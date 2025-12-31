@@ -1,0 +1,51 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to DigitalOcean Droplet
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            APP_DIR="/var/www/prime-products"
+            REPO_URL="git@github.com:${{ github.repository }}.git"
+            BRANCH="${{ github.ref_name }}"
+
+            echo "Checking if directory exists..."
+            if [ ! -d "$APP_DIR" ]; then
+              echo "Creating directory and cloning repository..."
+              mkdir -p /var/www
+              cd /var/www
+              git clone "$REPO_URL" prime-products
+              cd prime-products
+              git checkout "$BRANCH"
+            else
+              echo "Pulling latest code..."
+              cd "$APP_DIR"
+              git fetch origin
+              git checkout "$BRANCH"
+              git pull origin "$BRANCH"
+            fi
+
+            echo "Installing dependencies..."
+            npm install
+
+            echo "Building project..."
+            npm run build
+
+            echo "Restarting PM2..."
+            pm2 restart prime-products || pm2 start npm --name "prime-products" -- start
+
+            echo "Deployment complete!"
