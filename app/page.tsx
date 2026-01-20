@@ -1,3 +1,11 @@
+"use client";
+
+declare global {
+  interface Window {
+    gtag: (command: string, action: string, params?: Record<string, string>) => void;
+  }
+}
+
 export default function Home() {
   return (
     <div className="relative min-h-screen w-full bg-black overflow-hidden flex items-center justify-center px-4 py-8 md:p-0">
@@ -63,6 +71,12 @@ export default function Home() {
             href="https://www.kickstarter.com/projects/primestyleai/primestyleai-see-how-clothes-look-on-you-before-you-buy"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => {
+              window.gtag?.("event", "click", {
+                event_category: "outbound",
+                event_label: "kickstarter_button",
+              });
+            }}
             className="inline-flex items-center gap-2 sm:gap-3 md:gap-4 px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 bg-[#05CE78] hover:bg-[#04b86b] text-white font-semibold text-sm sm:text-base md:text-lg rounded-lg sm:rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-[#05CE78]/30"
           >
             <img
