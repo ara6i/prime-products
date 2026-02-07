@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PrimeStyleAI - Coming Soon",
-  description: "PrimeStyleAI is coming soon",
+  title: "PrimeStyleAI - Visit Our Beta",
+  description: "PrimeStyleAI - Try our beta at myaifitting.com",
   icons: {
     icon: "/favicon.svg",
     apple: "/logo.png",

@@ -34,19 +34,28 @@ export default function Home() {
 
         {/* Main heading */}
         <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-wider sm:tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-[#D4AF37] via-[#F4D03F] to-[#D4AF37] mb-2 sm:mb-4">
-          COMING
+          VISIT OUR
         </h1>
         <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-wider sm:tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-[#D4AF37] via-[#F4D03F] to-[#D4AF37] mb-6 sm:mb-8">
-          SOON
+          BETA
         </h1>
 
         {/* Subtitle */}
         <div className="mb-6 sm:mb-8 md:mb-12">
           <p className="text-gray-500 text-xs sm:text-sm md:text-base tracking-[0.2em] sm:tracking-[0.3em] uppercase mb-1 sm:mb-2">
-            — Something amazing —
+            — Experience the future of fashion —
           </p>
-          <p
-            className="text-base sm:text-xl md:text-2xl font-light tracking-wide"
+          <a
+            href="https://myaifitting.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              window.gtag?.("event", "click", {
+                event_category: "outbound",
+                event_label: "beta_website",
+              });
+            }}
+            className="inline-block text-base sm:text-xl md:text-2xl font-light tracking-wide hover:scale-105 transition-transform duration-300"
             style={{
               background: 'linear-gradient(90deg, #D4AF37, #F4D03F, #D4AF37)',
               backgroundSize: '200% 100%',
@@ -56,8 +65,8 @@ export default function Home() {
               animation: 'subtleGlow 4s ease-in-out infinite',
             }}
           >
-            is on the way
-          </p>
+            myaifitting.com →
+          </a>
         </div>
 
         {/* Kickstarter CTA */}
