@@ -10,13 +10,13 @@ import { usePilotModal } from "./PilotModalContext";
 
 const SECTION_LINKS = [
   { label: "Features", href: "#features" },
-  { label: "Demo", href: "/demo/products" },
+  { label: "Demo", href: "/developer/demo/products" },
   { label: "Integrations", href: "#integrations" },
   { label: "Pricing", href: "#pricing" },
-  { label: "Docs", href: "/docs" },
+  { label: "Docs", href: "/developer/docs" },
 ];
 
-const NAV_HEIGHT = 52;
+const NAV_HEIGHT = 64;
 
 export function MobileDeveloperNavbar() {
   const [open, setOpen] = useState(false);
@@ -38,13 +38,13 @@ export function MobileDeveloperNavbar() {
         className="sticky top-0 z-50 flex items-center justify-between px-4 bg-white/85 backdrop-blur-md border-b border-gray-100"
         style={{ height: NAV_HEIGHT }}
       >
-        <Link href="/" onClick={close}>
+        <Link href="/developer" onClick={close}>
           <Image
             src="/images/landing/logo-navbar-transparent.png"
             alt="PrimeStyleAI"
             width={56}
             height={52}
-            className="object-contain h-[28px] w-auto"
+            className="object-contain h-[44px] w-auto"
           />
         </Link>
 

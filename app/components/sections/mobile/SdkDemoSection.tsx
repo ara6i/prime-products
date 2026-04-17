@@ -9,7 +9,7 @@ import type { SdkStep } from "../../../types/landing";
 
 export function SdkDemoSection() {
   return (
-    <section id="sdk-demo" className="bg-white px-5 py-14">
+    <section id="sdk-demo" className="overflow-x-clip bg-white px-5 py-14">
       <Reveal variant="fade" className="flex flex-col items-center gap-3 text-center">
         <Eyebrow>{SDK_DEMO.eyebrow}</Eyebrow>
         <h2 className="text-[30px] font-semibold leading-[1.1] tracking-[-0.02em] text-text-primary">
@@ -43,9 +43,9 @@ export function SdkDemoSection() {
 
 function MobileStepCard({ step, aiTag }: { step: SdkStep; aiTag?: string }) {
   return (
-    <Reveal className="flex flex-col gap-4">
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-text-primary/8 bg-surface-light shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
-        <Image src={step.image} alt={step.title} fill sizes="100vw" className="object-cover" />
+    <Reveal className="flex min-w-0 flex-col gap-4">
+      <div className="relative aspect-[4/3] w-full max-w-full overflow-hidden rounded-2xl border border-text-primary/8 bg-surface-light shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+        <Image src={step.image} alt={step.title} fill sizes="(max-width: 640px) 100vw, 600px" className="object-cover" />
         <span className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white font-mono text-xs font-medium text-brand-blue-dark shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           {step.num}
         </span>

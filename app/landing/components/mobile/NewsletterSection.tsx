@@ -25,7 +25,11 @@ export function NewsletterSection({ email, onEmailChange, onSubscribe }: Newslet
           onChange={onEmailChange}
           className="h-11 w-full rounded-full border border-input-border bg-white px-4 text-sm text-text-primary placeholder:text-input-placeholder outline-none focus:border-brand-blue"
         />
-        <Button variant="outline" size="default" className="w-full" onClick={onSubscribe}>
+        <Button
+          variant="outline"
+          className="h-12 w-full rounded-full px-6 text-[15px] font-semibold"
+          onClick={onSubscribe}
+        >
           Subscribe
         </Button>
       </div>

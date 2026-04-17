@@ -21,10 +21,12 @@ export function HeroSection() {
         <Reveal delay={1}>
           <h1 className="text-[40px] font-semibold leading-[1.05] tracking-[-0.025em] text-text-primary">
             {HERO.headline}{" "}
-            <em className="not-italic bg-gradient-to-br from-brand-blue to-accent-purple bg-clip-text font-serif italic text-transparent">
-              {HERO.headlineEm}
-            </em>{" "}
-            for
+            <span className="whitespace-nowrap">
+              <em className="not-italic bg-gradient-to-br from-brand-blue to-accent-purple bg-clip-text font-serif italic text-transparent">
+                {HERO.headlineEm}
+              </em>{" "}
+              for
+            </span>
             <br />
             fit.
           </h1>

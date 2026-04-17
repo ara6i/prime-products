@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Star, ShoppingBag, Heart, Truck, Ruler, X, Globe } from "lucide-react";
 import type { CatalogProductViewModel } from "@/app/dashboard/catalog/mapper/catalogMapper";
 import { PrimeStyleTryon } from "@primestyleai/tryon/react";
-import { TryOnNotice } from "@/app/components/shared/TryOnNotice";
 
 const SDK_LOCALES = [
   { code: "en", label: "English" },
@@ -381,7 +380,6 @@ export function ProductShowcase({ product }: ProductShowcaseProps) {
                   Size Guide
                 </button>
               </div>
-              <TryOnNotice />
             </div>
           </div>
 

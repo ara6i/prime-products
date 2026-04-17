@@ -128,10 +128,21 @@ export function PilotModal({ open, onOpenChange }: PilotModalProps) {
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-text-primary/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
-        <DialogPrimitive.Content className="fixed left-1/2 top-1/2 z-50 flex max-h-[92vh] w-[94vw] max-w-[520px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-brand-blue/10 bg-white shadow-[0_32px_80px_rgba(33,84,239,0.25)] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95">
+        <DialogPrimitive.Content
+          className={cn(
+            "fixed z-50 flex flex-col overflow-hidden border border-brand-blue/10 bg-white shadow-[0_32px_80px_rgba(33,84,239,0.25)]",
+            // mobile: bottom drawer
+            "inset-x-0 bottom-0 max-h-[92vh] w-full rounded-t-3xl rounded-b-none pt-2",
+            "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom",
+            // desktop: centered modal
+            "md:inset-x-auto md:bottom-auto md:left-1/2 md:top-1/2 md:w-[94vw] md:max-w-[520px] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:pt-0",
+            "md:data-[state=open]:fade-in-0 md:data-[state=open]:zoom-in-95 md:data-[state=closed]:fade-out-0 md:data-[state=closed]:zoom-out-95 md:data-[state=open]:slide-in-from-bottom-0 md:data-[state=closed]:slide-out-to-bottom-0"
+          )}
+        >
+          <div className="mx-auto mb-1 h-1.5 w-10 flex-shrink-0 rounded-full bg-text-primary/15 md:hidden" aria-hidden />
           <ModalHeader onClose={() => onOpenChange(false)} />
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-7 pb-7 pt-5">
+          <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-6 pt-4 md:px-7 md:pb-7 md:pt-5">
             {submitted ? <SuccessState onClose={() => onOpenChange(false)} /> : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
                 <div className="flex flex-col items-center gap-1.5 text-center">
@@ -266,13 +277,13 @@ export function PilotModal({ open, onOpenChange }: PilotModalProps) {
 
 function ModalHeader({ onClose }: { onClose: () => void }) {
   return (
-    <div className="relative flex items-center justify-between border-b border-brand-blue/10 bg-gradient-to-br from-brand-blue-pale/60 via-white to-brand-blue-pale/30 px-7 py-5">
+    <div className="relative flex items-center justify-between border-b border-brand-blue/10 bg-gradient-to-br from-brand-blue-pale/60 via-white to-brand-blue-pale/30 px-5 py-4 md:px-7 md:py-5">
       <Image
         src="/images/landing/logo-navbar-transparent.png"
         alt="PrimeStyle AI"
         width={220}
         height={52}
-        className="h-12 w-auto object-contain"
+        className="h-10 w-auto object-contain md:h-12"
         priority
       />
       <DialogPrimitive.Close

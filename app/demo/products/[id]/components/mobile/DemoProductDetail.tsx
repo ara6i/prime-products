@@ -8,7 +8,6 @@ import type { DemoProductView } from "../../../types";
 import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
 import { useSizingAutoSelect } from "../../hooks/useSizingAutoSelect";
-import { TryOnNotice } from "@/app/components/shared/TryOnNotice";
 
 const SDK_LOCALES = [
   { code: "en", label: "English" },
@@ -537,7 +536,6 @@ export function MobileProductDetail({ product }: Props) {
               boxShadow: "0 4px 24px rgba(33,84,239,0.2)",
             }}
           />
-          <TryOnNotice className="mt-2" />
           <p className="text-center text-[9px] text-text-disabled mt-2 font-mono tracking-wider">@primestyleai/tryon</p>
         </div>
       </div>

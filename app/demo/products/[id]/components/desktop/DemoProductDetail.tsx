@@ -8,7 +8,6 @@ import type { DemoProductView } from "../../../types";
 import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
 import { useSizingAutoSelect } from "../../hooks/useSizingAutoSelect";
-import { TryOnNotice } from "@/app/components/shared/TryOnNotice";
 
 
 interface Props {
@@ -404,7 +403,6 @@ export function DesktopProductDetail({ product }: Props) {
               }}
             />
 
-            <TryOnNotice />
 
             {/* Size guide + shipping links */}
             <div className="space-y-[0.6vw]">
