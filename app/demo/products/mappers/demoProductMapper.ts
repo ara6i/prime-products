@@ -11,6 +11,31 @@ import type {
 
 const DEMO_BRAND = "PrimeStyleAI";
 
+/**
+ * Proxy slow third-party image CDNs through our nginx cache.
+ * Farfetch CDN (cdn-images.farfetch-contents.com) returns in ~10s from our droplet,
+ * so we route through /ext-img/* which nginx caches for 30 days on disk.
+ */
+const SLOW_CDN_HOSTS = new Set([
+  "cdn-images.farfetch-contents.com",
+]);
+
+function proxyImage(url: string | null | undefined): string {
+  if (!url || typeof url !== "string") return url || "";
+  try {
+    const u = new URL(url);
+    if (SLOW_CDN_HOSTS.has(u.hostname)) {
+      return `/ext-img/${u.hostname}${u.pathname}${u.search}`;
+    }
+  } catch {}
+  return url;
+}
+
+function proxyImages(urls?: string[]): string[] {
+  if (!urls) return [];
+  return urls.map(proxyImage);
+}
+
 /** Strip the real brand name from a product name, return a clean generic name */
 function cleanProductName(brand: string, name: string): string {
   if (!name) return "Untitled";
@@ -41,9 +66,9 @@ function toCard(p: DemoProductApi): DemoProductCard {
     name: cleanProductName(rawBrand, rawName),
     brand: DEMO_BRAND,
     category: p.category ?? "",
-    image: p.image_urls?.[0] ?? p.gallery?.[0] ?? p.variant_image_urls?.[0] ?? "",
+    image: proxyImage(p.image_urls?.[0] ?? p.gallery?.[0] ?? p.variant_image_urls?.[0] ?? ""),
     // Tuxedo: always show model image — skip the AI-generated (model-free) cover
-    generatedCover: (!modelImage && gc && gc !== COVER_SKIP) ? gc : undefined,
+    generatedCover: proxyImage((!modelImage && gc && gc !== COVER_SKIP) ? gc : undefined) || undefined,
     // Mark checked so the frontend won't call the cover API again
     coverChecked: !!gc || modelImage,
     vtoSupported: p.is_virtual_tryon_supported ?? false,
@@ -90,9 +115,9 @@ export function mapProductDetail(p: DemoProductApi): DemoProductView {
 /* ── helpers ────────────────────────────────── */
 
 function buildImages(p: DemoProductApi): string[] {
-  // Collect ALL unique images from every source
+  // Collect ALL unique images from every source, proxied through our cache for slow CDNs
   const all: string[] = [];
-  const add = (urls?: string[]) => urls?.forEach((u) => { if (u && !all.includes(u)) all.push(u); });
+  const add = (urls?: string[]) => proxyImages(urls).forEach((u) => { if (u && !all.includes(u)) all.push(u); });
 
   add(p.gallery);
   add(p.image_urls);
@@ -119,7 +144,7 @@ function buildColorVariants(p: DemoProductApi): DemoColorVariant[] {
     name: v.name ?? "",
     hex: v.hex ?? "#666",
     available: v.available ?? true,
-    images: v.images ?? [],
+    images: proxyImages(v.images),
     sizes: (v.sizes ?? []).map((s) => ({
       name: s.name ?? "",
       available: isAvailable(s.availability),

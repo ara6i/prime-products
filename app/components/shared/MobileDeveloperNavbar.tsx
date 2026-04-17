@@ -48,8 +48,10 @@ export function MobileDeveloperNavbar() {
 
   return (
     <>
+      {/* Spacer so content below flows under a fixed nav */}
+      <div aria-hidden style={{ height: NAV_HEIGHT }} />
       <nav
-        className="sticky top-0 z-50 flex items-center justify-between px-4 bg-white/85 backdrop-blur-md border-b border-gray-100"
+        className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-4 bg-white/85 backdrop-blur-md border-b border-gray-100"
         style={{ height: NAV_HEIGHT }}
       >
         <Link href="/" onClick={close}>
