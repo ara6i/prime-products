@@ -42,7 +42,7 @@ export function FeaturesSection() {
 
       <Reveal delay={2}>
         <div key={active} className="flex flex-col gap-4 animate-in fade-in duration-400">
-          <div className="relative aspect-[4/5] w-full max-w-full overflow-hidden rounded-2xl border border-text-primary/8 bg-surface-light">
+          <div className="relative aspect-[4/5] w-full max-w-full overflow-hidden">
             <Image src={tab.image} alt={tab.title} fill sizes="(max-width: 640px) 100vw, 600px" className="object-contain" />
           </div>
           <span className="text-xs font-mono uppercase tracking-[0.14em] text-brand-blue">

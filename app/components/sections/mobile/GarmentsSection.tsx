@@ -32,7 +32,7 @@ export function GarmentsSection() {
                   className="flex w-[140px] shrink-0 flex-col items-center gap-2 rounded-xl border border-text-primary/8 bg-white p-3"
                 >
                   <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-surface-light">
-                    <Image src={g.image} alt={g.label} fill sizes="140px" className="object-cover" />
+                    <Image src={g.image} alt={g.label} fill sizes="140px" loading="eager" className="object-cover" />
                   </div>
                   <span className="text-xs font-medium text-text-primary">{g.label}</span>
                 </article>

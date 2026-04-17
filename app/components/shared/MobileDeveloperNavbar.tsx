@@ -10,10 +10,10 @@ import { usePilotModal } from "./PilotModalContext";
 
 const SECTION_LINKS = [
   { label: "Features", href: "#features" },
-  { label: "Demo", href: "/developer/demo/products" },
+  { label: "Demo", href: "/demo/products" },
   { label: "Integrations", href: "#integrations" },
   { label: "Pricing", href: "#pricing" },
-  { label: "Docs", href: "/developer/docs" },
+  { label: "Docs", href: "/docs" },
 ];
 
 const NAV_HEIGHT = 64;
@@ -28,8 +28,33 @@ export function MobileDeveloperNavbar() {
   };
 
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    if (!open) return;
+    const scrollY = window.scrollY;
+    const body = document.body;
+    const html = document.documentElement;
+    const prev = {
+      bodyOverflow: body.style.overflow,
+      bodyPosition: body.style.position,
+      bodyTop: body.style.top,
+      bodyWidth: body.style.width,
+      htmlOverflow: html.style.overflow,
+      htmlOverscroll: html.style.overscrollBehavior,
+    };
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
+    html.style.overflow = "hidden";
+    html.style.overscrollBehavior = "none";
+    return () => {
+      body.style.overflow = prev.bodyOverflow;
+      body.style.position = prev.bodyPosition;
+      body.style.top = prev.bodyTop;
+      body.style.width = prev.bodyWidth;
+      html.style.overflow = prev.htmlOverflow;
+      html.style.overscrollBehavior = prev.htmlOverscroll;
+      window.scrollTo(0, scrollY);
+    };
   }, [open]);
 
   return (
@@ -38,7 +63,7 @@ export function MobileDeveloperNavbar() {
         className="sticky top-0 z-50 flex items-center justify-between px-4 bg-white/85 backdrop-blur-md border-b border-gray-100"
         style={{ height: NAV_HEIGHT }}
       >
-        <Link href="/developer" onClick={close}>
+        <Link href="/" onClick={close}>
           <Image
             src="/images/landing/logo-navbar-transparent.png"
             alt="PrimeStyleAI"

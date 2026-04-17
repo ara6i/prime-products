@@ -115,6 +115,7 @@ function LanguagesCard() {
                   alt={code}
                   width={20}
                   height={20}
+                  loading="eager"
                   className="h-full w-full object-cover"
                 />
               </div>

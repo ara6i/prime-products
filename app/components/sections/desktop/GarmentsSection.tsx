@@ -34,6 +34,7 @@ export function GarmentsSection() {
                       alt={g.label}
                       fill
                       sizes="200px"
+                      loading="eager"
                       className="object-cover transition-transform duration-500 group-hover:scale-[1.06]"
                     />
                   </div>
