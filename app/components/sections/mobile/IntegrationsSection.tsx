@@ -235,7 +235,9 @@ function TabVisualMobile({ tab }: { tab: IntegrationTab }) {
   switch (tab.content.visual.kind) {
     case "gif":
       return (
-        <img src={tab.content.visual.src} alt="SDK demo" className="w-full rounded-xl" />
+        <div className="w-full max-w-full overflow-hidden rounded-xl bg-white">
+          <img src={tab.content.visual.src} alt="SDK demo" className="block h-auto w-full max-w-full" />
+        </div>
       );
     case "code":
       return (

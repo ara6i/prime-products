@@ -13,7 +13,7 @@ export function FeaturesSection() {
   const tab = tabs[active];
 
   return (
-    <section className="px-5 py-14">
+    <section className="overflow-x-clip px-5 py-14">
       <Reveal variant="fade" className="mb-8 flex flex-col items-center gap-3 text-center">
         <Eyebrow>{FEATURES.eyebrow}</Eyebrow>
         <h2 className="text-[30px] font-semibold leading-[1.1] tracking-[-0.02em] text-text-primary">
@@ -42,8 +42,8 @@ export function FeaturesSection() {
 
       <Reveal delay={2}>
         <div key={active} className="flex flex-col gap-4 animate-in fade-in duration-400">
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-text-primary/8 bg-surface-light">
-            <Image src={tab.image} alt={tab.title} fill sizes="100vw" className="object-cover" />
+          <div className="relative aspect-[4/5] w-full max-w-full overflow-hidden rounded-2xl border border-text-primary/8 bg-surface-light">
+            <Image src={tab.image} alt={tab.title} fill sizes="(max-width: 640px) 100vw, 600px" className="object-contain" />
           </div>
           <span className="text-xs font-mono uppercase tracking-[0.14em] text-brand-blue">
             Capability 0{active + 1}
