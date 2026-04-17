@@ -50,7 +50,7 @@ export function DocsMobileNav({ navigation, activeId }: DocsMobileNavProps) {
   };
 
   return (
-    <div ref={navRef} className="lg:hidden sticky top-0 z-30">
+    <div ref={navRef} className="lg:hidden sticky top-[64px] z-30">
       {/* Collapsed bar */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -77,7 +77,7 @@ export function DocsMobileNav({ navigation, activeId }: DocsMobileNavProps) {
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 top-[45px] bg-white/60 z-30"
+            className="fixed inset-0 bg-white/60 z-30"
             onClick={() => setIsOpen(false)}
           />
 
