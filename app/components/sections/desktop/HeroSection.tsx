@@ -21,14 +21,11 @@ export function HeroSection() {
         <Reveal delay={1}>
           <h1 className="text-[clamp(3rem,2.4rem+3.2vw,5.25rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-text-primary">
             {HERO.headline}{" "}
-            <span className="whitespace-nowrap">
-              <em className="not-italic bg-gradient-to-br from-brand-blue via-brand-blue to-accent-purple bg-clip-text font-serif text-transparent italic">
-                {HERO.headlineEm}
-              </em>{" "}
-              for
-            </span>
+            <em className="not-italic bg-gradient-to-br from-brand-blue via-brand-blue to-accent-purple bg-clip-text font-serif text-transparent italic">
+              {HERO.headlineEm}
+            </em>
             <br />
-            fit.
+            for fit.
           </h1>
         </Reveal>
 
@@ -37,7 +34,7 @@ export function HeroSection() {
         </Reveal>
 
         <Reveal delay={2}>
-          <p className="max-w-[44ch] text-lg leading-[1.6] text-text-body">{HERO.subhead}</p>
+          <p className="whitespace-nowrap text-lg leading-[1.6] text-text-body">{HERO.subhead}</p>
         </Reveal>
 
         <Reveal delay={3} className="flex flex-wrap items-center justify-center gap-4 pt-2">
