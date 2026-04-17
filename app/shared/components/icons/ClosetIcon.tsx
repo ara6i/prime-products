@@ -1,0 +1,30 @@
+import type { IconProps } from "@/app/shared/types";
+
+export function ClosetIcon({
+  size = 30,
+  color = "currentColor",
+  className,
+}: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 30 30"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <g clipPath="url(#closet-clip)">
+        <path
+          d="M18.75 8.75V24.9625L13.4875 22.7L12.5 22.275L11.5125 22.7L6.25 24.9625V8.75H18.75ZM23.75 1.25H11.2375C9.8625 1.25 8.75 2.375 8.75 3.75H21.25C22.625 3.75 23.75 4.875 23.75 6.25V22.5L26.25 23.75V3.75C26.25 2.375 25.125 1.25 23.75 1.25ZM18.75 6.25H6.25C4.875 6.25 3.75 7.375 3.75 8.75V28.75L12.5 25L21.25 28.75V8.75C21.25 7.375 20.125 6.25 18.75 6.25Z"
+          fill={color}
+        />
+      </g>
+      <defs>
+        <clipPath id="closet-clip">
+          <rect width="30" height="30" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+}

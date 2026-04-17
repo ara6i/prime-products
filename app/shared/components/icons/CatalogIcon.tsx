@@ -1,0 +1,13 @@
+import type { IconProps } from "@/app/shared/types";
+
+export function CatalogIcon({
+  size = 30,
+  color = "currentColor",
+  className,
+}: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <path d="M23.75 7.5H21.25C21.25 4.05 18.45 1.25 15 1.25C11.55 1.25 8.75 4.05 8.75 7.5H6.25C4.875 7.5 3.7625 8.625 3.7625 10L3.75 25C3.75 26.375 4.875 27.5 6.25 27.5H23.75C25.125 27.5 26.25 26.375 26.25 25V10C26.25 8.625 25.125 7.5 23.75 7.5ZM15 3.75C17.075 3.75 18.75 5.425 18.75 7.5H11.25C11.25 5.425 12.925 3.75 15 3.75ZM15 16.25C11.55 16.25 8.75 13.45 8.75 10H11.25C11.25 12.075 12.925 13.75 15 13.75C17.075 13.75 18.75 12.075 18.75 10H21.25C21.25 13.45 18.45 16.25 15 16.25Z" fill={color}/>
+    </svg>
+  );
+}

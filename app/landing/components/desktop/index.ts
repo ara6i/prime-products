@@ -1,0 +1,14 @@
+export { LandingContent } from "./LandingContent";
+export { Navbar } from "./Navbar";
+export { HeroSection } from "./HeroSection";
+export { StatsSection } from "./StatsSection";
+export { BrandsSection } from "./BrandsSection";
+export { FeaturesSection } from "./FeaturesSection";
+export { HowItWorksSection } from "./HowItWorksSection";
+export { ProblemsSection } from "./ProblemsSection";
+export { PricingSection } from "./PricingSection";
+export { FAQSection } from "./FAQSection";
+export { TestimonialsSection } from "./TestimonialsSection";
+export { CTASection } from "./CTASection";
+export { NewsletterSection } from "./NewsletterSection";
+export { Footer } from "./Footer";

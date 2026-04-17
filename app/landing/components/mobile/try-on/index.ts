@@ -1,0 +1,1 @@
+export { MobileTryOnSection } from "./MobileTryOnSection";

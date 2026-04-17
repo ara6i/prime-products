@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
+import { Manrope, Poppins } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+import { Providers } from "@/app/shared/components/Providers";
 import "./globals.css";
 
-const GA_MEASUREMENT_ID = "G-M8YSSL4MM2";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
+});
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 const geistMono = Geist_Mono({
@@ -16,12 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PrimeStyleAI - Visit Our Beta",
-  description: "PrimeStyleAI - Try our beta at myaifitting.com",
-  icons: {
-    icon: "/favicon.svg",
-    apple: "/logo.png",
-  },
+  title: "PrimeStyle AI",
+  description: "Virtual Try-On powered by AI",
 };
 
 export default function RootLayout({
@@ -32,23 +33,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-          strategy="afterInteractive"
+        {/* Apple Sign In JS SDK */}
+        <script
+          src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"
+          defer
         />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_MEASUREMENT_ID}');
-          `}
-        </Script>
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${manrope.variable} ${poppins.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

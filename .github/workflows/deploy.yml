@@ -23,20 +23,18 @@ jobs:
             REPO_URL="git@github.com:${{ github.repository }}.git"
             BRANCH="${{ github.ref_name }}"
 
-            echo "Checking if directory exists..."
             if [ ! -d "$APP_DIR" ]; then
-              echo "Creating directory and cloning repository..."
+              echo "Cloning fresh..."
               mkdir -p /var/www
               cd /var/www
               git clone "$REPO_URL" prime-products
               cd prime-products
               git checkout "$BRANCH"
             else
-              echo "Pulling latest code..."
+              echo "Resetting to origin/$BRANCH..."
               cd "$APP_DIR"
               git fetch origin
-              git checkout "$BRANCH"
-              git pull origin "$BRANCH"
+              git reset --hard "origin/$BRANCH"
             fi
 
             echo "Installing dependencies..."
@@ -46,7 +44,11 @@ jobs:
             npm run build
 
             echo "Restarting PM2..."
-            pm2 delete prime-products 2>/dev/null || true
-            PORT=3001 pm2 start npm --name "prime-products" -- start
+            if pm2 describe prime-products > /dev/null 2>&1; then
+              pm2 restart prime-products --update-env
+            else
+              PORT=3001 pm2 start npm --name "prime-products" -- start
+            fi
+            pm2 save
 
             echo "Deployment complete!"
