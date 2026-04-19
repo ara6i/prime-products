@@ -101,9 +101,10 @@ function PricingCardReveal({ index, children }: { index: number; children: React
 
 function PricingCard({ tier, onPilotClick }: { tier: PricingTier; onPilotClick: () => void }) {
   const featured = !!tier.featured;
+  const isPilot = tier.id === "pilot";
   const isExternal = tier.ctaHref.startsWith("mailto:") || tier.ctaHref.startsWith("http");
   const handleClick = () => {
-    if (!isExternal) {
+    if (isPilot || !isExternal) {
       onPilotClick();
       return;
     }
