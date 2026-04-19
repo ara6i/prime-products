@@ -199,10 +199,10 @@ function PricingCard({ tier, onPilotClick }: { tier: PricingTier; onPilotClick: 
           type="button"
           onClick={handleClick}
           className={cn(
-            "mb-2 inline-flex h-14 w-full items-center justify-center rounded-xl border px-5 text-base font-semibold transition-transform cursor-pointer hover:-translate-y-0.5",
+            "mb-2 inline-flex h-14 w-full items-center justify-center rounded-xl px-5 text-base font-semibold transition-colors cursor-pointer",
             featured
-              ? "border-white/40 bg-gradient-to-t from-white via-white to-brand-blue-pale text-brand-blue-dark shadow-[0_8px_24px_rgba(255,255,255,0.15)]"
-              : "border-brand-blue-dark/40 bg-gradient-to-t from-brand-blue-dark via-brand-blue to-brand-blue/90 text-white shadow-[0_8px_24px_rgba(33,84,239,0.25)]"
+              ? "border border-white/40 bg-gradient-to-t from-white via-white to-brand-blue-pale text-brand-blue-dark shadow-[0_8px_24px_rgba(255,255,255,0.15)] hover:-translate-y-0.5"
+              : "bg-brand-blue text-white hover:bg-brand-blue-dark"
           )}
         >
           {tier.ctaLabel}

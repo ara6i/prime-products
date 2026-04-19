@@ -174,10 +174,10 @@ function PricingCardMobile({ tier, onPilotClick }: { tier: PricingTier; onPilotC
         type="button"
         onClick={handleClick}
         className={cn(
-          "mt-5 inline-flex h-12 w-full items-center justify-center rounded-xl border px-5 text-sm font-semibold transition-transform cursor-pointer hover:-translate-y-0.5",
+          "mt-5 inline-flex h-12 w-full items-center justify-center rounded-xl px-5 text-sm font-semibold transition-colors cursor-pointer",
           featured
-            ? "border-white/40 bg-gradient-to-t from-white via-white to-brand-blue-pale text-brand-blue-dark"
-            : "border-brand-blue-dark/40 bg-gradient-to-t from-brand-blue-dark via-brand-blue to-brand-blue/90 text-white shadow-[0_8px_24px_rgba(33,84,239,0.25)]"
+            ? "border border-white/40 bg-gradient-to-t from-white via-white to-brand-blue-pale text-brand-blue-dark hover:-translate-y-0.5"
+            : "bg-brand-blue text-white hover:bg-brand-blue-dark"
         )}
       >
         {tier.ctaLabel}

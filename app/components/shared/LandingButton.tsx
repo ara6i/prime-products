@@ -10,7 +10,7 @@ const landingButtonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-brand-blue text-white shadow-[0_8px_24px_rgba(33,84,239,0.25)] hover:bg-brand-blue-dark hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(33,84,239,0.32)]",
+          "bg-brand-blue text-white hover:bg-brand-blue-dark",
         outline:
           "border border-text-primary/15 bg-white text-text-primary hover:border-brand-blue/40 hover:bg-brand-blue-pale/30 hover:text-brand-blue-dark",
         white:

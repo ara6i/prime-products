@@ -250,7 +250,7 @@ export function PilotModal({ open, onOpenChange }: PilotModalProps) {
                     "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full font-medium transition-all",
                     submitting
                       ? "cursor-wait bg-brand-blue/70 text-white"
-                      : "bg-brand-blue text-white shadow-[0_8px_24px_rgba(33,84,239,0.25)] hover:-translate-y-0.5 hover:bg-brand-blue-dark hover:shadow-[0_12px_32px_rgba(33,84,239,0.32)]"
+                      : "bg-brand-blue text-white hover:bg-brand-blue-dark"
                   )}
                 >
                   {submitting ? (
