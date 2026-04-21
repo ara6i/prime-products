@@ -42,11 +42,8 @@ export function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // On non-admin hosts in production: block /admin/* so admin UI only serves on its subdomain.
-  if (process.env.NODE_ENV === "production" && pathname.startsWith("/admin")) {
-    return NextResponse.rewrite(new URL("/not-found", req.url));
-  }
-
+  // /admin/* passes through on any host — accessible at both
+  // admin.primestyleai.com/* and primestyleai.com/admin/*.
   return NextResponse.next();
 }
 
