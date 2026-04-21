@@ -175,6 +175,58 @@
   --dev-step-bg: #2154EF;
   --dev-step-text: #FFFFFF;
 
+  /* Admin — dense SaaS scale (Shopify/Linear style) */
+  --admin-sidebar-width: 12.5vw;         /* 240px @ 1920 */
+  --admin-header-height: 3.125vw;        /* 60px @ 1920 */
+  --admin-content-padding-x: 1.667vw;    /* 32px @ 1920 */
+  --admin-content-padding-y: 1.25vw;     /* 24px @ 1920 */
+  --admin-card-radius: 0.521vw;          /* 10px @ 1920 */
+  --admin-card-padding: 1.042vw;         /* 20px @ 1920 */
+  --admin-gap-xs: 0.208vw;               /* 4px */
+  --admin-gap-sm: 0.417vw;               /* 8px */
+  --admin-gap-md: 0.625vw;               /* 12px */
+  --admin-gap-lg: 1.042vw;               /* 20px */
+  --admin-gap-xl: 1.458vw;               /* 28px */
+  --admin-text-xs: 0.573vw;              /* 11px */
+  --admin-text-sm: 0.677vw;              /* 13px */
+  --admin-text-base: 0.729vw;            /* 14px */
+  --admin-text-md: 0.833vw;              /* 16px */
+  --admin-text-lg: 0.938vw;              /* 18px */
+  --admin-text-xl: 0.938vw;              /* 18px — page titles */
+  --admin-text-2xl: 1.146vw;             /* 22px — hero numbers */
+  --admin-text-3xl: 1.458vw;             /* 28px — reserved for rare KPIs */
+  --admin-surface-page: #F6F8FB;
+  --admin-surface-card: #FFFFFF;
+  --admin-surface-sidebar: #FFFFFF;
+  --admin-border: #E7EAEE;
+  --admin-border-soft: #EEF1F5;
+  --admin-row-hover: #F8FAFF;
+  --admin-muted: #F4F6F9;
+  --admin-shadow-card: 0px 1px 2px rgba(16, 24, 40, 0.04), 0px 0px 0px 1px rgba(16, 24, 40, 0.04);
+  --admin-shadow-elevated: 0px 4px 16px rgba(16, 24, 40, 0.08), 0px 0px 0px 1px rgba(16, 24, 40, 0.04);
+  --admin-chart-1: #2154EF;
+  --admin-chart-2: #6035F2;
+  --admin-chart-3: #22C55E;
+  --admin-chart-4: #F59E0B;
+  --admin-chart-5: #EC4899;
+  --admin-map-fill: #E7EAEE;
+  --admin-map-stroke: #D6DBE2;
+  --admin-map-scale-0: #EEF2FF;
+  --admin-map-scale-1: #C7D6FF;
+  --admin-map-scale-2: #8FADFF;
+  --admin-map-scale-3: #4A7AF6;
+  --admin-map-scale-4: #2154EF;
+  --admin-status-active-bg: #E7F7EE;
+  --admin-status-active-text: #127A3C;
+  --admin-status-suspended-bg: #FEE4E4;
+  --admin-status-suspended-text: #B4231B;
+  --admin-status-uninstalled-bg: #EFF1F5;
+  --admin-status-uninstalled-text: #5E656E;
+  --admin-source-shopify-bg: #EFF7EE;
+  --admin-source-shopify-text: #2B7A3C;
+  --admin-source-sdk-bg: #EEF2FF;
+  --admin-source-sdk-text: #2C4AE0;
+
   /* Landing */
   --landing-blue-section-bg: #EFF5FF;
   --landing-yellow-start: #FFCF1E;
@@ -362,6 +414,58 @@
   --color-dev-card-hover: var(--dev-card-hover);
   --color-dev-step-bg: var(--dev-step-bg);
   --color-dev-step-text: var(--dev-step-text);
+
+  /* Admin */
+  --spacing-admin-sidebar: var(--admin-sidebar-width);
+  --spacing-admin-header: var(--admin-header-height);
+  --spacing-admin-content-x: var(--admin-content-padding-x);
+  --spacing-admin-content-y: var(--admin-content-padding-y);
+  --spacing-admin-card: var(--admin-card-padding);
+  --spacing-admin-gap-xs: var(--admin-gap-xs);
+  --spacing-admin-gap-sm: var(--admin-gap-sm);
+  --spacing-admin-gap-md: var(--admin-gap-md);
+  --spacing-admin-gap-lg: var(--admin-gap-lg);
+  --spacing-admin-gap-xl: var(--admin-gap-xl);
+  --radius-admin-card: var(--admin-card-radius);
+  --text-admin-xs: var(--admin-text-xs);
+  --text-admin-sm: var(--admin-text-sm);
+  --text-admin-base: var(--admin-text-base);
+  --text-admin-md: var(--admin-text-md);
+  --text-admin-lg: var(--admin-text-lg);
+  --text-admin-xl: var(--admin-text-xl);
+  --text-admin-2xl: var(--admin-text-2xl);
+  --text-admin-3xl: var(--admin-text-3xl);
+  --color-admin-chart-1: var(--admin-chart-1);
+  --color-admin-chart-2: var(--admin-chart-2);
+  --color-admin-chart-3: var(--admin-chart-3);
+  --color-admin-chart-4: var(--admin-chart-4);
+  --color-admin-chart-5: var(--admin-chart-5);
+  --color-admin-map-fill: var(--admin-map-fill);
+  --color-admin-map-stroke: var(--admin-map-stroke);
+  --color-admin-map-scale-0: var(--admin-map-scale-0);
+  --color-admin-map-scale-1: var(--admin-map-scale-1);
+  --color-admin-map-scale-2: var(--admin-map-scale-2);
+  --color-admin-map-scale-3: var(--admin-map-scale-3);
+  --color-admin-map-scale-4: var(--admin-map-scale-4);
+  --color-admin-surface-page: var(--admin-surface-page);
+  --color-admin-surface-card: var(--admin-surface-card);
+  --color-admin-surface-sidebar: var(--admin-surface-sidebar);
+  --color-admin-border: var(--admin-border);
+  --color-admin-border-soft: var(--admin-border-soft);
+  --color-admin-row-hover: var(--admin-row-hover);
+  --color-admin-muted: var(--admin-muted);
+  --shadow-admin-card: var(--admin-shadow-card);
+  --shadow-admin-elevated: var(--admin-shadow-elevated);
+  --color-admin-status-active-bg: var(--admin-status-active-bg);
+  --color-admin-status-active-text: var(--admin-status-active-text);
+  --color-admin-status-suspended-bg: var(--admin-status-suspended-bg);
+  --color-admin-status-suspended-text: var(--admin-status-suspended-text);
+  --color-admin-status-uninstalled-bg: var(--admin-status-uninstalled-bg);
+  --color-admin-status-uninstalled-text: var(--admin-status-uninstalled-text);
+  --color-admin-source-shopify-bg: var(--admin-source-shopify-bg);
+  --color-admin-source-shopify-text: var(--admin-source-shopify-text);
+  --color-admin-source-sdk-bg: var(--admin-source-sdk-bg);
+  --color-admin-source-sdk-text: var(--admin-source-sdk-text);
 
   /* Landing */
   --color-landing-blue-section-bg: var(--landing-blue-section-bg);
