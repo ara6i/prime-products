@@ -516,6 +516,7 @@ export function MobileProductDetail({ product }: Props) {
         <div className="px-4 py-3">
           <PrimeStyleTryon
             apiUrl={process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"}
+            productId={product.id}
             productImage={images[currentImage] ?? product.primaryImage}
             locale={sdkLocale}
             productTitle={product.name}

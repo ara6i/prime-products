@@ -380,6 +380,7 @@ export function DesktopProductDetail({ product }: Props) {
             {/* SDK CTA */}
             <PrimeStyleTryon
               apiUrl={process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"}
+              productId={product.id}
               productImage={images[0] ?? product.primaryImage}
               locale="en"
               productTitle={product.name}
