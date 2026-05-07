@@ -6,16 +6,20 @@ import { MobileProductList } from "./components/mobile/DemoProductList";
 import type { DemoProductCard } from "./types";
 import { DemoShell } from "./components/DemoShell";
 
-/** Pin certain product categories to the front of the listing */
+/** Tuxedo pinned to first, accessories (sunglasses / hats / shoes) pushed
+ *  to the end as a group. Everything else keeps its API order. */
 function sortDemoProducts(products: DemoProductCard[]): DemoProductCard[] {
   const priority = (p: DemoProductCard): number => {
     const name = p.name.toLowerCase();
     const cat  = p.category.toLowerCase();
     if (name.includes("tuxedo")) return 0;
-    if (name.includes("sunglass") || cat.includes("eyewear") || cat.includes("sunglass")) return 1;
-    if (name.includes("cap") || name.includes("hat") || cat.includes("hat") || cat.includes("cap")) return 2;
+    // Accessories — sunglasses / hats / caps / shoes / sneakers
+    if (name.includes("sunglass") || cat.includes("eyewear") || cat.includes("sunglass")) return 100;
+    if (name.includes("cap") || name.includes("hat") || cat.includes("hat") || cat.includes("cap")) return 100;
+    if (name.includes("sneaker") || name.includes("shoe") || cat.includes("shoe") || cat.includes("sneaker") || cat.includes("footwear")) return 100;
     return 10;
   };
+  // Stable-ish sort: products with the same priority stay in API order.
   return [...products].sort((a, b) => priority(a) - priority(b));
 }
 
