@@ -490,6 +490,35 @@ export function MobileProductDetail({ product }: Props) {
             </div>
           ) : null}
 
+          {/* Find Your Size — minimal inline button under the size dropdown
+              on mobile. No icon, no sticky bottom, no @primestyleai/tryon byline. */}
+          <PrimeStyleTryon
+            apiUrl={process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"}
+            productId={product.id}
+            productImage={images[currentImage] ?? product.primaryImage}
+            productImages={images}
+            locale={sdkLocale}
+            productTitle={product.name}
+            sizeGuideData={product.sizeGuideData}
+            buttonText="Find Your Size"
+            onComplete={handleSizingComplete}
+            buttonStyles={{
+              backgroundColor: "#2154EF",
+              textColor: "#ffffff",
+              border: "none",
+              borderRadius: "0.5rem",
+              height: "2.25rem",
+              width: "100%",
+              fontSize: "0.75rem",
+              fontWeight: "600",
+              iconSize: "14px",
+              iconColor: "#ffffff",
+              hoverBackgroundColor: "#193EDC",
+              hoverTextColor: "#ffffff",
+              boxShadow: "none",
+            }}
+          />
+
           {/* Description */}
           {product.description && (
             <div className="border-t border-border-light pt-5">
@@ -511,35 +540,6 @@ export function MobileProductDetail({ product }: Props) {
         </div>
       </div>
 
-      {/* Sticky bottom */}
-      <div className="flex-shrink-0 bg-white/95 backdrop-blur-md border-t border-border-light pb-safe-min">
-        <div className="px-4 py-3">
-          <PrimeStyleTryon
-            apiUrl={process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"}
-            productId={product.id}
-            productImage={images[currentImage] ?? product.primaryImage}
-            locale={sdkLocale}
-            productTitle={product.name}
-            sizeGuideData={product.sizeGuideData}
-            buttonText="Find Your Size"
-            onComplete={handleSizingComplete}
-            buttonStyles={{
-              backgroundColor: "#2154EF",
-              textColor: "#ffffff",
-              border: "none",
-              borderRadius: "0.75rem",
-              height: "3.25rem",
-              width: "100%",
-              fontSize: "0.9375rem",
-              fontWeight: "700",
-              hoverBackgroundColor: "#193EDC",
-              hoverTextColor: "#ffffff",
-              boxShadow: "0 4px 24px rgba(33,84,239,0.2)",
-            }}
-          />
-          <p className="text-center text-[9px] text-text-disabled mt-2 font-mono tracking-wider">@primestyleai/tryon</p>
-        </div>
-      </div>
 
       {/* Size Guide Modal */}
       {product.sizeGuide && (
