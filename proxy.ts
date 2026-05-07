@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { COOKIE_NAME, verifySessionToken } from "@/app/try-on-test/auth/lib/session";
 
 // Domains that should serve the /admin tree as their root.
 // Configurable via ADMIN_HOSTS (comma-separated) to avoid hard-coding env-specific hosts.
@@ -19,13 +20,31 @@ function normalizeHost(hostHeader: string | null): string {
   return hostHeader.split(":")[0]!.trim().toLowerCase();
 }
 
-export function proxy(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const host = normalizeHost(req.headers.get("host"));
   const adminHosts = getAdminHosts();
   const isAdminHost = adminHosts.includes(host);
 
   const url = req.nextUrl;
   const pathname = url.pathname;
+
+  // ── Try-on-test admin gate ──
+  // Anything under /try-on-test except the login page itself + auth API
+  // requires a valid admin session cookie. JWT signature verified
+  // statelessly so this stays cheap.
+  const isTryOnTestPath = pathname === "/try-on-test" || pathname.startsWith("/try-on-test/");
+  const isTryOnTestLogin = pathname === "/try-on-test/login" || pathname.startsWith("/try-on-test/login/");
+  const isTryOnTestAuthApi = pathname.startsWith("/api/try-on-test/auth/");
+  if (isTryOnTestPath && !isTryOnTestLogin && !isTryOnTestAuthApi) {
+    const token = req.cookies.get(COOKIE_NAME)?.value || "";
+    const payload = token ? await verifySessionToken(token) : null;
+    if (!payload) {
+      const redirectUrl = url.clone();
+      redirectUrl.pathname = "/try-on-test/login";
+      redirectUrl.search = `?from=${encodeURIComponent(pathname + url.search)}`;
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
 
   // On the admin subdomain: rewrite every path to its /admin/* counterpart.
   if (isAdminHost) {
