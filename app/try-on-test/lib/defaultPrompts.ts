@@ -6,19 +6,18 @@
  * inserted at request time and aren't part of this baseline. Keep this
  * file in sync whenever that builder changes.
  */
-export const DEFAULT_APPAREL_PROMPT = `Put the garment on MY model. Use the reference image (image 2) ONLY to understand the GARMENT itself — its color, pattern, cut, drape, tightness, length, and fabric behaviour. Take ONLY the garment from the reference. DO NOT take the reference model's accessories, shoes, bag, jewelry, belt, hat, eyewear, or any other styling — those stay as the input photo shows them. DO NOT take the reference model's pose, body, framing, zoom, or cropping. DO NOT replace my model with the reference model. My model's pose, body, framing, accessories, footwear, and aspect ratio stay EXACTLY as the input photo.
+export const DEFAULT_APPAREL_PROMPT = `Put the dress on the model, do not change anything about the garment, pay attention to all detail, look how the reference model wore the dress and put it on my model exactly the same way, don't decide by yourself, generate try-on metrically accurate, match my model's pose to the reference model's pose, add all accessories — shoes, bag, jewelry, belt, hat, eyewear, gloves, hosiery — exactly what the reference model wore alongside the garment — onto the model we want to do the try-on on.
 
 You are generating a virtual try-on image of a person wearing a garment.
 
 GARMENT (image 2) — design reference. Reproduce the garment's color, pattern, print, logo, seam placement, lapel shape, button count and placement, collar, cuff, hem cut, stitching, embroidery, hardware, lining, and branding from the reference. Do not swap, restyle, or 'improve' the cut.
 - The garment's WIDTH on the output is set by the BODY UNDERNEATH plus the FIT DIRECTIVES above — NOT by the body shape on the reference model. If the reference is slim-cut on a slim model and the user's body is wider, the garment renders wider with visible strain. That is correct.
-- IGNORE everything on the reference model EXCEPT the garment. No shoes, no bag, no jewelry, no hat, no eyewear, no belt, no gloves, no hosiery, no extra layers — leave whatever the user is already wearing/holding in the input photo unchanged. The reference is the GARMENT only.
+- ACCESSORIES — match what the reference model is wearing alongside the garment. If the reference shows shoes, a bag, jewelry, a hat, eyewear, a belt, gloves, hosiery, or any other styling, REPLICATE that exact item on the user. Do not invent extras the reference doesn't show.
+- FOOTWEAR — replace the user's shoes with the footwear the reference model wears. If the reference is shot from the waist up and no footwear is visible, keep the user's original shoes.
 - FABRIC — drape correctly for the named material. Fluid for silks/satins/chiffons, structured for denim/wool/leather, conforming with mild stretch for jersey/knit, anti-static and clinging for synthetics. Render the appropriate weight, sheen, and natural fold behavior.
 
 PRESERVE FROM INPUT (everything outside the garment region):
 - BODY. Same weight, same proportions, same width at every level (chest, waist, hips, thighs). The body in the OUTPUT occupies the SAME horizontal width as the body in the INPUT — measured at the visible belly bulge, the widest hip point, the widest chest point. If the output looks slimmer than the input, you violated this rule. When the FIT DIRECTIVES say the garment is smaller than the body, the FABRIC strains over the unchanged body (tension lines, gaping fasteners, fabric pulling diagonally, belly pushing against buttons). DO NOT add slimming illusions (vertical lines, dark contouring, perspective tricks).
-- HANDS. Keep my model's hands in the same natural rest position as the input photo. Do NOT put hands in pockets, on hips, crossed, behind the back, or in any 'fashion-shoot' pose copied from the reference model. If the input has hands at the sides, render hands at the sides; if relaxed in front, keep them relaxed in front. A neutral, normal hand pose is mandatory.
-- POSE. Same shoulders, hips, leg stance, and head angle as the input. Do not lean, twist, or shift weight to mimic the reference model. The reference is for the GARMENT only.
 - FACE. Same features, expression, head angle, gaze, hairline, hair length, hair color.
 - SKIN. Same tone, same texture, same blemishes/marks. No retouching, smoothing, or beautifying.
 - BACKGROUND. Same pixels as the input, including lighting and shadows.
