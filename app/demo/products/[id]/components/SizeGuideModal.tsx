@@ -221,9 +221,35 @@ function TransposedSizeTable({
   // Measurement columns: every key except the size column AND drop any
   // pure-label / variant columns (Fit, Customization, etc.). Heuristic =
   // "value contains a digit" → it's a measurement.
-  const measurementKeys = allKeys.filter((k) => {
+  const candidateMeasurementKeys = allKeys.filter((k) => {
     if (k === sizeKey) return false;
     return rows.some((r) => /\d/.test(String(r[k] ?? "")));
+  });
+
+  // Drop the dual-unit pair the user isn't viewing. e.g. "Bust (in)" +
+  // "Bust (cm)" both exist in mongo; show only the one matching `unit`.
+  // Singletons (no paired unit) always render.
+  const measurementKeys = candidateMeasurementKeys.filter((k) => {
+    const lower = k.toLowerCase();
+    const hasInch = lower.includes("(in)") || lower.endsWith(" in");
+    const hasCm = lower.includes("(cm)") || lower.endsWith(" cm");
+    if (hasInch) {
+      const base = lower.replace(/\s*\(in\)\s*/, "").replace(/\s+in$/, "").trim();
+      const cmExists = candidateMeasurementKeys.some((other) => {
+        const ol = other.toLowerCase();
+        return ol !== lower && ol.includes(base) && (ol.includes("(cm)") || ol.endsWith(" cm"));
+      });
+      return cmExists ? unit === "in" : true;
+    }
+    if (hasCm) {
+      const base = lower.replace(/\s*\(cm\)\s*/, "").replace(/\s+cm$/, "").trim();
+      const inExists = candidateMeasurementKeys.some((other) => {
+        const ol = other.toLowerCase();
+        return ol !== lower && ol.includes(base) && (ol.includes("(in)") || ol.endsWith(" in"));
+      });
+      return inExists ? unit === "cm" : true;
+    }
+    return true;
   });
 
   const columnHasExplicitUnit = (key: string): boolean => {
