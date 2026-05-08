@@ -201,6 +201,7 @@ function parseSizeGuide(raw: unknown): DemoSizeGuide | null {
     howToMeasure: sg.howToMeasure as string[] | undefined,
     fitTerms: sg.fitTerms as DemoSizeGuide["fitTerms"],
     regions: sg.regions as DemoSizeGuide["regions"],
+    filters: sg.filters as DemoSizeGuide["filters"],
     noUnitToggle: sg.noUnitToggle as boolean | undefined,
     unit: (sg.unit as string) ?? "",
     guideImages: sg.guideImages as DemoSizeGuide["guideImages"],

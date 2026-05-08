@@ -123,6 +123,17 @@ export interface DemoSizeGuideRegion {
   columns: string[];
 }
 
+/** Row-filtering dropdown — e.g. Fit (Missy/Plus) and Customization
+ *  (Standard/Extra Length) for variant-aware charts. Each filter narrows
+ *  the visible rows by matching the row's value of `key` to the chosen
+ *  option. Multiple filters are AND-combined.  */
+export interface DemoSizeGuideFilter {
+  key: string;
+  label: string;
+  options: Array<{ value: string; label: string }>;
+  default?: string;
+}
+
 export interface DemoSizeGuide {
   title: string;
   /** Flat format (single table) */
@@ -136,6 +147,10 @@ export interface DemoSizeGuide {
   fitTerms?: Array<{ name: string; description: string }>;
   /** Optional country/region selector — adds a dropdown above the table. */
   regions?: DemoSizeGuideRegion[];
+  /** Optional row-filter dropdowns (e.g. Fit / Customization for the
+   *  wedding gown). When present, the modal renders one <select> per
+   *  filter and shows only rows matching the chosen values. */
+  filters?: DemoSizeGuideFilter[];
   /** When true, hide the cm/in unit toggle (use for charts that are pure
    *  label conversions and have no actual length measurements). */
   noUnitToggle?: boolean;

@@ -8,7 +8,7 @@ import {
   SheetContent,
 } from "@/app/shared/components/ui/sheet";
 import { cn } from "@/app/shared/lib/utils";
-import type { DemoSizeGuide, DemoSizeGuideSection, DemoSizeGuideRegion } from "../../types";
+import type { DemoSizeGuide, DemoSizeGuideSection, DemoSizeGuideRegion, DemoSizeGuideFilter } from "../../types";
 
 interface Props {
   guide: DemoSizeGuide;
@@ -109,6 +109,185 @@ function RegionSelect({
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+/* ── Variant filter dropdown (Fit / Customization) ── */
+
+function FilterSelect({
+  filter,
+  value,
+  onChange,
+}: {
+  filter: DemoSizeGuideFilter;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const activeLabel = filter.options.find((o) => o.value === value)?.label ?? "";
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  return (
+    <div className="flex flex-col gap-1.5 min-w-[160px]">
+      <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-hint">
+        {filter.label}
+      </span>
+      <div ref={ref} className="relative">
+        <button
+          onClick={() => setOpen((v) => !v)}
+          className="w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider bg-white text-text-body border border-border-light hover:border-brand-blue focus:border-brand-blue focus:outline-none transition-colors"
+        >
+          <span className="truncate">{activeLabel}</span>
+          <ChevronDown
+            className={cn(
+              "h-3.5 w-3.5 text-text-hint transition-transform duration-200 flex-shrink-0",
+              open && "rotate-180"
+            )}
+          />
+        </button>
+
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, y: -6, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.97 }}
+              transition={{ duration: 0.14, ease: "easeOut" }}
+              className="absolute top-full mt-1.5 left-0 right-0 z-[60] bg-white border border-border-light rounded-lg shadow-xl overflow-hidden py-1"
+            >
+              {filter.options.map((o) => (
+                <button
+                  key={o.value}
+                  onClick={() => { onChange(o.value); setOpen(false); }}
+                  className={cn(
+                    "w-full flex items-center justify-between gap-3 px-3.5 py-2 text-xs font-medium text-left transition-colors",
+                    value === o.value
+                      ? "text-brand-blue bg-brand-blue/5"
+                      : "text-text-body hover:bg-surface-light"
+                  )}
+                >
+                  <span className="truncate">{o.label}</span>
+                  {value === o.value && <Check className="h-3 w-3 text-brand-blue flex-shrink-0" />}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+/* ── Transposed table — sizes across the top, measurements down the side ──
+ *
+ * Used when the guide ships `filters` (variant-aware charts like the
+ * David's Bridal wedding gown). Layout mirrors that store's own size
+ * guide: one row per measurement (Bust / Waist / Hip / Length), with
+ * the size labels stretched as columns. */
+
+function TransposedSizeTable({
+  rows,
+  unit,
+  sourceUnit,
+}: {
+  rows: Array<Record<string, string>>;
+  unit: Unit;
+  sourceUnit: Unit | null;
+}) {
+  if (rows.length === 0) {
+    return (
+      <p className="text-xs text-text-hint italic">No sizes match the selected options.</p>
+    );
+  }
+
+  // Heuristic: pick the size column (first non-filter, non-measurement
+  // column). For the wedding chart the filters carry Fit + Customization
+  // so the size column is reliably "Size".
+  const allKeys = Object.keys(rows[0] ?? {});
+  const sizeKey =
+    allKeys.find((k) => k.toLowerCase() === "size") ||
+    allKeys.find((k) => k.toLowerCase() === "standard") ||
+    allKeys[0]!;
+
+  // Measurement columns: every key except the size column AND drop any
+  // pure-label / variant columns (Fit, Customization, etc.). Heuristic =
+  // "value contains a digit" → it's a measurement.
+  const measurementKeys = allKeys.filter((k) => {
+    if (k === sizeKey) return false;
+    return rows.some((r) => /\d/.test(String(r[k] ?? "")));
+  });
+
+  const columnHasExplicitUnit = (key: string): boolean => {
+    const lower = key.toLowerCase();
+    return (
+      lower.includes("(cm)") ||
+      lower.includes("(in)") ||
+      lower.endsWith(" cm") ||
+      lower.endsWith(" in")
+    );
+  };
+
+  const displayValue = (val: string | undefined, key: string): string => {
+    if (!val) return "—";
+    if (!sourceUnit || sourceUnit === unit) return val;
+    if (columnHasExplicitUnit(key)) return val;
+    return convertValueUnits(val, sourceUnit, unit);
+  };
+
+  const stripUnit = (key: string) =>
+    key.replace(/\s*\((cm|in)\)\s*$/i, "").trim();
+
+  return (
+    <div className="overflow-x-auto -mx-1 px-1">
+      <table className="w-full text-sm border-separate border-spacing-0">
+        <thead>
+          <tr>
+            <th className="text-left py-2.5 pr-3 text-xs text-brand-blue font-semibold uppercase tracking-wider border-b border-border-light bg-white sticky left-0">
+              {sizeKey}
+            </th>
+            {rows.map((r, i) => (
+              <th
+                key={i}
+                className={cn(
+                  "py-2.5 px-3 text-xs text-text-hint font-semibold uppercase tracking-wider border-b border-border-light text-center whitespace-nowrap",
+                  i % 2 === 0 ? "bg-brand-blue/5" : ""
+                )}
+              >
+                {r[sizeKey]}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {measurementKeys.map((mKey) => (
+            <tr key={mKey}>
+              <td className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider text-text-primary whitespace-nowrap border-b border-border-light bg-white sticky left-0">
+                {stripUnit(mKey)}
+              </td>
+              {rows.map((r, i) => (
+                <td
+                  key={i}
+                  className={cn(
+                    "py-2.5 px-3 text-sm text-text-body text-center whitespace-nowrap border-b border-border-light",
+                    i % 2 === 0 ? "bg-brand-blue/5" : ""
+                  )}
+                >
+                  {displayValue(r[mKey], mKey)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -253,15 +432,47 @@ export function SizeGuideModal({ guide, open, onClose }: Props) {
     () => guide.regions?.[0]?.code || ""
   );
 
+  // Variant-filter selections (Fit / Customization). Initialized to each
+  // filter's `default` value, fall back to the first option.
+  const [filterValues, setFilterValues] = useState<Record<string, string>>(() => {
+    const out: Record<string, string> = {};
+    for (const f of guide.filters || []) {
+      out[f.key] = f.default ?? f.options[0]?.value ?? "";
+    }
+    return out;
+  });
+
   useEffect(() => {
     if (open) setRegionCode(guide.regions?.[0]?.code || "");
+  }, [open, guide]);
+
+  useEffect(() => {
+    if (!open) return;
+    const out: Record<string, string> = {};
+    for (const f of guide.filters || []) {
+      out[f.key] = f.default ?? f.options[0]?.value ?? "";
+    }
+    setFilterValues(out);
   }, [open, guide]);
 
   const hasSections = guide.sections && guide.sections.length > 0;
   const hasFlatTable = guide.headers && guide.rows && guide.rows.length > 0;
   const hasRegions = guide.regions && guide.regions.length > 0;
+  const hasFilters = (guide.filters?.length ?? 0) > 0;
   const showUnitToggle = !guide.noUnitToggle;
   const sourceUnit = normalizeSourceUnit(guide.unit);
+
+  // Apply filters to the flat row list. AND-combined: a row must match
+  // every filter's selected value.
+  const filteredRows: Array<Record<string, string>> = hasFilters && guide.rows
+    ? guide.rows.filter((r) =>
+        (guide.filters || []).every((f) => {
+          const v = filterValues[f.key];
+          if (!v) return true;
+          return String(r[f.key] ?? "") === v;
+        }),
+      )
+    : guide.rows ?? [];
 
   const activeRegion: DemoSizeGuideRegion | null = hasRegions
     ? guide.regions!.find((r) => r.code === regionCode) || guide.regions![0] || null
@@ -307,7 +518,22 @@ export function SizeGuideModal({ guide, open, onClose }: Props) {
           </button>
         </div>
 
-        {/* Controls — region + unit */}
+        {/* Controls — variant filters first (Fit / Customization), then
+            region + unit toggle on a second row */}
+        {hasFilters && (
+          <div className="flex flex-wrap items-end gap-3 px-5 pt-3.5 pb-1 flex-shrink-0">
+            {(guide.filters || []).map((f) => (
+              <FilterSelect
+                key={f.key}
+                filter={f}
+                value={filterValues[f.key] ?? ""}
+                onChange={(v) =>
+                  setFilterValues((prev) => ({ ...prev, [f.key]: v }))
+                }
+              />
+            ))}
+          </div>
+        )}
         {(hasRegions || showUnitToggle) && (
           <div className="flex flex-wrap items-center gap-2.5 px-5 pt-3.5 pb-2 flex-shrink-0">
             {hasRegions && (
@@ -353,7 +579,15 @@ export function SizeGuideModal({ guide, open, onClose }: Props) {
               />
             ))}
 
-          {!hasSections && hasFlatTable && (
+          {!hasSections && hasFlatTable && hasFilters && (
+            <TransposedSizeTable
+              rows={filteredRows}
+              unit={unit}
+              sourceUnit={sourceUnit}
+            />
+          )}
+
+          {!hasSections && hasFlatTable && !hasFilters && (
             <SizeTable
               section={{ name: "", headers: guide.headers!, rows: guide.rows! }}
               unit={unit}
