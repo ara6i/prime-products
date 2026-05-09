@@ -150,27 +150,43 @@ export function DesktopProductDetail({ product }: Props) {
       if (rawLen || split.len) setPantsLengthSize(rawLen || split.len || "");
     };
 
+    console.groupCollapsed("[autosize:desktop] applying recommendation");
+    console.log("raw.recommendedSize:", raw.recommendedSize);
+    console.log("raw.recommendedLength:", raw.recommendedLength);
+    console.log("raw.sections:", raw.sections);
+    console.log("parsedSizes:", parsedSizes.map(p => ({ original: p.original, number: p.number, length: p.length, available: p.available })));
     const sections = raw.sections as Record<string, any> | undefined;
     if (sections && Object.keys(sections).length > 0) {
       const entries = Object.entries(sections);
+      console.log("[autosize] section entries (raw order):", entries.map(([n, s]: [string, any]) => ({ name: n, size: s?.size, recommendedSize: s?.recommendedSize, length: s?.length })));
       for (const [name, sec] of entries) {
         const lc = name.toLowerCase();
         if (!/pant|trouser/.test(lc)) continue;
         const sizeStr = (sec as any)?.size || (sec as any)?.recommendedSize;
+        console.log(`[autosize] pants iter "${name}" → sizeStr=${sizeStr} length=${(sec as any)?.length}`);
         if (!sizeStr) continue;
         applyPants(sizeStr, (sec as any)?.length);
       }
       const isJacketLike = (n: string) => /jacket|coat|blazer|tuxedo|suit/.test(n.toLowerCase());
       const isPants = (n: string) => /pant|trouser/.test(n.toLowerCase());
       const target = entries.find(([n]) => isJacketLike(n) && !isPants(n)) || entries.find(([n]) => !isPants(n));
+      console.log("[autosize] jacket target picked:", target ? target[0] : "(none)");
       if (target) {
         const [, sec] = target;
         const sizeStr = (sec as any)?.size || (sec as any)?.recommendedSize;
-        if (sizeStr) applyJacket(sizeStr, (sec as any)?.length);
+        console.log(`[autosize] jacket sizeStr=${sizeStr} length=${(sec as any)?.length}`);
+        if (sizeStr) {
+          const applied = applyJacket(sizeStr, (sec as any)?.length);
+          console.log(`[autosize] applyJacket returned ${applied}`);
+        }
       }
     } else if (raw.recommendedSize) {
+      console.log("[autosize] flat path applyJacket", raw.recommendedSize, raw.recommendedLength);
       applyJacket(raw.recommendedSize, raw.recommendedLength || undefined);
+    } else {
+      console.log("[autosize] no sections AND no recommendedSize — bailing");
     }
+    console.groupEnd();
 
     setJustAutoFilled(true);
     const handle = window.setTimeout(() => setJustAutoFilled(false), 1100);

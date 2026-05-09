@@ -1,0 +1,1058 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shopify launch + operate — beyond submission</title>
+<style>
+  :root {
+    --bg: #f7f8fb;
+    --surface: #ffffff;
+    --surface-soft: #f1f5f9;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --text-soft: #94a3b8;
+    --border: rgba(15, 23, 42, 0.08);
+    --border-strong: rgba(15, 23, 42, 0.16);
+    --accent: #7c3aed;
+    --accent-soft: rgba(124, 58, 237, 0.08);
+    --accent-blue: #2154EF;
+
+    --high-bg: rgba(239, 68, 68, 0.12);
+    --high-fg: #b91c1c;
+    --med-bg: rgba(245, 158, 11, 0.14);
+    --med-fg: #b45309;
+    --low-bg: rgba(100, 116, 139, 0.12);
+    --low-fg: #475569;
+    --ok-bg: rgba(16, 185, 129, 0.12);
+    --ok-fg: #047857;
+    --info-bg: rgba(33, 84, 239, 0.12);
+    --info-fg: #1d4ed8;
+
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.04);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b1220;
+      --surface: #111827;
+      --surface-soft: #0f172a;
+      --text: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-soft: #6b7280;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-strong: rgba(255, 255, 255, 0.12);
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.12);
+      --accent-blue: #6c8cff;
+      --high-bg: rgba(239, 68, 68, 0.18);
+      --high-fg: #fca5a5;
+      --med-bg: rgba(245, 158, 11, 0.18);
+      --med-fg: #fcd34d;
+      --low-bg: rgba(148, 163, 184, 0.18);
+      --low-fg: #cbd5e1;
+      --ok-bg: rgba(74, 222, 128, 0.18);
+      --ok-fg: #86efac;
+      --info-bg: rgba(108, 140, 255, 0.18);
+      --info-fg: #93c5fd;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ── Top bar ─────────────────────────────────────────────────── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar__row {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .topbar__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .topbar__title-mark {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .topbar__title small {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .topbar__links {
+    display: flex;
+    gap: 6px;
+  }
+  .topbar__link {
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    padding: 5px 11px;
+    border-radius: 999px;
+    transition: background 140ms ease;
+  }
+  .topbar__link:hover { background: var(--surface-soft); }
+  .progressbar { height: 2px; background: transparent; }
+  .progressbar__fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0;
+    transition: width 80ms linear;
+  }
+
+  /* ── Layout ──────────────────────────────────────────────────── */
+  .layout {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 32px 28px 64px;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 36px;
+  }
+
+  /* ── TOC ─────────────────────────────────────────────────────── */
+  .toc {
+    position: sticky;
+    top: 76px;
+    align-self: start;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding-right: 8px;
+  }
+  .toc__title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    margin: 0 0 12px 4px;
+  }
+  .toc ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: toc;
+  }
+  .toc li { margin: 0; }
+  .toc a {
+    display: block;
+    padding: 6px 10px 6px 32px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.4;
+    border-left: 2px solid transparent;
+    border-radius: 0 6px 6px 0;
+    transition: color 120ms ease, background 120ms ease, border-color 120ms ease;
+    position: relative;
+    counter-increment: toc;
+  }
+  .toc a::before {
+    content: counter(toc, decimal-leading-zero);
+    position: absolute;
+    left: 8px;
+    top: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-soft);
+  }
+  .toc a:hover { color: var(--text); background: var(--surface-soft); }
+  .toc a.is-active {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-left-color: var(--accent);
+  }
+  .toc a.is-active::before { color: var(--accent); }
+
+  /* ── Hero ────────────────────────────────────────────────────── */
+  .hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .hero h1 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .hero__sub {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0;
+    max-width: 80ch;
+  }
+
+  /* ── Critical-gaps callout ───────────────────────────────────── */
+  .critical {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--high-fg);
+    border-radius: var(--radius);
+    padding: 22px 28px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .critical__heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .critical__heading::before {
+    content: "⚠";
+    width: 26px; height: 26px;
+    border-radius: 999px;
+    background: var(--high-bg);
+    color: var(--high-fg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .critical p { margin: 6px 0; color: var(--text-muted); }
+  .critical p strong { color: var(--text); }
+
+  /* ── Sections ────────────────────────────────────────────────── */
+  section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    scroll-margin-top: 80px;
+  }
+  section h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  section h2 .num {
+    color: var(--text-soft);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+  }
+  section h3 {
+    margin: 28px 0 10px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    color: var(--text);
+  }
+  section h4 {
+    margin: 18px 0 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  section p { margin: 6px 0 14px; color: var(--text-muted); max-width: 80ch; }
+  section p strong { color: var(--text); }
+  section ul, section ol { padding-left: 22px; margin: 4px 0 14px; }
+  section li { margin-bottom: 4px; color: var(--text-muted); }
+  section li strong { color: var(--text); }
+  section .lede { margin-bottom: 18px; }
+
+  /* ── Tables ──────────────────────────────────────────────────── */
+  table.t {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 8px 0 18px;
+    font-size: 13.5px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  table.t thead th {
+    text-align: left;
+    background: var(--surface-soft);
+    color: var(--text);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  table.t tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text);
+  }
+  table.t tbody tr:last-child td { border-bottom: 0; }
+  table.t tbody tr:hover td { background: var(--surface-soft); }
+  table.t code {
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+  }
+  table.t .col-key { width: 30%; font-weight: 500; }
+  table.t .col-narrow { width: 110px; }
+
+  /* ── Badges ──────────────────────────────────────────────────── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+  .badge--high  { background: var(--high-bg);  color: var(--high-fg);  border-color: rgba(239,68,68,0.3); }
+  .badge--med   { background: var(--med-bg);   color: var(--med-fg);   border-color: rgba(245,158,11,0.3); }
+  .badge--low   { background: var(--low-bg);   color: var(--low-fg);   border-color: rgba(148,163,184,0.3); }
+  .badge--ok    { background: var(--ok-bg);    color: var(--ok-fg);    border-color: rgba(16,185,129,0.3); }
+  .badge--info  { background: var(--info-bg);  color: var(--info-fg);  border-color: rgba(33,84,239,0.3); }
+
+  /* ── Stat row ────────────────────────────────────────────────── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .stat {
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .stat__value {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .stat__label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+
+  /* ── Code block ──────────────────────────────────────────────── */
+  pre {
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 12.5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    margin: 8px 0 16px;
+  }
+  pre code { color: var(--text); }
+  p code, li code {
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+  }
+
+  /* ── Callout ─────────────────────────────────────────────────── */
+  .callout {
+    background: var(--accent-soft);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .callout--warn {
+    background: var(--high-bg);
+    border-color: rgba(239,68,68,0.3);
+    border-left-color: var(--high-fg);
+  }
+  .callout strong { color: var(--text); }
+
+  /* ── Footer ──────────────────────────────────────────────────── */
+  footer.page-footer {
+    text-align: center;
+    color: var(--text-soft);
+    font-size: 12px;
+    padding: 24px 8px;
+  }
+
+  /* ── Responsive ──────────────────────────────────────────────── */
+  @media (max-width: 920px) {
+    .layout { grid-template-columns: 1fr; padding: 16px; gap: 20px; }
+    .toc, .topbar__links { display: none; }
+    .topbar__row { padding: 12px 16px; }
+    section, .hero, .critical { padding: 20px; }
+    .hero h1 { font-size: 22px; }
+  }
+
+  @media print {
+    body { background: white; }
+    .topbar { position: static; backdrop-filter: none; }
+    .toc, .progressbar { display: none; }
+    .layout { grid-template-columns: 1fr; padding: 0; }
+    section, .hero, .critical { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar__row">
+    <div class="topbar__title">
+      <span class="topbar__title-mark">L</span>
+      Launch + Operate
+      <small>· Shopify post-submission ops</small>
+    </div>
+    <nav class="topbar__links">
+      <a class="topbar__link" href="SHOPIFY-APP-REVIEW-CHECKLIST.html">Submission checklist</a>
+      <a class="topbar__link" href="SHOPIFY-APP-REVIEW-CLAUDE-ACTIONS.html">Claude actions</a>
+      <a class="topbar__link" href="POLARIS-FOR-ADMIN.html">Polaris</a>
+    </nav>
+  </div>
+  <div class="progressbar"><div class="progressbar__fill" id="progressbar"></div></div>
+</header>
+
+<div class="layout">
+
+  <aside class="toc" aria-label="Sections">
+    <p class="toc__title">Sections</p>
+    <ol>
+      <li><a href="#critical">Top app gaps</a></li>
+      <li><a href="#bfs-reviews">BFS annual reviews</a></li>
+      <li><a href="#regain">Regain lost status</a></li>
+      <li><a href="#pcd">PCD requirements</a></li>
+      <li><a href="#dpr">Data Protection Review</a></li>
+      <li><a href="#billing">Billing &amp; Managed Pricing</a></li>
+      <li><a href="#sub-types">Subscription patterns</a></li>
+      <li><a href="#credits">App credits &amp; refunds</a></li>
+      <li><a href="#deploy">Deployment</a></li>
+      <li><a href="#distribution">Distribution &amp; visibility</a></li>
+      <li><a href="#sunset">Sunsetting an app</a></li>
+      <li><a href="#metrics">Track app usage</a></li>
+      <li><a href="#history">App history events</a></li>
+      <li><a href="#revshare">Revenue share</a></li>
+      <li><a href="#ads">App Store ads</a></li>
+      <li><a href="#marketing">Marketing &amp; launch</a></li>
+    </ol>
+  </aside>
+
+  <main>
+
+    <div class="hero">
+      <h1>Launch + operate — Shopify post-submission ops</h1>
+      <p class="hero__sub">
+        Everything beyond the initial App Store submission: annual BFS reviews, the full Protected Customer Data requirements, Managed Pricing setup, billing patterns, deployment, app distribution, sunsetting, ad campaigns, and marketing. Companion to the submission checklist + Claude actions docs.
+      </p>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 0. CRITICAL GAPS                                              -->
+    <!-- ============================================================ -->
+    <div class="critical" id="critical">
+      <p class="critical__heading">Two gaps to close right away</p>
+      <p>
+        <strong>1. Confirm <code>app.billing.tsx</code> uses Managed App Pricing (or `appSubscriptionCreate`).</strong>
+        We never explicitly verified this. If it rolls its own (e.g. Stripe), the app will be rejected on review for failing req 1.2.1. Likely a 30-minute audit + small refactor.
+      </p>
+      <p>
+        <strong>2. PCD L1.6 — opt-out for automated decisions.</strong>
+        Our size recommendation IS automated decision-making. Required: either a "request manual review" pathway in the SDK, or an explicit privacy-policy clause + a UI disclosure on the try-on widget. Without it, we will fail the data protection review.
+      </p>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 1. BFS ANNUAL REVIEWS                                          -->
+    <!-- ============================================================ -->
+    <section id="bfs-reviews">
+      <h2><span class="num">01</span> Built for Shopify — annual reviews</h2>
+      <p class="lede">Once we earn BFS, Shopify re-reviews us every year to confirm we still meet the criteria. Knowing the cycle lets us prep before the email arrives.</p>
+
+      <table class="t">
+        <thead><tr><th class="col-key">Stage</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td>When</td><td>About 1 year from initial BFS approval, around the same time each year</td></tr>
+          <tr><td>How we hear</td><td>Email + Partner Dashboard banner</td></tr>
+          <tr><td>Duration</td><td>A few days to ~1 week (queue + actual review)</td></tr>
+          <tr><td>Result delivery</td><td>Email with verdict + reasons</td></tr>
+          <tr><td>Pass</td><td>No action — certified for another year</td></tr>
+          <tr><td>Fail</td><td><strong>60-day grace period</strong> to fix issues. App keeps BFS during the grace.</td></tr>
+          <tr><td>Miss the grace</td><td>BFS removed. Can re-apply any time.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Pre-review prep (run once a year)</h3>
+      <ol>
+        <li>Re-run the full submission checklist on the current state of the app.</li>
+        <li>Re-run Lighthouse on Dawn dev store with our block; confirm ≤ −10 pts impact.</li>
+        <li>Confirm Web Vitals targets in Partner Dashboard (LCP ≤ 2.5s, CLS ≤ 0.1, INP ≤ 200ms @ p75).</li>
+        <li>Confirm install / review / rating thresholds still met.</li>
+        <li>Re-grep for REST `.json` calls (Shopify keeps tightening this).</li>
+      </ol>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 2. REGAIN LOST STATUS                                          -->
+    <!-- ============================================================ -->
+    <section id="regain">
+      <h2><span class="num">02</span> Regain lost BFS status</h2>
+      <p class="lede">BFS can be lost between reviews if automated criteria slip. Auto-loss is recoverable on its own once you're back in compliance — no resubmission needed.</p>
+
+      <h3>Automated criteria (lose after 60 days of failure)</h3>
+      <ul>
+        <li>Uninstalls cleanly (theme app extensions properly remove)</li>
+        <li>App is embedded in Shopify admin</li>
+        <li>Minimizes impact on checkout speed</li>
+        <li>Admin performance — meets 75th-percentile Web Vitals targets</li>
+        <li>Minimum number of installs</li>
+        <li>Minimum number of reviews</li>
+        <li>Minimum app rating</li>
+      </ul>
+      <p>Track these in real time on Partner Dashboard → Apps → Distribution.</p>
+
+      <h3>Manual criteria (ongoing)</h3>
+      <p>Apps may be reviewed at any time for manually-checked items (design, integration). 60 days to fix if anything fails. Same grace logic as annual review.</p>
+
+      <h3>Auto-regain</h3>
+      <p>BFS is restored automatically when all criteria pass again. <strong>No reapplication needed.</strong> Shopify might still spot-check after auto-restore.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 3. PCD                                                         -->
+    <!-- ============================================================ -->
+    <section id="pcd">
+      <h2><span class="num">03</span> Protected Customer Data — full L1+L2 requirements</h2>
+      <p class="lede">If you handle <strong>any</strong> protected fields (we do — order webhooks include customer email/name/address), you must implement <strong>all 9 L1 + 7 L2</strong> requirements. Shopify checks these in the data protection review.</p>
+
+      <h3>Level 1 (always required if touching protected fields)</h3>
+      <table class="t">
+        <thead><tr><th class="col-narrow">#</th><th class="col-key">Requirement</th><th>How we'd evidence it</th></tr></thead>
+        <tbody>
+          <tr><td>L1.1</td><td>Process the minimum personal data needed</td><td>Strip <code>customer.email</code>, <code>customer.firstName</code>, address from order webhooks unless explicitly approved + needed. Code-level audit.</td></tr>
+          <tr><td>L1.2</td><td>Inform merchants what you process + why</td><td>Privacy policy section + DPA clause naming each field.</td></tr>
+          <tr><td>L1.3</td><td>Limit processing to stated purposes</td><td>Document each field's purpose. Don't reuse data across products.</td></tr>
+          <tr><td>L1.4</td><td>Honor customer consent</td><td>If buyer rejects cookies, fall back gracefully (anonymous session). Add CMP integration.</td></tr>
+          <tr><td>L1.5</td><td>Honor "Do Not Sell" / opt-out</td><td>API endpoint + privacy form for individual opt-outs.</td></tr>
+          <tr><td><strong>L1.6</strong></td><td><strong>Allow opt-out of automated decisions with legal/significant effect</strong></td><td><strong>Our size recommendation IS automated.</strong> Need either a "request manual review" pathway, or explicit privacy-policy disclosure + a UI consent step on the try-on widget.</td></tr>
+          <tr><td>L1.7</td><td>Have a DPA with merchants</td><td>Sign a DPA on installation flow (click-through), attached to ToS.</td></tr>
+          <tr><td>L1.8</td><td>Apply retention periods + enforce</td><td>Cron jobs to delete: photo bytes (immediate), sizing profiles (12 mo), analytics events (24 mo).</td></tr>
+          <tr><td>L1.9</td><td>Encrypt at rest + in transit</td><td>TLS everywhere ✓. Mongo Atlas encryption-at-rest must be ON. Document.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Level 2 (required if you touch name/address/phone/email)</h3>
+      <table class="t">
+        <thead><tr><th class="col-narrow">#</th><th class="col-key">Requirement</th><th>How we'd evidence it</th></tr></thead>
+        <tbody>
+          <tr><td>L2.1</td><td>Encrypt backups</td><td>Mongo Atlas backups are encrypted by default — confirm in cluster settings + screenshot.</td></tr>
+          <tr><td>L2.2</td><td>Test ↔ prod separation</td><td>Separate clusters / databases. No prod data in dev. Document and enforce via env vars.</td></tr>
+          <tr><td>L2.3</td><td>Have a DLP strategy</td><td>1-page document covering backups, encryption, access control, key rotation, secrets management.</td></tr>
+          <tr><td>L2.4</td><td>Limit staff access</td><td>Atlas IAM — revoke unused accounts; least-privilege roles.</td></tr>
+          <tr><td>L2.5</td><td>Strong staff passwords</td><td>Password policy + MFA mandatory across Atlas, Cloudinary, Shopify Partners, GitHub.</td></tr>
+          <tr><td>L2.6</td><td>Access log to PCD</td><td>Atlas audit logs ON. Review monthly. Retain ≥ 90 days.</td></tr>
+          <tr><td>L2.7</td><td>Security incident response policy</td><td>1-page doc: severity scale, roles, escalation, evidence collection, merchant + Shopify notification thresholds.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout--warn">
+        <strong>Heads-up:</strong> Shopify can request evidence for ALL of these during a data protection review — not just attestations. Have screenshots, configs, and policy docs filed somewhere you can pull on demand.
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 4. DATA PROTECTION REVIEW                                      -->
+    <!-- ============================================================ -->
+    <section id="dpr">
+      <h2><span class="num">04</span> Data Protection Review — what triggers it + how to prep</h2>
+      <p class="lede">Shopify can select any app that handles PCD for a deep review. We're more likely to be selected once we cross install thresholds.</p>
+
+      <h3>Selection signals</h3>
+      <p>Apps are more likely to be reviewed if they have:</p>
+      <ul>
+        <li>High number of merchant installs</li>
+        <li>High volume of customer records</li>
+        <li>More protected customer fields approved</li>
+        <li>Long retention of personal data</li>
+      </ul>
+
+      <h3>How to prep (do this before submission, file the artifacts)</h3>
+      <ol>
+        <li>Privacy policy + DPA published and linked from listing</li>
+        <li>Per-field PCD justification text saved in the Partner Dashboard submission</li>
+        <li>Atlas IAM screenshots (least-privilege)</li>
+        <li>Atlas encryption-at-rest screenshot</li>
+        <li>Atlas audit-log enabled screenshot</li>
+        <li>Backup encryption settings screenshot</li>
+        <li>Retention cron job source + schedule</li>
+        <li>1-page DLP doc</li>
+        <li>1-page incident response policy</li>
+        <li>Sub-processor list with signed DPAs (Cloudinary, Google Cloud, Atlas)</li>
+        <li>Buyer opt-out endpoint + privacy form (for L1.5)</li>
+        <li>Manual-review pathway for the try-on widget (for L1.6)</li>
+      </ol>
+
+      <p>If selected: Shopify emails instructions. They want evidence, not just claims. Respond within whatever window they give (usually 2-4 weeks).</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 5. BILLING                                                     -->
+    <!-- ============================================================ -->
+    <section id="billing">
+      <h2><span class="num">05</span> Billing &amp; Managed App Pricing</h2>
+      <p class="lede">Apps on the App Store <strong>must</strong> use Shopify's billing API (Managed Pricing or programmatic via <code>appSubscriptionCreate</code>). No Stripe. No direct credit cards.</p>
+
+      <h3>Managed App Pricing (the easier path)</h3>
+      <p>Shopify hosts a plan-selection page; you configure plans in the Partner Dashboard. Pros: less code, automatic test-charges on dev stores, automatic plan-change UX, automatic webhook events.</p>
+
+      <h4>Setup</h4>
+      <ol>
+        <li>Partner Dashboard → App → Distribution → Pricing → enable Managed Pricing</li>
+        <li>Define plans: name, price, interval (every 30 days, annually), free trial length, included features</li>
+        <li>Generate the plan-selection welcome link (one per plan or shared)</li>
+        <li>In your app, redirect un-subscribed merchants to the welcome link</li>
+        <li>Subscribe to billing webhooks: <code>app_subscriptions/update</code>, <code>app/uninstalled</code></li>
+      </ol>
+
+      <h4>Public vs private plans</h4>
+      <table class="t">
+        <thead><tr><th class="col-key">Type</th><th>Use case</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Public</strong></td><td>Visible to all merchants. Most plans.</td></tr>
+          <tr><td><strong>Private</strong></td><td>Hidden from the catalog — only accessible via direct link. Use for custom/enterprise deals or beta-tester pricing.</td></tr>
+        </tbody>
+      </table>
+
+      <h4>Welcome links</h4>
+      <p>Direct links to the plan-selection page or a specific plan. Useful for onboarding emails, marketing pages, or in-app upgrade buttons.</p>
+
+      <h4>Proration</h4>
+      <p>When a merchant changes plans, Shopify prorates the price difference automatically. Upgrades are charged immediately. Downgrades take effect next cycle.</p>
+
+      <h4>Test charges</h4>
+      <p>On dev stores, charges are <strong>always test charges</strong> — no real money. You can iterate freely.</p>
+
+      <h3>Programmatic billing (more control)</h3>
+      <p>Use <code>appSubscriptionCreate</code> via the Admin GraphQL API. Use this if you need: usage-based pricing not supported by Managed, custom proration, complex plan combinations, or per-store pricing.</p>
+
+      <h4>Required mutations</h4>
+      <ul>
+        <li><code>appSubscriptionCreate</code> — start a subscription</li>
+        <li><code>appSubscriptionCancel</code> — cancel</li>
+        <li><code>appUsageRecordCreate</code> — log usage for usage-based plans</li>
+        <li><code>appSubscriptionLineItemUpdate</code> — change a plan's max charge</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 6. SUB PATTERNS                                                -->
+    <!-- ============================================================ -->
+    <section id="sub-types">
+      <h2><span class="num">06</span> Subscription patterns</h2>
+
+      <h3>Time-based subscription</h3>
+      <p>Flat fee per cycle (every 30 days or annually). Simplest model.</p>
+      <p>Examples: <code>$29 / month</code>. Good for: most SaaS apps including ours.</p>
+
+      <h3>Usage-based subscription</h3>
+      <p>Per-event pricing. You log a usage charge each time the merchant uses a paid feature. Each charge is capped by a `cappedAmount` on the line item; once hit, no more charges that cycle.</p>
+      <p>Examples: <code>$0.05 per try-on, capped at $50/month</code>. Good for: pay-as-you-go tiers.</p>
+      <pre><code>// Log usage
+appUsageRecordCreate(
+  description: "Try-on rendered",
+  price: { amount: 0.05, currencyCode: USD },
+  subscriptionLineItemId: "..."
+)</code></pre>
+
+      <h3>Combined time + usage</h3>
+      <p>Base fee plus usage tier. Created as ONE subscription with TWO line items. Common for "enterprise" plans.</p>
+      <p>Examples: <code>$99/mo base + $0.02 per try-on after 1000</code>.</p>
+
+      <h3>Complex pricing models</h3>
+      <p>Tiered, volume discounts, region-specific, plan downgrades — Shopify documents specific patterns. Generally: each tier = a separate plan. Migrate merchants between plans on usage thresholds via <code>appSubscriptionCancel</code> + new <code>appSubscriptionCreate</code>.</p>
+
+      <h3>Update max charge</h3>
+      <p>If a merchant approaches their `cappedAmount` and wants to keep going, you must request a new approval via <code>appSubscriptionLineItemUpdate</code>. Merchant gets a Shopify-hosted approval page.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 7. CREDITS + REFUNDS                                           -->
+    <!-- ============================================================ -->
+    <section id="credits">
+      <h2><span class="num">07</span> App credits, one-time charges &amp; refunds</h2>
+
+      <h3>One-time purchases</h3>
+      <p>Use <code>appPurchaseOneTimeCreate</code> for non-recurring items (e.g. an add-on pack, a one-time setup fee). Merchant approves once, charged once.</p>
+
+      <h3>App credits</h3>
+      <p>Issue a credit to a merchant's next invoice using <code>appCredit</code>. Common cases:</p>
+      <ul>
+        <li>Refund part of a charge (Shopify doesn't process direct refunds — credits are the mechanism)</li>
+        <li>Promotional credit ("$10 off your next month")</li>
+        <li>SLA / outage compensation</li>
+      </ul>
+      <p><strong>Limits:</strong> credit cannot exceed the amount the merchant has paid you in the last 30 days. Credits reduce your earnings (negative entry).</p>
+
+      <h3>Refund app charges</h3>
+      <p>True refunds (money back to the card) require Shopify support — not API. For most cases, App Credits are the equivalent.</p>
+
+      <h3>View charges &amp; earnings</h3>
+      <p>Two surfaces:</p>
+      <ul>
+        <li><strong>Partner Dashboard</strong> → Apps → app → Overview / Insights / App history (visual, exportable to CSV)</li>
+        <li><strong>Partner GraphQL API</strong> — programmatic access to <code>transactions</code>, <code>shopifyPaymentsBalance</code>, <code>app(id)</code> usage. Useful for custom revenue dashboards on our side.</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 8. DEPLOYMENT                                                  -->
+    <!-- ============================================================ -->
+    <section id="deploy">
+      <h2><span class="num">08</span> Deployment</h2>
+      <p class="lede">Shopify documents a few sanctioned deployment paths. We're on a DigitalOcean droplet with PM2 — that's fine, but here are the alternatives + what they buy us.</p>
+
+      <h3>Hosting options</h3>
+      <table class="t">
+        <thead><tr><th class="col-key">Option</th><th>What it buys</th><th>Trade-off</th></tr></thead>
+        <tbody>
+          <tr><td>DigitalOcean / VPS + PM2 (us today)</td><td>Cheap, full control</td><td>You manage scaling + uptime</td></tr>
+          <tr><td>Google Cloud Run (Shopify-documented)</td><td>Auto-scale, no server mgmt, integrates with their ad/perf monitoring</td><td>Cold starts, more $ at high traffic</td></tr>
+          <tr><td>Vercel / Netlify / Render</td><td>Zero-config CI/CD, edge network</td><td>RR7 deployment is solid; budget creep at scale</td></tr>
+          <tr><td>Fly.io / Railway</td><td>Multi-region, Postgres/Redis bundled, easy CI</td><td>Newer, fewer Shopify-side guides</td></tr>
+        </tbody>
+      </table>
+
+      <h3>App versions</h3>
+      <p>Shopify tracks every deploy of your app/extension as a version. Versions are how Shopify rolls out scope changes, theme extension code, and webhook subscriptions to merchants.</p>
+      <p>Key commands:</p>
+      <pre><code>shopify app deploy           # Push current code as a new version
+shopify app versions list    # List deployed versions
+shopify app versions release # Activate a specific version</code></pre>
+
+      <h3>CD pipeline</h3>
+      <p>For a multi-piece app like ours (admin + theme extension + backend), the pipeline shape:</p>
+      <ol>
+        <li>Push to <code>main</code> → CI runs tests</li>
+        <li>If green: build admin → push to droplet, restart PM2</li>
+        <li>Build theme extension → <code>shopify app deploy</code> (creates a new version)</li>
+        <li>Activate the new version automatically OR via manual approval (recommended for theme extension changes — they ship to all merchants)</li>
+        <li>Backend deploys independently to droplet</li>
+      </ol>
+      <p>Every merchant on the previous version stays on it until they manually update OR the new version is released as the default.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 9. DISTRIBUTION                                                -->
+    <!-- ============================================================ -->
+    <section id="distribution">
+      <h2><span class="num">09</span> Distribution &amp; visibility</h2>
+
+      <h3>Fully visible vs limited visibility</h3>
+      <table class="t">
+        <thead><tr><th class="col-key">Mode</th><th>Where the listing appears</th><th>When to use</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Fully visible</strong></td><td>App Store search, category pages, Google. Default.</td><td>You want broad reach.</td></tr>
+          <tr><td><strong>Limited visibility</strong></td><td>Only via direct link. NOT indexed.</td><td>Soft launch / private beta / curated rollout.</td></tr>
+        </tbody>
+      </table>
+      <p>Both modes still allow merchants to install via the direct App Store URL. Toggle in Partner Dashboard → Apps → Distribution.</p>
+
+      <h3>Recommended launch plan</h3>
+      <ol>
+        <li>Submit, get approved with limited visibility</li>
+        <li>Onboard 5-10 friendly merchants via direct link to validate end-to-end</li>
+        <li>Collect first reviews</li>
+        <li>Switch to fully visible</li>
+        <li>Run App Store ads (see §15) to seed install velocity</li>
+      </ol>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 10. SUNSETTING                                                 -->
+    <!-- ============================================================ -->
+    <section id="sunset">
+      <h2><span class="num">10</span> Sunsetting an app</h2>
+      <p class="lede">If we ever wind the app down, Shopify has a documented graceful path — required to stay in good standing.</p>
+      <ol>
+        <li>Notify all installed merchants ≥ 30 days in advance via in-app banner + email</li>
+        <li>Give them an export path for any data we hold</li>
+        <li>Stop new installs (limited visibility)</li>
+        <li>Honor billing cancellations promptly</li>
+        <li>On D-day: stop accepting webhooks; reply 410 Gone to API hits</li>
+        <li>Run the <code>shop/redact</code> handler on every shop after the 48h Shopify grace</li>
+        <li>Remove the listing from Partner Dashboard</li>
+      </ol>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 11. METRICS                                                    -->
+    <!-- ============================================================ -->
+    <section id="metrics">
+      <h2><span class="num">11</span> Track app usage in Partner Dashboard</h2>
+      <p class="lede">Partner Dashboard → Apps → app → Overview shows everything Shopify uses to evaluate us.</p>
+
+      <h3>Metric definitions</h3>
+      <table class="t">
+        <thead><tr><th class="col-key">Metric</th><th>What it means</th></tr></thead>
+        <tbody>
+          <tr><td>Total earnings to date</td><td>Pending payments + payments received (sum of all-time)</td></tr>
+          <tr><td>Merchants with your app</td><td>Active stores with the app installed (excludes canceled / frozen)</td></tr>
+          <tr><td>Merchant growth</td><td>Cumulative active stores over the selected date range</td></tr>
+          <tr><td>Installs</td><td>OAuth-grant approvals over the date range</td></tr>
+          <tr><td>Uninstalls</td><td>Removals over the date range</td></tr>
+          <tr><td><strong>Time to uninstall</strong></td><td>Buckets: same day · 1-14 days · 15-90 days · 91+ days. <strong>Watch this — high "same day" = onboarding broken.</strong></td></tr>
+          <tr><td>Re-opened stores</td><td>Previously-closed stores that activated again</td></tr>
+          <tr><td>Closed stores</td><td>Stores that closed Shopify entirely with our app installed</td></tr>
+          <tr><td>Earnings</td><td>Pending + payouts minus credits, for the selected range</td></tr>
+          <tr><td>Payouts you received</td><td>Money in our bank after Shopify fees</td></tr>
+          <tr><td>Next payout</td><td>What's coming next</td></tr>
+          <tr><td>Pending payment</td><td>Collected but not yet paid out</td></tr>
+          <tr><td>One-time charges</td><td>Sum of <code>ApplicationCharge</code> earnings</td></tr>
+          <tr><td>Recurring application charges</td><td>Sum of <code>RecurringApplicationCharge</code></td></tr>
+          <tr><td>Usage charges</td><td>Sum of <code>UsageCharge</code></td></tr>
+          <tr><td>Application credits</td><td>Sum of <code>ApplicationCredit</code> (always negative)</td></tr>
+          <tr><td>Average rating</td><td>Mean of all merchant ratings</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Earnings + payout schedule</h3>
+      <ul>
+        <li><strong>RecurringApplicationCharge:</strong> up to 37 days from approval to earnings showing</li>
+        <li><strong>ApplicationCharge:</strong> within 7 days</li>
+      </ul>
+      <p>Data lag in dashboard: up to 10 minutes.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 12. APP HISTORY                                                -->
+    <!-- ============================================================ -->
+    <section id="history">
+      <h2><span class="num">12</span> App history events (audit log)</h2>
+      <p class="lede">Partner Dashboard → Apps → app → Insights → App history. Every billing + install event is logged. Useful for debugging "why did this merchant suddenly churn".</p>
+
+      <h3>Application charge events</h3>
+      <table class="t">
+        <thead><tr><th class="col-key">Event</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Charge accepted</td><td>Merchant approved, dev hasn't activated yet</td></tr>
+          <tr><td>Charge activated</td><td>Activated by dev → on next invoice</td></tr>
+          <tr><td>Charge declined</td><td>Merchant clicked Decline</td></tr>
+          <tr><td>Charge expired</td><td>48h elapsed without action</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Recurring charge events</h3>
+      <table class="t">
+        <thead><tr><th class="col-key">Event</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Recurring accepted / activated / declined / expired</td><td>Same as one-time</td></tr>
+          <tr><td>Recurring canceled</td><td>Merchant uninstalled, changed plan, or canceled subscription</td></tr>
+          <tr><td>Recurring frozen</td><td>Merchant lost active Shopify subscription</td></tr>
+          <tr><td>Recurring unfrozen</td><td>Merchant resumed Shopify subscription</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Application credit events</h3>
+      <table class="t">
+        <thead><tr><th class="col-key">Event</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Credit applied</td><td>Successfully added; deducts from our payout</td></tr>
+          <tr><td>Credit failed</td><td>Common reasons: amount exceeds last 30d paid, or pending receivables &lt; credit</td></tr>
+          <tr><td>Credit pending</td><td>Created but not yet applied</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Install events</h3>
+      <p><code>Installed</code> after OAuth grant · <code>Uninstalled</code> after merchant removes the app.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 13. REVENUE SHARE                                              -->
+    <!-- ============================================================ -->
+    <section id="revshare">
+      <h2><span class="num">13</span> Revenue share rules</h2>
+      <p class="lede">Shopify's cut of our revenue depends on per-app earnings tier. Worth knowing before pricing decisions.</p>
+
+      <ul>
+        <li>Up to a defined annual revenue threshold per partner: <strong>0% Shopify cut</strong> (you keep ~100% minus standard payment processing).</li>
+        <li>Above the threshold: standard split (currently 15% Shopify cut for most apps, but verify the current rate in the Partner Dashboard — Shopify changes this periodically).</li>
+        <li>Built for Shopify status doesn't change the rev share — it's about visibility + promotion.</li>
+      </ul>
+      <p><strong>Practical impact:</strong> early-stage apps usually pay nothing to Shopify on the first chunk of revenue. Don't over-engineer the rev-share math into pricing — Shopify deducts at payout time.</p>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 14. ADS                                                        -->
+    <!-- ============================================================ -->
+    <section id="ads">
+      <h2><span class="num">14</span> App Store ads</h2>
+      <p class="lede">Paid placement in App Store search results. Bidding model. Run after launch + first reviews are in.</p>
+
+      <h3>How it works</h3>
+      <ol>
+        <li>You bid on keywords merchants might search ("size chart", "virtual try on", "fashion fit", etc.)</li>
+        <li>Your ad shows above organic results when a merchant searches</li>
+        <li>You pay per click (CPC), not per impression</li>
+        <li>Shopify takes a small fee on top of the CPC</li>
+      </ol>
+
+      <h3>Setup checklist</h3>
+      <ol>
+        <li>App is fully visible (not limited)</li>
+        <li>App listing complete + reviewed by Shopify</li>
+        <li>Set ad permissions (who in your team can manage)</li>
+        <li>Add a payment method for ad billing</li>
+        <li>Create your first ad campaign with target keywords + max bid</li>
+        <li>Track performance via the ads dashboard (impressions, clicks, installs, ROI)</li>
+      </ol>
+
+      <h3>Ad billing</h3>
+      <p>Charged separately from app earnings — ads are an expense, not a revenue offset. Invoice from Shopify monthly.</p>
+
+      <h3>Ad permissions</h3>
+      <p>Roles: ad admins (create / pause / delete) and ad viewers (read-only). Set in Partner Dashboard → team settings.</p>
+
+      <h3>Recommended for us</h3>
+      <ul>
+        <li>Wait until: ≥ 5 reviews, BFS submitted (not yet approved is fine), at least one strong testimonial in listing copy</li>
+        <li>First campaign: ~$200–$500 budget, narrow keywords (avoid generic "shopify app")</li>
+        <li>Iterate weekly based on CTR + install conversion</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 15. MARKETING                                                  -->
+    <!-- ============================================================ -->
+    <section id="marketing">
+      <h2><span class="num">15</span> Marketing &amp; launch</h2>
+
+      <h3>Launch press release</h3>
+      <p>Shopify provides a template + distribution guidance. Key elements:</p>
+      <ul>
+        <li>What problem does it solve (1 line)</li>
+        <li>Concrete benefit ("install in 2 mins, no code")</li>
+        <li>Founder quote</li>
+        <li>App Store link</li>
+        <li>Brand assets attached (logo + screenshot)</li>
+      </ul>
+
+      <h3>Shopify brand assets</h3>
+      <p>You can use Shopify's official "Available on the Shopify App Store" badge in your own marketing. Direct download from <code>shopify.dev/docs/apps/launch/marketing/shopify-brand-assets</code>. Rules:</p>
+      <ul>
+        <li>Don't recolor the badge</li>
+        <li>Don't crop the Shopify glyph</li>
+        <li>Maintain padding around the badge</li>
+        <li>Link to your App Store listing</li>
+      </ul>
+
+      <h3>Track listing traffic</h3>
+      <p>Append UTMs to App Store URLs from your marketing channels:</p>
+      <pre><code>https://apps.shopify.com/your-app?utm_source=blog&amp;utm_medium=referral&amp;utm_campaign=q2_launch</code></pre>
+      <p>Partner Dashboard → Apps → app → Distribution → "Listing traffic" tab shows referrers + UTM breakdown. Helps you double down on what's working.</p>
+
+      <h3>Manage reviews</h3>
+      <p>You can reply to every review in Partner Dashboard. Best practice: reply to every 1–3 star review with a constructive plan + a way to contact you. Shopify weighs response rate in BFS criteria.</p>
+
+      <h3>Shopify quality checks</h3>
+      <p>Outside annual reviews, Shopify runs automated quality checks on your app (uptime, install/uninstall ratios, refund rates, support response time). Failure here can trigger a manual review or temporary App Store de-listing. Stay above 95% uptime, &lt; 5% same-day uninstalls.</p>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-footer">
+  Companion to
+  <a href="SHOPIFY-APP-REVIEW-CHECKLIST.html" style="color: inherit;">SHOPIFY-APP-REVIEW-CHECKLIST.html</a> ·
+  <a href="SHOPIFY-APP-REVIEW-CLAUDE-ACTIONS.html" style="color: inherit;">SHOPIFY-APP-REVIEW-CLAUDE-ACTIONS.html</a> ·
+  <a href="POLARIS-FOR-ADMIN.md" style="color: inherit;">POLARIS-FOR-ADMIN.md</a>
+</footer>
+
+<script>
+  // ── Reading progress ─────────────────────────────────────────
+  const progress = document.getElementById('progressbar');
+  const updateProgress = () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / Math.max(h.scrollHeight - h.clientHeight, 1)) * 100;
+    progress.style.width = pct + '%';
+  };
+  document.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // ── TOC active ────────────────────────────────────────────────
+  const tocLinks = Array.from(document.querySelectorAll('.toc a'));
+  const tocMap = new Map(tocLinks.map(a => [a.getAttribute('href').slice(1), a]));
+  const observer = new IntersectionObserver((entries) => {
+    const visible = entries
+      .filter(e => e.isIntersecting)
+      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+    if (!visible.length) return;
+    const id = visible[0].target.id;
+    tocLinks.forEach(a => a.classList.toggle('is-active', a === tocMap.get(id)));
+  }, { rootMargin: '-80px 0px -65% 0px', threshold: 0 });
+  document.querySelectorAll('section[id], div[id="critical"]').forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

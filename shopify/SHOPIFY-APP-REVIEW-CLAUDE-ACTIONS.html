@@ -1,0 +1,1122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Claude can do — Shopify App Store readiness</title>
+<style>
+  :root {
+    --bg: #f7f8fb;
+    --surface: #ffffff;
+    --surface-soft: #f1f5f9;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --text-soft: #94a3b8;
+    --border: rgba(15, 23, 42, 0.08);
+    --border-strong: rgba(15, 23, 42, 0.16);
+    --accent: #16a34a;
+    --accent-soft: rgba(22, 163, 74, 0.08);
+    --accent-blue: #2154EF;
+
+    --auto-bg: rgba(22, 163, 74, 0.12);
+    --auto-fg: #15803d;
+    --audit-bg: rgba(33, 84, 239, 0.12);
+    --audit-fg: #1d4ed8;
+    --doc-bg: rgba(168, 85, 247, 0.12);
+    --doc-fg: #7e22ce;
+    --you-bg: rgba(245, 158, 11, 0.14);
+    --you-fg: #b45309;
+
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b1220;
+      --surface: #111827;
+      --surface-soft: #0f172a;
+      --text: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-soft: #6b7280;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-strong: rgba(255, 255, 255, 0.12);
+      --accent: #4ade80;
+      --accent-soft: rgba(74, 222, 128, 0.12);
+      --accent-blue: #6c8cff;
+      --auto-bg: rgba(74, 222, 128, 0.18);
+      --auto-fg: #86efac;
+      --audit-bg: rgba(108, 140, 255, 0.18);
+      --audit-fg: #93c5fd;
+      --doc-bg: rgba(168, 85, 247, 0.18);
+      --doc-fg: #d8b4fe;
+      --you-bg: rgba(245, 158, 11, 0.18);
+      --you-fg: #fcd34d;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ── Top bar ─────────────────────────────────────────────────── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar__row {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .topbar__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .topbar__title-mark {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #16a34a, #4ade80);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .topbar__title small {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .topbar__legend { display: flex; flex-wrap: wrap; gap: 6px; }
+  .topbar__legend .badge { font-size: 11px; padding: 3px 8px; }
+  .topbar__back {
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    padding: 5px 11px;
+    border-radius: 999px;
+    transition: background 140ms ease;
+  }
+  .topbar__back:hover { background: var(--surface-soft); }
+
+  /* ── Layout ──────────────────────────────────────────────────── */
+  .layout {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 32px 28px 64px;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 36px;
+  }
+
+  /* ── TOC ─────────────────────────────────────────────────────── */
+  .toc {
+    position: sticky;
+    top: 76px;
+    align-self: start;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding-right: 8px;
+  }
+  .toc__title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+    margin: 0 0 12px 4px;
+  }
+  .toc ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: toc;
+  }
+  .toc li { margin: 0; }
+  .toc a {
+    display: block;
+    padding: 6px 10px 6px 32px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.4;
+    border-left: 2px solid transparent;
+    border-radius: 0 6px 6px 0;
+    transition: color 120ms ease, background 120ms ease, border-color 120ms ease;
+    position: relative;
+    counter-increment: toc;
+  }
+  .toc a::before {
+    content: counter(toc, decimal-leading-zero);
+    position: absolute;
+    left: 8px;
+    top: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-soft);
+  }
+  .toc a:hover { color: var(--text); background: var(--surface-soft); }
+  .toc a.is-active {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-left-color: var(--accent);
+  }
+  .toc a.is-active::before { color: var(--accent); }
+
+  /* ── Hero ────────────────────────────────────────────────────── */
+  .hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 36px;
+    box-shadow: var(--shadow-sm);
+  }
+  .hero h1 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .hero__sub {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0 0 20px;
+    max-width: 78ch;
+  }
+  .hero__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .hero__stat {
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .hero__stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .hero__stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+
+  /* ── Sections ────────────────────────────────────────────────── */
+  section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    scroll-margin-top: 80px;
+  }
+  section h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  section h2 .num {
+    color: var(--text-soft);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+  }
+  section h2 .pill {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
+  section .lede {
+    color: var(--text-muted);
+    margin: 6px 0 22px;
+    max-width: 78ch;
+  }
+
+  /* ── Action cards ────────────────────────────────────────────── */
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .action {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 18px 20px;
+    background: var(--surface);
+    transition: border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+    position: relative;
+  }
+  .action:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-sm);
+  }
+  .action__head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .action__num {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .action__title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.4;
+    flex: 1;
+  }
+  .action__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .action__body { padding-left: 40px; }
+  .action__row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 10px;
+    font-size: 13.5px;
+    margin-bottom: 5px;
+  }
+  .action__row dt {
+    color: var(--text-soft);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-top: 2px;
+  }
+  .action__row dd {
+    color: var(--text);
+    margin: 0;
+  }
+  .action__row dd code {
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
+    font-size: 12px;
+  }
+
+  /* Variant accent on each card section */
+  section.section--auto .action__num  { background: var(--auto-bg);  color: var(--auto-fg);  border-color: rgba(22, 163, 74, 0.3); }
+  section.section--audit .action__num { background: var(--audit-bg); color: var(--audit-fg); border-color: rgba(33, 84, 239, 0.3); }
+  section.section--doc .action__num   { background: var(--doc-bg);   color: var(--doc-fg);   border-color: rgba(168, 85, 247, 0.3); }
+  section.section--you .action__num   { background: var(--you-bg);   color: var(--you-fg);   border-color: rgba(245, 158, 11, 0.3); }
+
+  section.section--auto h2 .pill  { background: var(--auto-bg);  color: var(--auto-fg); }
+  section.section--audit h2 .pill { background: var(--audit-bg); color: var(--audit-fg); }
+  section.section--doc h2 .pill   { background: var(--doc-bg);   color: var(--doc-fg); }
+  section.section--you h2 .pill   { background: var(--you-bg);   color: var(--you-fg); }
+
+  /* ── Badges ──────────────────────────────────────────────────── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+  .badge--auto    { background: var(--auto-bg);  color: var(--auto-fg);  border-color: rgba(22, 163, 74, 0.3); }
+  .badge--audit   { background: var(--audit-bg); color: var(--audit-fg); border-color: rgba(33, 84, 239, 0.3); }
+  .badge--doc     { background: var(--doc-bg);   color: var(--doc-fg);   border-color: rgba(168, 85, 247, 0.3); }
+  .badge--you     { background: var(--you-bg);   color: var(--you-fg);   border-color: rgba(245, 158, 11, 0.3); }
+  .badge--high    { background: rgba(239,68,68,0.12); color: #b91c1c; border-color: rgba(239,68,68,0.3); }
+  .badge--medium  { background: rgba(245,158,11,0.12); color: #b45309; border-color: rgba(245,158,11,0.3); }
+  .badge--low     { background: rgba(100,116,139,0.12); color: #475569; border-color: rgba(100,116,139,0.3); }
+  .badge--effort-s { background: rgba(16,185,129,0.12); color: #047857; border-color: rgba(16,185,129,0.3); }
+  .badge--effort-m { background: rgba(245,158,11,0.12); color: #b45309; border-color: rgba(245,158,11,0.3); }
+  .badge--effort-l { background: rgba(239,68,68,0.12); color: #b91c1c; border-color: rgba(239,68,68,0.3); }
+
+  /* ── Footer ──────────────────────────────────────────────────── */
+  footer.page-footer {
+    text-align: center;
+    color: var(--text-soft);
+    font-size: 12px;
+    padding: 24px 8px;
+  }
+
+  /* ── Responsive ──────────────────────────────────────────────── */
+  @media (max-width: 920px) {
+    .layout { grid-template-columns: 1fr; padding: 16px; gap: 20px; }
+    .toc, .topbar__legend { display: none; }
+    .topbar__row { padding: 12px 16px; }
+    section { padding: 20px; }
+    .hero { padding: 22px; }
+    .hero h1 { font-size: 22px; }
+    .action__body { padding-left: 0; }
+    .action__row { grid-template-columns: 1fr; gap: 2px; margin-bottom: 10px; }
+  }
+
+  @media print {
+    body { background: white; }
+    .topbar { position: static; backdrop-filter: none; }
+    .toc { display: none; }
+    .layout { grid-template-columns: 1fr; padding: 0; }
+    section, .hero { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+    .action { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar__row">
+    <div class="topbar__title">
+      <span class="topbar__title-mark">P</span>
+      What Claude can do
+      <small>· Shopify App Store readiness</small>
+    </div>
+    <a class="topbar__back" href="SHOPIFY-APP-REVIEW-CHECKLIST.html">← full checklist</a>
+  </div>
+</header>
+
+<div class="layout">
+
+  <aside class="toc" aria-label="Sections">
+    <p class="toc__title">Sections</p>
+    <ol>
+      <li><a href="#auto">Code I can ship today</a></li>
+      <li><a href="#audit">Audits I can run today</a></li>
+      <li><a href="#doc">Docs I can draft</a></li>
+      <li><a href="#you">What only you can do</a></li>
+    </ol>
+  </aside>
+
+  <main>
+
+    <div class="hero">
+      <h1>What I (Claude) can do — solo, no input from you</h1>
+      <p class="hero__sub">
+        I went through every item in the Shopify app review checklist and split them into four buckets. Three are work I can drive end-to-end — code changes, code audits, and document drafts. The fourth bucket lists the items that genuinely need you (Partner Dashboard logins, business decisions, real-store testing). Pick a bucket and I'll start.
+      </p>
+
+      <div class="hero__grid" id="counts">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 1. Code I can ship today (autonomous)                         -->
+    <!-- ============================================================ -->
+    <section id="auto" class="section--auto">
+      <h2>
+        <span class="num">01</span>
+        Code I can ship today
+        <span class="pill">autonomous</span>
+      </h2>
+      <p class="lede">Concrete code changes I can make + commit + push + deploy on the droplet without asking. Each one closes a real review-blocker from the checklist.</p>
+
+      <div class="actions">
+
+        <!-- A1 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">1</span>
+            <h3 class="action__title">Lazy-load the SDK bundle in the theme app extension</h3>
+            <span class="action__tags">
+              <span class="badge badge--high">Highest risk</span>
+              <span class="badge badge--effort-m">~2 hr</span>
+            </span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Section 6 (perf), Risk #1, TODO #1, BFS 2.2.1</dd></div>
+            <div class="action__row"><dt>Touches</dt><dd><code>extensions/primestyle-tryon/blocks/*.liquid</code>, new <code>extensions/primestyle-tryon/assets/tryon-loader.js</code> (~5 KB stub), <code>scripts/sync-sdk.mjs</code></dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Block ships only the &lt;10 KB stub by default. The 1.4 MB SDK loads via dynamic <code>import()</code> on the first user interaction (click "Try On"). Lighthouse delta on Dawn drops from ~−25 pts to ~−3 pts.</dd></div>
+          </dl>
+        </div>
+
+        <!-- A2 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">2</span>
+            <h3 class="action__title">Make App Bridge the first script tag in <code>app/root.tsx</code></h3>
+            <span class="action__tags">
+              <span class="badge badge--high">Auto-rejection if missing</span>
+              <span class="badge badge--effort-s">~15 min</span>
+            </span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Req 2.2.3, BFS 3.1.1, TODO #2, Risk #4</dd></div>
+            <div class="action__row"><dt>Touches</dt><dd><code>PrimeStyleAI-shopify/app/root.tsx</code></dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Reorder document head so <code>https://cdn.shopify.com/shopifycloud/app-bridge.js</code> precedes any other script (CSS first, then App Bridge, then everything else). Verify version is current.</dd></div>
+          </dl>
+        </div>
+
+        <!-- A3 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">3</span>
+            <h3 class="action__title">Migrate every REST <code>.json</code> Admin call to GraphQL</h3>
+            <span class="action__tags">
+              <span class="badge badge--high">Auto-rejection if missing</span>
+              <span class="badge badge--effort-l">~1 day</span>
+            </span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Req 2.2.4, TODO #3, Risk #3</dd></div>
+            <div class="action__row"><dt>Touches</dt><dd><code>PrimeStyleAI-shopify/**</code>, <code>primeStyleAI-backend/src/modules/shopify*/**</code></dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Grep both repos for <code>/admin/api/*.json</code>; rewrite each as an <code>admin.graphql(`query …`)</code> call with typed inputs. Update result-shape parsers. Tests pass before deploy.</dd></div>
+          </dl>
+        </div>
+
+        <!-- A4 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">4</span>
+            <h3 class="action__title">Audit + drop unused scopes from <code>shopify.app.toml</code></h3>
+            <span class="action__tags">
+              <span class="badge badge--high">Auto-rejection risk</span>
+              <span class="badge badge--effort-s">~30 min</span>
+            </span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Req 3.2.1, TODO #7, TODO #8, Risk #2</dd></div>
+            <div class="action__row"><dt>Touches</dt><dd><code>PrimeStyleAI-shopify/shopify.app.toml</code> + grep usage across both repos</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Remove every scope not actually referenced in code. Specifically check <code>read_all_orders</code>, <code>read_customers</code>, etc. Reinstall flow needs to be re-tested by you afterward.</dd></div>
+          </dl>
+        </div>
+
+        <!-- A5 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">5</span>
+            <h3 class="action__title">Add in-app deep-link onboarding to <code>app._index.tsx</code></h3>
+            <span class="action__tags">
+              <span class="badge badge--high">Online Store category requirement</span>
+              <span class="badge badge--effort-m">~1.5 hr</span>
+            </span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Req 5.1.3, TODO #9, BFS 4.2.2</dd></div>
+            <div class="action__row"><dt>Touches</dt><dd><code>PrimeStyleAI-shopify/app/routes/app._index.tsx</code>, deep link helper</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Setup card with status (block enabled? size charts uploaded?) + a one-click button that opens the Theme Editor at the right product template with our block pre-selected (<code>?context=apps&amp;activateAppId=…</code>).</dd></div>
+          </dl>
+        </div>
+
+        <!-- A6 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">6</span>
+            <h3 class="action__title">Strip non-approved customer PII from webhook handlers</h3>
+            <span class="action__tags">
+              <span class="badge badge--high">PCD compliance</span>
+              <span class="badge badge--effort-s">~1 hr</span>
+            </span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Section 8 PCD action #4</dd></div>
+            <div class="action__row"><dt>Touches</dt><dd><code>primeStyleAI-backend/src/modules/shopify/order-webhooks.controller.ts</code> + matching shop-app handlers</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Stop reading <code>customer.email</code>, <code>customer.firstName</code>, <code>shippingAddress.*</code>. Keep only order id + line items + financial fields. Add comments documenting which fields are intentionally NOT touched.</dd></div>
+          </dl>
+        </div>
+
+        <!-- A7 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">7</span>
+            <h3 class="action__title">Onboarding checklist with progress indicator on home page</h3>
+            <span class="action__tags">
+              <span class="badge badge--medium">BFS</span>
+              <span class="badge badge--effort-m">~2 hr</span>
+            </span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>TODO #22, BFS 4.2.2, BFS 4.2.3</dd></div>
+            <div class="action__row"><dt>Touches</dt><dd><code>PrimeStyleAI-shopify/app/routes/app._index.tsx</code></dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>4-step setup checklist: (1) install ✓ (2) add block to theme (3) upload size chart (4) make a try-on. Each step shows ✓ when complete; gated steps link to the right page.</dd></div>
+          </dl>
+        </div>
+
+        <!-- A8 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">8</span>
+            <h3 class="action__title">Live block preview in Settings</h3>
+            <span class="action__tags">
+              <span class="badge badge--medium">BFS</span>
+              <span class="badge badge--effort-m">~3 hr</span>
+            </span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>TODO #24, BFS 4.2.6</dd></div>
+            <div class="action__row"><dt>Touches</dt><dd><code>PrimeStyleAI-shopify/app/routes/app.settings.tsx</code></dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Render the storefront button + modal preview inline in Settings, driven by the same color/text/radius settings that ship to the theme block. Merchant sees changes without leaving the admin.</dd></div>
+          </dl>
+        </div>
+
+        <!-- A9 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">9</span>
+            <h3 class="action__title">Polish the analytics dashboard (try-on counts, top products, conversion)</h3>
+            <span class="action__tags">
+              <span class="badge badge--medium">BFS</span>
+              <span class="badge badge--effort-m">~2 hr</span>
+            </span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>TODO #23, BFS 3.1.4</dd></div>
+            <div class="action__row"><dt>Touches</dt><dd><code>PrimeStyleAI-shopify/app/routes/app.analytics.tsx</code></dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Cards: try-ons this week, most-tried product, conversion rate, return-impact (already there). Make sure all widgets render gracefully on zero data.</dd></div>
+          </dl>
+        </div>
+
+        <!-- A10 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">10</span>
+            <h3 class="action__title">Mobile-responsive admin pass</h3>
+            <span class="action__tags">
+              <span class="badge badge--low">BFS polish</span>
+              <span class="badge badge--effort-m">~2 hr</span>
+            </span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>TODO #26, BFS 4.1.2</dd></div>
+            <div class="action__row"><dt>Touches</dt><dd>All <code>app/routes/app.*.tsx</code></dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>No horizontal scroll on phone width. Tables collapse responsibly. Polaris components remain on small viewports. Reflows tested at 375 / 414 / 768 px.</dd></div>
+          </dl>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 2. Audits I can run today (read-only)                         -->
+    <!-- ============================================================ -->
+    <section id="audit" class="section--audit">
+      <h2>
+        <span class="num">02</span>
+        Audits I can run today
+        <span class="pill">read-only</span>
+      </h2>
+      <p class="lede">Pure investigations — I read code, grep for patterns, summarize findings into a single report you can act on. Nothing changed.</p>
+
+      <div class="actions">
+
+        <!-- B1 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">1</span>
+            <h3 class="action__title">Billing audit — confirm Managed Pricing / Billing API usage</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~20 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Req 1.2.1, 1.2.3</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Read <code>app.billing.tsx</code> + the GraphQL helpers. Confirm we use <code>appSubscriptionCreate</code> via Shopify and don't touch Stripe / cards. Flag any direct payment fields.</dd></div>
+          </dl>
+        </div>
+
+        <!-- B2 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">2</span>
+            <h3 class="action__title">Polaris audit — every admin page</h3>
+            <span class="action__tags"><span class="badge badge--effort-m">~1 hr</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Req 2.1.2, BFS 4.1.1, TODO #25</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Page-by-page report: which components are stock Polaris, which are custom Tailwind, which mix the two. Flag contrast issues and Polaris alternatives where appropriate.</dd></div>
+          </dl>
+        </div>
+
+        <!-- B3 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">3</span>
+            <h3 class="action__title">Webhook reliability audit</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~30 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Req 2.1.4</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Trace orders/create, orders/paid, refunds/create handlers. Confirm idempotency, error handling, retries, and that they actually persist to the analytics collection. Surface any unhandled rejections.</dd></div>
+          </dl>
+        </div>
+
+        <!-- B4 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">4</span>
+            <h3 class="action__title">"Reachable from embedded admin" audit</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~20 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Req 2.2.2, BFS 3.1.2</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>List every URL the merchant might need + confirm each is reachable from inside the embedded admin (no required redirect to <code>shopify.primestyleai.com</code>).</dd></div>
+          </dl>
+        </div>
+
+        <!-- B5 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">5</span>
+            <h3 class="action__title">Auth-gating audit — nothing renders before <code>authenticate.admin()</code></h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~20 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Req 2.3.2</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Read every loader. Confirm authenticate.admin() resolves before any UI renders or any data is fetched.</dd></div>
+          </dl>
+        </div>
+
+        <!-- B6 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">6</span>
+            <h3 class="action__title">GDPR webhook handler audit (data_request, redact, shop/redact)</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~30 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Section 7 GDPR webhooks, TODO #18, TODO #32</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Trace each handler. Confirm <code>customers/data_request</code> compiles all stored data, <code>customers/redact</code> deletes everything tied to the customer, <code>shop/redact</code> wipes ALL shop rows + cancels subscriptions. Report any gaps.</dd></div>
+          </dl>
+        </div>
+
+        <!-- B7 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">7</span>
+            <h3 class="action__title">Promotion / dark-pattern audit</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~15 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Req 2.2.6, BFS 4.3.2 / 4.3.6</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Grep for "Rate us", "Upgrade", countdown timers, popovers-on-load. Report any banners that need dismissibility persistence.</dd></div>
+          </dl>
+        </div>
+
+        <!-- B8 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">8</span>
+            <h3 class="action__title">Photo-bytes persistence audit</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~30 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Section 8 PCD row 1</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Trace the user photo through the VTO pipeline. Confirm the bytes are NEVER written to mongo / cloudinary / disk — only base64 in-memory → Gemini → discarded. Add a code comment + small test to enforce.</dd></div>
+          </dl>
+        </div>
+
+        <!-- B9 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">9</span>
+            <h3 class="action__title">Theme app extension cleanup audit</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~15 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>BFS 3.2.1 / 3.2.2</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Confirm we don't touch theme files via the Asset API and that the theme app extension uninstalls cleanly with no leftover storefront code.</dd></div>
+          </dl>
+        </div>
+
+        <!-- B10 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">10</span>
+            <h3 class="action__title">CSS asset weight check</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~10 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Section 6 row 2</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Measure <code>extensions/primestyle-tryon/assets/primestyle-tryon.css</code> gzipped size. Report whether it's under 100 KB; if not, propose a critical-vs-deferred split.</dd></div>
+          </dl>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 3. Documents I can draft                                      -->
+    <!-- ============================================================ -->
+    <section id="doc" class="section--doc">
+      <h2>
+        <span class="num">03</span>
+        Documents I can draft
+        <span class="pill">writing</span>
+      </h2>
+      <p class="lede">Standalone documents I can produce with no extra info — you read, edit, publish.</p>
+
+      <div class="actions">
+
+        <!-- C1 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">1</span>
+            <h3 class="action__title">Privacy Policy (full text)</h3>
+            <span class="action__tags">
+              <span class="badge badge--high">Auto-rejection if missing</span>
+              <span class="badge badge--effort-m">~1 hr</span>
+            </span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Privacy Policy section, TODO #4, Risk #5</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Ready-to-publish Markdown + HTML for <code>primestyleai.com/legal/privacy</code>. Covers data collected via Shopify API, buyer-device data, photo handling (transient), retention, EU/EEA legal basis, contact details, sub-processor list.</dd></div>
+          </dl>
+        </div>
+
+        <!-- C2 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">2</span>
+            <h3 class="action__title">Terms of Service</h3>
+            <span class="action__tags"><span class="badge badge--effort-m">~45 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>TODO #5</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Standard SaaS ToS adapted to a Shopify VTO app — service description, acceptable use, billing, IP, liability cap, governing law. You + a lawyer review before publishing.</dd></div>
+          </dl>
+        </div>
+
+        <!-- C3 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">3</span>
+            <h3 class="action__title">Sub-processor list (for the privacy page)</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~20 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>TODO #31</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Table: Cloudinary (image hosting/transient), Google Cloud / Vertex AI (try-on rendering, sizing inference), MongoDB Atlas (data store), DigitalOcean (hosting). Purpose, region, data shared, DPA link.</dd></div>
+          </dl>
+        </div>
+
+        <!-- C4 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">4</span>
+            <h3 class="action__title">Security incident response policy (1-page)</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~30 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>TODO #29 (half), Section 8 L2.7</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Detection → triage → containment → notification → post-mortem. Roles, response time targets, merchant + Shopify notification thresholds.</dd></div>
+          </dl>
+        </div>
+
+        <!-- C5 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">5</span>
+            <h3 class="action__title">Data loss prevention strategy (1-page)</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~30 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>TODO #29 (other half), Section 8 L2.3</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>Backup cadence, encryption at rest + in transit, access reviews, key rotation, secrets management, regional restrictions.</dd></div>
+          </dl>
+        </div>
+
+        <!-- C6 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">6</span>
+            <h3 class="action__title">App Store listing copy (subtitle + description)</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~30 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Req 4.4.1, 4.4.2, TODO #14</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>App card subtitle (1 short line, no claims), App details (≤500 chars, functional), feature bullets, FAQ. Free of "best/first/only/X% boost" stat claims so it passes review.</dd></div>
+          </dl>
+        </div>
+
+        <!-- C7 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">7</span>
+            <h3 class="action__title">Demo screencast script (step-by-step)</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~20 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Req 4.5.3 prep, TODO #10 prep</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>A timed shooting script: scene-by-scene narration covering install → block-add → buyer photo → sizing → try-on → admin sees event in analytics. You record the actual video.</dd></div>
+          </dl>
+        </div>
+
+        <!-- C8 -->
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">8</span>
+            <h3 class="action__title">Scope justifications (paste-into-submit-form text)</h3>
+            <span class="action__tags"><span class="badge badge--effort-s">~15 min</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Closes</dt><dd>Section 3.2 prep</dd></div>
+            <div class="action__row"><dt>Outcome</dt><dd>For each remaining scope after the audit, a 1-2 sentence justification ready to paste into the App Store submission form.</dd></div>
+          </dl>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 4. What only YOU can do                                       -->
+    <!-- ============================================================ -->
+    <section id="you" class="section--you">
+      <h2>
+        <span class="num">04</span>
+        What only you can do
+        <span class="pill">needs you</span>
+      </h2>
+      <p class="lede">Items that genuinely require your hands — Partner Dashboard logins, paid services, real-store testing, asset uploads, business decisions. I can prep, you execute.</p>
+
+      <div class="actions">
+
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">1</span>
+            <h3 class="action__title">Apply for Protected Customer Data Level 2</h3>
+            <span class="action__tags"><span class="badge badge--high">Blocking</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Where</dt><dd>Partner Dashboard → Apps → API access requests → Protected customer data access</dd></div>
+            <div class="action__row"><dt>Why me</dt><dd>I can draft the field-by-field justification text (see C8); only you can submit it from the Partner login.</dd></div>
+          </dl>
+        </div>
+
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">2</span>
+            <h3 class="action__title">Set the Emergency developer contact</h3>
+            <span class="action__tags"><span class="badge badge--high">Blocking</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Where</dt><dd>Partner Dashboard → Account settings → Emergency contact</dd></div>
+            <div class="action__row"><dt>Need</dt><dd>Phone + email a human will respond to within 24 h.</dd></div>
+          </dl>
+        </div>
+
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">3</span>
+            <h3 class="action__title">Record the demo screencast + upload</h3>
+            <span class="action__tags"><span class="badge badge--high">Blocking</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Where</dt><dd>Local recording → Partner Dashboard submission form</dd></div>
+            <div class="action__row"><dt>Need</dt><dd>I'll give you the shot-list. You record, edit, and upload.</dd></div>
+          </dl>
+        </div>
+
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">4</span>
+            <h3 class="action__title">Provide test store credentials in the submission form</h3>
+            <span class="action__tags"><span class="badge badge--high">Blocking</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Where</dt><dd>Partner Dashboard submission form</dd></div>
+            <div class="action__row"><dt>Need</dt><dd>Dev store URL, admin login, app preinstalled, test products with size charts attached.</dd></div>
+          </dl>
+        </div>
+
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">5</span>
+            <h3 class="action__title">App icon (1200×1200 PNG)</h3>
+            <span class="action__tags"><span class="badge badge--high">Blocking</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Where</dt><dd>Partner Dashboard + App Store listing form</dd></div>
+            <div class="action__row"><dt>Need</dt><dd>Identical icon in both locations. No text, no Shopify trademarks, no pricing, padding around the logo.</dd></div>
+          </dl>
+        </div>
+
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">6</span>
+            <h3 class="action__title">Pricing details, languages, sales-channel toggle in the listing</h3>
+            <span class="action__tags"><span class="badge badge--medium">Required for submission</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Where</dt><dd>Partner Dashboard listing form</dd></div>
+            <div class="action__row"><dt>Why me</dt><dd>I can draft text + recommend categories; only you can fill the form fields.</dd></div>
+          </dl>
+        </div>
+
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">7</span>
+            <h3 class="action__title">Sign DPAs with Cloudinary, Google Cloud / Vertex, MongoDB Atlas</h3>
+            <span class="action__tags"><span class="badge badge--medium">Required pre-launch</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Where</dt><dd>Each provider's dashboard / legal form</dd></div>
+            <div class="action__row"><dt>Need</dt><dd>Use each provider's standard DPA. Save signed copies.</dd></div>
+          </dl>
+        </div>
+
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">8</span>
+            <h3 class="action__title">Real Lighthouse + Web Vitals runs on the Dawn dev store</h3>
+            <span class="action__tags"><span class="badge badge--medium">Required pre-launch</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Where</dt><dd>Browser DevTools / pagespeed.web.dev / Partner Dashboard Web Vitals</dd></div>
+            <div class="action__row"><dt>Why me</dt><dd>I can do the lazy-load fix that should put us inside budget; only a real browser session can produce the numbers.</dd></div>
+          </dl>
+        </div>
+
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">9</span>
+            <h3 class="action__title">Manual install/uninstall/reinstall + incognito tests</h3>
+            <span class="action__tags"><span class="badge badge--medium">Required pre-launch</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Where</dt><dd>Real Shopify install + Chrome incognito with 3rd-party cookies blocked</dd></div>
+            <div class="action__row"><dt>Why me</dt><dd>Needs a real Shopify session, real OAuth grant page, real revoke. I can guide you step-by-step but can't drive the click flow.</dd></div>
+          </dl>
+        </div>
+
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">10</span>
+            <h3 class="action__title">Atlas access logs, IAM cleanup, sub-processor signatures</h3>
+            <span class="action__tags"><span class="badge badge--low">Pre-launch hygiene</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Where</dt><dd>MongoDB Atlas console</dd></div>
+            <div class="action__row"><dt>Need</dt><dd>Enable audit logs, revoke unused users, confirm encryption-at-rest is on.</dd></div>
+          </dl>
+        </div>
+
+        <div class="action">
+          <div class="action__head">
+            <span class="action__num">11</span>
+            <h3 class="action__title">Acquire ≥ 50 installs + ≥ 5 reviews (Built for Shopify gate)</h3>
+            <span class="action__tags"><span class="badge badge--low">Post-launch growth</span></span>
+          </div>
+          <dl class="action__body">
+            <div class="action__row"><dt>Why me</dt><dd>This is a marketing + customer-success outcome, not code. Comes after launch.</dd></div>
+          </dl>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-footer">
+  Companion to <a href="SHOPIFY-APP-REVIEW-CHECKLIST.html" style="color: inherit;">SHOPIFY-APP-REVIEW-CHECKLIST.html</a> · split of who-does-what.
+</footer>
+
+<script>
+  // ── Status totals ─────────────────────────────────────────────
+  (function () {
+    const sections = ['auto', 'audit', 'doc', 'you'];
+    const counts = {};
+    sections.forEach(id => {
+      counts[id] = document.querySelectorAll(`#${id} .action`).length;
+    });
+    const target = document.getElementById('counts');
+    target.innerHTML = `
+      <div class="hero__stat" style="border-left: 3px solid var(--auto-fg);">
+        <span class="hero__stat-value" style="color: var(--auto-fg);">${counts.auto}</span>
+        <span class="hero__stat-label">Code I can ship</span>
+      </div>
+      <div class="hero__stat" style="border-left: 3px solid var(--audit-fg);">
+        <span class="hero__stat-value" style="color: var(--audit-fg);">${counts.audit}</span>
+        <span class="hero__stat-label">Audits I can run</span>
+      </div>
+      <div class="hero__stat" style="border-left: 3px solid var(--doc-fg);">
+        <span class="hero__stat-value" style="color: var(--doc-fg);">${counts.doc}</span>
+        <span class="hero__stat-label">Docs I can draft</span>
+      </div>
+      <div class="hero__stat" style="border-left: 3px solid var(--you-fg);">
+        <span class="hero__stat-value" style="color: var(--you-fg);">${counts.you}</span>
+        <span class="hero__stat-label">Need you</span>
+      </div>
+    `;
+  })();
+
+  // ── TOC active-link tracking ──────────────────────────────────
+  const tocLinks = Array.from(document.querySelectorAll('.toc a'));
+  const tocMap = new Map(tocLinks.map(a => [a.getAttribute('href').slice(1), a]));
+  const observer = new IntersectionObserver((entries) => {
+    const visible = entries
+      .filter(e => e.isIntersecting)
+      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+    if (!visible.length) return;
+    const id = visible[0].target.id;
+    tocLinks.forEach(a => a.classList.toggle('is-active', a === tocMap.get(id)));
+  }, { rootMargin: '-80px 0px -65% 0px', threshold: 0 });
+  document.querySelectorAll('section[id]').forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
