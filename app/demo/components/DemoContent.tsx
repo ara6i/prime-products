@@ -17,8 +17,8 @@ export function DemoContent({ product }: DemoContentProps) {
   return (
     <PilotModalProvider>
     <div className="flex flex-col w-full min-h-screen bg-white text-text-primary">
-      <div className="hidden lg:block"><DeveloperNavbar /></div>
-      <div className="lg:hidden"><MobileDeveloperNavbar /></div>
+      <div className="hidden lg:contents"><DeveloperNavbar variant="demo" /></div>
+      <div className="contents lg:hidden"><MobileDeveloperNavbar variant="demo" /></div>
 
       {/* Hero */}
       <div className="border-b border-border-light bg-dev-section-bg">

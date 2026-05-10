@@ -209,11 +209,15 @@ export function MobileProductDetail({ product }: Props) {
     };
 
     const sections = raw.sections as Record<string, any> | undefined;
+    // Backend can include "Jacket Length" / "Pant Length" pseudo-sections
+    // alongside the real "Jacket" / "Pants" sections — those carry only a
+    // length value, not a size, and shouldn't be matched as primary targets.
+    const isLengthOnly = (n: string) => /\blength\b/i.test(n);
     // eslint-disable-next-line no-console
     console.log("[demo:auto-select] mobile", { raw, parsedSizes, sections });
 
     if (sections && Object.keys(sections).length > 0) {
-      const entries = Object.entries(sections);
+      const entries = Object.entries(sections).filter(([n]) => !isLengthOnly(n));
       for (const [name, sec] of entries) {
         const lc = name.toLowerCase();
         if (!/pant|trouser/.test(lc)) continue;

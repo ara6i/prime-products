@@ -14,8 +14,8 @@ export function DemoShell({ children }: DemoShellProps) {
   return (
     <PilotModalProvider>
       <div className="flex flex-col w-full min-h-screen bg-white text-text-primary">
-        <div className="hidden lg:block"><DeveloperNavbar /></div>
-        <div className="lg:hidden"><MobileDeveloperNavbar /></div>
+        <div className="hidden lg:contents"><DeveloperNavbar variant="demo" /></div>
+        <div className="contents lg:hidden"><MobileDeveloperNavbar variant="demo" /></div>
         <div className="flex-1">{children}</div>
         <div className="flex flex-col items-center gap-[1.25vw] bg-brand-blue-pale px-[7.292vw] py-[2.5vw]">
           <Footer />

@@ -156,9 +156,14 @@ export function DesktopProductDetail({ product }: Props) {
     console.log("raw.sections:", raw.sections);
     console.log("parsedSizes:", parsedSizes.map(p => ({ original: p.original, number: p.number, length: p.length, available: p.available })));
     const sections = raw.sections as Record<string, any> | undefined;
+    // Backend can include "Jacket Length" / "Pant Length" pseudo-sections
+    // alongside the real "Jacket" / "Pants" sections — those carry only the
+    // length string, not a size, and shouldn't be matched as the primary
+    // jacket/pants target.
+    const isLengthOnly = (n: string) => /\blength\b/i.test(n);
     if (sections && Object.keys(sections).length > 0) {
-      const entries = Object.entries(sections);
-      console.log("[autosize] section entries (raw order):", entries.map(([n, s]: [string, any]) => ({ name: n, size: s?.size, recommendedSize: s?.recommendedSize, length: s?.length })));
+      const entries = Object.entries(sections).filter(([n]) => !isLengthOnly(n));
+      console.log("[autosize] section entries (Length-only filtered):", entries.map(([n, s]: [string, any]) => ({ name: n, size: s?.size, recommendedSize: s?.recommendedSize, length: s?.length })));
       for (const [name, sec] of entries) {
         const lc = name.toLowerCase();
         if (!/pant|trouser/.test(lc)) continue;

@@ -336,18 +336,26 @@ function SizeTable({
   regionPrimaryColumn?: string | null;
 }) {
   const rowKeys = Object.keys(section.rows[0] || {});
+  // Prefer the actual size axis (Size/Standard/Length/Fit) over
+  // regionPrimaryColumn. The region's first column is a MEASUREMENT
+  // ("Bust (in)" etc.) — using it as the row label drops the size
+  // axis into the regular-column slot, where the cm/inches toggle then
+  // converts size values (0 → 0, 2 → 5.1, 4 → 10.2) as if they were
+  // inches measurements. labelKey must be the size column so it renders
+  // as the row header and is excluded from unit conversion.
   const labelKey =
-    (regionPrimaryColumn && rowKeys.includes(regionPrimaryColumn))
+    rowKeys.find(
+      (k) =>
+        k.toLowerCase() === "standard" ||
+        k.toLowerCase() === "size" ||
+        k.toLowerCase() === "length" ||
+        k.toLowerCase() === "fit"
+    ) ||
+    (regionPrimaryColumn && rowKeys.includes(regionPrimaryColumn)
       ? regionPrimaryColumn
-      : rowKeys.find(
-          (k) =>
-            k.toLowerCase() === "standard" ||
-            k.toLowerCase() === "size" ||
-            k.toLowerCase() === "length" ||
-            k.toLowerCase() === "fit"
-        ) ||
-        rowKeys[0] ||
-        "Size";
+      : null) ||
+    rowKeys[0] ||
+    "Size";
 
   const allColKeys = rowKeys.filter((k) => k !== labelKey);
 

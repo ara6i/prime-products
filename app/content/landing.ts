@@ -13,7 +13,12 @@ import type {
 
 const ASSET = "/images/landing/ps";
 
-export const GET_API_KEY_HREF = "https://preview.myaifitting.com/developer/dashboard/keys";
+// Sentinel "#pilot" — every Get Started / Get API key CTA on the landing
+// page now opens the Apply For Free Pilot modal instead of routing out
+// to the myaifitting dashboard. Any consumer that sees "#pilot" should
+// call the pilot-modal opener (see IntegrationsSection's isPilotCta wiring
+// for the canonical pattern).
+export const GET_API_KEY_HREF = "#pilot";
 export const DOCS_HREF = "/docs";
 export const DEMO_HREF = "/demo/products";
 
