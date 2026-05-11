@@ -158,6 +158,35 @@ function buildSizes(p: DemoProductApi): DemoSizeOption[] {
   if (raw && Array.isArray(raw.headers) && Array.isArray(raw.rows) && !Array.isArray(raw.sections)) {
     const headers = raw.headers as string[];
     const rows = raw.rows as Array<Record<string, string>>;
+    // Priority 0a: charts that encode size as Fit + Size + Customization
+    // columns (DB Studio wedding dress: Fit="MISSY"|"PLUS", Size="12"|"16W",
+    // Customization="Standard (No Customization)"|"Extra Length"). The
+    // matcher's sizeLabel format is "FIT SIZE / CUSTOMIZATION", so we have
+    // to surface that exact composite to the dropdown — otherwise the auto-
+    // select can't match the backend's "MISSY 12 / Standard" recommendation
+    // against a bare "12" option.
+    const fitKey = headers.find((h) => h.toLowerCase() === "fit");
+    const sizeKey = headers.find((h) => h.toLowerCase() === "size");
+    const customKey = headers.find((h) => h.toLowerCase().includes("customization") || h.toLowerCase() === "length");
+    if (sizeKey && (fitKey || customKey)) {
+      const composite = rows
+        .map((r) => {
+          const size = r[sizeKey]?.trim();
+          if (!size) return null;
+          const fit = fitKey ? r[fitKey]?.trim() : "";
+          const customRaw = customKey ? r[customKey]?.trim() : "";
+          // Strip the verbose parenthetical so "Standard (No Customization)"
+          // collapses to "Standard" in the dropdown.
+          const custom = customRaw ? customRaw.replace(/\s*\([^)]*\)\s*/g, "").trim() : "";
+          const head = fit ? `${fit} ${size}` : size;
+          return custom ? `${head} / ${custom}` : head;
+        })
+        .filter((v): v is string => !!v);
+      const names = [...new Set(composite)];
+      if (names.length > 0) {
+        return names.map((name) => ({ name, available: true }));
+      }
+    }
     const stdKey = headers.find((h) => h.toLowerCase() === "standard");
     if (stdKey) {
       // Deduplicate — multiple rows can share the same Standard label (e.g. XXS=54cm & XXS=55cm)

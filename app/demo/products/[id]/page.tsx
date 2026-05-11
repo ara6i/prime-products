@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import { fetchDemoProduct } from "../services/demoProductService";
 import { mapProductDetail } from "../mappers/demoProductMapper";
-import { DesktopProductDetail } from "./components/desktop/DemoProductDetail";
-import { MobileProductDetail } from "./components/mobile/DemoProductDetail";
+import { ProductDetailSwitcher } from "./components/ProductDetailSwitcher";
 
 export const dynamic = "force-dynamic";
 
@@ -19,16 +18,7 @@ export default async function DemoProductDetailPage({ params, searchParams }: Pa
     const raw = await fetchDemoProduct(id, sp.color);
     const product = mapProductDetail(raw);
 
-    return (
-      <>
-        <div className="hidden lg:block">
-          <DesktopProductDetail product={product} />
-        </div>
-        <div className="lg:hidden">
-          <MobileProductDetail product={product} />
-        </div>
-      </>
-    );
+    return <ProductDetailSwitcher product={product} />;
   } catch {
     notFound();
   }

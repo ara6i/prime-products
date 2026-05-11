@@ -2,12 +2,20 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { ChevronLeft, Camera, Ruler, Globe, ChevronRight, Sparkles } from "lucide-react";
-import { PrimeStyleTryon, usePrimeStyleSize } from "@primestyleai/tryon/react";
+import { usePrimeStyleSize } from "@primestyleai/tryon/react";
 import type { DemoProductView } from "../../../types";
 import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
 import { useSizingAutoSelect } from "../../hooks/useSizingAutoSelect";
+
+// Lazy-load the SDK component so the heavy bundle doesn't block first paint.
+// usePrimeStyleSize stays statically imported — hooks can't be dynamic.
+const PrimeStyleTryon = dynamic(
+  () => import("@primestyleai/tryon/react").then((m) => ({ default: m.PrimeStyleTryon })),
+  { ssr: false },
+);
 
 const SDK_LOCALES = [
   { code: "en", label: "English" },
@@ -56,12 +64,31 @@ export function MobileProductDetail({ product }: Props) {
 
   // Parse sizes — memoized so `parsedSizes` has a stable reference across renders.
   // Without memoization, the useEffect below would fire every render and spam logs.
-  const hasSplitSizes = sizes.some((s) => s.name.includes(" "));
+  // Handles three real-world chart label formats:
+  //   1. "MISSY 12 / Standard"   → number="MISSY 12", length="Standard"  (DB Studio)
+  //   2. "44 R"                  → number="44",       length="R"          (tuxedo)
+  //   3. "12" / "16W"            → number="12",       length=""           (plain dress)
+  const hasSplitSizes = sizes.some((s) => s.name.includes(" ") || s.name.includes("/"));
   const parsedSizes = useMemo(() => sizes.map((s) => {
-    const spaceIdx = s.name.indexOf(" ");
-    return spaceIdx === -1
-      ? { number: s.name, length: "", available: s.available, original: s.name }
-      : { number: s.name.slice(0, spaceIdx), length: s.name.slice(spaceIdx + 1), available: s.available, original: s.name };
+    const name = s.name.trim();
+    const prefixed = name.match(/^(MISSY|PLUS)\s+(\S+)\s*\/\s*(.+)$/i);
+    if (prefixed) {
+      return {
+        number: `${prefixed[1]!.toUpperCase()} ${prefixed[2]}`,
+        length: prefixed[3]!.trim(),
+        available: s.available,
+        original: name,
+      };
+    }
+    const slashed = name.match(/^(\S+)\s*\/\s*(.+)$/);
+    if (slashed) {
+      return { number: slashed[1]!, length: slashed[2]!.trim(), available: s.available, original: name };
+    }
+    const spaceIdx = name.indexOf(" ");
+    if (spaceIdx === -1) {
+      return { number: name, length: "", available: s.available, original: name };
+    }
+    return { number: name.slice(0, spaceIdx), length: name.slice(spaceIdx + 1), available: s.available, original: name };
   }), [sizes]);
   const sizeNumbers = [...new Map(parsedSizes.map((s) => [s.number, s])).keys()];
   const allUniqueLengths = [...new Set(parsedSizes.map((s) => s.length).filter(Boolean))];
@@ -177,6 +204,26 @@ export function MobileProductDetail({ product }: Props) {
     };
 
     const applyJacket = (rawSize: string, rawLen?: string): boolean => {
+      // Match the FULL raw string against an entry's `original` first.
+      // Catches "MISSY 12 / Standard" where naive splitSize would drop
+      // the "MISSY" prefix.
+      const directFull = parsedSizes.find((p) => p.original === rawSize);
+      if (directFull?.available) {
+        setJacketSizeNum(directFull.number);
+        setJacketLength(directFull.length || "");
+        setSelectedSize(directFull.original);
+        return true;
+      }
+      const directNumber = parsedSizes.find((p) => p.number === rawSize);
+      if (directNumber?.available) {
+        setJacketSizeNum(directNumber.number);
+        const len = rawLen || parsedSizes.find((p) => p.number === directNumber.number && p.length)?.length || "";
+        setJacketLength(len);
+        const original = parsedSizes.find((p) => p.number === directNumber.number && p.length === len)?.original
+          || directNumber.original;
+        setSelectedSize(original);
+        return true;
+      }
       const split = splitSize(rawSize);
       const num = split.num;
       const len = rawLen || split.len;

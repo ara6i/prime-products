@@ -2,12 +2,21 @@
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { ArrowLeft, Ruler, Sparkles } from "lucide-react";
-import { PrimeStyleTryon, usePrimeStyleSize } from "@primestyleai/tryon/react";
+import { usePrimeStyleSize } from "@primestyleai/tryon/react";
 import type { DemoProductView } from "../../../types";
 import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
 import { useSizingAutoSelect } from "../../hooks/useSizingAutoSelect";
+
+// Lazy-load the SDK component so the heavy bundle (~MBs of try-on + sizing UI)
+// doesn't block first paint of the product page. Static import for
+// usePrimeStyleSize is kept — hooks must be statically resolvable.
+const PrimeStyleTryon = dynamic(
+  () => import("@primestyleai/tryon/react").then((m) => ({ default: m.PrimeStyleTryon })),
+  { ssr: false },
+);
 
 
 interface Props {
@@ -27,12 +36,34 @@ export function DesktopProductDetail({ product }: Props) {
   // Prefer product.sizes (built from size guide Standard column) — richer than variant's raw mm sizes
   const sizes = product.sizes.length ? product.sizes : (activeVariant?.sizes ?? []);
 
-  const hasSplitSizes = sizes.some((s) => s.name.includes(" "));
+  const hasSplitSizes = sizes.some((s) => s.name.includes(" ") || s.name.includes("/"));
+  // Size label parser handles three real-world chart formats:
+  //   1. "MISSY 12 / Standard"   → number="MISSY 12", length="Standard"  (DB Studio wedding dress)
+  //   2. "44 R"                  → number="44",       length="R"          (tuxedo jacket)
+  //   3. "12" / "16W"            → number="12",       length=""           (plain dress)
+  // Keeping the "MISSY" / "PLUS" prefix INSIDE the displayed size keeps
+  // PLUS rows (which only ship a "Standard" variant) from collapsing onto
+  // MISSY rows of the same number in the dropdown.
   const parsedSizes = useMemo(() => sizes.map((s) => {
-    const spaceIdx = s.name.indexOf(" ");
-    return spaceIdx === -1
-      ? { number: s.name, length: "", available: s.available, original: s.name }
-      : { number: s.name.slice(0, spaceIdx), length: s.name.slice(spaceIdx + 1), available: s.available, original: s.name };
+    const name = s.name.trim();
+    const prefixed = name.match(/^(MISSY|PLUS)\s+(\S+)\s*\/\s*(.+)$/i);
+    if (prefixed) {
+      return {
+        number: `${prefixed[1]!.toUpperCase()} ${prefixed[2]}`,
+        length: prefixed[3]!.trim(),
+        available: s.available,
+        original: name,
+      };
+    }
+    const slashed = name.match(/^(\S+)\s*\/\s*(.+)$/);
+    if (slashed) {
+      return { number: slashed[1]!, length: slashed[2]!.trim(), available: s.available, original: name };
+    }
+    const spaceIdx = name.indexOf(" ");
+    if (spaceIdx === -1) {
+      return { number: name, length: "", available: s.available, original: name };
+    }
+    return { number: name.slice(0, spaceIdx), length: name.slice(spaceIdx + 1), available: s.available, original: name };
   }), [sizes]);
   const sizeNumbers = [...new Map(parsedSizes.map((s) => [s.number, s])).keys()];
   const allUniqueLengths = [...new Set(parsedSizes.map((s) => s.length).filter(Boolean))];
@@ -129,6 +160,31 @@ export function DesktopProductDetail({ product }: Props) {
     };
 
     const applyJacket = (rawSize: string, rawLen?: string): boolean => {
+      // FIRST try the FULL raw string against each entry's `original`. This
+      // catches the "MISSY 12 / Standard" case where splitting on whitespace
+      // would shred the prefix off.
+      const directFull = parsedSizes.find((p) => p.original === rawSize);
+      if (directFull?.available) {
+        setJacketSizeNum(directFull.number);
+        setJacketLength(directFull.length || "");
+        setSelectedSize(directFull.original);
+        return true;
+      }
+      // Also try matching the raw against `number` (the displayed dropdown
+      // value) so e.g. backend "MISSY 12" picks the MISSY-12 row regardless
+      // of which length variant it lives under.
+      const directNumber = parsedSizes.find((p) => p.number === rawSize);
+      if (directNumber?.available) {
+        setJacketSizeNum(directNumber.number);
+        // Length pill defaults to backend's rawLen if provided, else first
+        // available length for that number.
+        const len = rawLen || parsedSizes.find((p) => p.number === directNumber.number && p.length)?.length || "";
+        setJacketLength(len);
+        const original = parsedSizes.find((p) => p.number === directNumber.number && p.length === len)?.original
+          || directNumber.original;
+        setSelectedSize(original);
+        return true;
+      }
       const split = splitSize(rawSize);
       const num = split.num;
       const len = rawLen || split.len;
