@@ -12,7 +12,6 @@ import { FeaturesSection } from "./sections/mobile/FeaturesSection";
 import { SdkDemoSection } from "./sections/mobile/SdkDemoSection";
 import { ScaleSection } from "./sections/mobile/ScaleSection";
 import { GarmentsSection } from "./sections/mobile/GarmentsSection";
-import { PricingSection } from "./sections/mobile/PricingSection";
 import { CtaBannerSection } from "./sections/mobile/CtaBannerSection";
 
 export function MobileDeveloperLanding() {
@@ -30,7 +29,6 @@ export function MobileDeveloperLanding() {
         <section id="demo"><SdkDemoSection /></section>
         <ScaleSection />
         <GarmentsSection />
-        <section id="pricing"><PricingSection /></section>
         <CtaBannerSection />
       </main>
       <div className="flex flex-col gap-6 bg-brand-blue-pale px-4 py-10">

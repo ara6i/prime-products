@@ -9,7 +9,6 @@ const SECTION_LINKS = [
   { label: "Features", href: "#features" },
   { label: "Demo", href: "/demo/products", external: true },
   { label: "Integrations", href: "#integrations" },
-  { label: "Pricing", href: "#pricing" },
 ];
 
 interface DeveloperNavbarProps {
