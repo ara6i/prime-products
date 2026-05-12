@@ -41,8 +41,10 @@ export function DesktopProductDetail({ product }: Props) {
   // space-in-name heuristic below and render Jacket/Length dropdowns
   // instead of plain shoe sizes. Regex mirrors detectMeasurementType
   // in the SDK so demo and SDK stay in sync.
+  const categoryHaystack = `${product.category} ${product.subcategory} ${product.name}`;
   const isAccessoryCategory = /\b(shoe|shoes|sneaker|sneakers|boot|boots|heel|heels|loafer|loafers|mule|mules|sandal|sandals|trainer|trainers|slipper|slippers|stiletto|stilettos|pump|pumps|oxford|derby|derbies|wedge|espadrille|clog|hat|hats|cap|caps|beanie|beanies|fedora|snapback|beret|panama|headband|visor|bonnet|sunglass|sunglasses|eyewear|eyeglasses|glasses|spectacles|optical|goggles|frames|aviator|wayfarer|lens)\b/i
-    .test(`${product.category} ${product.subcategory} ${product.name}`);
+    .test(categoryHaystack);
+  const isDress = /\b(dress|dresses|gown|gowns|wedding|bridal|bridesmaid)\b/i.test(categoryHaystack);
   const hasSplitSizes = !isAccessoryCategory && sizes.some((s) => s.name.includes(" ") || s.name.includes("/"));
   // Size label parser handles three real-world chart formats:
   //   1. "MISSY 12 / Standard"   → number="MISSY 12", length="Standard"  (DB Studio wedding dress)
@@ -388,9 +390,7 @@ export function DesktopProductDetail({ product }: Props) {
                 <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider block">Size</span>
                 <div className="flex gap-[0.5vw]">
                   <div className="flex-1">
-                    {pantsWaistSizes.length > 0 && (
-                      <label style={{ fontSize: '0.72vw' }} className="text-text-caption block mb-[0.3vw]">Jacket</label>
-                    )}
+                    <label style={{ fontSize: '0.72vw' }} className="text-text-caption block mb-[0.3vw]">{pantsWaistSizes.length > 0 ? "Jacket" : isDress ? "Dress" : "Size"}</label>
                     <SizeSelect
                       value={jacketSizeNum}
                       onChange={handleSizeNumberSelect}
