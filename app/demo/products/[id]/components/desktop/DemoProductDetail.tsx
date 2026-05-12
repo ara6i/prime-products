@@ -36,7 +36,14 @@ export function DesktopProductDetail({ product }: Props) {
   // Prefer product.sizes (built from size guide Standard column) — richer than variant's raw mm sizes
   const sizes = product.sizes.length ? product.sizes : (activeVariant?.sizes ?? []);
 
-  const hasSplitSizes = sizes.some((s) => s.name.includes(" ") || s.name.includes("/"));
+  // Footwear / headwear / eyewear never use the jacket+length split UI.
+  // Without this gate, shoe sizes like "US 10" / "EU 42" trip the
+  // space-in-name heuristic below and render Jacket/Length dropdowns
+  // instead of plain shoe sizes. Regex mirrors detectMeasurementType
+  // in the SDK so demo and SDK stay in sync.
+  const isAccessoryCategory = /\b(shoe|shoes|sneaker|sneakers|boot|boots|heel|heels|loafer|loafers|mule|mules|sandal|sandals|trainer|trainers|slipper|slippers|stiletto|stilettos|pump|pumps|oxford|derby|derbies|wedge|espadrille|clog|hat|hats|cap|caps|beanie|beanies|fedora|snapback|beret|panama|headband|visor|bonnet|sunglass|sunglasses|eyewear|eyeglasses|glasses|spectacles|optical|goggles|frames|aviator|wayfarer|lens)\b/i
+    .test(`${product.category} ${product.subcategory} ${product.name}`);
+  const hasSplitSizes = !isAccessoryCategory && sizes.some((s) => s.name.includes(" ") || s.name.includes("/"));
   // Size label parser handles three real-world chart formats:
   //   1. "MISSY 12 / Standard"   → number="MISSY 12", length="Standard"  (DB Studio wedding dress)
   //   2. "44 R"                  → number="44",       length="R"          (tuxedo jacket)
