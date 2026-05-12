@@ -388,7 +388,9 @@ export function DesktopProductDetail({ product }: Props) {
                 <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider block">Size</span>
                 <div className="flex gap-[0.5vw]">
                   <div className="flex-1">
-                    <label style={{ fontSize: '0.72vw' }} className="text-text-caption block mb-[0.3vw]">Jacket</label>
+                    {pantsWaistSizes.length > 0 && (
+                      <label style={{ fontSize: '0.72vw' }} className="text-text-caption block mb-[0.3vw]">Jacket</label>
+                    )}
                     <SizeSelect
                       value={jacketSizeNum}
                       onChange={handleSizeNumberSelect}

@@ -446,11 +446,13 @@ export function MobileProductDetail({ product }: Props) {
                 </div>
               ) : null}
 
-              {/* Jacket card */}
+              {/* Size card — labels say "Jacket *" only when a Pants block exists
+                  (real suit). For dresses and other single-section apparel the
+                  first axis is just "Size" / "Length" — no "Jacket" prefix. */}
               <div className={`rounded-xl border border-border-light bg-surface-light p-3 ${justAutoFilled ? "ps-autofill-flash" : ""}`}>
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <label className="text-xs text-text-hint uppercase tracking-wider mb-2 block">Jacket Size</label>
+                    <label className="text-xs text-text-hint uppercase tracking-wider mb-2 block">{pantsWaistSizes.length > 0 ? "Jacket Size" : "Size"}</label>
                     <SizeSelect
                       value={jacketSizeNum}
                       onChange={handleSizeNumberSelect}
@@ -465,7 +467,7 @@ export function MobileProductDetail({ product }: Props) {
 
                   {allUniqueLengths.length > 0 && (
                     <div className="flex-1">
-                      <label className="text-xs text-text-hint uppercase tracking-wider mb-2 block">Jacket Length</label>
+                      <label className="text-xs text-text-hint uppercase tracking-wider mb-2 block">{pantsWaistSizes.length > 0 ? "Jacket Length" : "Length"}</label>
                       <SizeSelect
                         value={jacketLength}
                         onChange={handleLengthSelect}
