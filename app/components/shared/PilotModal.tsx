@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { X, Check, Loader2 } from "lucide-react";
 import { cn } from "@/app/shared/lib/utils";
+import { getPilotRequestUrl } from "./pilotRequest";
 
 interface PilotModalProps {
   open: boolean;
@@ -17,7 +18,7 @@ type ShareData = "yes" | "no";
 interface FormState {
   name: string;
   email: string;
-  brand: string;
+  website: string;
   monthlyVisitors: string;
   catalogDescription: string;
   toolIntegration: ToolIntegration;
@@ -30,7 +31,7 @@ type FieldTouched = Partial<Record<keyof FormState, boolean>>;
 const INITIAL_FORM: FormState = {
   name: "",
   email: "",
-  brand: "",
+  website: "",
   monthlyVisitors: "",
   catalogDescription: "",
   toolIntegration: "react-sdk",
@@ -38,13 +39,15 @@ const INITIAL_FORM: FormState = {
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const WEBSITE_RE = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/.*)?$/i;
 
 function validate(form: FormState): FieldErrors {
   const errors: FieldErrors = {};
   if (!form.name.trim() || form.name.trim().length < 2) errors.name = "Please enter your full name.";
   if (!form.email.trim()) errors.email = "Email is required.";
   else if (!EMAIL_RE.test(form.email.trim())) errors.email = "That doesn't look like a valid email.";
-  if (!form.brand.trim() || form.brand.trim().length < 2) errors.brand = "Please enter your brand or store name.";
+  if (!form.website.trim()) errors.website = "Please enter your website.";
+  else if (!WEBSITE_RE.test(form.website.trim())) errors.website = "Enter a valid website.";
   if (!form.monthlyVisitors.trim()) errors.monthlyVisitors = "Please enter a rough monthly visitor count.";
   return errors;
 }
@@ -86,7 +89,7 @@ export function PilotModal({ open, onOpenChange }: PilotModalProps) {
     setTouched({
       name: true,
       email: true,
-      brand: true,
+      website: true,
       monthlyVisitors: true,
       catalogDescription: true,
       toolIntegration: true,
@@ -98,14 +101,14 @@ export function PilotModal({ open, onOpenChange }: PilotModalProps) {
     setSubmitError(null);
 
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
-      const res = await fetch(`${apiBase}/api/contact/pilot-request`, {
+      const res = await fetch(getPilotRequestUrl(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name.trim(),
           email: form.email.trim(),
-          company: form.brand.trim(),
+          company: form.website.trim(),
+          website: form.website.trim(),
           monthlyVisitors: form.monthlyVisitors.trim(),
           catalogDescription: form.catalogDescription.trim() || undefined,
           toolIntegration: form.toolIntegration,
@@ -156,56 +159,61 @@ export function PilotModal({ open, onOpenChange }: PilotModalProps) {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <div className="text-sm font-medium text-text-primary">Tell us about your brand</div>
-
                   <Field
-                    placeholder="Full name"
+                    label="Full name"
                     required
                     value={form.name}
                     onChange={setField("name")}
                     onBlur={markTouched("name")}
                     error={touched.name ? errors.name : undefined}
+                    placeholder="Jane Cooper"
                     autoComplete="name"
                   />
                   <Field
+                    label="Work email"
                     type="email"
-                    placeholder="Your email"
                     required
                     value={form.email}
                     onChange={setField("email")}
                     onBlur={markTouched("email")}
                     error={touched.email ? errors.email : undefined}
+                    placeholder="jane@brand.com"
                     autoComplete="email"
+                    inputMode="email"
                   />
                   <Field
-                    placeholder="Brand/store name"
+                    label="Brand website"
                     required
-                    value={form.brand}
-                    onChange={setField("brand")}
-                    onBlur={markTouched("brand")}
-                    error={touched.brand ? errors.brand : undefined}
-                    autoComplete="organization"
+                    value={form.website}
+                    onChange={setField("website")}
+                    onBlur={markTouched("website")}
+                    error={touched.website ? errors.website : undefined}
+                    placeholder="https://yourbrand.com"
+                    autoComplete="url"
+                    inputMode="url"
                   />
                   <Field
-                    placeholder="Monthly website visitors *"
+                    label="Monthly visitors"
                     required
                     value={form.monthlyVisitors}
                     onChange={setField("monthlyVisitors")}
                     onBlur={markTouched("monthlyVisitors")}
                     error={touched.monthlyVisitors ? errors.monthlyVisitors : undefined}
+                    placeholder="Example: 50,000"
                     inputMode="numeric"
                   />
-                  <Field
-                    placeholder="Describe your apparel catalog"
+                  <Textarea
+                    label="Apparel catalog"
                     value={form.catalogDescription}
                     onChange={setField("catalogDescription")}
                     onBlur={markTouched("catalogDescription")}
+                    placeholder="Tell us what you sell, your size chart setup, and where you want the pilot to run."
                   />
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <div className="text-sm font-medium text-text-primary">What type of tool integration are you using?</div>
                   <RadioGroup
+                    label="Integration"
                     name="toolIntegration"
                     value={form.toolIntegration}
                     onChange={(v) => setField("toolIntegration")(v as ToolIntegration)}
@@ -218,23 +226,21 @@ export function PilotModal({ open, onOpenChange }: PilotModalProps) {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <div className="text-sm font-medium text-text-primary">
-                    Are you willing to share data on the effect of the Decision Engine to help us measure performance?
-                  </div>
                   <RadioGroup
+                    label="Pilot measurement"
                     name="shareData"
                     value={form.shareData}
                     onChange={(v) => setField("shareData")(v as ShareData)}
                     layout="stack"
                     options={[
-                      { value: "yes", label: "Yes, I am willing to share performance data." },
-                      { value: "no", label: "No, I'd prefer not to share performance data." },
+                      { value: "yes", label: "Yes, I can share pilot performance data." },
+                      { value: "no", label: "No, I prefer not to share performance data." },
                     ]}
                   />
                 </div>
 
                 <p className="text-xs leading-[1.55] text-text-hint">
-                  By applying you agree to share data on the impact of the Decision Engine if your brand is selected.
+                  By applying, you agree to share data on the impact of the Decision Engine if your brand is selected.
                 </p>
 
                 {submitError ? (
@@ -256,10 +262,10 @@ export function PilotModal({ open, onOpenChange }: PilotModalProps) {
                   {submitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Submitting application…
+                      Submitting application...
                     </>
                   ) : (
-                    "Submit Application"
+                    "Submit pilot application"
                   )}
                 </button>
 
@@ -319,6 +325,7 @@ function SuccessState({ onClose }: { onClose: () => void }) {
 }
 
 interface FieldBaseProps {
+  label: string;
   value: string;
   onChange: (value: string) => void;
   onBlur?: () => void;
@@ -331,9 +338,11 @@ interface FieldBaseProps {
 }
 
 function Field({
+  label,
   value,
   onChange,
   onBlur,
+  required,
   error,
   placeholder,
   type = "text",
@@ -342,7 +351,11 @@ function Field({
 }: FieldBaseProps) {
   const isValid = !error && value.trim().length > 0;
   return (
-    <div className="flex flex-col gap-1">
+    <label className="flex flex-col gap-2">
+      <span className="text-sm font-semibold text-text-primary">
+        {label}
+        {required ? <span className="text-brand-blue"> *</span> : null}
+      </span>
       <div className="relative">
         <input
           type={type}
@@ -380,7 +393,29 @@ function Field({
       >
         {error}
       </div>
-    </div>
+    </label>
+  );
+}
+
+function Textarea({
+  label,
+  value,
+  onChange,
+  onBlur,
+  placeholder,
+}: Pick<FieldBaseProps, "label" | "value" | "onChange" | "onBlur" | "placeholder">) {
+  return (
+    <label className="flex flex-col gap-2">
+      <span className="text-sm font-semibold text-text-primary">{label}</span>
+      <textarea
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        onBlur={onBlur}
+        placeholder={placeholder}
+        rows={4}
+        className="min-h-[118px] w-full resize-none rounded-lg border border-text-primary/12 bg-white px-3 py-3 text-sm leading-[1.55] text-text-primary placeholder:text-text-hint transition-all duration-200 focus:border-brand-blue focus:outline-none focus:ring-2 focus:ring-brand-blue/15"
+      />
+    </label>
   );
 }
 
@@ -390,12 +425,14 @@ interface RadioOption {
 }
 
 function RadioGroup({
+  label,
   name,
   value,
   onChange,
   options,
   layout = "inline",
 }: {
+  label: string;
   name: string;
   value: string;
   onChange: (value: string) => void;
@@ -403,38 +440,44 @@ function RadioGroup({
   layout?: "inline" | "stack";
 }) {
   return (
-    <div className={cn("flex gap-3", layout === "stack" ? "flex-col" : "flex-row flex-wrap")}>
-      {options.map((opt) => {
-        const checked = opt.value === value;
-        return (
-          <label
-            key={opt.value}
-            className={cn(
-              "inline-flex cursor-pointer items-center gap-2 text-sm text-text-body",
-              layout === "stack" ? "w-full" : ""
-            )}
-          >
-            <input
-              type="radio"
-              name={name}
-              value={opt.value}
-              checked={checked}
-              onChange={() => onChange(opt.value)}
-              className="sr-only"
-            />
-            <span
-              aria-hidden
+    <fieldset className="flex flex-col gap-3">
+      <legend className="text-sm font-semibold text-text-primary">{label}</legend>
+      <div className={cn("flex gap-2", layout === "stack" ? "flex-col" : "flex-row flex-wrap")}>
+        {options.map((opt) => {
+          const checked = opt.value === value;
+          return (
+            <label
+              key={opt.value}
               className={cn(
-                "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-all",
-                checked ? "border-brand-blue bg-brand-blue" : "border-text-primary/25 bg-white"
+                "inline-flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-all duration-200",
+                checked
+                  ? "border-brand-blue bg-brand-blue-pale/70 text-brand-blue-dark"
+                  : "border-text-primary/10 bg-white text-text-body hover:border-brand-blue/25 hover:bg-brand-blue-pale/25",
+                layout === "stack" ? "w-full" : ""
               )}
             >
-              {checked ? <span className="h-1.5 w-1.5 rounded-full bg-white" /> : null}
-            </span>
-            <span className={cn(checked ? "text-text-primary" : "text-text-body")}>{opt.label}</span>
-          </label>
-        );
-      })}
-    </div>
+              <input
+                type="radio"
+                name={name}
+                value={opt.value}
+                checked={checked}
+                onChange={() => onChange(opt.value)}
+                className="sr-only"
+              />
+              <span
+                aria-hidden
+                className={cn(
+                  "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-all",
+                  checked ? "border-brand-blue bg-brand-blue" : "border-text-primary/25 bg-white"
+                )}
+              >
+                {checked ? <span className="h-1.5 w-1.5 rounded-full bg-white" /> : null}
+              </span>
+              <span>{opt.label}</span>
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
   );
 }

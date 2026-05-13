@@ -13,6 +13,7 @@ import { SdkDemoSection } from "./sections/desktop/SdkDemoSection";
 import { ScaleSection } from "./sections/desktop/ScaleSection";
 import { GarmentsSection } from "./sections/desktop/GarmentsSection";
 import { CtaBannerSection } from "./sections/desktop/CtaBannerSection";
+import { PilotContactSection } from "./sections/shared/PilotContactSection";
 
 export function DeveloperLanding() {
   const [email, setEmail] = useState("");
@@ -29,6 +30,7 @@ export function DeveloperLanding() {
         <section id="demo"><SdkDemoSection /></section>
         <ScaleSection />
         <GarmentsSection />
+        <PilotContactSection />
         <CtaBannerSection />
       </main>
       <div data-testid="footer-area" className="flex flex-col items-center gap-[1.25vw] bg-brand-blue-pale px-[7.292vw] py-[2.5vw]">

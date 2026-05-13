@@ -12,6 +12,7 @@ const SECTION_LINKS = [
   { label: "Features", href: "#features" },
   { label: "Demo", href: "/demo/products", external: true },
   { label: "Integrations", href: "#integrations" },
+  { label: "Contact", href: "#contact" },
 ];
 
 const NAV_HEIGHT = 64;
