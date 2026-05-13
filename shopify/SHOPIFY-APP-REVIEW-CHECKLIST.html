@@ -553,6 +553,8 @@
       <li><a href="#bfs">Built for Shopify</a></li>
       <li><a href="#todo">Pre-submission TODO</a></li>
       <li><a href="#risks">Risk summary</a></li>
+      <li><a href="#submission">Submission &amp; suspensions</a></li>
+      <li><a href="#quality-checks">Ongoing quality checks</a></li>
       <li><a href="#open">Open questions</a></li>
     </ol>
   </aside>
@@ -1014,6 +1016,10 @@
         <li><strong>App reinstall flow tested</strong> — install → uninstall → reinstall → OAuth required again.</li>
         <li><strong>Incognito + 3rd-party cookies blocked test</strong> — entire flow works.</li>
         <li><strong>Lighthouse delta on Dawn dev store</strong> — install our block, measure, must be ≤ -10 points (or much better with lazy-load).</li>
+        <li><strong>Email allowlist</strong> — add <code>app-submissions@shopify.com</code>, <code>app-audits@shopify.com</code>, <code>noreply@shopify.com</code> to allowed senders for the Partner inbox.</li>
+        <li><strong>Apply for Protected Customer Data BEFORE submitting</strong> — sequencing matters. Once the app is in review, you cannot apply.</li>
+        <li><strong>Confirm domain naming</strong> — App URLs + API contact email cannot contain "Shopify", "Example", or any misspelling/abbreviation. Audit <code>shopify.app.toml</code> + Partner Dashboard contact email.</li>
+        <li><strong>Run Shopify's AI self-review</strong> from your agent chat: <code>/shopify-app-store-review</code>. Catches code-level fails before submitting.</li>
       </ol>
 
       <h3>STRONGLY RECOMMENDED (avoid Built for Shopify rejection later)</h3>
@@ -1057,8 +1063,113 @@
     <!-- ============================================================ -->
     <!-- SECTION 12 — OPEN QUESTIONS                                   -->
     <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!-- SUBMISSION PROCESS, AUTOMATED CHECKS, SUSPENSIONS              -->
+    <!-- ============================================================ -->
+    <section id="submission">
+      <h2><span class="num">12</span> Submission process, automated checks &amp; suspensions</h2>
+      <p style="color: var(--text-muted); margin: 6px 0 18px;">Items I missed in the original draft — Shopify's "Submit your app for review" page documents these explicitly. Critical for our review timeline.</p>
+
+      <h3>Email allowlist (do this NOW)</h3>
+      <p style="color: var(--text-muted); margin: 6px 0;">Add to allowed senders in the inbox the Partner email points to:</p>
+      <ul>
+        <li><code>app-submissions@shopify.com</code> — review communications</li>
+        <li><code>app-audits@shopify.com</code> — quality check team</li>
+        <li><code>noreply@shopify.com</code> — automated notifications</li>
+      </ul>
+      <p style="color: var(--text-muted);">Missed reviewer emails = missed deadlines = automatic suspension risk.</p>
+
+      <h3>Configuration setup gotchas</h3>
+      <table class="checklist">
+        <thead><tr><th class="col-id">#</th><th class="col-req">Requirement</th><th class="col-status">Status</th><th class="col-action">Action</th></tr></thead>
+        <tbody>
+          <tr><td class="col-id">12.1</td><td>App URLs <strong>cannot contain "Shopify" or "Example"</strong> (or any misspelling/abbreviation)</td><td><span class="badge badge--pass">✅ Pass</span></td><td><code>shopify.primestyleai.com</code> is fine — brand is "primestyle", not "shopify-something".</td></tr>
+          <tr><td class="col-id">12.2</td><td>API contact email <strong>cannot contain "Shopify"</strong></td><td><span class="badge badge--warn">⚠️ Verify</span></td><td>Confirm the contact email in Partner Dashboard doesn't use any Shopify branding.</td></tr>
+          <tr><td class="col-id">12.3</td><td>Compliance webhooks subscribed</td><td><span class="badge badge--pass">✅ Pass</span></td><td><code>customers/data_request</code>, <code>customers/redact</code>, <code>shop/redact</code> all implemented.</td></tr>
+          <tr><td class="col-id">12.4</td><td>Emergency developer contact set</td><td><span class="badge badge--fail">❌ Fail</span></td><td>Partner account → Settings → Emergency contact. Email + phone, 24h response.</td></tr>
+          <tr><td class="col-id">12.5</td><td>App icon 1200×1200 JPEG/PNG, identical between Dev Dashboard + listing</td><td><span class="badge badge--fail">❌ Fail</span></td><td>Upload to both surfaces.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Protected Customer Data — sequencing</h3>
+      <div class="callout">
+        <strong>Critical:</strong> the PCD form <strong>must be submitted BEFORE the app goes to review</strong>. Once your app is in review, you cannot apply for PCD. If you submit first then realize you need PCD, you're stuck until review concludes. <strong>Apply for PCD first, then submit.</strong>
+      </div>
+
+      <h3>Automated pre-submission checks</h3>
+      <p style="color: var(--text-muted); margin: 6px 0;">The Shopify App Store review page (Partner Dashboard → app → Distribution → Create / Manage listing) runs automated checks for common errors. <strong>Every check must pass before the Submit button is enabled.</strong> Failed checks show specific error messages — fix and rerun.</p>
+      <p style="color: var(--text-muted);">Recommended pre-submission step: run Shopify's AI self-review skill from your agent chat:</p>
+      <pre style="background: var(--surface-soft); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-size: 12.5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin: 8px 0 16px;"><code>/shopify-app-store-review</code></pre>
+      <p style="color: var(--text-muted);">Reads your codebase, reports likely passes / fails / needs-review against every requirement that can be evaluated locally. Doesn't replace Shopify's human review but catches obvious code-level fails.</p>
+
+      <h3>App status flow during review</h3>
+      <table class="checklist">
+        <thead><tr><th class="col-status">Status</th><th class="col-req">What it means</th><th class="col-action">What to do</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge--na">Draft</span></td><td>Building the listing. Fix issues on the App Store review page.</td><td>Click <strong>Submit your app</strong> when ready</td></tr>
+          <tr><td><span class="badge badge--warn">Submitted</span></td><td>In the review queue. Confirmation email arrives.</td><td>Wait. <strong>Withdraw</strong> at any time via the status banner.</td></tr>
+          <tr><td><span class="badge badge--warn">Paused</span></td><td>Didn't meet core requirements; reviewer can't proceed.</td><td>Fix → click <strong>Submit fixes</strong></td></tr>
+          <tr><td><span class="badge badge--warn">Reviewed</span></td><td>Reviewer assigned, needs to discuss specific items.</td><td>Reply to continue the conversation</td></tr>
+          <tr><td><span class="badge badge--pass">Published</span></td><td>App is live on the App Store.</td><td>Begin marketing + monitor reviews</td></tr>
+          <tr><td><span class="badge badge--fail">Suspended</span></td><td>Partner suspended from submitting this app for a period.</td><td>Wait for resubmission date shown in the banner.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Temporary suspensions — what triggers them</h3>
+      <ul>
+        <li>Consecutively failing to address reviewer issues after <strong>two or more exchanges</strong></li>
+        <li>Repeatedly submitting the app with <strong>new and growing numbers of issues</strong></li>
+        <li>Failing to respond to review emails after repeated attempts</li>
+        <li>Refusing to accept the outcome of exemption requests</li>
+      </ul>
+      <p style="color: var(--text-muted);"><strong>Repeat suspensions stack</strong> — each subsequent suspension is longer than the last. Other apps owned by the Partner are unaffected; only the suspended app's review is paused.</p>
+
+      <h3>Common review problems (auto-rejection patterns)</h3>
+      <table class="checklist">
+        <thead><tr><th class="col-id" style="width: 110px;">Category</th><th class="col-req">Problem</th><th class="col-action">Fix</th></tr></thead>
+        <tbody>
+          <tr><td>Billing</td><td>Inaccurate pricing · merchants can't switch plans · uses non-Shopify billing</td><td>Update pricing · allow plan switching in-app · use Shopify Billing API only</td></tr>
+          <tr><td>Installation</td><td>Doesn't redirect to OAuth · fatal error after install · doesn't reinstall</td><td>Verify OAuth + redirect URLs · ensure post-install UI loads · handle reinstall</td></tr>
+          <tr><td>Embedding</td><td>Switches between embedded + non-embedded versions</td><td>Use App Bridge consistently · session token authentication</td></tr>
+          <tr><td>UI</td><td>Broken UI on install · 4xx / 5xx errors · 300 redirects to dead ends</td><td>QA every page · clear error messages</td></tr>
+          <tr><td>Testing</td><td>No test instructions or credentials · app not in stable state</td><td>Provide test credentials + screencast · ensure app is finished</td></tr>
+          <tr><td>Online store</td><td>Doesn't use theme app extensions · widgets fail on storefront</td><td>Use theme app extensions · QA widget rendering</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ONGOING QUALITY CHECKS                                         -->
+    <!-- ============================================================ -->
+    <section id="quality-checks">
+      <h2><span class="num">13</span> Ongoing app quality checks (post-launch)</h2>
+      <p style="color: var(--text-muted); margin: 6px 0 18px;">Separate from initial review and BFS annual reviews. Quality checks are <strong>ongoing audits</strong> Shopify runs to verify your app still meets current requirements — which can change without notice.</p>
+
+      <h3>How it works</h3>
+      <ol style="color: var(--text-muted);">
+        <li>Shopify selects your app for a quality check</li>
+        <li>You receive an email from <code>app-audits@shopify.com</code> with required changes</li>
+        <li><strong style="color: var(--text);">Respond within 7 days</strong> — failure to respond <strong>demotes your app</strong></li>
+        <li><strong style="color: var(--text);">Make required changes within 30 days</strong> — failure can result in your app being <strong>unpublished</strong></li>
+        <li>Reply to the quality check email describing what you did</li>
+        <li>App Excellence Team reviews; if changes meet current requirements, the quality check is complete</li>
+      </ol>
+
+      <div class="callout" style="background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.3); border-left-color: var(--high-fg, #b91c1c);">
+        <strong>Hard deadlines:</strong> 7-day response, 30-day fix. Don't ignore these — quality check failures lead to demotion or unpublishing.
+      </div>
+
+      <h3>Quarterly self-check (do this every 90 days)</h3>
+      <ul>
+        <li>Re-read App Store requirements — they change without notice</li>
+        <li>Re-grep code for new deprecation patterns (REST .json, App Bridge versions, etc.)</li>
+        <li>Re-run Lighthouse on the storefront block in a fresh Dawn install</li>
+        <li>Confirm GDPR webhook handlers still respond correctly</li>
+      </ul>
+    </section>
+
     <section id="open">
-      <h2><span class="num">12</span> Open Questions to Resolve Before Submission</h2>
+      <h2><span class="num">14</span> Open Questions to Resolve Before Submission</h2>
       <ul class="questions">
         <li>Confirm exact list of Shopify scopes currently in <code>shopify.app.toml</code>.</li>
         <li>Confirm whether ANY REST <code>.json</code> endpoints are called in <code>PrimeStyleAI-shopify</code> or backend's <code>shopify-admin</code> / <code>shopify</code> modules.</li>

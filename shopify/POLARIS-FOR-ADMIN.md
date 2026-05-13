@@ -660,3 +660,373 @@ Items the deeper docs surfaced that weren't called out before:
 - [ ] Wire `shopify.webVitals` from `app/root.tsx`
 - [ ] Call `shopify.reviews.request()` after positive milestones
 - [ ] Move `read_orders` (and any non-essential scope) to runtime via `shopify.scopes.request()`
+
+---
+
+## Comprehensive template + pattern reference
+
+The earlier pass listed templates and patterns by name only. Below are full code examples for the four templates and the highest-value patterns, drawn directly from Shopify's official App Home docs. Use these as the starting point for each route.
+
+### Template — Index page
+
+For routes like `app.size-charts.tsx`, `app.products.tsx`, `app.detect-size-charts.tsx`. Provides a searchable table with bulk actions. The route file should use a plural noun (`app.size-charts.tsx`).
+
+```tsx
+<s-page heading="Size charts">
+  <s-button slot="primary-action" variant="primary">Upload chart</s-button>
+  <s-button slot="secondary-actions" variant="secondary">Detect existing</s-button>
+  <s-button slot="secondary-actions" variant="secondary">Export</s-button>
+
+  {/* Empty state — show only when there are no items yet */}
+  <s-section accessibilityLabel="Empty state">
+    <s-grid gap="base" justifyItems="center" paddingBlock="large-400">
+      <s-box maxInlineSize="200px">
+        <s-image
+          aspectRatio="1/0.5"
+          src="https://cdn.shopify.com/static/images/polaris/patterns/callout.png"
+          alt="Empty state illustration"
+        />
+      </s-box>
+      <s-grid justifyItems="center" maxInlineSize="450px" gap="base">
+        <s-stack alignItems="center">
+          <s-heading>No size charts yet</s-heading>
+          <s-paragraph>Upload your first chart or detect existing ones from your store.</s-paragraph>
+        </s-stack>
+        <s-button-group>
+          <s-button>Detect existing</s-button>
+          <s-button variant="primary">Upload chart</s-button>
+        </s-button-group>
+      </s-grid>
+    </s-grid>
+  </s-section>
+
+  {/* Index table — show when items exist */}
+  <s-section padding="none" accessibilityLabel="Charts table">
+    <s-table>
+      <s-table-header-row>
+        <s-table-header listSlot="primary">Name</s-table-header>
+        <s-table-header format="numeric">Sizes</s-table-header>
+        <s-table-header>Updated</s-table-header>
+        <s-table-header>Status</s-table-header>
+      </s-table-header-row>
+      <s-table-body>
+        <s-table-row>
+          <s-table-cell>
+            <s-link href="#">Mens swim shorts</s-link>
+          </s-table-cell>
+          <s-table-cell>8</s-table-cell>
+          <s-table-cell>Today</s-table-cell>
+          <s-table-cell><s-badge tone="success">Active</s-badge></s-table-cell>
+        </s-table-row>
+      </s-table-body>
+    </s-table>
+  </s-section>
+</s-page>
+```
+
+### Template — Details page
+
+For per-resource edit pages (e.g. editing one size chart). Two-column layout with main content on the left, contextual aside on the right (only renders when `inlineSize="large"`).
+
+```tsx
+<s-page heading="Edit size chart" inlineSize="large">
+  <s-link slot="breadcrumb-actions" href="/app/size-charts">Size charts</s-link>
+  <s-button slot="primary-action" variant="primary">Save</s-button>
+  <s-button slot="secondary-actions">Preview</s-button>
+  <s-button slot="secondary-actions" tone="critical">Delete</s-button>
+
+  <s-section heading="Chart details">
+    <s-stack direction="block" gap="base">
+      <s-text-field label="Chart name" name="name" value="Mens swim shorts" required />
+      <s-select label="Unit" name="unit">
+        <s-option value="in" selected>Inches</s-option>
+        <s-option value="cm">Centimeters</s-option>
+      </s-select>
+    </s-stack>
+  </s-section>
+
+  <s-box slot="aside">
+    <s-section heading="Status">
+      <s-stack direction="block" gap="base">
+        <s-badge tone="success">Active</s-badge>
+        <s-text>Connected to 12 products</s-text>
+        <s-link href="#">View products</s-link>
+      </s-stack>
+    </s-section>
+  </s-box>
+</s-page>
+```
+
+### Template — Settings page (with Save Bar)
+
+For `app.settings.tsx`. The `data-save-bar` attribute on the `<form>` enables Shopify's Save Bar API automatically — show save / discard controls when the form is dirty.
+
+```tsx
+<form
+  data-save-bar
+  onSubmit={(event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target as HTMLFormElement);
+    // submit to your action
+  }}
+  onReset={() => {
+    // restore initial values
+  }}
+>
+  <s-page heading="Settings" inlineSize="small">
+    <s-section heading="Try-on widget">
+      <s-text-field label="Button text" name="buttonText" value="Find Your Size" />
+      <s-color-picker label="Button color" name="buttonColor" value="#2154EF" />
+      <s-number-field label="Border radius (px)" name="radius" value={8} min={0} max={32} />
+      <s-switch label="Show 'Powered by' footer" name="showPoweredBy" checked />
+    </s-section>
+
+    <s-section heading="Notifications">
+      <s-select label="Email frequency" name="emailFrequency">
+        <s-option value="immediately" selected>Immediately</s-option>
+        <s-option value="daily">Daily digest</s-option>
+        <s-option value="weekly">Weekly digest</s-option>
+      </s-select>
+      <s-choice-list label="Notify me about" name="notifyAbout" multiple>
+        <s-choice value="new-tryons" selected>New try-ons</s-choice>
+        <s-choice value="negative-reviews">Negative reviews</s-choice>
+        <s-choice value="usage-cap">Usage cap reached</s-choice>
+      </s-choice-list>
+    </s-section>
+  </s-page>
+</form>
+```
+
+### Pattern — Setup guide
+
+Multi-step interactive checklist with progress tracking. Drop it on `app._index.tsx` for onboarding (TODO #22 in the checklist).
+
+```tsx
+import { useState } from "react";
+
+const [done, setDone] = useState({ s1: false, s2: false, s3: false, s4: false });
+const completedCount = Object.values(done).filter(Boolean).length;
+
+return (
+  <s-section>
+    <s-grid gap="base">
+      <s-grid gridTemplateColumns="1fr auto" alignItems="center">
+        <s-heading>Setup Guide</s-heading>
+        <s-button variant="tertiary" tone="neutral" icon="x" accessibilityLabel="Dismiss" />
+      </s-grid>
+      <s-paragraph>{completedCount} of 4 steps complete.</s-paragraph>
+
+      {[
+        { id: "s1", title: "Add the Try-On block to your theme", action: "Open Theme Editor" },
+        { id: "s2", title: "Upload your first size chart", action: "Upload chart" },
+        { id: "s3", title: "Configure the widget appearance", action: "Open settings" },
+        { id: "s4", title: "Run a test try-on", action: "Visit storefront" },
+      ].map((step) => (
+        <s-grid key={step.id} gridTemplateColumns="auto 1fr auto" alignItems="center" gap="base">
+          <s-checkbox
+            checked={done[step.id]}
+            label=""
+            accessibilityLabel={`Mark ${step.title} complete`}
+          />
+          <s-text>{step.title}</s-text>
+          <s-button variant="primary">{step.action}</s-button>
+        </s-grid>
+      ))}
+    </s-grid>
+  </s-section>
+);
+```
+
+### Pattern — Metrics card
+
+KPI tiles for the homepage. Use `<s-stack>` for layout + Sparkline from polaris-viz (covered in the Charts section above).
+
+```tsx
+<s-grid gridTemplateColumns="repeat(3, 1fr)" gap="base">
+  <s-section>
+    <s-stack direction="block" gap="small-100">
+      <s-text tone="neutral">Try-ons this week</s-text>
+      <s-heading>186</s-heading>
+      <s-text tone="success">+ 24% vs last week</s-text>
+    </s-stack>
+  </s-section>
+  <s-section>
+    <s-stack direction="block" gap="small-100">
+      <s-text tone="neutral">Conversion rate</s-text>
+      <s-heading>34%</s-heading>
+      <s-text tone="success">+ 3% vs last week</s-text>
+    </s-stack>
+  </s-section>
+  <s-section>
+    <s-stack direction="block" gap="small-100">
+      <s-text tone="neutral">Returns prevented</s-text>
+      <s-heading>12</s-heading>
+      <s-text tone="neutral">$2,400 saved</s-text>
+    </s-stack>
+  </s-section>
+</s-grid>
+```
+
+### Pattern — Empty state
+
+When a collection has no items yet. Use inside `<s-section>` on Index pages.
+
+```tsx
+<s-section accessibilityLabel="Empty state">
+  <s-grid gap="base" justifyItems="center" paddingBlock="large-400">
+    <s-box maxInlineSize="200px">
+      <s-image aspectRatio="1/0.5" src="/images/empty-state.svg" alt="" />
+    </s-box>
+    <s-grid justifyItems="center" maxInlineSize="450px" gap="base">
+      <s-stack alignItems="center">
+        <s-heading>No try-ons yet</s-heading>
+        <s-paragraph>Once shoppers start using the widget, you'll see their try-on activity here.</s-paragraph>
+      </s-stack>
+      <s-button variant="primary">Visit storefront</s-button>
+    </s-grid>
+  </s-section>
+</s-section>
+```
+
+### Pattern — Callout card
+
+In-line promo for "Add the Try-On block to your theme" or upgrade prompts.
+
+```tsx
+<s-section>
+  <s-grid gridTemplateColumns="1fr auto" gap="base" alignItems="center">
+    <s-stack direction="block" gap="small-100">
+      <s-heading>Add the Try-On block to your theme</s-heading>
+      <s-paragraph>Show the virtual try-on widget on every product page in 2 clicks.</s-paragraph>
+    </s-stack>
+    <s-button variant="primary">Open Theme Editor</s-button>
+  </s-grid>
+</s-section>
+```
+
+### Pattern — Footer help
+
+"Need help?" block at the bottom of every page. Reduces support tickets.
+
+```tsx
+<s-stack direction="inline" gap="small" alignItems="center">
+  <s-text tone="neutral">Need help?</s-text>
+  <s-link href="https://docs.primestyleai.com">Read the docs</s-link>
+  <s-text tone="neutral">·</s-text>
+  <s-link href="mailto:support@primestyleai.com">Contact support</s-link>
+</s-stack>
+```
+
+---
+
+## Per-component quick reference
+
+The 20 components we'll touch most often, with key props + gotchas. Pulled from each component's official page.
+
+### Layout
+
+| Component | Key props | Notes / gotchas |
+|---|---|---|
+| `<s-page>` | `heading` (required) · `inline-size` (`small` / `base` / `large`) · slots: `primary-action`, `secondary-actions`, `breadcrumb-actions`, `accessory`, `aside` | Aside slot ONLY renders when `inline-size="large"`. Max one primary action, three secondary. |
+| `<s-section>` | `heading` · `padding` (`base` / `none`) · `accessibility-label` | Use `padding="none"` when wrapping a table |
+| `<s-stack>` | `direction` (`inline` / `block`) · `gap` (`small-100`–`large-400`, `base`) · `align-items` | The flex container for App Home |
+| `<s-grid>` | `grid-template-columns` · `gap` · `align-items` · `justify-items` | Use for KPI tiles, multi-column layouts |
+| `<s-box>` | `padding` · `background` · `border` · `border-radius` · `max-inline-size` · `max-block-size` | Generic container with style props |
+| `<s-divider>` | `direction` · `color` | Visual separator |
+
+### Actions
+
+| Component | Key props | Notes / gotchas |
+|---|---|---|
+| `<s-button>` | `variant` (`primary` / `secondary` / `tertiary`) · `tone` · `icon` · `type` · `disabled` · `loading` · `command-for` · `command` | Use `command-for="modal-id" command="--show"` for declarative modal opens |
+| `<s-button-group>` | `gap` | Container for multiple buttons with consistent spacing |
+| `<s-link>` | `href` · `tone` | Use Remix/RR7 `<Link>` not raw `<a>` — anchors aren't supported in RR7 apps |
+| `<s-menu>` | `id` · `accessibility-label` | Holds buttons that open via `command-for` from a trigger button |
+
+### Forms
+
+| Component | Key props | Notes / gotchas |
+|---|---|---|
+| `<s-text-field>` | `label` · `name` · `value` · `placeholder` · `required` · `icon` | Standard text input |
+| `<s-text-area>` | `label` · `name` · `rows` · `max-length` | Multi-line text |
+| `<s-select>` | `label` · `name` · `placeholder` · contains `<s-option>` children | For ≤ 5 options; use radio for ≤ 3 |
+| `<s-choice-list>` | `label` · `name` · `multiple` · contains `<s-choice>` children | Radio (default) or checkbox group (`multiple`) |
+| `<s-checkbox>` | `label` · `name` · `value` · `checked` | Single boolean choice |
+| `<s-switch>` | `label` · `name` · `checked` | On/off toggle |
+| `<s-color-picker>` | `name` · `value` · `alpha` | Use for the try-on button color setting (replaces our raw hex inputs) |
+| `<s-color-field>` | `label` · `name` · `value` · `alpha` | Hex input + color preview |
+| `<s-drop-zone>` | `label` · `name` · `accept` · `multiple` | Use for CSV upload (replaces custom file input) |
+| `<s-number-field>` | `label` · `name` · `value` · `min` · `max` · `step` | Numeric input with stepper |
+| `<s-money-field>` | `label` · `name` · `min` · `max` | Currency-formatted input |
+
+### Display
+
+| Component | Key props | Notes / gotchas |
+|---|---|---|
+| `<s-heading>` | (no props, just text) | Section heading |
+| `<s-paragraph>` | `tone` · `color` | Body text |
+| `<s-text>` | `type` (`strong`) · `tone` (`auto`/`neutral`/`info`/`success`/`caution`/`warning`/`critical`) | **`tone="subdued"` is INVALID** — use `tone="neutral"` instead |
+| `<s-badge>` | `tone` · `color` · `icon` · `size` | Status badges (Active / Draft / etc.) |
+| `<s-banner>` | `heading` · `tone` · `dismissible` | Use for persistent errors. **One banner at a time. Persist dismissal in localStorage.** |
+| `<s-spinner>` | `size` · `accessibility-label` | Loading indicator |
+| `<s-image>` | `src` · `alt` · `aspect-ratio` · `object-fit` · `loading` | Use `aspect-ratio` to prevent CLS |
+| `<s-thumbnail>` | `src` · `alt` · `size` (`small` / `base` / `large`) | Product thumbnails in tables |
+| `<s-icon>` | `type` · `tone` · `color` · `size` | Polaris icons (e.g. `cart`, `product`, `view`) |
+
+### Tables
+
+| Component | Key props | Notes / gotchas |
+|---|---|---|
+| `<s-table>` | `variant` (`auto`) | Index-table replacement. Wrap in `<s-section padding="none">` |
+| `<s-table-header>` | `list-slot` (`primary` / `labeled`) · `format` (`numeric` / `currency`) | `list-slot="primary"` is the main column |
+
+### Disclosure
+
+| Component | Key props | Notes / gotchas |
+|---|---|---|
+| `<s-modal>` | `id` · `heading` · `size` (`base`) | Open via `command-for` + `command="--show"` from a button. Use App Bridge Save Bar inside if it's a form. |
+| `<s-popover>` | `id` · `inline-size` | Tooltip / floating panel |
+| `<s-tooltip>` | `id` · paired with `interest-for` on the trigger element | Hover hint |
+
+### App Bridge web components (the four shell pieces)
+
+| Component | Purpose | Required for |
+|---|---|---|
+| `<s-app-nav>` | Sidebar / nav inside the embedded app | **BFS req 4.1.4** — must use this, not a custom sidebar |
+| `<s-title-bar>` | Page title bar with primary / secondary actions | Replaces page header chrome |
+| `<s-save-bar>` | Sticky save / cancel bar | **BFS req 4.1.5** — required for any form. Use `data-save-bar` on `<form>` for automatic wiring. |
+| `<s-app-window>` | Embedded-window controls | Rarely needed |
+
+---
+
+## Section coverage report (what was missed before)
+
+Honest delta showing what the official 31k-line Polaris App Home doc covers vs what we documented:
+
+| Doc section | Coverage before | Now |
+|---|---|---|
+| App Bridge APIs (24 listed) | Names only | Full reference table with use cases |
+| Web components (~50 listed) | Form components named | 20+ most-used components with key props + gotchas |
+| App Bridge web components (4) | Mentioned | Full table with BFS requirement notes |
+| Templates (Homepage, Index, Details, Settings) | Homepage only | All four with verified code examples |
+| Patterns (11 compositions) | Names only | Setup guide, Metrics card, Empty state, Callout card, Footer help with full code |
+
+Still partial (lower priority — search the source MD if needed):
+- Per-component examples for components we won't use (`s-clickable-chip`, `s-popover` deep dive, etc.)
+- Detailed Properties + Examples + Best practices + Limitations sections per every component
+- Less-common patterns: Account connection, App card, Media card, Interstitial nav
+
+If we need any of these, search [POLARIS-FULL-REFERENCE.md](./POLARIS-FULL-REFERENCE.md) by section header (e.g. `^# Account connection`) — the byte-identical official reference is sitting next to this file.
+
+---
+
+## Where to find what
+
+| You want | Open |
+|---|---|
+| Quick "how should I build this" guidance | this file (`POLARIS-FOR-ADMIN.md`) |
+| Full docs for a specific component / API / pattern | [`POLARIS-FULL-REFERENCE.md`](./POLARIS-FULL-REFERENCE.md) — verbatim official source, 31k lines |
+| Submission requirements (pre-launch) | [`SHOPIFY-APP-REVIEW-CHECKLIST.html`](./SHOPIFY-APP-REVIEW-CHECKLIST.html) |
+| Post-launch ops, billing, ads, marketing | [`SHOPIFY-LAUNCH-AND-OPERATE.html`](./SHOPIFY-LAUNCH-AND-OPERATE.html) |
+| Full official launch docs (verbatim) | [`SHOPIFY-LAUNCH-FULL-REFERENCE.md`](./SHOPIFY-LAUNCH-FULL-REFERENCE.md) — 7.8k lines, 53 pages |
+| What I (Claude) can do solo | [`SHOPIFY-APP-REVIEW-CLAUDE-ACTIONS.html`](./SHOPIFY-APP-REVIEW-CLAUDE-ACTIONS.html) |
