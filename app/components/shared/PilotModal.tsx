@@ -283,7 +283,7 @@ export function PilotModal({ open, onOpenChange }: PilotModalProps) {
 
 function ModalHeader({ onClose }: { onClose: () => void }) {
   return (
-    <div className="sticky top-0 z-20 relative flex shrink-0 items-center justify-between border-b border-brand-blue/10 bg-gradient-to-br from-brand-blue-pale/60 via-white to-brand-blue-pale/30 px-5 py-4 md:px-7 md:py-5">
+    <div className="relative flex shrink-0 items-center justify-between border-b border-brand-blue/10 bg-gradient-to-br from-brand-blue-pale/60 via-white to-brand-blue-pale/30 px-5 py-4 md:sticky md:top-0 md:z-20 md:px-7 md:py-5">
       <Image
         src="/images/landing/logo-navbar-transparent.png"
         alt="PrimeStyle AI"
