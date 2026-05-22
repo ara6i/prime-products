@@ -4,36 +4,39 @@ import Image from "next/image";
 import { Reveal } from "../../shared/Reveal";
 import { Eyebrow } from "../../shared/Eyebrow";
 import { CheckIcon, SparkleIcon } from "../../shared/icons";
-import { SDK_DEMO } from "../../../content/landing";
+import { useLandingLanguage } from "@/app/landing/i18n";
 import type { SdkStep } from "../../../types/landing";
 
 export function SdkDemoSection() {
+  const { content } = useLandingLanguage();
+  const { sdkDemo } = content;
+
   return (
     <section id="sdk-demo" className="overflow-x-clip bg-white px-5 py-14">
       <Reveal variant="fade" className="flex flex-col items-center gap-3 text-center">
-        <Eyebrow>{SDK_DEMO.eyebrow}</Eyebrow>
+        <Eyebrow>{sdkDemo.eyebrow}</Eyebrow>
         <h2 className="text-[30px] font-semibold leading-[1.1] tracking-[-0.02em] text-text-primary">
-          {SDK_DEMO.title}
+          {sdkDemo.title}
         </h2>
-        <p className="text-base leading-[1.55] text-text-body">{SDK_DEMO.subtitle}</p>
+        <p className="text-base leading-[1.55] text-text-body">{sdkDemo.subtitle}</p>
       </Reveal>
 
       <div className="mt-10 flex flex-col gap-8">
-        {SDK_DEMO.flow1.steps.map((s, i) => (
+        {sdkDemo.flow1.steps.map((s, i) => (
           <MobileStepCard key={`f1-${i}`} step={s} />
         ))}
       </div>
 
       <Reveal variant="fade" className="mt-12 flex justify-center">
-        <Eyebrow>{SDK_DEMO.flow2.tag}</Eyebrow>
+        <Eyebrow>{sdkDemo.flow2.tag}</Eyebrow>
       </Reveal>
 
       <div className="mt-6 flex flex-col gap-8">
-        {SDK_DEMO.flow2.steps.map((s, i) => (
+        {sdkDemo.flow2.steps.map((s, i) => (
           <MobileStepCard
             key={`f2-${i}`}
             step={s}
-            aiTag={i === SDK_DEMO.flow2.steps.length - 1 ? SDK_DEMO.flow2.aiTag : undefined}
+            aiTag={i === sdkDemo.flow2.steps.length - 1 ? sdkDemo.flow2.aiTag : undefined}
           />
         ))}
       </div>

@@ -2,7 +2,7 @@
  * Hip circumference — mirrors backend formulas in
  * `sizing.service.ts → synthesizeBaselinesFromAnchors`.
  *
- *  ── Male  : K-factor model (additive, bone × 1.10 + BMI-driven pad)
+ *  ── Male  : K-factor model (additive, calibrated bone expansion + BMI-driven pad)
  *  ── Female: Refined model (B = bone × k_b, T = continuous BMI lerp)
  */
 
@@ -29,21 +29,6 @@ const MALE_HIPS_ANCHORS: Array<{ bmi: number; hipsW: number; hipsD: number }> = 
   { bmi: 35,   hipsW: 1.70, hipsD: 0.90 },
   { bmi: 40,   hipsW: 1.76, hipsD: 0.94 },
 ];
-
-function interpHipsD(bmi: number, anchors: typeof FEMALE_HIPSD_ANCHORS): number {
-  if (bmi <= anchors[0]!.bmi) return anchors[0]!.hipsD;
-  const last = anchors[anchors.length - 1]!;
-  if (bmi >= last.bmi) return last.hipsD;
-  for (let i = 0; i < anchors.length - 1; i++) {
-    const lo = anchors[i]!;
-    const hi = anchors[i + 1]!;
-    if (bmi >= lo.bmi && bmi <= hi.bmi) {
-      const t = (bmi - lo.bmi) / (hi.bmi - lo.bmi);
-      return lo.hipsD + (hi.hipsD - lo.hipsD) * t;
-    }
-  }
-  return last.hipsD;
-}
 
 function interpMaleHips(bmi: number): { hipsW: number; hipsD: number } {
   const anchors = MALE_HIPS_ANCHORS;
@@ -73,6 +58,11 @@ function computeMaleHipTissuePadCm(bmi: number): number {
   return lowPad + (highPad - lowPad) * t;
 }
 
+// Mirrors backend `MALE_HIP_BONE_TO_BREADTH_K`.
+// BlazePose hip landmarks are skeletal/internal; 1.10 was too low for men's
+// outer hip circumference, producing ~34.3" where the target is ~39".
+const MALE_HIP_BONE_TO_BREADTH_K = 1.30;
+
 function ellipseCm(w: number, d: number): number {
   const a = w / 2;
   const b = d / 2;
@@ -83,7 +73,7 @@ export interface HipsTrace {
   gender: Gender;
   bmi: number;
   hipBoneCm: number;
-  /** Female: k_b × bone (refined). Male: bone × 1.10 + tissue (additive K-factor). */
+  /** Female: k_b × bone (refined). Male: calibrated bone expansion + tissue. */
   hipBreadthCm: number;
   hipDepthCm: number;
   hipsCm: number;
@@ -140,13 +130,13 @@ export function computeHips(
   } else {
     const { hipsD } = interpMaleHips(bmi);
     const tissuePadCm = computeMaleHipTissuePadCm(bmi);
-    hipBreadthCm = hipBoneCm * 1.10 + tissuePadCm;
+    hipBreadthCm = hipBoneCm * MALE_HIP_BONE_TO_BREADTH_K + tissuePadCm;
     hipDepthCm = hipBreadthCm * hipsD;
     formula =
-      `H_b = bone × 1.10 + tissue = ${r(hipBoneCm)} × 1.10 + ${r(tissuePadCm)} = ${r(hipBreadthCm)} cm\n` +
+      `H_b = bone × ${MALE_HIP_BONE_TO_BREADTH_K.toFixed(2)} + tissue = ${r(hipBoneCm)} × ${MALE_HIP_BONE_TO_BREADTH_K.toFixed(2)} + ${r(tissuePadCm)} = ${r(hipBreadthCm)} cm\n` +
       `H_d = H_b × hipsD(BMI) = ${r(hipBreadthCm)} × ${hipsD.toFixed(3)} = ${r(hipDepthCm)} cm`;
     details.push(
-      { label: "bone × 1.10", value: `${r(hipBoneCm * 1.10)} cm` },
+      { label: `bone × ${MALE_HIP_BONE_TO_BREADTH_K.toFixed(2)}`, value: `${r(hipBoneCm * MALE_HIP_BONE_TO_BREADTH_K)} cm` },
       { label: "Tissue pad (BMI lerp)", value: `${r(tissuePadCm)} cm` },
       { label: "hipsD(BMI)", value: hipsD.toFixed(3) },
     );

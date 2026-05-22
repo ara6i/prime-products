@@ -227,6 +227,46 @@
   --admin-source-sdk-bg: #EEF2FF;
   --admin-source-sdk-text: #2C4AE0;
 
+  /* Customer Dashboard — calm B2B workspace */
+  --customer-sidebar-width: 14.583vw;      /* 280px @ 1920 */
+  --customer-header-height: 4.167vw;       /* 80px @ 1920 */
+  --customer-content-x: 1.667vw;           /* 32px @ 1920 */
+  --customer-content-y: 1.25vw;            /* 24px @ 1920 */
+  --customer-card-radius: 1.042vw;         /* 20px @ 1920 */
+  --customer-card-padding: 1.25vw;         /* 24px @ 1920 */
+  --customer-gap-xs: 0.313vw;              /* 6px @ 1920 */
+  --customer-gap-sm: 0.521vw;              /* 10px @ 1920 */
+  --customer-gap-md: 0.833vw;              /* 16px @ 1920 */
+  --customer-gap-lg: 1.25vw;               /* 24px @ 1920 */
+  --customer-gap-xl: 1.667vw;              /* 32px @ 1920 */
+  --customer-text-xs: 0.625vw;             /* 12px @ 1920 */
+  --customer-text-sm: 0.729vw;             /* 14px @ 1920 */
+  --customer-text-base: 0.833vw;           /* 16px @ 1920 */
+  --customer-text-lg: 0.938vw;             /* 18px @ 1920 */
+  --customer-text-xl: 1.146vw;             /* 22px @ 1920 */
+  --customer-text-2xl: 1.458vw;            /* 28px @ 1920 */
+  --customer-text-3xl: 1.875vw;            /* 36px @ 1920 */
+  --customer-surface-page: #F6F8FB;
+  --customer-surface-card: #FFFFFF;
+  --customer-surface-soft: #F1F4F8;
+  --customer-surface-blue: #EEF4FF;
+  --customer-border: #E5EAF2;
+  --customer-border-strong: #D5DEEC;
+  --customer-muted: #667085;
+  --customer-success-bg: #E8F7EF;
+  --customer-success-text: #137A3D;
+  --customer-warning-bg: #FFF7DB;
+  --customer-warning-text: #946200;
+  --customer-danger-bg: #FFE9E9;
+  --customer-danger-text: #B42318;
+  --customer-chart-primary: #5D5FEF;
+  --customer-chart-secondary: #8AD7E8;
+  --customer-chart-control: #B5BAC5;
+  --customer-chart-grid: #E8EDF5;
+  --customer-chart-axis: #7A8291;
+  --customer-chart-soft: #DDE7FF;
+  --customer-shadow-card: 0 0.052vw 0.104vw rgba(16, 24, 40, 0.04), 0 0 0 0.052vw rgba(16, 24, 40, 0.04);
+
   /* Landing */
   --landing-blue-section-bg: #EFF5FF;
   --landing-yellow-start: #FFCF1E;
@@ -272,6 +312,33 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+}
+
+[data-customer-theme="dark"] {
+  --text-primary: #F5F7FB;
+  --text-secondary: #DCE3EE;
+  --text-body: #B7C1D1;
+  --text-muted: #9AA6BA;
+  --customer-surface-page: #0E1421;
+  --customer-surface-card: #141D2D;
+  --customer-surface-soft: #1B2638;
+  --customer-surface-blue: #172B52;
+  --customer-border: #273348;
+  --customer-border-strong: #344258;
+  --customer-muted: #9AA6BA;
+  --customer-success-bg: #123C2A;
+  --customer-success-text: #72E2A5;
+  --customer-warning-bg: #423411;
+  --customer-warning-text: #FFD36A;
+  --customer-danger-bg: #3D1D22;
+  --customer-danger-text: #FF9A9A;
+  --customer-chart-primary: #8E8BFF;
+  --customer-chart-secondary: #69DCEB;
+  --customer-chart-control: #606A7E;
+  --customer-chart-grid: #263246;
+  --customer-chart-axis: #9AA6BA;
+  --customer-chart-soft: #213456;
+  --customer-shadow-card: 0 0.052vw 0.104vw rgba(0, 0, 0, 0.22), 0 0 0 0.052vw rgba(255, 255, 255, 0.04);
 }
 
 @theme inline {
@@ -466,6 +533,46 @@
   --color-admin-source-shopify-text: var(--admin-source-shopify-text);
   --color-admin-source-sdk-bg: var(--admin-source-sdk-bg);
   --color-admin-source-sdk-text: var(--admin-source-sdk-text);
+
+  /* Customer Dashboard */
+  --spacing-customer-sidebar: var(--customer-sidebar-width);
+  --spacing-customer-header: var(--customer-header-height);
+  --spacing-customer-content-x: var(--customer-content-x);
+  --spacing-customer-content-y: var(--customer-content-y);
+  --spacing-customer-card: var(--customer-card-padding);
+  --spacing-customer-gap-xs: var(--customer-gap-xs);
+  --spacing-customer-gap-sm: var(--customer-gap-sm);
+  --spacing-customer-gap-md: var(--customer-gap-md);
+  --spacing-customer-gap-lg: var(--customer-gap-lg);
+  --spacing-customer-gap-xl: var(--customer-gap-xl);
+  --radius-customer-card: var(--customer-card-radius);
+  --text-customer-xs: var(--customer-text-xs);
+  --text-customer-sm: var(--customer-text-sm);
+  --text-customer-base: var(--customer-text-base);
+  --text-customer-lg: var(--customer-text-lg);
+  --text-customer-xl: var(--customer-text-xl);
+  --text-customer-2xl: var(--customer-text-2xl);
+  --text-customer-3xl: var(--customer-text-3xl);
+  --color-customer-page: var(--customer-surface-page);
+  --color-customer-card: var(--customer-surface-card);
+  --color-customer-soft: var(--customer-surface-soft);
+  --color-customer-blue: var(--customer-surface-blue);
+  --color-customer-border: var(--customer-border);
+  --color-customer-border-strong: var(--customer-border-strong);
+  --color-customer-muted: var(--customer-muted);
+  --color-customer-success-bg: var(--customer-success-bg);
+  --color-customer-success-text: var(--customer-success-text);
+  --color-customer-warning-bg: var(--customer-warning-bg);
+  --color-customer-warning-text: var(--customer-warning-text);
+  --color-customer-danger-bg: var(--customer-danger-bg);
+  --color-customer-danger-text: var(--customer-danger-text);
+  --color-customer-chart-primary: var(--customer-chart-primary);
+  --color-customer-chart-secondary: var(--customer-chart-secondary);
+  --color-customer-chart-control: var(--customer-chart-control);
+  --color-customer-chart-grid: var(--customer-chart-grid);
+  --color-customer-chart-axis: var(--customer-chart-axis);
+  --color-customer-chart-soft: var(--customer-chart-soft);
+  --shadow-customer-card: var(--customer-shadow-card);
 
   /* Landing */
   --color-landing-blue-section-bg: var(--landing-blue-section-bg);
@@ -765,3 +872,19 @@ body {
   50%      { transform: translateY(-6px); }
 }
 .ps-float { animation: ps-float 5s ease-in-out infinite; }
+
+/* Customer login floating badges (server-safe, no styled-jsx). */
+@keyframes ps-float-login-primary {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+@keyframes ps-float-login-secondary {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(8px); }
+}
+.floating-badge-primary {
+  animation: ps-float-login-primary 5.4s ease-in-out infinite;
+}
+.floating-badge-secondary {
+  animation: ps-float-login-secondary 5.9s ease-in-out infinite;
+}

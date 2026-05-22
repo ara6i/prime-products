@@ -1,6 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Linkedin, Instagram, Youtube } from "lucide-react";
+import { useLandingLanguage } from "@/app/landing/i18n";
+import { FOOTER_POLICY_LINKS } from "@/app/landing/data/footerPolicyLinks";
 
 const SOCIAL_LINKS = [
   { Icon: Linkedin, href: "https://www.linkedin.com/company/primestyleai/posts/?feedView=all", label: "LinkedIn" },
@@ -9,6 +13,9 @@ const SOCIAL_LINKS = [
 ];
 
 export function Footer() {
+  const { t } = useLandingLanguage();
+  const copyright = t.footer.copyright.replace("{year}", String(new Date().getFullYear()));
+
   return (
     <footer className="flex flex-col items-center gap-5 self-stretch w-full">
       <Link href="/" className="flex flex-col items-center gap-2">
@@ -20,10 +27,10 @@ export function Footer() {
           className="object-contain w-[100px] h-[100px]"
         />
         <span className="text-[18px] font-semibold leading-tight text-text-primary tracking-[-0.01em]">
-          PrimeStyle AI
+          {t.footer.brand}
         </span>
         <span className="text-[13px] leading-snug text-text-body text-center">
-          The Decision Engine for fit.
+          {t.footer.tagline}
         </span>
       </Link>
 
@@ -44,6 +51,20 @@ export function Footer() {
 
       <div className="h-px w-full bg-text-primary/10" />
 
+      <div className="flex flex-wrap justify-center gap-2 px-2">
+        {FOOTER_POLICY_LINKS.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="rounded-full border border-text-primary/10 bg-white/60 px-3 py-1.5 text-[11px] font-semibold leading-[1.4] text-text-body transition-colors hover:border-brand-blue/25 hover:bg-white hover:text-brand-blue"
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
+
+      <div className="h-px w-full bg-text-primary/10" />
+
       <div className="flex flex-col items-center gap-1.5 text-[12px] leading-[1.5] text-text-body">
         <a
           href="mailto:support@primestyleai.com"
@@ -54,12 +75,12 @@ export function Footer() {
         </a>
         <span className="flex items-center gap-1.5">
           <MapPin size={13} strokeWidth={1.75} />
-          Laguna Niguel, California
+          {t.footer.location}
         </span>
       </div>
 
       <span className="text-[11px] leading-[1.5] text-text-hint text-center">
-        © {new Date().getFullYear()} PrimeStyle AI. All rights reserved.
+        {copyright}
       </span>
     </footer>
   );

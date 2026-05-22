@@ -4,19 +4,23 @@ import Image from "next/image";
 import { Reveal } from "../../shared/Reveal";
 import { SectionHeading } from "../../shared/SectionHeading";
 import { CustomizeIcon } from "../../shared/icons";
-import { SCALE, GARMENTS } from "../../../content/landing";
+import { useLandingLanguage } from "@/app/landing/i18n";
+import type { GarmentsContent, ScaleContent } from "../../../types/landing";
 
 export function ScaleSection() {
+  const { content } = useLandingLanguage();
+  const { scale, garments } = content;
+
   return (
     <section className="bg-[#F5F6F8] px-8 py-[clamp(5rem,7vw,7rem)]">
       <div className="mx-auto flex w-[77.778vw] flex-col gap-12">
-        <SectionHeading eyebrow={SCALE.eyebrow} title={SCALE.title} />
+        <SectionHeading eyebrow={scale.eyebrow} title={scale.title} />
 
         <div className="grid grid-cols-6 gap-4">
-          <CustomizeCard />
-          <DevicesCard />
-          <LanguagesCard />
-          <GarmentsCard />
+          <CustomizeCard scale={scale} />
+          <DevicesCard scale={scale} />
+          <LanguagesCard scale={scale} />
+          <GarmentsCard scale={scale} garments={garments} />
         </div>
       </div>
     </section>
@@ -51,8 +55,8 @@ function CardCopy({ title, body }: { title: string; body: string }) {
   );
 }
 
-function CustomizeCard() {
-  const card = SCALE.cards.find((c) => c.id === "customize")!;
+function CustomizeCard({ scale }: { scale: ScaleContent }) {
+  const card = scale.cards.find((c) => c.id === "customize")!;
   return (
     <CardShell delay={1} span="lg:col-span-2">
       <div className="relative flex h-48 items-center justify-center">
@@ -85,8 +89,8 @@ function CustomizeCard() {
   );
 }
 
-function DevicesCard() {
-  const card = SCALE.cards.find((c) => c.id === "devices")!;
+function DevicesCard({ scale }: { scale: ScaleContent }) {
+  const card = scale.cards.find((c) => c.id === "devices")!;
   return (
     <CardShell delay={2} span="lg:col-span-2">
       <div className="relative flex h-48 items-center justify-center">
@@ -122,8 +126,8 @@ function DevicesCard() {
   );
 }
 
-function LanguagesCard() {
-  const card = SCALE.cards.find((c) => c.id === "globe")!;
+function LanguagesCard({ scale }: { scale: ScaleContent }) {
+  const card = scale.cards.find((c) => c.id === "globe")!;
   const flags = card.flags ?? [];
   const angleStep = 360 / flags.length;
   return (
@@ -156,7 +160,6 @@ function LanguagesCard() {
                   alt={code}
                   width={24}
                   height={24}
-                  loading="eager"
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -169,9 +172,9 @@ function LanguagesCard() {
   );
 }
 
-function GarmentsCard() {
-  const card = SCALE.cards.find((c) => c.id === "garment")!;
-  const sample = GARMENTS.items.slice(0, 6);
+function GarmentsCard({ scale, garments }: { scale: ScaleContent; garments: GarmentsContent }) {
+  const card = scale.cards.find((c) => c.id === "garment")!;
+  const sample = garments.items.slice(0, 6);
   return (
     <CardShell delay={4} span="lg:col-span-6">
       <div className="relative flex h-48 items-center justify-center">

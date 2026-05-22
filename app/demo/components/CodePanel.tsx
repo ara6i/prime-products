@@ -55,15 +55,13 @@ yarn add @primestyleai/tryon
 pnpm add @primestyleai/tryon`;
 
     case "script":
-      return `# Add to your .env.local file:
+      return `# No browser API key is required for the PrimeStyle demo.
+# Keep PrimeStyle keys server-side only.
 
-NEXT_PUBLIC_PRIMESTYLE_API_KEY=ps_live_your_key_here
+# Optional: custom API URL for local/staging demos
+NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
 
-# Optional: custom API URL (defaults to production)
-# NEXT_PUBLIC_PRIMESTYLE_API_URL=https://myaifitting.com
-
-# Get your API key at:
-# https://myaifitting.com/developer/dashboard/keys`;
+# Production uses the PrimeStyle backend configuration.`;
   }
 }
 

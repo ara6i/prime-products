@@ -5,50 +5,53 @@ import { Eyebrow } from "../../shared/Eyebrow";
 import { LandingButton } from "../../shared/LandingButton";
 import { Marquee } from "../../shared/Marquee";
 import { usePilotModal } from "../../shared/PilotModalContext";
-import { HERO } from "../../../content/landing";
+import { useLandingLanguage } from "@/app/landing/i18n";
 
 export function HeroSection() {
   const { open: openPilot } = usePilotModal();
+  const { content, translate } = useLandingLanguage();
+  const { hero } = content;
+
   return (
     <section className="relative overflow-hidden px-8 pb-12 pt-24">
       <HeroBackground />
 
       <div className="relative z-10 mx-auto flex w-[62.5vw] flex-col items-center gap-6 text-center">
         <Reveal variant="fade">
-          <Eyebrow>{HERO.eyebrow}</Eyebrow>
+          <Eyebrow>{hero.eyebrow}</Eyebrow>
         </Reveal>
 
         <Reveal delay={1}>
           <h1 className="text-[clamp(3rem,2.4rem+3.2vw,5.25rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-text-primary">
-            {HERO.headline}{" "}
+            {hero.headline}{" "}
             <em className="not-italic bg-gradient-to-br from-brand-blue via-brand-blue to-accent-purple bg-clip-text font-serif text-transparent italic">
-              {HERO.headlineEm}
+              {hero.headlineEm}
             </em>
             <br />
-            for fit.
+            {translate("for fit.")}
           </h1>
         </Reveal>
 
         <Reveal delay={2} className="h-px w-16 bg-gradient-to-r from-transparent via-brand-blue to-transparent">
-          <span className="sr-only">divider</span>
+          <span className="sr-only">{translate("divider")}</span>
         </Reveal>
 
         <Reveal delay={2}>
-          <p className="whitespace-nowrap text-lg leading-[1.6] text-text-body">{HERO.subhead}</p>
+          <p className="whitespace-nowrap text-lg leading-[1.6] text-text-body">{hero.subhead}</p>
         </Reveal>
 
         <Reveal delay={3} className="flex flex-wrap items-center justify-center gap-4 pt-2">
           <LandingButton onClick={openPilot} variant="primary" icon="arrow-right">
-            {HERO.primaryLabel}
+            {hero.primaryLabel}
           </LandingButton>
-          <LandingButton href={HERO.secondaryHref} variant="outline">
-            {HERO.secondaryLabel}
+          <LandingButton href={hero.secondaryHref} variant="outline">
+            {hero.secondaryLabel}
           </LandingButton>
         </Reveal>
       </div>
 
       <div className="relative z-10 mt-16">
-        <Marquee items={HERO.marquee} />
+        <Marquee items={hero.marquee} />
       </div>
     </section>
   );

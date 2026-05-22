@@ -19,6 +19,23 @@ interface Props {
 type Unit = "cm" | "in";
 
 const CM_PER_IN = 2.54;
+const EXPLICIT_UNIT_RE = /\s*\((cm|in)\)\s*$/i;
+const TRAILING_UNIT_RE = /\s+(cm|in)$/i;
+const NON_MEASUREMENT_KEYS = new Set([
+  "size",
+  "standard",
+  "fit",
+  "customization",
+  "eu",
+  "uk",
+  "us",
+  "it",
+  "fr",
+  "jp",
+  "kr",
+]);
+const MEASUREMENT_KEY_RE =
+  /\b(bust|chest|waist|hip|hips|inseam|outseam|sleeve|collar|neck|shoulder|height|length|width|rise|thigh|arm|foot|head|circumference)\b/i;
 
 function formatNumber(n: number): string {
   if (!Number.isFinite(n)) return String(n);
@@ -30,10 +47,14 @@ function formatNumber(n: number): string {
 function convertValueUnits(raw: string, from: Unit, to: Unit): string {
   if (from === to) return raw;
   const factor = to === "in" ? 1 / CM_PER_IN : CM_PER_IN;
-  return raw.replace(/(\d+(?:\.\d+)?)/g, (m) => {
+  const converted = raw.replace(/(\d+(?:\.\d+)?)/g, (m) => {
     const n = parseFloat(m);
     return Number.isNaN(n) ? m : formatNumber(n * factor);
   });
+  if (from === "cm" && to === "in") {
+    return converted.replace(/\b(?:centimeters?|cm)\b/gi, "in");
+  }
+  return converted.replace(/\b(?:inches?|inch|in)\b/gi, "cm");
 }
 
 function normalizeSourceUnit(raw: string | undefined): Unit | null {
@@ -42,6 +63,92 @@ function normalizeSourceUnit(raw: string | undefined): Unit | null {
   if (u === "cm" || u === "centimeter" || u === "centimeters") return "cm";
   if (u === "in" || u === "inch" || u === "inches" || u === '"') return "in";
   return null;
+}
+
+function getExplicitUnit(key: string): Unit | null {
+  const paren = key.match(EXPLICIT_UNIT_RE)?.[1]?.toLowerCase();
+  if (paren === "cm" || paren === "in") return paren;
+  const trailing = key.match(TRAILING_UNIT_RE)?.[1]?.toLowerCase();
+  if (trailing === "cm" || trailing === "in") return trailing;
+  return null;
+}
+
+function hasExplicitUnit(key: string): boolean {
+  return getExplicitUnit(key) !== null;
+}
+
+function baseHeaderLabel(key: string): string {
+  return key.replace(EXPLICIT_UNIT_RE, "").replace(TRAILING_UNIT_RE, "").trim();
+}
+
+function isMeasurementKey(key: string): boolean {
+  const normalized = baseHeaderLabel(key).toLowerCase().trim();
+  if (!normalized || NON_MEASUREMENT_KEYS.has(normalized)) return false;
+  return MEASUREMENT_KEY_RE.test(normalized);
+}
+
+function displayMeasurementHeader(
+  key: string,
+  unit: Unit,
+  sourceUnit: Unit | null,
+): string {
+  const explicitUnit = getExplicitUnit(key);
+  if (explicitUnit) return `${baseHeaderLabel(key)} (${explicitUnit})`;
+  if (sourceUnit && isMeasurementKey(key)) return `${key.trim()} (${unit})`;
+  return key.trim();
+}
+
+function guideHasUnitColumns(guide: DemoSizeGuide): boolean {
+  const headers = [
+    ...(guide.headers ?? []),
+    ...(guide.sections?.flatMap((section) => section.headers ?? []) ?? []),
+  ];
+  return headers.some(hasExplicitUnit);
+}
+
+function hasPairedUnitColumn(keys: string[], key: string): boolean {
+  const explicitUnit = getExplicitUnit(key);
+  if (!explicitUnit) return false;
+  const base = baseHeaderLabel(key.toLowerCase());
+  const pairedUnit = explicitUnit === "cm" ? "in" : "cm";
+  return keys.some((other) => {
+    if (other === key) return false;
+    return (
+      baseHeaderLabel(other.toLowerCase()) === base &&
+      getExplicitUnit(other) === pairedUnit
+    );
+  });
+}
+
+function displayColumnHeader(
+  key: string,
+  unit: Unit,
+  sourceUnit: Unit | null,
+  peerKeys: string[],
+): string {
+  const explicitUnit = getExplicitUnit(key);
+  if (explicitUnit && !hasPairedUnitColumn(peerKeys, key)) {
+    return `${baseHeaderLabel(key)} (${unit})`;
+  }
+  return displayMeasurementHeader(key, unit, sourceUnit);
+}
+
+function getColumnSourceUnit(
+  key: string,
+  sourceUnit: Unit | null,
+  peerKeys: string[],
+): Unit | null {
+  const explicitUnit = getExplicitUnit(key);
+  if (explicitUnit && !hasPairedUnitColumn(peerKeys, key)) return explicitUnit;
+  return explicitUnit ?? sourceUnit;
+}
+
+function shouldConvertColumn(
+  key: string,
+  sourceUnit: Unit | null,
+): boolean {
+  if (getExplicitUnit(key)) return true;
+  return Boolean(sourceUnit && isMeasurementKey(key));
 }
 
 /* ── Animated region dropdown ── */
@@ -231,21 +338,22 @@ function TransposedSizeTable({
   // Singletons (no paired unit) always render.
   const measurementKeys = candidateMeasurementKeys.filter((k) => {
     const lower = k.toLowerCase();
-    const hasInch = lower.includes("(in)") || lower.endsWith(" in");
-    const hasCm = lower.includes("(cm)") || lower.endsWith(" cm");
+    const explicitUnit = getExplicitUnit(k);
+    const hasInch = explicitUnit === "in";
+    const hasCm = explicitUnit === "cm";
     if (hasInch) {
-      const base = lower.replace(/\s*\(in\)\s*/, "").replace(/\s+in$/, "").trim();
+      const base = baseHeaderLabel(lower);
       const cmExists = candidateMeasurementKeys.some((other) => {
         const ol = other.toLowerCase();
-        return ol !== lower && ol.includes(base) && (ol.includes("(cm)") || ol.endsWith(" cm"));
+        return ol !== lower && baseHeaderLabel(ol) === base && getExplicitUnit(other) === "cm";
       });
       return cmExists ? unit === "in" : true;
     }
     if (hasCm) {
-      const base = lower.replace(/\s*\(cm\)\s*/, "").replace(/\s+cm$/, "").trim();
+      const base = baseHeaderLabel(lower);
       const inExists = candidateMeasurementKeys.some((other) => {
         const ol = other.toLowerCase();
-        return ol !== lower && ol.includes(base) && (ol.includes("(in)") || ol.endsWith(" in"));
+        return ol !== lower && baseHeaderLabel(ol) === base && getExplicitUnit(other) === "in";
       });
       return inExists ? unit === "cm" : true;
     }
@@ -253,24 +361,17 @@ function TransposedSizeTable({
   });
 
   const columnHasExplicitUnit = (key: string): boolean => {
-    const lower = key.toLowerCase();
-    return (
-      lower.includes("(cm)") ||
-      lower.includes("(in)") ||
-      lower.endsWith(" cm") ||
-      lower.endsWith(" in")
-    );
+    return hasExplicitUnit(key);
   };
 
   const displayValue = (val: string | undefined, key: string): string => {
     if (!val) return "—";
-    if (!sourceUnit || sourceUnit === unit) return val;
-    if (columnHasExplicitUnit(key)) return val;
-    return convertValueUnits(val, sourceUnit, unit);
+    if (!shouldConvertColumn(key, sourceUnit)) return val;
+    const valueSourceUnit = getColumnSourceUnit(key, sourceUnit, candidateMeasurementKeys);
+    if (!valueSourceUnit || valueSourceUnit === unit) return val;
+    if (columnHasExplicitUnit(key) && hasPairedUnitColumn(candidateMeasurementKeys, key)) return val;
+    return convertValueUnits(val, valueSourceUnit, unit);
   };
-
-  const stripUnit = (key: string) =>
-    key.replace(/\s*\((cm|in)\)\s*$/i, "").trim();
 
   return (
     <div className="overflow-x-auto -mx-1 px-1">
@@ -297,7 +398,7 @@ function TransposedSizeTable({
           {measurementKeys.map((mKey) => (
             <tr key={mKey}>
               <td className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider text-text-primary whitespace-nowrap border-b border-border-light bg-white sticky left-0">
-                {stripUnit(mKey)}
+                {displayColumnHeader(mKey, unit, sourceUnit, candidateMeasurementKeys)}
               </td>
               {rows.map((r, i) => (
                 <td
@@ -365,22 +466,31 @@ function SizeTable({
 
   const colKeys = regionFiltered.filter((k) => {
     const lower = k.toLowerCase();
-    const hasInch = lower.includes("(in)") || lower.endsWith(" in");
-    const hasCm = lower.includes("(cm)") || lower.endsWith(" cm");
+    const explicitUnit = getExplicitUnit(k);
+    const hasInch = explicitUnit === "in";
+    const hasCm = explicitUnit === "cm";
 
     if (hasInch) {
-      const baseName = lower.replace(/\s*\(in\)\s*/, "").replace(/\s+in$/, "").trim();
+      const baseName = baseHeaderLabel(lower);
       const cmExists = regionFiltered.some((other) => {
         const ol = other.toLowerCase();
-        return ol !== lower && ol.includes(baseName) && (ol.includes("(cm)") || ol.endsWith(" cm"));
+        return (
+          ol !== lower &&
+          baseHeaderLabel(ol) === baseName &&
+          getExplicitUnit(other) === "cm"
+        );
       });
       return cmExists ? unit === "in" : true;
     }
     if (hasCm) {
-      const baseName = lower.replace(/\s*\(cm\)\s*/, "").replace(/\s+cm$/, "").trim();
+      const baseName = baseHeaderLabel(lower);
       const inExists = regionFiltered.some((other) => {
         const ol = other.toLowerCase();
-        return ol !== lower && ol.includes(baseName) && (ol.includes("(in)") || ol.endsWith(" in"));
+        return (
+          ol !== lower &&
+          baseHeaderLabel(ol) === baseName &&
+          getExplicitUnit(other) === "in"
+        );
       });
       return inExists ? unit === "cm" : true;
     }
@@ -388,25 +498,21 @@ function SizeTable({
   });
 
   const displayHeader = (key: string): string =>
-    key.replace(/\s*\((cm|in)\)\s*$/i, "").trim();
+    displayColumnHeader(key, unit, sourceUnit, regionFiltered);
 
   /** True when the column header carries an explicit unit suffix — in that
    *  case the value is already in the correct unit and must not be re-converted. */
   const columnHasExplicitUnit = (key: string): boolean => {
-    const lower = key.toLowerCase();
-    return (
-      lower.includes("(cm)") ||
-      lower.includes("(in)") ||
-      lower.endsWith(" cm") ||
-      lower.endsWith(" in")
-    );
+    return hasExplicitUnit(key);
   };
 
   const displayValue = (val: string | undefined, key: string): string => {
     if (!val) return "\u2014";
-    if (!sourceUnit || sourceUnit === unit) return val;
-    if (columnHasExplicitUnit(key)) return val;
-    return convertValueUnits(val, sourceUnit, unit);
+    if (!shouldConvertColumn(key, sourceUnit)) return val;
+    const valueSourceUnit = getColumnSourceUnit(key, sourceUnit, regionFiltered);
+    if (!valueSourceUnit || valueSourceUnit === unit) return val;
+    if (columnHasExplicitUnit(key) && hasPairedUnitColumn(regionFiltered, key)) return val;
+    return convertValueUnits(val, valueSourceUnit, unit);
   };
 
   return (
@@ -462,39 +568,38 @@ function SizeTable({
 
 export function SizeGuideModal({ guide, open, onClose }: Props) {
   const [unit, setUnit] = useState<Unit>("cm");
-  const [regionCode, setRegionCode] = useState<string>(
-    () => guide.regions?.[0]?.code || ""
-  );
+  const defaultRegionCode = guide.regions?.[0]?.code || "";
+  const [regionCodeOverride, setRegionCodeOverride] = useState<string>("");
+  const regionCode = regionCodeOverride || defaultRegionCode;
 
   // Variant-filter selections (Fit / Customization). Initialized to each
   // filter's `default` value, fall back to the first option.
-  const [filterValues, setFilterValues] = useState<Record<string, string>>(() => {
+  const defaultFilterValues = React.useMemo<Record<string, string>>(() => {
     const out: Record<string, string> = {};
     for (const f of guide.filters || []) {
       out[f.key] = f.default ?? f.options[0]?.value ?? "";
     }
     return out;
-  });
+  }, [guide]);
+  const [filterOverrides, setFilterOverrides] = useState<Record<string, string>>({});
+  const filterValues = React.useMemo<Record<string, string>>(
+    () => ({ ...defaultFilterValues, ...filterOverrides }),
+    [defaultFilterValues, filterOverrides],
+  );
 
-  useEffect(() => {
-    if (open) setRegionCode(guide.regions?.[0]?.code || "");
-  }, [open, guide]);
-
-  useEffect(() => {
-    if (!open) return;
-    const out: Record<string, string> = {};
-    for (const f of guide.filters || []) {
-      out[f.key] = f.default ?? f.options[0]?.value ?? "";
-    }
-    setFilterValues(out);
-  }, [open, guide]);
+  const handleClose = () => {
+    setRegionCodeOverride("");
+    setFilterOverrides({});
+    onClose();
+  };
 
   const hasSections = guide.sections && guide.sections.length > 0;
   const hasFlatTable = guide.headers && guide.rows && guide.rows.length > 0;
   const hasRegions = guide.regions && guide.regions.length > 0;
   const hasFilters = (guide.filters?.length ?? 0) > 0;
-  const showUnitToggle = !guide.noUnitToggle;
   const sourceUnit = normalizeSourceUnit(guide.unit);
+  const showUnitToggle =
+    !guide.noUnitToggle && (Boolean(sourceUnit) || guideHasUnitColumns(guide));
 
   // Apply filters to the flat row list. AND-combined: a row must match
   // every filter's selected value.
@@ -522,7 +627,7 @@ export function SizeGuideModal({ guide, open, onClose }: Props) {
   }
 
   return (
-    <Sheet open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
+    <Sheet open={open} onOpenChange={(o) => { if (!o) handleClose(); }}>
       <SheetContent
         side="right"
         showCloseButton={false}
@@ -545,7 +650,7 @@ export function SizeGuideModal({ guide, open, onClose }: Props) {
             </div>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="w-8 h-8 rounded-full flex items-center justify-center text-text-hint hover:text-text-primary hover:bg-surface-light transition-colors"
           >
             <X className="h-4 w-4" />
@@ -562,7 +667,7 @@ export function SizeGuideModal({ guide, open, onClose }: Props) {
                 filter={f}
                 value={filterValues[f.key] ?? ""}
                 onChange={(v) =>
-                  setFilterValues((prev) => ({ ...prev, [f.key]: v }))
+                  setFilterOverrides((prev) => ({ ...prev, [f.key]: v }))
                 }
               />
             ))}
@@ -574,7 +679,7 @@ export function SizeGuideModal({ guide, open, onClose }: Props) {
               <RegionSelect
                 regions={guide.regions!}
                 value={regionCode}
-                onChange={setRegionCode}
+                onChange={setRegionCodeOverride}
               />
             )}
             {showUnitToggle && (

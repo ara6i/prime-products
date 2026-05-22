@@ -93,7 +93,7 @@ export function AdminSidebar({ adminName }: Props) {
         className="flex items-center gap-[var(--spacing-admin-gap-md)] px-[var(--spacing-admin-content-x)] py-[1.25vw] border-b border-admin-border"
       >
         <Image
-          src="/images/landing/logo-navbar-transparent.png"
+          src="/images/landing/optimized/logo-navbar-transparent.webp"
           alt="PrimeStyleAI"
           width={95}
           height={89}

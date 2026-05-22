@@ -7,6 +7,7 @@ import { cn } from "@/app/shared/lib/utils";
 const TABS = [
   { href: "/try-on-test", label: "Try-On" },
   { href: "/try-on-test/sizing-lab", label: "AI Sizing Lab" },
+  { href: "/try-on-test/capacity-lab", label: "Capacity Lab" },
 ] as const;
 
 export function TabNav() {

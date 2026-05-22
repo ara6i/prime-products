@@ -1,5 +1,4 @@
 import { headers } from "next/headers";
-import { DeviceSwitch } from "@/app/shared/components/DeviceSwitch";
 import { DeveloperLanding } from "./components/DeveloperLanding";
 import { MobileDeveloperLanding } from "./components/MobileDeveloperLanding";
 
@@ -15,11 +14,5 @@ export default async function DeveloperPage() {
   const headersList = await headers();
   const initialIsMobile = MOBILE_UA_REGEX.test(headersList.get("user-agent") ?? "");
 
-  return (
-    <DeviceSwitch
-      initialIsMobile={initialIsMobile}
-      desktop={<DeveloperLanding />}
-      mobile={<MobileDeveloperLanding />}
-    />
-  );
+  return initialIsMobile ? <MobileDeveloperLanding /> : <DeveloperLanding />;
 }

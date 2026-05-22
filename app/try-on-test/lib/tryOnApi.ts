@@ -47,14 +47,12 @@ export class TryOnApiError extends Error {
 
 export interface TryOnApiClientConfig {
   baseUrl: string;
-  apiKey: string;
 }
 
 export function createTryOnApiClient(config: TryOnApiClientConfig) {
-  const { baseUrl, apiKey } = config;
+  const { baseUrl } = config;
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${apiKey}`,
   };
 
   async function submit(payload: SubmitTryOnPayload): Promise<SubmitTryOnResponse> {
@@ -77,7 +75,7 @@ export function createTryOnApiClient(config: TryOnApiClientConfig) {
   }
 
   function streamUrl(): string {
-    return `${baseUrl}/api/v1/tryon/stream?key=${encodeURIComponent(apiKey)}`;
+    return `${baseUrl}/api/v1/tryon/stream`;
   }
 
   return { submit, streamUrl };

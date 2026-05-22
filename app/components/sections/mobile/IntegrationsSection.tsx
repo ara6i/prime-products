@@ -11,9 +11,17 @@ import { LandingButton } from "../../shared/LandingButton";
 import { NotifyModal, type NotifyProduct } from "../../shared/NotifyModal";
 import { usePilotModal } from "../../shared/PilotModalContext";
 import { cn } from "@/app/shared/lib/utils";
-import { DOCS_HREF } from "../../../content/landing";
+import { useLandingLanguage } from "@/app/landing/i18n";
 
-type Visual = { kind: "gif"; src: string } | { kind: "code" } | { kind: "soon"; tag: "widget" | "shopify" };
+type Visual =
+  | {
+      kind: "video";
+      webm: string;
+      mp4: string;
+      poster: string;
+    }
+  | { kind: "code" }
+  | { kind: "soon"; tag: "widget" | "shopify" };
 
 type IntegrationTab = {
   value: string;
@@ -43,7 +51,12 @@ const TABS: IntegrationTab[] = [
         "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.",
       primaryHref: "#pilot",
       primaryLabel: "Apply for free pilot",
-      visual: { kind: "gif", src: "/images/landing/ps/sdk-demo.gif" },
+      visual: {
+        kind: "video",
+        webm: "/images/landing/ps/optimized/sdk-demo.webm",
+        mp4: "/images/landing/ps/optimized/sdk-demo.mp4",
+        poster: "/images/landing/ps/optimized/sdk-demo-poster.webp",
+      },
     },
   },
   {
@@ -93,6 +106,8 @@ const TABS: IntegrationTab[] = [
 export function IntegrationsSection() {
   const [notifyProduct, setNotifyProduct] = useState<NotifyProduct | null>(null);
   const { open: openPilot } = usePilotModal();
+  const { translate } = useLandingLanguage();
+
   return (
     <section id="integrations" className="relative overflow-hidden px-5 py-14">
       <div
@@ -105,12 +120,12 @@ export function IntegrationsSection() {
       />
 
       <Reveal variant="fade" className="mb-6 flex flex-col items-center gap-3 text-center">
-        <Eyebrow>Ship it your way</Eyebrow>
+        <Eyebrow>{translate("Ship it your way")}</Eyebrow>
         <h2 className="text-[26px] font-medium leading-[1.1] tracking-[-0.02em] text-text-primary">
-          Four ways to integrate.
+          {translate("Four ways to integrate.")}
         </h2>
         <p className="text-[15px] leading-[1.55] text-text-body">
-          SDK and REST API are live today. Widget and Shopify app are next up.
+          {translate("SDK and REST API are live today. Widget and Shopify app are next up.")}
         </p>
       </Reveal>
 
@@ -128,7 +143,7 @@ export function IntegrationsSection() {
                 )}
               >
                 {tab.icon}
-                {tab.label}
+                {translate(tab.label)}
               </TabsPrimitive.Trigger>
             ))}
           </TabsPrimitive.List>
@@ -143,8 +158,8 @@ export function IntegrationsSection() {
                 "data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-400"
               )}
             >
-              <TabVisualMobile tab={tab} />
-              <TabCopyMobile tab={tab} onNotify={setNotifyProduct} onPilot={openPilot} />
+              <TabVisualMobile tab={tab} translate={translate} />
+              <TabCopyMobile tab={tab} onNotify={setNotifyProduct} onPilot={openPilot} translate={translate} />
             </TabsPrimitive.Content>
           ))}
         </TabsPrimitive.Root>
@@ -167,10 +182,12 @@ function TabCopyMobile({
   tab,
   onNotify,
   onPilot,
+  translate,
 }: {
   tab: IntegrationTab;
   onNotify: (product: NotifyProduct) => void;
   onPilot: () => void;
+  translate: (value: string, replacements?: Record<string, string | number>) => string;
 }) {
   const { content } = tab;
   const soon = content.status === "soon";
@@ -188,13 +205,13 @@ function TabCopyMobile({
         )}
       >
         {!soon ? <span className="h-1 w-1 rounded-full bg-status-success" /> : null}
-        {soon ? "Coming soon" : "Available today"}
+        {soon ? translate("Coming soon") : translate("Available today")}
       </span>
 
       <h3 className="text-[19px] font-medium leading-[1.2] tracking-[-0.012em] text-text-primary">
-        {content.title}
+        {translate(content.title)}
       </h3>
-      <p className="text-[14.5px] leading-[1.65] text-text-body">{content.description}</p>
+      <p className="text-[14.5px] leading-[1.65] text-text-body">{translate(content.description)}</p>
 
       <div className="flex flex-col gap-2 pt-1">
         {soon ? (
@@ -203,15 +220,15 @@ function TabCopyMobile({
             onClick={() => notifyProduct && onNotify(notifyProduct)}
             className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-brand-blue/25 bg-white px-6 text-sm font-medium text-brand-blue-dark transition-colors cursor-pointer hover:bg-brand-blue-pale/40"
           >
-            {content.primaryLabel}
+            {translate(content.primaryLabel)}
           </button>
         ) : isPilotCta ? (
           <LandingButton onClick={onPilot} variant="primary" size="lg" icon="arrow-right" className="w-full">
-            {content.primaryLabel}
+            {translate(content.primaryLabel)}
           </LandingButton>
         ) : (
           <LandingButton href={content.primaryHref} variant="primary" size="lg" icon="arrow-right" className="w-full">
-            {content.primaryLabel}
+            {translate(content.primaryLabel)}
           </LandingButton>
         )}
         {content.secondaryHref ? (
@@ -219,7 +236,7 @@ function TabCopyMobile({
             href={content.secondaryHref}
             className="inline-flex items-center justify-center gap-1.5 text-sm font-medium text-brand-blue"
           >
-            {content.secondaryLabel} →
+            {content.secondaryLabel ? translate(content.secondaryLabel) : null} →
           </Link>
         ) : null}
       </div>
@@ -227,12 +244,30 @@ function TabCopyMobile({
   );
 }
 
-function TabVisualMobile({ tab }: { tab: IntegrationTab }) {
+function TabVisualMobile({
+  tab,
+  translate,
+}: {
+  tab: IntegrationTab;
+  translate: (value: string, replacements?: Record<string, string | number>) => string;
+}) {
   switch (tab.content.visual.kind) {
-    case "gif":
+    case "video":
       return (
         <div className="w-full max-w-full overflow-hidden rounded-xl bg-white">
-          <img src={tab.content.visual.src} alt="SDK demo" className="block h-auto w-full max-w-full" />
+          <video
+            aria-label={translate("SDK demo")}
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster={tab.content.visual.poster}
+            preload="none"
+            className="block h-auto w-full max-w-full"
+          >
+            <source src={tab.content.visual.webm} type="video/webm" />
+            <source src={tab.content.visual.mp4} type="video/mp4" />
+          </video>
         </div>
       );
     case "code":
@@ -293,7 +328,7 @@ function TabVisualMobile({ tab }: { tab: IntegrationTab }) {
           )}
           <span className="inline-flex items-center gap-1.5 rounded-full border border-text-primary/15 bg-surface-segment px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-text-hint">
             <Clock3 className="h-3 w-3" />
-            Coming soon
+            {translate("Coming soon")}
           </span>
         </div>
       );

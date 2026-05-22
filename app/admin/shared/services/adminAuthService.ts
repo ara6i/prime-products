@@ -7,6 +7,16 @@ const COOKIE_NAME = "admin_session";
 
 export interface AdminUser {
   username: string;
+  role?: "admin" | "merchant";
+  store?: {
+    username: string;
+    storeName: string;
+    merchantName: string;
+    domain: string;
+    ownerEmail: string;
+    invitationCode: string;
+    domainVerificationToken: string;
+  };
 }
 
 export interface BackendSession {
@@ -17,6 +27,7 @@ export interface BackendSession {
 export interface LoginResult {
   ok: boolean;
   error?: string;
+  user?: AdminUser;
 }
 
 export async function loginAdmin(username: string, password: string): Promise<LoginResult> {
@@ -65,7 +76,7 @@ export async function loginAdmin(username: string, password: string): Promise<Lo
     maxAge: data.session.maxAgeSeconds,
   });
 
-  return { ok: true };
+  return { ok: true, user: data.user };
 }
 
 export async function logoutAdmin(): Promise<void> {

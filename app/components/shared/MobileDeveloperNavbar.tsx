@@ -2,36 +2,40 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
 import { cn } from "@/app/shared/lib/utils";
-import { usePilotModal } from "./PilotModalContext";
+import { LandingLanguageSwitcher, useLandingLanguage } from "@/app/landing/i18n";
 
-const SECTION_LINKS = [
-  { label: "Features", href: "#features" },
-  { label: "Demo", href: "/demo/products", external: true },
-  { label: "Integrations", href: "#integrations" },
-  { label: "Contact", href: "#contact" },
+type SectionLabelKey = "features" | "demo" | "integrations" | "contact";
+
+const SECTION_LINKS: Array<{
+  labelKey: SectionLabelKey;
+  href: string;
+  external?: boolean;
+}> = [
+  { labelKey: "features", href: "#features" },
+  { labelKey: "demo", href: "/demo/products", external: true },
+  { labelKey: "integrations", href: "#integrations" },
+  { labelKey: "contact", href: "#contact" },
 ];
+const CUSTOMER_LOGIN_PATH = "/customer/login";
 
 const NAV_HEIGHT = 64;
 
 interface MobileDeveloperNavbarProps {
-  /** "demo" trims the mobile nav to just Docs + Apply pilot inline — no
+  /** "demo" trims the mobile nav to just customer login inline — no
    *  hamburger menu needed since there's nothing else to show. */
   variant?: "default" | "demo";
+  sectionHrefPrefix?: string;
 }
 
-export function MobileDeveloperNavbar({ variant = "default" }: MobileDeveloperNavbarProps) {
+export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix = "" }: MobileDeveloperNavbarProps) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
-  const { open: openPilot } = usePilotModal();
   const isDemo = variant === "demo";
-  const handlePilotClick = () => {
-    close();
-    openPilot();
-  };
+  const resolveHref = (href: string) => href.startsWith("#") ? `${sectionHrefPrefix}${href}` : href;
+  const { language, setLanguage, t } = useLandingLanguage();
 
   useEffect(() => {
     if (!open) return;
@@ -61,29 +65,40 @@ export function MobileDeveloperNavbar({ variant = "default" }: MobileDeveloperNa
         style={{ height: NAV_HEIGHT }}
       >
         <Link href="/" onClick={close}>
-          <Image
-            src="/images/landing/logo-navbar-transparent.png"
+          <img
+            src="/images/landing/optimized/logo-navbar-small.webp"
             alt="PrimeStyleAI"
-            width={56}
-            height={52}
-            className="object-contain h-[44px] w-auto"
+            width={68}
+            height={64}
+            loading="eager"
+            fetchPriority="high"
+            className="object-contain h-[52px] w-auto"
           />
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <Button
-            variant="primary"
-            onClick={handlePilotClick}
-            className="h-[34px] px-4 text-[12.5px] font-semibold rounded-full whitespace-nowrap cursor-pointer"
+            asChild
+            variant="outline"
+            className="h-[34px] max-w-[118px] px-3 text-[11.5px] font-semibold rounded-full whitespace-nowrap cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
           >
-            Apply for free pilot
+            <Link href={CUSTOMER_LOGIN_PATH} className="truncate">
+              {t.nav.customerLogin}
+            </Link>
           </Button>
+          {!isDemo && (
+            <LandingLanguageSwitcher
+              language={language}
+              onLanguageChange={setLanguage}
+              compact
+            />
+          )}
           {!isDemo && (
             <Button
               variant="icon"
               className="w-9 h-9 flex items-center justify-center flex-shrink-0"
               onClick={() => setOpen((v) => !v)}
-              aria-label={open ? "Close menu" : "Open menu"}
+              aria-label={open ? t.nav.closeMenu : t.nav.openMenu}
             >
               {open ? <X size={20} className="text-gray-800" /> : <Menu size={20} className="text-gray-800" />}
             </Button>
@@ -116,35 +131,39 @@ export function MobileDeveloperNavbar({ variant = "default" }: MobileDeveloperNa
                 link.external ? (
                   <a
                     key={link.href}
-                    href={link.href}
+                    href={resolveHref(link.href)}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={close}
                     className="flex items-center h-11 px-3 rounded-xl text-[15px] font-medium text-gray-900 hover:bg-gray-50 transition-colors"
                   >
-                    {link.label}
+                    {t.nav[link.labelKey]}
                   </a>
                 ) : (
                   <Link
                     key={link.href}
-                    href={link.href}
+                    href={resolveHref(link.href)}
                     onClick={close}
                     className="flex items-center h-11 px-3 rounded-xl text-[15px] font-medium text-gray-900 hover:bg-gray-50 transition-colors"
                   >
-                    {link.label}
+                    {t.nav[link.labelKey]}
                   </Link>
                 )
               )}
             </div>
 
             <div className="flex-shrink-0 px-4 py-4 border-t border-gray-100">
-              <Button
-                variant="primary"
-                onClick={handlePilotClick}
-                className="w-full h-12 text-[15px] font-semibold rounded-2xl cursor-pointer"
-              >
-                Apply for free pilot
-              </Button>
+              <div className="grid grid-cols-1 gap-2">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full h-11 text-[14px] font-semibold rounded-2xl cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
+                >
+                  <Link href={CUSTOMER_LOGIN_PATH} onClick={close}>
+                    {t.nav.customerLogin}
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </>

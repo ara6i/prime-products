@@ -4,7 +4,6 @@ import { isLivePhase } from "./runPhase";
 export interface CanSubmitInputs {
   modelDataUri: string | null;
   garmentDataUri: string | null;
-  apiKey: string;
   isModelCompressing: boolean;
   isGarmentCompressing: boolean;
   isCustomPromptInvalid: boolean;
@@ -17,7 +16,6 @@ export interface CanSubmitInputs {
  */
 export function canSubmitTryOn(inputs: CanSubmitInputs): boolean {
   if (!inputs.modelDataUri || !inputs.garmentDataUri) return false;
-  if (!inputs.apiKey.trim()) return false;
   if (inputs.isModelCompressing || inputs.isGarmentCompressing) return false;
   if (inputs.isCustomPromptInvalid) return false;
   if (isLivePhase(inputs.phase)) return false;

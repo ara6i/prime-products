@@ -3,10 +3,13 @@
 import { Reveal } from "../../shared/Reveal";
 import { LandingButton } from "../../shared/LandingButton";
 import { usePilotModal } from "../../shared/PilotModalContext";
-import { CTA } from "../../../content/landing";
+import { useLandingLanguage } from "@/app/landing/i18n";
 
 export function CtaBannerSection() {
   const { open: openPilot } = usePilotModal();
+  const { content } = useLandingLanguage();
+  const { cta } = content;
+
   return (
     <section className="px-8 py-[clamp(5rem,7vw,7rem)]">
       <Reveal
@@ -30,20 +33,20 @@ export function CtaBannerSection() {
         />
 
         <h2 className="max-w-[24ch] text-[clamp(2rem,1.6rem+2vw,3.5rem)] font-semibold leading-[1.08] tracking-[-0.025em]">
-          {CTA.title}
+          {cta.title}
         </h2>
-        <p className="max-w-[48ch] text-lg leading-[1.55] text-white/80">{CTA.body}</p>
+        <p className="max-w-[48ch] text-lg leading-[1.55] text-white/80">{cta.body}</p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
           <LandingButton onClick={openPilot} variant="white" icon="arrow-right">
-            {CTA.primaryLabel}
+            {cta.primaryLabel}
           </LandingButton>
-          <LandingButton href={CTA.secondaryHref} variant="onGradient">
-            {CTA.secondaryLabel}
+          <LandingButton href={cta.secondaryHref} variant="onGradient">
+            {cta.secondaryLabel}
           </LandingButton>
         </div>
 
-        <p className="pt-2 text-xs text-white/55">{CTA.footer}</p>
+        <p className="pt-2 text-xs text-white/55">{cta.footer}</p>
       </Reveal>
     </section>
   );

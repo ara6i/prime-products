@@ -28,7 +28,7 @@ export function Navbar() {
     <nav className="flex items-center gap-[0.833vw] px-[3.125vw] py-[0.625vw] w-full mx-auto">
       <Link href="/">
         <Image
-          src="/images/landing/logo-navbar-transparent.png"
+          src="/images/landing/optimized/logo-navbar-transparent.webp"
           alt="PrimeStyleAI"
           width={95}
           height={89}

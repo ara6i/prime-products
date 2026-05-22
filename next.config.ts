@@ -4,7 +4,6 @@ const PREVIEW = "https://preview.myaifitting.com";
 
 const nextConfig: NextConfig = {
   images: {
-    unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
@@ -26,12 +25,14 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     const backend = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-    return [
-      {
-        source: "/api/:path*",
-        destination: `${backend}/api/:path*`,
-      },
-    ];
+    return {
+      fallback: [
+        {
+          source: "/api/:path*",
+          destination: `${backend}/api/:path*`,
+        },
+      ],
+    };
   },
 };
 

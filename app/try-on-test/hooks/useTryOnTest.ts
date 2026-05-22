@@ -34,7 +34,6 @@ export function useTryOnTest() {
   const canSubmit = canSubmitTryOn({
     modelDataUri: model.state.dataUri,
     garmentDataUri: garment.state.dataUri,
-    apiKey: TRY_ON_TEST_CONFIG.apiKey,
     isModelCompressing: model.state.isCompressing,
     isGarmentCompressing: garment.state.isCompressing,
     isCustomPromptInvalid: promptInvalid,

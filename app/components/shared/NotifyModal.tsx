@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { X, Check, Loader2, Bell } from "lucide-react";
 import { cn } from "@/app/shared/lib/utils";
+import { useLandingLanguage } from "@/app/landing/i18n";
 
 export type NotifyProduct = "widget" | "shopify";
 
@@ -30,6 +31,7 @@ const PRODUCT_META: Record<NotifyProduct, { title: string; subtitle: string }> =
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function NotifyModal({ open, onOpenChange, product }: NotifyModalProps) {
+  const { translate } = useLandingLanguage();
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [touched, setTouched] = useState(false);
@@ -52,9 +54,9 @@ export function NotifyModal({ open, onOpenChange, product }: NotifyModalProps) {
   }, [open]);
 
   const emailError = !email.trim()
-    ? "Email is required."
+    ? translate("Email is required.")
     : !EMAIL_RE.test(email.trim())
-    ? "That doesn't look like a valid email."
+    ? translate("That doesn't look like a valid email.")
     : null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -77,11 +79,11 @@ export function NotifyModal({ open, onOpenChange, product }: NotifyModalProps) {
       });
       if (!res.ok) {
         const payload = (await res.json().catch(() => ({}))) as { error?: string; message?: string };
-        throw new Error(payload.error ?? payload.message ?? "Could not sign you up. Try again.");
+        throw new Error(payload.error ?? payload.message ?? translate("Could not sign you up. Try again."));
       }
       setSubmitted(true);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Something went wrong.");
+      setSubmitError(err instanceof Error ? err.message : translate("Something went wrong."));
     } finally {
       setSubmitting(false);
     }
@@ -94,7 +96,7 @@ export function NotifyModal({ open, onOpenChange, product }: NotifyModalProps) {
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-text-primary/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
         <DialogPrimitive.Content className="fixed left-1/2 top-1/2 z-50 grid max-h-[92vh] w-[94vw] max-w-[460px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-brand-blue/10 bg-white shadow-[0_32px_80px_rgba(33,84,239,0.25)] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95">
-          <ModalHeader onClose={() => onOpenChange(false)} />
+          <ModalHeader onClose={() => onOpenChange(false)} translate={translate} />
 
           <div className="px-7 pb-7 pt-4">
             {submitted ? (
@@ -105,20 +107,20 @@ export function NotifyModal({ open, onOpenChange, product }: NotifyModalProps) {
                   <div className="inline-flex items-center gap-2">
                     <span className="inline-flex h-6 items-center gap-1.5 rounded-full bg-brand-blue-pale/60 px-2 text-[10px] font-medium uppercase tracking-[0.08em] text-brand-blue-dark">
                       <Bell className="h-3 w-3" />
-                      Coming soon
+                      {translate("Coming soon")}
                     </span>
                   </div>
                   <DialogPrimitive.Title className="text-[22px] font-medium leading-[1.2] tracking-[-0.015em] text-text-primary">
-                    {meta.title}
+                    {translate(meta.title)}
                   </DialogPrimitive.Title>
                   <DialogPrimitive.Description className="text-sm leading-[1.55] text-text-body">
-                    {meta.subtitle}
+                    {translate(meta.subtitle)}
                   </DialogPrimitive.Description>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-medium text-text-body">
-                    Work email<span className="ml-0.5 text-brand-blue">*</span>
+                    {translate("Work email")}<span className="ml-0.5 text-brand-blue">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -126,7 +128,7 @@ export function NotifyModal({ open, onOpenChange, product }: NotifyModalProps) {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       onBlur={() => setTouched(true)}
-                      placeholder="you@company.com"
+                      placeholder={translate("you@company.com")}
                       autoComplete="email"
                       className={cn(
                         "h-11 w-full rounded-lg border bg-white px-3 pr-9 text-sm text-text-primary placeholder:text-text-hint transition-all duration-200",
@@ -159,12 +161,12 @@ export function NotifyModal({ open, onOpenChange, product }: NotifyModalProps) {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-medium text-text-body">Company (optional)</label>
+                  <label className="text-xs font-medium text-text-body">{translate("Company (optional)")}</label>
                   <input
                     type="text"
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
-                    placeholder="Your store or brand"
+                    placeholder={translate("Your store or brand")}
                     autoComplete="organization"
                     className="h-11 w-full rounded-lg border border-text-primary/15 bg-white px-3 text-sm text-text-primary placeholder:text-text-hint transition-all duration-200 focus:border-brand-blue focus:outline-none focus:ring-2 focus:ring-brand-blue/15"
                   />
@@ -189,15 +191,15 @@ export function NotifyModal({ open, onOpenChange, product }: NotifyModalProps) {
                   {submitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Adding you…
+                      {translate("Adding you…")}
                     </>
                   ) : (
-                    "Notify me"
+                    translate("Notify me")
                   )}
                 </button>
 
                 <p className="text-center text-xs text-text-hint">
-                  One email when it ships. No spam, unsubscribe anytime.
+                  {translate("One email when it ships. No spam, unsubscribe anytime.")}
                 </p>
               </form>
             )}
@@ -208,11 +210,17 @@ export function NotifyModal({ open, onOpenChange, product }: NotifyModalProps) {
   );
 }
 
-function ModalHeader({ onClose }: { onClose: () => void }) {
+function ModalHeader({
+  onClose,
+  translate,
+}: {
+  onClose: () => void;
+  translate: (value: string, replacements?: Record<string, string | number>) => string;
+}) {
   return (
     <div className="relative flex items-center justify-between border-b border-brand-blue/10 bg-gradient-to-br from-brand-blue-pale/60 via-white to-brand-blue-pale/30 px-7 py-5">
       <Image
-        src="/images/landing/logo-navbar-transparent.png"
+        src="/images/landing/optimized/logo-navbar-transparent.webp"
         alt="PrimeStyle AI"
         width={200}
         height={48}
@@ -222,7 +230,7 @@ function ModalHeader({ onClose }: { onClose: () => void }) {
       <DialogPrimitive.Close
         onClick={onClose}
         className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-hint transition-colors hover:bg-brand-blue-pale/50 hover:text-text-primary"
-        aria-label="Close"
+        aria-label={translate("Close")}
       >
         <X className="h-4 w-4" />
       </DialogPrimitive.Close>
@@ -231,21 +239,24 @@ function ModalHeader({ onClose }: { onClose: () => void }) {
 }
 
 function SuccessState({ email, onClose }: { email: string; onClose: () => void }) {
+  const { translate } = useLandingLanguage();
+
   return (
     <div className="flex flex-col items-center gap-4 py-8 text-center animate-in fade-in-0 zoom-in-95 duration-400">
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-status-success/10 text-status-success">
         <Check className="h-7 w-7" strokeWidth={2.5} />
       </div>
-      <h3 className="text-xl font-medium tracking-[-0.01em] text-text-primary">You&rsquo;re on the list.</h3>
+      <h3 className="text-xl font-medium tracking-[-0.01em] text-text-primary">{translate("You’re on the list.")}</h3>
       <p className="max-w-[36ch] text-sm leading-[1.55] text-text-body">
-        We sent a confirmation to <span className="font-medium text-text-primary">{email}</span>. You&rsquo;ll hear from us the moment early access opens.
+        {translate("We sent a confirmation to")} <span className="font-medium text-text-primary">{email}</span>.{" "}
+        {translate("You’ll hear from us the moment early access opens.")}
       </p>
       <button
         type="button"
         onClick={onClose}
         className="mt-2 inline-flex h-11 items-center justify-center rounded-full bg-brand-blue px-6 text-sm font-medium text-white transition-colors hover:bg-brand-blue-dark"
       >
-        Done
+        {translate("Done")}
       </button>
     </div>
   );

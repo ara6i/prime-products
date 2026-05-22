@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, ArrowRight, Sparkles, Camera, Ruler } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Sparkles, Camera, Ruler } from "lucide-react";
 import type { DemoProductCard } from "../../types";
 
 interface Props {
@@ -90,22 +90,6 @@ export function MobileProductList({ products }: Props) {
         )}
       </section>
 
-      {/* Bottom CTA */}
-      <section className="px-[4%] pb-[3vh] pt-[1.5vh]">
-        <div className="h-px bg-border-light mb-[2vh]" />
-        <Link
-          href="/docs"
-          className="flex items-center justify-between px-[5%] py-[1.5vh] bg-dev-section-bg border border-border-light rounded-xl active:bg-surface-light transition-colors"
-        >
-          <div>
-            <h3 style={{ fontSize: 'clamp(13px, 3.5vw, 16px)' }} className="font-semibold mb-[0.2vh]">Ready to integrate?</h3>
-            <p style={{ fontSize: 'clamp(10px, 2.8vw, 13px)' }} className="text-text-hint">Add try-on & sizing in under 5 min</p>
-          </div>
-          <div className="w-[8vw] h-[8vw] max-w-[32px] max-h-[32px] rounded-full bg-brand-blue flex items-center justify-center flex-shrink-0">
-            <ArrowRight className="h-4 w-4 text-white" />
-          </div>
-        </Link>
-      </section>
     </div>
   );
 }

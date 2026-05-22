@@ -100,3 +100,5 @@ export { CheckCheckIcon } from "./CheckCheckIcon";
 export { HelpOutlineIcon } from "./HelpOutlineIcon";
 export { CheckmarkSmallIcon } from "./CheckmarkSmallIcon";
 export { VerifiedCheckIcon } from "./VerifiedCheckIcon";
+export { SunIcon } from "./SunIcon";
+export { MoonIcon } from "./MoonIcon";

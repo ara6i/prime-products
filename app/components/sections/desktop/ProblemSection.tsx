@@ -3,21 +3,24 @@
 import { Reveal } from "../../shared/Reveal";
 import { Eyebrow } from "../../shared/Eyebrow";
 import { QuoteIcon } from "../../shared/icons";
-import { PROBLEM } from "../../../content/landing";
+import { useLandingLanguage } from "@/app/landing/i18n";
 
 export function ProblemSection() {
+  const { content } = useLandingLanguage();
+  const { problem } = content;
+
   return (
     <section className="bg-[#F5F6F8] px-8 py-[clamp(5rem,7vw,7rem)]">
       <div className="mx-auto flex w-[59.722vw] flex-col items-center gap-8 text-center">
         <Reveal variant="fade" className="flex flex-col items-center gap-4">
-          <Eyebrow>{PROBLEM.eyebrow}</Eyebrow>
+          <Eyebrow>{problem.eyebrow}</Eyebrow>
           <h2 className="text-[clamp(2.25rem,1.8rem+2.2vw,3.75rem)] font-semibold leading-[1.05] tracking-[-0.025em] text-text-primary">
-            {PROBLEM.headline}
+            {problem.headline}
           </h2>
         </Reveal>
 
         <Reveal delay={1}>
-          <p className="text-lg leading-[1.65] text-text-body">{PROBLEM.body}</p>
+          <p className="text-lg leading-[1.65] text-text-body">{problem.body}</p>
         </Reveal>
 
         <Reveal
@@ -27,9 +30,9 @@ export function ProblemSection() {
         >
           <QuoteIcon className="h-8 w-8 text-brand-blue/40" />
           <blockquote className="font-serif text-[clamp(1.35rem,1.2rem+0.6vw,1.75rem)] italic leading-[1.35] text-text-primary">
-            {PROBLEM.pullquote}
+            {problem.pullquote}
           </blockquote>
-          <figcaption className="text-sm leading-[1.55] text-text-body">{PROBLEM.pullquoteFooter}</figcaption>
+          <figcaption className="text-sm leading-[1.55] text-text-body">{problem.pullquoteFooter}</figcaption>
         </Reveal>
       </div>
     </section>

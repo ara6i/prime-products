@@ -5,6 +5,7 @@ import { loginAdmin, logoutAdmin } from "@/app/admin/shared/services/adminAuthSe
 
 export interface LoginState {
   error: string | null;
+  errorId?: number;
 }
 
 export async function loginAction(
@@ -15,12 +16,25 @@ export async function loginAction(
   const password = (formData.get("password") as string | null) ?? "";
 
   if (!username || !password) {
-    return { error: "Enter both username and password." };
+    return { error: "Enter both username and password.", errorId: Date.now() };
   }
 
   const result = await loginAdmin(username, password);
   if (!result.ok) {
-    return { error: result.error ?? "Login failed." };
+    const message =
+      result.error === "Invalid username or password."
+        ? "Credentials were not correct."
+        : result.error ?? "Login failed.";
+
+    return { error: message, errorId: Date.now() };
+  }
+
+  if (result.user?.role === "merchant") {
+    await logoutAdmin();
+    return {
+      error: "This is a customer account. Use the customer login page.",
+      errorId: Date.now(),
+    };
   }
 
   redirect("/admin");

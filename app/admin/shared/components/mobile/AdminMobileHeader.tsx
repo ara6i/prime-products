@@ -29,7 +29,7 @@ export function AdminMobileHeader({ title, subtitle }: Props) {
       <header className="lg:hidden sticky top-0 z-30 flex items-center justify-between bg-admin-surface-card border-b border-admin-border px-4 h-14">
         <Link href="/admin" className="flex items-center gap-2">
           <Image
-            src="/images/landing/logo-navbar-transparent.png"
+            src="/images/landing/optimized/logo-navbar-transparent.webp"
             alt="PrimeStyleAI"
             width={95}
             height={89}

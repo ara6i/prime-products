@@ -90,7 +90,7 @@ export function MobileNavbar() {
       >
         <Link href="/" onClick={close}>
           <Image
-            src="/images/landing/logo-navbar-transparent.png"
+            src="/images/landing/optimized/logo-navbar-transparent.webp"
             alt="PrimeStyleAI"
             width={56}
             height={52}

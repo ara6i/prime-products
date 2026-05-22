@@ -5,17 +5,19 @@ import Image from "next/image";
 import { Reveal } from "../../shared/Reveal";
 import { SectionHeading } from "../../shared/SectionHeading";
 import { cn } from "@/app/shared/lib/utils";
-import { FEATURES } from "../../../content/landing";
+import { useLandingLanguage } from "@/app/landing/i18n";
 
 export function FeaturesSection() {
   const [active, setActive] = useState(0);
-  const tabs = FEATURES.tabs;
+  const { content, translate } = useLandingLanguage();
+  const { features } = content;
+  const tabs = features.tabs;
   const activeTab = tabs[active];
 
   return (
     <section className="px-8 py-[clamp(5rem,7vw,7rem)]">
       <div className="mx-auto flex w-[86.111vw] flex-col gap-12">
-        <SectionHeading eyebrow={FEATURES.eyebrow} title={FEATURES.title} />
+        <SectionHeading eyebrow={features.eyebrow} title={features.title} />
 
         <Reveal variant="fade" delay={1} className="flex flex-wrap justify-center gap-2">
           {tabs.map((tab, i) => (
@@ -42,7 +44,7 @@ export function FeaturesSection() {
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-center">
             <div key={`copy-${active}`} className="flex flex-col gap-4 animate-in fade-in slide-in-from-left-4 duration-500">
               <span className="text-xs font-mono uppercase tracking-[0.14em] text-brand-blue">
-                Capability 0{active + 1}
+                {translate("Capability")} 0{active + 1}
               </span>
               <h3 className="text-[clamp(1.75rem,1.4rem+1.2vw,2.5rem)] font-semibold leading-[1.15] tracking-[-0.02em] text-text-primary">
                 {activeTab.title}

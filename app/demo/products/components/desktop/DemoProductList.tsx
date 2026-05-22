@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Sparkles, Camera, Ruler } from "lucide-react";
+import { ArrowUpRight, Sparkles, Camera, Ruler } from "lucide-react";
 import type { DemoProductCard } from "../../types";
 
 interface Props {
@@ -123,25 +123,6 @@ export function DesktopProductList({ products }: Props) {
         </div>
       </section>
 
-      {/* ── Bottom CTA ── */}
-      <section className="relative pb-[5vh]">
-        <div className="max-w-[75%] mx-auto px-[2%]">
-          <div className="h-px bg-gradient-to-r from-transparent via-border-light to-transparent mb-[4vh]" />
-          <div className="relative overflow-hidden rounded-[1vw] border border-border-light bg-dev-section-bg">
-            <div className="absolute top-0 right-0 w-[20vw] h-[15vh] bg-[radial-gradient(ellipse,rgba(33,84,239,0.06),transparent_70%)]" />
-            <div className="relative flex items-center justify-between px-[2vw] py-[2vh]">
-              <div>
-                <h3 style={{ fontSize: '1.3vw' }} className="font-semibold tracking-tight mb-[0.5vh]">Ready to integrate?</h3>
-                <p style={{ fontSize: '0.85vw' }} className="text-text-body">Add virtual try-on & size recommendation to your store in under 5 minutes.</p>
-              </div>
-              <Link href="/docs" className="group inline-flex items-center gap-[0.4vw] px-[1.2vw] py-[0.8vh] bg-brand-blue text-white font-bold rounded-full hover:bg-brand-blue-dark hover:shadow-[0_0_30px_rgba(33,84,239,0.3)] transition-all duration-300" style={{ fontSize: '0.85vw' }}>
-                View Docs
-                <ArrowRight style={{ width: '1vw', height: '1vw' }} className="group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

@@ -6,31 +6,34 @@ import { Eyebrow } from "../../shared/Eyebrow";
 import { CheckIcon, SparkleIcon } from "../../shared/icons";
 import { useAutoAdvance } from "../../../hooks/useAutoAdvance";
 import { cn } from "@/app/shared/lib/utils";
-import { SDK_DEMO } from "../../../content/landing";
+import { useLandingLanguage } from "@/app/landing/i18n";
 import type { SdkStep } from "../../../types/landing";
 
 export function SdkDemoSection() {
+  const { content, translate } = useLandingLanguage();
+  const { sdkDemo } = content;
+
   return (
     <section id="sdk-demo" className="bg-white">
       <div className="mx-auto w-[86.111vw] px-[2.222vw] pb-[clamp(3rem,5vw,5rem)] pt-[clamp(5rem,7vw,7rem)]">
         <Reveal variant="fade" className="flex flex-col items-center gap-4 text-center">
-          <Eyebrow>{SDK_DEMO.eyebrow}</Eyebrow>
+          <Eyebrow>{sdkDemo.eyebrow}</Eyebrow>
           <h2 className="text-[clamp(2.25rem,1.8rem+2.2vw,3.75rem)] font-medium leading-[1.05] tracking-[-0.025em] text-text-primary">
-            {SDK_DEMO.title}
+            {sdkDemo.title}
           </h2>
-          <p className="max-w-[48ch] text-lg leading-[1.6] text-text-body">{SDK_DEMO.subtitle}</p>
+          <p className="max-w-[48ch] text-lg leading-[1.6] text-text-body">{sdkDemo.subtitle}</p>
         </Reveal>
       </div>
 
-      <TabFlow steps={SDK_DEMO.flow1.steps} />
+      <TabFlow steps={sdkDemo.flow1.steps} translate={translate} />
 
       <div className="mx-auto w-[86.111vw] px-[2.222vw] text-center pt-[clamp(3rem,5vw,5rem)]">
         <Reveal variant="fade">
-          <Eyebrow>{SDK_DEMO.flow2.tag}</Eyebrow>
+          <Eyebrow>{sdkDemo.flow2.tag}</Eyebrow>
         </Reveal>
       </div>
 
-      <TabFlow steps={SDK_DEMO.flow2.steps} aiTag={SDK_DEMO.flow2.aiTag} />
+      <TabFlow steps={sdkDemo.flow2.steps} aiTag={sdkDemo.flow2.aiTag} translate={translate} />
     </section>
   );
 }
@@ -38,16 +41,17 @@ export function SdkDemoSection() {
 interface TabFlowProps {
   steps: SdkStep[];
   aiTag?: string;
+  translate: (value: string, replacements?: Record<string, string | number>) => string;
 }
 
-function TabFlow({ steps, aiTag }: TabFlowProps) {
+function TabFlow({ steps, aiTag, translate }: TabFlowProps) {
   const { step, progress, jumpToStep, containerRef } = useAutoAdvance({ count: steps.length });
 
   return (
     <div ref={containerRef} className="py-[clamp(3rem,5vw,5rem)]">
       <div className="mx-auto grid w-[86.111vw] grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] items-center gap-[3.333vw] px-[2.222vw]">
         <div className="flex flex-col gap-8">
-          <StepProgress steps={steps} active={step} progress={progress} onStepClick={jumpToStep} />
+          <StepProgress steps={steps} active={step} progress={progress} onStepClick={jumpToStep} translate={translate} />
           <div className="relative min-h-[300px]">
             {steps.map((s, i) => (
               <StepSlide key={i} step={s} active={i === step} aiTag={aiTag && i === steps.length - 1 ? aiTag : undefined} />
@@ -78,11 +82,13 @@ function StepProgress({
   active,
   progress,
   onStepClick,
+  translate,
 }: {
   steps: SdkStep[];
   active: number;
   progress: number;
   onStepClick: (i: number) => void;
+  translate: (value: string, replacements?: Record<string, string | number>) => string;
 }) {
   return (
     <div className="flex items-center gap-3" role="tablist">
@@ -116,7 +122,7 @@ function StepProgress({
             <button
               type="button"
               onClick={() => onStepClick(i + 1)}
-              aria-label={`Jump to step ${i + 2}`}
+              aria-label={translate("Jump to step {step}", { step: i + 2 })}
               className="relative h-px w-16 bg-text-primary/15 cursor-pointer"
             >
               <span

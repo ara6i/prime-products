@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { ChevronLeft, Camera, Ruler, Globe, ChevronRight, Sparkles } from "lucide-react";
 import { usePrimeStyleSize } from "@primestyleai/tryon/react";
+import type { RecommendForProductInput } from "@primestyleai/tryon/react";
 import type { DemoProductView } from "../../../types";
 import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
@@ -16,6 +17,13 @@ const PrimeStyleTryon = dynamic(
   () => import("@primestyleai/tryon/react").then((m) => ({ default: m.PrimeStyleTryon })),
   { ssr: false },
 );
+
+type DemoPrimeStyleTryonProps = React.ComponentProps<typeof PrimeStyleTryon> & {
+  productCategory?: string;
+  productSubcategory?: string;
+};
+
+const DemoPrimeStyleTryon = PrimeStyleTryon as React.ComponentType<DemoPrimeStyleTryonProps>;
 
 const SDK_LOCALES = [
   { code: "en", label: "English" },
@@ -43,6 +51,12 @@ const SDK_LOCALES = [
 interface Props {
   product: DemoProductView;
 }
+
+type DemoPrimeStyleSizeInput = RecommendForProductInput & {
+  productCategory?: string;
+  productSubcategory?: string;
+  productDescription?: string;
+};
 
 export function MobileProductDetail({ product }: Props) {
   const router = useRouter();
@@ -74,10 +88,12 @@ export function MobileProductDetail({ product }: Props) {
   // instead of plain shoe sizes. Regex mirrors detectMeasurementType
   // in the SDK so demo and SDK stay in sync.
   const categoryHaystack = `${product.category} ${product.subcategory} ${product.name}`;
-  const isAccessoryCategory = /\b(shoe|shoes|sneaker|sneakers|boot|boots|heel|heels|loafer|loafers|mule|mules|sandal|sandals|trainer|trainers|slipper|slippers|stiletto|stilettos|pump|pumps|oxford|derby|derbies|wedge|espadrille|clog|hat|hats|cap|caps|beanie|beanies|fedora|snapback|beret|panama|headband|visor|bonnet|sunglass|sunglasses|eyewear|eyeglasses|glasses|spectacles|optical|goggles|frames|aviator|wayfarer|lens)\b/i
+  const isAccessoryCategory = /\b(accessory|accessories|jewelry|jewellery|earring|earrings|bracelet|bracelets|ring|rings|necklace|necklaces|pendant|pendants|chain|chains|watch|watches|cufflink|cufflinks|brooch|brooches|anklet|anklets|charm|charms|shoe|shoes|sneaker|sneakers|boot|boots|heel|heels|loafer|loafers|mule|mules|sandal|sandals|trainer|trainers|slipper|slippers|stiletto|stilettos|pump|pumps|oxford|derby|derbies|wedge|espadrille|clog|hat|hats|cap|caps|beanie|beanies|fedora|snapback|beret|panama|headband|visor|bonnet|sunglass|sunglasses|eyewear|eyeglasses|glasses|spectacles|optical|goggles|frames|aviator|wayfarer|lens|handbag|handbags|bag|bags|tote|totes|crossbody|clutch|satchel|backpack|backpacks|wallet|wallets|purse|purses|luggage|suitcase|suitcases|leather goods)\b/i
     .test(categoryHaystack);
   const isDress = /\b(dress|dresses|gown|gowns|wedding|bridal|bridesmaid)\b/i.test(categoryHaystack);
-  const hasSplitSizes = !isAccessoryCategory && sizes.some((s) => s.name.includes(" ") || s.name.includes("/"));
+  const isOneSizeOnly = sizes.length === 1 && /^one\s*size$/i.test(sizes[0]?.name.trim() ?? "");
+  const oneSizeLabel = sizes[0]?.name ?? "One Size";
+  const hasSplitSizes = !isAccessoryCategory && !isOneSizeOnly && sizes.some((s) => s.name.includes(" ") || s.name.includes("/"));
   const parsedSizes = useMemo(() => sizes.map((s) => {
     const name = s.name.trim();
     const prefixed = name.match(/^(MISSY|PLUS)\s+(\S+)\s*\/\s*(.+)$/i);
@@ -143,13 +159,17 @@ export function MobileProductDetail({ product }: Props) {
   });
 
   // ── Headless auto-sizing from saved profile ──
-  const autoSize = usePrimeStyleSize({
+  const autoSizeInput: DemoPrimeStyleSizeInput = {
     productId: product.id,
     productTitle: product.name,
     productImage: product.primaryImage,
+    productCategory: product.category,
+    productSubcategory: product.subcategory,
+    productDescription: product.description,
     sizeGuideData: product.sizeGuideData,
     apiUrl: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000",
-  });
+  };
+  const autoSize = usePrimeStyleSize(autoSizeInput);
   // Auto-select sizes when the saved-profile recommendation arrives from
   // the SDK. The backend returns split fields like
   //   sections.Jacket = { recommendedSize: "38", size: "38", length: "Regular" }
@@ -421,7 +441,22 @@ export function MobileProductDetail({ product }: Props) {
           )}
 
           {/* ── MW-style Bundle Size Selector ── */}
-          {sizes.length > 0 && hasSplitSizes ? (
+          {sizes.length > 0 && isOneSizeOnly ? (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm text-text-hint uppercase tracking-wider">Size</span>
+                {product.sizeGuide && (
+                  <button onClick={() => setSizeGuideOpen(true)} className="text-sm text-brand-blue flex items-center gap-1">
+                    <Ruler className="h-3 w-3" />
+                    Size Guide
+                  </button>
+                )}
+              </div>
+              <div className="rounded-xl border border-border-light bg-surface-light px-3 py-3 text-sm font-medium text-text-primary">
+                {oneSizeLabel}
+              </div>
+            </div>
+          ) : sizes.length > 0 && hasSplitSizes ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-text-hint uppercase tracking-wider">Your Size</span>
@@ -552,17 +587,21 @@ export function MobileProductDetail({ product }: Props) {
             </div>
           ) : null}
 
-          {/* Find Your Size — minimal inline button under the size dropdown
+          {/* See How It Fits — minimal inline button under the size dropdown
               on mobile. No icon, no sticky bottom, no @primestyleai/tryon byline. */}
-          <PrimeStyleTryon
+          <DemoPrimeStyleTryon
             apiUrl={process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"}
             productId={product.id}
             productImage={images[currentImage] ?? product.primaryImage}
             productImages={images}
             locale={sdkLocale}
             productTitle={product.name}
+            productCategory={product.category}
+            productSubcategory={product.subcategory}
+            productDescription={product.description}
+            productMaterial={product.material}
             sizeGuideData={product.sizeGuideData}
-            buttonText="Find Your Size"
+            buttonText="See How It Fits"
             onComplete={handleSizingComplete}
             buttonStyles={{
               backgroundColor: "#2154EF",

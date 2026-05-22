@@ -5,6 +5,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ArrowLeft, Ruler, Sparkles } from "lucide-react";
 import { usePrimeStyleSize } from "@primestyleai/tryon/react";
+import type { RecommendForProductInput } from "@primestyleai/tryon/react";
 import type { DemoProductView } from "../../../types";
 import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
@@ -18,10 +19,22 @@ const PrimeStyleTryon = dynamic(
   { ssr: false },
 );
 
+type DemoPrimeStyleTryonProps = React.ComponentProps<typeof PrimeStyleTryon> & {
+  productCategory?: string;
+  productSubcategory?: string;
+};
+
+const DemoPrimeStyleTryon = PrimeStyleTryon as React.ComponentType<DemoPrimeStyleTryonProps>;
 
 interface Props {
   product: DemoProductView;
 }
+
+type DemoPrimeStyleSizeInput = RecommendForProductInput & {
+  productCategory?: string;
+  productSubcategory?: string;
+  productDescription?: string;
+};
 
 export function DesktopProductDetail({ product }: Props) {
   const [selectedColor, setSelectedColor] = useState(product.selectedColor);
@@ -42,10 +55,12 @@ export function DesktopProductDetail({ product }: Props) {
   // instead of plain shoe sizes. Regex mirrors detectMeasurementType
   // in the SDK so demo and SDK stay in sync.
   const categoryHaystack = `${product.category} ${product.subcategory} ${product.name}`;
-  const isAccessoryCategory = /\b(shoe|shoes|sneaker|sneakers|boot|boots|heel|heels|loafer|loafers|mule|mules|sandal|sandals|trainer|trainers|slipper|slippers|stiletto|stilettos|pump|pumps|oxford|derby|derbies|wedge|espadrille|clog|hat|hats|cap|caps|beanie|beanies|fedora|snapback|beret|panama|headband|visor|bonnet|sunglass|sunglasses|eyewear|eyeglasses|glasses|spectacles|optical|goggles|frames|aviator|wayfarer|lens)\b/i
+  const isAccessoryCategory = /\b(accessory|accessories|jewelry|jewellery|earring|earrings|bracelet|bracelets|ring|rings|necklace|necklaces|pendant|pendants|chain|chains|watch|watches|cufflink|cufflinks|brooch|brooches|anklet|anklets|charm|charms|shoe|shoes|sneaker|sneakers|boot|boots|heel|heels|loafer|loafers|mule|mules|sandal|sandals|trainer|trainers|slipper|slippers|stiletto|stilettos|pump|pumps|oxford|derby|derbies|wedge|espadrille|clog|hat|hats|cap|caps|beanie|beanies|fedora|snapback|beret|panama|headband|visor|bonnet|sunglass|sunglasses|eyewear|eyeglasses|glasses|spectacles|optical|goggles|frames|aviator|wayfarer|lens|handbag|handbags|bag|bags|tote|totes|crossbody|clutch|satchel|backpack|backpacks|wallet|wallets|purse|purses|luggage|suitcase|suitcases|leather goods)\b/i
     .test(categoryHaystack);
   const isDress = /\b(dress|dresses|gown|gowns|wedding|bridal|bridesmaid)\b/i.test(categoryHaystack);
-  const hasSplitSizes = !isAccessoryCategory && sizes.some((s) => s.name.includes(" ") || s.name.includes("/"));
+  const isOneSizeOnly = sizes.length === 1 && /^one\s*size$/i.test(sizes[0]?.name.trim() ?? "");
+  const oneSizeLabel = sizes[0]?.name ?? "One Size";
+  const hasSplitSizes = !isAccessoryCategory && !isOneSizeOnly && sizes.some((s) => s.name.includes(" ") || s.name.includes("/"));
   // Size label parser handles three real-world chart formats:
   //   1. "MISSY 12 / Standard"   → number="MISSY 12", length="Standard"  (DB Studio wedding dress)
   //   2. "44 R"                  → number="44",       length="R"          (tuxedo jacket)
@@ -115,13 +130,17 @@ export function DesktopProductDetail({ product }: Props) {
     setPantsLengthSize,
   });
 
-  const autoSize = usePrimeStyleSize({
+  const autoSizeInput: DemoPrimeStyleSizeInput = {
     productId: product.id,
     productTitle: product.name,
     productImage: product.primaryImage,
+    productCategory: product.category,
+    productSubcategory: product.subcategory,
+    productDescription: product.description,
     sizeGuideData: product.sizeGuideData,
     apiUrl: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000",
-  });
+  };
+  const autoSize = usePrimeStyleSize(autoSizeInput);
 
   const lastAutoSelectedRef = useRef<string | null>(null);
   useEffect(() => {
@@ -385,7 +404,14 @@ export function DesktopProductDetail({ product }: Props) {
             ) : null}
 
             {/* Size selector */}
-            {sizes.length > 0 && hasSplitSizes ? (
+            {sizes.length > 0 && isOneSizeOnly ? (
+              <div>
+                <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider block mb-[0.6vw]">Size</span>
+                <div className="w-full rounded-lg border border-border-light bg-surface-light px-[0.85vw] py-[0.7vw] text-text-primary font-medium" style={{ fontSize: '0.82vw' }}>
+                  {oneSizeLabel}
+                </div>
+              </div>
+            ) : sizes.length > 0 && hasSplitSizes ? (
               <div className={`space-y-[0.6vw] ${justAutoFilled ? "ps-autofill-flash" : ""}`}>
                 <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider block">Size</span>
                 <div className="flex gap-[0.5vw]">
@@ -464,15 +490,19 @@ export function DesktopProductDetail({ product }: Props) {
             ) : null}
 
             {/* SDK CTA */}
-            <PrimeStyleTryon
+            <DemoPrimeStyleTryon
               apiUrl={process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"}
               productId={product.id}
               productImage={images[0] ?? product.primaryImage}
               productImages={images}
               locale="en"
               productTitle={product.name}
+              productCategory={product.category}
+              productSubcategory={product.subcategory}
+              productDescription={product.description}
+              productMaterial={product.material}
               sizeGuideData={product.sizeGuideData}
-              buttonText="Find Your Size"
+              buttonText="See How It Fits"
               onComplete={handleSizingComplete}
               buttonStyles={{
                 backgroundColor: "#2154EF",

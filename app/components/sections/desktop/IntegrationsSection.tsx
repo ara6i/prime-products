@@ -11,9 +11,17 @@ import { LandingButton } from "../../shared/LandingButton";
 import { NotifyModal, type NotifyProduct } from "../../shared/NotifyModal";
 import { usePilotModal } from "../../shared/PilotModalContext";
 import { cn } from "@/app/shared/lib/utils";
-import { DOCS_HREF } from "../../../content/landing";
+import { useLandingLanguage } from "@/app/landing/i18n";
 
-type Visual = { kind: "gif"; src: string } | { kind: "code" } | { kind: "soon"; tag: "widget" | "shopify" };
+type Visual =
+  | {
+      kind: "video";
+      webm: string;
+      mp4: string;
+      poster: string;
+    }
+  | { kind: "code" }
+  | { kind: "soon"; tag: "widget" | "shopify" };
 
 type IntegrationTab = {
   value: "sdk" | "api" | "widget" | "shopify";
@@ -43,7 +51,12 @@ const TABS: IntegrationTab[] = [
         "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, Remix, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.",
       primaryHref: "#pilot",
       primaryLabel: "Apply for free pilot",
-      visual: { kind: "gif", src: "/images/landing/ps/sdk-demo.gif" },
+      visual: {
+        kind: "video",
+        webm: "/images/landing/ps/optimized/sdk-demo.webm",
+        mp4: "/images/landing/ps/optimized/sdk-demo.mp4",
+        poster: "/images/landing/ps/optimized/sdk-demo-poster.webp",
+      },
     },
   },
   {
@@ -93,6 +106,8 @@ const TABS: IntegrationTab[] = [
 export function IntegrationsSection() {
   const [notifyProduct, setNotifyProduct] = useState<NotifyProduct | null>(null);
   const { open: openPilot } = usePilotModal();
+  const { translate } = useLandingLanguage();
+
   return (
     <section id="integrations" className="relative overflow-hidden px-8 py-[clamp(5rem,7vw,7rem)]">
       <div
@@ -106,9 +121,9 @@ export function IntegrationsSection() {
 
       <div className="mx-auto flex w-[86.111vw] flex-col gap-10">
         <SectionHeading
-          eyebrow="Ship it your way"
-          title="Four ways to integrate."
-          subtitle="SDK and REST API are live today. Widget and Shopify app are next up."
+          eyebrow={translate("Ship it your way")}
+          title={translate("Four ways to integrate.")}
+          subtitle={translate("SDK and REST API are live today. Widget and Shopify app are next up.")}
         />
 
         <Reveal variant="fade" delay={1}>
@@ -126,7 +141,7 @@ export function IntegrationsSection() {
                   )}
                 >
                   {tab.icon}
-                  {tab.label}
+                  {translate(tab.label)}
                 </TabsPrimitive.Trigger>
               ))}
             </TabsPrimitive.List>
@@ -142,8 +157,8 @@ export function IntegrationsSection() {
                     "data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-500"
                   )}
                 >
-                  <TabCopy tab={tab} onNotify={setNotifyProduct} onPilot={openPilot} />
-                  <TabVisual tab={tab} />
+                  <TabCopy tab={tab} onNotify={setNotifyProduct} onPilot={openPilot} translate={translate} />
+                  <TabVisual tab={tab} translate={translate} />
                 </TabsPrimitive.Content>
               ))}
             </div>
@@ -168,10 +183,12 @@ function TabCopy({
   tab,
   onNotify,
   onPilot,
+  translate,
 }: {
   tab: IntegrationTab;
   onNotify: (product: NotifyProduct) => void;
   onPilot: () => void;
+  translate: (value: string, replacements?: Record<string, string | number>) => string;
 }) {
   const { content } = tab;
   const soon = content.status === "soon";
@@ -189,14 +206,14 @@ function TabCopy({
         )}
       >
         {!soon ? <span className="h-1 w-1 rounded-full bg-status-success" /> : null}
-        {soon ? "Coming soon" : "Available today"}
+        {soon ? translate("Coming soon") : translate("Available today")}
       </span>
 
       <h3 className="text-[clamp(1.375rem,1.2rem+0.6vw,1.75rem)] font-medium leading-[1.2] tracking-[-0.012em] text-text-primary">
-        {content.title}
+        {translate(content.title)}
       </h3>
 
-      <p className="max-w-[52ch] text-[15px] leading-[1.65] text-text-body">{content.description}</p>
+      <p className="max-w-[52ch] text-[15px] leading-[1.65] text-text-body">{translate(content.description)}</p>
 
       <div className="mt-2 flex flex-wrap items-center gap-3">
         {soon ? (
@@ -205,15 +222,15 @@ function TabCopy({
             onClick={() => notifyProduct && onNotify(notifyProduct)}
             className="inline-flex h-11 items-center gap-2 rounded-full border border-brand-blue/20 bg-white px-5 text-sm font-medium text-brand-blue-dark transition-all cursor-pointer hover:-translate-y-0.5 hover:border-brand-blue/40 hover:bg-brand-blue-pale/40 hover:shadow-[0_6px_18px_rgba(33,84,239,0.12)]"
           >
-            {content.primaryLabel}
+            {translate(content.primaryLabel)}
           </button>
         ) : isPilotCta ? (
           <LandingButton onClick={onPilot} variant="primary" size="lg" icon="arrow-right">
-            {content.primaryLabel}
+            {translate(content.primaryLabel)}
           </LandingButton>
         ) : (
           <LandingButton href={content.primaryHref} variant="primary" size="lg" icon="arrow-right">
-            {content.primaryLabel}
+            {translate(content.primaryLabel)}
           </LandingButton>
         )}
         {content.secondaryHref ? (
@@ -221,7 +238,7 @@ function TabCopy({
             href={content.secondaryHref}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-blue transition-colors hover:text-brand-blue-dark"
           >
-            {content.secondaryLabel} →
+            {content.secondaryLabel ? translate(content.secondaryLabel) : null} →
           </Link>
         ) : null}
       </div>
@@ -229,24 +246,44 @@ function TabCopy({
   );
 }
 
-function TabVisual({ tab }: { tab: IntegrationTab }) {
+function TabVisual({
+  tab,
+  translate,
+}: {
+  tab: IntegrationTab;
+  translate: (value: string, replacements?: Record<string, string | number>) => string;
+}) {
   switch (tab.content.visual.kind) {
-    case "gif":
-      return <GifFrame src={tab.content.visual.src} />;
+    case "video":
+      return <VideoFrame visual={tab.content.visual} translate={translate} />;
     case "code":
       return <CodeFrame />;
     case "soon":
-      return <SoonFrame tag={tab.content.visual.tag} />;
+      return <SoonFrame tag={tab.content.visual.tag} translate={translate} />;
   }
 }
 
-function GifFrame({ src }: { src: string }) {
+function VideoFrame({
+  visual,
+  translate,
+}: {
+  visual: Extract<Visual, { kind: "video" }>;
+  translate: (value: string, replacements?: Record<string, string | number>) => string;
+}) {
   return (
-    <img
-      src={src}
-      alt="SDK demo"
+    <video
+      aria-label={translate("SDK demo")}
+      autoPlay
+      loop
+      muted
+      playsInline
+      poster={visual.poster}
+      preload="none"
       className="w-full rounded-2xl shadow-[0_16px_48px_rgba(33,84,239,0.1)]"
-    />
+    >
+      <source src={visual.webm} type="video/webm" />
+      <source src={visual.mp4} type="video/mp4" />
+    </video>
   );
 }
 
@@ -303,7 +340,13 @@ function CodeFrame() {
   );
 }
 
-function SoonFrame({ tag }: { tag: "widget" | "shopify" }) {
+function SoonFrame({
+  tag,
+  translate,
+}: {
+  tag: "widget" | "shopify";
+  translate: (value: string, replacements?: Record<string, string | number>) => string;
+}) {
   return (
     <div className="relative flex aspect-[5/4] w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-2xl border border-brand-blue/10 bg-white p-10 text-center shadow-[0_16px_48px_rgba(33,84,239,0.08)]">
       <div
@@ -329,10 +372,10 @@ function SoonFrame({ tag }: { tag: "widget" | "shopify" }) {
       <div className="relative flex flex-col items-center gap-1.5">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-text-primary/15 bg-surface-segment px-3 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-text-hint">
           <Clock3 className="h-3 w-3" />
-          Coming soon
+          {translate("Coming soon")}
         </span>
         <span className="font-mono text-xs text-text-hint">
-          {tag === "shopify" ? "Shopify App" : "Drop-in Widget"}
+          {tag === "shopify" ? translate("Shopify App") : translate("Drop-in Widget")}
         </span>
       </div>
     </div>

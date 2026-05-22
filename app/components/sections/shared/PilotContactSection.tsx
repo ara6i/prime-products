@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
 import {
   Check,
   Clock3,
@@ -14,26 +13,18 @@ import {
   ShieldCheck,
   Youtube,
 } from "lucide-react";
+import { Toaster } from "sonner";
+import { EmailOtpConfirmModal } from "../../shared/EmailOtpConfirmModal";
 import { Reveal } from "../../shared/Reveal";
 import { WordReveal } from "../../shared/WordReveal";
 import { cn } from "@/app/shared/lib/utils";
-import { getPilotRequestUrl } from "../../shared/pilotRequest";
-
-type ToolIntegration = "react-sdk" | "api" | "shopify";
-type ShareData = "yes" | "no";
-
-type FormState = {
-  name: string;
-  email: string;
-  website: string;
-  monthlyVisitors: string;
-  catalogDescription: string;
-  toolIntegration: ToolIntegration;
-  shareData: ShareData;
-};
-
-type FieldErrors = Partial<Record<keyof FormState, string>>;
-type FieldTouched = Partial<Record<keyof FormState, boolean>>;
+import { useLandingLanguage } from "@/app/landing/i18n";
+import {
+  PILOT_DEMO_URL,
+  type ShareData,
+  type ToolIntegration,
+  usePilotContactForm,
+} from "./hooks/usePilotContactForm";
 
 type FieldProps = {
   label: string;
@@ -52,19 +43,6 @@ type RadioOption<T extends string> = {
   value: T;
   label: string;
 };
-
-const INITIAL_FORM: FormState = {
-  name: "",
-  email: "",
-  website: "",
-  monthlyVisitors: "",
-  catalogDescription: "",
-  toolIntegration: "react-sdk",
-  shareData: "yes",
-};
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const WEBSITE_RE = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/.*)?$/i;
 
 const CONTACT_LINKS = [
   {
@@ -114,99 +92,62 @@ const PILOT_NOTES = [
   { Icon: Check, title: "No credit card", body: "Qualified pilots can start without payment setup." },
 ];
 
-function validate(form: FormState): FieldErrors {
-  const errors: FieldErrors = {};
-  if (!form.name.trim() || form.name.trim().length < 2) errors.name = "Please enter your full name.";
-  if (!form.email.trim()) errors.email = "Email is required.";
-  else if (!EMAIL_RE.test(form.email.trim())) errors.email = "Enter a valid email address.";
-  if (!form.website.trim()) errors.website = "Please enter your website.";
-  else if (!WEBSITE_RE.test(form.website.trim())) errors.website = "Enter a valid website.";
-  if (!form.monthlyVisitors.trim()) errors.monthlyVisitors = "Please enter a rough monthly visitor count.";
-  return errors;
-}
-
 export function PilotContactSection() {
-  const [form, setForm] = useState<FormState>(INITIAL_FORM);
-  const [touched, setTouched] = useState<FieldTouched>({});
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(false);
-
-  const errors = validate(form);
-  const hasErrors = Object.keys(errors).length > 0;
-
-  const setField =
-    <K extends keyof FormState>(key: K) =>
-    (value: FormState[K]) => {
-      setForm((current) => ({ ...current, [key]: value }));
-    };
-
-  const markTouched = (key: keyof FormState) => () => {
-    setTouched((current) => ({ ...current, [key]: true }));
-  };
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setTouched({
-      name: true,
-      email: true,
-      website: true,
-      monthlyVisitors: true,
-      catalogDescription: true,
-      toolIntegration: true,
-      shareData: true,
-    });
-
-    if (hasErrors) return;
-
-    setSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      const response = await fetch(getPilotRequestUrl(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name.trim(),
-          email: form.email.trim(),
-          company: form.website.trim(),
-          website: form.website.trim(),
-          monthlyVisitors: form.monthlyVisitors.trim(),
-          catalogDescription: form.catalogDescription.trim() || undefined,
-          toolIntegration: form.toolIntegration,
-          shareData: form.shareData === "yes",
-        }),
-      });
-
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => ({}))) as { error?: string; message?: string };
-        throw new Error(payload.error ?? payload.message ?? "Could not submit. Try again.");
-      }
-
-      setSubmitted(true);
-      setForm(INITIAL_FORM);
-      setTouched({});
-    } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : "Something went wrong.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const { translate } = useLandingLanguage();
+  const {
+    form,
+    touched,
+    errors,
+    submitted,
+    submitting,
+    submitError,
+    setField,
+    markTouched,
+    handleSubmit,
+    otpOpen,
+    otpEmail,
+    setOtpOpen,
+    handleOtpVerified,
+  } = usePilotContactForm();
 
   return (
     <section id="contact" className="relative overflow-hidden bg-white px-5 py-14 md:px-8 md:py-[clamp(5rem,7vw,7rem)]">
+      <EmailOtpConfirmModal
+        open={otpOpen}
+        onOpenChange={setOtpOpen}
+        email={otpEmail}
+        onVerified={handleOtpVerified}
+      />
+      <Toaster
+        position="bottom-right"
+        closeButton
+        toastOptions={{
+          className: "rounded-2xl",
+          style: {
+            background: "#ffffff",
+            color: "#0f172a",
+            border: "1px solid rgba(33,84,239,0.24)",
+            boxShadow: "0 16px 44px rgba(33,84,239,0.16)",
+            width: "min(92vw, 460px)",
+            padding: "14px 16px",
+            fontSize: "15px",
+            lineHeight: "1.45",
+          },
+        }}
+      />
       <div className="mx-auto grid w-full max-w-[1220px] items-start gap-8 lg:grid-cols-[0.9fr_1.1fr] xl:max-w-[88.889vw]">
         <Reveal as="article" className="flex flex-col gap-6">
           <div className="flex flex-col gap-4">
             <span className="inline-flex w-fit rounded-full border border-brand-blue/15 bg-brand-blue-pale/45 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-brand-blue-dark">
-              Contact
+              {translate("Contact")}
             </span>
             <h2 className="max-w-[12ch] text-[clamp(2rem,1.5rem+2.2vw,3.65rem)] font-medium leading-[1.05] text-text-primary">
-              <WordReveal text="Contact us" />
+              <WordReveal text={translate("Contact us")} />
             </h2>
             <p className="max-w-[58ch] text-base leading-[1.65] text-text-body md:text-[1.05rem]">
-              Share your brand profile, catalog scope, and integration requirements. Our team
-              reviews each pilot request and follows up with next steps.
+              {translate(
+                "Share your brand profile, catalog scope, and integration requirements. Our team reviews each pilot request and follows up with next steps."
+              )}
             </p>
           </div>
 
@@ -223,9 +164,9 @@ export function PilotContactSection() {
                   <Icon className="h-5 w-5" strokeWidth={1.8} />
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-sm font-medium text-text-hint">{label}</span>
+                  <span className="block text-sm font-medium text-text-hint">{translate(label)}</span>
                   <span className="block break-words text-base font-semibold text-text-primary transition-colors group-hover:text-brand-blue">
-                    {value}
+                    {label === "Address" ? translate(value) : value}
                   </span>
                 </span>
               </a>
@@ -233,7 +174,7 @@ export function PilotContactSection() {
           </div>
 
           <div className="flex flex-col gap-4">
-            <span className="text-sm font-semibold text-text-primary">Social links</span>
+            <span className="text-sm font-semibold text-text-primary">{translate("Social links")}</span>
             <div className="flex flex-wrap items-center gap-3">
               {SOCIAL_LINKS.map(({ Icon, href, label }) => (
                 <a
@@ -255,8 +196,8 @@ export function PilotContactSection() {
               <div key={title} className="flex gap-3 rounded-2xl bg-brand-blue-pale/35 p-4">
                 <Icon className="mt-0.5 h-5 w-5 shrink-0 text-brand-blue" strokeWidth={1.8} />
                 <div>
-                  <div className="text-sm font-semibold text-text-primary">{title}</div>
-                  <p className="mt-1 text-xs leading-[1.45] text-text-body">{body}</p>
+                  <div className="text-sm font-semibold text-text-primary">{translate(title)}</div>
+                  <p className="mt-1 text-xs leading-[1.45] text-text-body">{translate(body)}</p>
                 </div>
               </div>
             ))}
@@ -269,97 +210,104 @@ export function PilotContactSection() {
               aria-hidden
               className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-accent-purple/10 blur-[90px]"
             />
-            {submitted ? (
-              <SuccessState />
-            ) : (
-              <form onSubmit={handleSubmit} className="relative flex flex-col gap-5" noValidate>
+            <div className="relative">
+              <form
+                onSubmit={handleSubmit}
+                noValidate
+                aria-hidden={submitted}
+                className={cn(
+                  "relative flex flex-col gap-5 transition-opacity duration-300",
+                  submitted ? "pointer-events-none select-none opacity-0" : "opacity-100"
+                )}
+              >
                 <div className="flex flex-col gap-2">
                   <span className="text-sm font-semibold uppercase tracking-[0.12em] text-brand-blue">
-                    Pilot form
+                    {translate("Pilot form")}
                   </span>
                   <h3 className="text-2xl font-semibold leading-tight text-text-primary md:text-[2rem]">
-                    Decision Engine Pilot Application
+                    {translate("Decision Engine Pilot Application")}
                   </h3>
                   <p className="max-w-[58ch] text-sm leading-[1.6] text-text-body">
-                    Share the basics and we will follow up with the next step for your store.
+                    {translate("Share the basics and we will follow up with the next step for your store.")}
                   </p>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <Field
-                    label="Full name"
+                    label={translate("Full name")}
                     required
                     value={form.name}
                     onChange={setField("name")}
                     onBlur={markTouched("name")}
                     error={touched.name ? errors.name : undefined}
-                    placeholder="Jane Cooper"
+                    placeholder={translate("Jane Cooper")}
                     autoComplete="name"
                   />
                   <Field
-                    label="Work email"
+                    label={translate("Work email")}
                     type="email"
                     required
                     value={form.email}
                     onChange={setField("email")}
                     onBlur={markTouched("email")}
                     error={touched.email ? errors.email : undefined}
-                    placeholder="jane@brand.com"
+                    placeholder={translate("jane@brand.com")}
                     autoComplete="email"
                     inputMode="email"
                   />
                   <Field
-                    label="Brand website"
+                    label={translate("Brand website")}
                     required
                     value={form.website}
                     onChange={setField("website")}
                     onBlur={markTouched("website")}
                     error={touched.website ? errors.website : undefined}
-                    placeholder="https://yourbrand.com"
+                    placeholder={translate("https://yourbrand.com")}
                     autoComplete="url"
                     inputMode="url"
                   />
                   <Field
-                    label="Monthly visitors"
+                    label={translate("Monthly visitors")}
                     required
                     value={form.monthlyVisitors}
                     onChange={setField("monthlyVisitors")}
                     onBlur={markTouched("monthlyVisitors")}
                     error={touched.monthlyVisitors ? errors.monthlyVisitors : undefined}
-                    placeholder="Example: 50,000"
+                    placeholder={translate("Example: 50,000")}
                     inputMode="numeric"
                   />
                 </div>
 
                 <Textarea
-                  label="Apparel catalog"
+                  label={translate("Apparel catalog")}
                   value={form.catalogDescription}
                   onChange={setField("catalogDescription")}
                   onBlur={markTouched("catalogDescription")}
-                  placeholder="Tell us what you sell, your size chart setup, and where you want the pilot to run."
+                  placeholder={translate("Tell us what you sell, your size chart setup, and where you want the pilot to run.")}
                 />
 
                 <div className="grid gap-5 md:grid-cols-[0.9fr_1.1fr]">
                   <RadioGroup
-                    label="Integration"
+                    label={translate("Integration")}
                     name="contact-tool-integration"
                     value={form.toolIntegration}
                     onChange={(value) => setField("toolIntegration")(value)}
-                    options={INTEGRATION_OPTIONS}
+                    options={INTEGRATION_OPTIONS.map((option) => ({ ...option, label: translate(option.label) }))}
                   />
                   <RadioGroup
-                    label="Pilot measurement"
+                    label={translate("Pilot measurement")}
                     name="contact-share-data"
                     value={form.shareData}
                     onChange={(value) => setField("shareData")(value)}
-                    options={SHARE_DATA_OPTIONS}
+                    options={SHARE_DATA_OPTIONS.map((option) => ({ ...option, label: translate(option.label) }))}
                     layout="stack"
                   />
                 </div>
 
                 <p className="text-xs leading-[1.55] text-text-hint">
-                  By applying, you agree to share data on the impact of the Decision Engine if
-                  your brand is selected.
+                  {translate(
+                    "By applying, you agree to share data on the impact of the Decision Engine if your brand is selected."
+                  )}
                 </p>
 
                 {submitError ? (
@@ -381,17 +329,26 @@ export function PilotContactSection() {
                   {submitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Submitting application...
+                      {translate("Submitting application...")}
                     </>
                   ) : (
                     <>
-                      Submit pilot application
+                      {translate("Submit pilot application")}
                       <Send className="h-4 w-4" strokeWidth={2} />
                     </>
                   )}
                 </button>
               </form>
-            )}
+
+              <div
+                className={cn(
+                  "pointer-events-none absolute inset-0 flex items-center justify-center transition-all duration-300",
+                  submitted ? "opacity-100" : "translate-y-3 opacity-0"
+                )}
+              >
+                <SuccessState translate={translate} />
+              </div>
+            </div>
           </div>
         </Reveal>
       </div>
@@ -536,16 +493,24 @@ function RadioGroup<T extends string>({
   );
 }
 
-function SuccessState() {
+function SuccessState({ translate }: { translate: (value: string, replacements?: Record<string, string | number>) => string }) {
   return (
-    <div className="relative flex min-h-[520px] flex-col items-center justify-center gap-4 px-4 py-12 text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-status-success/10 text-status-success">
-        <Check className="h-8 w-8" strokeWidth={2.5} />
+    <div className="relative flex w-full max-w-[35rem] flex-col items-center justify-center gap-4 px-4 text-center">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full border border-brand-blue/20 bg-brand-blue-pale/60 text-brand-blue">
+        <Check className="h-8 w-8" strokeWidth={2.6} />
       </div>
-      <h3 className="text-2xl font-semibold text-text-primary">Application submitted.</h3>
+      <h3 className="text-2xl font-semibold text-text-primary md:text-[2rem]">{translate("Application submitted.")}</h3>
       <p className="max-w-[36ch] text-sm leading-[1.6] text-text-body">
-        Thanks. We will review your pilot request and reach out within 1 business day if your brand is a fit.
+        {translate("Thanks. We will review your pilot request and reach out within 1 business day if your brand is a fit.")}
       </p>
+      <a
+        href={PILOT_DEMO_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="pointer-events-auto mt-2 inline-flex h-11 items-center justify-center rounded-full border border-brand-blue/25 bg-white px-5 text-sm font-semibold text-brand-blue transition-all hover:-translate-y-0.5 hover:border-brand-blue hover:bg-brand-blue-pale/40"
+      >
+        {translate("Browse our demo while you wait")}
+      </a>
     </div>
   );
 }
