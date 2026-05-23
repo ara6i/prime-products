@@ -13,6 +13,9 @@ export function HostMetricsPanel({ metrics, isLoading, onRefresh }: HostMetricsP
   const database = metrics?.database ?? null;
   const pool = database?.pool ?? null;
   const sse = metrics?.sse ?? null;
+  const testLab = metrics?.testLab ?? null;
+  const workerConcurrency = testLab?.workers.reduce((sum, worker) => sum + worker.concurrency, 0) ?? 0;
+  const activeWorkerJobs = testLab?.workers.reduce((sum, worker) => sum + worker.activeJobs, 0) ?? 0;
 
   return (
     <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -132,6 +135,50 @@ export function HostMetricsPanel({ metrics, isLoading, onRefresh }: HostMetricsP
           </div>
         )}
       </div>
+
+      {testLab && (
+        <div className="mt-5 rounded-2xl border border-emerald-100 bg-emerald-50/40 p-4">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Test-lab worker lane</p>
+              <h3 className="mt-1 text-base font-semibold text-text-primary">Queue, workers, and isolated SSE</h3>
+            </div>
+            <p className="text-xs font-medium text-text-secondary">{testLab.queue.name}</p>
+          </div>
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <CapacityStatCard
+              label="Queue waiting"
+              value={String(testLab.queue.counts.waiting ?? 0)}
+              helper={`active ${testLab.queue.counts.active ?? 0}`}
+              tone={(testLab.queue.counts.waiting ?? 0) > 0 ? "blue" : "green"}
+            />
+            <CapacityStatCard
+              label="Workers"
+              value={String(testLab.workers.length)}
+              helper={`concurrency ${workerConcurrency}`}
+              tone={testLab.workers.length ? "green" : "neutral"}
+            />
+            <CapacityStatCard
+              label="Worker active"
+              value={String(activeWorkerJobs)}
+              helper={`done ${testLab.queue.counts.completed ?? 0} · failed ${testLab.queue.counts.failed ?? 0}`}
+              tone={(testLab.queue.counts.failed ?? 0) > 0 ? "red" : "neutral"}
+            />
+            <CapacityStatCard
+              label="Mirror SSE"
+              value={String(testLab.sse.activeStreams)}
+              helper={`global ${testLab.sse.activeGlobalStreams} · job ${testLab.sse.activeJobStreams}`}
+              tone="blue"
+            />
+            <CapacityStatCard
+              label="Queue delayed"
+              value={String(testLab.queue.counts.delayed ?? 0)}
+              helper={new Date(testLab.timestamp).toLocaleTimeString()}
+              tone="neutral"
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -62,6 +62,7 @@ const STATUS_POLL_INTERVAL_MS = 2_000;
 const SDK_FALLBACK_POLL_INTERVAL_MS = 3_000;
 const SDK_API_PREFIX = "/api/v1";
 const TEST_LAB_SDK_MIRROR_PREFIX = "/api/test-lab/sdk-mirror";
+const TEST_LAB_SHOPIFY_MIRROR_PREFIX = "/api/test-lab/shopify-mirror";
 
 let cachedSdkPersonDataUri: string | null = null;
 let cachedAgeCheckPersonDataUri: string | null = null;
@@ -80,7 +81,19 @@ export async function executeGeminiScenario(
   if (scenarioId === "tryon-real") return executeSdkTryOnOnlyScenario(targetId, tryOnModel, signal, onProgress);
   if (scenarioId === "sdk-journey-no-image-real") return executeFullSdkJourneyScenario(targetId, tryOnModel, signal, onProgress, { includeImageInStatus: false });
   if (scenarioId === "sdk-journey-sse-real") return executeFullSdkJourneySseScenario(targetId, tryOnModel, signal, onProgress);
+  if (scenarioId === "sdk-mirror-sse-real") return executeFullSdkJourneySseScenario(targetId, tryOnModel, signal, onProgress, {
+    apiPrefix: TEST_LAB_SDK_MIRROR_PREFIX,
+    message: "SDK exact mirror journey completed.",
+  });
   if (scenarioId === "sdk-journey-job-stream-real") return executeFullSdkJourneyJobStreamScenario(targetId, tryOnModel, signal, onProgress);
+  if (scenarioId === "shopify-mirror-sse-real") return executeFullSdkJourneySseScenario(targetId, tryOnModel, signal, onProgress, {
+    apiPrefix: TEST_LAB_SHOPIFY_MIRROR_PREFIX,
+    message: "Shopify exact mirror journey completed.",
+  });
+  if (scenarioId === "shopify-mirror-job-stream-real") return executeFullSdkJourneyJobStreamScenario(targetId, tryOnModel, signal, onProgress, {
+    apiPrefix: TEST_LAB_SHOPIFY_MIRROR_PREFIX,
+    message: "Shopify worker experiment journey completed.",
+  });
   if (scenarioId === "sdk-journey-real") return executeFullSdkJourneyScenario(targetId, tryOnModel, signal, onProgress);
   throw new Error(`Unsupported Gemini scenario: ${scenarioId}`);
 }
@@ -187,20 +200,21 @@ async function executeFullSdkJourneySseScenario(
   tryOnModel: TryOnModelId,
   signal: AbortSignal,
   onProgress?: ProgressReporter,
+  options: { apiPrefix?: string; message?: string } = {},
 ): Promise<ScenarioResult> {
   const baseUrl = getBaseUrl(targetId);
   const headers = getJsonHeaders(targetId);
   const stages: StageSummary[] = [];
   const sessionId = createSdkSessionId();
 
-  const sizing = await runSdkSizingResultFlow({ baseUrl, headers, sessionId, stages, signal, onProgress });
+  const sizing = await runSdkSizingResultFlow({ baseUrl, headers, sessionId, stages, signal, onProgress, apiPrefix: options.apiPrefix });
   if (!sizing.ok) return sizing.result;
 
-  const tryOn = await runSdkTryOnSseFlow({ targetId, baseUrl, headers, stages, signal, context: sizing.context, tryOnModel, onProgress });
+  const tryOn = await runSdkTryOnSseFlow({ targetId, baseUrl, headers, stages, signal, context: sizing.context, tryOnModel, onProgress, apiPrefix: options.apiPrefix });
   if (!tryOn.ok) return buildFlowResult(false, tryOn.status, stages, tryOn.body);
 
   return buildFlowResult(true, 200, stages, JSON.stringify({
-    message: "Exact SDK journey completed.",
+    message: options.message ?? "Exact SDK journey completed.",
     recommendedSize: sizing.context.recommendedSize,
 	    tryOnModel,
 	    jobId: tryOn.jobId,
@@ -216,20 +230,22 @@ async function executeFullSdkJourneyJobStreamScenario(
   tryOnModel: TryOnModelId,
   signal: AbortSignal,
   onProgress?: ProgressReporter,
+  options: { apiPrefix?: string; message?: string } = {},
 ): Promise<ScenarioResult> {
   const baseUrl = getBaseUrl(targetId);
   const headers = getJsonHeaders(targetId);
   const stages: StageSummary[] = [];
   const sessionId = createSdkSessionId();
 
-  const sizing = await runSdkSizingResultFlow({ baseUrl, headers, sessionId, stages, signal, onProgress, apiPrefix: TEST_LAB_SDK_MIRROR_PREFIX });
+  const apiPrefix = options.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX;
+  const sizing = await runSdkSizingResultFlow({ baseUrl, headers, sessionId, stages, signal, onProgress, apiPrefix });
   if (!sizing.ok) return sizing.result;
 
-  const tryOn = await runSdkTryOnJobStreamFlow({ targetId, baseUrl, headers, stages, signal, context: sizing.context, tryOnModel, onProgress, apiPrefix: TEST_LAB_SDK_MIRROR_PREFIX });
+  const tryOn = await runSdkTryOnJobStreamFlow({ targetId, baseUrl, headers, stages, signal, context: sizing.context, tryOnModel, onProgress, apiPrefix });
   if (!tryOn.ok) return buildFlowResult(false, tryOn.status, stages, tryOn.body);
 
   return buildFlowResult(true, 200, stages, JSON.stringify({
-    message: "Proposed SDK job-stream journey completed.",
+    message: options.message ?? "SDK worker experiment journey completed.",
     recommendedSize: sizing.context.recommendedSize,
 	    tryOnModel,
 	    jobId: tryOn.jobId,
@@ -357,6 +373,7 @@ async function runSdkTryOnSseFlow(input: {
     jobId: submit.jobId,
     recommendedSize: input.context.recommendedSize,
     onProgress: input.onProgress,
+    apiPrefix: input.apiPrefix,
   }).then((result) => {
     if (!result.ok) throw new Error(result.body);
     return { result, delivery: "sdk SSE vto-update" };
@@ -376,6 +393,7 @@ async function runSdkTryOnSseFlow(input: {
       firstPollStageName: "sdk.tryon.fallback-status.first-poll",
       pollStageName: "sdk.tryon.fallback-status.poll",
     },
+    input.apiPrefix,
   ).then((result) => {
     if (!result.ok) throw new Error(result.body);
     return { result, delivery: "fallback /status polling" };
@@ -584,15 +602,17 @@ async function waitForSdkTryOnSseResult(input: {
   jobId: string;
   recommendedSize: string;
   onProgress?: ProgressReporter;
+  apiPrefix?: string;
 }): Promise<ScenarioResult & { data?: unknown }> {
-  const streamUrl = buildSdkSseStreamUrl(input.baseUrl, input.targetId);
+  const apiPrefix = input.apiPrefix ?? SDK_API_PREFIX;
+  const streamUrl = buildSdkSseStreamUrl(input.baseUrl, input.targetId, apiPrefix);
   const connectStartedAt = Date.now();
   input.onProgress?.({
     stage: "sdk.tryon.sse.connect",
     status: "running",
     jobId: input.jobId,
     recommendedSize: input.recommendedSize,
-    detail: "/api/v1/tryon/stream",
+    detail: `${apiPrefix}/tryon/stream`,
   });
 
   const response = await fetch(streamUrl, {
@@ -636,7 +656,7 @@ async function waitForSdkTryOnSseResult(input: {
     status: response.status,
     ok: true,
     latencyMs: connectLatencyMs,
-    detail: "connected to /api/v1/tryon/stream",
+    detail: `connected to ${apiPrefix}/tryon/stream`,
   });
   input.onProgress?.({
     stage: "sdk.tryon.sse.connected",
@@ -1333,10 +1353,12 @@ function getBackendStageDetail(data: unknown): string | null {
   const pass1 = getRecord(detail, "pass1");
   const pass1Ms = pass1 ? getNumber(pass1, "durationMs") : getNumber(detail, "durationMs");
   const totalMs = getNumber(detail, "totalMs");
+  const queueWaitMs = getNumber(detail, "queueWaitMs");
   const imageKb = getNumber(detail, "imageKb");
   const postGemini = getRecord(detail, "postGemini");
   const postGeminiMs = postGemini ? getNumber(postGemini, "totalMs") : null;
   const parts = [
+    queueWaitMs !== null ? `queueWait=${Math.round(queueWaitMs)}ms` : null,
     pass1Ms ? `geminiMs=${Math.round(pass1Ms)}ms` : null,
     totalMs ? `backendTotal=${Math.round(totalMs)}ms` : null,
     postGeminiMs ? `postGemini=${Math.round(postGeminiMs)}ms` : null,
@@ -1375,9 +1397,9 @@ function getJsonHeaders(targetId: CapacityTargetId): Record<string, string> {
   };
 }
 
-function buildSdkSseStreamUrl(baseUrl: string, targetId: CapacityTargetId): string {
+function buildSdkSseStreamUrl(baseUrl: string, targetId: CapacityTargetId, apiPrefix = SDK_API_PREFIX): string {
   const apiKey = getCapacityApiKey(targetId);
-  const url = new URL("/api/v1/tryon/stream", baseUrl);
+  const url = new URL(`${apiPrefix}/tryon/stream`, baseUrl);
   url.searchParams.set("key", apiKey);
   return url.toString();
 }

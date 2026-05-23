@@ -108,9 +108,9 @@ export const CAPACITY_SCENARIOS: CapacityScenarioOption[] = [
   },
   {
     id: "sdk-journey-sse-real",
-    label: "Exact SDK journey",
+    label: "Protected real SDK journey",
     description: "Runs the browser SDK behavior: sizing, try-on submit, SSE stream, plus 3s fallback status polling.",
-    helper: "This mirrors shoppers today: /tryon/stream is primary, /status polling is backup, and generated images appear in samples.",
+    helper: "Protected baseline against /api/v1. Use only when intentionally testing the real SDK backend route.",
     method: "POST",
     path: "/api/v1/sizing/age-check -> /api/v1/sizing/recommend -> /api/v1/tryon -> /api/v1/tryon/stream + /status fallback",
     isGeminiSafe: false,
@@ -120,12 +120,51 @@ export const CAPACITY_SCENARIOS: CapacityScenarioOption[] = [
     estimatedSizingCallsPerRequest: 2,
   },
   {
+    id: "sdk-mirror-sse-real",
+    label: "SDK exact mirror",
+    description: "Runs the isolated test-lab copy of the browser SDK flow: sizing, try-on submit, global SSE stream, plus fallback status polling.",
+    helper: "Safe architecture lane: calls only /api/test-lab/sdk-mirror routes. It does not call /api/v1 SDK try-on.",
+    method: "POST",
+    path: "/api/test-lab/sdk-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback",
+    isGeminiSafe: false,
+    maxTotalRequests: 110,
+    maxVirtualUsers: 110,
+    estimatedTryOnCallsPerRequest: 1,
+    estimatedSizingCallsPerRequest: 2,
+  },
+  {
     id: "sdk-journey-job-stream-real",
-    label: "Proposed SDK job-stream",
+    label: "SDK worker experiment",
     description: "Runs copied test-lab SDK routes: sizing, try-on submit, a job-scoped SSE stream, then one result fetch when the job completes.",
     helper: "Experimental architecture in isolated /test-lab/sdk-mirror routes only. It does not call or change the real /api/v1 SDK try-on route.",
     method: "POST",
     path: "/api/test-lab/sdk-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId",
+    isGeminiSafe: false,
+    maxTotalRequests: 110,
+    maxVirtualUsers: 110,
+    estimatedTryOnCallsPerRequest: 1,
+    estimatedSizingCallsPerRequest: 2,
+  },
+  {
+    id: "shopify-mirror-sse-real",
+    label: "Shopify exact mirror",
+    description: "Runs the isolated Shopify-shaped mirror path with SDK-like sizing, try-on submit, global SSE stream, and fallback status polling.",
+    helper: "Safe architecture lane: calls only /api/test-lab/shopify-mirror routes. It does not touch the Shopify app proxy or Shopify backend routes.",
+    method: "POST",
+    path: "/api/test-lab/shopify-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback",
+    isGeminiSafe: false,
+    maxTotalRequests: 110,
+    maxVirtualUsers: 110,
+    estimatedTryOnCallsPerRequest: 1,
+    estimatedSizingCallsPerRequest: 2,
+  },
+  {
+    id: "shopify-mirror-job-stream-real",
+    label: "Shopify worker experiment",
+    description: "Runs the isolated Shopify-shaped mirror path with job-scoped SSE and one binary result fetch.",
+    helper: "Experimental architecture in isolated /test-lab/shopify-mirror routes only. It does not touch Shopify app routes.",
+    method: "POST",
+    path: "/api/test-lab/shopify-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId",
     isGeminiSafe: false,
     maxTotalRequests: 110,
     maxVirtualUsers: 110,
@@ -147,8 +186,8 @@ export const CAPACITY_SCENARIOS: CapacityScenarioOption[] = [
   },
 ];
 
-export const CAPACITY_USER_PRESETS = [1, 5, 10, 25, 50, 100, 250, 500, 1000] as const;
-export const CAPACITY_REQUEST_PRESETS = [10, 25, 50, 100, 150, 500, 1000, 2500, 5000, 10000] as const;
+export const CAPACITY_USER_PRESETS = [1, 5, 10, 25, 50, 100, 110, 250, 500, 1000] as const;
+export const CAPACITY_REQUEST_PRESETS = [10, 25, 50, 100, 110, 150, 500, 1000, 2500, 5000, 10000] as const;
 
 export const DEFAULT_CAPACITY_CONFIG = {
   targetId: "test",

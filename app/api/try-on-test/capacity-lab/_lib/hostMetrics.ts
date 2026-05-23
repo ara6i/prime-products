@@ -1,10 +1,12 @@
 import { execFile } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import os from "node:os";
 import { promisify } from "node:util";
 import type {
   CapacityDatabaseMetrics,
   CapacityMetricsSnapshot,
   CapacitySseMetrics,
+  CapacityTestLabMetrics,
   CapacityTargetId,
 } from "@/app/try-on-test/capacity-lab/types";
 import { getServerTarget } from "./capacityTargets";
@@ -60,6 +62,7 @@ interface RawBackendHealth {
 interface BackendHealthMetrics {
   database: CapacityDatabaseMetrics | null;
   sse: CapacitySseMetrics | null;
+  testLab: CapacityTestLabMetrics | null;
 }
 
 export async function readHostMetrics(targetId: CapacityTargetId): Promise<CapacityMetricsSnapshot> {
@@ -86,6 +89,7 @@ export async function readHostMetrics(targetId: CapacityTargetId): Promise<Capac
       error: formatHealthError(err),
     },
     sse: null,
+    testLab: null,
   }));
 
   return normalizeMetrics(targetId, raw, hostError, health);
@@ -131,6 +135,7 @@ async function readBackendHealth(targetId: CapacityTargetId): Promise<BackendHea
   return {
     database: normalizeDatabaseHealth(raw),
     sse: normalizeSseHealth(raw),
+    testLab: await readTestLabMetrics(targetId),
   };
 }
 
@@ -145,6 +150,83 @@ async function fetchHealthJson(url: string): Promise<RawBackendHealth> {
   }
 
   return await response.json() as RawBackendHealth;
+}
+
+async function readTestLabMetrics(targetId: CapacityTargetId): Promise<CapacityTestLabMetrics | null> {
+  if (targetId === "live") return null;
+  const key = getOptionalCapacityApiKey(targetId);
+  if (!key) return null;
+
+  const target = getServerTarget(targetId);
+  const response = await fetch(new URL("/api/test-lab/sdk-mirror/metrics", target.baseUrl).toString(), {
+    cache: "no-store",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${key}`,
+      "User-Agent": "PrimeStyleAI-Capacity-Lab/1.0",
+      "x-primestyle-capacity-lab": "true",
+    },
+    signal: AbortSignal.timeout(5000),
+  }).catch(() => null);
+  if (!response?.ok) return null;
+  const raw = await response.json().catch(() => null);
+  if (!raw || typeof raw !== "object") return null;
+  const value = raw as Record<string, unknown>;
+  const queue = value.queue && typeof value.queue === "object" ? value.queue as Record<string, unknown> : {};
+  const sse = value.sse && typeof value.sse === "object" ? value.sse as Record<string, unknown> : {};
+  return {
+    queue: {
+      name: String(queue.name ?? "test-lab-tryon"),
+      counts: normalizeCounts(queue.counts),
+    },
+    workers: Array.isArray(value.workers) ? value.workers.map(normalizeWorkerMetric).filter(Boolean) as CapacityTestLabMetrics["workers"] : [],
+    sse: {
+      activeGlobalStreams: Number(sse.activeGlobalStreams) || 0,
+      activeJobStreams: Number(sse.activeJobStreams) || 0,
+      activeStreams: Number(sse.activeStreams) || 0,
+    },
+    timestamp: String(value.timestamp ?? new Date().toISOString()),
+  };
+}
+
+function normalizeCounts(raw: unknown): Record<string, number> {
+  if (!raw || typeof raw !== "object") return {};
+  return Object.fromEntries(Object.entries(raw as Record<string, unknown>).map(([key, value]) => [key, Number(value) || 0]));
+}
+
+function normalizeWorkerMetric(raw: unknown): CapacityTestLabMetrics["workers"][number] | null {
+  if (!raw || typeof raw !== "object") return null;
+  const value = raw as Record<string, unknown>;
+  return {
+    workerId: String(value.workerId ?? "unknown"),
+    pid: Number(value.pid) || 0,
+    host: String(value.host ?? ""),
+    concurrency: Number(value.concurrency) || 0,
+    activeJobs: Number(value.activeJobs) || 0,
+    completedJobs: Number(value.completedJobs) || 0,
+    failedJobs: Number(value.failedJobs) || 0,
+    rssMb: Number(value.rssMb) || 0,
+    heapUsedMb: Number(value.heapUsedMb) || 0,
+    cpuPercent: Number(value.cpuPercent) || 0,
+    uptimeSec: Number(value.uptimeSec) || 0,
+    updatedAt: String(value.updatedAt ?? ""),
+  };
+}
+
+function getOptionalCapacityApiKey(targetId: CapacityTargetId): string | null {
+  const key = process.env[`PRIMESTYLE_CAPACITY_LAB_API_KEY_${targetId.toUpperCase()}`]
+    || process.env.PRIMESTYLE_CAPACITY_LAB_API_KEY
+    || process.env.PRIMESTYLE_FIRST_PARTY_API_KEY
+    || readLocalBackendFirstPartyKey();
+  return key?.trim() || null;
+}
+
+function readLocalBackendFirstPartyKey(): string | null {
+  if (process.env.NODE_ENV === "production") return null;
+  const envPath = process.env.PRIMESTYLE_CAPACITY_LAB_BACKEND_ENV_PATH || "/home/ara6i/Projects/primeStyleAI-backend/.env";
+  if (!existsSync(envPath)) return null;
+  const match = readFileSync(envPath, "utf8").match(/^PRIMESTYLE_FIRST_PARTY_API_KEY=(.+)$/m);
+  return match?.[1]?.trim() || null;
 }
 
 function buildRemoteMetricsScript(pm2Name: string | null): string {
@@ -199,6 +281,7 @@ function normalizeMetrics(
     process: raw.process ?? null,
     database: health.database,
     sse: health.sse,
+    testLab: health.testLab,
     error,
   };
 }

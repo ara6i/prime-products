@@ -9,7 +9,10 @@ export type CapacityScenarioId =
   | "tryon-real"
   | "sdk-journey-no-image-real"
   | "sdk-journey-sse-real"
+  | "sdk-mirror-sse-real"
   | "sdk-journey-job-stream-real"
+  | "shopify-mirror-sse-real"
+  | "shopify-mirror-job-stream-real"
   | "sdk-journey-real";
 export type CapacityRunStatus = "queued" | "running" | "completed" | "failed" | "stopped";
 
@@ -188,6 +191,35 @@ export interface CapacitySseMetrics {
   breakdown: Record<string, number>;
 }
 
+export interface CapacityTestLabWorkerMetrics {
+  workerId: string;
+  pid: number;
+  host: string;
+  concurrency: number;
+  activeJobs: number;
+  completedJobs: number;
+  failedJobs: number;
+  rssMb: number;
+  heapUsedMb: number;
+  cpuPercent: number;
+  uptimeSec: number;
+  updatedAt: string;
+}
+
+export interface CapacityTestLabMetrics {
+  queue: {
+    name: string;
+    counts: Record<string, number>;
+  };
+  workers: CapacityTestLabWorkerMetrics[];
+  sse: {
+    activeGlobalStreams: number;
+    activeJobStreams: number;
+    activeStreams: number;
+  };
+  timestamp: string;
+}
+
 export interface CapacityMetricsSnapshot {
   targetId: CapacityTargetId;
   hostLabel: string;
@@ -200,6 +232,7 @@ export interface CapacityMetricsSnapshot {
   process: CapacityProcessMetrics | null;
   database: CapacityDatabaseMetrics | null;
   sse: CapacitySseMetrics | null;
+  testLab: CapacityTestLabMetrics | null;
   error: string | null;
 }
 

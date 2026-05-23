@@ -88,6 +88,7 @@ export function mapMetricsSnapshot(raw: Partial<CapacityMetricsSnapshot>): Capac
     process: raw.process ?? null,
     database: raw.database ?? null,
     sse: raw.sse ?? null,
+    testLab: raw.testLab ?? null,
     error: raw.error ?? null,
   };
 }

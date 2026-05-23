@@ -589,7 +589,10 @@ function isScenarioId(value: unknown): value is CapacityRunConfig["scenarioId"] 
     value === "tryon-real" ||
     value === "sdk-journey-no-image-real" ||
     value === "sdk-journey-sse-real" ||
+    value === "sdk-mirror-sse-real" ||
     value === "sdk-journey-job-stream-real" ||
+    value === "shopify-mirror-sse-real" ||
+    value === "shopify-mirror-job-stream-real" ||
     value === "sdk-journey-real"
   );
 }
