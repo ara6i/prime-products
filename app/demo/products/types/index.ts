@@ -35,8 +35,19 @@ export interface DemoProductApi {
   variant_sizes?: Array<{ name?: string; availability?: string }>;
   selected_color?: { id?: string; name?: string; hex?: string; available?: boolean };
   size_guide?: unknown;
+  related_products?: DemoRelatedProductApi[];
   /** Gemini-generated model-free cover image URL (for listing card only) */
   generated_cover?: string;
+}
+
+export interface DemoRelatedProductApi {
+  id?: string;
+  name?: string;
+  brand?: string;
+  price?: number;
+  currency?: string;
+  image?: string;
+  rating?: number;
 }
 
 /** Raw shape from GET /api/catalog/demo/products (list) */
@@ -84,6 +95,15 @@ export interface DemoSizeOption {
   available: boolean;
 }
 
+export interface DemoCompleteLookProduct {
+  id: string;
+  name: string;
+  brand: string;
+  price: number | null;
+  currency: string;
+  image: string;
+}
+
 /** UI-ready product for the detail page */
 export interface DemoProductView {
   id: string;
@@ -91,6 +111,7 @@ export interface DemoProductView {
   brand: string;
   category: string;
   subcategory: string;
+  gender: string;
   description: string;
   material: string;
   images: string[];
@@ -103,6 +124,7 @@ export interface DemoProductView {
   sizeGuideData: unknown;
   /** Structured size guide for the modal */
   sizeGuide: DemoSizeGuide | null;
+  completeLook: DemoCompleteLookProduct[];
 }
 
 export interface DemoSizeGuideSection {

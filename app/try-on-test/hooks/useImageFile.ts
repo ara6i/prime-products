@@ -22,6 +22,7 @@ interface ImageState {
 export function useImageFile(label: string): {
   state: ImageState;
   selectFile: (file: File) => Promise<void>;
+  selectImageUrl: (url: string, name?: string) => Promise<void>;
   clear: () => void;
 } {
   const [state, setState] = useState<ImageState>({
@@ -70,11 +71,46 @@ export function useImageFile(label: string): {
     [label],
   );
 
+  const selectImageUrl = useCallback(
+    async (url: string, name?: string) => {
+      if (!url) {
+        setState((prev) => ({ ...prev, error: `${label}: image URL is empty.` }));
+        return;
+      }
+
+      setState((prev) => ({ ...prev, isCompressing: true, error: null, bytes: 0 }));
+
+      try {
+        const response = await fetch(`/api/try-on-test/image-proxy?url=${encodeURIComponent(url)}`);
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({} as { message?: string }));
+          throw new Error(data.message || `Image download failed (${response.status})`);
+        }
+
+        const blob = await response.blob();
+        const file = new File([blob], sanitizeFileName(name || `${label}.jpg`), {
+          type: blob.type || "image/jpeg",
+        });
+        await selectFile(file);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to load remote image";
+        setState((prev) => ({ ...prev, isCompressing: false, error: `${label}: ${message}` }));
+        throw err;
+      }
+    },
+    [label, selectFile],
+  );
+
   const clear = useCallback(() => {
     if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
     previewUrlRef.current = null;
     setState({ file: null, previewUrl: null, dataUri: null, isCompressing: false, error: null, bytes: 0 });
   }, []);
 
-  return { state, selectFile, clear };
+  return { state, selectFile, selectImageUrl, clear };
+}
+
+function sanitizeFileName(name: string): string {
+  const cleaned = name.replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "");
+  return cleaned || "image.jpg";
 }

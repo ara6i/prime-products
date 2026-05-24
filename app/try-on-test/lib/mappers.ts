@@ -1,11 +1,12 @@
 import type { TryOnModelId } from "./models";
-import type { HistoryEntry, TryOnRunInput, TryOnRunResult, TryOnRunTimings } from "./types";
+import type { HistoryEntry, TryOnRunInput, TryOnRunResult, TryOnRunTimings, TryOnSizingRunData } from "./types";
 
 export interface RunRequest {
   modelDataUri: string;
   garmentDataUri: string;
   customPrompt?: string;
   model: TryOnModelId;
+  sizing?: TryOnSizingRunData | null;
 }
 
 export function buildTryOnRunInput(req: RunRequest): TryOnRunInput {
@@ -16,6 +17,14 @@ export function buildTryOnRunInput(req: RunRequest): TryOnRunInput {
   };
   if (req.customPrompt && req.customPrompt.trim().length > 0) {
     input.customPrompt = req.customPrompt;
+  }
+  if (req.sizing) {
+    input.category = req.sizing.category;
+    input.productTitle = req.sizing.productTitle;
+    input.productDescription = req.sizing.productDescription;
+    input.productMaterial = req.sizing.productMaterial;
+    input.fitInfo = req.sizing.fitInfo;
+    input.silhouetteContext = req.sizing.silhouetteContext;
   }
   return input;
 }

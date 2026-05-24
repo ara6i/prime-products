@@ -1,0 +1,372 @@
+{
+  "sourceUrl": "https://www.zara.com/am/en/floral-linen-blend-shirt-p02587057.html?v1=541445395&v2=2420369",
+  "extractedAt": "2026-05-24T18:07:41.077Z",
+  "product": {
+    "id": 541444689,
+    "name": "FLORAL LINEN BLEND SHIRT",
+    "reference": "02587057-V2026",
+    "displayReference": "2587/057",
+    "category": "CAMISA",
+    "subcategory": "B.CAMISA",
+    "familyName": "CAMISA",
+    "subfamilyName": "B.CAMISA",
+    "sectionName": "WOMAN",
+    "description": "Linen blend shirt with a regular collar, v-neck and short turn-up sleeves. Featuring a button-up front.",
+    "composition": [
+      {
+        "description": "OUTER SHELL",
+        "components": [
+          "70% viscose",
+          "30% linen"
+        ]
+      }
+    ],
+    "sizeSystem": "2",
+    "coverImageUrl": "https://static.zara.net/assets/public/9eca/afaf/8aa141869c59/8edded0ead3e/02587057330-e1/02587057330-e1.jpg?ts=1779377105697&w=2048",
+    "colors": [
+      {
+        "name": "Multicoloured",
+        "hexCode": "#d7dbe6",
+        "productId": 541445395,
+        "price": {
+          "amount": 17900,
+          "currency": "AMD"
+        },
+        "images": [
+          {
+            "url": "https://static.zara.net/assets/public/25e3/1aa4/de154b159d72/40c3b52c1e19/02587057330-p/02587057330-p.jpg?ts=1779447378166&w=2048",
+            "kind": "full",
+            "name": "02587057330-p"
+          },
+          {
+            "url": "https://static.zara.net/assets/public/1804/cf23/c8a0427ebc47/07aec6678ee8/02587057330-a1/02587057330-a1.jpg?ts=1779447377636&w=2048",
+            "kind": "other",
+            "name": "02587057330-a1"
+          },
+          {
+            "url": "https://static.zara.net/assets/public/a70b/abfc/78274f749f84/238c5db857e8/02587057330-a2/02587057330-a2.jpg?ts=1779447377829&w=2048",
+            "kind": "other",
+            "name": "02587057330-a2"
+          },
+          {
+            "url": "https://static.zara.net/assets/public/7059/607a/27c845509348/6590ba959a42/02587057330-a3/02587057330-a3.jpg?ts=1779447377941&w=2048",
+            "kind": "other",
+            "name": "02587057330-a3"
+          },
+          {
+            "url": "https://static.zara.net/assets/public/9eca/afaf/8aa141869c59/8edded0ead3e/02587057330-e1/02587057330-e1.jpg?ts=1779377105697&w=2048",
+            "kind": "plain",
+            "name": "02587057330-e1"
+          },
+          {
+            "url": "https://static.zara.net/assets/public/6dda/506a/a519425e8f60/e591f1ff6d0d/02587057330-e2/02587057330-e2.jpg?ts=1779377105632&w=2048",
+            "kind": "plain",
+            "name": "02587057330-e2"
+          },
+          {
+            "url": "https://static.zara.net/assets/public/89e7/d10a/31224e1ea38c/16b318c1c1d9/02587057330-e3/02587057330-e3.jpg?ts=1779377105803&w=2048",
+            "kind": "plain",
+            "name": "02587057330-e3"
+          }
+        ],
+        "sizes": [
+          {
+            "name": "XS",
+            "availability": "in_stock",
+            "sku": 541444692,
+            "price": {
+              "amount": 17900,
+              "currency": "AMD"
+            }
+          },
+          {
+            "name": "S",
+            "availability": "in_stock",
+            "sku": 541444693,
+            "price": {
+              "amount": 17900,
+              "currency": "AMD"
+            }
+          },
+          {
+            "name": "M",
+            "availability": "in_stock",
+            "sku": 541444694,
+            "price": {
+              "amount": 17900,
+              "currency": "AMD"
+            }
+          },
+          {
+            "name": "L",
+            "availability": "in_stock",
+            "sku": 541444690,
+            "price": {
+              "amount": 17900,
+              "currency": "AMD"
+            }
+          },
+          {
+            "name": "XL",
+            "availability": "in_stock",
+            "sku": 541444691,
+            "price": {
+              "amount": 17900,
+              "currency": "AMD"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "completeTheLook": [
+    {
+      "id": 539586044,
+      "name": "FLORAL PRINT LINEN BLEND TROUSERS",
+      "reference": "02587058-V2026",
+      "displayReference": "2587/058",
+      "category": "PANTALON",
+      "subcategory": "B.PANTALON",
+      "familyName": "PANTALON",
+      "subfamilyName": "B.PANTALON",
+      "sectionName": "WOMAN",
+      "description": "",
+      "composition": [],
+      "coverImageUrl": "https://static.zara.net/assets/public/7bac/aaf8/14eb4107b395/e4a0ea52dda2/02587058330-e1/02587058330-e1.jpg?ts=1779376113690&w=2048",
+      "colors": [
+        {
+          "name": "Multicoloured",
+          "productId": 539586044,
+          "price": {
+            "amount": 19900,
+            "currency": "AMD"
+          },
+          "images": [
+            {
+              "url": "https://static.zara.net/assets/public/a1aa/6ff4/97c5453cb548/d16941e0605b/02587058330-f1/02587058330-f1.jpg?ts=1779376113896&w=2048",
+              "kind": "other",
+              "name": "02587058330-f1"
+            },
+            {
+              "url": "https://static.zara.net/assets/public/414f/acaf/bab448559467/f817c4e5ce08/02587058330-p/02587058330-p.jpg?ts=1779447378417&w=2048",
+              "kind": "full",
+              "name": "02587058330-p"
+            },
+            {
+              "url": "https://static.zara.net/assets/public/b280/b602/48eb45b29736/9b06999dd52c/02587058330-a1/02587058330-a1.jpg?ts=1779447378184&w=2048",
+              "kind": "other",
+              "name": "02587058330-a1"
+            },
+            {
+              "url": "https://static.zara.net/assets/public/53a2/bc36/4f9f4b6bae3a/1cb26ed9b683/02587058330-a2/02587058330-a2.jpg?ts=1779447377704&w=2048",
+              "kind": "other",
+              "name": "02587058330-a2"
+            },
+            {
+              "url": "https://static.zara.net/assets/public/db61/9ec6/c4cc4b3db06e/96e10eab106b/02587058330-a3/02587058330-a3.jpg?ts=1779447378439&w=2048",
+              "kind": "other",
+              "name": "02587058330-a3"
+            },
+            {
+              "url": "https://static.zara.net/assets/public/7bac/aaf8/14eb4107b395/e4a0ea52dda2/02587058330-e1/02587058330-e1.jpg?ts=1779376113690&w=2048",
+              "kind": "plain",
+              "name": "02587058330-e1"
+            },
+            {
+              "url": "https://static.zara.net/assets/public/fb86/645c/b4314cad83ce/7b42d863612f/02587058330-e2/02587058330-e2.jpg?ts=1779376113869&w=2048",
+              "kind": "plain",
+              "name": "02587058330-e2"
+            },
+            {
+              "url": "https://static.zara.net/assets/public/ddd2/941b/d953463fa262/0cc849480d1d/02587058330-e3/02587058330-e3.jpg?ts=1779376113308&w=2048",
+              "kind": "plain",
+              "name": "02587058330-e3"
+            }
+          ],
+          "sizes": [
+            {
+              "name": "XS",
+              "availability": "in_stock",
+              "sku": 539579244,
+              "price": {
+                "amount": 19900,
+                "currency": "AMD"
+              }
+            },
+            {
+              "name": "S",
+              "availability": "in_stock",
+              "sku": 539579245,
+              "price": {
+                "amount": 19900,
+                "currency": "AMD"
+              }
+            },
+            {
+              "name": "M",
+              "availability": "in_stock",
+              "sku": 539579246,
+              "price": {
+                "amount": 19900,
+                "currency": "AMD"
+              }
+            },
+            {
+              "name": "L",
+              "availability": "in_stock",
+              "sku": 539579242,
+              "price": {
+                "amount": 19900,
+                "currency": "AMD"
+              }
+            },
+            {
+              "name": "XL",
+              "availability": "in_stock",
+              "sku": 539579243,
+              "price": {
+                "amount": 19900,
+                "currency": "AMD"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 530133649,
+      "name": "FLAT LEATHER CRISS-CROSS SANDALS",
+      "reference": "12647710-V2026",
+      "displayReference": "2647/710",
+      "category": "SANDALIA PLANA",
+      "subcategory": "Z1B:ABIERTO PLA",
+      "familyName": "SANDALIA PLANA",
+      "subfamilyName": "Z1B:ABIERTO PLA",
+      "sectionName": "WOMAN",
+      "description": "",
+      "composition": [],
+      "coverImageUrl": "https://static.zara.net/assets/public/d94b/0f11/ae524f748613/782a0ae6177c/12614711305-e1/12614711305-e1.jpg?ts=1773311890670&w=2048",
+      "colors": [
+        {
+          "name": "Mustard",
+          "productId": 530133649,
+          "price": {
+            "amount": 19900,
+            "currency": "AMD"
+          },
+          "images": [
+            {
+              "url": "https://static.zara.net/assets/public/bbff/8d6b/e31740669180/394eb51fe79d/12614711305-f1/12614711305-f1.jpg?ts=1773311947880&w=2048",
+              "kind": "other",
+              "name": "12614711305-f1"
+            },
+            {
+              "url": "https://static.zara.net/assets/public/05e0/ed10/d4dc4bc8a5d2/39432c762327/12614711305-p/12614711305-p.jpg?ts=1773413173100&w=2048",
+              "kind": "full",
+              "name": "12614711305-p"
+            },
+            {
+              "url": "https://static.zara.net/assets/public/380f/0ca5/0fc84c69b69e/7395e42b8266/12614711305-a1/12614711305-a1.jpg?ts=1773413172200&w=2048",
+              "kind": "other",
+              "name": "12614711305-a1"
+            },
+            {
+              "url": "https://static.zara.net/assets/public/d94b/0f11/ae524f748613/782a0ae6177c/12614711305-e1/12614711305-e1.jpg?ts=1773311890670&w=2048",
+              "kind": "plain",
+              "name": "12614711305-e1"
+            },
+            {
+              "url": "https://static.zara.net/assets/public/512e/220b/4ae243c8a157/f1ee41c0e062/12614711305-e2/12614711305-e2.jpg?ts=1773311889985&w=2048",
+              "kind": "plain",
+              "name": "12614711305-e2"
+            },
+            {
+              "url": "https://static.zara.net/assets/public/2631/840c/c6994c38ba8f/34049cefca71/12614711305-e3/12614711305-e3.jpg?ts=1773311890766&w=2048",
+              "kind": "plain",
+              "name": "12614711305-e3"
+            },
+            {
+              "url": "https://static.zara.net/assets/public/3004/4648/54944e2da1a0/38bcedf1a308/12614711305-e4/12614711305-e4.jpg?ts=1773311889894&w=2048",
+              "kind": "plain",
+              "name": "12614711305-e4"
+            }
+          ],
+          "sizes": [
+            {
+              "name": "35",
+              "availability": "in_stock",
+              "sku": 504614062,
+              "price": {
+                "amount": 19900,
+                "currency": "AMD"
+              }
+            },
+            {
+              "name": "36",
+              "availability": "in_stock",
+              "sku": 504614063,
+              "price": {
+                "amount": 19900,
+                "currency": "AMD"
+              }
+            },
+            {
+              "name": "37",
+              "availability": "in_stock",
+              "sku": 504614068,
+              "price": {
+                "amount": 19900,
+                "currency": "AMD"
+              }
+            },
+            {
+              "name": "38",
+              "availability": "in_stock",
+              "sku": 504614069,
+              "price": {
+                "amount": 19900,
+                "currency": "AMD"
+              }
+            },
+            {
+              "name": "39",
+              "availability": "in_stock",
+              "sku": 504614066,
+              "price": {
+                "amount": 19900,
+                "currency": "AMD"
+              }
+            },
+            {
+              "name": "40",
+              "availability": "in_stock",
+              "sku": 504614067,
+              "price": {
+                "amount": 19900,
+                "currency": "AMD"
+              }
+            },
+            {
+              "name": "41",
+              "availability": "in_stock",
+              "sku": 504614064,
+              "price": {
+                "amount": 19900,
+                "currency": "AMD"
+              }
+            },
+            {
+              "name": "42",
+              "availability": "in_stock",
+              "sku": 504614074,
+              "price": {
+                "amount": 19900,
+                "currency": "AMD"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

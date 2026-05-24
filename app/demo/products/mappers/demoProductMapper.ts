@@ -7,6 +7,7 @@ import type {
   DemoColorVariant,
   DemoSizeOption,
   DemoSizeGuide,
+  DemoCompleteLookProduct,
 } from "../types";
 
 const DEMO_BRAND = "PrimeStyleAI";
@@ -99,6 +100,7 @@ export function mapProductDetail(p: DemoProductApi): DemoProductView {
     brand: DEMO_BRAND,
     category: p.category ?? "",
     subcategory: p.subcategory ?? "",
+    gender: p.gender ?? "",
     description: p.short_description || p.description || "",
     material: p.material ?? "",
     images,
@@ -107,12 +109,26 @@ export function mapProductDetail(p: DemoProductApi): DemoProductView {
     sizeSystem: p.size_system ?? "US",
     colorVariants,
     selectedColor: p.selected_color?.name ?? p.color ?? colorVariants[0]?.name ?? "",
-    sizeGuideData: p.size_guide ?? null,
+    sizeGuideData: sdkSizeGuideData(p.size_guide),
     sizeGuide: parseSizeGuide(p.size_guide),
+    completeLook: buildCompleteLook(p),
   };
 }
 
 /* ── helpers ────────────────────────────────── */
+
+function buildCompleteLook(p: DemoProductApi): DemoCompleteLookProduct[] {
+  return (p.related_products ?? [])
+    .map((item) => ({
+      id: item.id ?? "",
+      name: cleanProductName(item.brand ?? "", item.name ?? "Untitled"),
+      brand: item.brand || DEMO_BRAND,
+      price: typeof item.price === "number" ? item.price : null,
+      currency: item.currency ?? p.currency ?? "USD",
+      image: proxyImage(item.image ?? ""),
+    }))
+    .filter((item) => item.id && item.image);
+}
 
 function buildImages(p: DemoProductApi): string[] {
   // Collect ALL unique images from every source, proxied through our cache for slow CDNs
@@ -168,7 +184,17 @@ function buildSizes(p: DemoProductApi): DemoSizeOption[] {
     const fitKey = headers.find((h) => h.toLowerCase() === "fit");
     const sizeKey = headers.find((h) => h.toLowerCase() === "size");
     const customKey = headers.find((h) => h.toLowerCase().includes("customization") || h.toLowerCase() === "length");
-    if (sizeKey && (fitKey || customKey)) {
+    const accessoryLike = /accessor|sunglass|glasses|eyewear|hat|jewelry|watch|bracelet|necklace|ring|belt/i.test(
+      `${p.category ?? ""} ${p.subcategory ?? ""}`,
+    );
+    const fitValues = fitKey ? rows.map((r) => r[fitKey]?.trim()).filter(Boolean) : [];
+    const isEyewearFitDescriptor = fitValues.length > 0 && fitValues.every((v) =>
+      /^(narrow|medium|wide|regular|universal fit|low bridge fit|high bridge fit)$/i.test(v),
+    );
+    const shouldComposeFitSize = !!sizeKey && (
+      !!customKey || (!!fitKey && !accessoryLike && !isEyewearFitDescriptor)
+    );
+    if (shouldComposeFitSize && sizeKey) {
       const composite = rows
         .map((r) => {
           const size = r[sizeKey]?.trim();
@@ -183,6 +209,12 @@ function buildSizes(p: DemoProductApi): DemoSizeOption[] {
         })
         .filter((v): v is string => !!v);
       const names = [...new Set(composite)];
+      if (names.length > 0) {
+        return names.map((name) => ({ name, available: true }));
+      }
+    }
+    if (sizeKey) {
+      const names = [...new Set(rows.map((r) => r[sizeKey]?.trim()).filter(Boolean))];
       if (names.length > 0) {
         return names.map((name) => ({ name, available: true }));
       }
@@ -217,6 +249,12 @@ function buildSizes(p: DemoProductApi): DemoSizeOption[] {
 
 function isAvailable(_status?: string): boolean {
   return true; // Demo: always show all sizes as available
+}
+
+function sdkSizeGuideData(raw: unknown): unknown {
+  if (!raw || typeof raw !== "object") return raw ?? null;
+  const matcherGuide = (raw as Record<string, unknown>).matcherGuide;
+  return matcherGuide ?? raw;
 }
 
 function parseSizeGuide(raw: unknown): DemoSizeGuide | null {

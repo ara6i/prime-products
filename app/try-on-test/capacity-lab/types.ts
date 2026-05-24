@@ -3,17 +3,11 @@ import type { TryOnModelId } from "../lib/models";
 export type CapacityTargetId = "local" | "test" | "live";
 export type CapacityScenarioId =
   | "health"
-  | "ai-sizing-real"
-  | "tryon-submit-only-real"
-  | "tryon-no-image-real"
-  | "tryon-real"
-  | "sdk-journey-no-image-real"
-  | "sdk-journey-sse-real"
   | "sdk-mirror-sse-real"
   | "sdk-journey-job-stream-real"
   | "shopify-mirror-sse-real"
-  | "shopify-mirror-job-stream-real"
-  | "sdk-journey-real";
+  | "shopify-mirror-job-stream-real";
+export type CapacityRouteSafety = "health" | "mirror-only";
 export type CapacityRunStatus = "queued" | "running" | "completed" | "failed" | "stopped";
 
 export interface CapacityTargetOption {
@@ -95,6 +89,9 @@ export interface CapacityResultSample {
   id: string;
   capturedAt: string;
   scenarioId: CapacityScenarioId;
+  routeSafety: CapacityRouteSafety;
+  targetBaseUrl: string;
+  apiPrefix: string | null;
   status: number;
   latencyMs: number;
   tryOnModel: string | null;
@@ -125,6 +122,9 @@ export interface CapacityRunSnapshot {
   config: CapacityRunConfig;
   targetLabel: string;
   endpoint: string;
+  routeSafety: CapacityRouteSafety;
+  targetBaseUrl: string;
+  apiPrefix: string | null;
   startedAt: string;
   completedAt: string | null;
   elapsedMs: number;

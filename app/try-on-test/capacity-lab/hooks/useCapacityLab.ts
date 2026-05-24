@@ -154,6 +154,10 @@ function normalizeConfigChange<Key extends keyof CapacityRunConfig>(
 ): CapacityRunConfig {
   const next = { ...current, [key]: value } as CapacityRunConfig;
   const scenario = getScenarioById(CAPACITY_SCENARIOS, next.scenarioId);
+  if (!scenario.isGeminiSafe) {
+    next.targetId = "test";
+    next.confirmLive = false;
+  }
   const scenarioChanged = key === "scenarioId";
   const requestedUsers = scenarioChanged
     ? (scenario.isGeminiSafe ? 25 : Math.min(10, scenario.maxVirtualUsers))

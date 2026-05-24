@@ -1,5 +1,4 @@
 import { execFile } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
 import os from "node:os";
 import { promisify } from "node:util";
 import type {
@@ -215,18 +214,8 @@ function normalizeWorkerMetric(raw: unknown): CapacityTestLabMetrics["workers"][
 
 function getOptionalCapacityApiKey(targetId: CapacityTargetId): string | null {
   const key = process.env[`PRIMESTYLE_CAPACITY_LAB_API_KEY_${targetId.toUpperCase()}`]
-    || process.env.PRIMESTYLE_CAPACITY_LAB_API_KEY
-    || process.env.PRIMESTYLE_FIRST_PARTY_API_KEY
-    || readLocalBackendFirstPartyKey();
+    || process.env.PRIMESTYLE_CAPACITY_LAB_API_KEY;
   return key?.trim() || null;
-}
-
-function readLocalBackendFirstPartyKey(): string | null {
-  if (process.env.NODE_ENV === "production") return null;
-  const envPath = process.env.PRIMESTYLE_CAPACITY_LAB_BACKEND_ENV_PATH || "/home/ara6i/Projects/primeStyleAI-backend/.env";
-  if (!existsSync(envPath)) return null;
-  const match = readFileSync(envPath, "utf8").match(/^PRIMESTYLE_FIRST_PARTY_API_KEY=(.+)$/m);
-  return match?.[1]?.trim() || null;
 }
 
 function buildRemoteMetricsScript(pm2Name: string | null): string {

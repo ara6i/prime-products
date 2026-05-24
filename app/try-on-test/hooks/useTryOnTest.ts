@@ -11,6 +11,7 @@ import { useModelSelection } from "./useModelSelection";
 import { TRY_ON_TEST_CONFIG } from "../lib/config";
 import { canSubmitTryOn } from "../lib/canSubmit";
 import { buildTryOnRunInput } from "../lib/mappers";
+import type { TryOnSizingRunData } from "../lib/types";
 
 /**
  * Top-level orchestration hook for the try-on test page. Composes every
@@ -40,7 +41,7 @@ export function useTryOnTest() {
     phase: submission.phase,
   });
 
-  const run = useCallback(async () => {
+  const run = useCallback(async (sizing?: TryOnSizingRunData | null) => {
     if (!canSubmit || !model.state.dataUri || !garment.state.dataUri) return;
 
     const acceptsPrompt = modelSelection.entry.acceptsPrompt;
@@ -48,11 +49,12 @@ export function useTryOnTest() {
     const runInput = buildTryOnRunInput({
       modelDataUri: model.state.dataUri,
       garmentDataUri: garment.state.dataUri,
-      customPrompt: acceptsPrompt ? prompt.promptToSend : undefined,
+      customPrompt: sizing ? undefined : acceptsPrompt ? prompt.promptToSend : undefined,
       model: modelSelection.modelId,
+      sizing,
     });
-    const promptKind = acceptsPrompt ? prompt.promptKind : "n/a";
-    const promptForHistory = acceptsPrompt ? prompt.promptForHistory : "(model ignores prompt)";
+    const promptKind = sizing ? "default" : acceptsPrompt ? prompt.promptKind : "n/a";
+    const promptForHistory = sizing?.promptPreview || (acceptsPrompt ? prompt.promptForHistory : "(model ignores prompt)");
 
     submission.reset();
     stopwatch.start();

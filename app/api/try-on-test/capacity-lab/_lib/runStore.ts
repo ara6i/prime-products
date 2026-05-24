@@ -11,7 +11,7 @@ import type {
 } from "@/app/try-on-test/capacity-lab/types";
 import { TRY_ON_MODELS, type TryOnModelId } from "@/app/try-on-test/lib/models";
 import { getCapacityTryOnModelEstimate } from "@/app/try-on-test/capacity-lab/lib/modelEstimates";
-import { buildScenarioUrl, getServerScenario, getServerTarget } from "./capacityTargets";
+import { assertCapacityRouteSafety, buildScenarioUrl, getCapacityRouteAudit, getServerScenario, getServerTarget } from "./capacityTargets";
 import { executeGeminiScenario } from "./geminiScenarioRunner";
 
 interface MutableCapacityRun extends CapacityRunSnapshot {
@@ -39,8 +39,6 @@ const MAX_TEST_REQUESTS = 10000;
 const MAX_TEST_USERS = 1000;
 const MAX_LIVE_REQUESTS = 1000;
 const MAX_LIVE_USERS = 50;
-const MAX_LIVE_GEMINI_REQUESTS = 25;
-const MAX_LIVE_GEMINI_USERS = 5;
 const DEFAULT_CAPACITY_TRY_ON_MODEL: TryOnModelId = "gemini-2.5-flash-image";
 const MAX_ERRORS = 8;
 const MAX_RESULT_SAMPLES = 6;
@@ -55,10 +53,10 @@ export function normalizeRunConfig(raw: Partial<CapacityRunConfig>): CapacityRun
 
   const totalLimit = scenario.isGeminiSafe
     ? (target.isLive ? MAX_LIVE_REQUESTS : MAX_TEST_REQUESTS)
-    : (target.isLive ? Math.min(MAX_LIVE_GEMINI_REQUESTS, scenario.maxTotalRequests) : scenario.maxTotalRequests);
+    : scenario.maxTotalRequests;
   const userLimit = scenario.isGeminiSafe
     ? (target.isLive ? MAX_LIVE_USERS : MAX_TEST_USERS)
-    : (target.isLive ? Math.min(MAX_LIVE_GEMINI_USERS, scenario.maxVirtualUsers) : scenario.maxVirtualUsers);
+    : scenario.maxVirtualUsers;
   const defaultTotal = scenario.isGeminiSafe ? 500 : Math.min(10, totalLimit);
   const defaultUsers = scenario.isGeminiSafe ? 25 : Math.min(10, userLimit);
   const totalRequests = clampInteger(raw.totalRequests, 1, totalLimit, defaultTotal);
@@ -81,10 +79,12 @@ export function normalizeRunConfig(raw: Partial<CapacityRunConfig>): CapacityRun
 
 export function createCapacityRun(rawConfig: Partial<CapacityRunConfig>): CapacityRunSnapshot {
   cleanupOldRuns();
+  assertSupportedScenario(rawConfig.scenarioId);
 
   const config = normalizeRunConfig(rawConfig);
   const target = getServerTarget(config.targetId);
   const scenario = getServerScenario(config.scenarioId);
+  const routeAudit = assertCapacityRouteSafety(config);
 
   if (target.isLive && !config.confirmLive) {
     throw new Error("Live API runs require explicit confirmation.");
@@ -101,6 +101,9 @@ export function createCapacityRun(rawConfig: Partial<CapacityRunConfig>): Capaci
     config,
     targetLabel: target.label,
     endpoint: `${scenario.method} ${buildScenarioUrl(config.targetId, config.scenarioId)}`,
+    routeSafety: routeAudit.routeSafety,
+    targetBaseUrl: routeAudit.targetBaseUrl,
+    apiPrefix: routeAudit.apiPrefix,
     startedAt: now.toISOString(),
     completedAt: null,
     elapsedMs: 0,
@@ -195,6 +198,7 @@ async function runWorker(run: MutableCapacityRun): Promise<void> {
 }
 
 async function executeRequest(run: MutableCapacityRun, requestIndex: number): Promise<void> {
+  assertCapacityRouteSafety(run.config);
   const url = buildScenarioUrl(run.config.targetId, run.config.scenarioId);
   const scenario = getServerScenario(run.config.scenarioId);
   const controller = new AbortController();
@@ -293,6 +297,9 @@ function snapshotRun(run: MutableCapacityRun): CapacityRunSnapshot {
     config: run.config,
     targetLabel: run.targetLabel,
     endpoint: run.endpoint,
+    routeSafety: run.routeSafety,
+    targetBaseUrl: run.targetBaseUrl,
+    apiPrefix: run.apiPrefix,
     startedAt: run.startedAt,
     completedAt: run.completedAt,
     elapsedMs: run.elapsedMs,
@@ -375,13 +382,14 @@ function stripMutableLiveStage(stage: MutableLiveStage): CapacityLiveStage {
 }
 
 function addResultSample(run: MutableCapacityRun, status: number, latencyMs: number, body: string): void {
-  const sample = parseResultSample(run.config.scenarioId, status, latencyMs, body);
+  const sample = parseResultSample(run.config.scenarioId, getCapacityRouteAudit(run.config), status, latencyMs, body);
   if (!sample) return;
   run.resultSamples = [...run.resultSamples, sample].slice(-MAX_RESULT_SAMPLES);
 }
 
 function parseResultSample(
   scenarioId: CapacityRunConfig["scenarioId"],
+  routeAudit: ReturnType<typeof getCapacityRouteAudit>,
   status: number,
   latencyMs: number,
   body: string,
@@ -414,6 +422,9 @@ function parseResultSample(
     id: crypto.randomUUID(),
     capturedAt: new Date().toISOString(),
     scenarioId,
+    routeSafety: routeAudit.routeSafety,
+    targetBaseUrl: routeAudit.targetBaseUrl,
+    apiPrefix: routeAudit.apiPrefix,
     status,
     latencyMs,
     tryOnModel,
@@ -583,18 +594,17 @@ function estimateRun(config: CapacityRunConfig) {
 function isScenarioId(value: unknown): value is CapacityRunConfig["scenarioId"] {
   return (
     value === "health" ||
-    value === "ai-sizing-real" ||
-    value === "tryon-submit-only-real" ||
-    value === "tryon-no-image-real" ||
-    value === "tryon-real" ||
-    value === "sdk-journey-no-image-real" ||
-    value === "sdk-journey-sse-real" ||
     value === "sdk-mirror-sse-real" ||
     value === "sdk-journey-job-stream-real" ||
     value === "shopify-mirror-sse-real" ||
-    value === "shopify-mirror-job-stream-real" ||
-    value === "sdk-journey-real"
+    value === "shopify-mirror-job-stream-real"
   );
+}
+
+function assertSupportedScenario(value: unknown): void {
+  if (value === undefined || value === null || value === "") return;
+  if (isScenarioId(value)) return;
+  throw new Error("Unsupported or unsafe capacity scenario. Stress tests are mirror-only and cannot call real SDK or Shopify backend routes.");
 }
 
 function isTryOnModelId(value: unknown): value is TryOnModelId {

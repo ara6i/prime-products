@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const PREVIEW = "https://preview.myaifitting.com";
+const siteAuthEnabled = process.env.PRIME_PRODUCTS_SITE_AUTH_ENABLED === "true";
 
 const nextConfig: NextConfig = {
   images: {
@@ -20,7 +21,9 @@ const nextConfig: NextConfig = {
     return [
       { source: "/dashboard", destination: `${PREVIEW}/developer/dashboard`, permanent: false },
       { source: "/dashboard/:path*", destination: `${PREVIEW}/developer/dashboard/:path*`, permanent: false },
-      { source: "/login", destination: `${PREVIEW}/developer/login`, permanent: false },
+      ...(siteAuthEnabled
+        ? []
+        : [{ source: "/login", destination: `${PREVIEW}/developer/login`, permanent: false }]),
     ];
   },
   async rewrites() {

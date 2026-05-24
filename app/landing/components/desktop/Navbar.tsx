@@ -96,7 +96,7 @@ export function Navbar() {
           Terms
         </Link>
         <Link
-          href="#"
+          href="/privacy-policy"
           className="text-[0.833vw] leading-[1.625] text-black w-[5vw]"
         >
           Policy

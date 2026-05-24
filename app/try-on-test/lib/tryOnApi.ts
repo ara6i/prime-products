@@ -6,6 +6,7 @@
  */
 
 import type { TryOnModelId } from "./models";
+import type { FitAreaInfo, SilhouetteContext, TryOnProductCategory } from "./types";
 
 export interface SubmitTryOnPayload {
   modelImage: string;
@@ -16,6 +17,9 @@ export interface SubmitTryOnPayload {
   productTitle?: string;
   productDescription?: string;
   productMaterial?: string;
+  category?: TryOnProductCategory;
+  fitInfo?: FitAreaInfo[];
+  silhouetteContext?: SilhouetteContext;
   /** Test override — picks a specific Gemini or Vertex try-on model. */
   model?: TryOnModelId;
 }

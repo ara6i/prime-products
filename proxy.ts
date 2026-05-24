@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { COOKIE_NAME, verifySessionToken } from "@/app/try-on-test/auth/lib/session";
+import {
+  isSiteAuthEnabled,
+  SITE_AUTH_COOKIE_NAME,
+  verifySiteSessionToken,
+} from "@/app/shared/auth/siteSession";
+import { isTestLabAvailableForHost, isTryOnTestApiPath, isTryOnTestPath, normalizeHost } from "@/app/try-on-test/lib/access";
 
 // Domains that should serve the /admin tree as their root.
 // Configurable via ADMIN_HOSTS (comma-separated) to avoid hard-coding env-specific hosts.
@@ -15,32 +20,40 @@ function getAdminHosts(): string[] {
   return env.split(",").map((h) => h.trim().toLowerCase()).filter(Boolean);
 }
 
-function normalizeHost(hostHeader: string | null): string {
-  if (!hostHeader) return "";
-  return hostHeader.split(":")[0]!.trim().toLowerCase();
-}
-
 export async function proxy(req: NextRequest) {
   const host = normalizeHost(req.headers.get("host"));
   const adminHosts = getAdminHosts();
   const isAdminHost = adminHosts.includes(host);
+  const siteAuthEnabled = isSiteAuthEnabled();
 
   const url = req.nextUrl;
   const pathname = url.pathname;
+  const isSiteLoginPath = pathname === "/login" || pathname.startsWith("/login/");
+  const isTryOnTestRoute = isTryOnTestPath(pathname);
+  const isTryOnTestApiRoute = isTryOnTestApiPath(pathname);
 
-  // ── Try-on-test admin gate ──
-  // Anything under /try-on-test except the login page itself + auth API
-  // requires a valid admin session cookie. JWT signature verified
-  // statelessly so this stays cheap.
-  const isTryOnTestPath = pathname === "/try-on-test" || pathname.startsWith("/try-on-test/");
-  const isTryOnTestLogin = pathname === "/try-on-test/login" || pathname.startsWith("/try-on-test/login/");
-  const isTryOnTestAuthApi = pathname.startsWith("/api/try-on-test/auth/");
-  if (isTryOnTestPath && !isTryOnTestLogin && !isTryOnTestAuthApi) {
-    const token = req.cookies.get(COOKIE_NAME)?.value || "";
-    const payload = token ? await verifySessionToken(token) : null;
+  if ((isTryOnTestRoute || isTryOnTestApiRoute) && !isTestLabAvailableForHost(host)) {
+    if (isTryOnTestApiRoute) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 });
+    }
+
+    return new NextResponse("Not found", { status: 404 });
+  }
+
+  // ── Local/staging whole-site gate ──
+  // Enabled only by env. Keeps the public site, admin screens, demo routes,
+  // and local API routes behind a signed HTTP-only session cookie.
+  if (siteAuthEnabled && !isSiteLoginPath) {
+    const token = req.cookies.get(SITE_AUTH_COOKIE_NAME)?.value || "";
+    const payload = token ? await verifySiteSessionToken(token) : null;
+
     if (!payload) {
+      if (pathname.startsWith("/api/")) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }
+
       const redirectUrl = url.clone();
-      redirectUrl.pathname = "/try-on-test/login";
+      redirectUrl.pathname = "/login";
       redirectUrl.search = `?from=${encodeURIComponent(pathname + url.search)}`;
       return NextResponse.redirect(redirectUrl);
     }
@@ -53,7 +66,12 @@ export async function proxy(req: NextRequest) {
       rewritten.pathname = "/admin";
       return NextResponse.rewrite(rewritten);
     }
-    if (!pathname.startsWith("/admin") && !pathname.startsWith("/api") && !pathname.startsWith("/_next")) {
+    if (
+      !pathname.startsWith("/admin") &&
+      !pathname.startsWith("/api") &&
+      !pathname.startsWith("/_next") &&
+      !(siteAuthEnabled && isSiteLoginPath)
+    ) {
       const rewritten = url.clone();
       rewritten.pathname = `/admin${pathname}`;
       return NextResponse.rewrite(rewritten);

@@ -57,7 +57,7 @@ export function SizeSelect({
             : "border-border-light bg-white text-text-hint hover:border-brand-blue/40"
         )}
       >
-        <span className="text-sm leading-none truncate font-medium">
+        <span className="text-[13px] sm:text-sm leading-none truncate font-medium">
           {value ? selectedLabel : placeholder}
         </span>
         <ChevronDown
@@ -88,7 +88,7 @@ export function SizeSelect({
                   }
                 }}
                 className={cn(
-                  "w-full flex items-center justify-between gap-2 px-3.5 py-2 text-sm text-left transition-colors",
+                  "w-full flex items-center justify-between gap-2 px-3.5 py-2 text-[13px] sm:text-sm text-left transition-colors",
                   opt.disabled
                     ? "text-text-disabled cursor-not-allowed line-through"
                     : value === opt.value

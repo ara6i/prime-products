@@ -1,9 +1,13 @@
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
 import type { CapacityScenarioId, CapacityTargetId } from "@/app/try-on-test/capacity-lab/types";
 import type { TryOnModelId } from "@/app/try-on-test/lib/models";
-import { getServerTarget } from "./capacityTargets";
+import {
+  TEST_LAB_SDK_MIRROR_PREFIX,
+  TEST_LAB_SHOPIFY_MIRROR_PREFIX,
+  getServerTarget,
+} from "./capacityTargets";
 
 interface ScenarioResult {
   status: number;
@@ -60,9 +64,6 @@ const SAMPLE_PERSON_PATH = "shopify/FAT-GUY-NO-HAT-NO-GLASSES (1).png";
 const SAMPLE_GARMENT_PATH = "shopify/1-TMW_3BY1_10_TOMMY_HILFIGER_2_PIECE_TUXEDO_FORMAL_BLACK_ALT6 (1).jpg";
 const STATUS_POLL_INTERVAL_MS = 2_000;
 const SDK_FALLBACK_POLL_INTERVAL_MS = 3_000;
-const SDK_API_PREFIX = "/api/v1";
-const TEST_LAB_SDK_MIRROR_PREFIX = "/api/test-lab/sdk-mirror";
-const TEST_LAB_SHOPIFY_MIRROR_PREFIX = "/api/test-lab/shopify-mirror";
 
 let cachedSdkPersonDataUri: string | null = null;
 let cachedAgeCheckPersonDataUri: string | null = null;
@@ -75,12 +76,6 @@ export async function executeGeminiScenario(
   signal: AbortSignal,
   onProgress?: ProgressReporter,
 ): Promise<ScenarioResult> {
-  if (scenarioId === "ai-sizing-real") return executeSdkSizingOnlyScenario(targetId, signal, onProgress);
-  if (scenarioId === "tryon-submit-only-real") return executeSdkTryOnSubmitOnlyScenario(targetId, tryOnModel, signal, onProgress);
-  if (scenarioId === "tryon-no-image-real") return executeSdkTryOnOnlyScenario(targetId, tryOnModel, signal, onProgress, { includeImageInStatus: false });
-  if (scenarioId === "tryon-real") return executeSdkTryOnOnlyScenario(targetId, tryOnModel, signal, onProgress);
-  if (scenarioId === "sdk-journey-no-image-real") return executeFullSdkJourneyScenario(targetId, tryOnModel, signal, onProgress, { includeImageInStatus: false });
-  if (scenarioId === "sdk-journey-sse-real") return executeFullSdkJourneySseScenario(targetId, tryOnModel, signal, onProgress);
   if (scenarioId === "sdk-mirror-sse-real") return executeFullSdkJourneySseScenario(targetId, tryOnModel, signal, onProgress, {
     apiPrefix: TEST_LAB_SDK_MIRROR_PREFIX,
     message: "SDK exact mirror journey completed.",
@@ -94,105 +89,7 @@ export async function executeGeminiScenario(
     apiPrefix: TEST_LAB_SHOPIFY_MIRROR_PREFIX,
     message: "Shopify worker experiment journey completed.",
   });
-  if (scenarioId === "sdk-journey-real") return executeFullSdkJourneyScenario(targetId, tryOnModel, signal, onProgress);
-  throw new Error(`Unsupported Gemini scenario: ${scenarioId}`);
-}
-
-async function executeSdkSizingOnlyScenario(targetId: CapacityTargetId, signal: AbortSignal, onProgress?: ProgressReporter): Promise<ScenarioResult> {
-  const baseUrl = getBaseUrl(targetId);
-  const headers = getJsonHeaders(targetId);
-  const stages: StageSummary[] = [];
-  const sessionId = createSdkSessionId();
-
-  const sizing = await runSdkSizingResultFlow({ baseUrl, headers, sessionId, stages, signal, onProgress });
-  if (!sizing.ok) return sizing.result;
-
-  return buildFlowResult(true, 200, stages, JSON.stringify({
-    message: "Real SDK sizing flow completed.",
-    recommendedSize: sizing.context.recommendedSize,
-  }));
-}
-
-async function executeSdkTryOnOnlyScenario(
-  targetId: CapacityTargetId,
-  tryOnModel: TryOnModelId,
-  signal: AbortSignal,
-  onProgress?: ProgressReporter,
-  options: { includeImageInStatus?: boolean } = {},
-): Promise<ScenarioResult> {
-  const baseUrl = getBaseUrl(targetId);
-  const headers = getJsonHeaders(targetId);
-  const stages: StageSummary[] = [];
-  const sessionId = createSdkSessionId();
-  const context = await buildFallbackSizingContext(sessionId);
-
-  const tryOn = await runSdkTryOnFlow({ baseUrl, headers, stages, signal, context, tryOnModel, onProgress, includeImageInStatus: options.includeImageInStatus });
-  if (!tryOn.ok) return buildFlowResult(false, tryOn.status, stages, tryOn.body);
-
-  return buildFlowResult(true, 200, stages, JSON.stringify({
-    message: "Real SDK try-on flow completed.",
-    tryOnModel,
-    jobId: tryOn.jobId,
-    imageUrl: tryOn.imageUrl,
-    imageDelivery: options.includeImageInStatus === false ? "skipped by includeImage=false" : "included",
-  }));
-}
-
-async function executeSdkTryOnSubmitOnlyScenario(
-  targetId: CapacityTargetId,
-  tryOnModel: TryOnModelId,
-  signal: AbortSignal,
-  onProgress?: ProgressReporter,
-): Promise<ScenarioResult> {
-  const baseUrl = getBaseUrl(targetId);
-  const headers = getJsonHeaders(targetId);
-  const stages: StageSummary[] = [];
-  const sessionId = createSdkSessionId();
-  const context = await buildFallbackSizingContext(sessionId);
-
-  const submit = await submitSdkTryOnJob({ baseUrl, headers, stages, signal, context, tryOnModel, onProgress });
-  if (!submit.ok) return buildFlowResult(false, submit.status, stages, submit.body);
-
-  return buildFlowResult(true, 202, stages, JSON.stringify({
-    message: "Real SDK try-on submit accepted. Polling intentionally skipped for submit-path diagnostics.",
-    tryOnModel,
-    jobId: submit.jobId,
-    recommendedSize: context.recommendedSize,
-  }));
-}
-
-async function executeFullSdkJourneyScenario(
-  targetId: CapacityTargetId,
-  tryOnModel: TryOnModelId,
-  signal: AbortSignal,
-  onProgress?: ProgressReporter,
-  options: { includeImageInStatus?: boolean } = {},
-): Promise<ScenarioResult> {
-  const baseUrl = getBaseUrl(targetId);
-  const headers = getJsonHeaders(targetId);
-  const stages: StageSummary[] = [];
-  const sessionId = createSdkSessionId();
-
-  // Actual SDK photo path: age-check -> /sizing/recommend(method=photo).
-  const sizing = await runSdkSizingResultFlow({ baseUrl, headers, sessionId, stages, signal, onProgress });
-  if (!sizing.ok) return sizing.result;
-
-  // Current SDK behavior after the size result appears: try-on starts. Full
-  // profile estimates are already returned inline by /sizing/recommend, so a
-  // separate /sizing/estimate call here would over-measure shopper latency.
-  const tryOn = await runSdkTryOnFlow({ baseUrl, headers, stages, signal, context: sizing.context, tryOnModel, onProgress, includeImageInStatus: options.includeImageInStatus });
-
-  if (!tryOn.ok) return buildFlowResult(false, tryOn.status, stages, tryOn.body);
-
-  return buildFlowResult(true, 200, stages, JSON.stringify({
-    message: "Full real SDK journey completed.",
-    recommendedSize: sizing.context.recommendedSize,
-    tryOnModel,
-    jobId: tryOn.jobId,
-    imageUrl: tryOn.imageUrl,
-    imageDelivery: options.includeImageInStatus === false ? "skipped by includeImage=false" : "included",
-    profileEstimate: "not run separately; SDK stores inline estimates from sizing response",
-  }));
+  throw new Error(`Unsafe or unsupported capacity stress scenario: ${scenarioId}`);
 }
 
 async function executeFullSdkJourneySseScenario(
@@ -267,7 +164,7 @@ async function runSdkSizingResultFlow(input: {
 }): Promise<{ ok: true; context: SdkSizingContext } | { ok: false; result: ScenarioResult }> {
   const bodyImage = await getSdkPersonDataUri();
   const ageCheckImage = await getAgeCheckPersonDataUri();
-  const apiPrefix = input.apiPrefix ?? SDK_API_PREFIX;
+  const apiPrefix = input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX;
 
   const ageCheck = await postStage({
     name: "sdk.photo.age-check",
@@ -314,39 +211,6 @@ async function runSdkSizingResultFlow(input: {
       silhouetteContext: buildSilhouetteContextFromSizingResult(recommend.data, recommendedSize),
       modelImage: bodyImage,
     },
-  };
-}
-
-async function runSdkTryOnFlow(input: {
-  baseUrl: string;
-  headers: Record<string, string>;
-  stages: StageSummary[];
-  signal: AbortSignal;
-  context: SdkSizingContext;
-  tryOnModel: TryOnModelId;
-  onProgress?: ProgressReporter;
-  includeImageInStatus?: boolean;
-  apiPrefix?: string;
-}): Promise<ScenarioResult & { jobId?: string; imageUrl?: string | null }> {
-  const submit = await submitSdkTryOnJob(input);
-  if (!submit.ok) return toScenarioResult(submit);
-
-  const status = await pollTryOnStatus(
-    input.baseUrl,
-    input.headers,
-    input.stages,
-    submit.jobId,
-    input.signal,
-    input.onProgress,
-    { includeImage: input.includeImageInStatus !== false },
-    input.apiPrefix,
-  );
-  if (!status.ok) return status;
-
-  return {
-    ...status,
-    jobId: submit.jobId,
-    imageUrl: getNullableStringField(status.data, "imageUrl"),
   };
 }
 
@@ -448,7 +312,7 @@ async function runSdkTryOnJobStreamFlow(input: {
     jobId: submit.jobId,
     recommendedSize: input.context.recommendedSize,
     onProgress: input.onProgress,
-    apiPrefix: input.apiPrefix ?? SDK_API_PREFIX,
+    apiPrefix: input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX,
   });
   if (!ready.ok) {
     return {
@@ -461,7 +325,7 @@ async function runSdkTryOnJobStreamFlow(input: {
 
   const result = await getBinaryResultStage({
     name: "sdk.tryon.result.fetch",
-    url: `${input.baseUrl}${input.apiPrefix ?? SDK_API_PREFIX}/tryon/result/${encodeURIComponent(submit.jobId)}`,
+    url: `${input.baseUrl}${input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX}/tryon/result/${encodeURIComponent(submit.jobId)}`,
     headers: input.headers,
     stages: input.stages,
     signal: input.signal,
@@ -498,7 +362,7 @@ async function submitSdkTryOnJob(input: {
 }): Promise<JsonResponse & { jobId: string }> {
   const submit = await postStage({
     name: "sdk.tryon.submit",
-    url: `${input.baseUrl}${input.apiPrefix ?? SDK_API_PREFIX}/tryon`,
+    url: `${input.baseUrl}${input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX}/tryon`,
     headers: input.headers,
     body: buildSdkTryOnPayload(input.context, input.tryOnModel),
     stages: input.stages,
@@ -545,7 +409,7 @@ async function pollTryOnStatus(
     firstPollStageName?: string;
     pollStageName?: string;
   } = { includeImage: true },
-  apiPrefix = SDK_API_PREFIX,
+  apiPrefix = TEST_LAB_SDK_MIRROR_PREFIX,
 ): Promise<ScenarioResult & { data?: unknown }> {
   let polls = 0;
   while (!signal.aborted) {
@@ -604,7 +468,7 @@ async function waitForSdkTryOnSseResult(input: {
   onProgress?: ProgressReporter;
   apiPrefix?: string;
 }): Promise<ScenarioResult & { data?: unknown }> {
-  const apiPrefix = input.apiPrefix ?? SDK_API_PREFIX;
+  const apiPrefix = input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX;
   const streamUrl = buildSdkSseStreamUrl(input.baseUrl, input.targetId, apiPrefix);
   const connectStartedAt = Date.now();
   input.onProgress?.({
@@ -786,14 +650,14 @@ async function waitForSdkTryOnJobStreamReady(input: {
   onProgress?: ProgressReporter;
   apiPrefix?: string;
 }): Promise<ScenarioResult & { data?: unknown }> {
-  const streamUrl = buildSdkJobSseStreamUrl(input.baseUrl, input.targetId, input.jobId, input.apiPrefix ?? SDK_API_PREFIX);
+  const streamUrl = buildSdkJobSseStreamUrl(input.baseUrl, input.targetId, input.jobId, input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX);
   const connectStartedAt = Date.now();
   input.onProgress?.({
     stage: "sdk.tryon.job-sse.connect",
     status: "running",
     jobId: input.jobId,
     recommendedSize: input.recommendedSize,
-    detail: `${input.apiPrefix ?? SDK_API_PREFIX}/tryon/stream?jobId=...`,
+    detail: `${input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX}/tryon/stream?jobId=...`,
   });
 
   const response = await fetch(streamUrl, {
@@ -837,7 +701,7 @@ async function waitForSdkTryOnJobStreamReady(input: {
     status: response.status,
     ok: true,
     latencyMs: connectLatencyMs,
-    detail: `connected to ${input.apiPrefix ?? SDK_API_PREFIX}/tryon/stream?jobId=...`,
+    detail: `connected to ${input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX}/tryon/stream?jobId=...`,
   });
   input.onProgress?.({
     stage: "sdk.tryon.job-sse.connected",
@@ -1106,23 +970,6 @@ function collectMatchDetails(value: unknown): Array<Record<string, unknown>> {
   }
 
   return out;
-}
-
-async function buildFallbackSizingContext(sessionId: string): Promise<SdkSizingContext> {
-  return {
-    sessionId,
-    recommendedSize: "48 Regular",
-    fitInfo: buildFallbackFitInfo(),
-    modelImage: await getSdkPersonDataUri(),
-    silhouetteContext: {
-      recommendedSize: "48 Regular",
-      recommendedSizeMeasurements: "Chest 121-124 cm, Waist 107-112 cm, Hip 122-126 cm, Sleeve 90 cm, Inseam 81 cm",
-      sizeChartSummary: "Men's tuxedo chart from 40 Short to 52 Long with chest, waist, hip, sleeve, inseam, and fit length.",
-      userMeasurementsText: "Chest 122 cm, Waist 110 cm, Hips 124 cm, Shoulder Width 50 cm, Sleeve Length 90 cm, Inseam 81 cm",
-      userHeight: "178 cm",
-      userWeight: "110 kg",
-    },
-  };
 }
 
 function buildFallbackFitInfo(): FitAreaInfo[] {
@@ -1397,14 +1244,14 @@ function getJsonHeaders(targetId: CapacityTargetId): Record<string, string> {
   };
 }
 
-function buildSdkSseStreamUrl(baseUrl: string, targetId: CapacityTargetId, apiPrefix = SDK_API_PREFIX): string {
+function buildSdkSseStreamUrl(baseUrl: string, targetId: CapacityTargetId, apiPrefix = TEST_LAB_SDK_MIRROR_PREFIX): string {
   const apiKey = getCapacityApiKey(targetId);
   const url = new URL(`${apiPrefix}/tryon/stream`, baseUrl);
   url.searchParams.set("key", apiKey);
   return url.toString();
 }
 
-function buildSdkJobSseStreamUrl(baseUrl: string, targetId: CapacityTargetId, jobId: string, apiPrefix = SDK_API_PREFIX): string {
+function buildSdkJobSseStreamUrl(baseUrl: string, targetId: CapacityTargetId, jobId: string, apiPrefix = TEST_LAB_SDK_MIRROR_PREFIX): string {
   const apiKey = getCapacityApiKey(targetId);
   const url = new URL(`${apiPrefix}/tryon/stream`, baseUrl);
   url.searchParams.set("key", apiKey);
@@ -1424,24 +1271,14 @@ function createLinkedAbortController(parentSignal: AbortSignal): AbortController
 
 function getCapacityApiKey(targetId: CapacityTargetId): string {
   const key = process.env[`PRIMESTYLE_CAPACITY_LAB_API_KEY_${targetId.toUpperCase()}`]
-    || process.env.PRIMESTYLE_CAPACITY_LAB_API_KEY
-    || process.env.PRIMESTYLE_FIRST_PARTY_API_KEY
-    || readLocalBackendFirstPartyKey();
+    || process.env.PRIMESTYLE_CAPACITY_LAB_API_KEY;
 
   if (!key) {
     throw new Error(
-      `Missing server-side API key for ${targetId}. Set PRIMESTYLE_CAPACITY_LAB_API_KEY_${targetId.toUpperCase()} or PRIMESTYLE_CAPACITY_LAB_API_KEY.`,
+      `Missing server-side capacity-lab API key for ${targetId}. Set PRIMESTYLE_CAPACITY_LAB_API_KEY_${targetId.toUpperCase()} or PRIMESTYLE_CAPACITY_LAB_API_KEY.`,
     );
   }
-  return key;
-}
-
-function readLocalBackendFirstPartyKey(): string | null {
-  if (process.env.NODE_ENV === "production") return null;
-  const envPath = process.env.PRIMESTYLE_CAPACITY_LAB_BACKEND_ENV_PATH || "/home/ara6i/Projects/primeStyleAI-backend/.env";
-  if (!existsSync(envPath)) return null;
-  const match = readFileSync(envPath, "utf8").match(/^PRIMESTYLE_FIRST_PARTY_API_KEY=(.+)$/m);
-  return match?.[1]?.trim() || null;
+  return key.trim();
 }
 
 async function postJson(url: string, headers: Record<string, string>, body: unknown, signal: AbortSignal): Promise<JsonResponse> {

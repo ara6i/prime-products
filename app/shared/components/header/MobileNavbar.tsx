@@ -11,7 +11,7 @@ import { cn } from "@/app/shared/lib/utils";
 const NAV_LINKS = [
   { label: "Pricing", href: "/pricing" },
   { label: "Terms", href: "/terms" },
-  { label: "Policy", href: "#" },
+  { label: "Policy", href: "/privacy-policy" },
 ];
 
 const DEVELOPER_ITEMS = [

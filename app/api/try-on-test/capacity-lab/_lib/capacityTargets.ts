@@ -1,4 +1,16 @@
-import type { CapacityRunConfig, CapacityScenarioId, CapacityTargetId } from "@/app/try-on-test/capacity-lab/types";
+import type { CapacityRouteSafety, CapacityRunConfig, CapacityScenarioId, CapacityTargetId } from "@/app/try-on-test/capacity-lab/types";
+
+export const TEST_LAB_SDK_MIRROR_PREFIX = "/api/test-lab/sdk-mirror";
+export const TEST_LAB_SHOPIFY_MIRROR_PREFIX = "/api/test-lab/shopify-mirror";
+const MIRROR_GEMINI_MAX_REQUESTS = 150;
+const MIRROR_GEMINI_MAX_USERS = 150;
+const UNSAFE_STRESS_ROUTE_PATTERNS = [
+  "/api/v1",
+  "/api/admin/shopify",
+  "/api/admin/shopify-v2",
+  "/api/proxy",
+  "api.primestyleai.com",
+];
 
 interface ServerCapacityTarget {
   id: CapacityTargetId;
@@ -18,6 +30,12 @@ export interface ServerCapacityScenario {
   maxVirtualUsers: number;
   estimatedTryOnCallsPerRequest: number;
   estimatedSizingCallsPerRequest: number;
+}
+
+export interface CapacityRouteAudit {
+  routeSafety: CapacityRouteSafety;
+  targetBaseUrl: string;
+  apiPrefix: string | null;
 }
 
 const TARGETS: Record<CapacityTargetId, ServerCapacityTarget> = {
@@ -62,158 +80,60 @@ const SCENARIOS: Record<CapacityScenarioId, ServerCapacityScenario> = {
       live: "/health",
     },
   },
-  "ai-sizing-real": {
-    id: "ai-sizing-real",
-    method: "POST",
-    isGeminiSafe: false,
-    maxTotalRequests: 110,
-    maxVirtualUsers: 110,
-    estimatedTryOnCallsPerRequest: 0,
-    estimatedSizingCallsPerRequest: 2,
-    paths: {
-      local: "/api/v1/sizing/age-check -> /api/v1/sizing/recommend",
-      test: "/api/v1/sizing/age-check -> /api/v1/sizing/recommend",
-      live: "/api/v1/sizing/age-check -> /api/v1/sizing/recommend",
-    },
-  },
-  "tryon-submit-only-real": {
-    id: "tryon-submit-only-real",
-    method: "POST",
-    isGeminiSafe: false,
-    maxTotalRequests: 110,
-    maxVirtualUsers: 110,
-    estimatedTryOnCallsPerRequest: 1,
-    estimatedSizingCallsPerRequest: 0,
-    paths: {
-      local: "/api/v1/tryon submit only",
-      test: "/api/v1/tryon submit only",
-      live: "/api/v1/tryon submit only",
-    },
-  },
-  "tryon-no-image-real": {
-    id: "tryon-no-image-real",
-    method: "POST",
-    isGeminiSafe: false,
-    maxTotalRequests: 110,
-    maxVirtualUsers: 110,
-    estimatedTryOnCallsPerRequest: 1,
-    estimatedSizingCallsPerRequest: 0,
-    paths: {
-      local: "/api/v1/tryon -> /api/v1/tryon/status/:jobId?includeImage=false",
-      test: "/api/v1/tryon -> /api/v1/tryon/status/:jobId?includeImage=false",
-      live: "/api/v1/tryon -> /api/v1/tryon/status/:jobId?includeImage=false",
-    },
-  },
-  "tryon-real": {
-    id: "tryon-real",
-    method: "POST",
-    isGeminiSafe: false,
-    maxTotalRequests: 110,
-    maxVirtualUsers: 110,
-    estimatedTryOnCallsPerRequest: 1,
-    estimatedSizingCallsPerRequest: 0,
-    paths: {
-      local: "/api/v1/tryon -> /api/v1/tryon/status/:jobId",
-      test: "/api/v1/tryon -> /api/v1/tryon/status/:jobId",
-      live: "/api/v1/tryon -> /api/v1/tryon/status/:jobId",
-    },
-  },
-  "sdk-journey-no-image-real": {
-    id: "sdk-journey-no-image-real",
-    method: "POST",
-    isGeminiSafe: false,
-    maxTotalRequests: 110,
-    maxVirtualUsers: 110,
-    estimatedTryOnCallsPerRequest: 1,
-    estimatedSizingCallsPerRequest: 2,
-    paths: {
-      local: "/api/v1/sizing/age-check -> /api/v1/sizing/recommend -> /api/v1/tryon -> /api/v1/tryon/status/:jobId?includeImage=false",
-      test: "/api/v1/sizing/age-check -> /api/v1/sizing/recommend -> /api/v1/tryon -> /api/v1/tryon/status/:jobId?includeImage=false",
-      live: "/api/v1/sizing/age-check -> /api/v1/sizing/recommend -> /api/v1/tryon -> /api/v1/tryon/status/:jobId?includeImage=false",
-    },
-  },
-  "sdk-journey-sse-real": {
-    id: "sdk-journey-sse-real",
-    method: "POST",
-    isGeminiSafe: false,
-    maxTotalRequests: 110,
-    maxVirtualUsers: 110,
-    estimatedTryOnCallsPerRequest: 1,
-    estimatedSizingCallsPerRequest: 2,
-    paths: {
-      local: "/api/v1/sizing/age-check -> /api/v1/sizing/recommend -> /api/v1/tryon -> /api/v1/tryon/stream + /status fallback",
-      test: "/api/v1/sizing/age-check -> /api/v1/sizing/recommend -> /api/v1/tryon -> /api/v1/tryon/stream + /status fallback",
-      live: "/api/v1/sizing/age-check -> /api/v1/sizing/recommend -> /api/v1/tryon -> /api/v1/tryon/stream + /status fallback",
-    },
-  },
   "sdk-mirror-sse-real": {
     id: "sdk-mirror-sse-real",
     method: "POST",
     isGeminiSafe: false,
-    maxTotalRequests: 110,
-    maxVirtualUsers: 110,
+    maxTotalRequests: MIRROR_GEMINI_MAX_REQUESTS,
+    maxVirtualUsers: MIRROR_GEMINI_MAX_USERS,
     estimatedTryOnCallsPerRequest: 1,
     estimatedSizingCallsPerRequest: 2,
     paths: {
-      local: "/api/test-lab/sdk-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback",
-      test: "/api/test-lab/sdk-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback",
-      live: "/api/test-lab/sdk-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback",
+      local: `${TEST_LAB_SDK_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
+      test: `${TEST_LAB_SDK_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
+      live: `${TEST_LAB_SDK_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
     },
   },
   "sdk-journey-job-stream-real": {
     id: "sdk-journey-job-stream-real",
     method: "POST",
     isGeminiSafe: false,
-    maxTotalRequests: 110,
-    maxVirtualUsers: 110,
+    maxTotalRequests: MIRROR_GEMINI_MAX_REQUESTS,
+    maxVirtualUsers: MIRROR_GEMINI_MAX_USERS,
     estimatedTryOnCallsPerRequest: 1,
     estimatedSizingCallsPerRequest: 2,
     paths: {
-      local: "/api/test-lab/sdk-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId",
-      test: "/api/test-lab/sdk-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId",
-      live: "/api/test-lab/sdk-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId",
+      local: `${TEST_LAB_SDK_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId`,
+      test: `${TEST_LAB_SDK_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId`,
+      live: `${TEST_LAB_SDK_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId`,
     },
   },
   "shopify-mirror-sse-real": {
     id: "shopify-mirror-sse-real",
     method: "POST",
     isGeminiSafe: false,
-    maxTotalRequests: 110,
-    maxVirtualUsers: 110,
+    maxTotalRequests: MIRROR_GEMINI_MAX_REQUESTS,
+    maxVirtualUsers: MIRROR_GEMINI_MAX_USERS,
     estimatedTryOnCallsPerRequest: 1,
     estimatedSizingCallsPerRequest: 2,
     paths: {
-      local: "/api/test-lab/shopify-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback",
-      test: "/api/test-lab/shopify-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback",
-      live: "/api/test-lab/shopify-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback",
+      local: `${TEST_LAB_SHOPIFY_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
+      test: `${TEST_LAB_SHOPIFY_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
+      live: `${TEST_LAB_SHOPIFY_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
     },
   },
   "shopify-mirror-job-stream-real": {
     id: "shopify-mirror-job-stream-real",
     method: "POST",
     isGeminiSafe: false,
-    maxTotalRequests: 110,
-    maxVirtualUsers: 110,
+    maxTotalRequests: MIRROR_GEMINI_MAX_REQUESTS,
+    maxVirtualUsers: MIRROR_GEMINI_MAX_USERS,
     estimatedTryOnCallsPerRequest: 1,
     estimatedSizingCallsPerRequest: 2,
     paths: {
-      local: "/api/test-lab/shopify-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId",
-      test: "/api/test-lab/shopify-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId",
-      live: "/api/test-lab/shopify-mirror/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId",
-    },
-  },
-  "sdk-journey-real": {
-    id: "sdk-journey-real",
-    method: "POST",
-    isGeminiSafe: false,
-    maxTotalRequests: 110,
-    maxVirtualUsers: 110,
-    estimatedTryOnCallsPerRequest: 1,
-    estimatedSizingCallsPerRequest: 2,
-    paths: {
-      local: "/api/v1/sizing/age-check -> /api/v1/sizing/recommend -> /api/v1/tryon -> /api/v1/tryon/status/:jobId",
-      test: "/api/v1/sizing/age-check -> /api/v1/sizing/recommend -> /api/v1/tryon -> /api/v1/tryon/status/:jobId",
-      live: "/api/v1/sizing/age-check -> /api/v1/sizing/recommend -> /api/v1/tryon -> /api/v1/tryon/status/:jobId",
+      local: `${TEST_LAB_SHOPIFY_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId`,
+      test: `${TEST_LAB_SHOPIFY_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId`,
+      live: `${TEST_LAB_SHOPIFY_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId`,
     },
   },
 };
@@ -233,4 +153,46 @@ export function buildScenarioUrl(targetId: CapacityRunConfig["targetId"], scenar
   if (path.includes(" -> ")) return `${target.baseUrl.replace(/\/+$/, "")} ${path}`;
   if (path.startsWith("/")) return new URL(path, target.baseUrl).toString();
   return `${target.baseUrl.replace(/\/+$/, "")}/${path}`;
+}
+
+export function getScenarioApiPrefix(scenarioId: CapacityScenarioId): string | null {
+  if (scenarioId === "sdk-mirror-sse-real" || scenarioId === "sdk-journey-job-stream-real") {
+    return TEST_LAB_SDK_MIRROR_PREFIX;
+  }
+  if (scenarioId === "shopify-mirror-sse-real" || scenarioId === "shopify-mirror-job-stream-real") {
+    return TEST_LAB_SHOPIFY_MIRROR_PREFIX;
+  }
+  return null;
+}
+
+export function getCapacityRouteAudit(config: CapacityRunConfig): CapacityRouteAudit {
+  const target = getServerTarget(config.targetId);
+  const scenario = getServerScenario(config.scenarioId);
+  return {
+    routeSafety: scenario.isGeminiSafe ? "health" : "mirror-only",
+    targetBaseUrl: target.baseUrl.replace(/\/+$/, ""),
+    apiPrefix: getScenarioApiPrefix(config.scenarioId),
+  };
+}
+
+export function assertCapacityRouteSafety(config: CapacityRunConfig): CapacityRouteAudit {
+  const scenario = getServerScenario(config.scenarioId);
+  const audit = getCapacityRouteAudit(config);
+  if (scenario.isGeminiSafe) return audit;
+
+  if (config.targetId !== "test") {
+    throw new Error("Capacity stress tests are locked to the test backend. Real SDK, Shopify, local, and live stress targets are blocked.");
+  }
+
+  if (!audit.apiPrefix?.startsWith("/api/test-lab/")) {
+    throw new Error("Capacity stress tests must resolve to an isolated /api/test-lab mirror prefix.");
+  }
+
+  const resolvedRoute = buildScenarioUrl(config.targetId, config.scenarioId);
+  const unsafePattern = UNSAFE_STRESS_ROUTE_PATTERNS.find((pattern) => resolvedRoute.includes(pattern));
+  if (unsafePattern) {
+    throw new Error(`Unsafe capacity route blocked before execution: ${unsafePattern}`);
+  }
+
+  return audit;
 }

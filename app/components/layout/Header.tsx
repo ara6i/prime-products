@@ -112,8 +112,8 @@ export function Header({ isLoggedIn, currentPath, onDashboardClick }: HeaderProp
           Terms
         </Link>
         <Link
-          href="#"
-          className="text-[0.833vw] leading-[1.625] text-black w-[5vw]"
+          href="/privacy-policy"
+          className={`text-[0.833vw] leading-[1.625] w-[5vw] ${currentPath === "/privacy-policy" ? "text-[#2154EF] font-semibold" : "text-black"}`}
         >
           Policy
         </Link>

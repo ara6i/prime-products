@@ -1,23 +1,28 @@
 # PrimeStyleAI Unified Project Context
 
-Last updated: 2026-05-22
+Last updated: 2026-05-23
 Owner workspace: `/home/ara6i/Projects`
+Local Mac workspace: `/Users/arashsn/Projects/PrimeStyleAI`
 
 This file merges the key Claude memory/docs for SDK, backend, Shopify app, droplet deployment, and production URLs.
 
 ## 1) Core Repos and Roles
 
 - `prime-products` (`/home/ara6i/Projects/prime-products`)
+  - Local Mac path: `/Users/arashsn/Projects/PrimeStyleAI/prime-products`
   - Next.js app (customer-facing site at `https://primestyleai.com`)
   - PM2 process: `prime-products`
 - `primeStyleAI-backend` (`/home/ara6i/Projects/primeStyleAI-backend`)
+  - Local Mac path: `/Users/arashsn/Projects/PrimeStyleAI/primeStyleAI-backend`
   - Express 5 + MongoDB monolith backend (live proxy at `https://api.primestyleai.com`)
   - PM2 process: `primestyle-backend`
 - `PrimeStyleAI-shopify` (`/home/ara6i/Projects/PrimeStyleAI-shopify`)
+  - Local Mac path: `/Users/arashsn/Projects/PrimeStyleAI/PrimeStyleAI-shopify`
   - Shopify embedded admin app + theme app extension
   - Live URL: `https://shopify.primestyleai.com`
   - PM2 process: `primestyle-shopify`
 - `primestyleai-tryon-sdk` (`/home/ara6i/Projects/primestyleai-tryon-sdk`)
+  - Local Mac path: `/Users/arashsn/Projects/PrimeStyleAI/primestyleai-tryon-sdk`
   - Source for `@primestyleai/tryon` npm package
 
 ## 2) Production and Infrastructure
@@ -189,6 +194,21 @@ Important guardrail:
 Documented local workflow in `LOCAL-DEV.md`:
 - Local SDK iteration via `npm pack` + `npm install <tgz> --no-save` into `prime-products`
 - Avoid `npm link` due to Turbopack resolution issues with exports/symlink path
+
+Mac local run snapshot (verified 2026-05-23):
+- `prime-products` runs with `npm run dev` at `http://localhost:3000`.
+- `primeStyleAI-backend` runs with `npm run dev` at `http://localhost:4000`; health is `http://localhost:4000/api/health`.
+- Local frontend env used for local backend wiring:
+  - `NEXT_PUBLIC_API_URL=http://localhost:4000`
+  - `NEXT_PUBLIC_API_BASE_URL=http://localhost:4000`
+  - `NEXT_PUBLIC_PRIMESTYLE_API_URL=http://localhost:4000`
+- Local backend env used when no `.env` exists:
+  - `PORT=4000`
+  - `MONGO_URI=mongodb://127.0.0.1:27017/primestyleai`
+  - `CORS_ORIGIN=http://localhost:3000`
+  - `FRONTEND_URL=http://localhost:3000`
+- Homebrew is installed at `/opt/homebrew/bin/brew`; `/Users/arashsn/.zprofile` and `/Users/arashsn/.zshrc` load `eval "$(/opt/homebrew/bin/brew shellenv zsh)"` for zsh login and interactive shells, and `/Users/arashsn/.zshenv` prepends `/opt/homebrew/bin` as a fallback for all zsh shells. Docker and system `mongod` were not installed at local verification time. MongoDB Community 8.0.4 was downloaded as the official macOS ARM64 `.tgz` and extracted to `/Users/arashsn/Projects/PrimeStyleAI/.local/mongodb`; its data/log directories are `/Users/arashsn/Projects/PrimeStyleAI/.local/mongodb-data` and `/Users/arashsn/Projects/PrimeStyleAI/.local/mongodb-log`.
+- Codex CLI is installed via Homebrew cask `codex` at `/opt/homebrew/bin/codex` (`codex-cli 0.133.0`). Homebrew also installed `ripgrep` at `/opt/homebrew/bin/rg` (`ripgrep 15.1.0`).
 
 Important status caveat:
 - One memory doc says SDK distribution is fully npm-only and tgz override flow is no longer standard.

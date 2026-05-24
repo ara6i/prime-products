@@ -28,6 +28,7 @@ export function CapacityControls({
 }: CapacityControlsProps) {
   const selectedTarget = targets.find((target) => target.id === config.targetId) ?? targets[0]!;
   const selectedScenario = scenarios.find((scenario) => scenario.id === config.scenarioId) ?? scenarios[0]!;
+  const availableTargets = selectedScenario.isGeminiSafe ? targets : targets.filter((target) => target.id === "test");
   const userPresets = buildPresetValues([...CAPACITY_USER_PRESETS], selectedScenario.maxVirtualUsers);
   const requestPresets = buildPresetValues([...CAPACITY_REQUEST_PRESETS], selectedScenario.maxTotalRequests);
   const estimatedTryOns = config.totalRequests * selectedScenario.estimatedTryOnCallsPerRequest;
@@ -57,11 +58,13 @@ export function CapacityControls({
             disabled={isRunning || isStarting}
             onChange={(event) => onConfigChange("targetId", event.target.value as CapacityRunConfig["targetId"])}
           >
-            {targets.map((target) => (
+            {availableTargets.map((target) => (
               <option key={target.id} value={target.id}>{target.label}</option>
             ))}
           </select>
-          <span className="text-xs font-normal text-text-secondary">{selectedTarget.description}</span>
+          <span className="text-xs font-normal text-text-secondary">
+            {selectedScenario.isGeminiSafe ? selectedTarget.description : "Stress tests are locked to the isolated test backend."}
+          </span>
         </label>
 
         <label className="flex flex-col gap-2 text-sm font-medium text-text-primary">
@@ -150,7 +153,7 @@ export function CapacityControls({
                 This run uses {selectedModel.label}. Change the model above before starting the run.
               </p>
               <p className="mt-2 text-xs font-semibold text-blue-900">
-                Disabled presets exceed the current safety cap for this real Gemini scenario. Health checks can still use 500, 1,000, and 10,000 requests.
+                Stress runs are hard-locked to /api/test-lab mirror routes on the test backend. Disabled presets exceed the current mirror safety cap.
               </p>
             </div>
             <span className="w-fit rounded-full bg-white px-3 py-1 text-xs font-semibold text-brand-blue shadow-sm">
@@ -170,7 +173,7 @@ export function CapacityControls({
             onChange={(event) => onConfigChange("confirmGemini", event.target.checked)}
           />
           <span>
-            I understand this sends real Gemini requests. Cancel stops queued/polling work in the lab, but already-submitted backend try-on jobs can still finish and consume quota.
+            I understand this sends real Gemini requests from the isolated test-lab mirror routes. Cancel stops queued/polling work in the lab, but already-submitted test backend jobs can still finish and consume quota.
           </span>
         </label>
       )}
@@ -192,7 +195,7 @@ export function CapacityControls({
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-text-secondary">
-          Health supports thousands of virtual users. Real Gemini scenarios are capped server-side and use test-safe sample shopper data.
+          Health supports thousands of virtual users. Stress scenarios are capped server-side, test-backend only, and use test-safe sample shopper data.
         </p>
         <Button type="button" size="2xl" onClick={onStart} disabled={isRunning || isStarting} className="px-6 text-sm">
           {isStarting ? "Starting..." : isRunning ? "Running..." : selectedScenario.isGeminiSafe ? "Run capacity check" : "Run real Gemini check"}

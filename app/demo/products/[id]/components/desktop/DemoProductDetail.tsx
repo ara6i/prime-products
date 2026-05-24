@@ -21,7 +21,9 @@ const PrimeStyleTryon = dynamic(
 
 type DemoPrimeStyleTryonProps = React.ComponentProps<typeof PrimeStyleTryon> & {
   productCategory?: string;
+  productGender?: string;
   productSubcategory?: string;
+  productCarouselItems?: Array<{ image: string; title?: string; href?: string }>;
 };
 
 const DemoPrimeStyleTryon = PrimeStyleTryon as React.ComponentType<DemoPrimeStyleTryonProps>;
@@ -495,9 +497,15 @@ export function DesktopProductDetail({ product }: Props) {
               productId={product.id}
               productImage={images[0] ?? product.primaryImage}
               productImages={images}
+              productCarouselItems={product.completeLook.map((item) => ({
+                image: item.image,
+                title: item.name,
+                href: `/demo/products/${item.id}`,
+              }))}
               locale="en"
               productTitle={product.name}
               productCategory={product.category}
+              productGender={product.gender}
               productSubcategory={product.subcategory}
               productDescription={product.description}
               productMaterial={product.material}
@@ -543,6 +551,10 @@ export function DesktopProductDetail({ product }: Props) {
               </button>
             </div>
 
+            {product.completeLook.length > 0 && (
+              <CompleteLookRow products={product.completeLook} />
+            )}
+
             <p style={{ fontSize: '0.6vw' }} className="text-center text-text-disabled font-mono tracking-wide mt-[0.5vw]">@primestyleai/tryon</p>
           </div>
         </div>
@@ -554,4 +566,37 @@ export function DesktopProductDetail({ product }: Props) {
       )}
     </div>
   );
+}
+
+function CompleteLookRow({ products }: { products: DemoProductView["completeLook"] }) {
+  return (
+    <div className="border-t border-border-light pt-[1vw]">
+      <div className="flex items-center justify-between mb-[0.75vw]">
+        <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider">Complete the look</span>
+        <span style={{ fontSize: '0.68vw' }} className="text-text-disabled">{products.length} items</span>
+      </div>
+      <div className="flex gap-[0.55vw] overflow-x-auto pb-[0.2vw]">
+        {products.map((item) => (
+          <Link
+            key={item.id}
+            href={`/demo/products/${item.id}`}
+            className="group flex-shrink-0"
+            style={{ width: '5.9vw' }}
+          >
+            <div className="aspect-[3/4] rounded-[0.45vw] overflow-hidden bg-surface-light border border-border-light group-hover:border-brand-blue/35 transition-colors">
+              <img src={item.image} alt={item.name} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+            </div>
+            <p style={{ fontSize: '0.62vw' }} className="mt-[0.35vw] text-text-body font-medium leading-tight line-clamp-2 group-hover:text-brand-blue transition-colors">{item.name}</p>
+            {item.price !== null && (
+              <p style={{ fontSize: '0.58vw' }} className="mt-[0.15vw] text-text-disabled">{formatLookPrice(item.price, item.currency)}</p>
+            )}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function formatLookPrice(price: number, currency: string): string {
+  return `${price.toLocaleString("en-US")} ${currency}`;
 }

@@ -1,0 +1,2198 @@
+{
+  "sourceUrl": "https://www.zara.com/am/en/asymmetric-knit-jumper-p09598016.html?v1=545494378&v2=2419940",
+  "fetchedAt": "2026-05-24T10:07:12.795Z",
+  "product": {
+    "id": 545491423,
+    "name": "ASYMMETRIC KNIT JUMPER",
+    "type": "Product",
+    "kind": "Wear",
+    "state": "visible",
+    "reference": "09598016-I2026",
+    "displayReference": "9598/016",
+    "sectionName": "WOMAN",
+    "familyName": "TOPS Y OTRAS P.",
+    "subfamilyName": "PUNTO TOPS Y OT",
+    "description": "Flowy jumper with a round neck, asymmetric sleeves and hem.",
+    "composition": [
+      {
+        "description": "OUTER SHELL",
+        "components": [
+          "51% viscose",
+          "49% acrylic"
+        ]
+      }
+    ],
+    "sizeGuide": {
+      "enabled": true
+    },
+    "sizeSystem": "2",
+    "colors": [
+      {
+        "colorId": "800",
+        "name": "Black",
+        "hexCode": "#121315",
+        "productId": 545494378,
+        "reference": "C09598016800000-I2026",
+        "url": "https://www.zara.com/am/en/asymmetric-knit-jumper-p09598016.html?v1=545494378",
+        "price": {
+          "amount": 15900,
+          "currency": "AMD",
+          "formatted": "15,900 AMD"
+        },
+        "sizes": [
+          {
+            "id": 2,
+            "name": "S",
+            "equivalentSizeId": 102,
+            "sku": 545491427,
+            "reference": "0959801680002-I2026",
+            "availability": "in_stock",
+            "demand": "DEMAND_REGULAR",
+            "price": {
+              "amount": 15900,
+              "currency": "AMD",
+              "formatted": "15,900 AMD"
+            },
+            "attributes": [
+              {
+                "identifier": "PACKAGING",
+                "values": []
+              },
+              {
+                "identifier": "CONFECTION",
+                "values": [
+                  "CN"
+                ]
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "name": "M",
+            "equivalentSizeId": 103,
+            "sku": 545491428,
+            "reference": "0959801680003-I2026",
+            "availability": "in_stock",
+            "demand": "DEMAND_REGULAR",
+            "price": {
+              "amount": 15900,
+              "currency": "AMD",
+              "formatted": "15,900 AMD"
+            },
+            "attributes": [
+              {
+                "identifier": "PACKAGING",
+                "values": []
+              },
+              {
+                "identifier": "CONFECTION",
+                "values": [
+                  "CN"
+                ]
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "name": "L",
+            "equivalentSizeId": 104,
+            "sku": 545491429,
+            "reference": "0959801680004-I2026",
+            "availability": "in_stock",
+            "demand": "DEMAND_REGULAR",
+            "price": {
+              "amount": 15900,
+              "currency": "AMD",
+              "formatted": "15,900 AMD"
+            },
+            "attributes": [
+              {
+                "identifier": "PACKAGING",
+                "values": []
+              },
+              {
+                "identifier": "CONFECTION",
+                "values": [
+                  "CN"
+                ]
+              }
+            ]
+          }
+        ],
+        "images": [
+          {
+            "order": 1,
+            "name": "09598016800-p",
+            "kind": "full",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/db94/e0af/b61f4d12acd5/73601ddbde5f/09598016800-p/09598016800-p.jpg?ts=1779436607405&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/db94/e0af/b61f4d12acd5/73601ddbde5f/09598016800-p/09598016800-p.jpg?ts=1779436607405"
+          },
+          {
+            "order": 2,
+            "name": "09598016800-a1",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/8db4/0d74/04f94e2fa86d/8ef27ad2d9e0/09598016800-a1/09598016800-a1.jpg?ts=1779377121139&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/8db4/0d74/04f94e2fa86d/8ef27ad2d9e0/09598016800-a1/09598016800-a1.jpg?ts=1779377121139"
+          },
+          {
+            "order": 3,
+            "name": "09598016800-a2",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/2891/aa61/08dd4c578605/b69235bb8aa9/09598016800-a2/09598016800-a2.jpg?ts=1779377120975&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/2891/aa61/08dd4c578605/b69235bb8aa9/09598016800-a2/09598016800-a2.jpg?ts=1779377120975"
+          },
+          {
+            "order": 4,
+            "name": "09598016800-a3",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/fe44/6205/78364db0a008/ac9a7f778e1e/09598016800-a3/09598016800-a3.jpg?ts=1779377121625&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/fe44/6205/78364db0a008/ac9a7f778e1e/09598016800-a3/09598016800-a3.jpg?ts=1779377121625"
+          },
+          {
+            "order": 5,
+            "name": "09598016800-a4",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/c94e/430f/47d64dd68e85/cd3b71b47778/09598016800-a4/09598016800-a4.jpg?ts=1779377122179&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/c94e/430f/47d64dd68e85/cd3b71b47778/09598016800-a4/09598016800-a4.jpg?ts=1779377122179"
+          },
+          {
+            "order": 6,
+            "name": "09598016800-a5",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/d021/1237/7da74a749dbf/19f20ec43e82/09598016800-a5/09598016800-a5.jpg?ts=1779377055480&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/d021/1237/7da74a749dbf/19f20ec43e82/09598016800-a5/09598016800-a5.jpg?ts=1779377055480"
+          },
+          {
+            "order": 7,
+            "name": "09598016800-a6",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/159b/2c7b/6539495d821f/4e7f98d57b02/09598016800-a6/09598016800-a6.jpg?ts=1779377055607&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/159b/2c7b/6539495d821f/4e7f98d57b02/09598016800-a6/09598016800-a6.jpg?ts=1779377055607"
+          },
+          {
+            "order": 8,
+            "name": "09598016800-e1",
+            "kind": "plain",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/fa1f/e129/3dc347099ac1/2b83ab2af5aa/09598016800-e1/09598016800-e1.jpg?ts=1779287313561&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/fa1f/e129/3dc347099ac1/2b83ab2af5aa/09598016800-e1/09598016800-e1.jpg?ts=1779287313561"
+          },
+          {
+            "order": 9,
+            "name": "09598016800-e2",
+            "kind": "plain",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/2fbb/6e0b/6293496892d4/d9289abaa943/09598016800-e2/09598016800-e2.jpg?ts=1779287313185&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/2fbb/6e0b/6293496892d4/d9289abaa943/09598016800-e2/09598016800-e2.jpg?ts=1779287313185"
+          },
+          {
+            "order": 10,
+            "name": "09598016800-e3",
+            "kind": "plain",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/9069/5462/dca14df7a1ef/0edea82d6995/09598016800-e3/09598016800-e3.jpg?ts=1779287316476&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/9069/5462/dca14df7a1ef/0edea82d6995/09598016800-e3/09598016800-e3.jpg?ts=1779287316476"
+          }
+        ],
+        "shopcartImages": [
+          {
+            "name": "09598016800-f1",
+            "kind": "other",
+            "url": "https://static.zara.net/assets/public/6207/c601/6c094400abd8/13e08aafadd9/09598016800-f1/09598016800-f1.jpg?ts=1779287313379&w=2048"
+          }
+        ],
+        "colorSelectorImages": [
+          {
+            "name": "09598016800-f1",
+            "kind": "other",
+            "url": "https://static.zara.net/assets/public/6207/c601/6c094400abd8/13e08aafadd9/09598016800-f1/09598016800-f1.jpg?ts=1779287313379&w=256"
+          }
+        ],
+        "relations": [
+          {
+            "ids": [
+              531779302
+            ],
+            "type": "OTHER_COLOR"
+          },
+          {
+            "ids": [
+              529989247,
+              542172054,
+              524609974
+            ],
+            "type": "PACMAN-LOOK"
+          }
+        ]
+      },
+      {
+        "colorId": "072",
+        "name": "ecru-white",
+        "hexCode": "#bdb9b1",
+        "productId": 545494379,
+        "reference": "C09598016072000-I2026",
+        "url": "https://www.zara.com/am/en/asymmetric-knit-jumper-p09598016.html?v1=545494379",
+        "price": {
+          "amount": 15900,
+          "currency": "AMD",
+          "formatted": "15,900 AMD"
+        },
+        "sizes": [
+          {
+            "id": 2,
+            "name": "S",
+            "equivalentSizeId": 102,
+            "sku": 545491424,
+            "reference": "0959801607202-I2026",
+            "availability": "in_stock",
+            "demand": "DEMAND_REGULAR",
+            "price": {
+              "amount": 15900,
+              "currency": "AMD",
+              "formatted": "15,900 AMD"
+            },
+            "attributes": [
+              {
+                "identifier": "PACKAGING",
+                "values": []
+              },
+              {
+                "identifier": "CONFECTION",
+                "values": [
+                  "CN"
+                ]
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "name": "M",
+            "equivalentSizeId": 103,
+            "sku": 545491425,
+            "reference": "0959801607203-I2026",
+            "availability": "in_stock",
+            "demand": "DEMAND_REGULAR",
+            "price": {
+              "amount": 15900,
+              "currency": "AMD",
+              "formatted": "15,900 AMD"
+            },
+            "attributes": [
+              {
+                "identifier": "PACKAGING",
+                "values": []
+              },
+              {
+                "identifier": "CONFECTION",
+                "values": [
+                  "CN"
+                ]
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "name": "L",
+            "equivalentSizeId": 104,
+            "sku": 545491426,
+            "reference": "0959801607204-I2026",
+            "availability": "in_stock",
+            "demand": "DEMAND_REGULAR",
+            "price": {
+              "amount": 15900,
+              "currency": "AMD",
+              "formatted": "15,900 AMD"
+            },
+            "attributes": [
+              {
+                "identifier": "PACKAGING",
+                "values": []
+              },
+              {
+                "identifier": "CONFECTION",
+                "values": [
+                  "CN"
+                ]
+              }
+            ]
+          }
+        ],
+        "images": [
+          {
+            "order": 1,
+            "name": "09598016072-p",
+            "kind": "full",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/ca0b/dd0e/18594aee9906/e70a93912dbc/09598016072-p/09598016072-p.jpg?ts=1779377055719&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/ca0b/dd0e/18594aee9906/e70a93912dbc/09598016072-p/09598016072-p.jpg?ts=1779377055719"
+          },
+          {
+            "order": 2,
+            "name": "09598016072-a1",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/1921/1abf/41fa45ad8359/141d54827efb/09598016072-a1/09598016072-a1.jpg?ts=1779377055631&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/1921/1abf/41fa45ad8359/141d54827efb/09598016072-a1/09598016072-a1.jpg?ts=1779377055631"
+          },
+          {
+            "order": 3,
+            "name": "09598016072-a2",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/f834/8588/04744f6489d1/dca74bb8d013/09598016072-a2/09598016072-a2.jpg?ts=1779377055609&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/f834/8588/04744f6489d1/dca74bb8d013/09598016072-a2/09598016072-a2.jpg?ts=1779377055609"
+          },
+          {
+            "order": 4,
+            "name": "09598016072-a3",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/d557/9c1c/a0484d01baa2/c014322178a3/09598016072-a3/09598016072-a3.jpg?ts=1779377055525&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/d557/9c1c/a0484d01baa2/c014322178a3/09598016072-a3/09598016072-a3.jpg?ts=1779377055525"
+          },
+          {
+            "order": 5,
+            "name": "09598016072-a4",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/da7d/8f9a/00ff4be0a8cd/0deb63cf5184/09598016072-a4/09598016072-a4.jpg?ts=1779377055359&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/da7d/8f9a/00ff4be0a8cd/0deb63cf5184/09598016072-a4/09598016072-a4.jpg?ts=1779377055359"
+          },
+          {
+            "order": 6,
+            "name": "09598016072-a5",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/9ea4/6648/1c6341c9857e/7d77e52ab5ac/09598016072-a5/09598016072-a5.jpg?ts=1779377055169&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/9ea4/6648/1c6341c9857e/7d77e52ab5ac/09598016072-a5/09598016072-a5.jpg?ts=1779377055169"
+          },
+          {
+            "order": 7,
+            "name": "09598016072-e1",
+            "kind": "plain",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/d8ea/97c7/0bdb4c8e8ac4/9377f810a584/09598016072-e1/09598016072-e1.jpg?ts=1779357987000&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/d8ea/97c7/0bdb4c8e8ac4/9377f810a584/09598016072-e1/09598016072-e1.jpg?ts=1779357987000"
+          },
+          {
+            "order": 8,
+            "name": "09598016072-e2",
+            "kind": "plain",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/6bb0/1b50/59d843a7a119/1e454cae41d0/09598016072-e2/09598016072-e2.jpg?ts=1779357986329&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/6bb0/1b50/59d843a7a119/1e454cae41d0/09598016072-e2/09598016072-e2.jpg?ts=1779357986329"
+          },
+          {
+            "order": 9,
+            "name": "09598016072-e3",
+            "kind": "plain",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/62a9/149c/61814ec19651/c135996de535/09598016072-e3/09598016072-e3.jpg?ts=1779357987467&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/62a9/149c/61814ec19651/c135996de535/09598016072-e3/09598016072-e3.jpg?ts=1779357987467"
+          }
+        ],
+        "shopcartImages": [
+          {
+            "name": "09598016072-f1",
+            "kind": "other",
+            "url": "https://static.zara.net/assets/public/3e7f/8003/d56947d0a14e/28bc21b3823c/09598016072-f1/09598016072-f1.jpg?ts=1779357986618&w=2048"
+          }
+        ],
+        "colorSelectorImages": [
+          {
+            "name": "09598016072-f1",
+            "kind": "other",
+            "url": "https://static.zara.net/assets/public/3e7f/8003/d56947d0a14e/28bc21b3823c/09598016072-f1/09598016072-f1.jpg?ts=1779357986618&w=256"
+          }
+        ],
+        "relations": [
+          {
+            "ids": [
+              531779303
+            ],
+            "type": "OTHER_COLOR"
+          },
+          {
+            "ids": [
+              529989247,
+              542172054,
+              528575694
+            ],
+            "type": "PACMAN-LOOK"
+          }
+        ]
+      },
+      {
+        "colorId": "700",
+        "name": "Brown",
+        "hexCode": "#3E2D2A",
+        "productId": 551481768,
+        "reference": "C09598016700016-V2026",
+        "url": "https://www.zara.com/am/en/asymmetric-knit-jumper-p09598016.html?v1=551481768",
+        "price": {
+          "amount": 15900,
+          "currency": "AMD",
+          "formatted": "15,900 AMD"
+        },
+        "sizes": [
+          {
+            "id": 2,
+            "name": "S",
+            "equivalentSizeId": 102,
+            "sku": 502144756,
+            "reference": "0959801670002-V2026",
+            "availability": "in_stock",
+            "demand": "DEMAND_REGULAR",
+            "price": {
+              "amount": 15900,
+              "currency": "AMD",
+              "formatted": "15,900 AMD"
+            },
+            "attributes": [
+              {
+                "identifier": "PACKAGING",
+                "values": []
+              },
+              {
+                "identifier": "CONFECTION",
+                "values": [
+                  "CN"
+                ]
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "name": "M",
+            "equivalentSizeId": 103,
+            "sku": 502144757,
+            "reference": "0959801670003-V2026",
+            "availability": "coming_soon",
+            "demand": "DEMAND_REGULAR",
+            "price": {
+              "amount": 15900,
+              "currency": "AMD",
+              "formatted": "15,900 AMD"
+            },
+            "attributes": [
+              {
+                "identifier": "PACKAGING",
+                "values": []
+              },
+              {
+                "identifier": "CONFECTION",
+                "values": [
+                  "CN"
+                ]
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "name": "L",
+            "equivalentSizeId": 104,
+            "sku": 502144758,
+            "reference": "0959801670004-V2026",
+            "availability": "coming_soon",
+            "demand": "DEMAND_REGULAR",
+            "price": {
+              "amount": 15900,
+              "currency": "AMD",
+              "formatted": "15,900 AMD"
+            },
+            "attributes": [
+              {
+                "identifier": "PACKAGING",
+                "values": []
+              },
+              {
+                "identifier": "CONFECTION",
+                "values": [
+                  "CN"
+                ]
+              }
+            ]
+          }
+        ],
+        "images": [
+          {
+            "order": 1,
+            "name": "09598016700-p",
+            "kind": "full",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/c0c6/0800/294b4bdd888b/54371f8d0908/09598016700-p/09598016700-p.jpg?ts=1779373987939&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/c0c6/0800/294b4bdd888b/54371f8d0908/09598016700-p/09598016700-p.jpg?ts=1779373987939"
+          },
+          {
+            "order": 2,
+            "name": "09598016700-a1",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/bac2/43c7/864048a0b878/bd5d83c11527/09598016700-a1/09598016700-a1.jpg?ts=1779373992545&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/bac2/43c7/864048a0b878/bd5d83c11527/09598016700-a1/09598016700-a1.jpg?ts=1779373992545"
+          },
+          {
+            "order": 3,
+            "name": "09598016700-a2",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/18c4/8d5e/da5f4fa49844/06f7a65523f5/09598016700-a2/09598016700-a2.jpg?ts=1779373992639&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/18c4/8d5e/da5f4fa49844/06f7a65523f5/09598016700-a2/09598016700-a2.jpg?ts=1779373992639"
+          },
+          {
+            "order": 4,
+            "name": "09598016700-a3",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/3c42/afe3/11d841c7a917/9910628acea1/09598016700-a3/09598016700-a3.jpg?ts=1779373992543&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/3c42/afe3/11d841c7a917/9910628acea1/09598016700-a3/09598016700-a3.jpg?ts=1779373992543"
+          },
+          {
+            "order": 5,
+            "name": "09598016700-a4",
+            "kind": "other",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/33b6/484f/eb4e4428a26c/eeeee0bd6adf/09598016700-a4/09598016700-a4.jpg?ts=1779373989584&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/33b6/484f/eb4e4428a26c/eeeee0bd6adf/09598016700-a4/09598016700-a4.jpg?ts=1779373989584"
+          },
+          {
+            "order": 6,
+            "name": "09598016700-e1",
+            "kind": "plain",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/9efe/1dae/6e6147478f7e/b5691f75f85d/09598016700-e1/09598016700-e1.jpg?ts=1772635100879&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/9efe/1dae/6e6147478f7e/b5691f75f85d/09598016700-e1/09598016700-e1.jpg?ts=1772635100879"
+          },
+          {
+            "order": 7,
+            "name": "09598016700-e2",
+            "kind": "plain",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/8451/2cd0/a9494741ac01/e7cba3c6bde2/09598016700-e2/09598016700-e2.jpg?ts=1772635100821&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/8451/2cd0/a9494741ac01/e7cba3c6bde2/09598016700-e2/09598016700-e2.jpg?ts=1772635100821"
+          },
+          {
+            "order": 8,
+            "name": "09598016700-e3",
+            "kind": "plain",
+            "width": 2048,
+            "height": 3072,
+            "url": "https://static.zara.net/assets/public/c821/db8b/747a4b73869f/bcbead05f79f/09598016700-e3/09598016700-e3.jpg?ts=1772635099397&w=2048",
+            "rawUrl": "https://static.zara.net/assets/public/c821/db8b/747a4b73869f/bcbead05f79f/09598016700-e3/09598016700-e3.jpg?ts=1772635099397"
+          }
+        ],
+        "shopcartImages": [
+          {
+            "name": "09598016700-f1",
+            "kind": "other",
+            "url": "https://static.zara.net/assets/public/0a25/4838/604b4e8ba06e/4efdaa429433/09598016700-f1/09598016700-f1.jpg?ts=1772635100605&w=2048"
+          }
+        ],
+        "colorSelectorImages": [
+          {
+            "name": "09598016700-f1",
+            "kind": "other",
+            "url": "https://static.zara.net/assets/public/0a25/4838/604b4e8ba06e/4efdaa429433/09598016700-f1/09598016700-f1.jpg?ts=1772635100605&w=256"
+          }
+        ],
+        "relations": [
+          {
+            "ids": [
+              520706279,
+              536330060,
+              545043489,
+              512860127
+            ],
+            "type": "PACMAN-LOOK"
+          }
+        ]
+      }
+    ]
+  },
+  "completeTheLook": [
+    {
+      "id": 512895770,
+      "name": "ZW COLLECTION CAPE MIDI SKIRT",
+      "type": "Product",
+      "kind": "Wear",
+      "state": "visible",
+      "reference": "02494464-V2026",
+      "displayReference": "2494/464",
+      "sectionName": "WOMAN",
+      "familyName": "FALDA",
+      "subfamilyName": "W.FALDA",
+      "description": "ZARA WOMAN COLLECTION\n\nHigh-waist midi skirt. A-line hem. Invisible in-seam zip fastening.",
+      "composition": [
+        {
+          "description": "OUTER SHELL",
+          "components": [
+            "79% polyester",
+            "18% polyamide",
+            "3% elastane"
+          ]
+        }
+      ],
+      "sizeGuide": {
+        "enabled": true
+      },
+      "sizeSystem": "2",
+      "colors": [
+        {
+          "colorId": "800",
+          "name": "Black",
+          "hexCode": "#0A0A0A",
+          "productId": 512898800,
+          "reference": "C02494464800000-V2026",
+          "url": "https://www.zara.com/am/en/zw-collection-cape-midi-skirt-p02494464.html?v1=512898800",
+          "price": {
+            "amount": 19900,
+            "currency": "AMD",
+            "formatted": "19,900 AMD"
+          },
+          "sizes": [
+            {
+              "id": 1,
+              "name": "XS",
+              "equivalentSizeId": 101,
+              "sku": 512895771,
+              "reference": "0249446480001-V2026",
+              "availability": "out_of_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 19900,
+                "currency": "AMD",
+                "formatted": "19,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "CONFECTION",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "MA"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 2,
+              "name": "S",
+              "equivalentSizeId": 102,
+              "sku": 512895772,
+              "reference": "0249446480002-V2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 19900,
+                "currency": "AMD",
+                "formatted": "19,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "CONFECTION",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "MA"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 3,
+              "name": "M",
+              "equivalentSizeId": 103,
+              "sku": 512895773,
+              "reference": "0249446480003-V2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 19900,
+                "currency": "AMD",
+                "formatted": "19,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "CONFECTION",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "MA"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 4,
+              "name": "L",
+              "equivalentSizeId": 104,
+              "sku": 512895774,
+              "reference": "0249446480004-V2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 19900,
+                "currency": "AMD",
+                "formatted": "19,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "CONFECTION",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "MA"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 5,
+              "name": "XL",
+              "equivalentSizeId": 105,
+              "sku": 512895775,
+              "reference": "0249446480005-V2026",
+              "availability": "out_of_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 19900,
+                "currency": "AMD",
+                "formatted": "19,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "CONFECTION",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "MA"
+                  ]
+                }
+              ]
+            }
+          ],
+          "images": [
+            {
+              "order": 1,
+              "name": "02494464800-p",
+              "kind": "full",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/84e1/7a12/385e41649942/60906c997ed4/02494464800-p/02494464800-p.jpg?ts=1771247070124&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/84e1/7a12/385e41649942/60906c997ed4/02494464800-p/02494464800-p.jpg?ts=1771247070124"
+            },
+            {
+              "order": 2,
+              "name": "02494464800-a1",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/d5b1/2bae/b82242d2a8a0/7e566815c127/02494464800-a1/02494464800-a1.jpg?ts=1771247069233&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/d5b1/2bae/b82242d2a8a0/7e566815c127/02494464800-a1/02494464800-a1.jpg?ts=1771247069233"
+            },
+            {
+              "order": 3,
+              "name": "02494464800-a2",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/6e11/2337/a47a42bcb634/3dee90d424a0/02494464800-a2/02494464800-a2.jpg?ts=1771247070261&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/6e11/2337/a47a42bcb634/3dee90d424a0/02494464800-a2/02494464800-a2.jpg?ts=1771247070261"
+            },
+            {
+              "order": 4,
+              "name": "02494464800-a3",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/38bf/44d2/bdd24aea9283/60cbfb730930/02494464800-a3/02494464800-a3.jpg?ts=1771247070062&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/38bf/44d2/bdd24aea9283/60cbfb730930/02494464800-a3/02494464800-a3.jpg?ts=1771247070062"
+            },
+            {
+              "order": 5,
+              "name": "02494464800-a4",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/7fdc/0494/e55a4397984d/765cfaf57591/02494464800-a4/02494464800-a4.jpg?ts=1771247070133&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/7fdc/0494/e55a4397984d/765cfaf57591/02494464800-a4/02494464800-a4.jpg?ts=1771247070133"
+            },
+            {
+              "order": 6,
+              "name": "02494464800-e1",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/e728/cd47/44aa4f6da05a/55e948054275/02494464800-e1/02494464800-e1.jpg?ts=1770650693959&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/e728/cd47/44aa4f6da05a/55e948054275/02494464800-e1/02494464800-e1.jpg?ts=1770650693959"
+            },
+            {
+              "order": 7,
+              "name": "02494464800-e2",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/9ad9/2696/51654e2189f1/d80bca442122/02494464800-e2/02494464800-e2.jpg?ts=1770650693444&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/9ad9/2696/51654e2189f1/d80bca442122/02494464800-e2/02494464800-e2.jpg?ts=1770650693444"
+            }
+          ],
+          "shopcartImages": [
+            {
+              "name": "02494464800-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/a69b/3680/83bd4d45a85d/5c533141a1a7/02494464800-f1/02494464800-f1.jpg?ts=1770650694156&w=2048"
+            }
+          ],
+          "colorSelectorImages": [
+            {
+              "name": "02494464800-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/a69b/3680/83bd4d45a85d/5c533141a1a7/02494464800-f1/02494464800-f1.jpg?ts=1770650694156&w=256"
+            }
+          ],
+          "relations": [
+            {
+              "ids": [
+                495703292,
+                516167707
+              ],
+              "type": "PACMAN-LOOK"
+            }
+          ]
+        },
+        {
+          "colorId": "450",
+          "name": "Beige",
+          "hexCode": "#ae8f73",
+          "productId": 531409080,
+          "reference": "C02494464450000-V2026",
+          "url": "https://www.zara.com/am/en/zw-collection-cape-midi-skirt-p02494464.html?v1=531409080",
+          "price": {
+            "amount": 19900,
+            "currency": "AMD",
+            "formatted": "19,900 AMD"
+          },
+          "sizes": [
+            {
+              "id": 1,
+              "name": "XS",
+              "equivalentSizeId": 101,
+              "sku": 531405238,
+              "reference": "0249446445001-V2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 19900,
+                "currency": "AMD",
+                "formatted": "19,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "CONFECTION",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "MA"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 2,
+              "name": "S",
+              "equivalentSizeId": 102,
+              "sku": 531405234,
+              "reference": "0249446445002-V2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 19900,
+                "currency": "AMD",
+                "formatted": "19,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "CONFECTION",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "MA"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 3,
+              "name": "M",
+              "equivalentSizeId": 103,
+              "sku": 531405236,
+              "reference": "0249446445003-V2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 19900,
+                "currency": "AMD",
+                "formatted": "19,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "CONFECTION",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "MA"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 4,
+              "name": "L",
+              "equivalentSizeId": 104,
+              "sku": 531405231,
+              "reference": "0249446445004-V2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 19900,
+                "currency": "AMD",
+                "formatted": "19,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "CONFECTION",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "MA"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 5,
+              "name": "XL",
+              "equivalentSizeId": 105,
+              "sku": 531405232,
+              "reference": "0249446445005-V2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 19900,
+                "currency": "AMD",
+                "formatted": "19,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "CONFECTION",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "MA"
+                  ]
+                }
+              ]
+            }
+          ],
+          "images": [
+            {
+              "order": 1,
+              "name": "02494464450-p",
+              "kind": "full",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/e100/3be2/68424ea2b400/00ef4966dfbc/02494464450-p/02494464450-p.jpg?ts=1779119938849&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/e100/3be2/68424ea2b400/00ef4966dfbc/02494464450-p/02494464450-p.jpg?ts=1779119938849"
+            },
+            {
+              "order": 2,
+              "name": "02494464450-a1",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/a59f/c173/f1144c009c6b/536faa88418f/02494464450-a1/02494464450-a1.jpg?ts=1779119934989&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/a59f/c173/f1144c009c6b/536faa88418f/02494464450-a1/02494464450-a1.jpg?ts=1779119934989"
+            },
+            {
+              "order": 3,
+              "name": "02494464450-a2",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/d451/6f07/333844628f9f/48736db365bb/02494464450-a2/02494464450-a2.jpg?ts=1779119937483&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/d451/6f07/333844628f9f/48736db365bb/02494464450-a2/02494464450-a2.jpg?ts=1779119937483"
+            },
+            {
+              "order": 4,
+              "name": "02494464450-e1",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/5021/4788/12934b3d8d53/41490eab7845/02494464450-e1/02494464450-e1.jpg?ts=1779172541122&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/5021/4788/12934b3d8d53/41490eab7845/02494464450-e1/02494464450-e1.jpg?ts=1779172541122"
+            },
+            {
+              "order": 5,
+              "name": "02494464450-e2",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/4f06/0c5f/798543408e31/10d41554943a/02494464450-e2/02494464450-e2.jpg?ts=1779172541056&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/4f06/0c5f/798543408e31/10d41554943a/02494464450-e2/02494464450-e2.jpg?ts=1779172541056"
+            },
+            {
+              "order": 6,
+              "name": "02494464450-e3",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/9edd/8856/aaf945a6a1a6/92a5fc3a13dd/02494464450-e3/02494464450-e3.jpg?ts=1779172540348&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/9edd/8856/aaf945a6a1a6/92a5fc3a13dd/02494464450-e3/02494464450-e3.jpg?ts=1779172540348"
+            }
+          ],
+          "shopcartImages": [
+            {
+              "name": "02494464450-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/d3df/00dd/d65c419fb50b/f9dc7275ca71/02494464450-f1/02494464450-f1.jpg?ts=1779172541618&w=2048"
+            }
+          ],
+          "colorSelectorImages": [
+            {
+              "name": "02494464450-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/d3df/00dd/d65c419fb50b/f9dc7275ca71/02494464450-f1/02494464450-f1.jpg?ts=1779172541618&w=256"
+            }
+          ],
+          "relations": [
+            {
+              "ids": [
+                531496838,
+                545042957,
+                496349752
+              ],
+              "type": "PACMAN-LOOK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 506826496,
+      "name": "LIMITED EDITION LEATHER WEDGE SHOES",
+      "type": "Product",
+      "kind": "Other",
+      "state": "visible",
+      "reference": "11287710-V2026",
+      "displayReference": "1287/710",
+      "sectionName": "WOMAN",
+      "familyName": "ZAPATO TACON",
+      "subfamilyName": "Z1W:ZAPATO TACO",
+      "description": "Leather shoes. Wedge heel. Pointed toe.\n\nHeel height: 5 cm. / 1.9″",
+      "composition": [
+        {
+          "description": "UPPER",
+          "components": [
+            "100% sheep leather"
+          ]
+        },
+        {
+          "description": "LINING",
+          "components": [
+            "100% goat leather"
+          ]
+        },
+        {
+          "description": "SOLE",
+          "components": [
+            "100% rubber"
+          ]
+        },
+        {
+          "description": "INSOLE",
+          "components": [
+            "100% goat leather"
+          ]
+        }
+      ],
+      "sizeGuide": {
+        "enabled": true
+      },
+      "sizeSystem": "12724",
+      "colors": [
+        {
+          "colorId": "001",
+          "name": "White",
+          "hexCode": "#E8E5DF",
+          "productId": 542172054,
+          "reference": "C11287710001024-V2026",
+          "url": "https://www.zara.com/am/en/limited-edition-leather-wedge-shoes-p11287710.html?v1=542172054",
+          "price": {
+            "amount": 53900,
+            "currency": "AMD",
+            "formatted": "53,900 AMD"
+          },
+          "sizes": [
+            {
+              "id": 35,
+              "name": "35",
+              "equivalentSizeId": 35,
+              "sku": 506826497,
+              "reference": "1128771000135-V2026",
+              "availability": "out_of_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 53900,
+                "currency": "AMD",
+                "formatted": "53,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                }
+              ]
+            },
+            {
+              "id": 36,
+              "name": "36",
+              "equivalentSizeId": 36,
+              "sku": 506826498,
+              "reference": "1128771000136-V2026",
+              "availability": "out_of_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 53900,
+                "currency": "AMD",
+                "formatted": "53,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                }
+              ]
+            },
+            {
+              "id": 37,
+              "name": "37",
+              "equivalentSizeId": 37,
+              "sku": 506826503,
+              "reference": "1128771000137-V2026",
+              "availability": "out_of_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 53900,
+                "currency": "AMD",
+                "formatted": "53,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                }
+              ]
+            },
+            {
+              "id": 38,
+              "name": "38",
+              "equivalentSizeId": 38,
+              "sku": 506826504,
+              "reference": "1128771000138-V2026",
+              "availability": "out_of_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 53900,
+                "currency": "AMD",
+                "formatted": "53,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                }
+              ]
+            },
+            {
+              "id": 39,
+              "name": "39",
+              "equivalentSizeId": 39,
+              "sku": 506826501,
+              "reference": "1128771000139-V2026",
+              "availability": "out_of_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 53900,
+                "currency": "AMD",
+                "formatted": "53,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                }
+              ]
+            },
+            {
+              "id": 40,
+              "name": "40",
+              "equivalentSizeId": 40,
+              "sku": 506826502,
+              "reference": "1128771000140-V2026",
+              "availability": "out_of_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 53900,
+                "currency": "AMD",
+                "formatted": "53,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                }
+              ]
+            },
+            {
+              "id": 41,
+              "name": "41",
+              "equivalentSizeId": 41,
+              "sku": 506826499,
+              "reference": "1128771000141-V2026",
+              "availability": "out_of_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 53900,
+                "currency": "AMD",
+                "formatted": "53,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                }
+              ]
+            },
+            {
+              "id": 42,
+              "name": "42",
+              "equivalentSizeId": 42,
+              "sku": 506826500,
+              "reference": "1128771000142-V2026",
+              "availability": "out_of_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 53900,
+                "currency": "AMD",
+                "formatted": "53,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                }
+              ]
+            }
+          ],
+          "images": [
+            {
+              "order": 1,
+              "name": "11287710001-p",
+              "kind": "full",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/3b6b/5dfb/7ad045d0a4e4/16b810c3a974/11287710001-p/11287710001-p.jpg?ts=1776328686700&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/3b6b/5dfb/7ad045d0a4e4/16b810c3a974/11287710001-p/11287710001-p.jpg?ts=1776328686700"
+            },
+            {
+              "order": 2,
+              "name": "11287710001-a1",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/e19c/905f/404741e5bddb/7699eb743184/11287710001-a1/11287710001-a1.jpg?ts=1776328686483&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/e19c/905f/404741e5bddb/7699eb743184/11287710001-a1/11287710001-a1.jpg?ts=1776328686483"
+            },
+            {
+              "order": 3,
+              "name": "11287710001-e1",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/7403/b571/c5aa4547af83/17d29afa62de/11287710001-e1/11287710001-e1.jpg?ts=1776426718928&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/7403/b571/c5aa4547af83/17d29afa62de/11287710001-e1/11287710001-e1.jpg?ts=1776426718928"
+            },
+            {
+              "order": 4,
+              "name": "11287710001-e2",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/1dab/96e7/c0b54d5a9aca/db98be7f3a4e/11287710001-e2/11287710001-e2.jpg?ts=1776426718690&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/1dab/96e7/c0b54d5a9aca/db98be7f3a4e/11287710001-e2/11287710001-e2.jpg?ts=1776426718690"
+            },
+            {
+              "order": 5,
+              "name": "11287710001-e3",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/61e2/8ba4/59494267b828/b120e8b7fd9d/11287710001-e3/11287710001-e3.jpg?ts=1776426719074&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/61e2/8ba4/59494267b828/b120e8b7fd9d/11287710001-e3/11287710001-e3.jpg?ts=1776426719074"
+            },
+            {
+              "order": 6,
+              "name": "11287710001-e4",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/42da/37dd/55bf4c898c2b/965027a61a9b/11287710001-e4/11287710001-e4.jpg?ts=1776426718821&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/42da/37dd/55bf4c898c2b/965027a61a9b/11287710001-e4/11287710001-e4.jpg?ts=1776426718821"
+            }
+          ],
+          "shopcartImages": [
+            {
+              "name": "11287710001-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/fdbd/b6aa/291d4bd089cf/028bef17b8f4/11287710001-f1/11287710001-f1.jpg?ts=1776328106917&w=2048"
+            }
+          ],
+          "colorSelectorImages": [
+            {
+              "name": "11287710001-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/fdbd/b6aa/291d4bd089cf/028bef17b8f4/11287710001-f1/11287710001-f1.jpg?ts=1776328106917&w=256"
+            }
+          ],
+          "relations": [
+            {
+              "ids": [
+                512882897,
+                523891069
+              ],
+              "type": "PACMAN-LOOK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 506835474,
+      "name": "CATEYE SUNGLASSES",
+      "type": "Product",
+      "kind": "Wear",
+      "state": "visible",
+      "reference": "02727008-V2026",
+      "displayReference": "2727/008",
+      "sectionName": "WOMAN",
+      "familyName": "GAFAS",
+      "subfamilyName": "Z-GAFAS DE SOL",
+      "description": "Model height: 179 cm | Size: M\n\nCateye sunglasses with an acetate frame. Polarised lenses. Case included.\n\nUV/UVA 400 protection. Category 3.",
+      "composition": [
+        {
+          "description": "OUTER SHELL",
+          "components": []
+        }
+      ],
+      "sizeGuide": {
+        "enabled": true
+      },
+      "sizeSystem": "10146",
+      "colors": [
+        {
+          "colorId": "800",
+          "name": "Black",
+          "hexCode": "#090A0C",
+          "productId": 524609974,
+          "reference": "C02727008800020-V2026",
+          "url": "https://www.zara.com/am/en/cateye-sunglasses-p02727008.html?v1=524609974",
+          "price": {
+            "amount": 25900,
+            "currency": "AMD",
+            "formatted": "25,900 AMD"
+          },
+          "sizes": [
+            {
+              "id": 3,
+              "name": "M",
+              "equivalentSizeId": 103,
+              "sku": 506835475,
+              "reference": "0272700880003-V2026",
+              "availability": "out_of_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 25900,
+                "currency": "AMD",
+                "formatted": "25,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                }
+              ]
+            }
+          ],
+          "images": [
+            {
+              "order": 1,
+              "name": "02727008800-p",
+              "kind": "full",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/2360/0151/cd984688aeba/518d14675ff6/02727008800-p/02727008800-p.jpg?ts=1771424503538&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/2360/0151/cd984688aeba/518d14675ff6/02727008800-p/02727008800-p.jpg?ts=1771424503538"
+            },
+            {
+              "order": 2,
+              "name": "02727008800-a1",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/c7eb/12ca/07e04f958826/f7b20e7ffc58/02727008800-a1/02727008800-a1.jpg?ts=1771424503885&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/c7eb/12ca/07e04f958826/f7b20e7ffc58/02727008800-a1/02727008800-a1.jpg?ts=1771424503885"
+            },
+            {
+              "order": 3,
+              "name": "02727008800-e1",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/64e6/429d/2d5e461eabac/8e6357426dd4/02727008800-e1/02727008800-e1.jpg?ts=1771436274186&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/64e6/429d/2d5e461eabac/8e6357426dd4/02727008800-e1/02727008800-e1.jpg?ts=1771436274186"
+            },
+            {
+              "order": 4,
+              "name": "02727008800-e2",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/d749/c081/1b9b498e9b2e/4348cd5ef036/02727008800-e2/02727008800-e2.jpg?ts=1771436274727&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/d749/c081/1b9b498e9b2e/4348cd5ef036/02727008800-e2/02727008800-e2.jpg?ts=1771436274727"
+            },
+            {
+              "order": 5,
+              "name": "02727008800-e3",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/2828/0fe3/4d7b47e3bc5d/c34dd61cd3ff/02727008800-e3/02727008800-e3.jpg?ts=1771436276595&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/2828/0fe3/4d7b47e3bc5d/c34dd61cd3ff/02727008800-e3/02727008800-e3.jpg?ts=1771436276595"
+            }
+          ],
+          "shopcartImages": [
+            {
+              "name": "02727008800-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/3f91/7e24/550241ff8ff5/71508a267fb7/02727008800-f1/02727008800-f1.jpg?ts=1771436275015&w=2048"
+            }
+          ],
+          "colorSelectorImages": [
+            {
+              "name": "02727008800-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/3f91/7e24/550241ff8ff5/71508a267fb7/02727008800-f1/02727008800-f1.jpg?ts=1771436275015&w=256"
+            }
+          ],
+          "relations": []
+        }
+      ]
+    }
+  ],
+  "otherRelated": [
+    {
+      "id": 502144755,
+      "name": "ASYMMETRIC KNIT JUMPER",
+      "type": "Product",
+      "kind": "Wear",
+      "state": "visible",
+      "reference": "09598016-V2026",
+      "displayReference": "9598/016",
+      "sectionName": "WOMAN",
+      "familyName": "TOPS Y OTRAS P.",
+      "subfamilyName": "PUNTO TOPS Y OT",
+      "description": "Flowy jumper with a round neck, asymmetric sleeves and hem.",
+      "composition": [
+        {
+          "description": "OUTER SHELL",
+          "components": [
+            "51% viscose",
+            "49% acrylic"
+          ]
+        }
+      ],
+      "sizeGuide": {
+        "enabled": true
+      },
+      "sizeSystem": "2",
+      "colors": [
+        {
+          "colorId": "800",
+          "name": "Black",
+          "hexCode": "#121315",
+          "productId": 545494378,
+          "reference": "C09598016800000-I2026",
+          "url": "https://www.zara.com/am/en/asymmetric-knit-jumper-p09598016.html?v1=545494378",
+          "price": {
+            "amount": 15900,
+            "currency": "AMD",
+            "formatted": "15,900 AMD"
+          },
+          "sizes": [
+            {
+              "id": 2,
+              "name": "S",
+              "equivalentSizeId": 102,
+              "sku": 545491427,
+              "reference": "0959801680002-I2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 15900,
+                "currency": "AMD",
+                "formatted": "15,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "CN"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 3,
+              "name": "M",
+              "equivalentSizeId": 103,
+              "sku": 545491428,
+              "reference": "0959801680003-I2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 15900,
+                "currency": "AMD",
+                "formatted": "15,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "CN"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 4,
+              "name": "L",
+              "equivalentSizeId": 104,
+              "sku": 545491429,
+              "reference": "0959801680004-I2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 15900,
+                "currency": "AMD",
+                "formatted": "15,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "CN"
+                  ]
+                }
+              ]
+            }
+          ],
+          "images": [
+            {
+              "order": 1,
+              "name": "09598016800-p",
+              "kind": "full",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/db94/e0af/b61f4d12acd5/73601ddbde5f/09598016800-p/09598016800-p.jpg?ts=1779436607405&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/db94/e0af/b61f4d12acd5/73601ddbde5f/09598016800-p/09598016800-p.jpg?ts=1779436607405"
+            },
+            {
+              "order": 2,
+              "name": "09598016800-a1",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/8db4/0d74/04f94e2fa86d/8ef27ad2d9e0/09598016800-a1/09598016800-a1.jpg?ts=1779377121139&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/8db4/0d74/04f94e2fa86d/8ef27ad2d9e0/09598016800-a1/09598016800-a1.jpg?ts=1779377121139"
+            },
+            {
+              "order": 3,
+              "name": "09598016800-a2",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/2891/aa61/08dd4c578605/b69235bb8aa9/09598016800-a2/09598016800-a2.jpg?ts=1779377120975&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/2891/aa61/08dd4c578605/b69235bb8aa9/09598016800-a2/09598016800-a2.jpg?ts=1779377120975"
+            },
+            {
+              "order": 4,
+              "name": "09598016800-a3",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/fe44/6205/78364db0a008/ac9a7f778e1e/09598016800-a3/09598016800-a3.jpg?ts=1779377121625&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/fe44/6205/78364db0a008/ac9a7f778e1e/09598016800-a3/09598016800-a3.jpg?ts=1779377121625"
+            },
+            {
+              "order": 5,
+              "name": "09598016800-a4",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/c94e/430f/47d64dd68e85/cd3b71b47778/09598016800-a4/09598016800-a4.jpg?ts=1779377122179&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/c94e/430f/47d64dd68e85/cd3b71b47778/09598016800-a4/09598016800-a4.jpg?ts=1779377122179"
+            },
+            {
+              "order": 6,
+              "name": "09598016800-a5",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/d021/1237/7da74a749dbf/19f20ec43e82/09598016800-a5/09598016800-a5.jpg?ts=1779377055480&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/d021/1237/7da74a749dbf/19f20ec43e82/09598016800-a5/09598016800-a5.jpg?ts=1779377055480"
+            },
+            {
+              "order": 7,
+              "name": "09598016800-a6",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/159b/2c7b/6539495d821f/4e7f98d57b02/09598016800-a6/09598016800-a6.jpg?ts=1779377055607&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/159b/2c7b/6539495d821f/4e7f98d57b02/09598016800-a6/09598016800-a6.jpg?ts=1779377055607"
+            },
+            {
+              "order": 8,
+              "name": "09598016800-e1",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/fa1f/e129/3dc347099ac1/2b83ab2af5aa/09598016800-e1/09598016800-e1.jpg?ts=1779287313561&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/fa1f/e129/3dc347099ac1/2b83ab2af5aa/09598016800-e1/09598016800-e1.jpg?ts=1779287313561"
+            },
+            {
+              "order": 9,
+              "name": "09598016800-e2",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/2fbb/6e0b/6293496892d4/d9289abaa943/09598016800-e2/09598016800-e2.jpg?ts=1779287313185&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/2fbb/6e0b/6293496892d4/d9289abaa943/09598016800-e2/09598016800-e2.jpg?ts=1779287313185"
+            },
+            {
+              "order": 10,
+              "name": "09598016800-e3",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/9069/5462/dca14df7a1ef/0edea82d6995/09598016800-e3/09598016800-e3.jpg?ts=1779287316476&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/9069/5462/dca14df7a1ef/0edea82d6995/09598016800-e3/09598016800-e3.jpg?ts=1779287316476"
+            }
+          ],
+          "shopcartImages": [
+            {
+              "name": "09598016800-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/6207/c601/6c094400abd8/13e08aafadd9/09598016800-f1/09598016800-f1.jpg?ts=1779287313379&w=2048"
+            }
+          ],
+          "colorSelectorImages": [
+            {
+              "name": "09598016800-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/6207/c601/6c094400abd8/13e08aafadd9/09598016800-f1/09598016800-f1.jpg?ts=1779287313379&w=256"
+            }
+          ],
+          "relations": [
+            {
+              "ids": [
+                531779302
+              ],
+              "type": "OTHER_COLOR"
+            },
+            {
+              "ids": [
+                529989247,
+                542172054,
+                524609974
+              ],
+              "type": "PACMAN-LOOK"
+            }
+          ]
+        },
+        {
+          "colorId": "700",
+          "name": "Brown",
+          "hexCode": "#3E2D2A",
+          "productId": 551481768,
+          "reference": "C09598016700016-V2026",
+          "url": "https://www.zara.com/am/en/asymmetric-knit-jumper-p09598016.html?v1=551481768",
+          "price": {
+            "amount": 15900,
+            "currency": "AMD",
+            "formatted": "15,900 AMD"
+          },
+          "sizes": [
+            {
+              "id": 2,
+              "name": "S",
+              "equivalentSizeId": 102,
+              "sku": 502144756,
+              "reference": "0959801670002-V2026",
+              "availability": "coming_soon",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 15900,
+                "currency": "AMD",
+                "formatted": "15,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "CN"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 3,
+              "name": "M",
+              "equivalentSizeId": 103,
+              "sku": 502144757,
+              "reference": "0959801670003-V2026",
+              "availability": "coming_soon",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 15900,
+                "currency": "AMD",
+                "formatted": "15,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "CN"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 4,
+              "name": "L",
+              "equivalentSizeId": 104,
+              "sku": 502144758,
+              "reference": "0959801670004-V2026",
+              "availability": "coming_soon",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 15900,
+                "currency": "AMD",
+                "formatted": "15,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "CN"
+                  ]
+                }
+              ]
+            }
+          ],
+          "images": [
+            {
+              "order": 1,
+              "name": "09598016700-p",
+              "kind": "full",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/c0c6/0800/294b4bdd888b/54371f8d0908/09598016700-p/09598016700-p.jpg?ts=1779373987939&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/c0c6/0800/294b4bdd888b/54371f8d0908/09598016700-p/09598016700-p.jpg?ts=1779373987939"
+            },
+            {
+              "order": 2,
+              "name": "09598016700-a1",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/bac2/43c7/864048a0b878/bd5d83c11527/09598016700-a1/09598016700-a1.jpg?ts=1779373992545&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/bac2/43c7/864048a0b878/bd5d83c11527/09598016700-a1/09598016700-a1.jpg?ts=1779373992545"
+            },
+            {
+              "order": 3,
+              "name": "09598016700-a2",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/18c4/8d5e/da5f4fa49844/06f7a65523f5/09598016700-a2/09598016700-a2.jpg?ts=1779373992639&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/18c4/8d5e/da5f4fa49844/06f7a65523f5/09598016700-a2/09598016700-a2.jpg?ts=1779373992639"
+            },
+            {
+              "order": 4,
+              "name": "09598016700-a3",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/3c42/afe3/11d841c7a917/9910628acea1/09598016700-a3/09598016700-a3.jpg?ts=1779373992543&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/3c42/afe3/11d841c7a917/9910628acea1/09598016700-a3/09598016700-a3.jpg?ts=1779373992543"
+            },
+            {
+              "order": 5,
+              "name": "09598016700-a4",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/33b6/484f/eb4e4428a26c/eeeee0bd6adf/09598016700-a4/09598016700-a4.jpg?ts=1779373989584&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/33b6/484f/eb4e4428a26c/eeeee0bd6adf/09598016700-a4/09598016700-a4.jpg?ts=1779373989584"
+            },
+            {
+              "order": 6,
+              "name": "09598016700-e1",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/9efe/1dae/6e6147478f7e/b5691f75f85d/09598016700-e1/09598016700-e1.jpg?ts=1772635100879&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/9efe/1dae/6e6147478f7e/b5691f75f85d/09598016700-e1/09598016700-e1.jpg?ts=1772635100879"
+            },
+            {
+              "order": 7,
+              "name": "09598016700-e2",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/8451/2cd0/a9494741ac01/e7cba3c6bde2/09598016700-e2/09598016700-e2.jpg?ts=1772635100821&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/8451/2cd0/a9494741ac01/e7cba3c6bde2/09598016700-e2/09598016700-e2.jpg?ts=1772635100821"
+            },
+            {
+              "order": 8,
+              "name": "09598016700-e3",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/c821/db8b/747a4b73869f/bcbead05f79f/09598016700-e3/09598016700-e3.jpg?ts=1772635099397&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/c821/db8b/747a4b73869f/bcbead05f79f/09598016700-e3/09598016700-e3.jpg?ts=1772635099397"
+            }
+          ],
+          "shopcartImages": [
+            {
+              "name": "09598016700-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/0a25/4838/604b4e8ba06e/4efdaa429433/09598016700-f1/09598016700-f1.jpg?ts=1772635100605&w=2048"
+            }
+          ],
+          "colorSelectorImages": [
+            {
+              "name": "09598016700-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/0a25/4838/604b4e8ba06e/4efdaa429433/09598016700-f1/09598016700-f1.jpg?ts=1772635100605&w=256"
+            }
+          ],
+          "relations": [
+            {
+              "ids": [
+                520706279,
+                536330060,
+                545043489,
+                512860127
+              ],
+              "type": "PACMAN-LOOK"
+            }
+          ]
+        },
+        {
+          "colorId": "072",
+          "name": "ecru-white",
+          "hexCode": "#bdb9b1",
+          "productId": 545494379,
+          "reference": "C09598016072000-I2026",
+          "url": "https://www.zara.com/am/en/asymmetric-knit-jumper-p09598016.html?v1=545494379",
+          "price": {
+            "amount": 15900,
+            "currency": "AMD",
+            "formatted": "15,900 AMD"
+          },
+          "sizes": [
+            {
+              "id": 2,
+              "name": "S",
+              "equivalentSizeId": 102,
+              "sku": 545491424,
+              "reference": "0959801607202-I2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 15900,
+                "currency": "AMD",
+                "formatted": "15,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "CN"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 3,
+              "name": "M",
+              "equivalentSizeId": 103,
+              "sku": 545491425,
+              "reference": "0959801607203-I2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 15900,
+                "currency": "AMD",
+                "formatted": "15,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "CN"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 4,
+              "name": "L",
+              "equivalentSizeId": 104,
+              "sku": 545491426,
+              "reference": "0959801607204-I2026",
+              "availability": "in_stock",
+              "demand": "DEMAND_REGULAR",
+              "price": {
+                "amount": 15900,
+                "currency": "AMD",
+                "formatted": "15,900 AMD"
+              },
+              "attributes": [
+                {
+                  "identifier": "PACKAGING",
+                  "values": []
+                },
+                {
+                  "identifier": "CONFECTION",
+                  "values": [
+                    "CN"
+                  ]
+                }
+              ]
+            }
+          ],
+          "images": [
+            {
+              "order": 1,
+              "name": "09598016072-p",
+              "kind": "full",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/ca0b/dd0e/18594aee9906/e70a93912dbc/09598016072-p/09598016072-p.jpg?ts=1779377055719&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/ca0b/dd0e/18594aee9906/e70a93912dbc/09598016072-p/09598016072-p.jpg?ts=1779377055719"
+            },
+            {
+              "order": 2,
+              "name": "09598016072-a1",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/1921/1abf/41fa45ad8359/141d54827efb/09598016072-a1/09598016072-a1.jpg?ts=1779377055631&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/1921/1abf/41fa45ad8359/141d54827efb/09598016072-a1/09598016072-a1.jpg?ts=1779377055631"
+            },
+            {
+              "order": 3,
+              "name": "09598016072-a2",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/f834/8588/04744f6489d1/dca74bb8d013/09598016072-a2/09598016072-a2.jpg?ts=1779377055609&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/f834/8588/04744f6489d1/dca74bb8d013/09598016072-a2/09598016072-a2.jpg?ts=1779377055609"
+            },
+            {
+              "order": 4,
+              "name": "09598016072-a3",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/d557/9c1c/a0484d01baa2/c014322178a3/09598016072-a3/09598016072-a3.jpg?ts=1779377055525&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/d557/9c1c/a0484d01baa2/c014322178a3/09598016072-a3/09598016072-a3.jpg?ts=1779377055525"
+            },
+            {
+              "order": 5,
+              "name": "09598016072-a4",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/da7d/8f9a/00ff4be0a8cd/0deb63cf5184/09598016072-a4/09598016072-a4.jpg?ts=1779377055359&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/da7d/8f9a/00ff4be0a8cd/0deb63cf5184/09598016072-a4/09598016072-a4.jpg?ts=1779377055359"
+            },
+            {
+              "order": 6,
+              "name": "09598016072-a5",
+              "kind": "other",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/9ea4/6648/1c6341c9857e/7d77e52ab5ac/09598016072-a5/09598016072-a5.jpg?ts=1779377055169&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/9ea4/6648/1c6341c9857e/7d77e52ab5ac/09598016072-a5/09598016072-a5.jpg?ts=1779377055169"
+            },
+            {
+              "order": 7,
+              "name": "09598016072-e1",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/d8ea/97c7/0bdb4c8e8ac4/9377f810a584/09598016072-e1/09598016072-e1.jpg?ts=1779357987000&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/d8ea/97c7/0bdb4c8e8ac4/9377f810a584/09598016072-e1/09598016072-e1.jpg?ts=1779357987000"
+            },
+            {
+              "order": 8,
+              "name": "09598016072-e2",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/6bb0/1b50/59d843a7a119/1e454cae41d0/09598016072-e2/09598016072-e2.jpg?ts=1779357986329&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/6bb0/1b50/59d843a7a119/1e454cae41d0/09598016072-e2/09598016072-e2.jpg?ts=1779357986329"
+            },
+            {
+              "order": 9,
+              "name": "09598016072-e3",
+              "kind": "plain",
+              "width": 2048,
+              "height": 3072,
+              "url": "https://static.zara.net/assets/public/62a9/149c/61814ec19651/c135996de535/09598016072-e3/09598016072-e3.jpg?ts=1779357987467&w=2048",
+              "rawUrl": "https://static.zara.net/assets/public/62a9/149c/61814ec19651/c135996de535/09598016072-e3/09598016072-e3.jpg?ts=1779357987467"
+            }
+          ],
+          "shopcartImages": [
+            {
+              "name": "09598016072-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/3e7f/8003/d56947d0a14e/28bc21b3823c/09598016072-f1/09598016072-f1.jpg?ts=1779357986618&w=2048"
+            }
+          ],
+          "colorSelectorImages": [
+            {
+              "name": "09598016072-f1",
+              "kind": "other",
+              "url": "https://static.zara.net/assets/public/3e7f/8003/d56947d0a14e/28bc21b3823c/09598016072-f1/09598016072-f1.jpg?ts=1779357986618&w=256"
+            }
+          ],
+          "relations": [
+            {
+              "ids": [
+                531779303
+              ],
+              "type": "OTHER_COLOR"
+            },
+            {
+              "ids": [
+                529989247,
+                542172054,
+                528575694
+              ],
+              "type": "PACMAN-LOOK"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

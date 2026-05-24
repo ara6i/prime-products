@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { ChevronLeft, Camera, Ruler, Globe, ChevronRight, Sparkles } from "lucide-react";
@@ -20,7 +21,9 @@ const PrimeStyleTryon = dynamic(
 
 type DemoPrimeStyleTryonProps = React.ComponentProps<typeof PrimeStyleTryon> & {
   productCategory?: string;
+  productGender?: string;
   productSubcategory?: string;
+  productCarouselItems?: Array<{ image: string; title?: string; href?: string }>;
 };
 
 const DemoPrimeStyleTryon = PrimeStyleTryon as React.ComponentType<DemoPrimeStyleTryonProps>;
@@ -416,10 +419,10 @@ export function MobileProductDetail({ product }: Props) {
         )}
 
         {/* Product info */}
-        <div className="px-5 pt-5 space-y-5">
-          <div>
-            <p className="text-xs text-brand-blue font-semibold tracking-[0.15em] uppercase mb-1.5">{product.brand}</p>
-            <h1 className="text-2xl font-semibold tracking-[-0.02em] leading-[1.2]">{product.name}</h1>
+        <div className="px-4 pt-4 space-y-4">
+          <div className="space-y-1.5">
+            <p className="text-[10px] text-brand-blue font-semibold tracking-[0.16em] uppercase leading-none">{product.brand}</p>
+            <h1 className="text-[20px] font-semibold tracking-[-0.01em] leading-[1.22] text-text-primary">{product.name}</h1>
           </div>
 
           <div className="h-px bg-gradient-to-r from-brand-blue/20 via-brand-blue/10 to-transparent" />
@@ -427,14 +430,25 @@ export function MobileProductDetail({ product }: Props) {
 
           {/* Colors */}
           {product.colorVariants.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-text-hint uppercase tracking-wider">Color</span>
-                <span className="text-sm text-text-hint">{selectedColor}</span>
+            <div className="space-y-2.5">
+              <div className="space-y-1">
+                <span className="block text-[11px] text-text-hint uppercase tracking-[0.14em] leading-none">Color</span>
+                <span className="block max-w-full text-[12px] leading-snug text-text-body break-words">
+                  {selectedColor}
+                </span>
               </div>
-              <div className="flex gap-3">
+              <div className="-mx-1 flex gap-2 overflow-x-auto px-1 py-1.5 scrollbar-hide">
                 {product.colorVariants.map((cv) => (
-                  <button key={cv.name} onClick={() => cv.available && handleColorSelect(cv.name)} disabled={!cv.available} className={`w-9 h-9 rounded-full transition-all duration-200 ${selectedColor === cv.name ? "ring-2 ring-brand-blue ring-offset-2 ring-offset-white scale-110" : ""} ${!cv.available ? "opacity-25" : ""}`} style={{ backgroundColor: cv.hex }} />
+                  <button
+                    key={cv.name}
+                    type="button"
+                    aria-label={cv.name}
+                    title={cv.name}
+                    onClick={() => cv.available && handleColorSelect(cv.name)}
+                    disabled={!cv.available}
+                    className={`h-8 w-8 flex-shrink-0 rounded-full border border-black/5 transition-all duration-200 ${selectedColor === cv.name ? "ring-2 ring-brand-blue ring-offset-2 ring-offset-white" : ""} ${!cv.available ? "opacity-25" : ""}`}
+                    style={{ backgroundColor: cv.hex }}
+                  />
                 ))}
               </div>
             </div>
@@ -444,24 +458,24 @@ export function MobileProductDetail({ product }: Props) {
           {sizes.length > 0 && isOneSizeOnly ? (
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-text-hint uppercase tracking-wider">Size</span>
+                <span className="text-[11px] text-text-hint uppercase tracking-[0.14em]">Size</span>
                 {product.sizeGuide && (
-                  <button onClick={() => setSizeGuideOpen(true)} className="text-sm text-brand-blue flex items-center gap-1">
+                  <button onClick={() => setSizeGuideOpen(true)} className="text-[12px] text-brand-blue flex items-center gap-1">
                     <Ruler className="h-3 w-3" />
                     Size Guide
                   </button>
                 )}
               </div>
-              <div className="rounded-xl border border-border-light bg-surface-light px-3 py-3 text-sm font-medium text-text-primary">
+              <div className="rounded-lg border border-border-light bg-surface-light px-3 py-2.5 text-[13px] font-medium text-text-primary">
                 {oneSizeLabel}
               </div>
             </div>
           ) : sizes.length > 0 && hasSplitSizes ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-text-hint uppercase tracking-wider">Your Size</span>
+                <span className="text-[11px] text-text-hint uppercase tracking-[0.14em]">Your Size</span>
                 {product.sizeGuide && (
-                  <button onClick={() => setSizeGuideOpen(true)} className="text-sm text-brand-blue flex items-center gap-1">
+                  <button onClick={() => setSizeGuideOpen(true)} className="text-[12px] text-brand-blue flex items-center gap-1">
                     <Ruler className="h-3 w-3" />
                     Size Guide
                   </button>
@@ -489,7 +503,7 @@ export function MobileProductDetail({ product }: Props) {
               <div className={`rounded-xl border border-border-light bg-surface-light p-3 ${justAutoFilled ? "ps-autofill-flash" : ""}`}>
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <label className="text-xs text-text-hint uppercase tracking-wider mb-2 block">{pantsWaistSizes.length > 0 ? "Jacket Size" : isDress ? "Dress" : "Size"}</label>
+                    <label className="text-[11px] text-text-hint uppercase tracking-[0.12em] mb-2 block">{pantsWaistSizes.length > 0 ? "Jacket Size" : isDress ? "Dress" : "Size"}</label>
                     <SizeSelect
                       value={jacketSizeNum}
                       onChange={handleSizeNumberSelect}
@@ -504,7 +518,7 @@ export function MobileProductDetail({ product }: Props) {
 
                   {allUniqueLengths.length > 0 && (
                     <div className="flex-1">
-                      <label className="text-xs text-text-hint uppercase tracking-wider mb-2 block">{pantsWaistSizes.length > 0 ? "Jacket Length" : "Length"}</label>
+                      <label className="text-[11px] text-text-hint uppercase tracking-[0.12em] mb-2 block">{pantsWaistSizes.length > 0 ? "Jacket Length" : "Length"}</label>
                       <SizeSelect
                         value={jacketLength}
                         onChange={handleLengthSelect}
@@ -525,7 +539,7 @@ export function MobileProductDetail({ product }: Props) {
               <div className={`rounded-xl border border-border-light bg-surface-light p-3 ${justAutoFilled ? "ps-autofill-flash" : ""}`}>
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <label className="text-xs text-text-hint uppercase tracking-wider mb-2 block">Pants Size</label>
+                    <label className="text-[11px] text-text-hint uppercase tracking-[0.12em] mb-2 block">Pants Size</label>
                     <SizeSelect
                       value={pantsWaistSize}
                       onChange={setPantsWaistSize}
@@ -536,7 +550,7 @@ export function MobileProductDetail({ product }: Props) {
 
                   {pantsLengthSizes.length > 0 && (
                     <div className="flex-1">
-                      <label className="text-xs text-text-hint uppercase tracking-wider mb-2 block">Pants Length</label>
+                      <label className="text-[11px] text-text-hint uppercase tracking-[0.12em] mb-2 block">Pants Length</label>
                       <SizeSelect
                         value={pantsLengthSize}
                         onChange={setPantsLengthSize}
@@ -552,9 +566,9 @@ export function MobileProductDetail({ product }: Props) {
             /* Simple sizes — dropdown for consistency */
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-text-hint uppercase tracking-wider">Size</span>
+                <span className="text-[11px] text-text-hint uppercase tracking-[0.14em]">Size</span>
                 {product.sizeGuide && (
-                  <button onClick={() => setSizeGuideOpen(true)} className="text-sm text-brand-blue flex items-center gap-1">
+                  <button onClick={() => setSizeGuideOpen(true)} className="text-[12px] text-brand-blue flex items-center gap-1">
                     <Ruler className="h-3 w-3" />
                     Size Guide
                   </button>
@@ -594,9 +608,15 @@ export function MobileProductDetail({ product }: Props) {
             productId={product.id}
             productImage={images[currentImage] ?? product.primaryImage}
             productImages={images}
+            productCarouselItems={product.completeLook.map((item) => ({
+              image: item.image,
+              title: item.name,
+              href: `/demo/products/${item.id}`,
+            }))}
             locale={sdkLocale}
             productTitle={product.name}
             productCategory={product.category}
+            productGender={product.gender}
             productSubcategory={product.subcategory}
             productDescription={product.description}
             productMaterial={product.material}
@@ -624,10 +644,10 @@ export function MobileProductDetail({ product }: Props) {
           {product.description && (
             <div className="border-t border-border-light pt-5">
               <button onClick={() => setDescExpanded(!descExpanded)} className="w-full flex items-center justify-between mb-3">
-                <span className="text-sm text-text-hint uppercase tracking-wider">Description</span>
-                <span className="text-sm text-brand-blue">{descExpanded ? "Less" : "More"}</span>
+                <span className="text-[11px] text-text-hint uppercase tracking-[0.14em]">Description</span>
+                <span className="text-[12px] text-brand-blue">{descExpanded ? "Less" : "More"}</span>
               </button>
-              <div className={`text-sm text-text-hint leading-[1.75] overflow-hidden transition-all duration-300 [&_a]:text-brand-blue [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-1 [&_p]:mb-2 ${descExpanded ? "max-h-[2000px]" : "max-h-[72px]"}`} dangerouslySetInnerHTML={{ __html: product.description }} />
+              <div className={`text-[13px] text-text-hint leading-[1.65] overflow-hidden transition-all duration-300 [&_a]:text-brand-blue [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-1 [&_p]:mb-2 ${descExpanded ? "max-h-[2000px]" : "max-h-[66px]"}`} dangerouslySetInnerHTML={{ __html: product.description }} />
             </div>
           )}
 
@@ -637,6 +657,10 @@ export function MobileProductDetail({ product }: Props) {
               <span className="h-px flex-1 bg-border-light" />
               <span className="text-text-hint">{product.material}</span>
             </div>
+          )}
+
+          {product.completeLook.length > 0 && (
+            <CompleteLookRow products={product.completeLook} />
           )}
         </div>
       </div>
@@ -648,4 +672,32 @@ export function MobileProductDetail({ product }: Props) {
       )}
     </div>
   );
+}
+
+function CompleteLookRow({ products }: { products: DemoProductView["completeLook"] }) {
+  return (
+    <div className="border-t border-border-light pt-5 pb-1">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-sm text-text-hint uppercase tracking-wider">Complete the look</span>
+        <span className="text-[11px] text-text-disabled">{products.length} items</span>
+      </div>
+      <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+        {products.map((item) => (
+          <Link key={item.id} href={`/demo/products/${item.id}`} className="w-24 flex-shrink-0">
+            <div className="aspect-[3/4] overflow-hidden rounded-xl border border-border-light bg-surface-light">
+              <img src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" />
+            </div>
+            <p className="mt-2 line-clamp-2 text-xs font-medium leading-tight text-text-body">{item.name}</p>
+            {item.price !== null && (
+              <p className="mt-1 text-[11px] text-text-disabled">{formatLookPrice(item.price, item.currency)}</p>
+            )}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function formatLookPrice(price: number, currency: string): string {
+  return `${price.toLocaleString("en-US")} ${currency}`;
 }

@@ -2,6 +2,51 @@ import type { TryOnModelId } from "./models";
 
 export type TryOnPhase = "idle" | "submitting" | "queued" | "generating" | "done" | "error";
 
+export type TryOnProductCategory =
+  | "apparel"
+  | "shoe"
+  | "bag"
+  | "hat"
+  | "sunglasses"
+  | "necklace"
+  | "bracelet"
+  | "ring"
+  | "belt"
+  | "watch"
+  | "accessory";
+
+export type FitLabel = "good" | "tight" | "loose" | "a-bit-tight" | "a-bit-loose" | "too-tight" | "too-loose";
+
+export interface FitAreaInfo {
+  area: string;
+  section?: string;
+  fit: FitLabel;
+  userValue?: number;
+  garmentRange?: string;
+  y?: number;
+  x1?: number;
+  x2?: number;
+}
+
+export interface SilhouetteContext {
+  recommendedSize?: string;
+  recommendedSizeMeasurements?: string;
+  sizeChartSummary?: string;
+  userMeasurementsText?: string;
+  userHeight?: string;
+  userWeight?: string;
+}
+
+export interface TryOnSizingRunData {
+  category: TryOnProductCategory;
+  productTitle?: string;
+  productDescription?: string;
+  productMaterial?: string;
+  fitInfo?: FitAreaInfo[];
+  silhouetteContext?: SilhouetteContext;
+  promptPreview?: string;
+}
+
 export interface TryOnRunInput {
   modelImage: string;
   garmentImage: string;
@@ -9,6 +54,9 @@ export interface TryOnRunInput {
   productTitle?: string;
   productDescription?: string;
   productMaterial?: string;
+  category?: TryOnProductCategory;
+  fitInfo?: FitAreaInfo[];
+  silhouetteContext?: SilhouetteContext;
   /** Per-request model override sent to the backend test endpoint. */
   model?: TryOnModelId;
 }

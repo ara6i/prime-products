@@ -65,6 +65,9 @@ export function useTryOnSubmission(config: { baseUrl: string }): {
       if (input.productTitle) payload.productTitle = input.productTitle;
       if (input.productDescription) payload.productDescription = input.productDescription;
       if (input.productMaterial) payload.productMaterial = input.productMaterial;
+      if (input.category) payload.category = input.category;
+      if (input.fitInfo?.length) payload.fitInfo = input.fitInfo;
+      if (input.silhouetteContext) payload.silhouetteContext = input.silhouetteContext;
       if (input.model) payload.model = input.model;
 
       let ack;

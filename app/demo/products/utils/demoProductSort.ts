@@ -26,6 +26,16 @@ const ACCESSORY_KEYWORDS = [
   "sunglass",
 ];
 
+const COMPLETE_LOOK_ORDER = [
+  "floral-print-linen-blend-trousers",
+  "flat-leather-criss-cross-sandals",
+  "floral-linen-blend-shirt",
+];
+
+function getCompleteLookOrder(product: DemoProductCard): number {
+  return COMPLETE_LOOK_ORDER.indexOf(product.id);
+}
+
 function hasAnyKeyword(value: string, keywords: string[]): boolean {
   return keywords.some((keyword) => value.includes(keyword));
 }
@@ -49,6 +59,13 @@ export function sortDemoProducts(products: DemoProductCard[]): DemoProductCard[]
   return products
     .map((product, index) => ({ product, index }))
     .sort((a, b) => {
+      const lookOrderA = getCompleteLookOrder(a.product);
+      const lookOrderB = getCompleteLookOrder(b.product);
+      if (lookOrderA >= 0 || lookOrderB >= 0) {
+        if (lookOrderA >= 0 && lookOrderB >= 0) return lookOrderA - lookOrderB;
+        return lookOrderA >= 0 ? -1 : 1;
+      }
+
       const priorityDelta = getProductPriority(a.product) - getProductPriority(b.product);
       return priorityDelta || a.index - b.index;
     })

@@ -31,6 +31,10 @@ export function RunSummary({ snapshot, isRunning, isCancelling, onCancel }: RunS
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-blue">Current run</p>
           <h2 className="mt-1 text-xl font-semibold text-text-primary">{snapshot.targetLabel}</h2>
           <p className="mt-1 text-sm text-text-secondary">{snapshot.endpoint}</p>
+          <p className="mt-1 text-xs font-semibold text-brand-blue">
+            Route safety: {snapshot.routeSafety}
+            {snapshot.apiPrefix ? ` · ${snapshot.targetBaseUrl}${snapshot.apiPrefix}` : ""}
+          </p>
           {snapshot.estimate.estimatedTryOnCalls > 0 && (
             <p className="mt-1 text-xs font-semibold text-brand-blue">Try-on model: {snapshot.config.tryOnModel}</p>
           )}
@@ -278,6 +282,10 @@ function ResultSamples({ samples }: ResultSamplesProps) {
                   <SampleLine label="Recommended size" value={sample.recommendedSize ?? "n/a"} />
                   <SampleLine label="Model used" value={sample.tryOnModel ?? "n/a"} />
                   <SampleLine label="Try-on job" value={sample.jobId ?? "n/a"} />
+                </div>
+                <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+                  <SampleLine label="Route safety" value={sample.routeSafety} />
+                  <SampleLine label="Route prefix" value={sample.apiPrefix ? `${sample.targetBaseUrl}${sample.apiPrefix}` : sample.targetBaseUrl} />
                 </div>
 
                 {sample.message && (
