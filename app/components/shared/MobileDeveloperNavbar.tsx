@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
@@ -20,8 +20,22 @@ const SECTION_LINKS: Array<{
   { labelKey: "contact", href: "#contact" },
 ];
 const CUSTOMER_LOGIN_PATH = "/customer/login";
+const ADMIN_LOGIN_PATH = "/admin/login";
+const STAGING_HOSTS = new Set(["test-fe-9a7k.primestyleai.com"]);
 
 const NAV_HEIGHT = 64;
+
+function subscribeToHostname(): () => void {
+  return () => undefined;
+}
+
+function getBrowserStagingSnapshot(): boolean {
+  return STAGING_HOSTS.has(window.location.hostname.toLowerCase());
+}
+
+function useShowStagingAdminLogin(): boolean {
+  return useSyncExternalStore(subscribeToHostname, getBrowserStagingSnapshot, () => false);
+}
 
 interface MobileDeveloperNavbarProps {
   /** "demo" trims the mobile nav to just customer login inline — no
@@ -34,6 +48,7 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
   const isDemo = variant === "demo";
+  const showAdminLogin = useShowStagingAdminLogin();
   const resolveHref = (href: string) => href.startsWith("#") ? `${sectionHrefPrefix}${href}` : href;
   const { language, setLanguage, t } = useLandingLanguage();
 
@@ -77,6 +92,14 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
         </Link>
 
         <div className="flex items-center gap-1.5">
+          {showAdminLogin && (
+            <Link
+              href={ADMIN_LOGIN_PATH}
+              className="hidden min-[390px]:inline-flex h-[34px] items-center rounded-full px-2.5 text-[11.5px] font-semibold text-text-body hover:text-brand-blue"
+            >
+              Admin
+            </Link>
+          )}
           <Button
             asChild
             variant="outline"
@@ -127,6 +150,16 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
             style={{ top: NAV_HEIGHT, maxHeight: `calc(100svh - ${NAV_HEIGHT}px)` }}
           >
             <div className="flex-1 overflow-y-auto px-3 py-3">
+              {showAdminLogin && (
+                <Link
+                  href={ADMIN_LOGIN_PATH}
+                  onClick={close}
+                  className="flex items-center h-11 px-3 rounded-xl text-[15px] font-medium text-gray-900 hover:bg-gray-50 transition-colors"
+                >
+                  Admin Login
+                </Link>
+              )}
+
               {SECTION_LINKS.map((link) =>
                 link.external ? (
                   <a

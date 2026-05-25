@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/app/shared/components/ui";
@@ -19,6 +20,20 @@ const SECTION_LINKS: Array<{
   { labelKey: "contact", href: "#contact" },
 ];
 const CUSTOMER_LOGIN_PATH = "/customer/login";
+const ADMIN_LOGIN_PATH = "/admin/login";
+const STAGING_HOSTS = new Set(["test-fe-9a7k.primestyleai.com"]);
+
+function subscribeToHostname(): () => void {
+  return () => undefined;
+}
+
+function getBrowserStagingSnapshot(): boolean {
+  return STAGING_HOSTS.has(window.location.hostname.toLowerCase());
+}
+
+function useShowStagingAdminLogin(): boolean {
+  return useSyncExternalStore(subscribeToHostname, getBrowserStagingSnapshot, () => false);
+}
 
 interface DeveloperNavbarProps {
   /** "demo" trims the navbar down to just the customer login action, right-aligned. */
@@ -27,6 +42,7 @@ interface DeveloperNavbarProps {
 
 export function DeveloperNavbar({ variant = "default" }: DeveloperNavbarProps) {
   const isDemo = variant === "demo";
+  const showAdminLogin = useShowStagingAdminLogin();
   const { open: openPilot } = usePilotModal();
   const { language, setLanguage, t } = useLandingLanguage();
 
@@ -75,6 +91,14 @@ export function DeveloperNavbar({ variant = "default" }: DeveloperNavbarProps) {
             language={language}
             onLanguageChange={setLanguage}
           />
+        )}
+        {showAdminLogin && (
+          <Link
+            href={ADMIN_LOGIN_PATH}
+            className="text-[0.833vw] font-semibold leading-[1.354vw] text-text-body transition-colors hover:text-brand-blue whitespace-nowrap"
+          >
+            Admin Login
+          </Link>
         )}
         <Button
           asChild
