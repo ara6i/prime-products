@@ -65,7 +65,9 @@ Current frontend state (verified 2026-05-25):
 - Both production and test frontend should install exact SDK version `5.10.178`.
 
 Current backend state (verified 2026-05-25):
-- Production backend and test backend code are intentionally identical at commit `63ac297` (`Fix test VTO worker image fetches`).
+- Production backend and test backend code are intentionally identical by file tree after the backend feedback/Shopify release.
+- Backend `origin/staging`: `177bd9c` (`Deploy backend feedback and Shopify updates`).
+- Backend `origin/main`: `dcf79c3` (`Sync production backend with staging release`), same file tree as `177bd9c`.
 - Production backend path: `/var/www/backend.primestyleai.com`.
 - Test backend path: `/var/www/test-be-9a7k.primestyleai.com`.
 - Production backend keeps production `.env` and real MongoDB database `primestyleai`.
