@@ -60,11 +60,10 @@ Important test-login note:
 - Production `primestyleai.com` must not return a `WWW-Authenticate` header.
 
 Current frontend state (verified 2026-05-25):
-- `prime-products` `main` and `staging` have identical file trees.
-- `main` commit: `54076f5` (`Update frontend to SDK 5.10.176`).
-- `staging` commit: `c923d17` (`Update frontend to SDK 5.10.176`).
-- Both depend on exact npm package `@primestyleai/tryon` version `5.10.176`.
-- Production and test frontend servers both have installed SDK `5.10.176`.
+- `prime-products` `main` and `staging` runtime source/dependency files are aligned.
+- Latest frontend runtime package bump: `main` commit `6805db0`, `staging` commit `c08d8e5` (`Update tryon SDK to 5.10.177`).
+- Both depend on exact npm package `@primestyleai/tryon` version `5.10.177`.
+- Production and test frontend servers both have installed SDK `5.10.177`.
 
 Current backend state (verified 2026-05-25):
 - Production backend and test backend code are intentionally identical at commit `63ac297` (`Fix test VTO worker image fetches`).
@@ -158,10 +157,11 @@ Repo:
 - `/home/ara6i/Projects/primestyleai-tryon-sdk`
 
 Version state as of 2026-05-25:
-- SDK repo `main` and GitHub are synced at `5.10.176`, commit `8d8ba04`.
-- npm registry `latest` is `@primestyleai/tryon@5.10.176`.
-- `prime-products` `main` and `staging` depend on exact npm version `5.10.176`.
-- Test and production frontend servers both have installed SDK `5.10.176`.
+- SDK repo `main` and GitHub are synced at `5.10.177`, commit `07d9285`.
+- npm registry `latest` is `@primestyleai/tryon@5.10.177`.
+- `prime-products` `main` and `staging` depend on exact npm version `5.10.177`.
+- Test and production frontend servers both have installed SDK `5.10.177`.
+- `5.10.177` lowers the mobile Metric/Imperial unit switch on garment and accessory AI scan body-details screens without changing the shoe reference flow.
 - `5.10.176` removes the mobile multi-section fit percentage badge (`% FIT MATCH`) from the SDK result screen.
 - npm publish requires a granular npm token with package write access and bypass-2FA enabled; never store npm tokens in the repo or server env unless explicitly configuring CI.
 - Local `.tgz` installs are acceptable only for temporary SDK iteration. Before committing or deploying `prime-products`, dependency should be switched back to the published npm package version.
