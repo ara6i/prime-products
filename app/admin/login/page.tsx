@@ -53,28 +53,6 @@ export default async function AdminLoginPage() {
                 Manage merchants, monitor platform analytics, and review operational performance from the admin dashboard.
               </p>
             </div>
-
-            <div className="relative mt-3 flex flex-1 items-center justify-center">
-              <div className="relative w-[126%] max-w-none overflow-hidden rounded-[22px] shadow-[0_34px_62px_rgba(33,84,239,0.18)]">
-                <Image
-                  src="/images/login/customer-login-hero.png"
-                  alt="PrimeStyle AI try-on and sizing preview"
-                  width={1080}
-                  height={860}
-                  className="h-auto min-h-[500px] w-full object-cover object-center"
-                />
-              </div>
-
-              <div className="floating-badge-primary absolute left-4 top-[12%] min-w-[168px] rounded-2xl border border-brand-blue/15 bg-white/92 px-4 py-3 shadow-[0_14px_30px_rgba(33,84,239,0.16)] backdrop-blur-sm">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-brand-blue-dark">Try-on</p>
-                <p className="mt-1 text-sm font-semibold text-text-primary">Generation Ready</p>
-              </div>
-
-              <div className="floating-badge-secondary absolute bottom-[11%] right-10 min-w-[176px] rounded-2xl border border-brand-blue/15 bg-white/92 px-4 py-3 shadow-[0_14px_30px_rgba(33,84,239,0.16)] backdrop-blur-sm">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-brand-blue-dark">Sizing</p>
-                <p className="mt-1 text-sm font-semibold text-text-primary">Guide Intelligence</p>
-              </div>
-            </div>
           </div>
         </aside>
 
