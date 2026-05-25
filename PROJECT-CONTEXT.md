@@ -1,6 +1,6 @@
 # PrimeStyleAI Unified Project Context
 
-Last updated: 2026-05-23
+Last updated: 2026-05-25
 Owner workspace: `/home/ara6i/Projects`
 Local Mac workspace: `/Users/arashsn/Projects/PrimeStyleAI`
 
@@ -38,25 +38,71 @@ Main domains:
 
 Important: do not confuse repo name `prime-products` with production domain (`primestyleai.com`).
 
-Live note (verified on 2026-05-13):
+Live note (verified on 2026-05-25):
 - `backend.primestyleai.com` did not resolve publicly at verification time.
 - `api.primestyleai.com/health` responded `HTTP 200`.
 
-## 3) Standard Deploy Flow (Droplet + PM2)
+## 3) Source of Truth and Deploy Workflow
+
+Current branch policy (set 2026-05-25):
+- `staging` is the normal local development and test-server branch.
+- Test frontend deploys from `origin/staging` to `/var/www/test-fe-9a7k.primestyleai.com`.
+- Test backend deploys from `origin/staging` to `/var/www/test-be-9a7k.primestyleai.com`.
+- Production frontend deploys from `origin/main` to `/var/www/prime-products`.
+- Production backend currently runs the same code tree as backend `origin/staging`, but keeps production env/database.
+- Do not push directly to `main` unless the owner explicitly asks for direct main push.
+- For production promotion, create/show a PR or equivalent staging-to-main diff first, get explicit approval, then merge/deploy production.
+- After production promotion, return local frontend checkout to `staging` for future development.
+
+Important test-login note:
+- The test frontend password gate is nginx `auth_basic` on `test-fe-9a7k.primestyleai.com`.
+- It is not app source code and should not be copied into production nginx.
+- Production `primestyleai.com` must not return a `WWW-Authenticate` header.
+
+Current frontend state (verified 2026-05-25):
+- `prime-products` `main` and `staging` have identical file trees.
+- `main` commit: `54076f5` (`Update frontend to SDK 5.10.176`).
+- `staging` commit: `c923d17` (`Update frontend to SDK 5.10.176`).
+- Both depend on exact npm package `@primestyleai/tryon` version `5.10.176`.
+- Production and test frontend servers both have installed SDK `5.10.176`.
+
+Current backend state (verified 2026-05-25):
+- Production backend and test backend code are intentionally identical at commit `63ac297` (`Fix test VTO worker image fetches`).
+- Production backend path: `/var/www/backend.primestyleai.com`.
+- Test backend path: `/var/www/test-be-9a7k.primestyleai.com`.
+- Production backend keeps production `.env` and real MongoDB database `primestyleai`.
+- Test backend keeps test `.env` and MongoDB database `primestyleai_test`.
+- Never copy test `.env` into production.
+
+### 3.1) Manual Deploy Flow (Droplet + PM2)
 
 Basic manual flow:
 1. `ssh root@167.99.252.27`
 2. `pm2 list`
 3. `cd <service-directory>`
-4. `git pull`
-5. `npm install`
-6. `npm run build` (if needed)
-7. `pm2 restart <app-name>`
+4. `git fetch origin`
+5. Reset only to the approved branch:
+   - Test frontend: `git reset --hard origin/staging`
+   - Production frontend: `git reset --hard origin/main`
+   - Test backend: `git reset --hard origin/staging`
+   - Production backend: only after explicit approval, preserving production `.env`
+6. `git clean -fd -e .env -e .env.local` when an exact repo tree is needed but env files must be preserved
+7. `npm install`
+8. `npm run build` (if needed)
+9. `pm2 restart <app-name> --update-env`
 
-Known command example for `prime-products`:
+Do not use `git pull` blindly on production if the repo is dirty or the branch target is unclear.
+
+Known command example for `prime-products` production after approval:
 
 ```bash
-ssh root@167.99.252.27 'cd /var/www/prime-products && git pull && npm install && npm run build && pm2 restart prime-products'
+ssh root@167.99.252.27 'cd /var/www/prime-products && git fetch origin && git reset --hard origin/main && git clean -fd -e .env -e .env.local && npm install && npm run build && pm2 restart prime-products --update-env'
+```
+
+Known command example for `prime-products` test:
+
+```bash
+ssh root@167.99.252.27 'cd /var/www/test-fe-9a7k.primestyleai.com && git fetch origin && git reset --hard origin/staging && git clean -fd -e .env -e .env.local && npm install && npm run build && pm2 restart prime-products-test --update-env'
 ```
 
 ## 4) Backend Architecture (`primeStyleAI-backend`)
@@ -111,10 +157,14 @@ Operational note:
 Repo:
 - `/home/ara6i/Projects/primestyleai-tryon-sdk`
 
-Version state as of 2026-05-22:
-- SDK repo local/staging version is `5.10.174` at commit `46384e4`.
-- npm registry `latest` is still `5.10.173` because publishing `5.10.174` was blocked by npm 2FA.
-- `prime-products` currently depends on `@primestyleai/tryon` as `^5.10.173`.
+Version state as of 2026-05-25:
+- SDK repo `main` and GitHub are synced at `5.10.176`, commit `8d8ba04`.
+- npm registry `latest` is `@primestyleai/tryon@5.10.176`.
+- `prime-products` `main` and `staging` depend on exact npm version `5.10.176`.
+- Test and production frontend servers both have installed SDK `5.10.176`.
+- `5.10.176` removes the mobile multi-section fit percentage badge (`% FIT MATCH`) from the SDK result screen.
+- npm publish requires a granular npm token with package write access and bypass-2FA enabled; never store npm tokens in the repo or server env unless explicitly configuring CI.
+- Local `.tgz` installs are acceptable only for temporary SDK iteration. Before committing or deploying `prime-products`, dependency should be switched back to the published npm package version.
 
 Primary flow:
 - Parallel sizing + try-on for apparel path
@@ -191,9 +241,11 @@ Important guardrail:
 
 ## 7) Local Development Workflow Notes
 
-Documented local workflow in `LOCAL-DEV.md`:
-- Local SDK iteration via `npm pack` + `npm install <tgz> --no-save` into `prime-products`
-- Avoid `npm link` due to Turbopack resolution issues with exports/symlink path
+SDK local iteration:
+- Preferred committed/deployed dependency is the published npm version, currently exact `@primestyleai/tryon@5.10.176`.
+- Temporary local SDK iteration can use `npm pack` + `npm install <tgz> --no-save` into `prime-products`.
+- Before committing or deploying `prime-products`, replace any `file:../primestyleai-tryon-sdk/*.tgz` dependency with the published npm package version.
+- Avoid `npm link` due to Turbopack resolution issues with exports/symlink path.
 
 Mac local run snapshot (verified 2026-05-23):
 - `prime-products` runs with `npm run dev` at `http://localhost:3000`.
@@ -210,10 +262,10 @@ Mac local run snapshot (verified 2026-05-23):
 - Homebrew is installed at `/opt/homebrew/bin/brew`; `/Users/arashsn/.zprofile` and `/Users/arashsn/.zshrc` load `eval "$(/opt/homebrew/bin/brew shellenv zsh)"` for zsh login and interactive shells, and `/Users/arashsn/.zshenv` prepends `/opt/homebrew/bin` as a fallback for all zsh shells. Docker and system `mongod` were not installed at local verification time. MongoDB Community 8.0.4 was downloaded as the official macOS ARM64 `.tgz` and extracted to `/Users/arashsn/Projects/PrimeStyleAI/.local/mongodb`; its data/log directories are `/Users/arashsn/Projects/PrimeStyleAI/.local/mongodb-data` and `/Users/arashsn/Projects/PrimeStyleAI/.local/mongodb-log`.
 - Codex CLI is installed via Homebrew cask `codex` at `/opt/homebrew/bin/codex` (`codex-cli 0.133.0`). Homebrew also installed `ripgrep` at `/opt/homebrew/bin/rg` (`ripgrep 15.1.0`).
 
-Important status caveat:
-- One memory doc says SDK distribution is fully npm-only and tgz override flow is no longer standard.
-- Another doc (`LOCAL-DEV.md`) documents active tgz local override workflow.
-- Treat this as environment-dependent; verify current desired mode before changing dependency flow.
+Local branch guardrail:
+- Keep the local `prime-products` checkout on `staging` for ongoing work unless explicitly preparing/reviewing a production PR.
+- Do not leave the local frontend workspace on `main` after production deployment work.
+- For SDK changes, publish a new npm version first, then update `prime-products` `staging`; promote to `main` only after owner approval.
 
 ## 8) Backend Operations Snapshot (Droplet Diagnostic Context)
 
@@ -238,9 +290,16 @@ curl -I https://primestyleai.com
 
 # Backend health quick check
 curl -I https://api.primestyleai.com/health
+
+# SDK registry version
+npm view @primestyleai/tryon version dist-tags --json
+
+# Verify production has no nginx basic-auth and test still has it
+curl -sS -I https://primestyleai.com | grep -i '^WWW-Authenticate' || true
+curl -sS -I https://test-fe-9a7k.primestyleai.com/demo/products | grep -i '^WWW-Authenticate' || true
 ```
 
-## 10) Live Droplet Server Inventory (SSH Verified 2026-05-13)
+## 10) Live Droplet Server Inventory (SSH Verified 2026-05-25)
 
 Verification command baseline:
 - `ssh root@167.99.252.27`
@@ -254,6 +313,7 @@ PM2 processes online:
 - `primestyle-backend` -> cwd `/var/www/backend.primestyleai.com`, script `dist/server.js` (cluster)
 - `primestyle-backend-test` -> cwd `/var/www/test-be-9a7k.primestyleai.com`, script `dist/server.js`
 - `primestyle-shopify` -> cwd `/var/www/shopify.primestyleai.com`, React Router serve CLI
+- `primestyle-test-lab-worker` -> cwd `/var/www/test-be-9a7k.primestyleai.com`, script `dist/workers/test-lab-sdk-mirror.worker.js`
 
 Listening ports (from `ss -tulpn`):
 - `80`, `443` (nginx)
@@ -272,6 +332,7 @@ Nginx routing snapshots:
 - `api.primestyleai.com` -> backend endpoints on `127.0.0.1:4000`
 - `test-fe-9a7k.primestyleai.com` -> `localhost:3004` and `/api/*` -> `127.0.0.1:4001`
 - `test-be-9a7k.primestyleai.com` -> backend endpoints on `127.0.0.1:4001`
+- `test-fe-9a7k.primestyleai.com` has nginx `auth_basic` enabled; production `primestyleai.com` does not.
 
 `/var/www` directories currently include:
 - `backend.primestyleai.com`
