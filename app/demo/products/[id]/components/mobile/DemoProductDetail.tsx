@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
@@ -75,9 +75,15 @@ export function MobileProductDetail({ product }: Props) {
   const [sdkLocale, setSdkLocale] = useState("en");
 
   const activeVariant = product.colorVariants.find((v) => v.name === selectedColor);
-  const images = activeVariant?.images.length ? activeVariant.images : product.images;
+  const images = useMemo(
+    () => (activeVariant?.images.length ? activeVariant.images : product.images),
+    [activeVariant, product.images],
+  );
   // Prefer product.sizes (built from size guide Standard column) — richer than variant's raw mm sizes
-  const sizes = product.sizes.length ? product.sizes : (activeVariant?.sizes ?? []);
+  const sizes = useMemo(
+    () => (product.sizes.length ? product.sizes : (activeVariant?.sizes ?? [])),
+    [activeVariant, product.sizes],
+  );
 
   // Parse sizes — memoized so `parsedSizes` has a stable reference across renders.
   // Without memoization, the useEffect below would fire every render and spam logs.
@@ -132,6 +138,27 @@ export function MobileProductDetail({ product }: Props) {
   const pantsLengthSection = product.sizeGuide?.sections?.find((s) => /pant/i.test(s.name) && /length/i.test(s.name));
   const pantsWaistSizes = pantsSection?.rows.map((r) => r["Size"]).filter(Boolean) ?? [];
   const pantsLengthSizes = pantsLengthSection?.rows.map((r) => r["Length"] || r["Size"]).filter(Boolean) ?? [];
+  const sdkApiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  const sdkCarouselItems = useMemo(() => product.completeLook.map((item) => ({
+    image: item.image,
+    title: item.name,
+    href: `/demo/products/${item.id}`,
+  })), [product.completeLook]);
+  const sdkButtonStyles = useMemo(() => ({
+    backgroundColor: "#2154EF",
+    textColor: "#ffffff",
+    border: "none",
+    borderRadius: "0.5rem",
+    height: "2.25rem",
+    width: "100%",
+    fontSize: "0.75rem",
+    fontWeight: "600",
+    iconSize: "14px",
+    iconColor: "#ffffff",
+    hoverBackgroundColor: "#193EDC",
+    hoverTextColor: "#ffffff",
+    boxShadow: "none",
+  }), []);
 
   const handleSizeNumberSelect = (num: string) => {
     setJacketSizeNum(num);
@@ -162,7 +189,7 @@ export function MobileProductDetail({ product }: Props) {
   });
 
   // ── Headless auto-sizing from saved profile ──
-  const autoSizeInput: DemoPrimeStyleSizeInput = {
+  const autoSizeInput = useMemo<DemoPrimeStyleSizeInput>(() => ({
     productId: product.id,
     productTitle: product.name,
     productImage: product.primaryImage,
@@ -170,8 +197,8 @@ export function MobileProductDetail({ product }: Props) {
     productSubcategory: product.subcategory,
     productDescription: product.description,
     sizeGuideData: product.sizeGuideData,
-    apiUrl: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000",
-  };
+    apiUrl: sdkApiUrl,
+  }), [product.id, product.name, product.primaryImage, product.category, product.subcategory, product.description, product.sizeGuideData, sdkApiUrl]);
   const autoSize = usePrimeStyleSize(autoSizeInput);
   // Auto-select sizes when the saved-profile recommendation arrives from
   // the SDK. The backend returns split fields like
@@ -179,9 +206,19 @@ export function MobileProductDetail({ product }: Props) {
   // but the catalog stores variant sizes as single tokens like "38R", "38L"
   // (Short / Regular / Long). We therefore try a handful of concatenation
   // patterns to bridge those two shapes.
+  const lastAutoSelectedRef = useRef<string | null>(null);
   useEffect(() => {
     const raw = autoSize.result?.raw as any;
     if (!raw || parsedSizes.length === 0) return;
+    const recoKey = JSON.stringify({
+      size: raw.recommendedSize,
+      length: raw.recommendedLength,
+      sections: raw.sections
+        ? Object.fromEntries(Object.entries(raw.sections as Record<string, any>).map(([k, v]) => [k, { size: (v as any)?.size, length: (v as any)?.length, recommendedSize: (v as any)?.recommendedSize }]))
+        : null,
+    });
+    if (lastAutoSelectedRef.current === recoKey) return;
+    lastAutoSelectedRef.current = recoKey;
 
     const splitSize = (s: string): { num: string; len?: string } => {
       const trimmed = s.trim();
@@ -604,15 +641,11 @@ export function MobileProductDetail({ product }: Props) {
           {/* See How It Fits — minimal inline button under the size dropdown
               on mobile. No icon, no sticky bottom, no @primestyleai/tryon byline. */}
           <DemoPrimeStyleTryon
-            apiUrl={process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"}
+            apiUrl={sdkApiUrl}
             productId={product.id}
             productImage={images[currentImage] ?? product.primaryImage}
             productImages={images}
-            productCarouselItems={product.completeLook.map((item) => ({
-              image: item.image,
-              title: item.name,
-              href: `/demo/products/${item.id}`,
-            }))}
+            productCarouselItems={sdkCarouselItems}
             locale={sdkLocale}
             productTitle={product.name}
             productCategory={product.category}
@@ -623,21 +656,7 @@ export function MobileProductDetail({ product }: Props) {
             sizeGuideData={product.sizeGuideData}
             buttonText="See How It Fits"
             onComplete={handleSizingComplete}
-            buttonStyles={{
-              backgroundColor: "#2154EF",
-              textColor: "#ffffff",
-              border: "none",
-              borderRadius: "0.5rem",
-              height: "2.25rem",
-              width: "100%",
-              fontSize: "0.75rem",
-              fontWeight: "600",
-              iconSize: "14px",
-              iconColor: "#ffffff",
-              hoverBackgroundColor: "#193EDC",
-              hoverTextColor: "#ffffff",
-              boxShadow: "none",
-            }}
+            buttonStyles={sdkButtonStyles}
           />
 
           {/* Description */}
