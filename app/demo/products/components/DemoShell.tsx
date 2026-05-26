@@ -3,7 +3,7 @@
 import { DeveloperNavbar } from "@/app/components/shared/DeveloperNavbar";
 import { MobileDeveloperNavbar } from "@/app/components/shared/MobileDeveloperNavbar";
 import { PilotModalProvider } from "@/app/components/shared/PilotModalContext";
-import { Footer } from "@/app/landing/components/desktop/Footer";
+import { DemoFooter } from "@/app/demo/components/DemoFooter";
 
 interface DemoShellProps {
   isLoggedIn: boolean;
@@ -17,9 +17,7 @@ export function DemoShell({ children }: DemoShellProps) {
         <div className="hidden lg:contents"><DeveloperNavbar variant="demo" /></div>
         <div className="contents lg:hidden"><MobileDeveloperNavbar variant="demo" /></div>
         <div className="flex-1">{children}</div>
-        <div className="flex flex-col items-center gap-[1.25vw] bg-brand-blue-pale px-[7.292vw] py-[2.5vw]">
-          <Footer />
-        </div>
+        <DemoFooter />
       </div>
     </PilotModalProvider>
   );

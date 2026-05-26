@@ -3,10 +3,10 @@
 import { DeveloperNavbar } from "@/app/components/shared/DeveloperNavbar";
 import { MobileDeveloperNavbar } from "@/app/components/shared/MobileDeveloperNavbar";
 import { PilotModalProvider } from "@/app/components/shared/PilotModalContext";
-import { Footer } from "@/app/landing/components/desktop/Footer";
 import type { CatalogProductViewModel } from "@/app/dashboard/catalog/mapper/catalogMapper";
 import { ProductShowcase } from "./ProductShowcase";
 import { CodePanel } from "./CodePanel";
+import { DemoFooter } from "./DemoFooter";
 
 interface DemoContentProps {
   product: CatalogProductViewModel;
@@ -69,9 +69,7 @@ export function DemoContent({ product }: DemoContentProps) {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-[1.25vw] bg-brand-blue-pale px-[7.292vw] py-[2.5vw]">
-        <Footer />
-      </div>
+      <DemoFooter />
     </div>
     </PilotModalProvider>
   );
