@@ -95,17 +95,49 @@ export function useAdminChatDetail(initialChat: AdminChatDetailView): UseAdminCh
 
   const sendReply = useCallback((event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!replyDraft.trim()) return;
+    const body = replyDraft.trim();
+    if (!body) return;
 
+    const optimisticId = `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     setIsSending(true);
     setError(null);
+    setReplyDraft("");
+    setChat((current) => ({
+      ...current,
+      messages: [
+        ...current.messages,
+        {
+          id: optimisticId,
+          sessionId: current.session.id,
+          authorType: "admin",
+          authorName: "PrimeStyleAI Support",
+          body,
+          createdAtLabel: "Just now",
+          tone: "admin",
+        },
+      ],
+    }));
 
-    sendAdminChatMessageClient(chat.session.id, { body: replyDraft.trim() })
+    sendAdminChatMessageClient(chat.session.id, { body })
       .then((detail) => {
-        setChat((current) => mergeDetail(current, detail));
-        setReplyDraft("");
+        setChat((current) =>
+          mergeDetail(
+            {
+              ...current,
+              messages: current.messages.filter((message) => message.id !== optimisticId),
+            },
+            detail,
+          ),
+        );
       })
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to send message"))
+      .catch((err) => {
+        setError(err instanceof Error ? err.message : "Failed to send message");
+        setChat((current) => ({
+          ...current,
+          messages: current.messages.filter((message) => message.id !== optimisticId),
+        }));
+        setReplyDraft(body);
+      })
       .finally(() => setIsSending(false));
   }, [chat.session.id, replyDraft]);
 

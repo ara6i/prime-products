@@ -32,7 +32,6 @@ export function ChatConversationPanel({
   chat,
   replyDraft,
   isLoading,
-  isSending,
   isUpdating,
   onReplyDraftChange,
   onReplySubmit,
@@ -101,14 +100,14 @@ export function ChatConversationPanel({
         <textarea
           value={replyDraft}
           onChange={(event) => onReplyDraftChange(event.target.value)}
-          disabled={isSending || isClosed}
+          disabled={isClosed}
           placeholder={isClosed ? "Reopen the chat to reply" : "Type a reply..."}
           className="min-h-[5.2vw] w-full resize-none rounded-[0.833vw] border border-customer-border bg-customer-card px-[0.833vw] py-[0.729vw] text-[clamp(14px,0.84vw,16px)] font-normal leading-relaxed text-text-primary outline-none placeholder:text-customer-muted disabled:bg-customer-soft disabled:text-customer-muted max-lg:min-h-[28vw] max-lg:rounded-[4vw] max-lg:px-[4vw] max-lg:py-[3vw] max-lg:text-[3.5vw]"
         />
         <div className="mt-[0.729vw] flex justify-end max-lg:mt-[3vw]">
-          <Button type="submit" disabled={isSending || isClosed || !replyDraft.trim()} className="h-[2.604vw] rounded-full px-[1.25vw] text-[clamp(14px,0.84vw,16px)] font-semibold max-lg:h-[11vw] max-lg:px-[5vw] max-lg:text-[3.6vw]">
+          <Button type="submit" disabled={isClosed || !replyDraft.trim()} className="h-[2.604vw] rounded-full px-[1.25vw] text-[clamp(14px,0.84vw,16px)] font-semibold max-lg:h-[11vw] max-lg:px-[5vw] max-lg:text-[3.6vw]">
             <Send className="h-[0.938vw] w-[0.938vw] max-lg:h-[4vw] max-lg:w-[4vw]" />
-            {isSending ? "Sending" : "Send"}
+            Send
           </Button>
         </div>
       </form>
