@@ -10,6 +10,7 @@ export interface AdminChatSessionRaw {
   visitorEmail: string | null;
   visitorCompany: string | null;
   storeDomain: string | null;
+  storeLogoUrl: string | null;
   source: AdminChatSource;
   status: AdminChatSessionStatus;
   assignedTo: string | null;
@@ -73,6 +74,7 @@ export interface ChatSessionItem {
   visitorName: string;
   visitorMeta: string;
   storeLabel: string;
+  storeLogoUrl: string | null;
   sourceLabel: string;
   status: AdminChatSessionStatus;
   statusLabel: string;

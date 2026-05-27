@@ -88,6 +88,7 @@ function mapStats(response: AdminTicketsResponse): TicketStatCard[] {
 function sourceLabel(source: AdminTicketRaw["source"]): string {
   if (source === "email") return "Support email";
   if (source === "customer_dashboard") return "Customer dashboard";
+  if (source === "shopify_admin") return "Shopify admin";
   if (source === "public_form") return "Public form";
   return "Admin";
 }
@@ -112,7 +113,7 @@ function mapThread(ticket: AdminTicketRaw): TicketThreadEntry[] {
     authorLabel: ticket.requesterName,
     authorMeta: ticket.requesterEmail,
     body: ticket.message,
-    bodyHtml: null,
+    bodyHtml: ticket.messageHtml,
     dateLabel: formatDate(ticket.createdAt),
     tone: "requester",
     deliveryLabel: "Email received",

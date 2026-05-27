@@ -22,6 +22,7 @@ export interface AdminTicketRaw {
   ticketNumber: string;
   subject: string;
   message: string;
+  messageHtml: string | null;
   requesterName: string;
   requesterEmail: string;
   requesterCompany: string | null;

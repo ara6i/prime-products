@@ -61,6 +61,7 @@ export function mapChatSession(session: AdminChatSessionRaw): ChatSessionItem {
     visitorName: session.visitorName,
     visitorMeta: [session.visitorEmail, session.visitorCompany].filter(Boolean).join(" · ") || "No contact details",
     storeLabel: session.storeDomain ?? "No store domain",
+    storeLogoUrl: session.storeLogoUrl,
     sourceLabel: sourceLabel(session.source),
     status: session.status,
     statusLabel: session.status === "closed" ? "Closed" : "Open",

@@ -28,6 +28,26 @@ function messageClasses(tone: AdminChatDetailView["messages"][number]["tone"]): 
   return "mr-auto border-customer-border bg-customer-card text-text-primary";
 }
 
+function StoreLogo({
+  logoUrl,
+  storeLabel,
+}: {
+  logoUrl: string | null;
+  storeLabel: string;
+}) {
+  const fallback = storeLabel.trim().slice(0, 1).toUpperCase() || "S";
+  return (
+    <div className="flex h-[2.8vw] w-[2.8vw] shrink-0 items-center justify-center overflow-hidden rounded-full border border-customer-border bg-customer-soft text-[clamp(14px,0.84vw,16px)] font-semibold text-text-primary max-lg:h-[11vw] max-lg:w-[11vw] max-lg:text-[4vw]">
+      {logoUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={logoUrl} alt={`${storeLabel} logo`} className="h-full w-full object-cover" />
+      ) : (
+        fallback
+      )}
+    </div>
+  );
+}
+
 export function ChatConversationPanel({
   chat,
   replyDraft,
@@ -55,14 +75,17 @@ export function ChatConversationPanel({
     <section className="flex h-[calc(100vh-16vw)] min-h-[34vw] flex-col overflow-hidden rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card max-lg:h-auto max-lg:min-h-[120vw] max-lg:rounded-[5vw]">
       <div className="border-b border-customer-border p-[1.042vw] max-lg:p-[4vw]">
         <div className="flex flex-wrap items-start justify-between gap-[1vw] max-lg:gap-[3vw]">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-[0.417vw] max-lg:gap-[1.5vw]">
-              <ChatStatusBadge tone={chat.session.statusTone}>{chat.session.statusLabel}</ChatStatusBadge>
-              <span className="text-[clamp(12px,0.72vw,14px)] text-customer-muted max-lg:text-[3vw]">{chat.session.chatNumber}</span>
+          <div className="flex min-w-0 items-start gap-[0.833vw] max-lg:gap-[3vw]">
+            <StoreLogo logoUrl={chat.session.storeLogoUrl} storeLabel={chat.session.storeLabel} />
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-[0.417vw] max-lg:gap-[1.5vw]">
+                <ChatStatusBadge tone={chat.session.statusTone}>{chat.session.statusLabel}</ChatStatusBadge>
+                <span className="text-[clamp(12px,0.72vw,14px)] text-customer-muted max-lg:text-[3vw]">{chat.session.chatNumber}</span>
+              </div>
+              <h2 className="mt-[0.521vw] truncate text-[clamp(22px,1.45vw,28px)] font-semibold leading-tight text-text-primary max-lg:mt-[2vw] max-lg:text-[5.6vw]">{chat.session.visitorName}</h2>
+              <p className="mt-[0.313vw] truncate text-[clamp(13px,0.78vw,15px)] text-text-body max-lg:mt-[1vw] max-lg:text-[3.2vw]">{chat.session.visitorMeta}</p>
+              <p className="mt-[0.208vw] truncate text-[clamp(12px,0.72vw,14px)] text-customer-muted max-lg:mt-[0.8vw] max-lg:text-[3vw]">{chat.session.storeLabel} · {chat.session.sourceLabel}</p>
             </div>
-            <h2 className="mt-[0.521vw] truncate text-[clamp(22px,1.45vw,28px)] font-semibold leading-tight text-text-primary max-lg:mt-[2vw] max-lg:text-[5.6vw]">{chat.session.visitorName}</h2>
-            <p className="mt-[0.313vw] truncate text-[clamp(13px,0.78vw,15px)] text-text-body max-lg:mt-[1vw] max-lg:text-[3.2vw]">{chat.session.visitorMeta}</p>
-            <p className="mt-[0.208vw] truncate text-[clamp(12px,0.72vw,14px)] text-customer-muted max-lg:mt-[0.8vw] max-lg:text-[3vw]">{chat.session.storeLabel} · {chat.session.sourceLabel}</p>
           </div>
 
           <div className="flex items-center gap-[0.521vw] max-lg:gap-[2vw]">

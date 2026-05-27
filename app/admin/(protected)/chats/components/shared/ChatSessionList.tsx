@@ -21,6 +21,26 @@ const statusTabs: Array<{ label: string; value: AdminChatStatusFilter }> = [
   { label: "Closed", value: "closed" },
 ];
 
+function StoreAvatar({
+  logoUrl,
+  storeLabel,
+}: {
+  logoUrl: string | null;
+  storeLabel: string;
+}) {
+  const fallback = storeLabel.trim().slice(0, 1).toUpperCase() || "S";
+  return (
+    <span className="inline-flex h-[1.563vw] w-[1.563vw] shrink-0 items-center justify-center overflow-hidden rounded-full border border-customer-border bg-customer-soft text-[clamp(10px,0.62vw,12px)] font-semibold text-text-primary max-lg:h-[7vw] max-lg:w-[7vw] max-lg:text-[2.8vw]">
+      {logoUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={logoUrl} alt={`${storeLabel} logo`} className="h-full w-full object-cover" />
+      ) : (
+        fallback
+      )}
+    </span>
+  );
+}
+
 function ChatTabs({
   statusFilter,
   isLoading,
@@ -76,7 +96,10 @@ export function ChatSessionList({
                   <ChatStatusBadge tone={item.statusTone}>{item.statusLabel}</ChatStatusBadge>
                 </div>
 
-                <p className="mt-[2vw] truncate text-[3.2vw] text-text-body">{item.storeLabel}</p>
+                <div className="mt-[2vw] flex min-w-0 items-center gap-[2vw]">
+                  <StoreAvatar logoUrl={item.storeLogoUrl} storeLabel={item.storeLabel} />
+                  <p className="truncate text-[3.2vw] text-text-body">{item.storeLabel}</p>
+                </div>
                 <p className="mt-[1.5vw] line-clamp-2 text-[3.4vw] leading-relaxed text-text-body">{item.lastMessagePreview}</p>
 
                 <div className="mt-[3vw] flex items-center justify-between gap-[3vw]">
@@ -152,7 +175,10 @@ export function ChatSessionList({
                     <p className="mt-[0.156vw] truncate text-[clamp(11px,0.68vw,13px)] text-customer-muted">{item.visitorMeta}</p>
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
-                    <p className="truncate text-[clamp(12px,0.72vw,14px)] text-text-body">{item.storeLabel}</p>
+                    <div className="flex min-w-0 items-center gap-[0.521vw]">
+                      <StoreAvatar logoUrl={item.storeLogoUrl} storeLabel={item.storeLabel} />
+                      <p className="truncate text-[clamp(12px,0.72vw,14px)] text-text-body">{item.storeLabel}</p>
+                    </div>
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
                     <p className="truncate text-[clamp(12px,0.72vw,14px)] text-text-body">{item.sourceLabel}</p>
