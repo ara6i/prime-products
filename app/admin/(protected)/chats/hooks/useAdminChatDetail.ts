@@ -31,11 +31,21 @@ function mergeDetail(current: AdminChatDetailView, detail: AdminChatDetailRaw): 
   const mapped = mapChatDetail(detail);
   if (current.session.id !== mapped.session.id) return current;
 
-  const currentIds = new Set(current.messages.map((message) => message.id));
+  const incomingReal = mapped.messages.filter((message) => !message.id.startsWith("local-"));
+  const currentMessages = current.messages.filter(
+    (message) =>
+      !message.id.startsWith("local-") ||
+      !incomingReal.some(
+        (incoming) =>
+          incoming.authorType === message.authorType &&
+          incoming.body.trim() === message.body.trim(),
+      ),
+  );
+  const currentIds = new Set(currentMessages.map((message) => message.id));
   return {
     session: mapped.session,
     messages: [
-      ...current.messages,
+      ...currentMessages,
       ...mapped.messages.filter((message) => !currentIds.has(message.id)),
     ],
   };
@@ -79,9 +89,18 @@ export function useAdminChatDetail(initialChat: AdminChatDetailView): UseAdminCh
         if (message?.sessionId === chatIdRef.current) {
           setChat((current) => {
             if (current.messages.some((item) => item.id === message.id)) return current;
+            const mappedMessage = mapChatMessage(message);
             return {
               ...current,
-              messages: [...current.messages, mapChatMessage(message)],
+              messages: [
+                ...current.messages.filter(
+                  (item) =>
+                    !item.id.startsWith("local-") ||
+                    item.authorType !== mappedMessage.authorType ||
+                    item.body.trim() !== mappedMessage.body.trim(),
+                ),
+                mappedMessage,
+              ],
             };
           });
         }
