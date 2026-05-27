@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye } from "lucide-react";
+import { Eye, Star } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
 import { Tabs, TabsList, TabsTrigger } from "@/app/shared/components/ui/tabs";
 import type { AdminChatStatusFilter, ChatSessionItem } from "../../types";
@@ -100,6 +100,19 @@ export function ChatSessionList({
                   <StoreAvatar logoUrl={item.storeLogoUrl} storeLabel={item.storeLabel} />
                   <p className="truncate text-[3.2vw] text-text-body">{item.storeLabel}</p>
                 </div>
+                <div className="mt-[1.5vw] flex flex-wrap items-center gap-[1.5vw]">
+                  {item.supportIssue ? (
+                    <span className="rounded-full border border-customer-border bg-customer-soft px-[2.5vw] py-[1vw] text-[2.8vw] font-semibold text-text-body">
+                      {item.supportIssue}
+                    </span>
+                  ) : null}
+                  {item.ratingScore ? (
+                    <span className="inline-flex items-center gap-[1vw] rounded-full bg-brand-blue-light px-[2.5vw] py-[1vw] text-[2.8vw] font-semibold text-brand-blue">
+                      <Star className="h-[3vw] w-[3vw] fill-current" />
+                      {item.ratingScore}/5
+                    </span>
+                  ) : null}
+                </div>
                 <p className="mt-[1.5vw] line-clamp-2 text-[3.4vw] leading-relaxed text-text-body">{item.lastMessagePreview}</p>
 
                 <div className="mt-[3vw] flex items-center justify-between gap-[3vw]">
@@ -182,12 +195,21 @@ export function ChatSessionList({
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
                     <p className="truncate text-[clamp(12px,0.72vw,14px)] text-text-body">{item.sourceLabel}</p>
+                    {item.supportIssue ? (
+                      <p className="mt-[0.156vw] truncate text-[clamp(11px,0.68vw,13px)] text-customer-muted">{item.supportIssue}</p>
+                    ) : null}
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
                     <p className="truncate text-[clamp(13px,0.78vw,15px)] text-text-primary">{item.lastMessagePreview}</p>
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
                     <p className="whitespace-nowrap text-[clamp(12px,0.72vw,14px)] text-customer-muted">{item.lastMessageAtLabel}</p>
+                    {item.ratingScore ? (
+                      <p className="mt-[0.156vw] inline-flex items-center gap-[0.208vw] whitespace-nowrap text-[clamp(11px,0.68vw,13px)] font-semibold text-brand-blue">
+                        <Star className="h-[0.729vw] w-[0.729vw] fill-current" />
+                        {item.ratingScore}/5
+                      </p>
+                    ) : null}
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
                     {item.hasUnread ? (

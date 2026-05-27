@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { RotateCcw, Send, XCircle } from "lucide-react";
+import { RotateCcw, Send, Star, XCircle } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
 import type { AdminChatDetailView } from "../../types";
 import { ChatStatusBadge } from "./ChatStatusBadge";
@@ -85,6 +85,19 @@ export function ChatConversationPanel({
               <h2 className="mt-[0.521vw] truncate text-[clamp(22px,1.45vw,28px)] font-semibold leading-tight text-text-primary max-lg:mt-[2vw] max-lg:text-[5.6vw]">{chat.session.visitorName}</h2>
               <p className="mt-[0.313vw] truncate text-[clamp(13px,0.78vw,15px)] text-text-body max-lg:mt-[1vw] max-lg:text-[3.2vw]">{chat.session.visitorMeta}</p>
               <p className="mt-[0.208vw] truncate text-[clamp(12px,0.72vw,14px)] text-customer-muted max-lg:mt-[0.8vw] max-lg:text-[3vw]">{chat.session.storeLabel} · {chat.session.sourceLabel}</p>
+              <div className="mt-[0.625vw] flex flex-wrap items-center gap-[0.417vw] max-lg:mt-[2vw] max-lg:gap-[1.5vw]">
+                {chat.session.supportIssue ? (
+                  <span className="rounded-full border border-customer-border bg-customer-soft px-[0.625vw] py-[0.208vw] text-[clamp(11px,0.68vw,13px)] font-semibold text-text-body max-lg:px-[3vw] max-lg:py-[1vw] max-lg:text-[2.9vw]">
+                    {chat.session.supportIssue}
+                  </span>
+                ) : null}
+                {chat.session.ratingScore ? (
+                  <span className="inline-flex items-center gap-[0.26vw] rounded-full border border-brand-blue/20 bg-brand-blue-light px-[0.625vw] py-[0.208vw] text-[clamp(11px,0.68vw,13px)] font-semibold text-brand-blue max-lg:gap-[1vw] max-lg:px-[3vw] max-lg:py-[1vw] max-lg:text-[2.9vw]">
+                    <Star className="h-[0.729vw] w-[0.729vw] fill-current max-lg:h-[3vw] max-lg:w-[3vw]" />
+                    {chat.session.ratingScore}/5
+                  </span>
+                ) : null}
+              </div>
             </div>
           </div>
 
@@ -105,6 +118,17 @@ export function ChatConversationPanel({
       </div>
 
       <div className="min-h-0 flex-1 space-y-[0.729vw] overflow-y-auto bg-customer-soft/45 p-[1.042vw] max-lg:space-y-[3vw] max-lg:p-[4vw]">
+        {chat.session.ratingScore && chat.session.ratingNote ? (
+          <div className="rounded-[0.833vw] border border-brand-blue/20 bg-customer-card px-[0.833vw] py-[0.625vw] text-[clamp(13px,0.78vw,15px)] text-text-body max-lg:rounded-[4vw] max-lg:px-[4vw] max-lg:py-[3vw] max-lg:text-[3.3vw]">
+            <p className="font-semibold text-text-primary">Support rating note</p>
+            <p className="mt-[0.313vw] whitespace-pre-wrap leading-relaxed max-lg:mt-[1.5vw]">{chat.session.ratingNote}</p>
+            {chat.session.ratedAtLabel ? (
+              <p className="mt-[0.313vw] text-[clamp(11px,0.68vw,13px)] text-customer-muted max-lg:mt-[1.5vw] max-lg:text-[2.8vw]">
+                Rated {chat.session.ratedAtLabel}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
         {chat.messages.map((message) => (
           <article
             key={message.id}

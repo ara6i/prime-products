@@ -11,6 +11,7 @@ export interface AdminChatSessionRaw {
   visitorCompany: string | null;
   storeDomain: string | null;
   storeLogoUrl: string | null;
+  supportIssue: string | null;
   source: AdminChatSource;
   status: AdminChatSessionStatus;
   assignedTo: string | null;
@@ -18,6 +19,9 @@ export interface AdminChatSessionRaw {
   lastMessageAt: string;
   unreadAdminCount: number;
   unreadCustomerCount: number;
+  ratingScore: number | null;
+  ratingNote: string | null;
+  ratedAt: string | null;
   closedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -75,6 +79,10 @@ export interface ChatSessionItem {
   visitorMeta: string;
   storeLabel: string;
   storeLogoUrl: string | null;
+  supportIssue: string | null;
+  ratingScore: number | null;
+  ratingNote: string | null;
+  ratedAtLabel: string | null;
   sourceLabel: string;
   status: AdminChatSessionStatus;
   statusLabel: string;
