@@ -116,7 +116,7 @@ export function DesktopProductList({ products }: Props) {
           {products.length === 0 ? (
             <EmptyState />
           ) : (
-            <div className="grid grid-cols-4 gap-[1.2vw]">
+            <div className="grid grid-cols-5 gap-[1.1vw]">
               {products.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
             </div>
           )}
