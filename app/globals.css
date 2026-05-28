@@ -752,12 +752,21 @@ body {
   50%  { transform: rotate(180deg) scale(1.15); }
   100% { transform: rotate(360deg) scale(1); }
 }
+@keyframes ps-analyzing-text-change {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 .ps-analyzing-pulse {
   animation: ps-analyzing-pulse 1.4s ease-in-out infinite;
 }
 .ps-analyzing-spin {
   animation: ps-analyzing-spin 1.6s linear infinite;
   transform-origin: center;
+}
+.ps-analyzing-text {
+  display: inline-block;
+  animation: ps-analyzing-text-change 260ms ease-out;
+  white-space: nowrap;
 }
 
 /* Brief shimmer flash on the dropdown when its value gets auto-filled */

@@ -10,6 +10,7 @@ import type { DemoProductView } from "../../../types";
 import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
 import { useSizingAutoSelect } from "../../hooks/useSizingAutoSelect";
+import { useProfileAnalysisDisplay } from "../../hooks/useProfileAnalysisDisplay";
 
 // Lazy-load the SDK component so the heavy bundle (~MBs of try-on + sizing UI)
 // doesn't block first paint of the product page. Static import for
@@ -170,6 +171,12 @@ export function DesktopProductDetail({ product }: Props) {
     apiUrl: sdkApiUrl,
   }), [product.id, product.name, product.primaryImage, product.category, product.subcategory, product.description, product.sizeGuideData, sdkApiUrl]);
   const autoSize = usePrimeStyleSize(autoSizeInput);
+  const hasProfileSizeResult = Boolean(autoSize.recommendedSize || autoSize.sections);
+  const profileAnalysis = useProfileAnalysisDisplay({
+    loading: autoSize.loading,
+    hasResult: hasProfileSizeResult,
+    resetKey: product.id,
+  });
 
   const lastAutoSelectedRef = useRef<string | null>(null);
   useEffect(() => {
@@ -420,12 +427,12 @@ export function DesktopProductDetail({ product }: Props) {
             )}
 
             {/* AI auto-size status */}
-            {autoSize.loading ? (
+            {profileAnalysis.showAnalyzing ? (
               <div className="inline-flex items-center gap-[0.35vw] px-[0.7vw] py-[0.3vw] rounded-full bg-brand-blue/10 text-brand-blue font-semibold ps-analyzing-pulse self-start" style={{ fontSize: '0.7vw' }}>
                 <Sparkles style={{ width: '0.75vw', height: '0.75vw' }} className="ps-analyzing-spin" />
-                Analyzing your profile…
+                <span key={profileAnalysis.message} className="ps-analyzing-text">{profileAnalysis.message}</span>
               </div>
-            ) : (autoSize.recommendedSize || autoSize.sections) ? (
+            ) : profileAnalysis.showComplete ? (
               <div className="inline-flex items-center gap-[0.35vw] px-[0.7vw] py-[0.3vw] rounded-full bg-emerald-50 text-emerald-700 font-semibold self-start" style={{ fontSize: '0.7vw' }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                 Analyzed by your profile

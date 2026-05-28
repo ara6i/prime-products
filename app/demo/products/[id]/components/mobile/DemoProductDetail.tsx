@@ -11,6 +11,7 @@ import type { DemoProductView } from "../../../types";
 import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
 import { useSizingAutoSelect } from "../../hooks/useSizingAutoSelect";
+import { useProfileAnalysisDisplay } from "../../hooks/useProfileAnalysisDisplay";
 
 // Lazy-load the SDK component so the heavy bundle doesn't block first paint.
 // usePrimeStyleSize stays statically imported — hooks can't be dynamic.
@@ -200,6 +201,12 @@ export function MobileProductDetail({ product }: Props) {
     apiUrl: sdkApiUrl,
   }), [product.id, product.name, product.primaryImage, product.category, product.subcategory, product.description, product.sizeGuideData, sdkApiUrl]);
   const autoSize = usePrimeStyleSize(autoSizeInput);
+  const hasProfileSizeResult = Boolean(autoSize.recommendedSize || autoSize.sections);
+  const profileAnalysis = useProfileAnalysisDisplay({
+    loading: autoSize.loading,
+    hasResult: hasProfileSizeResult,
+    resetKey: product.id,
+  });
   // Auto-select sizes when the saved-profile recommendation arrives from
   // the SDK. The backend returns split fields like
   //   sections.Jacket = { recommendedSize: "38", size: "38", length: "Regular" }
@@ -520,12 +527,12 @@ export function MobileProductDetail({ product }: Props) {
               </div>
 
               {/* Status pill — "Analyzing…" while loading, "Analyzed by your profile" once done */}
-              {autoSize.loading ? (
+              {profileAnalysis.showAnalyzing ? (
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-brand-blue/10 text-brand-blue ps-analyzing-pulse">
                   <Sparkles className="h-3 w-3 ps-analyzing-spin" />
-                  Analyzing…
+                  <span key={profileAnalysis.message} className="ps-analyzing-text">{profileAnalysis.message}</span>
                 </div>
-              ) : (autoSize.recommendedSize || autoSize.sections) ? (
+              ) : profileAnalysis.showComplete ? (
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
@@ -612,12 +619,12 @@ export function MobileProductDetail({ product }: Props) {
                 )}
               </div>
               {/* Status pill */}
-              {autoSize.loading ? (
+              {profileAnalysis.showAnalyzing ? (
                 <div className="inline-flex items-center gap-1.5 mb-2.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-brand-blue/10 text-brand-blue ps-analyzing-pulse">
                   <Sparkles className="h-3 w-3 ps-analyzing-spin" />
-                  Analyzing…
+                  <span key={profileAnalysis.message} className="ps-analyzing-text">{profileAnalysis.message}</span>
                 </div>
-              ) : autoSize.recommendedSize ? (
+              ) : profileAnalysis.showComplete ? (
                 <div className="inline-flex items-center gap-1.5 mb-2.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
