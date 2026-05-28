@@ -103,7 +103,8 @@ export function MobileProductDetail({ product }: Props) {
   const isDress = /\b(dress|dresses|gown|gowns|wedding|bridal|bridesmaid)\b/i.test(categoryHaystack);
   const isOneSizeOnly = sizes.length === 1 && /^one\s*size$/i.test(sizes[0]?.name.trim() ?? "");
   const oneSizeLabel = sizes[0]?.name ?? "One Size";
-  const hasSplitSizes = !isAccessoryCategory && !isOneSizeOnly && sizes.some((s) => s.name.includes(" ") || s.name.includes("/"));
+  const isCountryAnnotatedSize = (name: string) => /\b(?:UK|US|EU|IT|FR)\b/i.test(name);
+  const hasSplitSizes = !isAccessoryCategory && !isOneSizeOnly && sizes.some((s) => !isCountryAnnotatedSize(s.name) && (s.name.includes(" ") || s.name.includes("/")));
   const parsedSizes = useMemo(() => sizes.map((s) => {
     const name = s.name.trim();
     const prefixed = name.match(/^(MISSY|PLUS)\s+(\S+)\s*\/\s*(.+)$/i);
@@ -707,9 +708,9 @@ function CompleteLookRow({ products }: { products: DemoProductView["completeLook
         <span className="text-sm text-text-hint uppercase tracking-wider">Complete the look</span>
         <span className="text-[11px] text-text-disabled">{products.length} items</span>
       </div>
-      <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+      <div className="grid grid-cols-4 gap-2 pb-2">
         {products.map((item) => (
-          <Link key={item.id} href={`/demo/products/${item.id}`} className="w-24 flex-shrink-0">
+          <Link key={item.id} href={`/demo/products/${item.id}`} className="min-w-0">
             <div className="aspect-[3/4] overflow-hidden rounded-xl border border-border-light bg-surface-light">
               <img src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" />
             </div>

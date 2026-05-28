@@ -69,7 +69,8 @@ export function DesktopProductDetail({ product }: Props) {
   const isDress = /\b(dress|dresses|gown|gowns|wedding|bridal|bridesmaid)\b/i.test(categoryHaystack);
   const isOneSizeOnly = sizes.length === 1 && /^one\s*size$/i.test(sizes[0]?.name.trim() ?? "");
   const oneSizeLabel = sizes[0]?.name ?? "One Size";
-  const hasSplitSizes = !isAccessoryCategory && !isOneSizeOnly && sizes.some((s) => s.name.includes(" ") || s.name.includes("/"));
+  const isCountryAnnotatedSize = (name: string) => /\b(?:UK|US|EU|IT|FR)\b/i.test(name);
+  const hasSplitSizes = !isAccessoryCategory && !isOneSizeOnly && sizes.some((s) => !isCountryAnnotatedSize(s.name) && (s.name.includes(" ") || s.name.includes("/")));
   // Size label parser handles three real-world chart formats:
   //   1. "MISSY 12 / Standard"   → number="MISSY 12", length="Standard"  (DB Studio wedding dress)
   //   2. "44 R"                  → number="44",       length="R"          (tuxedo jacket)
@@ -591,13 +592,12 @@ function CompleteLookRow({ products }: { products: DemoProductView["completeLook
         <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider">Complete the look</span>
         <span style={{ fontSize: '0.68vw' }} className="text-text-disabled">{products.length} items</span>
       </div>
-      <div className="flex gap-[0.55vw] overflow-x-auto pb-[0.2vw]">
+      <div className="grid grid-cols-4 gap-[0.55vw] pb-[0.2vw]">
         {products.map((item) => (
           <Link
             key={item.id}
             href={`/demo/products/${item.id}`}
-            className="group flex-shrink-0"
-            style={{ width: '5.9vw' }}
+            className="group min-w-0"
           >
             <div className="aspect-[3/4] rounded-[0.45vw] overflow-hidden bg-surface-light border border-border-light group-hover:border-brand-blue/35 transition-colors">
               <img src={item.image} alt={item.name} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />

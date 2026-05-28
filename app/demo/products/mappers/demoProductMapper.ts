@@ -183,6 +183,7 @@ function buildSizes(p: DemoProductApi): DemoSizeOption[] {
     // against a bare "12" option.
     const fitKey = headers.find((h) => h.toLowerCase() === "fit");
     const sizeKey = headers.find((h) => h.toLowerCase() === "size");
+    const alphaKey = headers.find((h) => h.toLowerCase() === "alpha");
     const customKey = headers.find((h) => h.toLowerCase().includes("customization") || h.toLowerCase() === "length");
     const accessoryLike = /accessor|sunglass|glasses|eyewear|hat|jewelry|watch|bracelet|necklace|ring|belt/i.test(
       `${p.category ?? ""} ${p.subcategory ?? ""}`,
@@ -211,6 +212,14 @@ function buildSizes(p: DemoProductApi): DemoSizeOption[] {
       const names = [...new Set(composite)];
       if (names.length > 0) {
         return names.map((name) => ({ name, available: true }));
+      }
+    }
+    if (sizeKey && alphaKey) {
+      const sizeNames = rows.map((r) => r[sizeKey]?.trim()).filter(Boolean);
+      const alphaNames = [...new Set(rows.map((r) => r[alphaKey]?.trim()).filter(Boolean))];
+      const sizeIncludesCountry = sizeNames.some((name) => /\b(?:UK|US|EU|IT|FR)\b/i.test(name));
+      if (sizeIncludesCountry && alphaNames.length > 0) {
+        return alphaNames.map((name) => ({ name, available: true }));
       }
     }
     if (sizeKey) {
