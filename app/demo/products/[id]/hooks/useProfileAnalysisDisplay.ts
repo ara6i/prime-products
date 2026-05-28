@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const MIN_ANALYSIS_MS = 6000;
+const MIN_ANALYSIS_MS = 200;
 
 const ANALYSIS_MESSAGES = [
   "Reading your profile...",
