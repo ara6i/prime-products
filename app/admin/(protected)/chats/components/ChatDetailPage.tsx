@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RotateCcw, XCircle } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
 import { useAdminChatDetail } from "../hooks/useAdminChatDetail";
 import type { AdminChatDetailView } from "../types";
@@ -13,6 +13,7 @@ interface ChatDetailPageProps {
 
 export function ChatDetailPage({ initialChat }: ChatDetailPageProps) {
   const chat = useAdminChatDetail(initialChat);
+  const isClosed = chat.chat.session.status === "closed";
 
   return (
     <section className="space-y-[1.042vw] max-lg:space-y-[4vw]">
@@ -43,6 +44,29 @@ export function ChatDetailPage({ initialChat }: ChatDetailPageProps) {
         <div className="flex flex-wrap items-center gap-[0.521vw] max-lg:gap-[2vw]">
           <ChatStatusBadge tone={chat.chat.session.statusTone}>{chat.chat.session.statusLabel}</ChatStatusBadge>
           {chat.chat.session.hasUnread ? <ChatStatusBadge tone="warning">{`${chat.chat.session.unreadAdminCount} unread`}</ChatStatusBadge> : null}
+          {isClosed ? (
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={chat.isUpdating}
+              onClick={chat.reopenChat}
+              className="h-[2.292vw] rounded-full px-[0.938vw] text-[clamp(13px,0.78vw,15px)] font-semibold max-lg:h-[10vw] max-lg:px-[4vw] max-lg:text-[3.3vw]"
+            >
+              <RotateCcw className="h-[0.833vw] w-[0.833vw] max-lg:h-[3.8vw] max-lg:w-[3.8vw]" />
+              Reopen
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={chat.isUpdating}
+              onClick={chat.closeChat}
+              className="h-[2.292vw] rounded-full px-[0.938vw] text-[clamp(13px,0.78vw,15px)] font-semibold max-lg:h-[10vw] max-lg:px-[4vw] max-lg:text-[3.3vw]"
+            >
+              <XCircle className="h-[0.833vw] w-[0.833vw] max-lg:h-[3.8vw] max-lg:w-[3.8vw]" />
+              Close
+            </Button>
+          )}
         </div>
       </div>
 
@@ -52,11 +76,8 @@ export function ChatDetailPage({ initialChat }: ChatDetailPageProps) {
           replyDraft={chat.replyDraft}
           isLoading={false}
           isSending={chat.isSending}
-          isUpdating={chat.isUpdating}
           onReplyDraftChange={chat.updateReplyDraft}
           onReplySubmit={chat.sendReply}
-          onCloseChat={chat.closeChat}
-          onReopenChat={chat.reopenChat}
         />
 
         <aside className="space-y-[0.833vw] rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-[1.042vw] max-lg:space-y-[3vw] max-lg:rounded-[5vw] max-lg:p-[4vw]">
