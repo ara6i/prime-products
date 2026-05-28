@@ -6,7 +6,7 @@
  * inserted at request time and aren't part of this baseline. Keep this
  * file in sync whenever that builder changes.
  */
-export const DEFAULT_APPAREL_PROMPT = `Put the dress on the model, do not change anything about the garment, pay attention to all detail, look how the reference model wore the dress and put it on my model exactly the same way, don't decide by yourself, generate try-on metrically accurate, match my model's pose to the reference model's pose, add all accessories — shoes, bag, jewelry, belt, hat, eyewear, gloves, hosiery — exactly what the reference model wore alongside the garment — onto the model we want to do the try-on on.
+export const DEFAULT_APPAREL_PROMPT = `Put this garment on the model, do not change anything about the garment, pay attention to all detail, look how the reference model wore the garment and put it on my model exactly the same way, don't decide by yourself, generate try-on metrically accurate, match my model's pose to the reference model's pose, add all accessories — shoes, bag, jewelry, belt, hat, eyewear, gloves, hosiery — exactly what the reference model wore alongside the garment — onto the model we want to do the try-on on.
 
 You are generating a virtual try-on image of a person wearing a garment.
 
