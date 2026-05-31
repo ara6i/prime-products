@@ -59,7 +59,7 @@ export function FeedbacksDesktop({ view }: FeedbacksDesktopProps) {
   return (
     <section className="space-y-[1.25vw]">
       <div>
-        <p className="text-[clamp(12px,0.72vw,14px)] font-semibold uppercase tracking-[0.16em] text-brand-blue">Reports</p>
+        <p className="text-[clamp(12px,0.72vw,14px)] font-semibold uppercase tracking-[0.16em] text-brand-blue">Customers</p>
         <h2 className="mt-[0.45vw] text-[clamp(30px,2vw,40px)] font-semibold leading-tight text-text-primary">Feedbacks</h2>
         <p className="mt-[0.45vw] max-w-[52vw] text-[clamp(15px,0.94vw,18px)] leading-relaxed text-text-body">
           Customer ratings, notes, product details, and anonymous visitor location when available.

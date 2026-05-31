@@ -2,6 +2,9 @@ export type AdminDashboardTheme = "light" | "dark";
 
 export type AdminDashboardIconKey =
   | "dashboard"
+  | "revenue"
+  | "support"
+  | "customers"
   | "tickets"
   | "chats"
   | "merchants"

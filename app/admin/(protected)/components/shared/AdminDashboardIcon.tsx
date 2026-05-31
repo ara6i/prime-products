@@ -2,11 +2,13 @@ import type { ReactNode } from "react";
 import {
   DashboardIcon,
   FileDownloadIcon,
+  HeadsetIcon,
   MonetizationOnIcon,
   NewChatIcon,
   PeopleIcon,
   SettingsIcon,
   TicketIcon,
+  UserIcon,
 } from "@/app/shared/components/icons";
 import type { IconProps } from "@/app/shared/types";
 import type { AdminDashboardIconKey } from "../../types";
@@ -19,6 +21,9 @@ interface AdminDashboardIconProps {
 
 const iconMap = {
   dashboard: DashboardIcon,
+  revenue: MonetizationOnIcon,
+  support: HeadsetIcon,
+  customers: UserIcon,
   tickets: TicketIcon,
   chats: NewChatIcon,
   merchants: PeopleIcon,

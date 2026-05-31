@@ -48,7 +48,7 @@ export const PROBLEM: ProblemContent = {
 
 export const FEATURES: FeaturesContent = {
   eyebrow: "What it does",
-  title: "Four moves. One perfect fit.",
+  title: "Four moves. One confident fit.",
   tabs: [
     {
       id: "photo",
@@ -116,7 +116,7 @@ export const SDK_DEMO: SdkDemoContent = {
       {
         num: "03",
         label: "Your Fit",
-        tag: "Perfect Fit",
+        tag: "Fit Guidance",
         title: "A size aligned to your catalog.",
         body: "The Decision Engine returns a recommendation for every piece — jacket, vest, trousers — matched to the brand's own size chart.",
         image: `${ASSET}/ps-raw-03-fitresult.jpg`,

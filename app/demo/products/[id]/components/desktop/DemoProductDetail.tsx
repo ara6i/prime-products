@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ArrowLeft, Ruler, Sparkles } from "lucide-react";
@@ -11,6 +11,14 @@ import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
 import { useSizingAutoSelect } from "../../hooks/useSizingAutoSelect";
 import { useProfileAnalysisDisplay } from "../../hooks/useProfileAnalysisDisplay";
+import {
+  DemoBagButton,
+  DemoBagDrawer,
+  buildDemoBagItem,
+  mergeDemoBagItem,
+  type DemoAddToBagPayload,
+  type DemoBagItem,
+} from "../DemoBag";
 
 // Lazy-load the SDK component so the heavy bundle (~MBs of try-on + sizing UI)
 // doesn't block first paint of the product page. Static import for
@@ -25,6 +33,10 @@ type DemoPrimeStyleTryonProps = React.ComponentProps<typeof PrimeStyleTryon> & {
   productGender?: string;
   productSubcategory?: string;
   productCarouselItems?: Array<{ image: string; title?: string; href?: string }>;
+  onAddToBag?: (payload: DemoAddToBagPayload) => void | Promise<void>;
+  addToBagLabel?: string;
+  continueShoppingLabel?: string;
+  backToProductPageLabel?: string;
 };
 
 const DemoPrimeStyleTryon = PrimeStyleTryon as React.ComponentType<DemoPrimeStyleTryonProps>;
@@ -45,6 +57,8 @@ export function DesktopProductDetail({ product }: Props) {
   const [jacketLength, setJacketLength] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [bagOpen, setBagOpen] = useState(false);
+  const [bagItems, setBagItems] = useState<DemoBagItem[]>([]);
 
   const activeVariant = product.colorVariants.find((v) => v.name === selectedColor);
   // Only show images for selected color variant
@@ -132,6 +146,35 @@ export function DesktopProductDetail({ product }: Props) {
     hoverTextColor: "#ffffff",
     boxShadow: "0 4px 24px rgba(33,84,239,0.18)",
   }), []);
+  const bagCount = useMemo(
+    () => bagItems.reduce((sum, item) => sum + item.quantity, 0),
+    [bagItems],
+  );
+  const handleAddToBag = useCallback((payload: DemoAddToBagPayload) => {
+    const item = buildDemoBagItem({
+      product,
+      image: images[0] ?? product.primaryImage,
+      color: selectedColor,
+      payload,
+    });
+    setBagItems((current) => mergeDemoBagItem(current, item));
+    setBagOpen(true);
+  }, [images, product, selectedColor]);
+  const incrementBagItem = useCallback((lineId: string) => {
+    setBagItems((current) => current.map((item) => (
+      item.lineId === lineId ? { ...item, quantity: item.quantity + 1 } : item
+    )));
+  }, []);
+  const decrementBagItem = useCallback((lineId: string) => {
+    setBagItems((current) => current.flatMap((item) => {
+      if (item.lineId !== lineId) return [item];
+      const nextQuantity = item.quantity - 1;
+      return nextQuantity > 0 ? [{ ...item, quantity: nextQuantity }] : [];
+    }));
+  }, []);
+  const removeBagItem = useCallback((lineId: string) => {
+    setBagItems((current) => current.filter((item) => item.lineId !== lineId));
+  }, []);
 
   const handleSizeNumberSelect = (num: string) => {
     setJacketSizeNum(num);
@@ -173,10 +216,12 @@ export function DesktopProductDetail({ product }: Props) {
   }), [product.id, product.name, product.primaryImage, product.category, product.subcategory, product.description, product.sizeGuideData, sdkApiUrl]);
   const autoSize = usePrimeStyleSize(autoSizeInput);
   const hasProfileSizeResult = Boolean(autoSize.recommendedSize || autoSize.sections);
+  const hasAuthenticatedProfile = Boolean(autoSize.authenticatedProfile);
   const profileAnalysis = useProfileAnalysisDisplay({
     loading: autoSize.loading,
     hasResult: hasProfileSizeResult,
-    resetKey: product.id,
+    resetKey: `${product.id}:${hasAuthenticatedProfile ? "signed-in" : "anonymous"}`,
+    enabled: hasAuthenticatedProfile,
   });
 
   const lastAutoSelectedRef = useRef<string | null>(null);
@@ -331,7 +376,7 @@ export function DesktopProductDetail({ product }: Props) {
     <div className="min-h-screen bg-white text-text-primary">
 
       {/* Sticky top nav */}
-      <nav id="demo-nav" className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-border-light flex items-center px-[3vw] py-[1.2vw]">
+      <nav id="demo-nav" className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-border-light flex items-center justify-between px-[3vw] py-[1.2vw]">
         <Link
           href="/demo/products"
           className="group flex items-center gap-[0.5vw] text-text-hint hover:text-text-primary transition-colors duration-200"
@@ -340,6 +385,11 @@ export function DesktopProductDetail({ product }: Props) {
           <ArrowLeft style={{ width: '0.9vw', height: '0.9vw' }} />
           Back
         </Link>
+        <DemoBagButton
+          count={bagCount}
+          onClick={() => setBagOpen(true)}
+          className="h-[2.1vw] w-[2.1vw]"
+        />
       </nav>
 
       {/* Three-column layout: [LEFT sticky info] [CENTER scrollable images] [RIGHT sticky purchase] */}
@@ -543,6 +593,7 @@ export function DesktopProductDetail({ product }: Props) {
               sizeGuideData={product.sizeGuideData}
               buttonText="See How It Fits"
               onComplete={handleSizingComplete}
+              onAddToBag={handleAddToBag}
               buttonStyles={sdkButtonStyles}
             />
 
@@ -581,6 +632,15 @@ export function DesktopProductDetail({ product }: Props) {
       {product.sizeGuide && (
         <SizeGuideModal guide={product.sizeGuide} open={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
       )}
+      <DemoBagDrawer
+        open={bagOpen}
+        items={bagItems}
+        onClose={() => setBagOpen(false)}
+        onClear={() => setBagItems([])}
+        onRemove={removeBagItem}
+        onIncrement={incrementBagItem}
+        onDecrement={decrementBagItem}
+      />
     </div>
   );
 }

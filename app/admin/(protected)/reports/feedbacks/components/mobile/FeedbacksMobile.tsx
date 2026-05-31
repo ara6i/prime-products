@@ -51,7 +51,7 @@ export function FeedbacksMobile({ view }: FeedbacksMobileProps) {
   return (
     <section className="space-y-[4.5vw]">
       <div>
-        <p className="text-[3vw] font-semibold uppercase tracking-[0.16em] text-brand-blue">Reports</p>
+        <p className="text-[3vw] font-semibold uppercase tracking-[0.16em] text-brand-blue">Customers</p>
         <h2 className="mt-[1.5vw] text-[8vw] font-semibold leading-tight text-text-primary">Feedbacks</h2>
         <p className="mt-[2vw] text-[3.7vw] leading-relaxed text-text-body">
           Ratings, notes, product details, and visitor context.

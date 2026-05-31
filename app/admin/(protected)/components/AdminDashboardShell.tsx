@@ -12,7 +12,8 @@ interface AdminDashboardShellProps {
 }
 
 function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
-  const reportsActive = activeHref.startsWith("/admin/reports");
+  const customersActive = activeHref.startsWith("/admin/customers") || activeHref.startsWith("/admin/reports/feedbacks");
+  const supportActive = activeHref.startsWith("/admin/chats") || activeHref.startsWith("/admin/tickets");
 
   return [
     {
@@ -23,55 +24,57 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
       disabled: false,
     },
     {
-      label: "Tickets",
-      href: "/admin/tickets",
-      icon: "tickets",
-      active: activeHref === "/admin/tickets",
-      disabled: false,
-    },
-    {
-      label: "Live chat",
-      href: "/admin/chats",
-      icon: "chats",
-      active: activeHref === "/admin/chats",
-      disabled: false,
-    },
-    {
-      label: "Merchants",
-      href: "/admin/merchants",
-      icon: "merchants",
-      active: false,
-      disabled: true,
-    },
-    {
-      label: "Analytics",
-      href: "/admin/analytics",
-      icon: "analytics",
-      active: false,
-      disabled: true,
-    },
-    {
-      label: "Reports",
-      href: "/admin/reports/feedbacks",
-      icon: "reports",
-      active: reportsActive,
+      label: "Customers",
+      href: "/admin/customers/sdk",
+      icon: "customers",
+      active: customersActive,
       disabled: false,
       children: [
         {
+          label: "SDK Customers",
+          href: "/admin/customers/sdk",
+          icon: "customers",
+          active: activeHref.startsWith("/admin/customers/sdk"),
+          disabled: false,
+        },
+        {
+          label: "Shopify Customers",
+          href: "/admin/customers/shopify",
+          icon: "customers",
+          active: activeHref.startsWith("/admin/customers/shopify"),
+          disabled: false,
+        },
+        {
           label: "Feedbacks",
-          href: "/admin/reports/feedbacks",
-          icon: "reports",
-          active: activeHref === "/admin/reports/feedbacks",
+          href: "/admin/customers/feedbacks",
+          icon: "customers",
+          active: activeHref === "/admin/customers/feedbacks" || activeHref === "/admin/reports/feedbacks",
           disabled: false,
         },
       ],
     },
     {
-      label: "Settings",
-      href: "/admin/settings",
-      icon: "settings",
-      active: false,
-      disabled: true,
+      label: "Support",
+      href: "/admin/chats",
+      icon: "support",
+      active: supportActive,
+      disabled: false,
+      children: [
+        {
+          label: "Live chat",
+          href: "/admin/chats",
+          icon: "chats",
+          active: activeHref.startsWith("/admin/chats"),
+          disabled: false,
+        },
+        {
+          label: "Tickets",
+          href: "/admin/tickets",
+          icon: "tickets",
+          active: activeHref.startsWith("/admin/tickets"),
+          disabled: false,
+        },
+      ],
     },
   ];
 }

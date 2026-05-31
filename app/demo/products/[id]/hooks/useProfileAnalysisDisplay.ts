@@ -1,27 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 
 const MIN_ANALYSIS_MS = 200;
-
-const ANALYSIS_MESSAGES = [
-  "Reading your profile...",
-  "Matching your measurements...",
-  "Checking the size guide...",
-  "Comparing fit sections...",
-  "Applying your best size...",
-  "Finalizing recommendation...",
-];
+const ANALYSIS_MESSAGE = "Analyzing";
 
 interface ProfileAnalysisDisplayInput {
   loading: boolean;
   hasResult: boolean;
   resetKey: string;
+  enabled?: boolean;
 }
 
-export function useProfileAnalysisDisplay({ loading, hasResult, resetKey }: ProfileAnalysisDisplayInput) {
+export function useProfileAnalysisDisplay({ loading, hasResult, resetKey, enabled = true }: ProfileAnalysisDisplayInput) {
+  const activeLoading = enabled && loading;
+  const activeHasResult = enabled && hasResult;
   const [startedAt, setStartedAt] = useState(() => Date.now());
   const [elapsedMs, setElapsedMs] = useState(0);
-  const prevLoadingRef = useRef(loading);
-  const prevResultRef = useRef(hasResult);
+  const prevLoadingRef = useRef(activeLoading);
+  const prevResultRef = useRef(activeHasResult);
 
   const restart = () => {
     setStartedAt(Date.now());
@@ -36,29 +31,28 @@ export function useProfileAnalysisDisplay({ loading, hasResult, resetKey }: Prof
     const wasLoading = prevLoadingRef.current;
     const hadResult = prevResultRef.current;
 
-    if ((loading && !wasLoading) || (hasResult && !hadResult && !wasLoading)) {
+    if ((activeLoading && !wasLoading) || (activeHasResult && !hadResult && !wasLoading)) {
       restart();
     }
 
-    prevLoadingRef.current = loading;
-    prevResultRef.current = hasResult;
-  }, [loading, hasResult]);
+    prevLoadingRef.current = activeLoading;
+    prevResultRef.current = activeHasResult;
+  }, [activeLoading, activeHasResult]);
 
   useEffect(() => {
-    if (!loading && !hasResult) return;
+    if (!activeLoading && !activeHasResult) return;
 
     const updateElapsed = () => setElapsedMs(Date.now() - startedAt);
     updateElapsed();
     const id = window.setInterval(updateElapsed, 250);
     return () => window.clearInterval(id);
-  }, [loading, hasResult, startedAt]);
+  }, [activeLoading, activeHasResult, startedAt]);
 
-  const showAnalyzing = (loading || hasResult) && (loading || elapsedMs < MIN_ANALYSIS_MS);
-  const messageIndex = Math.min(Math.floor(elapsedMs / 1000), ANALYSIS_MESSAGES.length - 1);
+  const showAnalyzing = (activeLoading || activeHasResult) && (activeLoading || elapsedMs < MIN_ANALYSIS_MS);
 
   return {
     showAnalyzing,
-    showComplete: hasResult && !showAnalyzing,
-    message: ANALYSIS_MESSAGES[messageIndex],
+    showComplete: activeHasResult && !showAnalyzing,
+    message: ANALYSIS_MESSAGE,
   };
 }

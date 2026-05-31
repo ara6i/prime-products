@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
@@ -12,6 +12,14 @@ import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
 import { useSizingAutoSelect } from "../../hooks/useSizingAutoSelect";
 import { useProfileAnalysisDisplay } from "../../hooks/useProfileAnalysisDisplay";
+import {
+  DemoBagButton,
+  DemoBagDrawer,
+  buildDemoBagItem,
+  mergeDemoBagItem,
+  type DemoAddToBagPayload,
+  type DemoBagItem,
+} from "../DemoBag";
 
 // Lazy-load the SDK component so the heavy bundle doesn't block first paint.
 // usePrimeStyleSize stays statically imported — hooks can't be dynamic.
@@ -25,6 +33,10 @@ type DemoPrimeStyleTryonProps = React.ComponentProps<typeof PrimeStyleTryon> & {
   productGender?: string;
   productSubcategory?: string;
   productCarouselItems?: Array<{ image: string; title?: string; href?: string }>;
+  onAddToBag?: (payload: DemoAddToBagPayload) => void | Promise<void>;
+  addToBagLabel?: string;
+  continueShoppingLabel?: string;
+  backToProductPageLabel?: string;
 };
 
 const DemoPrimeStyleTryon = PrimeStyleTryon as React.ComponentType<DemoPrimeStyleTryonProps>;
@@ -74,6 +86,8 @@ export function MobileProductDetail({ product }: Props) {
   const [descExpanded, setDescExpanded] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [sdkLocale, setSdkLocale] = useState("en");
+  const [bagOpen, setBagOpen] = useState(false);
+  const [bagItems, setBagItems] = useState<DemoBagItem[]>([]);
 
   const activeVariant = product.colorVariants.find((v) => v.name === selectedColor);
   const images = useMemo(
@@ -161,6 +175,35 @@ export function MobileProductDetail({ product }: Props) {
     hoverTextColor: "#ffffff",
     boxShadow: "none",
   }), []);
+  const bagCount = useMemo(
+    () => bagItems.reduce((sum, item) => sum + item.quantity, 0),
+    [bagItems],
+  );
+  const handleAddToBag = useCallback((payload: DemoAddToBagPayload) => {
+    const item = buildDemoBagItem({
+      product,
+      image: images[0] ?? product.primaryImage,
+      color: selectedColor,
+      payload,
+    });
+    setBagItems((current) => mergeDemoBagItem(current, item));
+    setBagOpen(true);
+  }, [images, product, selectedColor]);
+  const incrementBagItem = useCallback((lineId: string) => {
+    setBagItems((current) => current.map((item) => (
+      item.lineId === lineId ? { ...item, quantity: item.quantity + 1 } : item
+    )));
+  }, []);
+  const decrementBagItem = useCallback((lineId: string) => {
+    setBagItems((current) => current.flatMap((item) => {
+      if (item.lineId !== lineId) return [item];
+      const nextQuantity = item.quantity - 1;
+      return nextQuantity > 0 ? [{ ...item, quantity: nextQuantity }] : [];
+    }));
+  }, []);
+  const removeBagItem = useCallback((lineId: string) => {
+    setBagItems((current) => current.filter((item) => item.lineId !== lineId));
+  }, []);
 
   const handleSizeNumberSelect = (num: string) => {
     setJacketSizeNum(num);
@@ -203,10 +246,12 @@ export function MobileProductDetail({ product }: Props) {
   }), [product.id, product.name, product.primaryImage, product.category, product.subcategory, product.description, product.sizeGuideData, sdkApiUrl]);
   const autoSize = usePrimeStyleSize(autoSizeInput);
   const hasProfileSizeResult = Boolean(autoSize.recommendedSize || autoSize.sections);
+  const hasAuthenticatedProfile = Boolean(autoSize.authenticatedProfile);
   const profileAnalysis = useProfileAnalysisDisplay({
     loading: autoSize.loading,
     hasResult: hasProfileSizeResult,
-    resetKey: product.id,
+    resetKey: `${product.id}:${hasAuthenticatedProfile ? "signed-in" : "anonymous"}`,
+    enabled: hasAuthenticatedProfile,
   });
   // Auto-select sizes when the saved-profile recommendation arrives from
   // the SDK. The backend returns split fields like
@@ -419,7 +464,11 @@ export function MobileProductDetail({ product }: Props) {
             <p className="text-[10px] text-brand-blue font-semibold tracking-[0.15em] uppercase leading-none mb-0.5">{product.brand}</p>
             <p className="text-sm font-semibold text-text-primary truncate leading-tight">{product.name}</p>
           </div>
-          <div className="w-9 flex-shrink-0" />
+          <DemoBagButton
+            count={bagCount}
+            onClick={() => setBagOpen(true)}
+            className="h-9 w-9 flex-shrink-0"
+          />
         </div>
       </header>
 
@@ -664,6 +713,7 @@ export function MobileProductDetail({ product }: Props) {
             sizeGuideData={product.sizeGuideData}
             buttonText="See How It Fits"
             onComplete={handleSizingComplete}
+            onAddToBag={handleAddToBag}
             buttonStyles={sdkButtonStyles}
           />
 
@@ -697,6 +747,16 @@ export function MobileProductDetail({ product }: Props) {
       {product.sizeGuide && (
         <SizeGuideModal guide={product.sizeGuide} open={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
       )}
+      <DemoBagDrawer
+        open={bagOpen}
+        mode="mobile"
+        items={bagItems}
+        onClose={() => setBagOpen(false)}
+        onClear={() => setBagItems([])}
+        onRemove={removeBagItem}
+        onIncrement={incrementBagItem}
+        onDecrement={decrementBagItem}
+      />
     </div>
   );
 }
