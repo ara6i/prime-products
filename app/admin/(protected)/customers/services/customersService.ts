@@ -4,6 +4,9 @@ import type {
   AdminCustomerListQuery,
   AdminCustomerSource,
   AdminCustomersResponse,
+  ShopifyBehaviorAnalyticsRaw,
+  ShopifyControlCenterRaw,
+  ShopifyRevenueAnalyticsRaw,
 } from "../types";
 
 function createCustomerSearchParams(query: AdminCustomerListQuery): string {
@@ -28,5 +31,29 @@ export async function fetchAdminCustomer(
 ): Promise<AdminCustomerDetailRaw> {
   return adminFetch<AdminCustomerDetailRaw>(
     `/api/admin/stores/${encodeURIComponent(source)}/${encodeURIComponent(id)}`,
+  );
+}
+
+export async function fetchAdminShopifyControlCenter(id: string): Promise<ShopifyControlCenterRaw> {
+  return adminFetch<ShopifyControlCenterRaw>(
+    `/api/admin/stores/shopify/${encodeURIComponent(id)}/control-center`,
+  );
+}
+
+export async function fetchAdminShopifyBehavior(
+  id: string,
+  range = "30d",
+): Promise<ShopifyBehaviorAnalyticsRaw> {
+  return adminFetch<ShopifyBehaviorAnalyticsRaw>(
+    `/api/admin/stores/shopify/${encodeURIComponent(id)}/behavior?range=${encodeURIComponent(range)}`,
+  );
+}
+
+export async function fetchAdminShopifyRevenue(
+  id: string,
+  range = "30d",
+): Promise<ShopifyRevenueAnalyticsRaw> {
+  return adminFetch<ShopifyRevenueAnalyticsRaw>(
+    `/api/admin/stores/shopify/${encodeURIComponent(id)}/revenue?range=${encodeURIComponent(range)}`,
   );
 }

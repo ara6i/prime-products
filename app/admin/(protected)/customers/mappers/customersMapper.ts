@@ -108,6 +108,13 @@ function mapStats(response: AdminCustomersResponse, source: AdminCustomerSource)
 }
 
 export function mapCustomerStore(store: AdminCustomerStoreRaw): CustomerListItem {
+  const billing = store as AdminCustomerStoreRaw & {
+    billingTotalMonthlyPrice?: number | null;
+    billingSelectedProductCount?: number | null;
+    billingCurrentPeriodEnd?: string | null;
+  };
+  const currency = "USD";
+
   return {
     id: store.id,
     source: store.source,
@@ -118,6 +125,18 @@ export function mapCustomerStore(store: AdminCustomerStoreRaw): CustomerListItem
     statusLabel: titleCase(store.status),
     statusTone: statusTone(store.status),
     planLabel: store.plan ? titleCase(store.plan) : "Not tracked",
+    monthlySpendLabel:
+      store.source === "shopify"
+        ? formatCurrency(billing.billingTotalMonthlyPrice, currency)
+        : "Not tracked",
+    productCountLabel:
+      store.source === "shopify"
+        ? formatNumber(billing.billingSelectedProductCount)
+        : "Not tracked",
+    dueDateLabel:
+      store.source === "shopify"
+        ? formatDate(billing.billingCurrentPeriodEnd)
+        : "Not tracked",
     tryOnsLabel:
       store.source === "shopify"
         ? `${formatNumber(store.tryOnsUsed)} used / ${formatNumber(store.tryOnsRemaining)} left`

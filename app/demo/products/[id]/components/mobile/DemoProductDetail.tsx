@@ -187,7 +187,6 @@ export function MobileProductDetail({ product }: Props) {
       payload,
     });
     setBagItems((current) => mergeDemoBagItem(current, item));
-    setBagOpen(true);
   }, [images, product, selectedColor]);
   const incrementBagItem = useCallback((lineId: string) => {
     setBagItems((current) => current.map((item) => (
@@ -247,11 +246,12 @@ export function MobileProductDetail({ product }: Props) {
   const autoSize = usePrimeStyleSize(autoSizeInput);
   const hasProfileSizeResult = Boolean(autoSize.recommendedSize || autoSize.sections);
   const hasAuthenticatedProfile = Boolean(autoSize.authenticatedProfile);
+  const canShowProfileAnalysis = hasAuthenticatedProfile && !autoSize.noProfile;
   const profileAnalysis = useProfileAnalysisDisplay({
     loading: autoSize.loading,
     hasResult: hasProfileSizeResult,
-    resetKey: `${product.id}:${hasAuthenticatedProfile ? "signed-in" : "anonymous"}`,
-    enabled: hasAuthenticatedProfile,
+    resetKey: `${product.id}:${canShowProfileAnalysis ? "profile" : "none"}`,
+    enabled: canShowProfileAnalysis,
   });
   // Auto-select sizes when the saved-profile recommendation arrives from
   // the SDK. The backend returns split fields like

@@ -2,7 +2,7 @@
 
 import { Eye } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
-import type { CustomerListItem } from "../../types";
+import type { AdminCustomerSource, CustomerListItem } from "../../types";
 import { CustomerStatusBadge } from "./CustomerStatusBadge";
 
 interface CustomerListProps {
@@ -10,6 +10,7 @@ interface CustomerListProps {
   totalItems: number;
   isLoading: boolean;
   onSelect: (id: string) => void;
+  source: AdminCustomerSource;
   mobile?: boolean;
 }
 
@@ -18,8 +19,11 @@ export function CustomerList({
   totalItems,
   isLoading,
   onSelect,
+  source,
   mobile = false,
 }: CustomerListProps) {
+  const isShopify = source === "shopify";
+
   if (mobile) {
     if (items.length === 0) {
       return (
@@ -44,9 +48,10 @@ export function CustomerList({
 
             <div className="mt-[3vw] grid gap-[2vw] text-[3.2vw]">
               <p className="truncate text-text-body">Owner: {item.ownerLabel}</p>
-              <p className="truncate text-text-body">Plan: {item.planLabel}</p>
+              <p className="truncate text-text-body">Plan: {item.planLabel}{isShopify ? ` · ${item.monthlySpendLabel}` : ""}</p>
+              {isShopify ? <p className="truncate text-text-body">Products: {item.productCountLabel}</p> : null}
               <p className="truncate text-text-body">Try-ons: {item.tryOnsLabel}</p>
-              <p className="truncate text-customer-muted">Installed: {item.installedLabel}</p>
+              <p className="truncate text-customer-muted">{isShopify ? "Due" : "Installed"}: {isShopify ? item.dueDateLabel : item.installedLabel}</p>
             </div>
 
             <div className="mt-[3vw] flex justify-end">
@@ -70,7 +75,7 @@ export function CustomerList({
     <section className="overflow-hidden rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card">
       <div className="flex items-center justify-between border-b border-customer-border px-[1.042vw] py-[0.729vw]">
         <div>
-          <p className="text-[clamp(15px,0.94vw,18px)] font-semibold text-text-primary">Customer table</p>
+          <p className="text-[clamp(15px,0.94vw,18px)] font-semibold text-text-primary">{isShopify ? "Shopify customer table" : "Customer table"}</p>
           <p className="mt-[0.2vw] text-[clamp(12px,0.72vw,14px)] text-customer-muted">{totalItems.toLocaleString("en-US")} matching customers</p>
         </div>
         <span className="rounded-full bg-customer-blue px-[0.625vw] py-[0.208vw] text-[clamp(11px,0.68vw,13px)] font-semibold text-brand-blue">
@@ -85,10 +90,10 @@ export function CustomerList({
               <tr className="border-b border-customer-border text-left text-[clamp(11px,0.68vw,13px)] font-semibold uppercase tracking-[0.08em] text-customer-muted">
                 <th className="w-[5.8vw] px-[0.833vw] py-[0.521vw]">Status</th>
                 <th className="w-[13vw] px-[0.833vw] py-[0.521vw]">Store</th>
-                <th className="w-[14vw] px-[0.833vw] py-[0.521vw]">Customer</th>
-                <th className="w-[16vw] px-[0.833vw] py-[0.521vw]">Identifier</th>
-                <th className="px-[0.833vw] py-[0.521vw]">Plan / Usage</th>
-                <th className="w-[13vw] px-[0.833vw] py-[0.521vw]">Dates</th>
+                <th className="w-[14vw] px-[0.833vw] py-[0.521vw]">Owner</th>
+                <th className="w-[15vw] px-[0.833vw] py-[0.521vw]">{isShopify ? "Plan / Spend" : "Identifier"}</th>
+                <th className="px-[0.833vw] py-[0.521vw]">{isShopify ? "Products / Try-ons" : "Plan / Usage"}</th>
+                <th className="w-[13vw] px-[0.833vw] py-[0.521vw]">{isShopify ? "Due / Activity" : "Dates"}</th>
                 <th className="w-[5.8vw] px-[0.833vw] py-[0.521vw]">Action</th>
               </tr>
             </thead>
@@ -106,14 +111,15 @@ export function CustomerList({
                     <p className="truncate text-[clamp(12px,0.72vw,14px)] text-text-body">{item.ownerLabel}</p>
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
-                    <p className="truncate text-[clamp(12px,0.72vw,14px)] text-text-body">{item.identifierLabel}</p>
+                    <p className="truncate text-[clamp(12px,0.72vw,14px)] font-medium text-text-primary">{isShopify ? item.planLabel : item.identifierLabel}</p>
+                    {isShopify ? <p className="mt-[0.156vw] truncate text-[clamp(11px,0.68vw,13px)] text-customer-muted">{item.monthlySpendLabel}</p> : null}
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
-                    <p className="truncate text-[clamp(12px,0.72vw,14px)] font-medium text-text-primary">{item.planLabel}</p>
+                    <p className="truncate text-[clamp(12px,0.72vw,14px)] font-medium text-text-primary">{isShopify ? item.productCountLabel : item.planLabel}</p>
                     <p className="mt-[0.156vw] truncate text-[clamp(11px,0.68vw,13px)] text-customer-muted">{item.tryOnsLabel}</p>
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
-                    <p className="truncate text-[clamp(12px,0.72vw,14px)] text-text-body">{item.installedLabel}</p>
+                    <p className="truncate text-[clamp(12px,0.72vw,14px)] text-text-body">{isShopify ? item.dueDateLabel : item.installedLabel}</p>
                     <p className="mt-[0.156vw] truncate text-[clamp(11px,0.68vw,13px)] text-customer-muted">Last: {item.lastUsedLabel}</p>
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">

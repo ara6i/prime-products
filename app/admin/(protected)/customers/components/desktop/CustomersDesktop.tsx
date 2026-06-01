@@ -51,6 +51,7 @@ export function CustomersDesktop({ customers }: CustomersDesktopProps) {
         totalItems={customers.view.pagination.totalItems}
         isLoading={customers.isLoading}
         onSelect={customers.selectCustomer}
+        source={customers.view.source}
       />
 
       <div className="flex items-center justify-between rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card px-[1.042vw] py-[0.729vw]">

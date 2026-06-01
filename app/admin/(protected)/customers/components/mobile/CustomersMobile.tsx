@@ -43,6 +43,7 @@ export function CustomersMobile({ customers }: CustomersMobileProps) {
         totalItems={customers.view.pagination.totalItems}
         isLoading={customers.isLoading}
         onSelect={customers.selectCustomer}
+        source={customers.view.source}
         mobile
       />
 
