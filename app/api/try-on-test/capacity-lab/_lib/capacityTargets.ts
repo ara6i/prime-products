@@ -87,7 +87,7 @@ const SCENARIOS: Record<CapacityScenarioId, ServerCapacityScenario> = {
     paths: {
       local: "/api/health",
       test: "/health",
-      capacity: "/health",
+      capacity: "/api/health",
       live: "/health",
     },
   },
