@@ -8,7 +8,7 @@ import { Button } from "@/app/shared/components/ui";
 
 const DEVELOPER_DROPDOWN = [
   { title: "SDK in Action", icon: Play, href: "/demo/products", desc: "Try it on real products" },
-  { title: "Documentation", icon: BookOpen, href: "/docs", desc: "Guides & API reference" },
+  { title: "Documentation", icon: BookOpen, href: "/customer/dashboard", desc: "SDK dashboard" },
   { title: "Dashboard", icon: LayoutDashboard, href: "https://preview.myaifitting.com/developer/dashboard/keys", desc: "Keys, billing & usage" },
 ];
 

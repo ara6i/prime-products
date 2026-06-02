@@ -19,7 +19,7 @@ const ASSET = "/images/landing/ps";
 // call the pilot-modal opener (see IntegrationsSection's isPilotCta wiring
 // for the canonical pattern).
 export const GET_API_KEY_HREF = "#pilot";
-export const DOCS_HREF = "/docs";
+export const DOCS_HREF = "/customer/dashboard";
 export const DEMO_HREF = "/demo/products";
 
 export const HERO: HeroContent = {

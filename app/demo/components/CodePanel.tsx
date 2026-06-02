@@ -139,7 +139,7 @@ export function CodePanel({ productImage }: CodePanelProps) {
 
         <div className="pt-2">
           <a
-            href="/docs"
+            href="/customer/dashboard"
             className="inline-flex items-center gap-1.5 lg:gap-[0.2vw] text-xs lg:text-[0.7vw] text-brand-blue hover:underline font-medium"
           >
             Full Documentation

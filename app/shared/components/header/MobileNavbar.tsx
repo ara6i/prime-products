@@ -24,8 +24,8 @@ const DEVELOPER_ITEMS = [
   {
     title: "Documentation",
     icon: BookOpen,
-    href: "/docs",
-    desc: "Guides & API reference",
+    href: "/customer/dashboard",
+    desc: "SDK dashboard",
   },
   {
     title: "Dashboard",

@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function DocsPage() {
-  redirect("/demo");
+  redirect("/customer/dashboard");
 }
