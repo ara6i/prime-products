@@ -114,6 +114,15 @@ function readLocalMetrics(): RawHostMetrics {
 
 async function readDropletMetrics(pm2Name: string | null): Promise<RawHostMetrics> {
   const script = buildRemoteMetricsScript(pm2Name);
+  if (DROPLET_HOST === "local") {
+    const { stdout } = await execFileAsync(
+      "node",
+      ["-e", script],
+      { timeout: 7000, maxBuffer: 1024 * 1024 },
+    );
+    return JSON.parse(stdout.trim()) as RawHostMetrics;
+  }
+
   const { stdout } = await execFileAsync(
     "ssh",
     ["-o", "BatchMode=yes", "-o", "ConnectTimeout=4", DROPLET_HOST, `node -e ${JSON.stringify(script)}`],
