@@ -3,6 +3,7 @@ const DEFAULT_TEST_LAB_HOSTS = [
   "127.0.0.1",
   "::1",
   "test-fe-9a7k.primestyleai.com",
+  "capacity-fe-9a7k.primestyleai.com",
 ];
 
 export function normalizeHost(hostHeader: string | null | undefined): string {
