@@ -22,7 +22,7 @@ const DEFAULT_MODEL_ESTIMATE = getCapacityTryOnModelEstimate(DEFAULT_CAPACITY_TR
 
 export function mapRunConfig(raw: Partial<CapacityRunConfig>): CapacityRunConfig {
   return {
-    targetId: raw.targetId ?? "test",
+    targetId: raw.targetId ?? "capacity",
     scenarioId: raw.scenarioId ?? "health",
     totalRequests: Number(raw.totalRequests) || 500,
     virtualUsers: Number(raw.virtualUsers) || 25,
@@ -40,7 +40,7 @@ export function mapRunSnapshot(raw: Partial<CapacityRunSnapshot>): CapacityRunSn
     config: mapRunConfig(raw.config ?? {}),
     targetLabel: String(raw.targetLabel ?? "Backend"),
     endpoint: String(raw.endpoint ?? ""),
-    routeSafety: raw.routeSafety === "mirror-only" ? "mirror-only" : "health",
+    routeSafety: raw.routeSafety === "capacity-clone" ? "capacity-clone" : "health",
     targetBaseUrl: String(raw.targetBaseUrl ?? ""),
     apiPrefix: typeof raw.apiPrefix === "string" ? raw.apiPrefix : null,
     startedAt: String(raw.startedAt ?? new Date().toISOString()),
@@ -80,7 +80,7 @@ export function mapRunSnapshot(raw: Partial<CapacityRunSnapshot>): CapacityRunSn
 
 export function mapMetricsSnapshot(raw: Partial<CapacityMetricsSnapshot>): CapacityMetricsSnapshot {
   return {
-    targetId: raw.targetId ?? "test",
+    targetId: raw.targetId ?? "capacity",
     hostLabel: String(raw.hostLabel ?? "Backend host"),
     collectedAt: String(raw.collectedAt ?? new Date().toISOString()),
     cpuPercent: typeof raw.cpuPercent === "number" ? raw.cpuPercent : null,

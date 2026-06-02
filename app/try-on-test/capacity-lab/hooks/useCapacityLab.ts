@@ -155,7 +155,7 @@ function normalizeConfigChange<Key extends keyof CapacityRunConfig>(
   const next = { ...current, [key]: value } as CapacityRunConfig;
   const scenario = getScenarioById(CAPACITY_SCENARIOS, next.scenarioId);
   if (!scenario.isGeminiSafe) {
-    next.targetId = "test";
+    next.targetId = "capacity";
     next.confirmLive = false;
   }
   const scenarioChanged = key === "scenarioId";

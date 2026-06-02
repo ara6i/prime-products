@@ -152,7 +152,7 @@ async function fetchHealthJson(url: string): Promise<RawBackendHealth> {
 }
 
 async function readTestLabMetrics(targetId: CapacityTargetId): Promise<CapacityTestLabMetrics | null> {
-  if (targetId === "live") return null;
+  if (targetId !== "test") return null;
   const key = getOptionalCapacityApiKey(targetId);
   if (!key) return null;
 

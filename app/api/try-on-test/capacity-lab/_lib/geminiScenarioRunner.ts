@@ -4,8 +4,9 @@ import sharp from "sharp";
 import type { CapacityScenarioId, CapacityTargetId } from "@/app/try-on-test/capacity-lab/types";
 import type { TryOnModelId } from "@/app/try-on-test/lib/models";
 import {
-  TEST_LAB_SDK_MIRROR_PREFIX,
-  TEST_LAB_SHOPIFY_MIRROR_PREFIX,
+  SDK_REAL_ROUTE_PREFIX,
+  SHOPIFY_LEGACY_ROUTE_PREFIX,
+  SHOPIFY_V2_ROUTE_PREFIX,
   getServerTarget,
 } from "./capacityTargets";
 
@@ -64,6 +65,7 @@ const SAMPLE_PERSON_PATH = "shopify/FAT-GUY-NO-HAT-NO-GLASSES (1).png";
 const SAMPLE_GARMENT_PATH = "shopify/1-TMW_3BY1_10_TOMMY_HILFIGER_2_PIECE_TUXEDO_FORMAL_BLACK_ALT6 (1).jpg";
 const STATUS_POLL_INTERVAL_MS = 2_000;
 const SDK_FALLBACK_POLL_INTERVAL_MS = 3_000;
+const SHOPIFY_FALLBACK_POLL_INTERVAL_MS = 3_000;
 
 let cachedSdkPersonDataUri: string | null = null;
 let cachedAgeCheckPersonDataUri: string | null = null;
@@ -76,19 +78,11 @@ export async function executeGeminiScenario(
   signal: AbortSignal,
   onProgress?: ProgressReporter,
 ): Promise<ScenarioResult> {
-  if (scenarioId === "sdk-mirror-sse-real") return executeFullSdkJourneySseScenario(targetId, tryOnModel, signal, onProgress, {
-    apiPrefix: TEST_LAB_SDK_MIRROR_PREFIX,
-    message: "SDK exact mirror journey completed.",
+  if (scenarioId === "sdk-real-route-clone") return executeFullSdkJourneySseScenario(targetId, tryOnModel, signal, onProgress, {
+    apiPrefix: SDK_REAL_ROUTE_PREFIX,
+    message: "SDK real route clone journey completed.",
   });
-  if (scenarioId === "sdk-journey-job-stream-real") return executeFullSdkJourneyJobStreamScenario(targetId, tryOnModel, signal, onProgress);
-  if (scenarioId === "shopify-mirror-sse-real") return executeFullSdkJourneySseScenario(targetId, tryOnModel, signal, onProgress, {
-    apiPrefix: TEST_LAB_SHOPIFY_MIRROR_PREFIX,
-    message: "Shopify exact mirror journey completed.",
-  });
-  if (scenarioId === "shopify-mirror-job-stream-real") return executeFullSdkJourneyJobStreamScenario(targetId, tryOnModel, signal, onProgress, {
-    apiPrefix: TEST_LAB_SHOPIFY_MIRROR_PREFIX,
-    message: "Shopify worker experiment journey completed.",
-  });
+  if (scenarioId === "shopify-real-route-clone") return executeFullShopifyRealRouteScenario(targetId, tryOnModel, signal, onProgress);
   throw new Error(`Unsafe or unsupported capacity stress scenario: ${scenarioId}`);
 }
 
@@ -122,6 +116,212 @@ async function executeFullSdkJourneySseScenario(
   }));
 }
 
+async function executeFullShopifyRealRouteScenario(
+  targetId: CapacityTargetId,
+  tryOnModel: TryOnModelId,
+  signal: AbortSignal,
+  onProgress?: ProgressReporter,
+): Promise<ScenarioResult> {
+  const baseUrl = getBaseUrl(targetId);
+  const headers = getShopifyJsonHeaders(targetId);
+  const stages: StageSummary[] = [];
+  const sessionId = createSdkSessionId();
+  const shopDomain = getShopifyShopDomain(targetId);
+
+  const sizing = await runShopifySizingResultFlow({ baseUrl, headers, sessionId, shopDomain, stages, signal, onProgress });
+  if (!sizing.ok) return sizing.result;
+
+  const tryOn = await runShopifyTryOnFlow({ baseUrl, headers, stages, signal, context: sizing.context, shopDomain, onProgress });
+  if (!tryOn.ok) return buildFlowResult(false, tryOn.status, stages, tryOn.body);
+
+  return buildFlowResult(true, 200, stages, JSON.stringify({
+    message: "Shopify real route clone journey completed.",
+    recommendedSize: sizing.context.recommendedSize,
+    tryOnModel,
+    jobId: tryOn.jobId,
+    imageUrl: tryOn.imageUrl,
+    imageDelivery: tryOn.delivery,
+    shopDomain,
+    note: "Current real Shopify try-on route does not accept fitInfo or model override; sizing is still run first for exact storefront journey coverage.",
+  }));
+}
+
+async function runShopifySizingResultFlow(input: {
+  baseUrl: string;
+  headers: Record<string, string>;
+  sessionId: string;
+  shopDomain: string;
+  stages: StageSummary[];
+  signal: AbortSignal;
+  onProgress?: ProgressReporter;
+}): Promise<{ ok: true; context: SdkSizingContext } | { ok: false; result: ScenarioResult }> {
+  const bodyImage = await getSdkPersonDataUri();
+  const ageCheckImage = await getAgeCheckPersonDataUri();
+
+  const ageCheck = await postStage({
+    name: "shopify.photo.age-check",
+    url: `${input.baseUrl}${SHOPIFY_V2_ROUTE_PREFIX}/sizing/age-check`,
+    headers: input.headers,
+    body: { bodyImage: ageCheckImage },
+    stages: input.stages,
+    signal: input.signal,
+    onProgress: input.onProgress,
+  });
+  if (!ageCheck.ok) return { ok: false, result: buildFlowResult(false, ageCheck.status, input.stages, ageCheck.body) };
+
+  const recommend = await postStage({
+    name: "shopify.sizing.recommend.photo",
+    url: `${input.baseUrl}${SHOPIFY_V2_ROUTE_PREFIX}/sizing/recommend`,
+    headers: input.headers,
+    body: {
+      ...buildSdkPhotoRecommendPayload(input.sessionId, bodyImage),
+      shopDomain: input.shopDomain,
+    },
+    stages: input.stages,
+    signal: input.signal,
+    onProgress: input.onProgress,
+  });
+  if (!recommend.ok) return { ok: false, result: buildFlowResult(false, recommend.status, input.stages, recommend.body) };
+
+  const recommendedSize = getStringField(recommend.data, "recommendedSize");
+  if (!recommendedSize) {
+    return {
+      ok: false,
+      result: buildFlowResult(false, 502, input.stages, `Shopify sizing response did not include recommendedSize: ${recommend.body.slice(0, 220)}`),
+    };
+  }
+  input.onProgress?.({
+    stage: "shopify.sizing.result-ready",
+    status: "completed",
+    recommendedSize,
+    detail: `recommendedSize=${recommendedSize}`,
+  });
+
+  return {
+    ok: true,
+    context: {
+      sessionId: input.sessionId,
+      recommendedSize,
+      fitInfo: buildFitInfoFromSizingResult(recommend.data),
+      silhouetteContext: buildSilhouetteContextFromSizingResult(recommend.data, recommendedSize),
+      modelImage: bodyImage,
+    },
+  };
+}
+
+async function runShopifyTryOnFlow(input: {
+  baseUrl: string;
+  headers: Record<string, string>;
+  stages: StageSummary[];
+  signal: AbortSignal;
+  context: SdkSizingContext;
+  shopDomain: string;
+  onProgress?: ProgressReporter;
+}): Promise<ScenarioResult & { jobId?: string; imageUrl?: string | null; delivery?: string }> {
+  const submit = await submitShopifyTryOnJob(input);
+  if (!submit.ok) return toScenarioResult(submit);
+
+  const resultSignal = createLinkedAbortController(input.signal);
+  const streamUrl = getStringField(submit.data, "streamUrl");
+  const streamPromise = streamUrl
+    ? waitForShopifyTryOnStreamResult({
+        baseUrl: input.baseUrl,
+        streamUrl,
+        stages: input.stages,
+        signal: resultSignal.signal,
+        jobId: submit.jobId,
+        recommendedSize: input.context.recommendedSize,
+        onProgress: input.onProgress,
+      }).then((result) => {
+        if (!result.ok) throw new Error(result.body);
+        return { result, delivery: "shopify returned per-job SSE stream" };
+      })
+    : Promise.reject(new Error("Shopify try-on submit did not return streamUrl"));
+
+  const fallbackPollPromise = pollShopifyTryOnStatus({
+    baseUrl: input.baseUrl,
+    headers: input.headers,
+    stages: input.stages,
+    jobId: submit.jobId,
+    shopDomain: input.shopDomain,
+    signal: resultSignal.signal,
+    onProgress: input.onProgress,
+  }).then((result) => {
+    if (!result.ok) throw new Error(result.body);
+    return { result, delivery: "fallback legacy Shopify status polling" };
+  });
+
+  let winner: { result: ScenarioResult & { data?: unknown }; delivery: string };
+  try {
+    winner = await Promise.any([streamPromise, fallbackPollPromise]);
+  } catch (err) {
+    if (input.signal.aborted) throw new DOMException("Request aborted", "AbortError");
+    const message = err instanceof AggregateError
+      ? err.errors.map((item) => item instanceof Error ? item.message : String(item)).join(" | ")
+      : err instanceof Error
+        ? err.message
+        : "Shopify stream and fallback polling both failed";
+    return {
+      status: 502,
+      ok: false,
+      body: message.slice(0, 500),
+    };
+  } finally {
+    resultSignal.abort();
+  }
+
+  return {
+    ...winner.result,
+    jobId: submit.jobId,
+    imageUrl: getNullableStringField(winner.result.data, "imageUrl"),
+    delivery: winner.delivery,
+  };
+}
+
+async function submitShopifyTryOnJob(input: {
+  baseUrl: string;
+  headers: Record<string, string>;
+  stages: StageSummary[];
+  signal: AbortSignal;
+  context: SdkSizingContext;
+  shopDomain: string;
+  onProgress?: ProgressReporter;
+}): Promise<JsonResponse & { jobId: string }> {
+  const submit = await postStage({
+    name: "shopify.tryon.submit",
+    url: `${input.baseUrl}${SHOPIFY_LEGACY_ROUTE_PREFIX}/tryon`,
+    headers: input.headers,
+    body: buildShopifyTryOnPayload(input.context, input.shopDomain),
+    stages: input.stages,
+    signal: input.signal,
+    onProgress: input.onProgress,
+  });
+  if (!submit.ok) return { ...submit, jobId: "" };
+
+  const jobId = getStringField(submit.data, "jobId");
+  if (!jobId) {
+    return {
+      status: 502,
+      ok: false,
+      body: `Shopify try-on submit did not return a jobId: ${submit.body.slice(0, 180)}`,
+      data: submit.data,
+      jobId: "",
+    };
+  }
+  input.onProgress?.({
+    stage: "shopify.tryon.submitted",
+    status: "completed",
+    jobId,
+    recommendedSize: input.context.recommendedSize,
+    detail: `jobId=${jobId}`,
+  });
+
+  return {
+    ...submit,
+    jobId,
+  };
+}
+
 async function executeFullSdkJourneyJobStreamScenario(
   targetId: CapacityTargetId,
   tryOnModel: TryOnModelId,
@@ -134,7 +334,7 @@ async function executeFullSdkJourneyJobStreamScenario(
   const stages: StageSummary[] = [];
   const sessionId = createSdkSessionId();
 
-  const apiPrefix = options.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX;
+  const apiPrefix = options.apiPrefix ?? SDK_REAL_ROUTE_PREFIX;
   const sizing = await runSdkSizingResultFlow({ baseUrl, headers, sessionId, stages, signal, onProgress, apiPrefix });
   if (!sizing.ok) return sizing.result;
 
@@ -164,7 +364,7 @@ async function runSdkSizingResultFlow(input: {
 }): Promise<{ ok: true; context: SdkSizingContext } | { ok: false; result: ScenarioResult }> {
   const bodyImage = await getSdkPersonDataUri();
   const ageCheckImage = await getAgeCheckPersonDataUri();
-  const apiPrefix = input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX;
+  const apiPrefix = input.apiPrefix ?? SDK_REAL_ROUTE_PREFIX;
 
   const ageCheck = await postStage({
     name: "sdk.photo.age-check",
@@ -312,7 +512,7 @@ async function runSdkTryOnJobStreamFlow(input: {
     jobId: submit.jobId,
     recommendedSize: input.context.recommendedSize,
     onProgress: input.onProgress,
-    apiPrefix: input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX,
+    apiPrefix: input.apiPrefix ?? SDK_REAL_ROUTE_PREFIX,
   });
   if (!ready.ok) {
     return {
@@ -325,7 +525,7 @@ async function runSdkTryOnJobStreamFlow(input: {
 
   const result = await getBinaryResultStage({
     name: "sdk.tryon.result.fetch",
-    url: `${input.baseUrl}${input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX}/tryon/result/${encodeURIComponent(submit.jobId)}`,
+    url: `${input.baseUrl}${input.apiPrefix ?? SDK_REAL_ROUTE_PREFIX}/tryon/result/${encodeURIComponent(submit.jobId)}`,
     headers: input.headers,
     stages: input.stages,
     signal: input.signal,
@@ -362,7 +562,7 @@ async function submitSdkTryOnJob(input: {
 }): Promise<JsonResponse & { jobId: string }> {
   const submit = await postStage({
     name: "sdk.tryon.submit",
-    url: `${input.baseUrl}${input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX}/tryon`,
+    url: `${input.baseUrl}${input.apiPrefix ?? SDK_REAL_ROUTE_PREFIX}/tryon`,
     headers: input.headers,
     body: buildSdkTryOnPayload(input.context, input.tryOnModel),
     stages: input.stages,
@@ -409,7 +609,7 @@ async function pollTryOnStatus(
     firstPollStageName?: string;
     pollStageName?: string;
   } = { includeImage: true },
-  apiPrefix = TEST_LAB_SDK_MIRROR_PREFIX,
+  apiPrefix = SDK_REAL_ROUTE_PREFIX,
 ): Promise<ScenarioResult & { data?: unknown }> {
   let polls = 0;
   while (!signal.aborted) {
@@ -458,6 +658,229 @@ async function pollTryOnStatus(
   throw new DOMException("Request aborted", "AbortError");
 }
 
+async function pollShopifyTryOnStatus(input: {
+  baseUrl: string;
+  headers: Record<string, string>;
+  stages: StageSummary[];
+  jobId: string;
+  shopDomain: string;
+  signal: AbortSignal;
+  onProgress?: ProgressReporter;
+}): Promise<ScenarioResult & { data?: unknown }> {
+  let polls = 0;
+  while (!input.signal.aborted) {
+    input.onProgress?.({
+      stage: "shopify.tryon.fallback-poll.wait",
+      status: "running",
+      jobId: input.jobId,
+      pollCount: polls,
+      detail: "waiting before next Shopify status poll",
+    });
+    await sleep(SHOPIFY_FALLBACK_POLL_INTERVAL_MS, input.signal);
+    polls += 1;
+    const url = new URL(`${SHOPIFY_LEGACY_ROUTE_PREFIX}/tryon/status/${encodeURIComponent(input.jobId)}`, input.baseUrl);
+    url.searchParams.set("shopDomain", input.shopDomain);
+    const status = await getStage({
+      name: polls === 1 ? "shopify.tryon.fallback-status.first-poll" : "shopify.tryon.fallback-status.poll",
+      url: url.toString(),
+      headers: input.headers,
+      stages: input.stages,
+      signal: input.signal,
+      detail: `poll ${polls}`,
+      onProgress: input.onProgress,
+    });
+    if (!status.ok) return { ...toScenarioResult(status), data: status.data };
+
+    const state = getStringField(status.data, "status");
+    input.onProgress?.({
+      stage: `shopify.tryon.status.${state || "unknown"}`,
+      status: state === "completed" ? "completed" : state === "failed" ? "failed" : "running",
+      jobId: input.jobId,
+      backendStage: getBackendStage(status.data),
+      pollCount: polls,
+      detail: summarizeResponse(status.data, status.body),
+    });
+    if (state === "completed") return { ...toScenarioResult(status), data: status.data };
+    if (state === "failed") {
+      return {
+        status: 500,
+        ok: false,
+        body: `Shopify try-on job failed: ${status.body.slice(0, 220)}`,
+        data: status.data,
+      };
+    }
+  }
+
+  throw new DOMException("Request aborted", "AbortError");
+}
+
+async function waitForShopifyTryOnStreamResult(input: {
+  baseUrl: string;
+  streamUrl: string;
+  stages: StageSummary[];
+  signal: AbortSignal;
+  jobId: string;
+  recommendedSize: string;
+  onProgress?: ProgressReporter;
+}): Promise<ScenarioResult & { data?: unknown }> {
+  const streamUrl = normalizeStreamUrl(input.baseUrl, input.streamUrl);
+  const connectStartedAt = Date.now();
+  input.onProgress?.({
+    stage: "shopify.tryon.sse.connect",
+    status: "running",
+    jobId: input.jobId,
+    recommendedSize: input.recommendedSize,
+    detail: "/api/v1/tryon/stream/:jobId",
+  });
+
+  const response = await fetch(streamUrl, {
+    method: "GET",
+    cache: "no-store",
+    headers: {
+      Accept: "text/event-stream",
+      "User-Agent": "PrimeStyleAI-Capacity-Lab/1.0",
+      "x-primestyle-capacity-lab": "true",
+    },
+    signal: input.signal,
+  });
+
+  const connectLatencyMs = Date.now() - connectStartedAt;
+  if (!response.ok || !response.body) {
+    const body = await response.text().catch(() => "");
+    input.stages.push({
+      name: "shopify.tryon.sse.connect",
+      status: response.status,
+      ok: false,
+      latencyMs: connectLatencyMs,
+      detail: body.replace(/\s+/g, " ").trim().slice(0, 180) || "Shopify stream failed to connect",
+    });
+    input.onProgress?.({
+      stage: "shopify.tryon.sse.connect",
+      status: "failed",
+      jobId: input.jobId,
+      recommendedSize: input.recommendedSize,
+      detail: `stream failed with ${response.status}`,
+    });
+    return {
+      status: response.status || 502,
+      ok: false,
+      body: body || "Shopify stream failed to connect",
+      data: parseJson(body),
+    };
+  }
+
+  input.stages.push({
+    name: "shopify.tryon.sse.connect",
+    status: response.status,
+    ok: true,
+    latencyMs: connectLatencyMs,
+    detail: "connected to returned streamUrl",
+  });
+  input.onProgress?.({
+    stage: "shopify.tryon.sse.connected",
+    status: "completed",
+    jobId: input.jobId,
+    recommendedSize: input.recommendedSize,
+    detail: "stream connected",
+  });
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let seenEvents = 0;
+  const waitStartedAt = Date.now();
+  input.onProgress?.({
+    stage: "shopify.tryon.sse.wait",
+    status: "running",
+    jobId: input.jobId,
+    recommendedSize: input.recommendedSize,
+    detail: "waiting for Shopify job stream completion",
+  });
+
+  try {
+    while (!input.signal.aborted) {
+      const chunk = await reader.read();
+      if (chunk.done) break;
+
+      buffer += decoder.decode(chunk.value, { stream: true });
+      let boundaryIndex = findSseBoundary(buffer);
+      while (boundaryIndex >= 0) {
+        const rawEvent = buffer.slice(0, boundaryIndex);
+        buffer = buffer.slice(buffer[boundaryIndex] === "\r" ? boundaryIndex + 4 : boundaryIndex + 2);
+        boundaryIndex = findSseBoundary(buffer);
+
+        const parsedEvent = parseSseEvent(rawEvent);
+        if (!parsedEvent.data) continue;
+        seenEvents += 1;
+        const payload = parseJson(parsedEvent.data);
+        if (!payload || typeof payload !== "object") continue;
+
+        const status = getStringField(payload, "status");
+        const imageUrl = getNullableStringField(payload, "imageUrl");
+        input.onProgress?.({
+          stage: `shopify.tryon.sse.${status || "update"}`,
+          status: status === "completed" ? "completed" : status === "failed" ? "failed" : "running",
+          jobId: input.jobId,
+          recommendedSize: input.recommendedSize,
+          detail: summarizeResponse(payload, parsedEvent.data),
+        });
+
+        if (status === "completed" && imageUrl) {
+          input.stages.push({
+            name: "shopify.tryon.sse.completed",
+            status: 200,
+            ok: true,
+            latencyMs: Date.now() - waitStartedAt,
+            detail: `events=${seenEvents}, status=completed, imageUrl=yes`,
+          });
+          await reader.cancel().catch(() => undefined);
+          return {
+            status: 200,
+            ok: true,
+            body: JSON.stringify({ ...(payload as Record<string, unknown>), jobId: input.jobId }),
+            data: { ...(payload as Record<string, unknown>), jobId: input.jobId },
+          };
+        }
+
+        if (status === "failed") {
+          input.stages.push({
+            name: "shopify.tryon.sse.failed",
+            status: 500,
+            ok: false,
+            latencyMs: Date.now() - waitStartedAt,
+            detail: `events=${seenEvents}, status=failed`,
+          });
+          await reader.cancel().catch(() => undefined);
+          return {
+            status: 500,
+            ok: false,
+            body: `Shopify try-on SSE failed: ${parsedEvent.data.slice(0, 220)}`,
+            data: payload,
+          };
+        }
+      }
+    }
+  } finally {
+    await reader.cancel().catch(() => undefined);
+  }
+
+  if (input.signal.aborted) throw new DOMException("Request aborted", "AbortError");
+
+  input.stages.push({
+    name: "shopify.tryon.sse.completed",
+    status: 502,
+    ok: false,
+    latencyMs: Date.now() - waitStartedAt,
+    detail: `stream closed before completion; events=${seenEvents}`,
+  });
+  return {
+    status: 502,
+    ok: false,
+    body: `Shopify stream closed before completion for job ${input.jobId}`,
+    data: null,
+  };
+}
+
 async function waitForSdkTryOnSseResult(input: {
   targetId: CapacityTargetId;
   baseUrl: string;
@@ -468,7 +891,7 @@ async function waitForSdkTryOnSseResult(input: {
   onProgress?: ProgressReporter;
   apiPrefix?: string;
 }): Promise<ScenarioResult & { data?: unknown }> {
-  const apiPrefix = input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX;
+  const apiPrefix = input.apiPrefix ?? SDK_REAL_ROUTE_PREFIX;
   const streamUrl = buildSdkSseStreamUrl(input.baseUrl, input.targetId, apiPrefix);
   const connectStartedAt = Date.now();
   input.onProgress?.({
@@ -650,14 +1073,14 @@ async function waitForSdkTryOnJobStreamReady(input: {
   onProgress?: ProgressReporter;
   apiPrefix?: string;
 }): Promise<ScenarioResult & { data?: unknown }> {
-  const streamUrl = buildSdkJobSseStreamUrl(input.baseUrl, input.targetId, input.jobId, input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX);
+  const streamUrl = buildSdkJobSseStreamUrl(input.baseUrl, input.targetId, input.jobId, input.apiPrefix ?? SDK_REAL_ROUTE_PREFIX);
   const connectStartedAt = Date.now();
   input.onProgress?.({
     stage: "sdk.tryon.job-sse.connect",
     status: "running",
     jobId: input.jobId,
     recommendedSize: input.recommendedSize,
-    detail: `${input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX}/tryon/stream?jobId=...`,
+    detail: `${input.apiPrefix ?? SDK_REAL_ROUTE_PREFIX}/tryon/stream?jobId=...`,
   });
 
   const response = await fetch(streamUrl, {
@@ -701,7 +1124,7 @@ async function waitForSdkTryOnJobStreamReady(input: {
     status: response.status,
     ok: true,
     latencyMs: connectLatencyMs,
-    detail: `connected to ${input.apiPrefix ?? TEST_LAB_SDK_MIRROR_PREFIX}/tryon/stream?jobId=...`,
+    detail: `connected to ${input.apiPrefix ?? SDK_REAL_ROUTE_PREFIX}/tryon/stream?jobId=...`,
   });
   input.onProgress?.({
     stage: "sdk.tryon.job-sse.connected",
@@ -862,6 +1285,17 @@ function buildSdkTryOnPayload(context: SdkSizingContext, tryOnModel: TryOnModelI
     model: tryOnModel,
     fitInfo: context.fitInfo.length ? context.fitInfo : buildFallbackFitInfo(),
     silhouetteContext: context.silhouetteContext,
+  };
+}
+
+function buildShopifyTryOnPayload(context: SdkSizingContext, shopDomain: string): Record<string, unknown> {
+  return {
+    shopDomain,
+    modelImage: context.modelImage,
+    garmentImage: getGarmentDataUri(),
+    sessionId: context.sessionId,
+    productId: "capacity-tommy-hilfiger-black-tuxedo",
+    productTitle: "Two-Piece Formal Black Tuxedo",
   };
 }
 
@@ -1244,14 +1678,24 @@ function getJsonHeaders(targetId: CapacityTargetId): Record<string, string> {
   };
 }
 
-function buildSdkSseStreamUrl(baseUrl: string, targetId: CapacityTargetId, apiPrefix = TEST_LAB_SDK_MIRROR_PREFIX): string {
+function getShopifyJsonHeaders(targetId: CapacityTargetId): Record<string, string> {
+  const token = getShopifyAdminToken(targetId);
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+    "User-Agent": "PrimeStyleAI-Capacity-Lab/1.0",
+    "x-primestyle-capacity-lab": "true",
+  };
+}
+
+function buildSdkSseStreamUrl(baseUrl: string, targetId: CapacityTargetId, apiPrefix = SDK_REAL_ROUTE_PREFIX): string {
   const apiKey = getCapacityApiKey(targetId);
   const url = new URL(`${apiPrefix}/tryon/stream`, baseUrl);
   url.searchParams.set("key", apiKey);
   return url.toString();
 }
 
-function buildSdkJobSseStreamUrl(baseUrl: string, targetId: CapacityTargetId, jobId: string, apiPrefix = TEST_LAB_SDK_MIRROR_PREFIX): string {
+function buildSdkJobSseStreamUrl(baseUrl: string, targetId: CapacityTargetId, jobId: string, apiPrefix = SDK_REAL_ROUTE_PREFIX): string {
   const apiKey = getCapacityApiKey(targetId);
   const url = new URL(`${apiPrefix}/tryon/stream`, baseUrl);
   url.searchParams.set("key", apiKey);
@@ -1270,15 +1714,48 @@ function createLinkedAbortController(parentSignal: AbortSignal): AbortController
 }
 
 function getCapacityApiKey(targetId: CapacityTargetId): string {
-  const key = process.env[`PRIMESTYLE_CAPACITY_LAB_API_KEY_${targetId.toUpperCase()}`]
+  const key = process.env[`PRIMESTYLE_CAPACITY_SDK_API_KEY_${targetId.toUpperCase()}`]
+    || process.env.PRIMESTYLE_CAPACITY_SDK_API_KEY
+    || process.env[`PRIMESTYLE_CAPACITY_LAB_API_KEY_${targetId.toUpperCase()}`]
     || process.env.PRIMESTYLE_CAPACITY_LAB_API_KEY;
 
   if (!key) {
     throw new Error(
-      `Missing server-side capacity-lab API key for ${targetId}. Set PRIMESTYLE_CAPACITY_LAB_API_KEY_${targetId.toUpperCase()} or PRIMESTYLE_CAPACITY_LAB_API_KEY.`,
+      `Missing server-side SDK API key for ${targetId}. Set PRIMESTYLE_CAPACITY_SDK_API_KEY_${targetId.toUpperCase()}, PRIMESTYLE_CAPACITY_SDK_API_KEY, or PRIMESTYLE_CAPACITY_LAB_API_KEY.`,
     );
   }
   return key.trim();
+}
+
+function getShopifyAdminToken(targetId: CapacityTargetId): string {
+  const token = process.env[`PRIMESTYLE_CAPACITY_SHOPIFY_ADMIN_TOKEN_${targetId.toUpperCase()}`]
+    || process.env.PRIMESTYLE_CAPACITY_SHOPIFY_ADMIN_TOKEN
+    || process.env[`PRIMESTYLE_ADMIN_TOKEN_${targetId.toUpperCase()}`];
+
+  if (!token) {
+    throw new Error(
+      `Missing server-side Shopify admin token for ${targetId}. Set PRIMESTYLE_CAPACITY_SHOPIFY_ADMIN_TOKEN_${targetId.toUpperCase()} or PRIMESTYLE_CAPACITY_SHOPIFY_ADMIN_TOKEN.`,
+    );
+  }
+  return token.trim();
+}
+
+function getShopifyShopDomain(targetId: CapacityTargetId): string {
+  const shopDomain = process.env[`PRIMESTYLE_CAPACITY_SHOPIFY_SHOP_DOMAIN_${targetId.toUpperCase()}`]
+    || process.env.PRIMESTYLE_CAPACITY_SHOPIFY_SHOP_DOMAIN;
+
+  if (!shopDomain) {
+    throw new Error(
+      `Missing capacity Shopify shop domain for ${targetId}. Set PRIMESTYLE_CAPACITY_SHOPIFY_SHOP_DOMAIN_${targetId.toUpperCase()} or PRIMESTYLE_CAPACITY_SHOPIFY_SHOP_DOMAIN.`,
+    );
+  }
+  return shopDomain.trim();
+}
+
+function normalizeStreamUrl(baseUrl: string, rawStreamUrl: string): string {
+  const parsed = new URL(rawStreamUrl, baseUrl);
+  const base = new URL(baseUrl);
+  return `${base.origin}${parsed.pathname}${parsed.search}`;
 }
 
 async function postJson(url: string, headers: Record<string, string>, body: unknown, signal: AbortSignal): Promise<JsonResponse> {

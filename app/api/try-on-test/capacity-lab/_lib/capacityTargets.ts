@@ -1,15 +1,17 @@
 import type { CapacityRouteSafety, CapacityRunConfig, CapacityScenarioId, CapacityTargetId } from "@/app/try-on-test/capacity-lab/types";
 
-export const TEST_LAB_SDK_MIRROR_PREFIX = "/api/test-lab/sdk-mirror";
-export const TEST_LAB_SHOPIFY_MIRROR_PREFIX = "/api/test-lab/shopify-mirror";
-const MIRROR_GEMINI_MAX_REQUESTS = 150;
-const MIRROR_GEMINI_MAX_USERS = 150;
-const UNSAFE_STRESS_ROUTE_PATTERNS = [
-  "/api/v1",
-  "/api/admin/shopify",
-  "/api/admin/shopify-v2",
-  "/api/proxy",
+export const SDK_REAL_ROUTE_PREFIX = "/api/v1";
+export const SHOPIFY_LEGACY_ROUTE_PREFIX = "/api/admin/shopify";
+export const SHOPIFY_V2_ROUTE_PREFIX = "/api/admin/shopify-v2";
+
+const CAPACITY_BACKEND_BASE_URL = process.env.PRIMESTYLE_CAPACITY_BACKEND_URL
+  ?? process.env.NEXT_PUBLIC_CAPACITY_BACKEND_URL
+  ?? "https://capacity-be-9a7k.primestyleai.com";
+const CAPACITY_GEMINI_MAX_REQUESTS = 150;
+const CAPACITY_GEMINI_MAX_USERS = 150;
+const UNSAFE_STRESS_HOST_PATTERNS = [
   "api.primestyleai.com",
+  "test-be-9a7k.primestyleai.com",
 ];
 
 interface ServerCapacityTarget {
@@ -55,6 +57,14 @@ const TARGETS: Record<CapacityTargetId, ServerCapacityTarget> = {
     pm2Name: "primestyle-backend-test",
     metricsMode: "droplet",
   },
+  capacity: {
+    id: "capacity",
+    label: "Capacity backend",
+    baseUrl: CAPACITY_BACKEND_BASE_URL,
+    isLive: false,
+    pm2Name: "primestyle-backend-capacity",
+    metricsMode: "droplet",
+  },
   live: {
     id: "live",
     label: "Live API",
@@ -77,63 +87,38 @@ const SCENARIOS: Record<CapacityScenarioId, ServerCapacityScenario> = {
     paths: {
       local: "/api/health",
       test: "/health",
+      capacity: "/health",
       live: "/health",
     },
   },
-  "sdk-mirror-sse-real": {
-    id: "sdk-mirror-sse-real",
+  "sdk-real-route-clone": {
+    id: "sdk-real-route-clone",
     method: "POST",
     isGeminiSafe: false,
-    maxTotalRequests: MIRROR_GEMINI_MAX_REQUESTS,
-    maxVirtualUsers: MIRROR_GEMINI_MAX_USERS,
+    maxTotalRequests: CAPACITY_GEMINI_MAX_REQUESTS,
+    maxVirtualUsers: CAPACITY_GEMINI_MAX_USERS,
     estimatedTryOnCallsPerRequest: 1,
     estimatedSizingCallsPerRequest: 2,
     paths: {
-      local: `${TEST_LAB_SDK_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
-      test: `${TEST_LAB_SDK_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
-      live: `${TEST_LAB_SDK_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
+      local: `${SDK_REAL_ROUTE_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
+      test: `${SDK_REAL_ROUTE_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
+      capacity: `${SDK_REAL_ROUTE_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
+      live: `${SDK_REAL_ROUTE_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
     },
   },
-  "sdk-journey-job-stream-real": {
-    id: "sdk-journey-job-stream-real",
+  "shopify-real-route-clone": {
+    id: "shopify-real-route-clone",
     method: "POST",
     isGeminiSafe: false,
-    maxTotalRequests: MIRROR_GEMINI_MAX_REQUESTS,
-    maxVirtualUsers: MIRROR_GEMINI_MAX_USERS,
+    maxTotalRequests: CAPACITY_GEMINI_MAX_REQUESTS,
+    maxVirtualUsers: CAPACITY_GEMINI_MAX_USERS,
     estimatedTryOnCallsPerRequest: 1,
     estimatedSizingCallsPerRequest: 2,
     paths: {
-      local: `${TEST_LAB_SDK_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId`,
-      test: `${TEST_LAB_SDK_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId`,
-      live: `${TEST_LAB_SDK_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId`,
-    },
-  },
-  "shopify-mirror-sse-real": {
-    id: "shopify-mirror-sse-real",
-    method: "POST",
-    isGeminiSafe: false,
-    maxTotalRequests: MIRROR_GEMINI_MAX_REQUESTS,
-    maxVirtualUsers: MIRROR_GEMINI_MAX_USERS,
-    estimatedTryOnCallsPerRequest: 1,
-    estimatedSizingCallsPerRequest: 2,
-    paths: {
-      local: `${TEST_LAB_SHOPIFY_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
-      test: `${TEST_LAB_SHOPIFY_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
-      live: `${TEST_LAB_SHOPIFY_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream + /status fallback`,
-    },
-  },
-  "shopify-mirror-job-stream-real": {
-    id: "shopify-mirror-job-stream-real",
-    method: "POST",
-    isGeminiSafe: false,
-    maxTotalRequests: MIRROR_GEMINI_MAX_REQUESTS,
-    maxVirtualUsers: MIRROR_GEMINI_MAX_USERS,
-    estimatedTryOnCallsPerRequest: 1,
-    estimatedSizingCallsPerRequest: 2,
-    paths: {
-      local: `${TEST_LAB_SHOPIFY_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId`,
-      test: `${TEST_LAB_SHOPIFY_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId`,
-      live: `${TEST_LAB_SHOPIFY_MIRROR_PREFIX}/sizing/age-check -> /sizing/recommend -> /tryon -> /tryon/stream?jobId -> /tryon/result/:jobId`,
+      local: `${SHOPIFY_V2_ROUTE_PREFIX}/sizing/age-check -> /sizing/recommend -> ${SHOPIFY_LEGACY_ROUTE_PREFIX}/tryon -> returned streamUrl + /status fallback`,
+      test: `${SHOPIFY_V2_ROUTE_PREFIX}/sizing/age-check -> /sizing/recommend -> ${SHOPIFY_LEGACY_ROUTE_PREFIX}/tryon -> returned streamUrl + /status fallback`,
+      capacity: `${SHOPIFY_V2_ROUTE_PREFIX}/sizing/age-check -> /sizing/recommend -> ${SHOPIFY_LEGACY_ROUTE_PREFIX}/tryon -> returned streamUrl + /status fallback`,
+      live: `${SHOPIFY_V2_ROUTE_PREFIX}/sizing/age-check -> /sizing/recommend -> ${SHOPIFY_LEGACY_ROUTE_PREFIX}/tryon -> returned streamUrl + /status fallback`,
     },
   },
 };
@@ -156,12 +141,8 @@ export function buildScenarioUrl(targetId: CapacityRunConfig["targetId"], scenar
 }
 
 export function getScenarioApiPrefix(scenarioId: CapacityScenarioId): string | null {
-  if (scenarioId === "sdk-mirror-sse-real" || scenarioId === "sdk-journey-job-stream-real") {
-    return TEST_LAB_SDK_MIRROR_PREFIX;
-  }
-  if (scenarioId === "shopify-mirror-sse-real" || scenarioId === "shopify-mirror-job-stream-real") {
-    return TEST_LAB_SHOPIFY_MIRROR_PREFIX;
-  }
+  if (scenarioId === "sdk-real-route-clone") return SDK_REAL_ROUTE_PREFIX;
+  if (scenarioId === "shopify-real-route-clone") return `${SHOPIFY_V2_ROUTE_PREFIX} + ${SHOPIFY_LEGACY_ROUTE_PREFIX}`;
   return null;
 }
 
@@ -169,7 +150,7 @@ export function getCapacityRouteAudit(config: CapacityRunConfig): CapacityRouteA
   const target = getServerTarget(config.targetId);
   const scenario = getServerScenario(config.scenarioId);
   return {
-    routeSafety: scenario.isGeminiSafe ? "health" : "mirror-only",
+    routeSafety: scenario.isGeminiSafe ? "health" : "capacity-clone",
     targetBaseUrl: target.baseUrl.replace(/\/+$/, ""),
     apiPrefix: getScenarioApiPrefix(config.scenarioId),
   };
@@ -180,18 +161,18 @@ export function assertCapacityRouteSafety(config: CapacityRunConfig): CapacityRo
   const audit = getCapacityRouteAudit(config);
   if (scenario.isGeminiSafe) return audit;
 
-  if (config.targetId !== "test") {
-    throw new Error("Capacity stress tests are locked to the test backend. Real SDK, Shopify, local, and live stress targets are blocked.");
+  if (config.targetId !== "capacity") {
+    throw new Error("Capacity stress tests are locked to the separate capacity backend clone. Staging, live, and local stress targets are blocked.");
   }
 
-  if (!audit.apiPrefix?.startsWith("/api/test-lab/")) {
-    throw new Error("Capacity stress tests must resolve to an isolated /api/test-lab mirror prefix.");
+  if (!audit.targetBaseUrl.includes("capacity-be-9a7k.primestyleai.com") && !process.env.PRIMESTYLE_CAPACITY_BACKEND_URL) {
+    throw new Error("Capacity backend URL must be the dedicated capacity backend clone.");
   }
 
   const resolvedRoute = buildScenarioUrl(config.targetId, config.scenarioId);
-  const unsafePattern = UNSAFE_STRESS_ROUTE_PATTERNS.find((pattern) => resolvedRoute.includes(pattern));
+  const unsafePattern = UNSAFE_STRESS_HOST_PATTERNS.find((pattern) => resolvedRoute.includes(pattern));
   if (unsafePattern) {
-    throw new Error(`Unsafe capacity route blocked before execution: ${unsafePattern}`);
+    throw new Error(`Unsafe capacity host blocked before execution: ${unsafePattern}`);
   }
 
   return audit;

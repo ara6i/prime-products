@@ -46,7 +46,13 @@ const MAX_TIMELINE_POINTS = 90;
 const RUN_TTL_MS = 60 * 60 * 1000;
 
 export function normalizeRunConfig(raw: Partial<CapacityRunConfig>): CapacityRunConfig {
-  const targetId = raw.targetId === "local" || raw.targetId === "test" || raw.targetId === "live" ? raw.targetId : "test";
+  const targetId =
+    raw.targetId === "local" ||
+    raw.targetId === "test" ||
+    raw.targetId === "capacity" ||
+    raw.targetId === "live"
+      ? raw.targetId
+      : "capacity";
   const scenarioId = isScenarioId(raw.scenarioId) ? raw.scenarioId : "health";
   const target = getServerTarget(targetId);
   const scenario = getServerScenario(scenarioId);
@@ -594,17 +600,15 @@ function estimateRun(config: CapacityRunConfig) {
 function isScenarioId(value: unknown): value is CapacityRunConfig["scenarioId"] {
   return (
     value === "health" ||
-    value === "sdk-mirror-sse-real" ||
-    value === "sdk-journey-job-stream-real" ||
-    value === "shopify-mirror-sse-real" ||
-    value === "shopify-mirror-job-stream-real"
+    value === "sdk-real-route-clone" ||
+    value === "shopify-real-route-clone"
   );
 }
 
 function assertSupportedScenario(value: unknown): void {
   if (value === undefined || value === null || value === "") return;
   if (isScenarioId(value)) return;
-  throw new Error("Unsupported or unsafe capacity scenario. Stress tests are mirror-only and cannot call real SDK or Shopify backend routes.");
+  throw new Error("Unsupported or unsafe capacity scenario. Stress tests can call real SDK/Shopify routes only on the separate capacity backend clone.");
 }
 
 function isTryOnModelId(value: unknown): value is TryOnModelId {

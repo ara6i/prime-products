@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function parseTargetId(value: string | null): CapacityTargetId {
-  return value === "local" || value === "live" || value === "test" ? value : "test";
+  return value === "local" || value === "live" || value === "test" || value === "capacity" ? value : "capacity";
 }
 
 export async function GET(request: NextRequest) {

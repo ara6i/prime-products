@@ -1,13 +1,11 @@
 import type { TryOnModelId } from "../lib/models";
 
-export type CapacityTargetId = "local" | "test" | "live";
+export type CapacityTargetId = "local" | "test" | "capacity" | "live";
 export type CapacityScenarioId =
   | "health"
-  | "sdk-mirror-sse-real"
-  | "sdk-journey-job-stream-real"
-  | "shopify-mirror-sse-real"
-  | "shopify-mirror-job-stream-real";
-export type CapacityRouteSafety = "health" | "mirror-only";
+  | "sdk-real-route-clone"
+  | "shopify-real-route-clone";
+export type CapacityRouteSafety = "health" | "capacity-clone";
 export type CapacityRunStatus = "queued" | "running" | "completed" | "failed" | "stopped";
 
 export interface CapacityTargetOption {
