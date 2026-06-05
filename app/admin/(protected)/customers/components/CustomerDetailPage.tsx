@@ -4,7 +4,6 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
 import type { CustomerDetailSection, CustomerDetailView } from "../types";
-import { CustomerStatusBadge } from "./shared/CustomerStatusBadge";
 
 interface CustomerDetailPageProps {
   customer: CustomerDetailView;
@@ -50,13 +49,6 @@ export function CustomerDetailPage({ customer }: CustomerDetailPageProps) {
               {customer.store.storeName}
             </h2>
           </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-[0.521vw] max-lg:gap-[2vw]">
-          <CustomerStatusBadge tone={customer.store.statusTone}>{customer.store.statusLabel}</CustomerStatusBadge>
-          <span className="rounded-full bg-customer-blue px-[0.625vw] py-[0.208vw] text-[clamp(11px,0.68vw,13px)] font-semibold text-brand-blue max-lg:px-[2.4vw] max-lg:py-[1vw] max-lg:text-[2.9vw]">
-            {customer.sourceLabel}
-          </span>
         </div>
       </div>
 

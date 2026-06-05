@@ -54,7 +54,7 @@ export const FEATURES: FeaturesContent = {
       id: "photo",
       label: "Photo Sizing",
       title: "AI Sizing by Photo",
-      body: "One full-body photo. Our Decision Engine extracts measurements and returns a recommended size from your catalog based on the photo.",
+      body: "One full-body photo. Our Decision Engine extracts measurements and returns a suggested size from your catalog based on the photo.",
       image: `${ASSET}/optimized/ps-finalizing-pose-v2.webp`,
     },
     {
@@ -93,7 +93,7 @@ export const SDK_DEMO: SdkDemoContent = {
         label: "Sizing",
         tag: "Smart Size Finder",
         title: "A size recommendation. In seconds.",
-        body: "Shoppers enter height, weight, and a few body-type questions. The Decision Engine matches them to your size chart — not industry averages — and returns a recommended size in seconds.",
+        body: "Shoppers enter height, weight, and a few body-type questions. The Decision Engine matches them to your size chart — not industry averages — and returns a suggested size in seconds.",
         image: `${ASSET}/ps-raw-01-sizing.jpg`,
         badges: [
           "Works with any Shopify size chart",

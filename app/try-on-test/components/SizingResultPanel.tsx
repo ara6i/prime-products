@@ -12,7 +12,7 @@ export function SizingResultPanel({ prepared }: SizingResultPanelProps) {
     return (
       <section className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
         <PanelTitle title="Sizing result" />
-        <p className="text-sm text-text-secondary">Build sizing to see the recommended size, fitInfo, silhouetteContext, and final backend prompt.</p>
+        <p className="text-sm text-text-secondary">Build sizing to see the suggested size, fitInfo, silhouetteContext, and final backend prompt.</p>
       </section>
     );
   }

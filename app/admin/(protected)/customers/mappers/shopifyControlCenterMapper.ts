@@ -149,7 +149,7 @@ export function mapShopifyControlCenter(
       card("Due date", currentPeriodEndLabel, "Current billing period end"),
     ],
     billingCards: [
-      card("Plan", planLabel, subscriptionLabel),
+      card("Plan", planLabel, "Current billing plan"),
       card("Monthly total", formatCurrency(raw.billing.monthlySpend, currency), "Platform plus try-on package"),
       card("Annual run rate", formatCurrency(raw.billing.estimatedAnnualSpend, currency), "Estimated from current monthly total"),
       card("Next plan", formatCurrency(raw.billing.scheduledMonthlySpend, currency), `${formatNumber(raw.billing.scheduledProductCount)} products / ${formatNumber(raw.billing.scheduledTryOnPackQuantity)} try-ons`),
@@ -159,7 +159,7 @@ export function mapShopifyControlCenter(
     usageCards: [
       card("Used", formatNumber(raw.usage.tryOnsUsed), `${raw.usage.usagePercent}% of tracked balance`),
       card("Remaining", formatNumber(raw.usage.tryOnsRemaining), "Available to shoppers"),
-      card("Size charts", formatNumber(raw.usage.activeSizeCharts), "Active chart templates"),
+      card("Size charts", formatNumber(raw.usage.activeSizeCharts), "Configured chart templates"),
       card("Linked products", formatNumber(raw.usage.linkedProducts), "Products with sizing links"),
     ],
     billingFormDefaults: {
@@ -176,9 +176,9 @@ export function mapShopifyControlCenter(
       tryOnsUsed: raw.usage.tryOnsUsed,
     },
     profile: {
-      label: raw.storeProfile?.hasSizeGuideMapping ? "Size guide mapping active" : "No active size guide mapping",
+      label: raw.storeProfile?.hasSizeGuideMapping ? "Size guide mapping connected" : "No size guide mapping",
       helper: raw.storeProfile
-        ? `${titleCase(raw.storeProfile.status)} profile updated ${formatDate(raw.storeProfile.updatedAt)}`
+        ? `Profile updated ${formatDate(raw.storeProfile.updatedAt)}`
         : "No linked Shopify store profile",
     },
     technicalRows: [

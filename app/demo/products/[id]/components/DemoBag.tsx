@@ -51,7 +51,7 @@ function sizeSummary(payload: DemoAddToBagPayload): string {
       .filter(Boolean)
       .join(" / ");
   }
-  return payload.recommendedSize?.trim() || "Recommended size";
+  return payload.recommendedSize?.trim() || "Suggested size";
 }
 
 export function buildDemoBagItem({
@@ -182,7 +182,7 @@ export function DemoBagDrawer({
                 </div>
                 <p className="mt-4 text-sm font-semibold text-text-primary">Your bag is empty</p>
                 <p className="mt-1 max-w-[220px] text-xs leading-5 text-text-hint">
-                  Add a recommended fit from the SDK result to review it here.
+                  Add a suggested fit from the SDK result to review it here.
                 </p>
               </div>
             ) : (

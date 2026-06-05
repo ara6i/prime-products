@@ -10,7 +10,7 @@ export function HipsCard({ trace }: Props) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
       <h3 className="text-sm font-semibold text-text-primary mb-3">
-        Hips <span className="text-text-hint text-xs font-normal">· backend formula{trace ? ` (${trace.gender})` : ""}</span>
+        Hips <span className="text-text-hint text-xs font-normal">· lab trace{trace ? ` (${trace.gender})` : ""}</span>
       </h3>
       {!trace ? (
         <p className="text-sm text-text-secondary">Run Analyze to compute.</p>

@@ -11,6 +11,7 @@ import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
 import { useSizingAutoSelect } from "../../hooks/useSizingAutoSelect";
 import { useProfileAnalysisDisplay } from "../../hooks/useProfileAnalysisDisplay";
+import { inferSdkProductFitType } from "../../../utils/sdkProductFitType";
 import {
   DemoBagButton,
   DemoBagDrawer,
@@ -126,6 +127,7 @@ export function DesktopProductDetail({ product }: Props) {
   const pantsWaistSizes = pantsSection?.rows.map((r) => r["Size"]).filter(Boolean) ?? [];
   const pantsLengthSizes = pantsLengthSection?.rows.map((r) => r["Length"] || r["Size"]).filter(Boolean) ?? [];
   const sdkApiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  const sdkProductFitType = useMemo(() => inferSdkProductFitType(product), [product]);
   const sdkCarouselItems = useMemo(() => product.completeLook.map((item) => ({
     image: item.image,
     title: item.name,
@@ -588,6 +590,7 @@ export function DesktopProductDetail({ product }: Props) {
               productCategory={product.category}
               productGender={product.gender}
               productSubcategory={product.subcategory}
+              productFitType={sdkProductFitType}
               productDescription={product.description}
               productMaterial={product.material}
               sizeGuideData={product.sizeGuideData}

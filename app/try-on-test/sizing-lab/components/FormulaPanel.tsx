@@ -17,7 +17,7 @@ export function FormulaPanel({ trace }: Props) {
   if (!trace) {
     return (
       <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-        <h3 className="text-sm font-semibold text-text-primary mb-2">Formula trace</h3>
+        <h3 className="text-sm font-semibold text-text-primary mb-2">Lab formula trace</h3>
         <p className="text-sm text-text-secondary">Run analysis first to see the math.</p>
       </div>
     );
@@ -25,7 +25,7 @@ export function FormulaPanel({ trace }: Props) {
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-3 font-mono text-xs">
-      <h3 className="font-sans text-sm font-semibold text-text-primary mb-2">Formula trace</h3>
+      <h3 className="font-sans text-sm font-semibold text-text-primary mb-2">Lab formula trace</h3>
 
       <Step
         n={1}

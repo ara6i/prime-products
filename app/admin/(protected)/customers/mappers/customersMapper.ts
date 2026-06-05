@@ -79,7 +79,6 @@ function empty(value: string | null | undefined): string {
 }
 
 function mapStats(response: AdminCustomersResponse, source: AdminCustomerSource): CustomerStatCard[] {
-  const active = response.stores.filter((store) => store.status === "active").length;
   const withProfiles = response.stores.filter((store) => Boolean(store.storeProfileId)).length;
   const tryOnsUsed = response.stores.reduce((sum, store) => sum + (store.tryOnsUsed ?? 0), 0);
 
@@ -88,11 +87,6 @@ function mapStats(response: AdminCustomersResponse, source: AdminCustomerSource)
       label: "Total",
       value: formatNumber(response.pagination.total),
       helper: `${sourceLabels[source]} customer records`,
-    },
-    {
-      label: "Active",
-      value: formatNumber(active),
-      helper: "Shown on this page",
     },
     {
       label: "Store Profiles",
@@ -191,7 +185,6 @@ function sdkSections(detail: AdminCustomerDetailRaw): CustomerDetailSection[] {
     compactSection("Owner Account", [
       field("Name", user?.name ?? "Not available"),
       field("Email", user?.email ?? detail.store.ownerEmail),
-      field("Account status", titleCase(user?.accountStatus)),
       field("Email verified", formatBoolean(user?.isEmailVerified)),
       field("Onboarding completed", formatBoolean(user?.onboardingCompleted)),
       field("Token balance", user?.tokenBalance),
@@ -202,7 +195,6 @@ function sdkSections(detail: AdminCustomerDetailRaw): CustomerDetailSection[] {
     compactSection("SDK Project", [
       field("Project", project?.name ?? detail.store.identifier),
       field("Description", project?.description || "Not available"),
-      field("Project status", titleCase(project?.status)),
       field("Project id", project?._id ?? profile?.projectId),
       field("Created", formatDate(project?.createdAt)),
       field("Updated", formatDate(project?.updatedAt)),
@@ -210,7 +202,6 @@ function sdkSections(detail: AdminCustomerDetailRaw): CustomerDetailSection[] {
     compactSection("Store Profile", [
       field("Store profile id", profile?._id ?? detail.store.storeProfileId),
       field("Store name", profile?.storeName ?? detail.store.storeName),
-      field("Profile status", titleCase(profile?.status)),
       field("Source", sourceLabels[detail.source]),
       field("Size charts", detail.stats.chartCount),
       field("Created", formatDate(profile?.createdAt ?? detail.store.installedAt)),
@@ -246,7 +237,6 @@ function shopifySections(detail: AdminCustomerDetailRaw): CustomerDetailSection[
       field("Owner email", raw?.ownerEmail ?? detail.store.ownerEmail),
       field("Currency", raw?.currency ?? "Not available"),
       field("Timezone", raw?.timezone ?? "Not available"),
-      field("Status", titleCase(raw?.status ?? detail.store.status)),
       field("Installed", formatDate(raw?.installedAt ?? detail.store.installedAt)),
       field("Last used", formatDate(raw?.lastUsedAt ?? detail.store.lastUsedAt)),
       field("Uninstalled", formatDate(raw?.uninstalledAt)),
@@ -255,15 +245,13 @@ function shopifySections(detail: AdminCustomerDetailRaw): CustomerDetailSection[
       field("Plan", titleCase(raw?.plan ?? detail.store.plan)),
       field("Try-ons used", raw?.tryOnsUsed ?? detail.store.tryOnsUsed),
       field("Try-ons remaining", raw?.tryOnsRemaining ?? detail.store.tryOnsRemaining),
-      field("Active size charts", detail.stats.chartCount),
+      field("Size charts", detail.stats.chartCount),
       field("Linked products", detail.stats.linkedProductCount ?? 0),
     ]),
     compactSection("Billing", [
       field("Subscription id", raw?.billingSubscriptionId),
-      field("Subscription status", titleCase(raw?.billingSubscriptionStatus)),
       field("Current period end", formatDate(raw?.billingCurrentPeriodEnd)),
       field("Billing currency", billingCurrency),
-      field("Test billing", formatBoolean(raw?.billingTest)),
       field("Usage billing enabled", formatBoolean(raw?.billingUsageEnabled)),
       field("Usage price", formatCurrency(raw?.billingUsagePrice, billingCurrency)),
       field("Usage cap", formatCurrency(raw?.billingUsageCap, billingCurrency)),
@@ -284,7 +272,6 @@ function shopifySections(detail: AdminCustomerDetailRaw): CustomerDetailSection[
     compactSection("Store Profile", [
       field("Store profile id", profile?._id ?? detail.store.storeProfileId),
       field("Profile source", profile?.source ? sourceLabels[profile.source] : sourceLabels[detail.source]),
-      field("Profile status", titleCase(profile?.status)),
       field("Profile created", formatDate(profile?.createdAt)),
       field("Profile updated", formatDate(profile?.updatedAt)),
     ]),

@@ -1,6 +1,9 @@
 /**
- * Hip circumference — mirrors backend formulas in
- * `sizing.service.ts → synthesizeBaselinesFromAnchors`.
+ * Hip circumference visual trace for the sizing lab.
+ *
+ * Production SDK/Shopify sizing is owned by the backend sizing service. Keep
+ * this file as a debugging aid only; do not treat it as canonical product
+ * sizing logic.
  *
  *  ── Male  : K-factor model (additive, calibrated bone expansion + BMI-driven pad)
  *  ── Female: Refined model (B = bone × k_b, T = continuous BMI lerp)

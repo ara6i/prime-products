@@ -45,8 +45,8 @@ export function SizingLabPage() {
     metrics,
   );
 
-  // Backend-style hip computation for BOTH genders, sharing the
-  // waist trace's cmPerPx so the scale matches.
+  // Lab-only hip trace. Production SDK/Shopify measurements are computed by
+  // the backend sizing service; this page is for visual formula debugging.
   const hipsTrace = trace && pose.pose
     ? computeHips(
         pose.pose,
@@ -66,11 +66,17 @@ export function SizingLabPage() {
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight text-text-primary">AI Sizing Lab</h1>
         <p className="text-sm text-text-secondary">
-          Upload a photo, enter height + weight, and watch every step of the
-          trouser-waist computation — landmarks, segmentation mask, z-depth,
-          ellipse perimeter, and the direct weight lever.
+          Upload a photo, enter height + weight, and inspect the experimental
+          visual waist/hip trace. Production SDK and Shopify sizing use the
+          backend sizing service as the source of truth.
         </p>
       </header>
+
+      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        This lab is visual debugging only. Do not compare these local waist/hip
+        numbers directly against Shopify results; Shopify and the SDK use the
+        backend estimator.
+      </div>
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <ImageUploader

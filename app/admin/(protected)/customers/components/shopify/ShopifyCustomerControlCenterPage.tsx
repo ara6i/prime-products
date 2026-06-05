@@ -4,9 +4,6 @@ import { type FormEvent, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
-  Ban,
-  CheckCircle2,
-  RefreshCcw,
   RotateCcw,
   Save,
 } from "lucide-react";
@@ -23,7 +20,6 @@ import type {
   ShopifyRevenueAnalyticsRaw,
   ShopifyUsageLimitsPayload,
 } from "../../types";
-import { CustomerStatusBadge } from "../shared/CustomerStatusBadge";
 
 interface ShopifyCustomerControlCenterPageProps {
   initialView: ShopifyControlCenterView;
@@ -181,13 +177,11 @@ function UsageControls({
   view,
   isSaving,
   onSubmit,
-  onSetStatus,
   onResetMapping,
 }: {
   view: ShopifyControlCenterView;
   isSaving: boolean;
   onSubmit: (payload: ShopifyUsageLimitsPayload) => Promise<void>;
-  onSetStatus: (status: "active" | "suspended") => Promise<void>;
   onResetMapping: () => Promise<void>;
 }) {
   const [remaining, setRemaining] = useState(String(view.usageFormDefaults.tryOnsRemaining));
@@ -242,14 +236,6 @@ function UsageControls({
         <h3 className="text-[clamp(17px,1.05vw,21px)] font-semibold text-text-primary max-lg:text-[4.4vw]">Operations</h3>
         <p className="mt-[0.208vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:text-[3vw]">{view.profile.helper}</p>
         <div className="mt-[1.042vw] grid gap-[0.625vw] max-lg:mt-[4vw] max-lg:gap-[2.5vw]">
-          <Button type="button" variant="outline" disabled={isSaving} onClick={() => void onSetStatus("active")} className="h-[2.292vw] justify-start rounded-full text-[clamp(13px,0.78vw,15px)] max-lg:h-[10vw] max-lg:text-[3.3vw]">
-            <CheckCircle2 className="h-[0.833vw] w-[0.833vw] max-lg:h-[4vw] max-lg:w-[4vw]" />
-            Activate shop
-          </Button>
-          <Button type="button" variant="outline-neutral" disabled={isSaving} onClick={() => void onSetStatus("suspended")} className="h-[2.292vw] justify-start rounded-full text-[clamp(13px,0.78vw,15px)] max-lg:h-[10vw] max-lg:text-[3.3vw]">
-            <Ban className="h-[0.833vw] w-[0.833vw] max-lg:h-[4vw] max-lg:w-[4vw]" />
-            Suspend shop
-          </Button>
           <Button type="button" variant="ghost" disabled={isSaving} onClick={() => void onResetMapping()} className="h-[2.292vw] justify-start rounded-full text-[clamp(13px,0.78vw,15px)] max-lg:h-[10vw] max-lg:text-[3.3vw]">
             <RotateCcw className="h-[0.833vw] w-[0.833vw] max-lg:h-[4vw] max-lg:w-[4vw]" />
             Reset size mapping
@@ -287,9 +273,6 @@ export function ShopifyCustomerControlCenterPage({
     initialRevenue,
   );
   const { view } = customer;
-  const nextStatus = view.status === "active" ? "suspended" : "active";
-  const statusActionLabel = nextStatus === "active" ? "Activate shop" : "Suspend shop";
-  const StatusActionIcon = nextStatus === "active" ? CheckCircle2 : Ban;
 
   return (
     <section className="space-y-[1.042vw] max-lg:space-y-[4vw]">
@@ -306,27 +289,6 @@ export function ShopifyCustomerControlCenterPage({
               <h2 className="mt-[0.25vw] truncate text-[clamp(26px,1.65vw,32px)] font-semibold leading-tight text-text-primary max-lg:mt-[1vw] max-lg:text-[6vw]">{view.storeName}</h2>
               <p className="mt-[0.208vw] truncate text-[clamp(13px,0.78vw,15px)] text-text-body max-lg:text-[3.2vw]">{view.shopDomain} · {view.ownerEmail}</p>
             </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-[0.521vw] max-lg:gap-[2vw]">
-            <CustomerStatusBadge tone={view.statusTone}>{view.statusLabel}</CustomerStatusBadge>
-            {view.isTestBilling ? (
-              <span className="rounded-full bg-customer-soft px-[0.625vw] py-[0.208vw] text-[clamp(11px,0.68vw,13px)] font-semibold text-customer-muted max-lg:px-[2.4vw] max-lg:py-[1vw] max-lg:text-[2.9vw]">Test billing</span>
-            ) : null}
-            <Button
-              type="button"
-              variant={nextStatus === "active" ? "outline" : "outline-neutral"}
-              disabled={customer.isSaving}
-              onClick={() => void customer.setStatus(nextStatus)}
-              className="h-[2.292vw] rounded-full px-[0.833vw] text-[clamp(12px,0.72vw,14px)] font-semibold max-lg:h-[9vw] max-lg:px-[3vw] max-lg:text-[3vw]"
-            >
-              <StatusActionIcon className="h-[0.833vw] w-[0.833vw] max-lg:h-[4vw] max-lg:w-[4vw]" />
-              {statusActionLabel}
-            </Button>
-            <Button type="button" variant="ghost" disabled={customer.isSaving} onClick={() => void customer.refresh()} className="h-[2.292vw] rounded-full px-[0.833vw] text-[clamp(12px,0.72vw,14px)] font-semibold max-lg:h-[9vw] max-lg:px-[3vw] max-lg:text-[3vw]">
-              <RefreshCcw className="h-[0.833vw] w-[0.833vw] max-lg:h-[4vw] max-lg:w-[4vw]" />
-              Refresh
-            </Button>
           </div>
         </div>
 
@@ -354,7 +316,7 @@ export function ShopifyCustomerControlCenterPage({
             <MetricGrid cards={view.billingCards.slice(0, 4)} />
             <SmallRows
               rows={[
-                { label: "Plan", value: view.planLabel, helper: view.subscriptionLabel },
+                { label: "Plan", value: view.planLabel, helper: "Current billing plan" },
                 { label: "Due date", value: view.currentPeriodEndLabel },
                 { label: "Size profile", value: view.profile.label, helper: view.profile.helper },
               ]}
@@ -380,7 +342,6 @@ export function ShopifyCustomerControlCenterPage({
             view={view}
             isSaving={customer.isSaving}
             onSubmit={customer.updateUsage}
-            onSetStatus={customer.setStatus}
             onResetMapping={customer.resetSizeGuideMapping}
           />
         </TabsContent>

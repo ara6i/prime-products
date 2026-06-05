@@ -60,7 +60,7 @@ export function IntroductionSection() {
           <p className="text-sm text-gray-600 leading-relaxed">
             <code className="font-mono text-xs">usePrimeStyleSize()</code> and
             <code className="font-mono text-xs"> recommendForProduct()</code> return
-            a recommended size for your own UI. No modal.
+            a suggested size for your own UI. No modal.
           </p>
         </div>
 
@@ -209,7 +209,7 @@ export function QuickStartSection() {
             <li>A &quot;Try it on&quot; button renders next to your product.</li>
             <li>Clicking opens a modal that walks the user through profile setup or photo upload.</li>
             <li>The SDK requests a size recommendation and a try-on image from the API.</li>
-            <li>Within ~20 seconds the modal shows the try-on photo and recommended size.</li>
+            <li>Within ~20 seconds the modal shows the try-on photo and suggested size.</li>
           </ol>
         </div>
       </div>
@@ -828,7 +828,7 @@ export function ApiReferenceSection() {
         <EndpointBlock
           method="POST"
           path="/api/v1/sizing/recommend"
-          description="Given a user profile and a product (optionally with its size guide), returns a recommended size, a confidence level, and human-readable reasoning."
+          description="Given a user profile and a product (optionally with its size guide), returns a suggested size, a confidence level, and human-readable reasoning."
           bodyParams={[
             {
               name: "method",
@@ -1082,7 +1082,7 @@ function SizeRecommendation({ product }) {
 
   return (
     <div>
-      <strong>Recommended: {data.recommendedSize}</strong>
+      <strong>Suggested: {data.recommendedSize}</strong>
       <p>{data.reasoning}</p>
     </div>
   );
@@ -1427,7 +1427,7 @@ export function SdkSection() {
             { name: "setActiveProfileId(id)", type: "(id: string) => void", required: false, description: "Switch the active profile." },
             { name: "updateProfile(id, patch)", type: "(id, patch) => void", required: false, description: "Merge-update a profile by id." },
             { name: "updateProfileMeasurements(id, m, unit?)", type: "function", required: false, description: "Update only the measurements object for a profile." },
-            { name: "addSizeToHistory(profileId, entry)", type: "function", required: false, description: "Remember a recommended size for later lookups." },
+            { name: "addSizeToHistory(profileId, entry)", type: "function", required: false, description: "Remember a suggested size for later lookups." },
             { name: "getCachedSize(profile, productId)", type: "(profile, productId) => string | null", required: false, description: "Return a previously cached recommendation for (profile, product), or null." },
           ]}
         />

@@ -78,7 +78,7 @@ function mapItem(item: AdminFeedbackRawItem): FeedbackListItem {
     productTitle: item.productTitle || "Untitled product",
     productMeta: productMeta(item),
     productUrl: item.productUrl,
-    sizeLabel: item.recommendedSize ? `Recommended size ${item.recommendedSize}` : "No size recorded",
+    sizeLabel: item.recommendedSize ? `Suggested size ${item.recommendedSize}` : "No size recorded",
     visitorLabel: visitorLabel(item),
     visitorMeta: visitorMeta(item),
     deviceLabel: deviceLabel(item),

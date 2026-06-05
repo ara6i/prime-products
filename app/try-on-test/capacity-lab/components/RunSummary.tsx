@@ -225,7 +225,7 @@ function ResultSamples({ samples }: ResultSamplesProps) {
       <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-4">
         <p className="text-sm font-semibold text-text-primary">Result samples</p>
         <p className="mt-2 text-xs leading-5 text-text-secondary">
-          Waiting for the first completed real SDK journey. When one finishes, this will show the recommended size, try-on job id,
+          Waiting for the first completed real SDK journey. When one finishes, this will show the suggested size, try-on job id,
           generated image, and stage timings.
         </p>
       </div>
@@ -279,7 +279,7 @@ function ResultSamples({ samples }: ResultSamplesProps) {
                 </div>
 
                 <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-                  <SampleLine label="Recommended size" value={sample.recommendedSize ?? "n/a"} />
+                  <SampleLine label="Suggested size" value={sample.recommendedSize ?? "n/a"} />
                   <SampleLine label="Model used" value={sample.tryOnModel ?? "n/a"} />
                   <SampleLine label="Try-on job" value={sample.jobId ?? "n/a"} />
                 </div>
