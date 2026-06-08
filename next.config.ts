@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const PREVIEW = "https://preview.myaifitting.com";
 const siteAuthEnabled = process.env.PRIME_PRODUCTS_SITE_AUTH_ENABLED === "true";
@@ -39,4 +40,14 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const isVercel =
+  process.env.VERCEL === "1" ||
+  Boolean(process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.NEXT_PUBLIC_VERCEL_URL);
+const sentryEnabled =
+  (process.env.SENTRY_FRONTEND_ENABLED ?? process.env.NEXT_PUBLIC_ENABLE_FRONTEND_SENTRY) === "true" &&
+  !isVercel &&
+  Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN);
+
+export default sentryEnabled
+  ? withSentryConfig(nextConfig, { silent: true, disableLogger: true })
+  : nextConfig;
