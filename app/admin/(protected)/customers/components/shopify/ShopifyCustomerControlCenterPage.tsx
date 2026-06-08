@@ -257,6 +257,7 @@ function BillingAutomationControls({
   onSubmit: (payload: ShopifyBillingAutomationTestPayload) => Promise<void>;
 }) {
   const [reason, setReason] = useState("Admin automation test");
+  const [selectedAction, setSelectedAction] = useState<ShopifyBillingAutomationTestPayload["action"]>("usage_50");
   const actions: Array<{ label: string; helper: string; action: ShopifyBillingAutomationTestPayload["action"] }> = [
     { label: "Set usage to 50%", helper: "Sends the 50% usage email if it has not been sent.", action: "usage_50" },
     { label: "Set usage to 80%", helper: "Sends the 80% usage email if it has not been sent.", action: "usage_80" },
@@ -264,13 +265,19 @@ function BillingAutomationControls({
     { label: "Reset emails", helper: "Clears sent timestamps so alerts can be tested again.", action: "reset_emails" },
     { label: "Restart trial", helper: "Restarts the visible test trial with 20 try-ons.", action: "restart_trial" },
   ];
+  const selectedAutomation = actions.find((item) => item.action === selectedAction) ?? actions[0];
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void onSubmit({ action: selectedAction, reason });
+  };
 
   return (
-    <section className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-[1.042vw] max-lg:rounded-[5vw] max-lg:p-[4vw]">
+    <form onSubmit={handleSubmit} className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-[1.042vw] max-lg:rounded-[5vw] max-lg:p-[4vw]">
       <div className="flex flex-wrap items-start justify-between gap-[1vw] max-lg:gap-[3vw]">
         <div>
           <h3 className="text-[clamp(17px,1.05vw,21px)] font-semibold text-text-primary max-lg:text-[4.4vw]">Email automation test lab</h3>
-          <p className="mt-[0.208vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:text-[3vw]">{view.trial.message}</p>
+          <p className="mt-[0.208vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:text-[3vw]">Choose a test state, then run it. Nothing changes until you click Run automation.</p>
         </div>
         <span className={`rounded-full px-[0.729vw] py-[0.313vw] text-[clamp(11px,0.68vw,13px)] font-semibold max-lg:px-[3vw] max-lg:py-[1.5vw] max-lg:text-[2.8vw] ${view.trial.canUseStorefront ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}>
           {view.trial.statusLabel}
@@ -290,22 +297,36 @@ function BillingAutomationControls({
           ]}
         />
         <div className="grid gap-[0.521vw] max-lg:gap-[2vw]">
-          {actions.map((item) => (
-            <Button
-              key={item.action}
-              type="button"
-              variant={item.action === "expire_trial" ? "outline-dark" : "outline"}
-              disabled={isSaving}
-              onClick={() => void onSubmit({ action: item.action, reason })}
-              className="h-auto justify-between rounded-[0.833vw] px-[0.833vw] py-[0.625vw] text-left max-lg:rounded-[4vw] max-lg:px-[4vw] max-lg:py-[3vw]"
-              title={item.helper}
+          <div>
+            <Label htmlFor="shopify-automation-action" className="text-[clamp(12px,0.72vw,14px)] text-text-primary max-lg:text-[3vw]">Automation</Label>
+            <select
+              id="shopify-automation-action"
+              value={selectedAction}
+              onChange={(event) => setSelectedAction(event.target.value as ShopifyBillingAutomationTestPayload["action"])}
+              className="mt-[0.313vw] h-[2.5vw] w-full rounded-[0.833vw] border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none focus:border-transparent focus:ring-2 focus:ring-brand-blue max-lg:mt-[1vw] max-lg:h-[10vw] max-lg:rounded-[4vw]"
             >
-              <span>{item.label}</span>
-            </Button>
-          ))}
+              {actions.map((item) => (
+                <option key={item.action} value={item.action}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+            <p className="mt-[0.313vw] text-[clamp(11px,0.68vw,13px)] text-text-body max-lg:mt-[1vw] max-lg:text-[2.8vw]">
+              {selectedAutomation.helper}
+            </p>
+          </div>
+          <Button
+            type="submit"
+            variant={selectedAction === "expire_trial" ? "outline-dark" : "primary"}
+            disabled={isSaving}
+            className="h-[2.292vw] justify-center rounded-[0.833vw] px-[0.833vw] text-[clamp(13px,0.78vw,15px)] font-semibold max-lg:h-[10vw] max-lg:rounded-[4vw] max-lg:px-[4vw] max-lg:text-[3.3vw]"
+          >
+            <Save className="h-[0.833vw] w-[0.833vw] max-lg:h-[4vw] max-lg:w-[4vw]" />
+            Run automation
+          </Button>
         </div>
       </div>
-    </section>
+    </form>
   );
 }
 
