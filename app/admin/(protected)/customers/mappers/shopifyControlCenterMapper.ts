@@ -187,7 +187,7 @@ export function mapShopifyControlCenter(
     billingFormDefaults: {
       plan: raw.billing.plan || "custom",
       selectedProductCount: raw.billing.selectedProductCount ?? raw.billing.scheduledProductCount ?? 0,
-      requestedTryOns: raw.billing.tryOnPackQuantity ?? raw.billing.scheduledTryOnPackQuantity ?? 0,
+      requestedTryOns: raw.billing.tryOnPackQuantity ?? raw.billing.scheduledTryOnPackQuantity ?? raw.usage.tryOnsLimit,
       scheduledEffectiveAt: formatInputDate(raw.billing.scheduledEffectiveAt),
       currentPeriodEnd: formatInputDate(raw.billing.currentPeriodEnd),
       billingUsageEnabled: raw.billing.usageBillingEnabled,
