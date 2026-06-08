@@ -67,6 +67,16 @@ export interface ShopifyControlCenterRaw {
     usageAlert50SentAt: string | null;
     usageAlert80SentAt: string | null;
   };
+  trial: {
+    trialStartedAt: string | null;
+    trialEndsAt: string | null;
+    trialUsedAt: string | null;
+    trialExpiredEmailSentAt: string | null;
+    daysRemaining: number;
+    accessReason: string;
+    accessMessage: string;
+    canUseStorefront: boolean;
+  };
   storeProfile: {
     id: string;
     source: string;
@@ -151,6 +161,11 @@ export interface ShopifyUsageLimitsPayload {
   tryOnsRemaining?: number;
   tryOnsUsed?: number;
   grantTryOns?: number;
+  reason: string;
+}
+
+export interface ShopifyBillingAutomationTestPayload {
+  action: "usage_50" | "usage_80" | "expire_trial" | "reset_emails" | "restart_trial";
   reason: string;
 }
 
@@ -379,6 +394,15 @@ export interface ShopifyControlCenterView {
   summaryCards: ShopifyMetricCard[];
   billingCards: ShopifyMetricCard[];
   usageCards: ShopifyMetricCard[];
+  trialCards: ShopifyMetricCard[];
+  trial: {
+    statusLabel: string;
+    message: string;
+    startedAtLabel: string;
+    endsAtLabel: string;
+    expiredEmailLabel: string;
+    canUseStorefront: boolean;
+  };
   billingFormDefaults: {
     plan: string;
     selectedProductCount: number;

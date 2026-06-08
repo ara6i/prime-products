@@ -13,6 +13,7 @@ import { Label } from "@/app/shared/components/ui/label";
 import { useShopifyCustomerControlCenter } from "../../hooks/useShopifyCustomerControlCenter";
 import type {
   ShopifyBehaviorAnalyticsRaw,
+  ShopifyBillingAutomationTestPayload,
   ShopifyBillingOverridePayload,
   ShopifyControlCenterRaw,
   ShopifyControlCenterView,
@@ -246,6 +247,68 @@ function UsageControls({
   );
 }
 
+function BillingAutomationControls({
+  view,
+  isSaving,
+  onSubmit,
+}: {
+  view: ShopifyControlCenterView;
+  isSaving: boolean;
+  onSubmit: (payload: ShopifyBillingAutomationTestPayload) => Promise<void>;
+}) {
+  const [reason, setReason] = useState("Admin automation test");
+  const actions: Array<{ label: string; helper: string; action: ShopifyBillingAutomationTestPayload["action"] }> = [
+    { label: "Set usage to 50%", helper: "Sends the 50% usage email if it has not been sent.", action: "usage_50" },
+    { label: "Set usage to 80%", helper: "Sends the 80% usage email if it has not been sent.", action: "usage_80" },
+    { label: "Expire trial", helper: "Ends the free trial and sends the trial-ended email.", action: "expire_trial" },
+    { label: "Reset emails", helper: "Clears sent timestamps so alerts can be tested again.", action: "reset_emails" },
+    { label: "Restart trial", helper: "Restarts the visible test trial with 20 try-ons.", action: "restart_trial" },
+  ];
+
+  return (
+    <section className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-[1.042vw] max-lg:rounded-[5vw] max-lg:p-[4vw]">
+      <div className="flex flex-wrap items-start justify-between gap-[1vw] max-lg:gap-[3vw]">
+        <div>
+          <h3 className="text-[clamp(17px,1.05vw,21px)] font-semibold text-text-primary max-lg:text-[4.4vw]">Email automation test lab</h3>
+          <p className="mt-[0.208vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:text-[3vw]">{view.trial.message}</p>
+        </div>
+        <span className={`rounded-full px-[0.729vw] py-[0.313vw] text-[clamp(11px,0.68vw,13px)] font-semibold max-lg:px-[3vw] max-lg:py-[1.5vw] max-lg:text-[2.8vw] ${view.trial.canUseStorefront ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}>
+          {view.trial.statusLabel}
+        </span>
+      </div>
+
+      <div className="mt-[1.042vw] grid grid-cols-3 gap-[0.833vw] max-lg:mt-[4vw] max-lg:grid-cols-1 max-lg:gap-[3vw]">
+        <div>
+          <Label htmlFor="shopify-automation-reason" className="text-[clamp(12px,0.72vw,14px)] text-text-primary max-lg:text-[3vw]">Reason</Label>
+          <Input id="shopify-automation-reason" value={reason} onChange={(event) => setReason(event.target.value)} className="mt-[0.313vw] h-[2.5vw] rounded-[0.833vw] max-lg:mt-[1vw] max-lg:h-[10vw] max-lg:rounded-[4vw]" />
+        </div>
+        <SmallRows
+          rows={[
+            { label: "Trial started", value: view.trial.startedAtLabel },
+            { label: "Trial ends", value: view.trial.endsAtLabel },
+            { label: "Trial email", value: view.trial.expiredEmailLabel },
+          ]}
+        />
+        <div className="grid gap-[0.521vw] max-lg:gap-[2vw]">
+          {actions.map((item) => (
+            <Button
+              key={item.action}
+              type="button"
+              variant={item.action === "expire_trial" ? "outline-dark" : "outline"}
+              disabled={isSaving}
+              onClick={() => void onSubmit({ action: item.action, reason })}
+              className="h-auto justify-between rounded-[0.833vw] px-[0.833vw] py-[0.625vw] text-left max-lg:rounded-[4vw] max-lg:px-[4vw] max-lg:py-[3vw]"
+              title={item.helper}
+            >
+              <span>{item.label}</span>
+            </Button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function AnalyticsPanel({ view }: { view: ShopifyControlCenterView }) {
   return (
     <div className="space-y-[1.042vw] max-lg:space-y-[4vw]">
@@ -337,6 +400,12 @@ export function ShopifyCustomerControlCenterPage({
 
         <TabsContent value="usage" className="space-y-[1.042vw] max-lg:space-y-[4vw]">
           <MetricGrid cards={view.usageCards} />
+          <MetricGrid cards={view.trialCards} />
+          <BillingAutomationControls
+            view={view}
+            isSaving={customer.isSaving}
+            onSubmit={customer.runAutomationTest}
+          />
           <UsageControls
             key={`${view.usageFormDefaults.tryOnsRemaining}-${view.usageFormDefaults.tryOnsUsed}`}
             view={view}

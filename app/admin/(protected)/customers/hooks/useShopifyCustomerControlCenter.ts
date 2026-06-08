@@ -7,12 +7,14 @@ import {
   fetchAdminShopifyControlCenterClient,
   fetchAdminShopifyRevenueClient,
   resetCustomerSizeGuideMappingClient,
+  runShopifyBillingAutomationTestClient,
   updateShopifyBillingOverrideClient,
   updateShopifyStatusClient,
   updateShopifyUsageLimitsClient,
 } from "../services/customersClientService";
 import type {
   ShopifyBehaviorAnalyticsRaw,
+  ShopifyBillingAutomationTestPayload,
   ShopifyBillingOverridePayload,
   ShopifyControlCenterRaw,
   ShopifyControlCenterView,
@@ -34,6 +36,7 @@ export interface UseShopifyCustomerControlCenterResult {
   refresh: () => Promise<void>;
   updateBilling: (payload: ShopifyBillingOverridePayload) => Promise<void>;
   updateUsage: (payload: ShopifyUsageLimitsPayload) => Promise<void>;
+  runAutomationTest: (payload: ShopifyBillingAutomationTestPayload) => Promise<void>;
   setStatus: (status: "active" | "suspended") => Promise<void>;
   resetSizeGuideMapping: () => Promise<void>;
 }
@@ -106,6 +109,13 @@ export function useShopifyCustomerControlCenter(
     }, "Usage limits updated.");
   }, [runMutation, state.controlCenter.store.id]);
 
+  const runAutomationTest = useCallback(async (payload: ShopifyBillingAutomationTestPayload) => {
+    await runMutation(async () => {
+      const response = await runShopifyBillingAutomationTestClient(state.controlCenter.store.id, payload);
+      return response.controlCenter;
+    }, "Billing automation test applied.");
+  }, [runMutation, state.controlCenter.store.id]);
+
   const setStatus = useCallback(async (status: "active" | "suspended") => {
     await runMutation(async () => {
       await updateShopifyStatusClient(state.controlCenter.store.id, status);
@@ -129,6 +139,7 @@ export function useShopifyCustomerControlCenter(
       refresh,
       updateBilling,
       updateUsage,
+      runAutomationTest,
       setStatus,
       resetSizeGuideMapping,
     }),
@@ -139,6 +150,7 @@ export function useShopifyCustomerControlCenter(
       optimisticView,
       refresh,
       resetSizeGuideMapping,
+      runAutomationTest,
       setStatus,
       updateBilling,
       updateUsage,

@@ -6,6 +6,7 @@ import type {
   AdminCustomerSource,
   AdminCustomersResponse,
   ShopifyBehaviorAnalyticsRaw,
+  ShopifyBillingAutomationTestPayload,
   ShopifyBillingOverridePayload,
   ShopifyControlCenterMutationResponse,
   ShopifyControlCenterRaw,
@@ -112,6 +113,21 @@ export async function updateShopifyUsageLimitsClient(
   });
   if (!response.ok) {
     throw new Error("Failed to update usage limits");
+  }
+  return (await response.json()) as ShopifyControlCenterMutationResponse;
+}
+
+export async function runShopifyBillingAutomationTestClient(
+  id: string,
+  payload: ShopifyBillingAutomationTestPayload,
+): Promise<ShopifyControlCenterMutationResponse> {
+  const response = await fetch(`/api/admin/stores/shopify/${encodeURIComponent(id)}/billing-automation-test`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to run billing automation test");
   }
   return (await response.json()) as ShopifyControlCenterMutationResponse;
 }

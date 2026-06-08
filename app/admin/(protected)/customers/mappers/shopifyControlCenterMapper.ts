@@ -129,6 +129,14 @@ export function mapShopifyControlCenter(
   const currentPeriodEndLabel = formatDate(raw.billing.currentPeriodEnd);
   const storeName = raw.store.shopName || raw.store.shopDomain;
   const ownerEmail = raw.store.ownerEmail || "Not available";
+  const trialStatusLabel =
+    raw.trial.accessReason === "TRIAL_ACTIVE"
+      ? "Trial active"
+      : raw.trial.accessReason === "TRIAL_EXPIRED"
+        ? "Trial expired"
+        : raw.trial.accessReason === "ACTIVE_PLAN"
+          ? "Paid plan active"
+          : titleCase(raw.trial.accessReason);
 
   return {
     id: raw.store.id,
@@ -162,6 +170,20 @@ export function mapShopifyControlCenter(
       card("Size charts", formatNumber(raw.usage.activeSizeCharts), "Configured chart templates"),
       card("Linked products", formatNumber(raw.usage.linkedProducts), "Products with sizing links"),
     ],
+    trialCards: [
+      card("Trial status", trialStatusLabel, raw.trial.accessMessage),
+      card("Trial ends", formatDate(raw.trial.trialEndsAt), `${formatNumber(raw.trial.daysRemaining)} days remaining`),
+      card("50% email", formatDate(raw.usage.usageAlert50SentAt), "Usage threshold automation"),
+      card("80% email", formatDate(raw.usage.usageAlert80SentAt), "Usage threshold automation"),
+    ],
+    trial: {
+      statusLabel: trialStatusLabel,
+      message: raw.trial.accessMessage,
+      startedAtLabel: formatDate(raw.trial.trialStartedAt),
+      endsAtLabel: formatDate(raw.trial.trialEndsAt),
+      expiredEmailLabel: formatDate(raw.trial.trialExpiredEmailSentAt),
+      canUseStorefront: raw.trial.canUseStorefront,
+    },
     billingFormDefaults: {
       plan: raw.billing.plan || "custom",
       selectedProductCount: raw.billing.selectedProductCount ?? raw.billing.scheduledProductCount ?? 0,
@@ -189,6 +211,9 @@ export function mapShopifyControlCenter(
       technicalField("Billing override note", raw.technical.adminBillingOverrideNote),
       technicalField("Last usage adjustment", formatDate(raw.technical.adminUsageAdjustmentAt)),
       technicalField("Usage adjustment note", raw.technical.adminUsageAdjustmentNote),
+      technicalField("Trial started", formatDate(raw.trial.trialStartedAt)),
+      technicalField("Trial ends", formatDate(raw.trial.trialEndsAt)),
+      technicalField("Trial-ended email", formatDate(raw.trial.trialExpiredEmailSentAt)),
     ],
     analytics: {
       rangeLabel: `${behavior.range.days} days`,
