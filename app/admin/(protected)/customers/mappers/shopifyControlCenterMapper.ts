@@ -8,6 +8,8 @@ import type {
   ShopifyRevenueAnalyticsRaw,
 } from "../types";
 
+const FREE_PLAN_PRODUCT_LIMIT = 50;
+
 function formatNumber(value: number | null | undefined): string {
   if (typeof value !== "number") return "Not tracked";
   return new Intl.NumberFormat("en-US").format(value);
@@ -129,6 +131,13 @@ export function mapShopifyControlCenter(
   const currentPeriodEndLabel = formatDate(raw.billing.currentPeriodEnd);
   const storeName = raw.store.shopName || raw.store.shopDomain;
   const ownerEmail = raw.store.ownerEmail || "Not available";
+  const normalizedPlan = String(raw.billing.plan ?? "").trim().toLowerCase();
+  const isFreePlan =
+    !normalizedPlan || normalizedPlan === "free" || normalizedPlan === "pilot" || normalizedPlan === "test";
+  const productAllowance =
+    raw.billing.selectedProductCount ??
+    raw.billing.scheduledProductCount ??
+    (isFreePlan ? FREE_PLAN_PRODUCT_LIMIT : 0);
   const trialStatusLabel =
     raw.trial.accessReason === "TRIAL_ACTIVE"
       ? "Trial active"
@@ -152,7 +161,7 @@ export function mapShopifyControlCenter(
     isTestBilling: raw.billing.isTest,
     summaryCards: [
       card("Monthly spend", formatCurrency(raw.billing.monthlySpend, currency), "Current PrimeStyleAI plan"),
-      card("Products", formatNumber(raw.billing.selectedProductCount), "Products covered by plan"),
+      card("Products", formatNumber(productAllowance), "Products covered by plan"),
       card("Try-on balance", formatNumber(raw.usage.tryOnsRemaining), `${formatNumber(raw.usage.tryOnsUsed)} used`),
       card("Due date", currentPeriodEndLabel, "Current billing period end"),
     ],
@@ -186,7 +195,7 @@ export function mapShopifyControlCenter(
     },
     billingFormDefaults: {
       plan: raw.billing.plan || "custom",
-      selectedProductCount: raw.billing.selectedProductCount ?? raw.billing.scheduledProductCount ?? 0,
+      selectedProductCount: productAllowance,
       requestedTryOns: raw.billing.tryOnPackQuantity ?? raw.billing.scheduledTryOnPackQuantity ?? raw.usage.tryOnsLimit,
       scheduledEffectiveAt: formatInputDate(raw.billing.scheduledEffectiveAt),
       currentPeriodEnd: formatInputDate(raw.billing.currentPeriodEnd),
