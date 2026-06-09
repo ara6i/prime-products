@@ -64,6 +64,67 @@ function SmallRows({ rows }: { rows: Array<{ label: string; value: string; helpe
   );
 }
 
+function parseChartNumber(value: string): number {
+  const normalized = value.replace(/[$,%]/g, "").replace(/,/g, "").trim();
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+}
+
+function AnalyticsBarChart({
+  title,
+  helper,
+  rows,
+  valueLabel = "value",
+}: {
+  title: string;
+  helper: string;
+  rows: Array<{ label: string; value: string; helper?: string }>;
+  valueLabel?: string;
+}) {
+  const chartRows = rows.map((row) => ({ ...row, numericValue: parseChartNumber(row.value) }));
+  const maxValue = Math.max(0, ...chartRows.map((row) => row.numericValue));
+  const hasData = maxValue > 0;
+
+  return (
+    <section className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-[1.042vw] max-lg:rounded-[5vw] max-lg:p-[4vw]">
+      <div className="flex items-start justify-between gap-[1vw] max-lg:gap-[3vw]">
+        <div className="min-w-0">
+          <h3 className="text-[clamp(17px,1.05vw,21px)] font-semibold text-text-primary max-lg:text-[4.4vw]">{title}</h3>
+          <p className="mt-[0.208vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:text-[3vw]">{helper}</p>
+        </div>
+      </div>
+
+      <div className="mt-[1.042vw] space-y-[0.729vw] max-lg:mt-[4vw] max-lg:space-y-[3vw]">
+        {hasData ? chartRows.map((row) => {
+          const width = Math.max(5, Math.round((row.numericValue / maxValue) * 100));
+          return (
+            <div key={`${title}-${row.label}-${row.value}`} className="space-y-[0.313vw] max-lg:space-y-[1.5vw]">
+              <div className="flex items-start justify-between gap-[1vw] max-lg:gap-[3vw]">
+                <div className="min-w-0">
+                  <p className="truncate text-[clamp(12px,0.72vw,14px)] font-semibold text-text-primary max-lg:text-[3.2vw]">{row.label}</p>
+                  {row.helper ? <p className="truncate text-[clamp(11px,0.68vw,13px)] text-text-body max-lg:text-[2.8vw]">{row.helper}</p> : null}
+                </div>
+                <p className="shrink-0 text-[clamp(12px,0.72vw,14px)] font-semibold text-text-primary max-lg:text-[3.2vw]">{row.value}</p>
+              </div>
+              <div className="h-[0.521vw] overflow-hidden rounded-full bg-customer-soft max-lg:h-[2vw]">
+                <div
+                  className="h-full rounded-full bg-brand-blue"
+                  style={{ width: `${width}%` }}
+                  aria-label={`${row.label}: ${row.value} ${valueLabel}`}
+                />
+              </div>
+            </div>
+          );
+        }) : (
+          <div className="rounded-[0.833vw] border border-dashed border-customer-border bg-customer-soft px-[0.833vw] py-[1.042vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:rounded-[4vw] max-lg:px-[4vw] max-lg:py-[5vw] max-lg:text-[3.2vw]">
+            No tracked data yet.
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function BillingOverrideForm({
   view,
   isSaving,
@@ -389,10 +450,25 @@ function AnalyticsPanel({ view }: { view: ShopifyControlCenterView }) {
     <div className="space-y-[1.042vw] max-lg:space-y-[4vw]">
       <MetricGrid cards={view.analytics.behaviorCards} />
       <MetricGrid cards={view.analytics.revenueCards} />
-      <div className="grid grid-cols-3 gap-[1.042vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
-        <SmallRows rows={view.analytics.funnel.map((item) => ({ label: item.label, value: item.value }))} />
-        <SmallRows rows={view.analytics.topProducts.map((item) => ({ label: item.label, value: item.value, helper: item.helper }))} />
-        <SmallRows rows={view.analytics.topRevenueProducts.map((item) => ({ label: item.label, value: item.value, helper: item.helper }))} />
+      <div className="grid grid-cols-2 gap-[1.042vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
+        <AnalyticsBarChart
+          title="Storefront funnel"
+          helper="Every tracked step from product view through cart add."
+          rows={view.analytics.funnel.map((item) => ({ label: item.label, value: item.value }))}
+          valueLabel="events"
+        />
+        <AnalyticsBarChart
+          title="Most tried products"
+          helper="Placeholder test products are hidden from this chart."
+          rows={view.analytics.topProducts.map((item) => ({ label: item.label, value: item.value, helper: item.helper }))}
+          valueLabel="try-ons"
+        />
+        <AnalyticsBarChart
+          title="Revenue products"
+          helper="Attributed Shopify revenue by product when order data is available."
+          rows={view.analytics.topRevenueProducts.map((item) => ({ label: item.label, value: item.value, helper: item.helper }))}
+          valueLabel="revenue"
+        />
       </div>
     </div>
   );
