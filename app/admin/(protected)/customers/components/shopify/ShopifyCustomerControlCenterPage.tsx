@@ -277,7 +277,7 @@ function BillingAutomationControls({
       <div className="flex flex-wrap items-start justify-between gap-[1vw] max-lg:gap-[3vw]">
         <div>
           <h3 className="text-[clamp(17px,1.05vw,21px)] font-semibold text-text-primary max-lg:text-[4.4vw]">Email automation test lab</h3>
-          <p className="mt-[0.208vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:text-[3vw]">Choose a test state, then run it. Nothing changes until you click Run automation.</p>
+          <p className="mt-[0.208vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:text-[3vw]">Choose a test state, then save.</p>
         </div>
         <span className={`rounded-full px-[0.729vw] py-[0.313vw] text-[clamp(11px,0.68vw,13px)] font-semibold max-lg:px-[3vw] max-lg:py-[1.5vw] max-lg:text-[2.8vw] ${view.trial.canUseStorefront ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}>
           {view.trial.statusLabel}
@@ -322,7 +322,7 @@ function BillingAutomationControls({
             className="h-[2.292vw] justify-center rounded-[0.833vw] px-[0.833vw] text-[clamp(13px,0.78vw,15px)] font-semibold max-lg:h-[10vw] max-lg:rounded-[4vw] max-lg:px-[4vw] max-lg:text-[3.3vw]"
           >
             <Save className="h-[0.833vw] w-[0.833vw] max-lg:h-[4vw] max-lg:w-[4vw]" />
-            Run automation
+            Save
           </Button>
         </div>
       </div>
