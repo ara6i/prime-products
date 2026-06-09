@@ -1,46 +1,45 @@
-export interface AdminBehaviorResponse {
-  range: { days: number; from: string };
-  kpis: {
-    uniqueSessions: number;
-    productViews: number;
-    sdkOpened: number;
-    photoUploaded: number;
-    sizingStarted: number;
-    sizingFailed: number;
-    initiated: number;
-    completed: number;
-    failed: number;
-    clientErrors: number;
-    sizeShown: number;
-    sizeAccepted: number;
-    cartAdds: number;
-    completionRate: number;
-    sizeAcceptanceRate: number;
-  };
-  dailyActivity: Array<{ date: string; initiated: number; completed: number; failed: number }>;
-  deviceSplit: Array<{ device: string; count: number }>;
-  countrySplit: Array<{ iso2: string; name: string; count: number }>;
-  topProducts: Array<{ productId: string; productTitle: string; views?: number; tryOns: number; cartAdds?: number; activity?: number }>;
-  funnel: Array<{ step: string; count: number }>;
+export interface AdminReplaySession {
+  id: string;
+  sessionId: string;
+  source: "shopify" | "sdk";
+  shopifyShopId: string | null;
+  storeProfileId: string | null;
+  productId: string | null;
+  productTitle: string | null;
+  productUrl: string | null;
+  device: string | null;
+  os: string | null;
+  browser: string | null;
+  countryCode: string | null;
+  eventCount: number;
+  chunkCount: number;
+  startedAt: string;
+  lastSeenAt: string;
 }
 
-export interface BehaviorStatCard {
-  label: string;
-  value: string;
-  helper: string;
+export interface AdminReplaySessionsResponse {
+  sessions: AdminReplaySession[];
 }
 
-export interface BehaviorRow {
-  label: string;
-  value: string;
-  helper?: string;
+export interface AdminReplayDetailResponse {
+  session: AdminReplaySession;
+  events: unknown[];
 }
 
-export interface BehaviorViewModel {
-  stats: BehaviorStatCard[];
-  funnel: BehaviorRow[];
-  topProducts: BehaviorRow[];
-  devices: BehaviorRow[];
-  countries: BehaviorRow[];
-  rangeLabel: string;
+export interface ReplaySessionCardView {
+  session: AdminReplaySession;
+  title: string;
+  subtitle: string;
+  sourceLabel: string;
+  deviceLabel: string;
+  eventLabel: string;
+  durationLabel: string;
+  lastSeenLabel: string;
+}
+
+export interface ReplayPageViewModel {
+  sessions: ReplaySessionCardView[];
+  totalSessionsLabel: string;
+  totalEventsLabel: string;
+  latestActivityLabel: string;
 }

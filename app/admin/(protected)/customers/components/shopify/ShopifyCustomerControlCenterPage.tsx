@@ -64,64 +64,74 @@ function SmallRows({ rows }: { rows: Array<{ label: string; value: string; helpe
   );
 }
 
-function parseChartNumber(value: string): number {
+function parseMetricNumber(value: string): number {
   const normalized = value.replace(/[$,%]/g, "").replace(/,/g, "").trim();
   const parsed = Number(normalized);
   return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
 }
 
-function AnalyticsBarChart({
-  title,
-  helper,
-  rows,
-  valueLabel = "value",
-}: {
-  title: string;
-  helper: string;
-  rows: Array<{ label: string; value: string; helper?: string }>;
-  valueLabel?: string;
-}) {
-  const chartRows = rows.map((row) => ({ ...row, numericValue: parseChartNumber(row.value) }));
-  const maxValue = Math.max(0, ...chartRows.map((row) => row.numericValue));
-  const hasData = maxValue > 0;
+function readFirstNumber(value: string): number | null {
+  const match = value.replace(/,/g, "").match(/\d+(?:\.\d+)?/);
+  if (!match) return null;
+  const parsed = Number(match[0]);
+  return Number.isFinite(parsed) ? parsed : null;
+}
 
+function progressForMetric(card: ShopifyMetricCard, maxAbsoluteValue: number): number {
+  if (card.value.includes("%")) return Math.min(100, parseMetricNumber(card.value));
+  if (card.label === "Try-ons") {
+    const completed = parseMetricNumber(card.value);
+    const started = readFirstNumber(card.helper);
+    return started && started > 0 ? Math.min(100, Math.round((completed / started) * 100)) : 0;
+  }
+  const value = parseMetricNumber(card.value);
+  if (maxAbsoluteValue <= 0) return value > 0 ? 100 : 0;
+  return Math.min(100, Math.round((value / maxAbsoluteValue) * 100));
+}
+
+function AnalyticsKpiCard({
+  card,
+  progress,
+}: {
+  card: ShopifyMetricCard;
+  progress: number;
+}) {
   return (
-    <section className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-[1.042vw] max-lg:rounded-[5vw] max-lg:p-[4vw]">
-      <div className="flex items-start justify-between gap-[1vw] max-lg:gap-[3vw]">
-        <div className="min-w-0">
-          <h3 className="text-[clamp(17px,1.05vw,21px)] font-semibold text-text-primary max-lg:text-[4.4vw]">{title}</h3>
-          <p className="mt-[0.208vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:text-[3vw]">{helper}</p>
+    <article className="grid grid-cols-[1fr_auto] items-center gap-[1vw] rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-[1.042vw] max-lg:gap-[4vw] max-lg:rounded-[5vw] max-lg:p-[4vw]">
+      <div className="min-w-0">
+        <p className="text-[clamp(11px,0.68vw,13px)] font-semibold uppercase tracking-[0.08em] text-customer-muted max-lg:text-[2.8vw]">{card.label}</p>
+        <p className="mt-[0.521vw] truncate text-[clamp(24px,1.7vw,34px)] font-semibold leading-none text-text-primary max-lg:mt-[2vw] max-lg:text-[8vw]">{card.value}</p>
+        <p className="mt-[0.417vw] truncate text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:mt-[1.5vw] max-lg:text-[3vw]">{card.helper}</p>
+      </div>
+      <div
+        className="relative grid h-[4.375vw] w-[4.375vw] place-items-center rounded-full max-lg:h-[18vw] max-lg:w-[18vw]"
+        style={{ background: `conic-gradient(#2559ff ${progress}%, rgba(37, 89, 255, 0.12) 0)` }}
+        aria-label={`${card.label}: ${card.value}`}
+      >
+        <div className="grid h-[3.177vw] w-[3.177vw] place-items-center rounded-full bg-white text-[clamp(11px,0.68vw,13px)] font-semibold text-brand-blue shadow-sm max-lg:h-[13vw] max-lg:w-[13vw] max-lg:text-[3vw]">
+          {Math.round(progress)}%
         </div>
       </div>
+    </article>
+  );
+}
 
-      <div className="mt-[1.042vw] space-y-[0.729vw] max-lg:mt-[4vw] max-lg:space-y-[3vw]">
-        {hasData ? chartRows.map((row) => {
-          const width = Math.max(5, Math.round((row.numericValue / maxValue) * 100));
-          return (
-            <div key={`${title}-${row.label}-${row.value}`} className="space-y-[0.313vw] max-lg:space-y-[1.5vw]">
-              <div className="flex items-start justify-between gap-[1vw] max-lg:gap-[3vw]">
-                <div className="min-w-0">
-                  <p className="truncate text-[clamp(12px,0.72vw,14px)] font-semibold text-text-primary max-lg:text-[3.2vw]">{row.label}</p>
-                  {row.helper ? <p className="truncate text-[clamp(11px,0.68vw,13px)] text-text-body max-lg:text-[2.8vw]">{row.helper}</p> : null}
-                </div>
-                <p className="shrink-0 text-[clamp(12px,0.72vw,14px)] font-semibold text-text-primary max-lg:text-[3.2vw]">{row.value}</p>
-              </div>
-              <div className="h-[0.521vw] overflow-hidden rounded-full bg-customer-soft max-lg:h-[2vw]">
-                <div
-                  className="h-full rounded-full bg-brand-blue"
-                  style={{ width: `${width}%` }}
-                  aria-label={`${row.label}: ${row.value} ${valueLabel}`}
-                />
-              </div>
-            </div>
-          );
-        }) : (
-          <div className="rounded-[0.833vw] border border-dashed border-customer-border bg-customer-soft px-[0.833vw] py-[1.042vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:rounded-[4vw] max-lg:px-[4vw] max-lg:py-[5vw] max-lg:text-[3.2vw]">
-            No tracked data yet.
-          </div>
-        )}
-      </div>
-    </section>
+function AnalyticsKpiGrid({ cards }: { cards: ShopifyMetricCard[] }) {
+  const absoluteValues = cards
+    .filter((card) => !card.value.includes("%"))
+    .map((card) => parseMetricNumber(card.value));
+  const maxAbsoluteValue = Math.max(0, ...absoluteValues);
+
+  return (
+    <div className="grid grid-cols-2 gap-[1.042vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
+      {cards.map((card) => (
+        <AnalyticsKpiCard
+          key={`${card.label}-${card.value}`}
+          card={card}
+          progress={progressForMetric(card, maxAbsoluteValue)}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -446,30 +456,11 @@ function StoreAccessControls({
 }
 
 function AnalyticsPanel({ view }: { view: ShopifyControlCenterView }) {
+  const kpiCards = [...view.analytics.behaviorCards, ...view.analytics.revenueCards];
+
   return (
     <div className="space-y-[1.042vw] max-lg:space-y-[4vw]">
-      <MetricGrid cards={view.analytics.behaviorCards} />
-      <MetricGrid cards={view.analytics.revenueCards} />
-      <div className="grid grid-cols-2 gap-[1.042vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
-        <AnalyticsBarChart
-          title="Storefront funnel"
-          helper="Every tracked step from product view through cart add."
-          rows={view.analytics.funnel.map((item) => ({ label: item.label, value: item.value }))}
-          valueLabel="events"
-        />
-        <AnalyticsBarChart
-          title="Most tried products"
-          helper="Placeholder test products are hidden from this chart."
-          rows={view.analytics.topProducts.map((item) => ({ label: item.label, value: item.value, helper: item.helper }))}
-          valueLabel="try-ons"
-        />
-        <AnalyticsBarChart
-          title="Revenue products"
-          helper="Attributed Shopify revenue by product when order data is available."
-          rows={view.analytics.topRevenueProducts.map((item) => ({ label: item.label, value: item.value, helper: item.helper }))}
-          valueLabel="revenue"
-        />
-      </div>
+      <AnalyticsKpiGrid cards={kpiCards} />
     </div>
   );
 }

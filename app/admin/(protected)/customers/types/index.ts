@@ -427,8 +427,5 @@ export interface ShopifyControlCenterView {
     rangeLabel: string;
     behaviorCards: ShopifyMetricCard[];
     revenueCards: ShopifyMetricCard[];
-    funnel: Array<{ label: string; value: string }>;
-    topProducts: Array<{ label: string; helper: string; value: string }>;
-    topRevenueProducts: Array<{ label: string; helper: string; value: string }>;
   };
 }

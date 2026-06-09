@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronDown, Globe2 } from "lucide-react";
-import { CTA, FEATURES, GARMENTS, HERO, PROBLEM, SCALE, SDK_DEMO } from "@/app/content/landing";
+import { ASK_AI, CTA, FEATURES, GARMENTS, HERO, PROBLEM, SCALE, SDK_DEMO } from "@/app/content/landing";
 import { LANDING_STRING_TRANSLATIONS } from "./contentTranslations";
 
 export const LANDING_LANGUAGE_CODES = [
@@ -262,6 +262,7 @@ const BASE_LANDING_CONTENT = {
   scale: SCALE,
   garments: GARMENTS,
   cta: CTA,
+  askAi: ASK_AI,
 };
 
 function isLandingLanguageCode(value: string | null | undefined): value is LandingLanguageCode {

@@ -9,6 +9,7 @@ import type {
   CtaBannerContent,
   IntegrationContent,
   PricingContent,
+  AskAiContent,
 } from "../types/landing";
 
 const ASSET = "/images/landing/ps";
@@ -360,4 +361,10 @@ export const CTA: CtaBannerContent = {
   secondaryLabel: "See it in action",
   secondaryHref: DEMO_HREF,
   footer: "Free tier · SDK, Widget, API, Shopify · No credit card required",
+};
+
+export const ASK_AI: AskAiContent = {
+  eyebrow: "Ask another AI",
+  title: "Want a second opinion?",
+  body: "Open a ready-made question in ChatGPT, Claude, or Perplexity and see why PrimeStyleAI works for Shopify stores.",
 };

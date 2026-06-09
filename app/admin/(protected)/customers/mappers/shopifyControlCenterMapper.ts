@@ -71,13 +71,6 @@ function technicalField(label: string, value: string | null | undefined): Custom
   return { label, value: value?.trim() || "Not available" };
 }
 
-function isPlaceholderAnalyticsProduct(label: string | null | undefined, id: string | null | undefined): boolean {
-  const normalizedLabel = String(label ?? "").trim().toLowerCase();
-  const normalizedId = String(id ?? "").trim().toLowerCase();
-  const placeholders = new Set(["", "test", "testing", "untitled", "unknown", "n/a"]);
-  return placeholders.has(normalizedLabel) || placeholders.has(normalizedId);
-}
-
 function fallbackBehavior(): ShopifyBehaviorAnalyticsRaw {
   return {
     range: { days: 30, from: new Date().toISOString() },
@@ -247,26 +240,6 @@ export function mapShopifyControlCenter(
         card("Conversion", percent(revenue.attribution.conversionRate), "Completed try-ons to paid orders"),
         card("Refund rate", percent(revenue.refundRate), formatCurrency(revenue.orders.refundedAmount, revenue.currency)),
       ],
-      funnel: behavior.funnel.map((item) => ({
-        label: item.step,
-        value: formatNumber(item.count),
-      })),
-      topProducts: behavior.topProducts
-        .filter((item) => !isPlaceholderAnalyticsProduct(item.productTitle, item.productId))
-        .slice(0, 8)
-        .map((item) => ({
-          label: item.productTitle || item.productId,
-          helper: item.productId,
-          value: formatNumber(item.tryOns),
-        })),
-      topRevenueProducts: revenue.topProductsByRevenue
-        .filter((item) => !isPlaceholderAnalyticsProduct(item.title, item.productId))
-        .slice(0, 8)
-        .map((item) => ({
-          label: item.title || item.productId,
-          helper: `${formatNumber(item.orders)} orders`,
-          value: formatCurrency(item.revenue, revenue.currency),
-        })),
     },
   };
 }

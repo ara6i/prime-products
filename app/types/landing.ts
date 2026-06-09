@@ -146,3 +146,9 @@ export type CtaBannerContent = {
   secondaryHref: string;
   footer: string;
 };
+
+export type AskAiContent = {
+  eyebrow: string;
+  title: string;
+  body: string;
+};

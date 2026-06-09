@@ -1,41 +1,70 @@
-import type { AdminBehaviorResponse, BehaviorRow, BehaviorStatCard, BehaviorViewModel } from "../types";
+import type {
+  AdminReplaySession,
+  AdminReplaySessionsResponse,
+  ReplayPageViewModel,
+  ReplaySessionCardView,
+} from "../types";
+
+const numberFormatter = new Intl.NumberFormat("en-US");
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+});
 
 function formatNumber(value: number): string {
-  return new Intl.NumberFormat("en-US").format(value);
+  return numberFormatter.format(value);
 }
 
-function formatPercent(value: number): string {
-  return `${Math.round(value * 100)}%`;
+function formatDuration(startedAt: string, lastSeenAt: string): string {
+  const start = new Date(startedAt).getTime();
+  const end = new Date(lastSeenAt).getTime();
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return "Under 1 minute";
+  const seconds = Math.max(1, Math.round((end - start) / 1000));
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  const remainder = seconds % 60;
+  return remainder ? `${minutes}m ${remainder}s` : `${minutes}m`;
 }
 
-function stat(label: string, value: string, helper: string): BehaviorStatCard {
-  return { label, value, helper };
+function formatDate(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Unknown";
+  return dateFormatter.format(date);
 }
 
-function row(label: string, value: string, helper?: string): BehaviorRow {
-  return { label, value, helper };
+function compact(values: Array<string | null | undefined>): string {
+  return values.filter(Boolean).join(" · ");
 }
 
-export function mapBehaviorPage(response: AdminBehaviorResponse): BehaviorViewModel {
+function sourceLabel(session: AdminReplaySession): string {
+  return session.source === "shopify" ? "Shopify SDK" : "Public SDK";
+}
+
+function toCard(session: AdminReplaySession): ReplaySessionCardView {
+  const title = session.productTitle || session.productId || "Unknown product";
+  const subtitle = session.productUrl || session.sessionId;
+  const deviceLabel = compact([session.device, session.os, session.browser]) || "Unknown device";
   return {
-    rangeLabel: `Last ${response.range.days} days`,
-    stats: [
-      stat("Sessions", formatNumber(response.kpis.uniqueSessions), "Anonymous shopper sessions"),
-      stat("Product views", formatNumber(response.kpis.productViews ?? 0), `${formatNumber(response.kpis.sdkOpened ?? 0)} SDK opens`),
-      stat("Sizing", formatNumber(response.kpis.sizeShown), `${formatNumber(response.kpis.sizingFailed ?? 0)} failed sizing attempts`),
-      stat("Try-ons", formatNumber(response.kpis.initiated), `${formatNumber(response.kpis.completed)} completed`),
-      stat("Cart adds", formatNumber(response.kpis.cartAdds), `${formatNumber(response.kpis.clientErrors ?? 0)} client errors`),
-    ],
-    funnel: response.funnel.map((item) => row(item.step, formatNumber(item.count))),
-    topProducts: response.topProducts.map((item) => {
-      const pieces = [
-        item.views != null ? `${formatNumber(item.views)} views` : null,
-        `${formatNumber(item.tryOns)} try-ons`,
-        item.cartAdds != null ? `${formatNumber(item.cartAdds)} cart adds` : null,
-      ].filter(Boolean);
-      return row(item.productTitle, formatNumber(item.activity ?? item.tryOns), `${item.productId} · ${pieces.join(" · ")}`);
-    }),
-    devices: response.deviceSplit.map((item) => row(item.device, formatNumber(item.count))),
-    countries: response.countrySplit.map((item) => row(item.name, formatNumber(item.count), item.iso2)),
+    session,
+    title,
+    subtitle,
+    sourceLabel: sourceLabel(session),
+    deviceLabel,
+    eventLabel: `${formatNumber(session.eventCount)} events`,
+    durationLabel: formatDuration(session.startedAt, session.lastSeenAt),
+    lastSeenLabel: formatDate(session.lastSeenAt),
+  };
+}
+
+export function mapBehaviorPage(response: AdminReplaySessionsResponse): ReplayPageViewModel {
+  const sessions = response.sessions.map(toCard);
+  const eventCount = response.sessions.reduce((sum, session) => sum + session.eventCount, 0);
+  return {
+    sessions,
+    totalSessionsLabel: formatNumber(response.sessions.length),
+    totalEventsLabel: formatNumber(eventCount),
+    latestActivityLabel: sessions[0]?.lastSeenLabel ?? "No sessions yet",
   };
 }

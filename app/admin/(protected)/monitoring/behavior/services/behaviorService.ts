@@ -1,6 +1,6 @@
 import { adminFetch } from "@/app/admin/shared/services/adminFetch";
-import type { AdminBehaviorResponse } from "../types";
+import type { AdminReplaySessionsResponse } from "../types";
 
-export async function fetchAdminBehavior(): Promise<AdminBehaviorResponse> {
-  return adminFetch<AdminBehaviorResponse>("/api/admin/analytics/behavior?range=30d");
+export async function fetchReplaySessions(): Promise<AdminReplaySessionsResponse> {
+  return adminFetch<AdminReplaySessionsResponse>("/api/admin/replays?limit=100");
 }

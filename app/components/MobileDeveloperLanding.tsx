@@ -13,6 +13,7 @@ import { SdkDemoSection } from "./sections/mobile/SdkDemoSection";
 import { ScaleSection } from "./sections/mobile/ScaleSection";
 import { GarmentsSection } from "./sections/mobile/GarmentsSection";
 import { CtaBannerSection } from "./sections/mobile/CtaBannerSection";
+import { AskAiSection } from "./sections/shared/AskAiSection";
 import { PilotContactSection } from "./sections/shared/PilotContactSection";
 
 export function MobileDeveloperLanding() {
@@ -32,6 +33,7 @@ export function MobileDeveloperLanding() {
         <GarmentsSection />
         <PilotContactSection />
         <CtaBannerSection />
+        <AskAiSection />
       </main>
       <div className="flex flex-col gap-6 bg-brand-blue-pale px-4 py-10">
         <NewsletterSection
