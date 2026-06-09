@@ -4,6 +4,7 @@ import { type FormEvent, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
+  Power,
   RotateCcw,
   Save,
 } from "lucide-react";
@@ -330,6 +331,54 @@ function BillingAutomationControls({
   );
 }
 
+function StoreAccessControls({
+  view,
+  isSaving,
+  onSetStatus,
+}: {
+  view: ShopifyControlCenterView;
+  isSaving: boolean;
+  onSetStatus: (status: "active" | "suspended") => Promise<void>;
+}) {
+  const isActive = view.status === "active";
+
+  return (
+    <section className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-[1.042vw] max-lg:rounded-[5vw] max-lg:p-[4vw]">
+      <div className="flex flex-wrap items-center justify-between gap-[1vw] max-lg:gap-[3vw]">
+        <div>
+          <h3 className="text-[clamp(17px,1.05vw,21px)] font-semibold text-text-primary max-lg:text-[4.4vw]">Store access</h3>
+          <p className="mt-[0.208vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:text-[3vw]">Control whether this Shopify merchant can use PrimeStyleAI storefront services.</p>
+        </div>
+        <span className={`rounded-full px-[0.729vw] py-[0.313vw] text-[clamp(11px,0.68vw,13px)] font-semibold max-lg:px-[3vw] max-lg:py-[1.5vw] max-lg:text-[2.8vw] ${isActive ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
+          {view.statusLabel}
+        </span>
+      </div>
+
+      <div className="mt-[1.042vw] flex flex-wrap gap-[0.625vw] max-lg:mt-[4vw] max-lg:gap-[2vw]">
+        <Button
+          type="button"
+          disabled={isSaving || isActive}
+          onClick={() => void onSetStatus("active")}
+          className="h-[2.292vw] px-[1.042vw] text-[clamp(13px,0.78vw,15px)] font-semibold max-lg:h-[10vw] max-lg:px-[5vw] max-lg:text-[3.3vw]"
+        >
+          <Power className="h-[0.833vw] w-[0.833vw] max-lg:h-[4vw] max-lg:w-[4vw]" />
+          Activate store
+        </Button>
+        <Button
+          type="button"
+          variant="outline-dark"
+          disabled={isSaving || !isActive}
+          onClick={() => void onSetStatus("suspended")}
+          className="h-[2.292vw] px-[1.042vw] text-[clamp(13px,0.78vw,15px)] font-semibold max-lg:h-[10vw] max-lg:px-[5vw] max-lg:text-[3.3vw]"
+        >
+          <Power className="h-[0.833vw] w-[0.833vw] max-lg:h-[4vw] max-lg:w-[4vw]" />
+          Suspend store
+        </Button>
+      </div>
+    </section>
+  );
+}
+
 function AnalyticsPanel({ view }: { view: ShopifyControlCenterView }) {
   return (
     <div className="space-y-[1.042vw] max-lg:space-y-[4vw]">
@@ -340,6 +389,64 @@ function AnalyticsPanel({ view }: { view: ShopifyControlCenterView }) {
         <SmallRows rows={view.analytics.topProducts.map((item) => ({ label: item.label, value: item.value, helper: item.helper }))} />
         <SmallRows rows={view.analytics.topRevenueProducts.map((item) => ({ label: item.label, value: item.value, helper: item.helper }))} />
       </div>
+    </div>
+  );
+}
+
+function SettingsPanel({
+  view,
+  customer,
+}: {
+  view: ShopifyControlCenterView;
+  customer: ReturnType<typeof useShopifyCustomerControlCenter>;
+}) {
+  return (
+    <div className="space-y-[1.042vw] max-lg:space-y-[4vw]">
+      <MetricGrid cards={view.summaryCards} />
+
+      <div className="grid grid-cols-[1fr_0.7fr] gap-[1.042vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
+        <StoreAccessControls
+          view={view}
+          isSaving={customer.isSaving}
+          onSetStatus={customer.setStatus}
+        />
+        <SmallRows
+          rows={[
+            { label: "Plan", value: view.planLabel, helper: "Current billing plan" },
+            { label: "Subscription", value: view.subscriptionLabel },
+            { label: "Due date", value: view.currentPeriodEndLabel },
+            { label: "Size profile", value: view.profile.label, helper: view.profile.helper },
+          ]}
+        />
+      </div>
+
+      <MetricGrid cards={view.billingCards} />
+      <BillingOverrideForm
+        key={`${view.billingFormDefaults.plan}-${view.billingFormDefaults.selectedProductCount}-${view.billingFormDefaults.requestedTryOns}-${view.billingFormDefaults.currentPeriodEnd}-${view.billingFormDefaults.scheduledEffectiveAt}`}
+        view={view}
+        isSaving={customer.isSaving}
+        onSubmit={customer.updateBilling}
+      />
+
+      <MetricGrid cards={view.usageCards} />
+      <MetricGrid cards={view.trialCards} />
+      <BillingAutomationControls
+        view={view}
+        isSaving={customer.isSaving}
+        onSubmit={customer.runAutomationTest}
+      />
+      <UsageControls
+        key={`${view.usageFormDefaults.tryOnsRemaining}-${view.usageFormDefaults.tryOnsUsed}`}
+        view={view}
+        isSaving={customer.isSaving}
+        onSubmit={customer.updateUsage}
+        onResetMapping={customer.resetSizeGuideMapping}
+      />
+
+      <section className="space-y-[0.625vw] max-lg:space-y-[3vw]">
+        <h3 className="text-[clamp(17px,1.05vw,21px)] font-semibold text-text-primary max-lg:text-[4.4vw]">Technical details</h3>
+        <SmallRows rows={view.technicalRows} />
+      </section>
     </div>
   );
 }
@@ -384,60 +491,24 @@ export function ShopifyCustomerControlCenterPage({
         ) : null}
       </div>
 
-      <MetricGrid cards={view.summaryCards} />
-
-      <Tabs defaultValue="overview" className="gap-[1.042vw] max-lg:gap-[4vw]">
+      <Tabs defaultValue="analytics" className="gap-[1.042vw] max-lg:gap-[4vw]">
         <TabsList className="flex-wrap gap-[0.417vw] rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-[0.417vw] max-lg:gap-[2vw] max-lg:rounded-[5vw] max-lg:p-[2vw]">
-          {["overview", "billing", "usage", "analytics"].map((tab) => (
-            <TabsTrigger key={tab} value={tab} className="rounded-full border-0 px-[0.833vw] py-[0.417vw] text-[clamp(12px,0.72vw,14px)] capitalize data-[state=active]:bg-brand-blue data-[state=active]:text-white max-lg:px-[3vw] max-lg:py-[2vw] max-lg:text-[3.2vw]">
-              {tab}
+          {[
+            { value: "analytics", label: "Analytics" },
+            { value: "settings", label: "Settings" },
+          ].map((tab) => (
+            <TabsTrigger key={tab.value} value={tab.value} className="rounded-full border-0 px-[0.833vw] py-[0.417vw] text-[clamp(12px,0.72vw,14px)] data-[state=active]:bg-brand-blue data-[state=active]:text-white max-lg:px-[3vw] max-lg:py-[2vw] max-lg:text-[3.2vw]">
+              {tab.label}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-[1.042vw] max-lg:space-y-[4vw]">
-          <div className="grid grid-cols-[1fr_0.8fr] gap-[1.042vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
-            <MetricGrid cards={view.billingCards.slice(0, 4)} />
-            <SmallRows
-              rows={[
-                { label: "Plan", value: view.planLabel, helper: "Current billing plan" },
-                { label: "Due date", value: view.currentPeriodEndLabel },
-                { label: "Size profile", value: view.profile.label, helper: view.profile.helper },
-              ]}
-            />
-          </div>
-          <SmallRows rows={view.technicalRows} />
-        </TabsContent>
-
-        <TabsContent value="billing" className="space-y-[1.042vw] max-lg:space-y-[4vw]">
-          <MetricGrid cards={view.billingCards} />
-          <BillingOverrideForm
-            key={`${view.billingFormDefaults.plan}-${view.billingFormDefaults.selectedProductCount}-${view.billingFormDefaults.requestedTryOns}-${view.billingFormDefaults.currentPeriodEnd}-${view.billingFormDefaults.scheduledEffectiveAt}`}
-            view={view}
-            isSaving={customer.isSaving}
-            onSubmit={customer.updateBilling}
-          />
-        </TabsContent>
-
-        <TabsContent value="usage" className="space-y-[1.042vw] max-lg:space-y-[4vw]">
-          <MetricGrid cards={view.usageCards} />
-          <MetricGrid cards={view.trialCards} />
-          <BillingAutomationControls
-            view={view}
-            isSaving={customer.isSaving}
-            onSubmit={customer.runAutomationTest}
-          />
-          <UsageControls
-            key={`${view.usageFormDefaults.tryOnsRemaining}-${view.usageFormDefaults.tryOnsUsed}`}
-            view={view}
-            isSaving={customer.isSaving}
-            onSubmit={customer.updateUsage}
-            onResetMapping={customer.resetSizeGuideMapping}
-          />
-        </TabsContent>
-
         <TabsContent value="analytics">
           <AnalyticsPanel view={view} />
+        </TabsContent>
+
+        <TabsContent value="settings">
+          <SettingsPanel view={view} customer={customer} />
         </TabsContent>
       </Tabs>
     </section>
