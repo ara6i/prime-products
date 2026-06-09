@@ -73,7 +73,12 @@ function BillingOverrideForm({
   isSaving: boolean;
   onSubmit: (payload: ShopifyBillingOverridePayload) => Promise<void>;
 }) {
-  const [plan, setPlan] = useState(view.billingFormDefaults.plan);
+  const allowedPlans = ["pilot", "free", "custom"];
+  const normalizePlan = (value: string) => {
+    const normalized = value.trim().toLowerCase();
+    return allowedPlans.includes(normalized) ? normalized : "custom";
+  };
+  const [plan, setPlan] = useState(normalizePlan(view.billingFormDefaults.plan));
   const [productCount, setProductCount] = useState(String(view.billingFormDefaults.selectedProductCount));
   const [tryOns, setTryOns] = useState(String(view.billingFormDefaults.requestedTryOns));
   const [effectiveMode, setEffectiveMode] = useState<"current" | "next_cycle">("current");
@@ -82,8 +87,6 @@ function BillingOverrideForm({
   const [usageBillingEnabled, setUsageBillingEnabled] = useState(view.billingFormDefaults.billingUsageEnabled);
   const [autoRefillEnabled, setAutoRefillEnabled] = useState(view.billingFormDefaults.billingAutoRefillEnabled);
   const [reason, setReason] = useState("");
-  const knownPlans = ["custom", "pilot", "free", "starter", "growth", "pro", "scale", "cancelled"];
-  const planOptions = knownPlans.includes(plan) ? knownPlans : [plan, ...knownPlans];
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -126,7 +129,7 @@ function BillingOverrideForm({
             onChange={(event) => setPlan(event.target.value)}
             className="mt-[0.313vw] h-[2.5vw] w-full rounded-[0.833vw] border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none focus:border-transparent focus:ring-2 focus:ring-brand-blue max-lg:mt-[1vw] max-lg:h-[10vw] max-lg:rounded-[4vw]"
           >
-            {planOptions.map((option) => (
+            {allowedPlans.map((option) => (
               <option key={option} value={option}>
                 {option.charAt(0).toUpperCase() + option.slice(1)}
               </option>
@@ -262,6 +265,7 @@ function BillingAutomationControls({
   const actions: Array<{ label: string; helper: string; action: ShopifyBillingAutomationTestPayload["action"] }> = [
     { label: "Set usage to 50%", helper: "Sends the 50% usage email if it has not been sent.", action: "usage_50" },
     { label: "Set usage to 80%", helper: "Sends the 80% usage email if it has not been sent.", action: "usage_80" },
+    { label: "Send trial ending soon", helper: "Sets the trial end date into the warning window and sends the reminder email.", action: "trial_ending_soon" },
     { label: "Expire trial", helper: "Ends the free trial and sends the trial-ended email.", action: "expire_trial" },
     { label: "Reset emails", helper: "Clears sent timestamps so alerts can be tested again.", action: "reset_emails" },
     { label: "Restart trial", helper: "Restarts the visible test trial with 20 try-ons.", action: "restart_trial" },
@@ -294,6 +298,7 @@ function BillingAutomationControls({
           rows={[
             { label: "Trial started", value: view.trial.startedAtLabel },
             { label: "Trial ends", value: view.trial.endsAtLabel },
+            { label: "Trial warning", value: view.trial.endingSoonEmailLabel },
             { label: "Trial email", value: view.trial.expiredEmailLabel },
           ]}
         />

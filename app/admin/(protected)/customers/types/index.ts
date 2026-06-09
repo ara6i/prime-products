@@ -71,6 +71,7 @@ export interface ShopifyControlCenterRaw {
     trialStartedAt: string | null;
     trialEndsAt: string | null;
     trialUsedAt: string | null;
+    trialEndingSoonEmailSentAt: string | null;
     trialExpiredEmailSentAt: string | null;
     daysRemaining: number;
     accessReason: string;
@@ -165,7 +166,7 @@ export interface ShopifyUsageLimitsPayload {
 }
 
 export interface ShopifyBillingAutomationTestPayload {
-  action: "usage_50" | "usage_80" | "expire_trial" | "reset_emails" | "restart_trial";
+  action: "usage_50" | "usage_80" | "trial_ending_soon" | "expire_trial" | "reset_emails" | "restart_trial";
   reason: string;
 }
 
@@ -400,6 +401,7 @@ export interface ShopifyControlCenterView {
     message: string;
     startedAtLabel: string;
     endsAtLabel: string;
+    endingSoonEmailLabel: string;
     expiredEmailLabel: string;
     canUseStorefront: boolean;
   };

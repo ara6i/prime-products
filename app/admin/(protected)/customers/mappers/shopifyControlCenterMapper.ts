@@ -190,6 +190,7 @@ export function mapShopifyControlCenter(
       message: raw.trial.accessMessage,
       startedAtLabel: formatDate(raw.trial.trialStartedAt),
       endsAtLabel: formatDate(raw.trial.trialEndsAt),
+      endingSoonEmailLabel: formatDate(raw.trial.trialEndingSoonEmailSentAt),
       expiredEmailLabel: formatDate(raw.trial.trialExpiredEmailSentAt),
       canUseStorefront: raw.trial.canUseStorefront,
     },
@@ -222,6 +223,7 @@ export function mapShopifyControlCenter(
       technicalField("Usage adjustment note", raw.technical.adminUsageAdjustmentNote),
       technicalField("Trial started", formatDate(raw.trial.trialStartedAt)),
       technicalField("Trial ends", formatDate(raw.trial.trialEndsAt)),
+      technicalField("Trial warning email", formatDate(raw.trial.trialEndingSoonEmailSentAt)),
       technicalField("Trial-ended email", formatDate(raw.trial.trialExpiredEmailSentAt)),
     ],
     analytics: {
