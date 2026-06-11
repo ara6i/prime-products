@@ -65,8 +65,8 @@ Important test-login note:
 
 Current frontend state (updated 2026-06-11):
 - `prime-products` production and test are promoted through Git branches, not manual droplet copy/paste.
-- Latest frontend runtime package bump: exact npm package `@primestyleai/tryon@5.10.197`.
-- Both production and test frontend should install exact SDK version `5.10.197`.
+- Latest frontend runtime package bump: exact npm package `@primestyleai/tryon@5.10.198`.
+- Both production and test frontend should install exact SDK version `5.10.198`.
 
 Current backend state (verified 2026-05-25):
 - Production backend and test backend code are intentionally identical by file tree after the backend feedback/Shopify release.
@@ -162,10 +162,10 @@ Repo:
 - `/home/ara6i/Projects/primestyleai-tryon-sdk`
 
 Version state as of 2026-06-11:
-- SDK repo `main` and npm registry `latest` are `@primestyleai/tryon@5.10.197`.
-- `prime-products` `main` and `staging` should depend on exact npm version `5.10.197`.
-- Test and production frontend servers should both install SDK `5.10.197`.
-- `5.10.197` includes the latest SDK UI, Clarity session tagging, and generated try-on watermark removal.
+- SDK repo `main` and npm registry `latest` are `@primestyleai/tryon@5.10.198`.
+- `prime-products` `main` and `staging` should depend on exact npm version `5.10.198`.
+- Test and production frontend servers should both install SDK `5.10.198`.
+- `5.10.198` includes the latest SDK UI, Clarity session tagging, generated try-on watermark removal, mobile size-detail footer cleanup, and mobile scanner visibility tuning.
 - `5.10.178` added try-on result UI updates: pinned desktop result actions, mobile sticky result actions, collapsible/sent-lock try-on feedback, and updated result image actions.
 - `5.10.177` lowers the mobile Metric/Imperial unit switch on garment and accessory AI scan body-details screens without changing the shoe reference flow.
 - `5.10.176` removes the mobile multi-section fit percentage badge (`% FIT MATCH`) from the SDK result screen.
@@ -248,7 +248,7 @@ Important guardrail:
 ## 7) Local Development Workflow Notes
 
 SDK local iteration:
-- Preferred committed/deployed dependency is the published npm version, currently exact `@primestyleai/tryon@5.10.197`.
+- Preferred committed/deployed dependency is the published npm version, currently exact `@primestyleai/tryon@5.10.198`.
 - Temporary local SDK iteration can use `npm pack` + `npm install <tgz> --no-save` into `prime-products`.
 - Before committing or deploying `prime-products`, replace any `file:../primestyleai-tryon-sdk/*.tgz` dependency with the published npm package version.
 - Avoid `npm link` due to Turbopack resolution issues with exports/symlink path.
