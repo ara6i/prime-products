@@ -1,6 +1,6 @@
 # PrimeStyleAI Unified Project Context
 
-Last updated: 2026-05-25
+Last updated: 2026-06-11
 Owner workspace: `/home/ara6i/Projects`
 Local Mac workspace: `/Users/arashsn/Projects/PrimeStyleAI`
 
@@ -44,25 +44,29 @@ Live note (verified on 2026-05-25):
 
 ## 3) Source of Truth and Deploy Workflow
 
-Current branch policy (set 2026-05-25):
+Current branch policy (updated 2026-06-11):
 - `staging` is the normal local development and test-server branch.
 - Test frontend deploys from `origin/staging` to `/var/www/test-fe-9a7k.primestyleai.com`.
 - Test backend deploys from `origin/staging` to `/var/www/test-be-9a7k.primestyleai.com`.
 - Production frontend deploys from `origin/main` to `/var/www/prime-products`.
-- Production backend currently runs the same code tree as backend `origin/staging`, but keeps production env/database.
+- Production backend deploys from backend `origin/main` to `/var/www/backend.primestyleai.com`, but keeps production env/database.
 - Do not push directly to `main` unless the owner explicitly asks for direct main push.
 - For production promotion, create/show a PR or equivalent staging-to-main diff first, get explicit approval, then merge/deploy production.
 - After production promotion, return local frontend checkout to `staging` for future development.
+- Admin panel and test labs are test/local surfaces. They may exist in the same source tree, but production `primestyleai.com` must not expose them:
+  - `/admin` and `/admin/login` redirect to `/` on production.
+  - `/try-on-test` and related test-lab APIs remain gated to localhost/test hosts.
+  - The test frontend header may show an `Admin Panel` link; production must not show it.
 
 Important test-login note:
 - The test frontend password gate is nginx `auth_basic` on `test-fe-9a7k.primestyleai.com`.
 - It is not app source code and should not be copied into production nginx.
 - Production `primestyleai.com` must not return a `WWW-Authenticate` header.
 
-Current frontend state (verified 2026-05-25):
-- `prime-products` `main` and `staging` runtime source/dependency files are aligned.
-- Latest frontend runtime package bump: exact npm package `@primestyleai/tryon@5.10.178`.
-- Both production and test frontend should install exact SDK version `5.10.178`.
+Current frontend state (updated 2026-06-11):
+- `prime-products` production and test are promoted through Git branches, not manual droplet copy/paste.
+- Latest frontend runtime package bump: exact npm package `@primestyleai/tryon@5.10.197`.
+- Both production and test frontend should install exact SDK version `5.10.197`.
 
 Current backend state (verified 2026-05-25):
 - Production backend and test backend code are intentionally identical by file tree after the backend feedback/Shopify release.
@@ -157,12 +161,12 @@ Operational note:
 Repo:
 - `/home/ara6i/Projects/primestyleai-tryon-sdk`
 
-Version state as of 2026-05-25:
-- SDK repo `main` and GitHub are synced at `5.10.178`, commit `f4ed510`.
-- npm registry `latest` is `@primestyleai/tryon@5.10.178`.
-- `prime-products` `main` and `staging` depend on exact npm version `5.10.178`.
-- Test and production frontend servers should both install SDK `5.10.178`.
-- `5.10.178` adds the latest try-on result UI updates: pinned desktop result actions, mobile sticky result actions, collapsible/sent-lock try-on feedback, and updated result image actions.
+Version state as of 2026-06-11:
+- SDK repo `main` and npm registry `latest` are `@primestyleai/tryon@5.10.197`.
+- `prime-products` `main` and `staging` should depend on exact npm version `5.10.197`.
+- Test and production frontend servers should both install SDK `5.10.197`.
+- `5.10.197` includes the latest SDK UI, Clarity session tagging, and generated try-on watermark removal.
+- `5.10.178` added try-on result UI updates: pinned desktop result actions, mobile sticky result actions, collapsible/sent-lock try-on feedback, and updated result image actions.
 - `5.10.177` lowers the mobile Metric/Imperial unit switch on garment and accessory AI scan body-details screens without changing the shoe reference flow.
 - `5.10.176` removes the mobile multi-section fit percentage badge (`% FIT MATCH`) from the SDK result screen.
 - npm publish requires a granular npm token with package write access and bypass-2FA enabled; never store npm tokens in the repo or server env unless explicitly configuring CI.
@@ -244,7 +248,7 @@ Important guardrail:
 ## 7) Local Development Workflow Notes
 
 SDK local iteration:
-- Preferred committed/deployed dependency is the published npm version, currently exact `@primestyleai/tryon@5.10.178`.
+- Preferred committed/deployed dependency is the published npm version, currently exact `@primestyleai/tryon@5.10.197`.
 - Temporary local SDK iteration can use `npm pack` + `npm install <tgz> --no-save` into `prime-products`.
 - Before committing or deploying `prime-products`, replace any `file:../primestyleai-tryon-sdk/*.tgz` dependency with the published npm package version.
 - Avoid `npm link` due to Turbopack resolution issues with exports/symlink path.

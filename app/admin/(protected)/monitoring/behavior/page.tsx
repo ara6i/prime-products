@@ -3,18 +3,22 @@ import { AdminDashboardShell } from "../../components/AdminDashboardShell";
 import { AdminDashboardThemeProvider } from "../../components/shared/AdminDashboardThemeProvider";
 import { BehaviorPage } from "./components/BehaviorPage";
 import { mapBehaviorPage } from "./mappers/behaviorMapper";
-import { fetchReplaySessions } from "./services/behaviorService";
+import { fetchClaritySessions } from "./services/behaviorService";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminBehaviorRoute() {
-  const response = await fetchReplaySessions();
-  const view = mapBehaviorPage(response);
+  const projectId =
+    process.env.NEXT_PUBLIC_PRIMESTYLE_CLARITY_PROJECT_ID ||
+    process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ||
+    "wwb75cfm2z";
+  const sessions = await fetchClaritySessions();
+  const view = mapBehaviorPage(sessions);
 
   return (
     <AdminDashboardThemeProvider>
       <AdminDashboardShell logoutAction={logoutAction} activeHref="/admin/monitoring/behavior">
-        <BehaviorPage view={view} />
+        <BehaviorPage projectId={projectId} view={view} />
       </AdminDashboardShell>
     </AdminDashboardThemeProvider>
   );

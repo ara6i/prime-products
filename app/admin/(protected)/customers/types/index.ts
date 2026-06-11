@@ -5,6 +5,9 @@ export interface AdminCustomerStoreRaw {
   source: AdminCustomerSource;
   storeName: string;
   identifier: string;
+  websiteDomain?: string | null;
+  websiteUrl?: string | null;
+  shopifyDomain?: string | null;
   ownerEmail: string | null;
   status: string;
   plan: string | null;
@@ -22,6 +25,9 @@ export interface ShopifyControlCenterRaw {
   store: {
     id: string;
     shopDomain: string;
+    myshopifyDomain?: string | null;
+    primaryDomain?: string | null;
+    primaryDomainUrl?: string | null;
     shopName: string | null;
     ownerEmail: string | null;
     currency: string | null;
@@ -253,6 +259,9 @@ export interface AdminCustomerProjectRaw {
 
 export interface ShopifyCustomerRawDetails {
   shopDomain?: string | null;
+  myshopifyDomain?: string | null;
+  primaryDomain?: string | null;
+  primaryDomainUrl?: string | null;
   shopName?: string | null;
   ownerEmail?: string | null;
   currency?: string | null;
@@ -383,6 +392,8 @@ export interface ShopifyMetricCard {
 export interface ShopifyControlCenterView {
   id: string;
   storeName: string;
+  websiteDomain: string;
+  websiteUrl: string | null;
   shopDomain: string;
   ownerEmail: string;
   status: string;

@@ -57,14 +57,14 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
     {
       label: "Monitoring",
       href: "/admin/monitoring/behavior",
-      icon: "analytics",
+      icon: "behavior",
       active: monitoringActive,
       disabled: false,
       children: [
         {
           label: "User Behavior",
           href: "/admin/monitoring/behavior",
-          icon: "analytics",
+          icon: "behavior",
           active: activeHref.startsWith("/admin/monitoring/behavior"),
           disabled: false,
         },

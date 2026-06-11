@@ -1,9 +1,8 @@
-export interface AdminReplaySession {
+export interface AdminClaritySessionRaw {
   id: string;
   sessionId: string;
-  source: "shopify" | "sdk";
-  shopifyShopId: string | null;
-  storeProfileId: string | null;
+  sdkOpenId: string | null;
+  source: string;
   productId: string | null;
   productTitle: string | null;
   productUrl: string | null;
@@ -11,35 +10,39 @@ export interface AdminReplaySession {
   os: string | null;
   browser: string | null;
   countryCode: string | null;
-  eventCount: number;
-  chunkCount: number;
-  startedAt: string;
+  firstSeenAt: string;
   lastSeenAt: string;
+  eventCount: number;
+  eventTypes: string[];
+  jobIds: string[];
 }
 
-export interface AdminReplaySessionsResponse {
-  sessions: AdminReplaySession[];
+export interface AdminClaritySessionsResponse {
+  range: {
+    days: number;
+    from: string;
+  };
+  items: AdminClaritySessionRaw[];
 }
 
-export interface AdminReplayDetailResponse {
-  session: AdminReplaySession;
-  events: unknown[];
-}
-
-export interface ReplaySessionCardView {
-  session: AdminReplaySession;
-  title: string;
-  subtitle: string;
+export interface BehaviorSessionItem {
+  id: string;
+  tagName: string;
+  tagValue: string;
+  sessionId: string;
+  sdkOpenId: string | null;
+  productTitle: string;
+  productMeta: string;
+  productUrl: string | null;
   sourceLabel: string;
   deviceLabel: string;
-  eventLabel: string;
-  durationLabel: string;
   lastSeenLabel: string;
+  eventCountLabel: string;
+  eventsLabel: string;
+  jobIdsLabel: string;
 }
 
-export interface ReplayPageViewModel {
-  sessions: ReplaySessionCardView[];
-  totalSessionsLabel: string;
-  totalEventsLabel: string;
-  latestActivityLabel: string;
+export interface BehaviorViewModel {
+  sessions: BehaviorSessionItem[];
+  hasSessions: boolean;
 }

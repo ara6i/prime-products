@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import {
+  CameraIcon,
   DashboardIcon,
   FileDownloadIcon,
   HeadsetIcon,
@@ -27,6 +28,7 @@ const iconMap = {
   tickets: TicketIcon,
   chats: NewChatIcon,
   merchants: PeopleIcon,
+  behavior: CameraIcon,
   analytics: MonetizationOnIcon,
   reports: FileDownloadIcon,
   settings: SettingsIcon,

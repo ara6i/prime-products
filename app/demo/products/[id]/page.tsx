@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { fetchDemoProduct } from "../services/demoProductService";
 import { mapProductDetail } from "../mappers/demoProductMapper";
 import { ProductDetailSwitcher } from "./components/ProductDetailSwitcher";
@@ -20,7 +20,7 @@ export default async function DemoProductDetailPage({ params, searchParams }: Pa
 
     return <ProductDetailSwitcher product={product} />;
   } catch {
-    notFound();
+    redirect("/");
   }
 }
 

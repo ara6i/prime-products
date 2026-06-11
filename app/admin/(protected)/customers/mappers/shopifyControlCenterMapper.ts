@@ -130,6 +130,7 @@ export function mapShopifyControlCenter(
   const subscriptionLabel = titleCase(raw.billing.subscriptionStatus);
   const currentPeriodEndLabel = formatDate(raw.billing.currentPeriodEnd);
   const storeName = raw.store.shopName || raw.store.shopDomain;
+  const websiteDomain = raw.store.primaryDomain || raw.store.shopDomain;
   const ownerEmail = raw.store.ownerEmail || "Not available";
   const normalizedPlan = String(raw.billing.plan ?? "").trim().toLowerCase();
   const isFreePlan =
@@ -150,6 +151,8 @@ export function mapShopifyControlCenter(
   return {
     id: raw.store.id,
     storeName,
+    websiteDomain,
+    websiteUrl: raw.store.primaryDomainUrl ?? null,
     shopDomain: raw.store.shopDomain,
     ownerEmail,
     status: raw.store.status,

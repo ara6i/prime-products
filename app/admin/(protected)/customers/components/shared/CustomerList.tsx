@@ -105,7 +105,7 @@ export function CustomerList({
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
                     <p className="truncate text-[clamp(13px,0.78vw,15px)] font-medium text-text-primary">{item.storeName}</p>
-                    <p className="mt-[0.156vw] truncate text-[clamp(11px,0.68vw,13px)] text-customer-muted">{item.sourceLabel}</p>
+                    <p className="mt-[0.156vw] truncate text-[clamp(11px,0.68vw,13px)] text-customer-muted">{item.identifierLabel}</p>
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
                     <p className="truncate text-[clamp(12px,0.72vw,14px)] text-text-body">{item.ownerLabel}</p>

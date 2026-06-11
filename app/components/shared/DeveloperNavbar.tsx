@@ -97,7 +97,7 @@ export function DeveloperNavbar({ variant = "default" }: DeveloperNavbarProps) {
             href={ADMIN_LOGIN_PATH}
             className="text-[0.833vw] font-semibold leading-[1.354vw] text-text-body transition-colors hover:text-brand-blue whitespace-nowrap"
           >
-            Admin Login
+            Admin Panel
           </Link>
         )}
         <Button

@@ -114,7 +114,7 @@ export function mapCustomerStore(store: AdminCustomerStoreRaw): CustomerListItem
     source: store.source,
     sourceLabel: sourceLabels[store.source],
     storeName: empty(store.storeName),
-    identifierLabel: empty(store.identifier),
+    identifierLabel: empty(store.websiteDomain || store.identifier),
     ownerLabel: empty(store.ownerEmail),
     statusLabel: titleCase(store.status),
     statusTone: statusTone(store.status),
@@ -233,7 +233,8 @@ function shopifySections(detail: AdminCustomerDetailRaw): CustomerDetailSection[
   return [
     compactSection("Store", [
       field("Shop name", raw?.shopName ?? detail.store.storeName),
-      field("Shop domain", raw?.shopDomain ?? detail.store.identifier),
+      field("Website domain", raw?.primaryDomain ?? detail.store.websiteDomain ?? detail.store.identifier),
+      field("Shopify domain", raw?.shopDomain ?? detail.store.shopifyDomain ?? detail.store.identifier),
       field("Owner email", raw?.ownerEmail ?? detail.store.ownerEmail),
       field("Currency", raw?.currency ?? "Not available"),
       field("Timezone", raw?.timezone ?? "Not available"),

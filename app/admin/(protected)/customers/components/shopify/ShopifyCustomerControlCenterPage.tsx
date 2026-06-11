@@ -550,7 +550,10 @@ export function ShopifyCustomerControlCenterPage({
             <div className="min-w-0">
               <p className="text-[clamp(12px,0.72vw,14px)] font-semibold uppercase tracking-[0.16em] text-brand-blue max-lg:text-[3vw]">Shopify customer</p>
               <h2 className="mt-[0.25vw] truncate text-[clamp(26px,1.65vw,32px)] font-semibold leading-tight text-text-primary max-lg:mt-[1vw] max-lg:text-[6vw]">{view.storeName}</h2>
-              <p className="mt-[0.208vw] truncate text-[clamp(13px,0.78vw,15px)] text-text-body max-lg:text-[3.2vw]">{view.shopDomain} · {view.ownerEmail}</p>
+              <p className="mt-[0.208vw] truncate text-[clamp(13px,0.78vw,15px)] text-text-body max-lg:text-[3.2vw]">{view.websiteDomain} · {view.ownerEmail}</p>
+              {view.websiteDomain !== view.shopDomain ? (
+                <p className="mt-[0.156vw] truncate text-[clamp(11px,0.68vw,13px)] text-customer-muted max-lg:text-[2.8vw]">Shopify domain: {view.shopDomain}</p>
+              ) : null}
             </div>
           </div>
         </div>

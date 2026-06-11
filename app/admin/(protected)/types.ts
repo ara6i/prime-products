@@ -8,6 +8,7 @@ export type AdminDashboardIconKey =
   | "tickets"
   | "chats"
   | "merchants"
+  | "behavior"
   | "analytics"
   | "reports"
   | "settings";

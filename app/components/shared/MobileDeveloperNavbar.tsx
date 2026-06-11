@@ -97,7 +97,7 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
               href={ADMIN_LOGIN_PATH}
               className="hidden min-[390px]:inline-flex h-[34px] items-center rounded-full px-2.5 text-[11.5px] font-semibold text-text-body hover:text-brand-blue"
             >
-              Admin
+              Admin Panel
             </Link>
           )}
           <Button
