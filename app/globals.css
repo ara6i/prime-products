@@ -864,11 +864,10 @@ body {
   to   { transform: translate3d(-50%, 0, 0); }
 }
 .ps-marquee-track {
-  animation: ps-marquee 40s linear infinite;
+  animation: ps-marquee 26s linear infinite;
   will-change: transform;
 }
-.ps-marquee-track--slow { animation-duration: 60s; }
-.ps-marquee-scroll:hover .ps-marquee-track { animation-play-state: paused; }
+.ps-marquee-track--slow { animation-duration: 34s; }
 
 @keyframes ps-glow-pulse {
   0%, 100% { opacity: 0.6; transform: scale(1); }
