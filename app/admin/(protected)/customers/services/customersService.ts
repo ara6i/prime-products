@@ -53,17 +53,29 @@ export async function fetchAdminShopifyControlCenter(id: string): Promise<Shopif
 export async function fetchAdminShopifyBehavior(
   id: string,
   range = "30d",
+  customRange?: { from: string; to: string } | null,
 ): Promise<ShopifyBehaviorAnalyticsRaw> {
+  const params = new URLSearchParams({ range });
+  if (customRange?.from && customRange.to) {
+    params.set("from", customRange.from);
+    params.set("to", customRange.to);
+  }
   return adminFetch<ShopifyBehaviorAnalyticsRaw>(
-    `/api/admin/stores/shopify/${encodeURIComponent(id)}/behavior?range=${encodeURIComponent(range)}`,
+    `/api/admin/stores/shopify/${encodeURIComponent(id)}/behavior?${params.toString()}`,
   );
 }
 
 export async function fetchAdminShopifyRevenue(
   id: string,
   range = "30d",
+  customRange?: { from: string; to: string } | null,
 ): Promise<ShopifyRevenueAnalyticsRaw> {
+  const params = new URLSearchParams({ range });
+  if (customRange?.from && customRange.to) {
+    params.set("from", customRange.from);
+    params.set("to", customRange.to);
+  }
   return adminFetch<ShopifyRevenueAnalyticsRaw>(
-    `/api/admin/stores/shopify/${encodeURIComponent(id)}/revenue?range=${encodeURIComponent(range)}`,
+    `/api/admin/stores/shopify/${encodeURIComponent(id)}/revenue?${params.toString()}`,
   );
 }

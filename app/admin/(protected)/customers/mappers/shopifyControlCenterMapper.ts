@@ -45,6 +45,7 @@ function formatInputDate(value: string | null | undefined): string {
 
 function titleCase(value: string | null | undefined): string {
   if (!value) return "Not available";
+  if (value.trim().toLowerCase() === "unknown") return "Unknown device";
   return value
     .split(/[_\s-]+/)
     .filter(Boolean)

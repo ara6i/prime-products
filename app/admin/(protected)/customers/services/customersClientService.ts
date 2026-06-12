@@ -76,9 +76,15 @@ export async function fetchAdminShopifyControlCenterClient(id: string): Promise<
 export async function fetchAdminShopifyBehaviorClient(
   id: string,
   range = "30d",
+  customRange?: { from: string; to: string } | null,
 ): Promise<ShopifyBehaviorAnalyticsRaw> {
+  const params = new URLSearchParams({ range });
+  if (customRange?.from && customRange.to) {
+    params.set("from", customRange.from);
+    params.set("to", customRange.to);
+  }
   const response = await fetch(
-    `/api/admin/stores/shopify/${encodeURIComponent(id)}/behavior?range=${encodeURIComponent(range)}`,
+    `/api/admin/stores/shopify/${encodeURIComponent(id)}/behavior?${params.toString()}`,
     { cache: "no-store" },
   );
   if (!response.ok) {
@@ -90,9 +96,15 @@ export async function fetchAdminShopifyBehaviorClient(
 export async function fetchAdminShopifyRevenueClient(
   id: string,
   range = "30d",
+  customRange?: { from: string; to: string } | null,
 ): Promise<ShopifyRevenueAnalyticsRaw> {
+  const params = new URLSearchParams({ range });
+  if (customRange?.from && customRange.to) {
+    params.set("from", customRange.from);
+    params.set("to", customRange.to);
+  }
   const response = await fetch(
-    `/api/admin/stores/shopify/${encodeURIComponent(id)}/revenue?range=${encodeURIComponent(range)}`,
+    `/api/admin/stores/shopify/${encodeURIComponent(id)}/revenue?${params.toString()}`,
     { cache: "no-store" },
   );
   if (!response.ok) {
