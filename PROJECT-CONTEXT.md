@@ -273,6 +273,10 @@ Local branch guardrail:
 - Do not leave the local frontend workspace on `main` after production deployment work.
 - For SDK changes, publish a new npm version first, then update `prime-products` `staging`; promote to `main` only after owner approval.
 
+Admin API routing note:
+- Admin dashboard frontend calls prefer `PRIMESTYLE_ADMIN_API_INTERNAL_URL`, then fall back to `PRIMESTYLE_API_INTERNAL_URL` and `NEXT_PUBLIC_API_BASE_URL`.
+- Use this when the staging/test admin dashboard needs to read live backend/live MongoDB data without moving customer, demo, or public app traffic to the live backend.
+
 ## 8) Backend Operations Snapshot (Droplet Diagnostic Context)
 
 From prior backend diagnostics (`node diagnose-connections.js` on droplet):

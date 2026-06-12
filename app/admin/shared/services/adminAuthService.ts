@@ -2,7 +2,11 @@
 
 import { cookies } from "next/headers";
 
-const API_BASE_URL = process.env.PRIMESTYLE_API_INTERNAL_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const API_BASE_URL =
+  process.env.PRIMESTYLE_ADMIN_API_INTERNAL_URL ||
+  process.env.PRIMESTYLE_API_INTERNAL_URL ||
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "";
 const COOKIE_NAME = "admin_session";
 
 export interface AdminUser {
