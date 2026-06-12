@@ -11,6 +11,9 @@ export const dynamic = "force-dynamic";
 interface AdminPageProps {
   searchParams: Promise<{
     range?: string | string[];
+    tryOnRange?: string | string[];
+    installRange?: string | string[];
+    date?: string | string[];
   }>;
 }
 
@@ -22,7 +25,12 @@ function parseRange(raw: string | string[] | undefined): ShopifyDashboardRange {
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   const params = await searchParams;
-  const raw = await fetchShopifyDashboardOverview(parseRange(params.range));
+  const date = Array.isArray(params.date) ? params.date[0] : params.date;
+  const raw = await fetchShopifyDashboardOverview({
+    tryOnRange: parseRange(params.tryOnRange ?? params.range),
+    installRange: parseRange(params.installRange ?? params.range),
+    date,
+  });
   const view = await mapShopifyDashboardOverview(raw);
 
   return (

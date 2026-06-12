@@ -4,6 +4,11 @@ export type ShopifyDashboardRange = "today" | "week" | "month" | "range";
 
 export interface ShopifyDashboardRaw {
   range: ShopifyDashboardRange;
+  ranges?: {
+    tryOns: ShopifyDashboardRange;
+    installs: ShopifyDashboardRange;
+    date: string | null;
+  };
   generatedAt: string;
   from: string;
   currency: string;
@@ -18,7 +23,7 @@ export interface ShopifyDashboardRaw {
     uninstalled: number;
     inRange: number;
     growthPct: number;
-    byWeekday: Array<{ day: string; installs: number }>;
+    series: Array<{ label: string; installs: number }>;
   };
   tryOns: {
     initiated: number;
@@ -27,20 +32,22 @@ export interface ShopifyDashboardRaw {
     lifetime: number;
     completionGrowthPct: number;
     initiatedGrowthPct: number;
-    daily: Array<{ date: string; initiated: number; completed: number; failed: number }>;
+    daily: Array<{ date: string; label?: string; initiated: number; completed: number; failed: number }>;
   };
   impressions: {
     total: number;
     growthPct: number;
     countrySplit: Array<{ iso2: string; name: string; count: number }>;
   };
-  topProducts: Array<{
-    productId: string;
-    productTitle: string;
-    views: number;
-    tryOns: number;
-    completed: number;
-    activity: number;
+  topMerchants: Array<{
+    shopId: string;
+    shopDomain: string;
+    shopName: string;
+    ownerEmail: string | null;
+    status: "active" | "suspended" | "uninstalled";
+    installedAt: string;
+    rangeTryOns: number;
+    lifetimeTryOns: number;
   }>;
   deviceSplit: Array<{ device: string; count: number }>;
 }
@@ -54,15 +61,18 @@ export interface OverviewMetric {
 }
 
 export interface ShopifyDashboardView {
-  range: ShopifyDashboardRange;
-  rangeLabel: string;
+  tryOnRange: ShopifyDashboardRange;
+  installRange: ShopifyDashboardRange;
+  selectedDate: string | null;
+  tryOnRangeLabel: string;
+  installRangeLabel: string;
   revenue: OverviewMetric;
   tryOns: OverviewMetric;
   installs: OverviewMetric;
   impressions: OverviewMetric;
-  revenueSeries: Array<{ date: string; completed: number; initiated: number }>;
-  installSeries: Array<{ day: string; installs: number }>;
-  topProducts: Array<{ title: string; meta: string; value: string; accent: "blue" | "yellow" | "purple" }>;
+  revenueSeries: Array<{ date: string; label: string; completed: number; initiated: number }>;
+  installSeries: Array<{ label: string; installs: number }>;
+  topMerchants: Array<{ title: string; meta: string; value: string; accent: "blue" | "yellow" | "purple" }>;
   deviceBubbles: Array<{ label: string; value: string; percent: number; tone: "blue" | "yellow" | "purple" }>;
   map: PreparedMapData;
   countries: Array<{ label: string; count: string; iso2: string }>;

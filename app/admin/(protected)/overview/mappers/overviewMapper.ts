@@ -50,17 +50,22 @@ function deviceTone(index: number): "blue" | "yellow" | "purple" {
   return index === 1 ? "yellow" : index === 2 ? "purple" : "blue";
 }
 
-function productAccent(index: number): "blue" | "yellow" | "purple" {
+function rowAccent(index: number): "blue" | "yellow" | "purple" {
   return index === 1 ? "yellow" : index === 2 ? "purple" : "blue";
 }
 
 export async function mapShopifyDashboardOverview(raw: ShopifyDashboardRaw): Promise<ShopifyDashboardView> {
+  const tryOnRange = raw.ranges?.tryOns ?? raw.range;
+  const installRange = raw.ranges?.installs ?? raw.range;
   const deviceTotal = raw.deviceSplit.reduce((sum, item) => sum + item.count, 0);
   const map = await prepareCustomerMapData(raw.impressions.countrySplit, 960, 430);
 
   return {
-    range: raw.range,
-    rangeLabel: rangeLabels[raw.range],
+    tryOnRange,
+    installRange,
+    selectedDate: raw.ranges?.date ?? null,
+    tryOnRangeLabel: rangeLabels[tryOnRange],
+    installRangeLabel: rangeLabels[installRange],
     revenue: metric(
       "Revenue",
       formatCurrency(raw.revenue.monthly, raw.currency),
@@ -76,7 +81,7 @@ export async function mapShopifyDashboardOverview(raw: ShopifyDashboardRaw): Pro
     ),
     installs: metric(
       "Installs",
-      formatNumber(raw.installs.total),
+      formatNumber(raw.installs.inRange),
       `${formatNumber(raw.installs.active)} active stores`,
       "purple",
       raw.installs.growthPct,
@@ -90,15 +95,16 @@ export async function mapShopifyDashboardOverview(raw: ShopifyDashboardRaw): Pro
     ),
     revenueSeries: raw.tryOns.daily.map((point) => ({
       date: point.date,
+      label: point.label ?? point.date,
       completed: point.completed,
       initiated: point.initiated,
     })),
-    installSeries: raw.installs.byWeekday,
-    topProducts: raw.topProducts.map((product, index) => ({
-      title: product.productTitle,
-      meta: `${formatNumber(product.views)} views · ${formatNumber(product.completed)} completed`,
-      value: formatNumber(product.tryOns),
-      accent: productAccent(index),
+    installSeries: raw.installs.series,
+    topMerchants: raw.topMerchants.map((merchant, index) => ({
+      title: merchant.shopName || merchant.shopDomain,
+      meta: `${merchant.ownerEmail ?? merchant.shopDomain} · ${merchant.status}`,
+      value: formatNumber(merchant.rangeTryOns || merchant.lifetimeTryOns),
+      accent: rowAccent(index),
     })),
     deviceBubbles: raw.deviceSplit.map((item, index) => ({
       label: item.device,
