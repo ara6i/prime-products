@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight, CalendarDays } from "lucide-react";
+import { flagFromIso2 } from "@/app/customer/dashboard/utils/geo";
 import type { OverviewMetric, ShopifyDashboardRange, ShopifyDashboardView } from "../types";
 import { InstallBarChart, TryOnAreaChart } from "./OverviewCharts";
 
@@ -60,6 +61,26 @@ function buildDashboardHref({
   return `/admin?${params.toString()}`;
 }
 
+function toDateKey(date: Date) {
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}-${String(date.getUTCDate()).padStart(2, "0")}`;
+}
+
+function addUtcDays(date: Date, days: number) {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + days));
+}
+
+function selectedCalendarDates(view: ShopifyDashboardView, baseDate: Date) {
+  const selected = new Set<string>();
+  const end = view.selectedDate ? new Date(`${view.selectedDate}T00:00:00.000Z`) : baseDate;
+  const days = view.tryOnRange === "today" ? 1 : view.tryOnRange === "week" ? 7 : view.tryOnRange === "range" ? 90 : 30;
+
+  for (let offset = days - 1; offset >= 0; offset -= 1) {
+    selected.add(toDateKey(addUtcDays(end, -offset)));
+  }
+
+  return selected;
+}
+
 function RangeTabs({
   active,
   target,
@@ -110,6 +131,7 @@ function CalendarCard({ value, view }: { value: string; view: ShopifyDashboardVi
   const month = baseDate.getUTCMonth();
   const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
   const firstWeekday = new Date(Date.UTC(year, month, 1)).getUTCDay();
+  const selectedDates = selectedCalendarDates(view, baseDate);
   const cells = Array.from({ length: 35 }, (_, index) => {
     const day = index - firstWeekday + 1;
     if (day < 1 || day > daysInMonth) return null;
@@ -123,12 +145,13 @@ function CalendarCard({ value, view }: { value: string; view: ShopifyDashboardVi
         if (!cell) {
           return <span key={`empty-${index}`} className="aspect-square" />;
         }
-        const highlighted = cell.date === view.selectedDate;
+        const highlighted = selectedDates.has(cell.date);
+        const exactDay = cell.date === view.selectedDate || (view.selectedDate === null && cell.date === toDateKey(baseDate));
         return (
           <Link
             key={cell.date}
             href={buildDashboardHref({ tryOnRange: "today", installRange: view.installRange, date: cell.date })}
-            className={`flex aspect-square items-center justify-center rounded-[0.521vw] text-[clamp(10px,0.58vw,12px)] max-lg:rounded-[2.4vw] max-lg:text-[2.8vw] ${highlighted ? "bg-brand-blue text-white" : "bg-customer-soft text-customer-muted"}`}
+            className={`flex aspect-square items-center justify-center rounded-[0.521vw] text-[clamp(10px,0.58vw,12px)] max-lg:rounded-[2.4vw] max-lg:text-[2.8vw] ${exactDay ? "bg-brand-blue text-white" : highlighted ? "bg-brand-blue/20 text-brand-blue" : "bg-customer-soft text-customer-muted"}`}
           >
             {cell.day}
           </Link>
@@ -224,7 +247,10 @@ function ImpressionsMap({ view }: { view: ShopifyDashboardView }) {
       <div className="space-y-[0.521vw] max-lg:space-y-[2vw]">
         {view.countries.map((country) => (
           <div key={country.iso2} className="flex items-center justify-between gap-[0.521vw] rounded-[0.625vw] bg-customer-soft px-[0.625vw] py-[0.417vw] max-lg:rounded-[3vw] max-lg:px-[3vw] max-lg:py-[2vw]">
-            <span className="truncate text-[clamp(11px,0.64vw,12px)] text-text-body max-lg:text-[3vw]">{country.label}</span>
+            <span className="flex min-w-0 items-center gap-[0.365vw] max-lg:gap-[1.5vw]">
+              <span className="text-[clamp(13px,0.78vw,15px)] leading-none max-lg:text-[3.4vw]">{flagFromIso2(country.iso2)}</span>
+              <span className="truncate text-[clamp(11px,0.64vw,12px)] text-text-body max-lg:text-[3vw]">{country.label}</span>
+            </span>
             <span className="text-[clamp(11px,0.64vw,12px)] font-semibold text-text-primary max-lg:text-[3vw]">{country.count}</span>
           </div>
         ))}
