@@ -88,16 +88,16 @@ function CustomerMetricBlock({ card }: { card: ShopifyMetricCard }) {
 
 function CustomerCalendarSummary({ view }: { view: ShopifyControlCenterView }) {
   return (
-    <div className="grid grid-cols-2 gap-[0.417vw] max-lg:gap-[2vw]">
+    <div className="grid min-w-[10.5rem] grid-cols-2 gap-[0.417vw] max-lg:min-w-0 max-lg:gap-[2vw]">
       {[
         { label: "Status", value: view.statusLabel },
         { label: "Trial ends", value: view.trial.endsAtLabel },
         { label: "Due date", value: view.currentPeriodEndLabel },
         { label: "Range", value: view.analytics.rangeLabel },
       ].map((item) => (
-        <div key={item.label} className="rounded-[0.729vw] bg-customer-soft px-[0.729vw] py-[0.625vw] max-lg:rounded-[3.5vw] max-lg:px-[3vw] max-lg:py-[2.5vw]">
-          <p className="text-[clamp(10px,0.58vw,12px)] font-semibold uppercase tracking-[0.08em] text-customer-muted max-lg:text-[2.6vw]">{item.label}</p>
-          <p className="mt-[0.208vw] truncate text-[clamp(12px,0.72vw,14px)] font-semibold text-text-primary max-lg:text-[3vw]">{item.value}</p>
+        <div key={item.label} className="min-h-[4.1rem] rounded-[0.729vw] bg-customer-soft px-[0.729vw] py-[0.625vw] max-lg:min-h-0 max-lg:rounded-[3.5vw] max-lg:px-[3vw] max-lg:py-[2.5vw]">
+          <p className="text-[clamp(9px,0.55vw,11px)] font-semibold uppercase leading-[1.35] tracking-[0.08em] text-customer-muted max-lg:text-[2.6vw]">{item.label}</p>
+          <p className="mt-[0.208vw] break-words text-[clamp(11px,0.68vw,13px)] font-semibold leading-snug text-text-primary max-lg:text-[3vw]">{item.value}</p>
         </div>
       ))}
       <div className="col-span-2 mt-[0.104vw] flex items-center justify-between rounded-[0.833vw] bg-customer-soft px-[0.833vw] py-[0.625vw] max-lg:mt-[1vw] max-lg:rounded-[4vw] max-lg:px-[4vw] max-lg:py-[3vw]">
@@ -575,7 +575,7 @@ function AnalyticsPanel({ view }: { view: ShopifyControlCenterView }) {
             <CustomerMetricBlock card={tryOns ?? { label: "Try-ons", value: "0", helper: "0 started" }} />
             <span className="rounded-full bg-customer-soft px-[0.833vw] py-[0.365vw] text-[clamp(11px,0.68vw,13px)] font-medium text-customer-muted max-lg:px-[3vw] max-lg:py-[1.5vw] max-lg:text-[3vw]">Last {view.analytics.rangeLabel}</span>
           </div>
-          <div className="mt-[1.146vw] grid grid-cols-[1fr_9vw] gap-[1vw] max-lg:mt-[4vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
+          <div className="mt-[1.146vw] grid grid-cols-[minmax(0,1fr)_minmax(10.5rem,12vw)] gap-[1vw] max-lg:mt-[4vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
             <div className="h-[13.5vw] max-lg:h-[58vw]">
               <TryOnAreaChart data={view.analytics.dailyActivity} />
             </div>
