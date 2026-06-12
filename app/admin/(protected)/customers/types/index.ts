@@ -367,6 +367,7 @@ export interface CustomerListItem {
   source: AdminCustomerSource;
   sourceLabel: string;
   storeName: string;
+  environmentLabel?: string | null;
   identifierLabel: string;
   ownerLabel: string;
   statusLabel: string;

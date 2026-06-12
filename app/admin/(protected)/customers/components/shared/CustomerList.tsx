@@ -40,7 +40,14 @@ export function CustomerList({
           <article key={item.id} className="rounded-[5vw] border border-customer-border bg-customer-card p-[4vw]">
             <div className="flex items-start justify-between gap-[3vw]">
               <div className="min-w-0">
-                <p className="truncate text-[4vw] font-semibold text-text-primary">{item.storeName}</p>
+                <p className="flex min-w-0 items-center gap-[1.5vw] text-[4vw] font-semibold text-text-primary">
+                  <span className="truncate">{item.storeName}</span>
+                  {item.environmentLabel ? (
+                    <span className="shrink-0 rounded-full bg-customer-warning-bg px-[2vw] py-[0.6vw] text-[2.4vw] font-semibold text-customer-warning-text">
+                      {item.environmentLabel}
+                    </span>
+                  ) : null}
+                </p>
                 <p className="mt-[1vw] truncate text-[3vw] text-customer-muted">{item.sourceLabel} · {item.identifierLabel}</p>
               </div>
               <CustomerStatusBadge tone={item.statusTone}>{item.statusLabel}</CustomerStatusBadge>
@@ -111,7 +118,14 @@ export function CustomerList({
                     <CustomerStatusBadge tone={item.statusTone}>{item.statusLabel}</CustomerStatusBadge>
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
-                    <p className="truncate text-[clamp(13px,0.78vw,15px)] font-medium text-text-primary">{item.storeName}</p>
+                    <p className="flex min-w-0 items-center gap-[0.417vw] text-[clamp(13px,0.78vw,15px)] font-medium text-text-primary">
+                      <span className="truncate">{item.storeName}</span>
+                      {item.environmentLabel ? (
+                        <span className="shrink-0 rounded-full bg-customer-warning-bg px-[0.417vw] py-[0.104vw] text-[clamp(10px,0.58vw,11px)] font-semibold text-customer-warning-text">
+                          {item.environmentLabel}
+                        </span>
+                      ) : null}
+                    </p>
                     <p className="mt-[0.156vw] truncate text-[clamp(11px,0.68vw,13px)] text-customer-muted">{item.identifierLabel}</p>
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">

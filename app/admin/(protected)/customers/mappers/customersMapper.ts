@@ -151,12 +151,17 @@ export function mapCustomerStore(store: AdminCustomerStoreRaw): CustomerListItem
     store.source === "shopify" && store.shopifyDomain && store.shopifyDomain !== primaryIdentifier
       ? `${primaryIdentifier} · ${store.shopifyDomain}`
       : primaryIdentifier;
+  const environmentLabel =
+    store.source === "shopify" && /(^|\.)primestyleai-3\.myshopify\.com$/i.test(store.shopifyDomain || primaryIdentifier)
+      ? "Staging"
+      : null;
 
   return {
     id: store.id,
     source: store.source,
     sourceLabel: sourceLabels[store.source],
     storeName: empty(store.storeName),
+    environmentLabel,
     identifierLabel,
     ownerLabel: empty(store.ownerEmail),
     statusLabel: titleCase(store.status),
