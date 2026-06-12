@@ -138,7 +138,20 @@ function MobileCard({ product }: { product: DemoProductCard }) {
       <div className="mt-[1vh] px-[0.5vw]">
         <p className="text-text-hint uppercase tracking-widest" style={{ fontSize: 'clamp(8px, 2.2vw, 10px)' }}>{product.brand}</p>
         <h3 style={{ fontSize: 'clamp(11px, 3vw, 14px)' }} className="text-text-body font-medium leading-tight line-clamp-1 mt-[0.2vh]">{product.name}</h3>
+        {product.price !== null && (
+          <p className="mt-[0.25vh] font-semibold text-text-primary" style={{ fontSize: 'clamp(10px, 2.7vw, 13px)' }}>
+            {formatProductPrice(product.price, product.currency)}
+          </p>
+        )}
       </div>
     </Link>
   );
+}
+
+function formatProductPrice(price: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency || "USD",
+    maximumFractionDigits: Number.isInteger(price) ? 0 : 2,
+  }).format(price);
 }

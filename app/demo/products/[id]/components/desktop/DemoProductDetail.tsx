@@ -33,6 +33,9 @@ type DemoPrimeStyleTryonProps = React.ComponentProps<typeof PrimeStyleTryon> & {
   productCategory?: string;
   productGender?: string;
   productSubcategory?: string;
+  productPrice?: number | string;
+  productCompareAtPrice?: number | string;
+  productCurrency?: string;
   productCarouselItems?: Array<{ image: string; title?: string; href?: string }>;
   onAddToBag?: (payload: DemoAddToBagPayload) => void | Promise<void>;
   addToBagLabel?: string;
@@ -50,6 +53,9 @@ type DemoPrimeStyleSizeInput = RecommendForProductInput & {
   productCategory?: string;
   productSubcategory?: string;
   productDescription?: string;
+  productPrice?: number | string;
+  productCompareAtPrice?: number | string;
+  productCurrency?: string;
 };
 
 export function DesktopProductDetail({ product }: Props) {
@@ -212,9 +218,12 @@ export function DesktopProductDetail({ product }: Props) {
     productCategory: product.category,
     productSubcategory: product.subcategory,
     productDescription: product.description,
+    productPrice: product.price ?? undefined,
+    productCompareAtPrice: product.originalPrice ?? undefined,
+    productCurrency: product.currency,
     sizeGuideData: product.sizeGuideData,
     apiUrl: sdkApiUrl,
-  }), [product.id, product.name, product.primaryImage, product.category, product.subcategory, product.description, product.sizeGuideData, sdkApiUrl]);
+  }), [product.id, product.name, product.primaryImage, product.category, product.subcategory, product.description, product.price, product.originalPrice, product.currency, product.sizeGuideData, sdkApiUrl]);
   const autoSize = usePrimeStyleSize(autoSizeInput);
   const hasProfileSizeResult = Boolean(autoSize.recommendedSize || autoSize.sections);
   const hasAuthenticatedProfile = Boolean(autoSize.authenticatedProfile);
@@ -405,6 +414,14 @@ export function DesktopProductDetail({ product }: Props) {
           <div className="px-[2.5vw] py-[3vw]">
             <p style={{ fontSize: '0.72vw' }} className="text-text-hint uppercase tracking-[0.18em] mb-[0.6vw]">{product.brand}</p>
             <h1 style={{ fontSize: '2.0vw', lineHeight: 1.1 }} className="font-semibold tracking-[-0.025em] text-text-primary mb-[1.2vw]">{product.name}</h1>
+            {product.price !== null && (
+              <div className="mb-[1.1vw] flex items-baseline gap-[0.6vw]">
+                <span style={{ fontSize: '1.05vw' }} className="font-semibold text-text-primary">{formatProductPrice(product.price, product.currency)}</span>
+                {product.originalPrice !== null && product.originalPrice > product.price && (
+                  <span style={{ fontSize: '0.78vw' }} className="text-text-disabled line-through">{formatProductPrice(product.originalPrice, product.currency)}</span>
+                )}
+              </div>
+            )}
 
             {product.description && (
               <div
@@ -583,6 +600,9 @@ export function DesktopProductDetail({ product }: Props) {
               apiUrl={sdkApiUrl}
               productId={product.id}
               productImage={images[0] ?? product.primaryImage}
+              productPrice={product.price ?? undefined}
+              productCompareAtPrice={product.originalPrice ?? undefined}
+              productCurrency={product.currency}
               productImages={images}
               productCarouselItems={sdkCarouselItems}
               locale="en"
@@ -678,4 +698,12 @@ function CompleteLookRow({ products }: { products: DemoProductView["completeLook
 
 function formatLookPrice(price: number, currency: string): string {
   return `${price.toLocaleString("en-US")} ${currency}`;
+}
+
+function formatProductPrice(price: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency || "USD",
+    maximumFractionDigits: Number.isInteger(price) ? 0 : 2,
+  }).format(price);
 }

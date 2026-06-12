@@ -7,6 +7,9 @@ export type DemoAddToBagPayload = {
   productId?: string;
   productTitle?: string;
   productUrl?: string;
+  productPrice?: number | string;
+  productCompareAtPrice?: number | string;
+  productCurrency?: string;
   recommendedSize?: string;
   sizingResult?: unknown;
   resultImageUrl?: string | null;
@@ -26,6 +29,9 @@ export type DemoBagItem = {
   title: string;
   image: string;
   color?: string;
+  price: number | null;
+  compareAtPrice: number | null;
+  currency: string;
   sizeLabel: string;
   quantity: number;
 };
@@ -54,6 +60,21 @@ function sizeSummary(payload: DemoAddToBagPayload): string {
   return payload.recommendedSize?.trim() || "Suggested size";
 }
 
+function normalizePrice(value: number | string | null | undefined): number | null {
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  if (typeof value !== "string") return null;
+  const parsed = Number(value.replace(/[^0-9.-]/g, ""));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function formatPrice(price: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency || "USD",
+    maximumFractionDigits: Number.isInteger(price) ? 0 : 2,
+  }).format(price);
+}
+
 export function buildDemoBagItem({
   product,
   image,
@@ -67,6 +88,9 @@ export function buildDemoBagItem({
 }): DemoBagItem {
   const sizeLabel = sizeSummary(payload);
   const productId = payload.productId || product.id;
+  const price = normalizePrice(payload.productPrice) ?? product.price;
+  const compareAtPrice = normalizePrice(payload.productCompareAtPrice) ?? product.originalPrice;
+  const currency = payload.productCurrency || product.currency || "USD";
   const lineId = [
     normalizePart(productId),
     normalizePart(color),
@@ -79,6 +103,9 @@ export function buildDemoBagItem({
     title: payload.productTitle || product.name,
     image: image || product.primaryImage,
     color,
+    price,
+    compareAtPrice,
+    currency,
     sizeLabel,
     quantity: 1,
   };
@@ -214,6 +241,14 @@ export function DemoBagDrawer({
                       <p className="mt-2 rounded-lg bg-surface-light px-2 py-1 text-xs font-medium leading-5 text-text-body">
                         {item.sizeLabel}
                       </p>
+                      {item.price !== null ? (
+                        <div className="mt-2 flex items-baseline gap-2">
+                          <span className="text-xs font-semibold text-text-primary">{formatPrice(item.price, item.currency)}</span>
+                          {item.compareAtPrice !== null && item.compareAtPrice > item.price ? (
+                            <span className="text-[11px] text-text-disabled line-through">{formatPrice(item.compareAtPrice, item.currency)}</span>
+                          ) : null}
+                        </div>
+                      ) : null}
                       <div className="mt-3 flex items-center justify-between">
                         <div className="inline-flex items-center rounded-full border border-border-light bg-white">
                           <button
@@ -234,7 +269,9 @@ export function DemoBagDrawer({
                             <Plus className="h-3.5 w-3.5" />
                           </button>
                         </div>
-                        <span className="text-[11px] text-text-disabled">No checkout</span>
+                        <span className="text-[11px] font-medium text-text-caption">
+                          {item.price !== null ? formatPrice(item.price * item.quantity, item.currency) : "No checkout"}
+                        </span>
                       </div>
                     </div>
                   </div>

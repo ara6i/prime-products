@@ -65,6 +65,9 @@ export interface DemoProductCard {
   name: string;
   brand: string;
   category: string;
+  price: number | null;
+  originalPrice: number | null;
+  currency: string;
   image: string;
   /** Pre-generated model-free cover Cloudinary URL (only set when a real cover exists). */
   generatedCover?: string;
@@ -112,6 +115,9 @@ export interface DemoProductView {
   category: string;
   subcategory: string;
   gender: string;
+  price: number | null;
+  originalPrice: number | null;
+  currency: string;
   description: string;
   material: string;
   images: string[];

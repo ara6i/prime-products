@@ -186,10 +186,23 @@ function ProductCard({ product, index }: { product: DemoProductCard; index: numb
 
       <div className="mt-[0.6vh] px-[0.1vw]">
         <p className="text-text-hint uppercase tracking-widest" style={{ fontSize: '0.6vw' }}>{product.brand}</p>
-        <h3 style={{ fontSize: '0.85vw' }} className="text-text-body font-medium leading-tight line-clamp-1 mt-[0.1vh] group-hover:text-brand-blue transition-colors duration-200">{product.name}</h3>
+        <div className="mt-[0.1vh] flex items-center justify-between gap-[0.5vw]">
+          <h3 style={{ fontSize: '0.85vw' }} className="min-w-0 flex-1 text-text-body font-medium leading-tight line-clamp-1 group-hover:text-brand-blue transition-colors duration-200">{product.name}</h3>
+          {product.price !== null && (
+            <span style={{ fontSize: '0.72vw' }} className="shrink-0 font-semibold text-text-primary">{formatProductPrice(product.price, product.currency)}</span>
+          )}
+        </div>
       </div>
     </Link>
   );
+}
+
+function formatProductPrice(price: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency || "USD",
+    maximumFractionDigits: Number.isInteger(price) ? 0 : 2,
+  }).format(price);
 }
 
 function EmptyState() {
