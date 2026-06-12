@@ -213,7 +213,6 @@ function CustomerCountryMap({ view }: { view: ShopifyControlCenterView }) {
             width={view.analytics.map.width}
             height={view.analytics.map.height}
             countries={view.analytics.map.countries}
-            legendMax={view.analytics.map.legend.max}
           />
         ) : (
           <div className="grid h-[12.5vw] place-items-center rounded-[0.833vw] bg-customer-soft text-[clamp(12px,0.72vw,14px)] text-customer-muted max-lg:h-[48vw] max-lg:rounded-[4vw] max-lg:text-[3.2vw]">No map data yet.</div>

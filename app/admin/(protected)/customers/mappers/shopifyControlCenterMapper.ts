@@ -275,8 +275,7 @@ export function mapShopifyControlCenter(
         })),
       countrySplit: behavior.countrySplit
         .slice()
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 8),
+        .sort((a, b) => b.count - a.count),
       topProducts: behavior.topProducts
         .slice()
         .sort((a, b) => b.tryOns - a.tryOns)

@@ -24,7 +24,6 @@ export function CountrySplitCard({
   description = "Where try-ons happen",
 }: CountrySplitCardProps) {
   const total = countries.reduce((sum, country) => sum + country.count, 0);
-  const topCountries = countries.slice(0, 6);
 
   return (
     <CustomerDashboardCard
@@ -36,7 +35,7 @@ export function CountrySplitCard({
         <CustomerDashboardEmptyState title="No geo data yet" />
       ) : (
         <ul className="divide-y divide-customer-border">
-          {topCountries.map((country) => {
+          {countries.map((country) => {
             const percent = Math.round((country.count / total) * 100);
 
             return (

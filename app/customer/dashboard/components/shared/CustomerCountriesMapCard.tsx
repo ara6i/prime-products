@@ -16,7 +16,6 @@ export async function CustomerCountriesMapCard({ countries }: CustomerCountriesM
         width={map.width}
         height={map.height}
         countries={map.countries}
-        legendMax={map.legend.max}
       />
     </CustomerDashboardCard>
   );
