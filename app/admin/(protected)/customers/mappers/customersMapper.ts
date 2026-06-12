@@ -146,13 +146,18 @@ export function mapCustomerStore(store: AdminCustomerStoreRaw): CustomerListItem
     billingCurrentPeriodEnd?: string | null;
   };
   const currency = "USD";
+  const primaryIdentifier = empty(store.websiteDomain || store.identifier);
+  const identifierLabel =
+    store.source === "shopify" && store.shopifyDomain && store.shopifyDomain !== primaryIdentifier
+      ? `${primaryIdentifier} · ${store.shopifyDomain}`
+      : primaryIdentifier;
 
   return {
     id: store.id,
     source: store.source,
     sourceLabel: sourceLabels[store.source],
     storeName: empty(store.storeName),
-    identifierLabel: empty(store.websiteDomain || store.identifier),
+    identifierLabel,
     ownerLabel: empty(store.ownerEmail),
     statusLabel: titleCase(store.status),
     statusTone: statusTone(store.status),
