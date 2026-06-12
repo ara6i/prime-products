@@ -479,5 +479,12 @@ export interface ShopifyControlCenterView {
     rangeLabel: string;
     behaviorCards: ShopifyMetricCard[];
     revenueCards: ShopifyMetricCard[];
+    dailyActivity: Array<{ date: string; label: string; completed: number; initiated: number }>;
+    deviceBubbles: Array<{ label: string; value: string; percent: number; tone: "blue" | "yellow" | "purple" }>;
+    countrySplit: Array<{ iso2: string; name: string; count: number }>;
+    topProducts: Array<{ title: string; meta: string; value: string; accent: "blue" | "yellow" | "purple" }>;
+    revenueProducts: Array<{ title: string; meta: string; value: string; accent: "blue" | "yellow" | "purple" }>;
+    funnel: Array<{ step: string; count: string; percent: number }>;
+    map: import("@/app/customer/dashboard/utils/map/prepareCustomerMapData").PreparedMapData | null;
   };
 }

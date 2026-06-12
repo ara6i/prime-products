@@ -7,6 +7,7 @@ import type {
   ShopifyMetricCard,
   ShopifyRevenueAnalyticsRaw,
 } from "../types";
+import type { PreparedMapData } from "@/app/customer/dashboard/utils/map/prepareCustomerMapData";
 
 const FREE_PLAN_PRODUCT_LIMIT = 50;
 
@@ -56,6 +57,12 @@ function percent(value: number | null | undefined): string {
   return `${Math.round(value * 100)}%`;
 }
 
+function formatShortDate(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(date);
+}
+
 function statusTone(status: string): CustomerListItem["statusTone"] {
   if (status === "active") return "success";
   if (status === "suspended") return "warning";
@@ -65,6 +72,10 @@ function statusTone(status: string): CustomerListItem["statusTone"] {
 
 function card(label: string, value: string, helper: string): ShopifyMetricCard {
   return { label, value, helper };
+}
+
+function toneByIndex(index: number): "blue" | "yellow" | "purple" {
+  return index % 3 === 0 ? "blue" : index % 3 === 1 ? "yellow" : "purple";
 }
 
 function technicalField(label: string, value: string | null | undefined): CustomerDetailField {
@@ -121,6 +132,7 @@ export function mapShopifyControlCenter(
   raw: ShopifyControlCenterRaw,
   behaviorRaw?: ShopifyBehaviorAnalyticsRaw | null,
   revenueRaw?: ShopifyRevenueAnalyticsRaw | null,
+  preparedMap?: PreparedMapData | null,
 ): ShopifyControlCenterView {
   const behavior = behaviorRaw ?? fallbackBehavior();
   const revenue = revenueRaw ?? fallbackRevenue();
@@ -147,6 +159,8 @@ export function mapShopifyControlCenter(
         : raw.trial.accessReason === "ACTIVE_PLAN"
           ? "Paid plan active"
           : titleCase(raw.trial.accessReason);
+  const deviceTotal = behavior.deviceSplit.reduce((sum, item) => sum + item.count, 0);
+  const funnelMax = Math.max(1, ...behavior.funnel.map((item) => item.count));
 
   return {
     id: raw.store.id,
@@ -243,6 +257,52 @@ export function mapShopifyControlCenter(
         card("Conversion", percent(revenue.attribution.conversionRate), "Completed try-ons to paid orders"),
         card("Refund rate", percent(revenue.refundRate), formatCurrency(revenue.orders.refundedAmount, revenue.currency)),
       ],
+      dailyActivity: behavior.dailyActivity.map((point) => ({
+        date: point.date,
+        label: formatShortDate(point.date),
+        completed: point.completed,
+        initiated: point.initiated,
+      })),
+      deviceBubbles: behavior.deviceSplit
+        .slice()
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 3)
+        .map((item, index) => ({
+          label: titleCase(item.device),
+          value: formatNumber(item.count),
+          percent: deviceTotal > 0 ? Math.round((item.count / deviceTotal) * 100) : 0,
+          tone: toneByIndex(index),
+        })),
+      countrySplit: behavior.countrySplit
+        .slice()
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 8),
+      topProducts: behavior.topProducts
+        .slice()
+        .sort((a, b) => b.tryOns - a.tryOns)
+        .slice(0, 5)
+        .map((product, index) => ({
+          title: product.productTitle || product.productId || "Unknown product",
+          meta: product.productId,
+          value: formatNumber(product.tryOns),
+          accent: toneByIndex(index),
+        })),
+      revenueProducts: revenue.topProductsByRevenue
+        .slice()
+        .sort((a, b) => b.revenue - a.revenue)
+        .slice(0, 5)
+        .map((product, index) => ({
+          title: product.title || product.productId || "Unknown product",
+          meta: `${formatNumber(product.orders)} orders`,
+          value: formatCurrency(product.revenue, revenue.currency),
+          accent: toneByIndex(index),
+        })),
+      funnel: behavior.funnel.map((item) => ({
+        step: titleCase(item.step),
+        count: formatNumber(item.count),
+        percent: Math.round((item.count / funnelMax) * 100),
+      })),
+      map: preparedMap ?? null,
     },
   };
 }

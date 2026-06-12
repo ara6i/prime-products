@@ -59,7 +59,7 @@ export function useShopifyCustomerControlCenter(
 
   const applyState = useCallback((next: ShopifyCustomerControlCenterState) => {
     setState(next);
-    setOptimisticView(mapShopifyControlCenter(next.controlCenter, next.behavior, next.revenue));
+    setOptimisticView((current) => mapShopifyControlCenter(next.controlCenter, next.behavior, next.revenue, current.analytics.map));
   }, []);
 
   const refresh = useCallback(async () => {

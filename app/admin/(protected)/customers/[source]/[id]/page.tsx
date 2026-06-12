@@ -6,6 +6,7 @@ import { CustomerDetailPage } from "../../components/CustomerDetailPage";
 import { ShopifyCustomerControlCenterPage } from "../../components/shopify/ShopifyCustomerControlCenterPage";
 import { mapCustomerDetail } from "../../mappers/customersMapper";
 import { mapShopifyControlCenter } from "../../mappers/shopifyControlCenterMapper";
+import { prepareCustomerMapData } from "@/app/customer/dashboard/utils/map/prepareCustomerMapData";
 import {
   fetchAdminCustomer,
   fetchAdminShopifyBehavior,
@@ -43,7 +44,8 @@ export default async function AdminCustomerDetailRoute({ params }: AdminCustomer
       fetchAdminShopifyBehavior(id).catch(() => null),
       fetchAdminShopifyRevenue(id).catch(() => null),
     ]);
-    const view = mapShopifyControlCenter(controlCenter, behavior, revenue);
+    const map = behavior ? await prepareCustomerMapData(behavior.countrySplit) : null;
+    const view = mapShopifyControlCenter(controlCenter, behavior, revenue, map);
 
     return (
       <AdminDashboardThemeProvider>
