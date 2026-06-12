@@ -22,6 +22,7 @@ const ASSET = "/images/landing/ps";
 export const GET_API_KEY_HREF = "#pilot";
 export const DOCS_HREF = "/customer/dashboard";
 export const DEMO_HREF = "/demo/products";
+export const SHOPIFY_APP_HREF = "https://apps.shopify.com/primestyleai";
 
 export const HERO: HeroContent = {
   eyebrow: "SDK · Widget · API · Shopify",
@@ -240,8 +241,8 @@ export const INTEGRATIONS: IntegrationContent = {
       label: "Shopify",
       title: "Shopify App",
       body: "One-click install. Trained on your size chart, themed to your store, live on every product page in minutes.",
-      docsHref: `${DOCS_HREF}#shopify`,
-      comingSoon: true,
+      docsHref: SHOPIFY_APP_HREF,
+      badge: "Available",
     },
   ],
 };

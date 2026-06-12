@@ -13,6 +13,8 @@ import { usePilotModal } from "../../shared/PilotModalContext";
 import { cn } from "@/app/shared/lib/utils";
 import { useLandingLanguage } from "@/app/landing/i18n";
 
+const SHOPIFY_APP_HREF = "https://apps.shopify.com/primestyleai";
+
 type Visual =
   | {
       kind: "video";
@@ -92,12 +94,12 @@ const TABS: IntegrationTab[] = [
     label: "Shopify",
     icon: <ShoppingBag className="h-3.5 w-3.5 shrink-0" />,
     content: {
-      status: "soon",
+      status: "available",
       title: "Shopify App",
       description:
         "A native Shopify app trained on your own size chart. Themed to match your store, live on every product page in minutes — no theme edits, no developer required.",
-      primaryHref: "#notify",
-      primaryLabel: "Notify me",
+      primaryHref: SHOPIFY_APP_HREF,
+      primaryLabel: "Install on Shopify",
       visual: { kind: "soon", tag: "shopify" },
     },
   },
