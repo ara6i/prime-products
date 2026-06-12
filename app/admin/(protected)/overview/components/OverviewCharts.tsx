@@ -6,6 +6,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -81,9 +82,14 @@ export function TryOnAreaChart({ data }: TryOnChartProps) {
 }
 
 export function InstallBarChart({ data }: InstallChartProps) {
+  const chartData = data.map((item) => ({
+    ...item,
+    visualInstalls: item.installs > 0 ? item.installs : 1,
+  }));
+
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data} margin={{ top: 8, right: 0, bottom: 0, left: 0 }}>
+      <BarChart data={chartData} margin={{ top: 8, right: 0, bottom: 0, left: 0 }}>
         <XAxis
           dataKey="day"
           axisLine={false}
@@ -91,8 +97,12 @@ export function InstallBarChart({ data }: InstallChartProps) {
           tick={{ fontSize: 11, fill: "var(--customer-chart-axis)" }}
         />
         <YAxis hide allowDecimals={false} />
-        <Tooltip contentStyle={tooltipStyle} formatter={(value) => [Number(value).toLocaleString("en-US"), "Installs"]} />
-        <Bar dataKey="installs" radius={[12, 12, 12, 12]} fill="var(--brand-blue)" isAnimationActive={false} />
+        <Tooltip contentStyle={tooltipStyle} formatter={(_, __, item) => [Number(item.payload.installs).toLocaleString("en-US"), "Installs"]} />
+        <Bar dataKey="visualInstalls" radius={[12, 12, 12, 12]} isAnimationActive={false}>
+          {chartData.map((item) => (
+            <Cell key={item.day} fill="var(--brand-blue)" opacity={item.installs > 0 ? 0.9 : 0.12} />
+          ))}
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   );
