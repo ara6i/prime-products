@@ -3,18 +3,21 @@ import { AdminDashboardShell } from "../../components/AdminDashboardShell";
 import { AdminDashboardThemeProvider } from "../../components/shared/AdminDashboardThemeProvider";
 import { CustomersPage } from "../components/CustomersPage";
 import { mapCustomersPage } from "../mappers/customersMapper";
-import { fetchAdminCustomers } from "../services/customersService";
+import { fetchAdminCustomers, fetchAdminShopifyTryOnOverview } from "../services/customersService";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminShopifyCustomersPage() {
-  const response = await fetchAdminCustomers({
-    page: 1,
-    limit: 25,
-    source: "shopify",
-    search: "",
-  });
-  const view = mapCustomersPage(response, "shopify");
+  const [response, overview] = await Promise.all([
+    fetchAdminCustomers({
+      page: 1,
+      limit: 25,
+      source: "shopify",
+      search: "",
+    }),
+    fetchAdminShopifyTryOnOverview("30d"),
+  ]);
+  const view = mapCustomersPage(response, "shopify", overview);
 
   return (
     <AdminDashboardThemeProvider>

@@ -11,6 +11,8 @@ import type {
   ShopifyControlCenterMutationResponse,
   ShopifyControlCenterRaw,
   ShopifyRevenueAnalyticsRaw,
+  ShopifyTryOnOverview,
+  ShopifyTryOnRange,
   ShopifyUsageLimitsPayload,
 } from "../types";
 
@@ -34,6 +36,18 @@ export async function fetchAdminCustomersClient(query: AdminCustomerListQuery): 
     throw new Error("Failed to load customers");
   }
   return (await response.json()) as AdminCustomersResponse;
+}
+
+export async function fetchAdminShopifyTryOnOverviewClient(
+  range: ShopifyTryOnRange = "30d",
+): Promise<ShopifyTryOnOverview> {
+  const response = await fetch(`/api/admin/analytics/shopify-tryons?range=${encodeURIComponent(range)}`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to load Shopify try-on analytics");
+  }
+  return (await response.json()) as ShopifyTryOnOverview;
 }
 
 export async function fetchAdminCustomerClient(

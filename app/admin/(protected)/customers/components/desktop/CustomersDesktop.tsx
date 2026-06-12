@@ -17,6 +17,9 @@ export function CustomersDesktop({ customers }: CustomersDesktopProps) {
           <p className="text-[clamp(12px,0.72vw,14px)] font-semibold uppercase tracking-[0.16em] text-brand-blue">{customers.view.eyebrow}</p>
           <h2 className="mt-[0.35vw] text-[clamp(28px,1.8vw,36px)] font-semibold leading-tight text-text-primary">{customers.view.title}</h2>
           <p className="mt-[0.313vw] max-w-[52vw] text-[clamp(13px,0.78vw,15px)] leading-relaxed text-text-body">{customers.view.description}</p>
+          {customers.view.rangeLabel ? (
+            <p className="mt-[0.208vw] text-[clamp(12px,0.72vw,14px)] font-medium text-customer-muted">Try-on range: {customers.view.rangeLabel}</p>
+          ) : null}
         </div>
 
         <div className="flex items-center gap-[0.521vw]">

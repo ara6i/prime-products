@@ -9,6 +9,7 @@ import type {
   CustomerListItem,
   CustomerStatCard,
   CustomersViewModel,
+  ShopifyTryOnOverview,
 } from "../types";
 
 const sourceLabels: Record<AdminCustomerSource, string> = {
@@ -70,7 +71,7 @@ function sourceTitle(source: AdminCustomerSource): string {
 
 function sourceDescription(source: AdminCustomerSource): string {
   return source === "shopify"
-    ? "Installed Shopify stores, owner details, plan usage, billing signals, and linked sizing data."
+    ? "Installed Shopify stores with their own owner details, activation status, plan usage, and try-on counts."
     : "Direct SDK customers, their store profiles, projects, account information, and sizing setup.";
 }
 
@@ -78,9 +79,46 @@ function empty(value: string | null | undefined): string {
   return value?.trim() || "Not available";
 }
 
-function mapStats(response: AdminCustomersResponse, source: AdminCustomerSource): CustomerStatCard[] {
+function rangeLabel(range: ShopifyTryOnOverview["range"] | undefined): string | null {
+  if (range === "7d") return "Last 7 days";
+  if (range === "30d") return "Last 30 days";
+  if (range === "90d") return "Last 90 days";
+  if (range === "12m") return "Last 12 months";
+  return null;
+}
+
+function mapStats(
+  response: AdminCustomersResponse,
+  source: AdminCustomerSource,
+  overview?: ShopifyTryOnOverview | null,
+): CustomerStatCard[] {
   const withProfiles = response.stores.filter((store) => Boolean(store.storeProfileId)).length;
   const tryOnsUsed = response.stores.reduce((sum, store) => sum + (store.tryOnsUsed ?? 0), 0);
+
+  if (source === "shopify" && overview) {
+    return [
+      {
+        label: "Installs",
+        value: formatNumber(overview.kpis.totalInstalls),
+        helper: `${formatNumber(overview.kpis.activeInstalls)} active`,
+      },
+      {
+        label: "Range Try-ons",
+        value: formatNumber(overview.kpis.totalTryOns),
+        helper: rangeLabel(overview.range) ?? "Selected range",
+      },
+      {
+        label: "Lifetime Try-ons",
+        value: formatNumber(overview.kpis.lifetimeTryOns),
+        helper: "All Shopify customers",
+      },
+      {
+        label: "Store Profiles",
+        value: formatNumber(withProfiles),
+        helper: "Linked sizing profiles",
+      },
+    ];
+  }
 
   return [
     {
@@ -135,23 +173,45 @@ export function mapCustomerStore(store: AdminCustomerStoreRaw): CustomerListItem
       store.source === "shopify"
         ? `${formatNumber(store.tryOnsUsed)} used / ${formatNumber(store.tryOnsRemaining)} left`
         : "Not tracked",
+    rangeTryOnsLabel: "Not tracked",
+    lifetimeTryOnsLabel: store.source === "shopify" ? formatNumber(store.tryOnsUsed) : "Not tracked",
     lastUsedLabel: formatDate(store.lastUsedAt),
     installedLabel: formatDate(store.installedAt),
     storeProfileLabel: store.storeProfileId ?? "Not linked",
   };
 }
 
+function mapShopifyCustomerStore(
+  store: AdminCustomerStoreRaw,
+  overview?: ShopifyTryOnOverview | null,
+): CustomerListItem {
+  const item = mapCustomerStore(store);
+  const retailer = overview?.retailers.find((candidate) => candidate.id === store.id);
+  if (!retailer) return item;
+
+  return {
+    ...item,
+    rangeTryOnsLabel: formatNumber(retailer.rangeTryOns),
+    lifetimeTryOnsLabel: formatNumber(retailer.lifetimeTryOns),
+    tryOnsLabel: `${formatNumber(retailer.lifetimeTryOns)} lifetime / ${formatNumber(retailer.tryOnsRemaining)} left`,
+  };
+}
+
 export function mapCustomersPage(
   response: AdminCustomersResponse,
   source: AdminCustomerSource,
+  overview?: ShopifyTryOnOverview | null,
 ): CustomersViewModel {
   return {
     source,
     title: sourceTitle(source),
     eyebrow: "Customers",
     description: sourceDescription(source),
-    stats: mapStats(response, source),
-    items: response.stores.map(mapCustomerStore),
+    rangeLabel: source === "shopify" ? rangeLabel(overview?.range) : null,
+    stats: mapStats(response, source, overview),
+    items: response.stores.map((store) =>
+      source === "shopify" ? mapShopifyCustomerStore(store, overview) : mapCustomerStore(store),
+    ),
     pagination: {
       page: response.pagination.page,
       limit: response.pagination.limit,

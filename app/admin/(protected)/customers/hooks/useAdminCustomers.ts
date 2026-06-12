@@ -3,7 +3,10 @@
 import { type FormEvent, useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { mapCustomersPage } from "../mappers/customersMapper";
-import { fetchAdminCustomersClient } from "../services/customersClientService";
+import {
+  fetchAdminCustomersClient,
+  fetchAdminShopifyTryOnOverviewClient,
+} from "../services/customersClientService";
 import type {
   AdminCustomerListQuery,
   AdminCustomerSource,
@@ -45,9 +48,12 @@ export function useAdminCustomers(
   const loadCustomers = useCallback((query: AdminCustomerListQuery) => {
     setIsLoading(true);
     setError(null);
-    fetchAdminCustomersClient(query)
-      .then((response) => {
-        setView(mapCustomersPage(response, source));
+    Promise.all([
+      fetchAdminCustomersClient(query),
+      source === "shopify" ? fetchAdminShopifyTryOnOverviewClient("30d") : Promise.resolve(null),
+    ])
+      .then(([response, overview]) => {
+        setView(mapCustomersPage(response, source, overview));
         setListQuery(query);
       })
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load customers"))

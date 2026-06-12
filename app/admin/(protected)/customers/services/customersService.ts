@@ -7,6 +7,8 @@ import type {
   ShopifyBehaviorAnalyticsRaw,
   ShopifyControlCenterRaw,
   ShopifyRevenueAnalyticsRaw,
+  ShopifyTryOnOverview,
+  ShopifyTryOnRange,
 } from "../types";
 
 function createCustomerSearchParams(query: AdminCustomerListQuery): string {
@@ -23,6 +25,14 @@ function createCustomerSearchParams(query: AdminCustomerListQuery): string {
 
 export async function fetchAdminCustomers(query: AdminCustomerListQuery): Promise<AdminCustomersResponse> {
   return adminFetch<AdminCustomersResponse>(`/api/admin/stores?${createCustomerSearchParams(query)}`);
+}
+
+export async function fetchAdminShopifyTryOnOverview(
+  range: ShopifyTryOnRange = "30d",
+): Promise<ShopifyTryOnOverview> {
+  return adminFetch<ShopifyTryOnOverview>(
+    `/api/admin/analytics/shopify-tryons?range=${encodeURIComponent(range)}`,
+  );
 }
 
 export async function fetchAdminCustomer(

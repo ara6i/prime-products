@@ -152,6 +152,44 @@ export interface ShopifyRevenueAnalyticsRaw {
   topProductsByRevenue: Array<{ productId: string; title: string; revenue: number; orders: number }>;
 }
 
+export type ShopifyTryOnRange = "7d" | "30d" | "90d" | "12m";
+
+export interface ShopifyTryOnRetailer {
+  id: string;
+  shopName: string;
+  shopDomain: string;
+  primaryDomain: string | null;
+  primaryDomainUrl: string | null;
+  ownerEmail: string | null;
+  status: string;
+  installedAt: string | null;
+  uninstalledAt: string | null;
+  lastUsedAt: string | null;
+  rangeTryOns: number;
+  lifetimeTryOns: number;
+  tryOnsRemaining: number;
+}
+
+export interface ShopifyTryOnOverview {
+  range: ShopifyTryOnRange;
+  generatedAt: string;
+  from: string;
+  kpis: {
+    totalTryOns: number;
+    lifetimeTryOns: number;
+    activeInstalls: number;
+    totalInstalls: number;
+    suspendedInstalls: number;
+    uninstalledInstalls: number;
+    topRetailer: ShopifyTryOnRetailer | null;
+  };
+  series: Array<{
+    bucket: string;
+    tryOns: number;
+  }>;
+  retailers: ShopifyTryOnRetailer[];
+}
+
 export interface ShopifyBillingOverridePayload {
   plan: string;
   selectedProductCount: number;
@@ -338,6 +376,8 @@ export interface CustomerListItem {
   productCountLabel: string;
   dueDateLabel: string;
   tryOnsLabel: string;
+  rangeTryOnsLabel: string;
+  lifetimeTryOnsLabel: string;
   lastUsedLabel: string;
   installedLabel: string;
   storeProfileLabel: string;
@@ -348,6 +388,7 @@ export interface CustomersViewModel {
   title: string;
   eyebrow: string;
   description: string;
+  rangeLabel: string | null;
   stats: CustomerStatCard[];
   items: CustomerListItem[];
   pagination: {

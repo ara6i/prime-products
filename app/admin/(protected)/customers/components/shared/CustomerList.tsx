@@ -50,7 +50,14 @@ export function CustomerList({
               <p className="truncate text-text-body">Owner: {item.ownerLabel}</p>
               <p className="truncate text-text-body">Plan: {item.planLabel}{isShopify ? ` · ${item.monthlySpendLabel}` : ""}</p>
               {isShopify ? <p className="truncate text-text-body">Products: {item.productCountLabel}</p> : null}
-              <p className="truncate text-text-body">Try-ons: {item.tryOnsLabel}</p>
+              {isShopify ? (
+                <>
+                  <p className="truncate text-text-body">Range try-ons: {item.rangeTryOnsLabel}</p>
+                  <p className="truncate text-text-body">Lifetime try-ons: {item.lifetimeTryOnsLabel}</p>
+                </>
+              ) : (
+                <p className="truncate text-text-body">Try-ons: {item.tryOnsLabel}</p>
+              )}
               <p className="truncate text-customer-muted">{isShopify ? "Due" : "Installed"}: {isShopify ? item.dueDateLabel : item.installedLabel}</p>
             </div>
 
@@ -116,7 +123,9 @@ export function CustomerList({
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
                     <p className="truncate text-[clamp(12px,0.72vw,14px)] font-medium text-text-primary">{isShopify ? item.productCountLabel : item.planLabel}</p>
-                    <p className="mt-[0.156vw] truncate text-[clamp(11px,0.68vw,13px)] text-customer-muted">{item.tryOnsLabel}</p>
+                    <p className="mt-[0.156vw] truncate text-[clamp(11px,0.68vw,13px)] text-customer-muted">
+                      {isShopify ? `${item.rangeTryOnsLabel} range / ${item.lifetimeTryOnsLabel} lifetime` : item.tryOnsLabel}
+                    </p>
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
                     <p className="truncate text-[clamp(12px,0.72vw,14px)] text-text-body">{isShopify ? item.dueDateLabel : item.installedLabel}</p>
