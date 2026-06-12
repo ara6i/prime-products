@@ -208,9 +208,9 @@ function ImpressionsMap({ view }: { view: ShopifyDashboardView }) {
           <p className="text-[clamp(28px,1.85vw,36px)] font-semibold leading-none text-text-primary max-lg:text-[8vw]">{view.impressions.value}</p>
         </div>
         <svg viewBox={`0 0 ${view.map.width} ${view.map.height}`} className="h-[12.5vw] w-full max-lg:h-[48vw]" role="img" aria-label="Impressions by country">
-          {view.map.countries.map((country) => (
+          {view.map.countries.map((country, index) => (
             <path
-              key={country.numeric}
+              key={`${country.numeric}-${country.iso2 ?? "unknown"}-${index}`}
               d={country.path}
               className={`${mapBucketClasses[country.bucket]} transition-all hover:fill-brand-blue hover:opacity-90`}
               stroke="var(--customer-surface-card)"
