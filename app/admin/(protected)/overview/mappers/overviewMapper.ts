@@ -59,6 +59,7 @@ export async function mapShopifyDashboardOverview(raw: ShopifyDashboardRaw): Pro
   const installRange = raw.ranges?.installs ?? raw.range;
   const deviceTotal = raw.deviceSplit.reduce((sum, item) => sum + item.count, 0);
   const map = await prepareCustomerMapData(raw.impressions.countrySplit, 960, 430);
+  const funnel = raw.installs.funnel;
 
   return {
     tryOnRange,
@@ -100,6 +101,28 @@ export async function mapShopifyDashboardOverview(raw: ShopifyDashboardRaw): Pro
       initiated: point.initiated,
     })),
     installSeries: raw.installs.series,
+    installFunnel: funnel ? [
+      {
+        label: "First use",
+        value: formatNumber(funnel.firstUse),
+        helper: `${funnel.firstUseRatePct}% of installs`,
+      },
+      {
+        label: "Free to paid",
+        value: formatNumber(funnel.convertedFromFree),
+        helper: `${funnel.freeToPaidRatePct}% conversion`,
+      },
+      {
+        label: "Uninstalled",
+        value: formatNumber(funnel.uninstalled),
+        helper: `${funnel.uninstallRatePct}% uninstall rate`,
+      },
+      {
+        label: "Avg days to paid",
+        value: funnel.averageDaysToPaid === null ? "n/a" : String(funnel.averageDaysToPaid),
+        helper: `${formatNumber(funnel.paid)} paid · ${formatNumber(funnel.free)} free`,
+      },
+    ] : [],
     topMerchants: raw.topMerchants.map((merchant, index) => ({
       title: merchant.shopName || merchant.shopDomain,
       meta: `${merchant.ownerEmail ?? merchant.shopDomain} · ${merchant.status}`,

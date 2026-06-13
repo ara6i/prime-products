@@ -286,6 +286,17 @@ export function ShopifyOverviewPage({ view }: ShopifyOverviewPageProps) {
           <div className="mt-[1.146vw] h-[13.5vw] max-lg:mt-[4vw] max-lg:h-[58vw]">
             <InstallBarChart data={view.installSeries} />
           </div>
+          {view.installFunnel.length ? (
+            <div className="mt-[1vw] grid grid-cols-2 gap-[0.625vw] max-lg:mt-[4vw] max-lg:gap-[2vw]">
+              {view.installFunnel.map((item) => (
+                <div key={item.label} className="rounded-[0.625vw] bg-customer-soft px-[0.729vw] py-[0.625vw] max-lg:rounded-[3vw] max-lg:px-[3vw] max-lg:py-[2.5vw]">
+                  <p className="text-[clamp(11px,0.64vw,12px)] font-semibold uppercase tracking-[0.08em] text-customer-muted max-lg:text-[2.8vw]">{item.label}</p>
+                  <p className="mt-[0.313vw] text-[clamp(18px,1.25vw,24px)] font-semibold text-text-primary max-lg:mt-[1vw] max-lg:text-[5vw]">{item.value}</p>
+                  <p className="mt-[0.208vw] text-[clamp(11px,0.64vw,12px)] text-text-body max-lg:mt-[1vw] max-lg:text-[3vw]">{item.helper}</p>
+                </div>
+              ))}
+            </div>
+          ) : null}
         </section>
       </div>
 

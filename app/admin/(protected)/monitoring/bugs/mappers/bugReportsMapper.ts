@@ -36,10 +36,28 @@ function severityTone(severity: AdminBugReportRawItem["severity"]): string {
 function productMeta(item: AdminBugReportRawItem): string {
   const pieces = [
     item.sourceChannel ? item.sourceChannel.toUpperCase() : null,
+    item.store?.shopDomain ? `Store ${item.store.shopDomain}` : null,
     item.productId ? `Product ${item.productId}` : null,
     item.jobId ? `Job ${item.jobId}` : null,
   ].filter(Boolean);
   return pieces.join(" · ") || "No product context";
+}
+
+function storeLabel(item: AdminBugReportRawItem): string {
+  if (item.store?.shopName || item.store?.shopDomain) {
+    const name = item.store.shopName || item.store.shopDomain;
+    const plan = item.store.plan ? ` · ${item.store.plan}` : "";
+    const status = item.store.status ? ` · ${item.store.status}` : "";
+    return `${name}${plan}${status}`;
+  }
+  if (item.storeProfileId) return `SDK store profile ${item.storeProfileId}`;
+  return "No store context";
+}
+
+function profileLabel(item: AdminBugReportRawItem): string {
+  if (!item.profile) return "No customer profile";
+  const name = item.profile.name || item.profile.id || "Unnamed profile";
+  return `${name}${item.profile.loggedIn ? " · logged in" : " · guest/local"}`;
 }
 
 function visitorLabel(item: AdminBugReportRawItem): string {
@@ -53,6 +71,8 @@ function deviceLabel(item: AdminBugReportRawItem): string {
 function mapItem(item: AdminBugReportRawItem): BugReportItem {
   return {
     id: item.id,
+    source: item.source,
+    status: item.status,
     dateLabel: formatDate(item.createdAt),
     sourceLabel: sourceLabel(item.source),
     severityLabel: item.severity.toUpperCase(),
@@ -63,6 +83,8 @@ function mapItem(item: AdminBugReportRawItem): BugReportItem {
     productTitle: item.productTitle || "Untitled product",
     productMeta: productMeta(item),
     productUrl: item.productUrl,
+    storeLabel: storeLabel(item),
+    profileLabel: profileLabel(item),
     visitorLabel: visitorLabel(item),
     deviceLabel: deviceLabel(item),
     previewUrl: item.resultPreviewDataUrl,

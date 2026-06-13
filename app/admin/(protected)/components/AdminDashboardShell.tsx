@@ -13,6 +13,7 @@ interface AdminDashboardShellProps {
 
 function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
   const customersActive = activeHref.startsWith("/admin/customers") || activeHref.startsWith("/admin/reports/feedbacks");
+  const usersActive = activeHref.startsWith("/admin/users");
   const monitoringActive = activeHref.startsWith("/admin/monitoring");
   const supportActive = activeHref.startsWith("/admin/chats") || activeHref.startsWith("/admin/tickets");
 
@@ -22,6 +23,13 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
       href: "/admin",
       icon: "dashboard",
       active: activeHref === "/admin",
+      disabled: false,
+    },
+    {
+      label: "Users",
+      href: "/admin/users",
+      icon: "customers",
+      active: usersActive,
       disabled: false,
     },
     {
@@ -73,6 +81,13 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
           href: "/admin/monitoring/bugs",
           icon: "reports",
           active: activeHref.startsWith("/admin/monitoring/bugs"),
+          disabled: false,
+        },
+        {
+          label: "IP Limits",
+          href: "/admin/monitoring/ip-limits",
+          icon: "behavior",
+          active: activeHref.startsWith("/admin/monitoring/ip-limits"),
           disabled: false,
         },
       ],
