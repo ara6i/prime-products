@@ -6,6 +6,8 @@ export interface AdminClaritySessionRaw {
   productId: string | null;
   productTitle: string | null;
   productUrl: string | null;
+  originUrl: string | null;
+  originHost: string | null;
   device: string | null;
   os: string | null;
   browser: string | null;
@@ -35,6 +37,8 @@ export interface BehaviorSessionItem {
   productMeta: string;
   productUrl: string | null;
   sourceLabel: string;
+  originLabel: string;
+  countryLabel: string;
   deviceLabel: string;
   lastSeenLabel: string;
   eventCountLabel: string;

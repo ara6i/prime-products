@@ -9,6 +9,8 @@ export interface AdminBugReportRawItem {
   categories: string[];
   jobId: string | null;
   sourceChannel: "sdk" | "shopify" | null;
+  shopifyShopId: string | null;
+  storeProfileId: string | null;
   sessionId: string | null;
   productId: string | null;
   productTitle: string | null;
@@ -19,6 +21,22 @@ export interface AdminBugReportRawItem {
   browser: string | null;
   countryCode: string | null;
   countryName: string | null;
+  store: {
+    id: string | null;
+    shopDomain: string | null;
+    shopName: string | null;
+    ownerEmail: string | null;
+    primaryDomain: string | null;
+    primaryDomainUrl: string | null;
+    plan: string | null;
+    status: string | null;
+  } | null;
+  profile: {
+    loggedIn: boolean;
+    id: string | null;
+    name: string | null;
+  } | null;
+  metadata?: Record<string, unknown>;
 }
 
 export interface AdminBugReportsResponse {
@@ -41,6 +59,8 @@ export interface BugReportStatCard {
 
 export interface BugReportItem {
   id: string;
+  source: AdminBugReportRawItem["source"];
+  status: AdminBugReportRawItem["status"];
   dateLabel: string;
   sourceLabel: string;
   severityLabel: string;
@@ -51,6 +71,8 @@ export interface BugReportItem {
   productTitle: string;
   productMeta: string;
   productUrl: string | null;
+  storeLabel: string;
+  profileLabel: string;
   visitorLabel: string;
   deviceLabel: string;
   previewUrl: string | null;

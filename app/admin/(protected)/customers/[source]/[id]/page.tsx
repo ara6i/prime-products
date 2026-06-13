@@ -22,14 +22,38 @@ interface AdminCustomerDetailRouteProps {
     source: string;
     id: string;
   }>;
+  searchParams?: Promise<{
+    from?: string;
+    to?: string;
+  }>;
 }
 
 function isCustomerSource(source: string): source is AdminCustomerSource {
   return source === "sdk" || source === "shopify";
 }
 
-export default async function AdminCustomerDetailRoute({ params }: AdminCustomerDetailRouteProps) {
+function parseDateRange(searchParams: { from?: string; to?: string } | undefined): { from: string; to: string } | null {
+  const from = searchParams?.from;
+  const to = searchParams?.to;
+  if (!from || !to) return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(from) || !/^\d{4}-\d{2}-\d{2}$/.test(to)) return null;
+  if (to < from) return null;
+  return { from, to };
+}
+
+function defaultDateRange(): { from: string; to: string } {
+  const to = new Date();
+  const from = new Date(to);
+  from.setUTCDate(from.getUTCDate() - 29);
+  return {
+    from: from.toISOString().slice(0, 10),
+    to: to.toISOString().slice(0, 10),
+  };
+}
+
+export default async function AdminCustomerDetailRoute({ params, searchParams }: AdminCustomerDetailRouteProps) {
   const { source, id } = await params;
+  const query = await searchParams;
   if (!isCustomerSource(source)) {
     notFound();
   }
@@ -40,9 +64,10 @@ export default async function AdminCustomerDetailRoute({ params }: AdminCustomer
       notFound();
     }
 
+    const selectedRange = parseDateRange(query) ?? defaultDateRange();
     const [behavior, revenue] = await Promise.all([
-      fetchAdminShopifyBehavior(id).catch(() => null),
-      fetchAdminShopifyRevenue(id).catch(() => null),
+      fetchAdminShopifyBehavior(id, "30d", selectedRange).catch(() => null),
+      fetchAdminShopifyRevenue(id, "30d", selectedRange).catch(() => null),
     ]);
     const map = behavior ? await prepareCustomerMapData(behavior.countrySplit) : null;
     const view = mapShopifyControlCenter(controlCenter, behavior, revenue, map);
@@ -55,6 +80,7 @@ export default async function AdminCustomerDetailRoute({ params }: AdminCustomer
             initialControlCenter={controlCenter}
             initialBehavior={behavior}
             initialRevenue={revenue}
+            initialDateRange={selectedRange}
           />
         </AdminDashboardShell>
       </AdminDashboardThemeProvider>

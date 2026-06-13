@@ -325,7 +325,7 @@ function mapDeviceNumberRows(devices: CustomerDashboardDeviceSlice[]): CustomerD
 function mapCountryNumberRows(countries: CustomerDashboardCountrySlice[]): CustomerDashboardNumberRow[] {
   const total = countries.reduce((sum, country) => sum + country.count, 0);
 
-  return countries.slice(0, 7).map((country) => ({
+  return countries.map((country) => ({
     label: country.name,
     value: country.count.toLocaleString(),
     detail: `${safePercent(country.count, total)}% of try-ons`,

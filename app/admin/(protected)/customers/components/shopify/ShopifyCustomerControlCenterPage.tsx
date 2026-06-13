@@ -33,6 +33,7 @@ interface ShopifyCustomerControlCenterPageProps {
   initialControlCenter: ShopifyControlCenterRaw;
   initialBehavior: ShopifyBehaviorAnalyticsRaw | null;
   initialRevenue: ShopifyRevenueAnalyticsRaw | null;
+  initialDateRange: { from: string; to: string };
 }
 
 interface MetricGridProps {
@@ -88,16 +89,16 @@ function CustomerMetricBlock({ card }: { card: ShopifyMetricCard }) {
 
 function CustomerCalendarSummary({ view }: { view: ShopifyControlCenterView }) {
   return (
-    <div className="grid grid-cols-2 gap-[0.417vw] max-lg:gap-[2vw]">
+    <div className="grid min-w-[10.5rem] grid-cols-2 gap-[0.417vw] max-lg:min-w-0 max-lg:gap-[2vw]">
       {[
         { label: "Status", value: view.statusLabel },
         { label: "Trial ends", value: view.trial.endsAtLabel },
         { label: "Due date", value: view.currentPeriodEndLabel },
         { label: "Range", value: view.analytics.rangeLabel },
       ].map((item) => (
-        <div key={item.label} className="rounded-[0.729vw] bg-customer-soft px-[0.729vw] py-[0.625vw] max-lg:rounded-[3.5vw] max-lg:px-[3vw] max-lg:py-[2.5vw]">
-          <p className="text-[clamp(10px,0.58vw,12px)] font-semibold uppercase tracking-[0.08em] text-customer-muted max-lg:text-[2.6vw]">{item.label}</p>
-          <p className="mt-[0.208vw] truncate text-[clamp(12px,0.72vw,14px)] font-semibold text-text-primary max-lg:text-[3vw]">{item.value}</p>
+        <div key={item.label} className="min-h-[4.1rem] rounded-[0.729vw] bg-customer-soft px-[0.729vw] py-[0.625vw] max-lg:min-h-0 max-lg:rounded-[3.5vw] max-lg:px-[3vw] max-lg:py-[2.5vw]">
+          <p className="text-[clamp(9px,0.55vw,11px)] font-semibold uppercase leading-[1.35] tracking-[0.08em] text-customer-muted max-lg:text-[2.6vw]">{item.label}</p>
+          <p className="mt-[0.208vw] break-words text-[clamp(11px,0.68vw,13px)] font-semibold leading-snug text-text-primary max-lg:text-[3vw]">{item.value}</p>
         </div>
       ))}
       <div className="col-span-2 mt-[0.104vw] flex items-center justify-between rounded-[0.833vw] bg-customer-soft px-[0.833vw] py-[0.625vw] max-lg:mt-[1vw] max-lg:rounded-[4vw] max-lg:px-[4vw] max-lg:py-[3vw]">
@@ -105,6 +106,46 @@ function CustomerCalendarSummary({ view }: { view: ShopifyControlCenterView }) {
         <CalendarDays className="h-[1.042vw] w-[1.042vw] text-brand-blue max-lg:h-[5vw] max-lg:w-[5vw]" />
       </div>
     </div>
+  );
+}
+
+function DateRangeControls({ initialDateRange }: { initialDateRange: { from: string; to: string } }) {
+  const [from, setFrom] = useState(initialDateRange.from);
+  const [to, setTo] = useState(initialDateRange.to);
+
+  const applyRange = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!from || !to || to < from) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("from", from);
+    url.searchParams.set("to", to);
+    window.location.href = url.toString();
+  };
+
+  const resetRange = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("from");
+    url.searchParams.delete("to");
+    window.location.href = url.toString();
+  };
+
+  return (
+    <form onSubmit={applyRange} className="flex flex-wrap items-end gap-[0.521vw] rounded-[1.042vw] bg-customer-card p-[0.625vw] shadow-customer-card max-lg:gap-[2vw] max-lg:rounded-[5vw] max-lg:p-[3vw]">
+      <div>
+        <Label htmlFor="shopify-analytics-from" className="text-[clamp(10px,0.6vw,12px)] font-semibold uppercase tracking-[0.08em] text-customer-muted max-lg:text-[2.8vw]">From</Label>
+        <Input id="shopify-analytics-from" type="date" value={from} onChange={(event) => setFrom(event.target.value)} className="mt-[0.208vw] h-[2.188vw] w-[8.6vw] rounded-full bg-customer-soft text-[clamp(11px,0.68vw,13px)] max-lg:h-[10vw] max-lg:w-full max-lg:text-[3vw]" />
+      </div>
+      <div>
+        <Label htmlFor="shopify-analytics-to" className="text-[clamp(10px,0.6vw,12px)] font-semibold uppercase tracking-[0.08em] text-customer-muted max-lg:text-[2.8vw]">To</Label>
+        <Input id="shopify-analytics-to" type="date" value={to} onChange={(event) => setTo(event.target.value)} className="mt-[0.208vw] h-[2.188vw] w-[8.6vw] rounded-full bg-customer-soft text-[clamp(11px,0.68vw,13px)] max-lg:h-[10vw] max-lg:w-full max-lg:text-[3vw]" />
+      </div>
+      <Button type="submit" disabled={!from || !to || to < from} className="h-[2.188vw] px-[0.833vw] text-[clamp(11px,0.68vw,13px)] max-lg:h-[10vw] max-lg:px-[4vw] max-lg:text-[3vw]">
+        Apply
+      </Button>
+      <Button type="button" variant="ghost" size="icon-sm" title="Reset date range" onClick={resetRange} className="h-[2.188vw] w-[2.188vw] rounded-full max-lg:h-[10vw] max-lg:w-[10vw]">
+        <RotateCcw className="h-[0.833vw] w-[0.833vw] max-lg:h-[4vw] max-lg:w-[4vw]" />
+      </Button>
+    </form>
   );
 }
 
@@ -213,7 +254,6 @@ function CustomerCountryMap({ view }: { view: ShopifyControlCenterView }) {
             width={view.analytics.map.width}
             height={view.analytics.map.height}
             countries={view.analytics.map.countries}
-            legendMax={view.analytics.map.legend.max}
           />
         ) : (
           <div className="grid h-[12.5vw] place-items-center rounded-[0.833vw] bg-customer-soft text-[clamp(12px,0.72vw,14px)] text-customer-muted max-lg:h-[48vw] max-lg:rounded-[4vw] max-lg:text-[3.2vw]">No map data yet.</div>
@@ -556,7 +596,7 @@ function StoreAccessControls({
   );
 }
 
-function AnalyticsPanel({ view }: { view: ShopifyControlCenterView }) {
+function AnalyticsPanel({ view, initialDateRange }: { view: ShopifyControlCenterView; initialDateRange: { from: string; to: string } }) {
   const [sessions, tryOns, completion, sizeAcceptance] = view.analytics.behaviorCards;
   const [paidRevenue, tryOnRevenue, conversion, refundRate] = view.analytics.revenueCards;
 
@@ -567,7 +607,7 @@ function AnalyticsPanel({ view }: { view: ShopifyControlCenterView }) {
           <p className="text-[clamp(13px,0.78vw,15px)] font-semibold uppercase tracking-[0.16em] text-brand-blue max-lg:text-[3vw]">Shopify customer analytics</p>
           <h2 className="mt-[0.208vw] text-[clamp(24px,1.55vw,32px)] font-semibold text-text-primary max-lg:text-[6vw]">{view.storeName}</h2>
         </div>
-        <span className="w-fit rounded-full bg-customer-card px-[0.938vw] py-[0.521vw] text-[clamp(12px,0.72vw,14px)] font-medium text-customer-muted shadow-customer-card max-lg:px-[4vw] max-lg:py-[2vw] max-lg:text-[3.2vw]">{view.analytics.rangeLabel}</span>
+        <DateRangeControls initialDateRange={initialDateRange} />
       </div>
 
       <div className="grid grid-cols-[1.5fr_0.75fr] gap-[1.042vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
@@ -576,7 +616,7 @@ function AnalyticsPanel({ view }: { view: ShopifyControlCenterView }) {
             <CustomerMetricBlock card={tryOns ?? { label: "Try-ons", value: "0", helper: "0 started" }} />
             <span className="rounded-full bg-customer-soft px-[0.833vw] py-[0.365vw] text-[clamp(11px,0.68vw,13px)] font-medium text-customer-muted max-lg:px-[3vw] max-lg:py-[1.5vw] max-lg:text-[3vw]">Last {view.analytics.rangeLabel}</span>
           </div>
-          <div className="mt-[1.146vw] grid grid-cols-[1fr_9vw] gap-[1vw] max-lg:mt-[4vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
+          <div className="mt-[1.146vw] grid grid-cols-[minmax(0,1fr)_minmax(10.5rem,12vw)] gap-[1vw] max-lg:mt-[4vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
             <div className="h-[13.5vw] max-lg:h-[58vw]">
               <TryOnAreaChart data={view.analytics.dailyActivity} />
             </div>
@@ -689,6 +729,7 @@ export function ShopifyCustomerControlCenterPage({
   initialControlCenter,
   initialBehavior,
   initialRevenue,
+  initialDateRange,
 }: ShopifyCustomerControlCenterPageProps) {
   const customer = useShopifyCustomerControlCenter(
     initialView,
@@ -740,7 +781,7 @@ export function ShopifyCustomerControlCenterPage({
         </TabsList>
 
         <TabsContent value="analytics">
-          <AnalyticsPanel view={view} />
+          <AnalyticsPanel view={view} initialDateRange={initialDateRange} />
         </TabsContent>
 
         <TabsContent value="settings">

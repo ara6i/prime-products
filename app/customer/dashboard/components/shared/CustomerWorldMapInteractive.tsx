@@ -9,7 +9,6 @@ interface CustomerWorldMapInteractiveProps {
   width: number;
   height: number;
   countries: MapCountryPath[];
-  legendMax: number;
 }
 
 interface HoverState {
@@ -37,10 +36,10 @@ export function CustomerWorldMapInteractive({
   width,
   height,
   countries,
-  legendMax,
 }: CustomerWorldMapInteractiveProps) {
   const [hover, setHover] = useState<HoverState | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const totalTryOns = countries.reduce((sum, country) => sum + country.count, 0);
 
   const handleMove = (event: MouseEvent<SVGPathElement>, country: MapCountryPath) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -136,8 +135,8 @@ export function CustomerWorldMapInteractive({
           <span>More</span>
         </div>
         <div className="text-customer-xs text-customer-muted max-lg:text-[3vw]">
-          {legendMax > 0
-            ? `${legendMax.toLocaleString()} max per country`
+          {totalTryOns > 0
+            ? `${totalTryOns.toLocaleString()} ${getTooltipLabel(totalTryOns)}`
             : "No customer countries yet"}
         </div>
       </div>

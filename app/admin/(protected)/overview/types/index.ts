@@ -24,6 +24,18 @@ export interface ShopifyDashboardRaw {
     inRange: number;
     growthPct: number;
     series: Array<{ label: string; installs: number }>;
+    funnel?: {
+      installed: number;
+      firstUse: number;
+      free: number;
+      paid: number;
+      convertedFromFree: number;
+      uninstalled: number;
+      firstUseRatePct: number;
+      freeToPaidRatePct: number;
+      uninstallRatePct: number;
+      averageDaysToPaid: number | null;
+    };
   };
   tryOns: {
     initiated: number;
@@ -72,6 +84,7 @@ export interface ShopifyDashboardView {
   impressions: OverviewMetric;
   revenueSeries: Array<{ date: string; label: string; completed: number; initiated: number }>;
   installSeries: Array<{ label: string; installs: number }>;
+  installFunnel: Array<{ label: string; value: string; helper: string }>;
   topMerchants: Array<{ title: string; meta: string; value: string; accent: "blue" | "yellow" | "purple" }>;
   deviceBubbles: Array<{ label: string; value: string; percent: number; tone: "blue" | "yellow" | "purple" }>;
   map: PreparedMapData;

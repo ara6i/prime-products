@@ -3,6 +3,7 @@ import { Manrope, Poppins } from "next/font/google";
 import { Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import { PublicClarity } from "./components/PublicClarity";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -31,6 +32,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  const clarityId =
+    process.env.NEXT_PUBLIC_PRIMESTYLE_CLARITY_PROJECT_ID ||
+    process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ||
+    "wwb75cfm2z";
 
   return (
     <html lang="en">
@@ -54,6 +59,7 @@ export default function RootLayout({
             </Script>
           </>
         ) : null}
+        <PublicClarity projectId={clarityId} />
         {children}
       </body>
     </html>

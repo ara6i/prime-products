@@ -17,13 +17,43 @@ function shorten(value: string, left = 10, right = 8): string {
 }
 
 function sourceLabel(source: string): string {
-  if (source === "shopify") return "Shopify SDK";
+  if (source === "shopify") return "Shopify";
   if (source === "sdk") return "Public SDK";
   return source || "SDK";
 }
 
 function deviceLabel(item: AdminClaritySessionRaw): string {
-  return [item.device, item.os, item.browser, item.countryCode].filter(Boolean).join(" · ") || "Unknown device";
+  return [item.device, item.os, item.browser].filter(Boolean).join(" · ") || "Unknown device";
+}
+
+function isLocalHost(host: string | null): boolean {
+  return host === "localhost" || host === "127.0.0.1" || host === "::1";
+}
+
+function countryLabel(item: AdminClaritySessionRaw): string {
+  const code = item.countryCode;
+  if (!code) {
+    const host = item.originHost || hostFromUrl(item.originUrl) || hostFromUrl(item.productUrl);
+    return isLocalHost(host) ? "Local/dev" : "Not captured";
+  }
+  try {
+    return new Intl.DisplayNames(["en"], { type: "region" }).of(code.toUpperCase()) || code.toUpperCase();
+  } catch {
+    return code.toUpperCase();
+  }
+}
+
+function hostFromUrl(value: string | null): string | null {
+  if (!value) return null;
+  try {
+    return new URL(value).hostname.replace(/^www\./, "");
+  } catch {
+    return null;
+  }
+}
+
+function originLabel(item: AdminClaritySessionRaw): string {
+  return item.originHost || hostFromUrl(item.originUrl) || hostFromUrl(item.productUrl) || "Not captured";
 }
 
 function productMeta(item: AdminClaritySessionRaw): string {
@@ -44,6 +74,8 @@ function mapSession(item: AdminClaritySessionRaw): BehaviorSessionItem {
     productMeta: productMeta(item),
     productUrl: item.productUrl,
     sourceLabel: sourceLabel(item.source),
+    originLabel: originLabel(item),
+    countryLabel: countryLabel(item),
     deviceLabel: deviceLabel(item),
     lastSeenLabel: formatDate(item.lastSeenAt),
     eventCountLabel: new Intl.NumberFormat("en-US").format(item.eventCount),
