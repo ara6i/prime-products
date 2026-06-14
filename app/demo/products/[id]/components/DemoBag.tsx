@@ -67,12 +67,16 @@ function normalizePrice(value: number | string | null | undefined): number | nul
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function formatPrice(price: number, currency: string): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency || "USD",
-    maximumFractionDigits: Number.isInteger(price) ? 0 : 2,
-  }).format(price);
+function positivePrice(value: number | null | undefined): number | null {
+  return typeof value === "number" && value > 0 ? value : null;
+}
+
+function formatPrice(price: number): string {
+  const fractionDigits = Number.isInteger(price) ? 0 : 2;
+  return `$${price.toLocaleString("en-US", {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  })}`;
 }
 
 export function buildDemoBagItem({
@@ -88,9 +92,9 @@ export function buildDemoBagItem({
 }): DemoBagItem {
   const sizeLabel = sizeSummary(payload);
   const productId = payload.productId || product.id;
-  const price = normalizePrice(payload.productPrice) ?? product.price;
-  const compareAtPrice = normalizePrice(payload.productCompareAtPrice) ?? product.originalPrice;
-  const currency = payload.productCurrency || product.currency || "USD";
+  const price = positivePrice(normalizePrice(payload.productPrice)) ?? positivePrice(product.price);
+  const compareAtPrice = positivePrice(normalizePrice(payload.productCompareAtPrice)) ?? positivePrice(product.originalPrice);
+  const currency = "USD";
   const lineId = [
     normalizePart(productId),
     normalizePart(color),
@@ -241,11 +245,11 @@ export function DemoBagDrawer({
                       <p className="mt-2 rounded-lg bg-surface-light px-2 py-1 text-xs font-medium leading-5 text-text-body">
                         {item.sizeLabel}
                       </p>
-                      {item.price !== null ? (
+                      {item.price !== null && item.price > 0 ? (
                         <div className="mt-2 flex items-baseline gap-2">
-                          <span className="text-xs font-semibold text-text-primary">{formatPrice(item.price, item.currency)}</span>
+                          <span className="text-xs font-semibold text-text-primary">{formatPrice(item.price)}</span>
                           {item.compareAtPrice !== null && item.compareAtPrice > item.price ? (
-                            <span className="text-[11px] text-text-disabled line-through">{formatPrice(item.compareAtPrice, item.currency)}</span>
+                            <span className="text-[11px] text-text-disabled line-through">{formatPrice(item.compareAtPrice)}</span>
                           ) : null}
                         </div>
                       ) : null}
@@ -270,7 +274,7 @@ export function DemoBagDrawer({
                           </button>
                         </div>
                         <span className="text-[11px] font-medium text-text-caption">
-                          {item.price !== null ? formatPrice(item.price * item.quantity, item.currency) : "No checkout"}
+                          {item.price !== null && item.price > 0 ? formatPrice(item.price * item.quantity) : "No checkout"}
                         </span>
                       </div>
                     </div>

@@ -81,6 +81,10 @@ type DemoPrimeStyleSizeInput = RecommendForProductInput & {
   productCurrency?: string;
 };
 
+function positivePrice(value: number | null | undefined): number | undefined {
+  return typeof value === "number" && value > 0 ? value : undefined;
+}
+
 export function MobileProductDetail({ product }: Props) {
   const router = useRouter();
   const [currentImage, setCurrentImage] = useState(0);
@@ -248,12 +252,12 @@ export function MobileProductDetail({ product }: Props) {
     productCategory: product.category,
     productSubcategory: product.subcategory,
     productDescription: product.description,
-    productPrice: product.price ?? undefined,
-    productCompareAtPrice: product.originalPrice ?? undefined,
-    productCurrency: product.currency,
+    productPrice: positivePrice(product.price),
+    productCompareAtPrice: positivePrice(product.originalPrice),
+    productCurrency: "USD",
     sizeGuideData: product.sizeGuideData,
     apiUrl: sdkApiUrl,
-  }), [product.id, product.name, product.primaryImage, product.category, product.subcategory, product.description, product.price, product.originalPrice, product.currency, product.sizeGuideData, sdkApiUrl]);
+  }), [product.id, product.name, product.primaryImage, product.category, product.subcategory, product.description, product.price, product.originalPrice, product.sizeGuideData, sdkApiUrl]);
   const autoSize = usePrimeStyleSize(autoSizeInput);
   const hasProfileSizeResult = Boolean(autoSize.recommendedSize || autoSize.sections);
   const hasAuthenticatedProfile = Boolean(autoSize.authenticatedProfile);
@@ -528,11 +532,11 @@ export function MobileProductDetail({ product }: Props) {
           <div className="space-y-1.5">
             <p className="text-[10px] text-brand-blue font-semibold tracking-[0.16em] uppercase leading-none">{product.brand}</p>
             <h1 className="text-[20px] font-semibold tracking-[-0.01em] leading-[1.22] text-text-primary">{product.name}</h1>
-            {product.price !== null && (
+            {product.price !== null && product.price > 0 && (
               <div className="flex items-baseline gap-2">
-                <span className="text-[16px] font-semibold text-text-primary">{formatProductPrice(product.price, product.currency)}</span>
-                {product.originalPrice !== null && product.originalPrice > product.price && (
-                  <span className="text-[12px] text-text-disabled line-through">{formatProductPrice(product.originalPrice, product.currency)}</span>
+                <span className="text-[16px] font-semibold text-text-primary">{formatProductPrice(product.price)}</span>
+                {product.originalPrice !== null && product.originalPrice > 0 && product.originalPrice > product.price && (
+                  <span className="text-[12px] text-text-disabled line-through">{formatProductPrice(product.originalPrice)}</span>
                 )}
               </div>
             )}
@@ -720,9 +724,9 @@ export function MobileProductDetail({ product }: Props) {
             apiUrl={sdkApiUrl}
             productId={product.id}
             productImage={images[currentImage] ?? product.primaryImage}
-            productPrice={product.price ?? undefined}
-            productCompareAtPrice={product.originalPrice ?? undefined}
-            productCurrency={product.currency}
+            productPrice={positivePrice(product.price)}
+            productCompareAtPrice={positivePrice(product.originalPrice)}
+            productCurrency="USD"
             productImages={images}
             productCarouselItems={sdkCarouselItems}
             locale={sdkLocale}
@@ -798,8 +802,8 @@ function CompleteLookRow({ products }: { products: DemoProductView["completeLook
               <img src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" />
             </div>
             <p className="mt-2 line-clamp-2 text-xs font-medium leading-tight text-text-body">{item.name}</p>
-            {item.price !== null && (
-              <p className="mt-1 text-[11px] text-text-disabled">{formatLookPrice(item.price, item.currency)}</p>
+            {item.price !== null && item.price > 0 && (
+              <p className="mt-1 text-[11px] text-text-disabled">{formatLookPrice(item.price)}</p>
             )}
           </Link>
         ))}
@@ -808,14 +812,14 @@ function CompleteLookRow({ products }: { products: DemoProductView["completeLook
   );
 }
 
-function formatLookPrice(price: number, currency: string): string {
-  return `${price.toLocaleString("en-US")} ${currency}`;
+function formatLookPrice(price: number): string {
+  return formatProductPrice(price);
 }
 
-function formatProductPrice(price: number, currency: string): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency || "USD",
-    maximumFractionDigits: Number.isInteger(price) ? 0 : 2,
-  }).format(price);
+function formatProductPrice(price: number): string {
+  const fractionDigits = Number.isInteger(price) ? 0 : 2;
+  return `$${price.toLocaleString("en-US", {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  })}`;
 }
