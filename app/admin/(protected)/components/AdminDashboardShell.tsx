@@ -77,6 +77,13 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
           disabled: false,
         },
         {
+          label: "Platform Status",
+          href: "/admin/monitoring/status",
+          icon: "settings",
+          active: activeHref.startsWith("/admin/monitoring/status"),
+          disabled: false,
+        },
+        {
           label: "Bug Reports",
           href: "/admin/monitoring/bugs",
           icon: "reports",
