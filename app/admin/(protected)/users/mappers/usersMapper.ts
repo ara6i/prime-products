@@ -98,6 +98,11 @@ function valueOrEmpty(value: string | number | null | undefined): string {
   return String(value);
 }
 
+function photoUrl(item: AdminProfileUserRaw): string | null {
+  if (!item.photoUrl || !/^https?:\/\//i.test(item.photoUrl)) return null;
+  return item.photoUrl;
+}
+
 function detailRows(item: AdminProfileUserRaw): Array<{ label: string; value: string }> {
   const bra = [item.bandSize, item.cupSize, item.braSizeRegion].filter(Boolean).join(" ");
   const shoes = [item.shoeEU ? `EU ${item.shoeEU}` : null, item.shoeUS ? `US ${item.shoeUS}` : null, item.shoeUK ? `UK ${item.shoeUK}` : null]
@@ -132,20 +137,22 @@ function detailRows(item: AdminProfileUserRaw): Array<{ label: string; value: st
 }
 
 function mapItem(item: AdminProfileUserRaw): ProfileUserListItem {
+  const raw = { ...item, topSizes: item.topSizes ?? [] };
   return {
-    id: item.id,
-    raw: item,
-    profileLabel: profileLabel(item),
-    accountLabel: accountLabel(item),
-    sourceLabel: sourceLabel(item),
-    sourceTone: sourceTone(item),
-    originLabel: originLabel(item),
-    deviceLabel: deviceLabel(item),
-    countryLabel: countryLabel(item),
-    activityLabel: `${item.tryOnCount} try-ons · ${item.profileEventCount} profile events`,
-    lastSeenLabel: formatDate(item.lastSeenAt || item.updatedAt),
-    detailRows: detailRows(item),
-    measurementRows: measurementRows(item),
+    id: raw.id,
+    raw,
+    profileLabel: profileLabel(raw),
+    accountLabel: accountLabel(raw),
+    sourceLabel: sourceLabel(raw),
+    sourceTone: sourceTone(raw),
+    originLabel: originLabel(raw),
+    deviceLabel: deviceLabel(raw),
+    countryLabel: countryLabel(raw),
+    activityLabel: `${raw.tryOnCount} try-ons · ${raw.profileEventCount} profile events`,
+    lastSeenLabel: formatDate(raw.lastSeenAt || raw.updatedAt),
+    photoUrl: photoUrl(raw),
+    detailRows: detailRows(raw),
+    measurementRows: measurementRows(raw),
   };
 }
 

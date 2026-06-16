@@ -5,6 +5,7 @@ import { Eyebrow } from "../../shared/Eyebrow";
 import { LandingButton } from "../../shared/LandingButton";
 import { Marquee } from "../../shared/Marquee";
 import { usePilotModal } from "../../shared/PilotModalContext";
+import { HeroTrustBadge } from "../shared/HeroTrustBadge";
 import { useLandingLanguage } from "@/app/landing/i18n";
 
 export function HeroSection() {
@@ -46,9 +47,13 @@ export function HeroSection() {
             {hero.secondaryLabel}
           </LandingButton>
         </Reveal>
+
+        <Reveal delay={4} className="pt-1">
+          <HeroTrustBadge />
+        </Reveal>
       </div>
 
-      <div className="relative z-10 mt-10 -mx-5">
+      <div className="relative z-10 mt-8 -mx-5">
         <Marquee items={hero.marquee} />
       </div>
     </section>

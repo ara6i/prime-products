@@ -43,7 +43,16 @@ export interface AdminProfileUserRaw {
   measurementsUnit: string | null;
   measurements: Record<string, number>;
   sizeHistoryCount: number;
+  topSizes: Array<{
+    size: string;
+    count: number;
+    productId: string | null;
+    productTitle: string | null;
+    productImage: string | null;
+    lastSeenAt: string | null;
+  }>;
   photoStored: boolean;
+  photoUrl: string | null;
   profileEventCount: number;
   tryOnCount: number;
   eventCount: number;
@@ -84,6 +93,7 @@ export interface ProfileUserListItem {
   countryLabel: string;
   activityLabel: string;
   lastSeenLabel: string;
+  photoUrl: string | null;
   detailRows: Array<{ label: string; value: string }>;
   measurementRows: Array<{ label: string; value: string }>;
 }

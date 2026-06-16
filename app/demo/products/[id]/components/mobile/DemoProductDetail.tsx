@@ -4,14 +4,16 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { ChevronLeft, Camera, Ruler, Globe, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, Camera, Ruler, ChevronRight, Sparkles } from "lucide-react";
 import { usePrimeStyleSize } from "@primestyleai/tryon/react";
 import type { RecommendForProductInput } from "@primestyleai/tryon/react";
+import { useLandingLanguage } from "@/app/landing/i18n";
 import type { DemoProductView } from "../../../types";
 import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
 import { useSizingAutoSelect } from "../../hooks/useSizingAutoSelect";
 import { useProfileAnalysisDisplay } from "../../hooks/useProfileAnalysisDisplay";
+import { landingLanguageToSdkLocale } from "../../../utils/sdkLocale";
 import { inferSdkProductFitType } from "../../../utils/sdkProductFitType";
 import {
   DemoBagButton,
@@ -45,29 +47,6 @@ type DemoPrimeStyleTryonProps = React.ComponentProps<typeof PrimeStyleTryon> & {
 
 const DemoPrimeStyleTryon = PrimeStyleTryon as React.ComponentType<DemoPrimeStyleTryonProps>;
 
-const SDK_LOCALES = [
-  { code: "en", label: "English" },
-  { code: "es", label: "Español" },
-  { code: "fr", label: "Français" },
-  { code: "de", label: "Deutsch" },
-  { code: "it", label: "Italiano" },
-  { code: "sv", label: "Svenska" },
-  { code: "ja", label: "日本語" },
-  { code: "cs", label: "Čeština" },
-  { code: "da", label: "Dansk" },
-  { code: "nl", label: "Nederlands" },
-  { code: "nb", label: "Norsk" },
-  { code: "pl", label: "Polski" },
-  { code: "pt-br", label: "Português (BR)" },
-  { code: "pt-pt", label: "Português (PT)" },
-  { code: "fi", label: "Suomi" },
-  { code: "tr", label: "Türkçe" },
-  { code: "th", label: "ไทย" },
-  { code: "zh-cn", label: "中文 (简体)" },
-  { code: "zh-tw", label: "中文 (繁體)" },
-  { code: "ko", label: "한국어" },
-];
-
 interface Props {
   product: DemoProductView;
 }
@@ -87,6 +66,7 @@ function positivePrice(value: number | null | undefined): number | undefined {
 
 export function MobileProductDetail({ product }: Props) {
   const router = useRouter();
+  const { language } = useLandingLanguage();
   const [currentImage, setCurrentImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(product.selectedColor);
   const [jacketSizeNum, setJacketSizeNum] = useState("");
@@ -96,7 +76,6 @@ export function MobileProductDetail({ product }: Props) {
   const [selectedSize, setSelectedSize] = useState("");
   const [descExpanded, setDescExpanded] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
-  const [sdkLocale, setSdkLocale] = useState("en");
   const [bagOpen, setBagOpen] = useState(false);
   const [bagItems, setBagItems] = useState<DemoBagItem[]>([]);
 
@@ -110,6 +89,7 @@ export function MobileProductDetail({ product }: Props) {
     () => (product.sizes.length ? product.sizes : (activeVariant?.sizes ?? [])),
     [activeVariant, product.sizes],
   );
+  const sdkLocale = useMemo(() => landingLanguageToSdkLocale(language), [language]);
 
   // Parse sizes — memoized so `parsedSizes` has a stable reference across renders.
   // Without memoization, the useEffect below would fire every render and spam logs.

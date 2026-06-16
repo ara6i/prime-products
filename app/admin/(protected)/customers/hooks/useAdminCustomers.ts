@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useCallback, useMemo, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { mapCustomersPage } from "../mappers/customersMapper";
 import {
@@ -59,6 +59,15 @@ export function useAdminCustomers(
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load customers"))
       .finally(() => setIsLoading(false));
   }, [source]);
+
+  const didHydrateRefresh = useRef(false);
+  useEffect(() => {
+    if (didHydrateRefresh.current) return;
+    didHydrateRefresh.current = true;
+    const query = createDefaultQuery(source);
+    setSearchInput("");
+    loadCustomers(query);
+  }, [loadCustomers, source]);
 
   const submitSearch = useCallback((event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

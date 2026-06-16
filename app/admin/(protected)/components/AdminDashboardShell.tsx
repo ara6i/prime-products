@@ -26,31 +26,31 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
       disabled: false,
     },
     {
-      label: "Users",
+      label: "Profile Users",
       href: "/admin/users",
       icon: "customers",
       active: usersActive,
       disabled: false,
     },
     {
-      label: "Customers",
-      href: "/admin/customers/sdk",
+      label: "Stores",
+      href: "/admin/customers/shopify",
       icon: "customers",
       active: customersActive,
       disabled: false,
       children: [
         {
-          label: "SDK Customers",
-          href: "/admin/customers/sdk",
-          icon: "customers",
-          active: activeHref.startsWith("/admin/customers/sdk"),
-          disabled: false,
-        },
-        {
-          label: "Shopify Customers",
+          label: "Shopify Stores",
           href: "/admin/customers/shopify",
           icon: "customers",
           active: activeHref.startsWith("/admin/customers/shopify"),
+          disabled: false,
+        },
+        {
+          label: "SDK Stores",
+          href: "/admin/customers/sdk",
+          icon: "customers",
+          active: activeHref.startsWith("/admin/customers/sdk"),
           disabled: false,
         },
         {

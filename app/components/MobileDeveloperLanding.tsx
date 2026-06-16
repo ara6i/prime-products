@@ -13,7 +13,6 @@ import { SdkDemoSection } from "./sections/mobile/SdkDemoSection";
 import { ScaleSection } from "./sections/mobile/ScaleSection";
 import { GarmentsSection } from "./sections/mobile/GarmentsSection";
 import { CtaBannerSection } from "./sections/mobile/CtaBannerSection";
-import { AsSeenSection } from "./sections/shared/AsSeenSection";
 import { AskAiSection } from "./sections/shared/AskAiSection";
 import { PilotContactSection } from "./sections/shared/PilotContactSection";
 
@@ -26,7 +25,6 @@ export function MobileDeveloperLanding() {
       <MobileDeveloperNavbar />
       <main>
         <HeroSection />
-        <AsSeenSection />
         <ProblemSection />
         <section id="integrations"><IntegrationsSection /></section>
         <section id="features"><FeaturesSection /></section>
