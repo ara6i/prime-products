@@ -96,7 +96,12 @@ function normalizeAttemptCount(value: unknown): number {
 	return Math.max(1, Math.min(20, n));
 }
 
-export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse }) {
+type IpLimitsPageProps = {
+  initialData: IpLimitsResponse;
+  surface?: "monitoring" | "settings";
+};
+
+export function IpLimitsPage({ initialData, surface = "monitoring" }: IpLimitsPageProps) {
   const initialSettings = normalizeSettings(initialData.settings);
   const [data, setData] = useState(initialData);
   const [settings, setSettings] = useState(initialSettings);
@@ -112,6 +117,12 @@ export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse })
   const hasSettingsChanges =
     demoLimitEnabled !== savedDemoLimitEnabled ||
     settings.sdkMaxAttemptsPerIpProduct !== savedSettings.sdkMaxAttemptsPerIpProduct;
+  const headingEyebrow = surface === "settings" ? "Security settings" : "Monitoring";
+  const headingTitle = surface === "settings" ? "IP Limit Controls" : "IP Limits";
+  const headingDescription =
+    surface === "settings"
+      ? "Control admin demo abuse protection and reset locked IP/product pairs when needed."
+      : "Prime demo IP/product locks.";
 
   const refresh = async () => {
     const response = await fetch("/api/admin/ip-limits?limit=150", { cache: "no-store" });
@@ -134,28 +145,41 @@ export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse })
     });
   };
 
-  const resetRecord = (recordId: string) => run(async () => {
-    const response = await fetch("/api/admin/ip-limits/reset", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ recordId }),
-    });
-    if (!response.ok) throw new Error((await readJson(response)).message || "Reset failed");
-    await refresh();
-    setMessage("IP/product limit reset.");
-  });
+  const resetRecord = (recordId: string) => {
+    const record = data.records.find((item) => item.id === recordId);
+    const label = record?.productTitle || record?.productId || "this product";
+    if (!window.confirm(`Reset the IP/product lock for ${label}? This lets the visitor try again.`)) return;
 
-  const resetSpecific = () => run(async () => {
-    const response = await fetch("/api/admin/ip-limits/reset", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ipAddress, productId: productId || undefined }),
+    run(async () => {
+      const response = await fetch("/api/admin/ip-limits/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recordId }),
+      });
+      if (!response.ok) throw new Error((await readJson(response)).message || "Reset failed");
+      await refresh();
+      setMessage("IP/product limit reset.");
     });
-    if (!response.ok) throw new Error((await readJson(response)).message || "Reset failed");
-    const result = await readJson(response);
-    await refresh();
-    setMessage(`Reset ${result.deletedCount ?? 0} matching record(s).`);
-  });
+  };
+
+  const resetSpecific = () => {
+    const trimmedIp = ipAddress.trim();
+    const trimmedProductId = productId.trim();
+    const target = trimmedProductId ? `${trimmedIp} for product ${trimmedProductId}` : trimmedIp;
+    if (!window.confirm(`Reset IP-limit records for ${target}? This cannot be undone.`)) return;
+
+    run(async () => {
+      const response = await fetch("/api/admin/ip-limits/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ipAddress: trimmedIp, productId: trimmedProductId || undefined }),
+      });
+      if (!response.ok) throw new Error((await readJson(response)).message || "Reset failed");
+      const result = await readJson(response);
+      await refresh();
+      setMessage(`Reset ${result.deletedCount ?? 0} matching record(s).`);
+    });
+  };
 
   const fillCurrentIp = (target: "reset" | "whitelist") => run(async () => {
     const response = await fetch("/api/admin/ip-limits/current-ip", { cache: "no-store" });
@@ -183,29 +207,33 @@ export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse })
     setMessage(`Current IP whitelisted: ${current.ipAddressMasked || current.ipAddress}`);
   });
 
-  const saveSettings = () => run(async () => {
+  const saveSettings = () => {
     if (!hasSettingsChanges) return;
-    const response = await fetch("/api/admin/ip-limits/settings", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        enabled: settings.enabled,
-        sdkEnabled: settings.sdkEnabled,
-        sdkMaxAttemptsPerIpProduct: settings.sdkMaxAttemptsPerIpProduct,
-      }),
+    if (!window.confirm("Save IP-limit settings? This changes who can run repeat try-ons from the same IP/product.")) return;
+
+    run(async () => {
+      const response = await fetch("/api/admin/ip-limits/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          enabled: settings.enabled,
+          sdkEnabled: settings.sdkEnabled,
+          sdkMaxAttemptsPerIpProduct: settings.sdkMaxAttemptsPerIpProduct,
+        }),
+      });
+      if (!response.ok) throw new Error((await readJson(response)).message || "Settings save failed");
+      const result = await readJson(response);
+      if (result.settings) {
+        const nextSettings = normalizeSettings(result.settings as IpLimitSettings);
+        setSettings(nextSettings);
+        setSavedSettings(nextSettings);
+      } else {
+        setSavedSettings(settings);
+      }
+      setMessage(null);
+      toast.success("IP limit settings saved");
     });
-    if (!response.ok) throw new Error((await readJson(response)).message || "Settings save failed");
-    const result = await readJson(response);
-    if (result.settings) {
-      const nextSettings = normalizeSettings(result.settings as IpLimitSettings);
-      setSettings(nextSettings);
-      setSavedSettings(nextSettings);
-    } else {
-      setSavedSettings(settings);
-    }
-    setMessage(null);
-    toast.success("IP limit settings saved");
-  });
+  };
 
   const addWhitelist = () => run(async () => {
     const response = await fetch("/api/admin/ip-limits", {
@@ -220,22 +248,28 @@ export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse })
     setMessage("IP whitelisted.");
   });
 
-  const removeWhitelist = (id: string) => run(async () => {
-    const response = await fetch(`/api/admin/ip-limits/whitelist/${encodeURIComponent(id)}`, {
-      method: "DELETE",
+  const removeWhitelist = (id: string) => {
+    const entry = data.whitelist.find((item) => item.id === id);
+    const label = entry?.label || entry?.ipAddressMasked || "this IP";
+    if (!window.confirm(`Remove ${label} from the IP whitelist? Future attempts may be limited.`)) return;
+
+    run(async () => {
+      const response = await fetch(`/api/admin/ip-limits/whitelist/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error((await readJson(response)).message || "Remove failed");
+      await refresh();
+      setMessage("Whitelist entry removed.");
     });
-    if (!response.ok) throw new Error((await readJson(response)).message || "Remove failed");
-    await refresh();
-    setMessage("Whitelist entry removed.");
-  });
+  };
 
   return (
     <section className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-blue">Monitoring</p>
-          <h2 className="mt-2 text-3xl font-semibold leading-tight text-text-primary lg:text-4xl">IP Limits</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-text-body lg:text-base">Prime demo IP/product locks.</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-blue">{headingEyebrow}</p>
+          <h2 className="mt-2 text-3xl font-semibold leading-tight text-text-primary lg:text-4xl">{headingTitle}</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-text-body lg:text-base">{headingDescription}</p>
         </div>
         <span className="rounded-full border border-customer-border bg-customer-card px-4 py-2 text-sm font-semibold text-text-body">
           {data.records.length} recent records

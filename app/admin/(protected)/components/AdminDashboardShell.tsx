@@ -16,6 +16,7 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
   const usersActive = activeHref.startsWith("/admin/users");
   const monitoringActive = activeHref.startsWith("/admin/monitoring");
   const supportActive = activeHref.startsWith("/admin/chats") || activeHref.startsWith("/admin/tickets");
+  const settingsActive = activeHref.startsWith("/admin/settings");
 
   return [
     {
@@ -90,14 +91,14 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
           active: activeHref.startsWith("/admin/monitoring/bugs"),
           disabled: false,
         },
-        {
-          label: "IP Limits",
-          href: "/admin/monitoring/ip-limits",
-          icon: "behavior",
-          active: activeHref.startsWith("/admin/monitoring/ip-limits"),
-          disabled: false,
-        },
       ],
+    },
+    {
+      label: "Settings",
+      href: "/admin/settings",
+      icon: "settings",
+      active: settingsActive,
+      disabled: false,
     },
     {
       label: "Support",
