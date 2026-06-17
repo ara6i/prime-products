@@ -11,11 +11,12 @@ export type IpLimitRecord = {
   scopeId: string | null;
   productId: string;
   productTitle: string | null;
-  productUrl: string | null;
-  sessionId: string | null;
-  firstSeenAt: string | null;
-  lastAttemptAt: string | null;
-  blockedAttempts: number;
+	productUrl: string | null;
+	sessionId: string | null;
+	firstSeenAt: string | null;
+	lastAttemptAt: string | null;
+	attemptCount: number;
+	blockedAttempts: number;
 };
 
 export type IpWhitelistEntry = {
@@ -27,11 +28,14 @@ export type IpWhitelistEntry = {
 };
 
 export type IpLimitSettings = {
-  enabled: boolean;
-  sdkEnabled: boolean;
-  sdkApiKeyConfigured: boolean;
-  sdkApiKeyCount: number;
-  envHardDisabled: boolean;
+	enabled: boolean;
+	sdkEnabled: boolean;
+	shopifyEnabled: boolean;
+	sdkMaxAttemptsPerIpProduct: number;
+	shopifyMaxAttemptsPerIpProduct: number;
+	sdkApiKeyConfigured: boolean;
+	sdkApiKeyCount: number;
+	envHardDisabled: boolean;
   updatedAt: string | null;
   updatedBy: string | null;
 };
@@ -69,16 +73,27 @@ async function readJson(response: Response) {
 }
 
 function normalizeSettings(settings: IpLimitSettings): IpLimitSettings {
-  const raw = settings as Partial<IpLimitSettings>;
-  const legacyApiKeyIds = Array.isArray((raw as Partial<IpLimitSettings> & { sdkApiKeyIds?: unknown[] }).sdkApiKeyIds)
-    ? ((raw as Partial<IpLimitSettings> & { sdkApiKeyIds?: unknown[] }).sdkApiKeyIds ?? []).length
-    : 0;
-  const sdkApiKeyCount = typeof raw.sdkApiKeyCount === "number" ? raw.sdkApiKeyCount : legacyApiKeyIds;
-  return {
-    ...settings,
-    sdkApiKeyConfigured: typeof raw.sdkApiKeyConfigured === "boolean" ? raw.sdkApiKeyConfigured : sdkApiKeyCount > 0,
-    sdkApiKeyCount,
-  };
+	const raw = settings as Partial<IpLimitSettings>;
+	const legacyApiKeyIds = Array.isArray((raw as Partial<IpLimitSettings> & { sdkApiKeyIds?: unknown[] }).sdkApiKeyIds)
+		? ((raw as Partial<IpLimitSettings> & { sdkApiKeyIds?: unknown[] }).sdkApiKeyIds ?? []).length
+		: 0;
+	const sdkApiKeyCount = typeof raw.sdkApiKeyCount === "number" ? raw.sdkApiKeyCount : legacyApiKeyIds;
+	const sdkMaxAttemptsPerIpProduct = normalizeAttemptCount(raw.sdkMaxAttemptsPerIpProduct);
+	const shopifyMaxAttemptsPerIpProduct = normalizeAttemptCount(raw.shopifyMaxAttemptsPerIpProduct);
+	return {
+		...settings,
+		shopifyEnabled: typeof raw.shopifyEnabled === "boolean" ? raw.shopifyEnabled : false,
+		sdkMaxAttemptsPerIpProduct,
+		shopifyMaxAttemptsPerIpProduct,
+		sdkApiKeyConfigured: typeof raw.sdkApiKeyConfigured === "boolean" ? raw.sdkApiKeyConfigured : sdkApiKeyCount > 0,
+		sdkApiKeyCount,
+	};
+}
+
+function normalizeAttemptCount(value: unknown): number {
+	const raw = typeof value === "number" ? value : typeof value === "string" ? Number(value) : 1;
+	const n = Number.isFinite(raw) ? Math.floor(raw) : 1;
+	return Math.max(1, Math.min(20, n));
 }
 
 export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse }) {
@@ -94,7 +109,9 @@ export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse })
   const [isPending, startTransition] = useTransition();
   const demoLimitEnabled = settings.enabled && settings.sdkEnabled;
   const savedDemoLimitEnabled = savedSettings.enabled && savedSettings.sdkEnabled;
-  const hasSettingsChanges = demoLimitEnabled !== savedDemoLimitEnabled;
+  const hasSettingsChanges =
+    demoLimitEnabled !== savedDemoLimitEnabled ||
+    settings.sdkMaxAttemptsPerIpProduct !== savedSettings.sdkMaxAttemptsPerIpProduct;
 
   const refresh = async () => {
     const response = await fetch("/api/admin/ip-limits?limit=150", { cache: "no-store" });
@@ -140,7 +157,7 @@ export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse })
     setMessage(`Reset ${result.deletedCount ?? 0} matching record(s).`);
   });
 
-  const useCurrentIp = (target: "reset" | "whitelist") => run(async () => {
+  const fillCurrentIp = (target: "reset" | "whitelist") => run(async () => {
     const response = await fetch("/api/admin/ip-limits/current-ip", { cache: "no-store" });
     if (!response.ok) throw new Error((await readJson(response)).message || "Could not detect current IP");
     const result = (await response.json()) as CurrentIpResponse;
@@ -174,6 +191,7 @@ export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse })
       body: JSON.stringify({
         enabled: settings.enabled,
         sdkEnabled: settings.sdkEnabled,
+        sdkMaxAttemptsPerIpProduct: settings.sdkMaxAttemptsPerIpProduct,
       }),
     });
     if (!response.ok) throw new Error((await readJson(response)).message || "Settings save failed");
@@ -226,7 +244,7 @@ export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse })
 
       <section className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h3 className="text-base font-semibold text-text-primary">Demo IP Limit</h3>
+          <h3 className="text-base font-semibold text-text-primary">SDK IP/Product Limit</h3>
           <span className={`rounded-full px-3 py-1 text-xs font-semibold ${settings.envHardDisabled || !demoLimitEnabled ? "bg-amber-50 text-amber-700" : "bg-green-50 text-green-700"}`}>
             {settings.envHardDisabled ? "Env off" : demoLimitEnabled ? "On" : "Off"}
           </span>
@@ -244,11 +262,30 @@ export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse })
                 sdkEnabled: event.target.checked,
               }))}
             />
-            <span className="text-sm font-semibold text-text-primary">One try-on per IP/product</span>
+            <span className="text-sm font-semibold text-text-primary">Limit attempts per IP/product</span>
           </label>
           <span className="text-xs font-medium text-text-body">
             {settings.sdkApiKeyConfigured ? "Demo key configured" : "Demo key missing"}
           </span>
+        </div>
+
+        <div className="mt-4 grid gap-2 rounded-lg border border-customer-border bg-white p-4 sm:grid-cols-[minmax(0,1fr)_160px] sm:items-center">
+          <div>
+            <p className="text-sm font-semibold text-text-primary">Allowed attempts</p>
+            <p className="mt-1 text-xs text-text-body">Applies only to configured SDK API key IDs. Default is 1.</p>
+          </div>
+          <input
+            type="number"
+            min={1}
+            max={20}
+            value={settings.sdkMaxAttemptsPerIpProduct}
+            disabled={settings.envHardDisabled || isPending}
+            onChange={(event) => setSettings((current) => ({
+              ...current,
+              sdkMaxAttemptsPerIpProduct: normalizeAttemptCount(event.target.value),
+            }))}
+            className="rounded-lg border border-customer-border bg-white px-3 py-2 text-sm font-semibold text-text-primary outline-none focus:border-brand-blue"
+          />
         </div>
 
         <button
@@ -291,7 +328,7 @@ export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse })
           <button
             type="button"
             disabled={isPending}
-            onClick={() => useCurrentIp("reset")}
+            onClick={() => fillCurrentIp("reset")}
             className="ml-3 mt-4 inline-flex items-center gap-2 rounded-lg border border-customer-border px-4 py-2 text-sm font-semibold text-brand-blue disabled:opacity-50"
           >
             Use current IP
@@ -326,7 +363,7 @@ export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse })
           <button
             type="button"
             disabled={isPending}
-            onClick={() => useCurrentIp("whitelist")}
+            onClick={() => fillCurrentIp("whitelist")}
             className="ml-3 mt-4 inline-flex items-center gap-2 rounded-lg border border-customer-border px-4 py-2 text-sm font-semibold text-brand-blue disabled:opacity-50"
           >
             Use current IP
@@ -359,7 +396,7 @@ export function IpLimitsPage({ initialData }: { initialData: IpLimitsResponse })
                 {record.source.toUpperCase()} · {record.ipAddressMasked} · Product {record.productId}
               </p>
               <p className="mt-1 text-xs text-text-body">
-                First {formatDate(record.firstSeenAt)} · Last blocked {formatDate(record.lastAttemptAt)} · {record.blockedAttempts} blocked attempt(s)
+                First {formatDate(record.firstSeenAt)} · Last {formatDate(record.lastAttemptAt)} · {record.attemptCount ?? 1} allowed · {record.blockedAttempts} blocked
               </p>
             </div>
             <div className="text-sm text-text-body">
