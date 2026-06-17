@@ -141,16 +141,16 @@ function braValue(raw: AdminProfileUserRaw): string | null {
 function Row({ label, value, href }: { label: string; value: string; href?: string | null }) {
   const valueClass = href ? "text-brand-blue hover:text-brand-blue/80" : "text-text-primary";
   return (
-    <div className="grid grid-cols-[minmax(110px,0.42fr)_minmax(0,1fr)] gap-4 px-4 py-3 text-sm">
+    <div className="grid grid-cols-[minmax(88px,0.34fr)_minmax(0,1fr)] gap-3 px-4 py-3 text-sm">
       <dt className="text-customer-muted">{label}</dt>
       <dd className="min-w-0 font-semibold">
         {href ? (
-          <a href={href} target="_blank" rel="noreferrer" className={`inline-flex max-w-full items-center gap-1.5 break-words ${valueClass}`}>
-            <span className="min-w-0 break-words">{value}</span>
+          <a href={href} target="_blank" rel="noreferrer" className={`inline-flex min-w-0 max-w-full flex-wrap items-center gap-1.5 break-all [overflow-wrap:anywhere] ${valueClass}`}>
+            <span className="min-w-0 max-w-full break-all [overflow-wrap:anywhere]">{value}</span>
             <ExternalLink className="h-3.5 w-3.5 shrink-0" />
           </a>
         ) : (
-          <span className={valueClass}>{value}</span>
+          <span className={`block min-w-0 max-w-full break-all [overflow-wrap:anywhere] ${valueClass}`}>{value}</span>
         )}
       </dd>
     </div>
