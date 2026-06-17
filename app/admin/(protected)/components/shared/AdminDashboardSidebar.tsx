@@ -47,19 +47,25 @@ export function AdminDashboardSidebar({ navItems }: AdminDashboardSidebarProps) 
                   </span>
                 </summary>
                 <div className="mt-[0.417vw] flex flex-col gap-[0.313vw] pl-[1.667vw]">
-                  {item.children?.map((child) => (
-                    <Button
-                      key={child.label}
-                      asChild
-                      variant={child.active ? "tunal" : "ghost"}
-                      className="h-[clamp(38px,2.3vw,46px)] justify-start gap-[0.625vw] rounded-[0.729vw] px-[0.833vw] text-[clamp(13px,0.78vw,15px)] font-semibold"
-                    >
-                      <Link href={child.href}>
-                        <AdminDashboardIcon name={child.icon} size={16} className="h-[clamp(15px,0.9vw,18px)] w-[clamp(15px,0.9vw,18px)] object-contain" />
-                        {child.label}
-                      </Link>
-                    </Button>
-                  ))}
+                  {item.children?.map((child) => {
+                    const iconClass =
+                      child.icon === "sdk"
+                        ? "h-[clamp(22px,1.25vw,26px)] w-[clamp(22px,1.25vw,26px)] object-contain"
+                        : "h-[clamp(15px,0.9vw,18px)] w-[clamp(15px,0.9vw,18px)] object-contain";
+                    return (
+                      <Button
+                        key={child.label}
+                        asChild
+                        variant={child.active ? "tunal" : "ghost"}
+                        className="h-[clamp(38px,2.3vw,46px)] justify-start gap-[0.625vw] rounded-[0.729vw] px-[0.833vw] text-[clamp(13px,0.78vw,15px)] font-semibold"
+                      >
+                        <Link href={child.href}>
+                          <AdminDashboardIcon name={child.icon} size={child.icon === "sdk" ? 24 : 16} className={iconClass} />
+                          {child.label}
+                        </Link>
+                      </Button>
+                    );
+                  })}
                 </div>
               </details>
             );

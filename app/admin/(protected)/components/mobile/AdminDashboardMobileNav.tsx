@@ -29,19 +29,25 @@ export function AdminDashboardMobileNav({ navItems }: AdminDashboardMobileNavPro
                 </span>
               </summary>
               <div className="mt-[1.5vw] flex flex-col gap-[1vw]">
-                {item.children?.map((child) => (
-                  <Button
-                    key={child.label}
-                    asChild
-                    variant={child.active ? "tunal" : "ghost"}
-                    className="h-[10vw] shrink-0 gap-[2vw] rounded-full px-[4.5vw] text-[3.4vw] font-semibold"
-                  >
-                    <Link href={child.href}>
-                      <AdminDashboardIcon name={child.icon} size={16} className="h-[4vw] w-[4vw] object-contain" />
-                      {child.label}
-                    </Link>
-                  </Button>
-                ))}
+                {item.children?.map((child) => {
+                  const iconClass =
+                    child.icon === "sdk"
+                      ? "h-[6vw] w-[6vw] object-contain"
+                      : "h-[4vw] w-[4vw] object-contain";
+                  return (
+                    <Button
+                      key={child.label}
+                      asChild
+                      variant={child.active ? "tunal" : "ghost"}
+                      className="h-[10vw] shrink-0 gap-[2vw] rounded-full px-[4.5vw] text-[3.4vw] font-semibold"
+                    >
+                      <Link href={child.href}>
+                        <AdminDashboardIcon name={child.icon} size={child.icon === "sdk" ? 24 : 16} className={iconClass} />
+                        {child.label}
+                      </Link>
+                    </Button>
+                  );
+                })}
               </div>
             </details>
           );
