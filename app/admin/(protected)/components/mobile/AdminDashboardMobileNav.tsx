@@ -34,9 +34,12 @@ export function AdminDashboardMobileNav({ navItems }: AdminDashboardMobileNavPro
                     key={child.label}
                     asChild
                     variant={child.active ? "tunal" : "ghost"}
-                    className="h-[10vw] shrink-0 rounded-full px-[4.5vw] text-[3.4vw] font-semibold"
+                    className="h-[10vw] shrink-0 gap-[2vw] rounded-full px-[4.5vw] text-[3.4vw] font-semibold"
                   >
-                    <Link href={child.href}>{child.label}</Link>
+                    <Link href={child.href}>
+                      <AdminDashboardIcon name={child.icon} size={16} className="h-[4vw] w-[4vw] object-contain" />
+                      {child.label}
+                    </Link>
                   </Button>
                 ))}
               </div>

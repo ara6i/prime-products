@@ -6,6 +6,8 @@ export type AdminDashboardIconKey =
   | "support"
   | "customers"
   | "stores"
+  | "shopify"
+  | "sdk"
   | "tickets"
   | "chats"
   | "merchants"

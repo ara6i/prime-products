@@ -52,9 +52,12 @@ export function AdminDashboardSidebar({ navItems }: AdminDashboardSidebarProps) 
                       key={child.label}
                       asChild
                       variant={child.active ? "tunal" : "ghost"}
-                      className="h-[clamp(38px,2.3vw,46px)] justify-start rounded-[0.729vw] px-[0.833vw] text-[clamp(13px,0.78vw,15px)] font-semibold"
+                      className="h-[clamp(38px,2.3vw,46px)] justify-start gap-[0.625vw] rounded-[0.729vw] px-[0.833vw] text-[clamp(13px,0.78vw,15px)] font-semibold"
                     >
-                      <Link href={child.href}>{child.label}</Link>
+                      <Link href={child.href}>
+                        <AdminDashboardIcon name={child.icon} size={16} className="h-[clamp(15px,0.9vw,18px)] w-[clamp(15px,0.9vw,18px)] object-contain" />
+                        {child.label}
+                      </Link>
                     </Button>
                   ))}
                 </div>
