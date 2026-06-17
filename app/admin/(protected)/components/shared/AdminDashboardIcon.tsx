@@ -8,6 +8,7 @@ import {
   NewChatIcon,
   PeopleIcon,
   SettingsIcon,
+  ShoppingBagIcon,
   TicketIcon,
   UserIcon,
 } from "@/app/shared/components/icons";
@@ -25,6 +26,7 @@ const iconMap = {
   revenue: MonetizationOnIcon,
   support: HeadsetIcon,
   customers: UserIcon,
+  stores: ShoppingBagIcon,
   tickets: TicketIcon,
   chats: NewChatIcon,
   merchants: PeopleIcon,

@@ -5,6 +5,7 @@ export type AdminDashboardIconKey =
   | "revenue"
   | "support"
   | "customers"
+  | "stores"
   | "tickets"
   | "chats"
   | "merchants"
