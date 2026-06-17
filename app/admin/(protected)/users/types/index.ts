@@ -98,8 +98,30 @@ export interface ProfileUserListItem {
   measurementRows: Array<{ label: string; value: string }>;
 }
 
+export interface ProfileUserGroupItem {
+  id: string;
+  primaryProfile: ProfileUserListItem;
+  profiles: ProfileUserListItem[];
+  userLabel: string;
+  accountLabel: string;
+  sourceLabel: string;
+  sourceTone: string;
+  originLabel: string;
+  deviceLabel: string;
+  countryLabel: string;
+  activityLabel: string;
+  lastSeenLabel: string;
+  profileCount: number;
+  tryOnCount: number;
+  profileEventCount: number;
+  searchText: string;
+}
+
 export interface ProfileUsersViewModel {
   summary: AdminProfileUsersResponse["summary"];
-  items: ProfileUserListItem[];
+  items: ProfileUserGroupItem[];
+  profileItems: ProfileUserListItem[];
+  profileTotal: number;
+  userTotal: number;
   hasUsers: boolean;
 }

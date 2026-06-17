@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowLeft, Camera, ChevronDown, ExternalLink, Ruler, ShoppingBag, UserRound } from "lucide-react";
-import type { AdminProfileUserRaw, ProfileUserListItem } from "../types";
+import type { AdminProfileUserRaw, ProfileUserGroupItem } from "../types";
 
 const BODY_MEASUREMENT_ORDER = [
   "height",
@@ -40,14 +40,10 @@ const MEASUREMENT_LABELS: Record<string, string> = {
 };
 
 interface UserProfileDetailPageProps {
-  item: ProfileUserListItem;
+  user: ProfileUserGroupItem;
 }
 
 type LengthUnit = "cm" | "in";
-
-function hasValue(value: string | number | null | undefined): boolean {
-  return value !== null && value !== undefined && value !== "";
-}
 
 function missing(value: string | null | undefined, fallback = "Missing"): string {
   return value?.trim() || fallback;
@@ -174,7 +170,8 @@ function EmptyState({ text }: { text: string }) {
   return <div className="px-4 py-5 text-sm text-customer-muted">{text}</div>;
 }
 
-export function UserProfileDetailPage({ item }: UserProfileDetailPageProps) {
+export function UserProfileDetailPage({ user }: UserProfileDetailPageProps) {
+  const item = user.primaryProfile;
   const raw = item.raw;
   const [displayUnit, setDisplayUnit] = useState<LengthUnit>("cm");
   const measurements = measurementEntries(raw, displayUnit);
@@ -206,7 +203,7 @@ export function UserProfileDetailPage({ item }: UserProfileDetailPageProps) {
           <ArrowLeft className="h-4 w-4" />
           Users
         </Link>
-        <span className={`inline-flex rounded-full px-3 py-1.5 text-xs font-semibold ${item.sourceTone}`}>{item.sourceLabel}</span>
+        <span className={`inline-flex rounded-full px-3 py-1.5 text-xs font-semibold ${user.sourceTone}`}>{user.sourceLabel}</span>
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[300px_minmax(0,1fr)]">
@@ -227,24 +224,46 @@ export function UserProfileDetailPage({ item }: UserProfileDetailPageProps) {
           </div>
 
           <div className="space-y-1 p-4">
-            <h1 className="break-words text-2xl font-semibold leading-tight text-text-primary">{item.profileLabel}</h1>
-            <p className="break-words text-sm text-customer-muted">{item.accountLabel}</p>
+            <h1 className="break-words text-2xl font-semibold leading-tight text-text-primary">{user.userLabel}</h1>
+            <p className="break-words text-sm text-customer-muted">{user.accountLabel}</p>
+            <p className="mt-2 text-xs font-semibold text-brand-blue">{user.profileCount} profile{user.profileCount === 1 ? "" : "s"}</p>
           </div>
 
           <dl className="divide-y divide-customer-border border-t border-customer-border">
             <Row label="Customer of" value={storeLabel} />
             <Row label="Website" value={originLabel} href={raw.originUrl} />
-            <Row label="Source" value={item.sourceLabel} />
+            <Row label="Source" value={user.sourceLabel} />
             {raw.gender ? <Row label="Gender" value={raw.gender} /> : null}
             {typeof raw.age === "number" ? <Row label="Age" value={`${raw.age}`} /> : null}
-            <Row label="Last seen" value={formatDate(raw.lastSeenAt || raw.updatedAt)} />
+            <Row label="Last seen" value={user.lastSeenLabel} />
           </dl>
         </aside>
 
         <div className="space-y-5">
+          <section className="overflow-hidden rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card">
+            <SectionHeader icon={UserRound} title="Profiles" />
+            <div className="divide-y divide-customer-border">
+              {user.profiles.map((profile, index) => (
+                <article key={profile.id} className="grid gap-3 px-4 py-4 text-sm lg:grid-cols-[minmax(0,1fr)_180px_160px] lg:items-center">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate font-semibold text-text-primary">{profile.profileLabel}</p>
+                      {index === 0 ? (
+                        <span className="rounded-full bg-brand-blue/10 px-2 py-0.5 text-[11px] font-semibold text-brand-blue">Latest</span>
+                      ) : null}
+                    </div>
+                    <p className="mt-1 truncate text-xs text-customer-muted">{profile.originLabel}</p>
+                  </div>
+                  <p className="text-xs font-semibold text-text-body">{profile.activityLabel}</p>
+                  <p className="text-xs text-customer-muted lg:text-right">{profile.lastSeenLabel}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
           {missingItems.length ? (
             <div className="rounded-[var(--radius-customer-card)] border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
-              Missing: {missingItems.join(", ")}
+              Latest profile missing: {missingItems.join(", ")}
             </div>
           ) : null}
 
@@ -252,7 +271,7 @@ export function UserProfileDetailPage({ item }: UserProfileDetailPageProps) {
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-customer-border px-4 py-3">
               <div className="flex items-center gap-2">
                 <Ruler className="h-4 w-4 text-brand-blue" />
-                <h2 className="text-sm font-semibold text-text-primary">Measurements</h2>
+                <h2 className="text-sm font-semibold text-text-primary">Latest Profile Measurements</h2>
               </div>
               <div className="inline-flex rounded-lg border border-customer-border bg-customer-soft p-0.5">
                 {(["cm", "in"] as const).map((unit) => (

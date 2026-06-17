@@ -5,7 +5,7 @@ import { AdminDashboardThemeProvider } from "../../components/shared/AdminDashbo
 import { UserProfileDetailPage } from "../components/UserProfileDetailPage";
 import { mapProfileUsersPage } from "../mappers/usersMapper";
 import { fetchAdminProfileUsers } from "../services/usersService";
-import type { ProfileUserListItem } from "../types";
+import type { ProfileUserGroupItem } from "../types";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +13,7 @@ interface AdminUserProfileRouteProps {
   params: Promise<{ id: string }>;
 }
 
-function findByRouteId(items: ProfileUserListItem[], routeId: string): ProfileUserListItem | undefined {
+function findByRouteId(items: ProfileUserGroupItem[], routeId: string): ProfileUserGroupItem | undefined {
   const decodedId = decodeURIComponent(routeId);
   return items.find((user) => user.id === decodedId || encodeURIComponent(user.id) === routeId);
 }
@@ -30,7 +30,7 @@ function searchTermsFromRouteId(routeId: string): string[] {
   );
 }
 
-async function loadUserProfile(routeId: string): Promise<ProfileUserListItem | null> {
+async function loadUserProfile(routeId: string): Promise<ProfileUserGroupItem | null> {
   const initial = mapProfileUsersPage(await fetchAdminProfileUsers(300));
   const directMatch = findByRouteId(initial.items, routeId);
   if (directMatch) return directMatch;
@@ -55,7 +55,7 @@ export default async function AdminUserProfileRoute({ params }: AdminUserProfile
   return (
     <AdminDashboardThemeProvider>
       <AdminDashboardShell logoutAction={logoutAction} activeHref="/admin/users">
-        <UserProfileDetailPage item={item} />
+        <UserProfileDetailPage user={item} />
       </AdminDashboardShell>
     </AdminDashboardThemeProvider>
   );

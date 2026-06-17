@@ -3,37 +3,18 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Eye, Search } from "lucide-react";
-import type { ProfileUserListItem, ProfileUsersViewModel } from "../types";
+import type { ProfileUserGroupItem, ProfileUsersViewModel } from "../types";
 
 interface UsersPageProps {
   view: ProfileUsersViewModel;
 }
 
-function matchesSearch(item: ProfileUserListItem, query: string): boolean {
+function matchesSearch(item: ProfileUserGroupItem, query: string): boolean {
   if (!query) return true;
-  const raw = item.raw;
-  return [
-    item.profileLabel,
-    item.accountLabel,
-    item.sourceLabel,
-    item.originLabel,
-    item.deviceLabel,
-    item.countryLabel,
-    raw.profileId,
-    raw.userId,
-    raw.sessionId,
-    raw.storeName,
-    raw.storeDomain,
-    raw.productTitle,
-    raw.productId,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase()
-    .includes(query);
+  return item.searchText.includes(query);
 }
 
-function UsersTable({ items }: { items: ProfileUserListItem[] }) {
+function UsersTable({ items }: { items: ProfileUserGroupItem[] }) {
   if (!items.length) {
     return (
       <div className="p-8 text-center">
@@ -59,7 +40,7 @@ function UsersTable({ items }: { items: ProfileUserListItem[] }) {
           {items.map((item) => (
             <tr key={item.id} className="align-top">
               <td className="max-w-[270px] px-4 py-4">
-                <p className="truncate font-semibold text-text-primary">{item.profileLabel}</p>
+                <p className="truncate font-semibold text-text-primary">{item.userLabel}</p>
                 <p className="mt-1 truncate text-xs text-customer-muted">{item.accountLabel}</p>
               </td>
               <td className="px-4 py-4">
@@ -69,7 +50,9 @@ function UsersTable({ items }: { items: ProfileUserListItem[] }) {
               </td>
               <td className="max-w-[230px] px-4 py-4">
                 <p className="truncate font-semibold text-text-primary">{item.originLabel}</p>
-                <p className="mt-1 truncate text-xs text-customer-muted">{item.raw.storeName || item.raw.productTitle || "No store/product"}</p>
+                <p className="mt-1 truncate text-xs text-customer-muted">
+                  {item.primaryProfile.raw.storeName || item.primaryProfile.raw.productTitle || `${item.profileCount} profile${item.profileCount === 1 ? "" : "s"}`}
+                </p>
               </td>
               <td className="max-w-[220px] px-4 py-4">
                 <p className="truncate text-text-body">{item.deviceLabel}</p>
@@ -111,7 +94,7 @@ export function UsersPage({ view }: UsersPageProps) {
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-blue">Admin</p>
           <h2 className="mt-2 text-3xl font-semibold leading-tight text-text-primary lg:text-4xl">Users</h2>
           <p className="mt-2 text-sm text-customer-muted">
-            {view.summary.total.toLocaleString("en-US")} profiles · {view.summary.loggedInProfiles.toLocaleString("en-US")} logged in
+            {view.userTotal.toLocaleString("en-US")} users · {view.profileTotal.toLocaleString("en-US")} profiles
           </p>
         </div>
 
