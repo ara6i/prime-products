@@ -15,48 +15,48 @@ export function HeroSection() {
   const fitLine = translate("for fit.").replace(/\.$/, "");
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-brand-blue/10 bg-white px-[3.125vw] pb-[2.4vw] pt-[2.2vw]">
+    <section className="relative isolate overflow-hidden border-b border-brand-blue/10 bg-white px-4 pb-5 pt-4 lg:px-[3.125vw] lg:pb-[2.4vw] lg:pt-[2.2vw]">
       <HeroBackground />
 
-      <div className="relative z-10 grid grid-cols-[0.9fr_1.1fr] items-start gap-[4.25vw] pt-[2.3vw]">
+      <div className="relative z-10 grid grid-cols-1 gap-4 pt-3 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-[4.25vw] lg:pt-[2.3vw]">
         <div className="min-w-0">
-          <Reveal variant="fade" className="flex items-center gap-[0.625vw]">
+          <Reveal variant="fade" className="hidden items-center gap-[0.625vw] lg:flex">
             <span className="h-px w-[3.2vw] bg-brand-blue" />
             <HeroTechStack />
           </Reveal>
 
           <Reveal delay={1}>
-            <h1 className="mt-[1.45vw] max-w-[41vw] font-poppins text-[clamp(3.35rem,4.8vw,6.15rem)] font-medium leading-[1.02] tracking-[-0.052em] text-text-primary">
+            <h1 className="mt-4 w-full max-w-none font-poppins text-[clamp(1.72rem,8.55vw,4.85rem)] font-medium leading-[0.98] tracking-[-0.058em] text-text-primary lg:mt-[1.45vw] lg:max-w-[41vw] lg:text-[clamp(3.35rem,4.8vw,6.15rem)] lg:leading-[1.02] lg:tracking-[-0.052em]">
               <span className="block">{hero.headline}</span>
-              <span className="block text-brand-blue">{hero.headlineEm}</span>
+              <span className="block whitespace-nowrap text-brand-blue">{hero.headlineEm}</span>
               <span className="block">{fitLine}</span>
             </h1>
           </Reveal>
 
           <Reveal delay={2}>
-            <p className="mt-[1.35vw] max-w-[38vw] text-[clamp(1.05rem,1vw,1.25rem)] leading-[1.55] text-text-body">
+            <p className="mt-4 max-w-[21rem] text-[14.5px] leading-[1.45] text-text-body lg:mt-[1.35vw] lg:max-w-[38vw] lg:text-[clamp(1.05rem,1vw,1.25rem)] lg:leading-[1.55]">
               {hero.subhead}
             </p>
           </Reveal>
 
-          <Reveal delay={3} className="mt-[1.5vw] flex flex-wrap items-center gap-[0.75vw]">
-            <LandingButton onClick={openPilot} variant="primary" icon="arrow-right">
+          <Reveal delay={3} className="mt-4 grid grid-cols-1 gap-2.5 min-[380px]:grid-cols-2 lg:mt-[1.5vw] lg:flex lg:flex-wrap lg:items-center lg:gap-[0.75vw]">
+            <LandingButton onClick={openPilot} variant="primary" size="lg" icon="arrow-right" className="w-full lg:w-auto">
               {hero.primaryLabel}
             </LandingButton>
-            <LandingButton href={hero.secondaryHref} variant="outline">
+            <LandingButton href={hero.secondaryHref} variant="outline" size="lg" className="w-full lg:w-auto">
               {hero.secondaryLabel}
             </LandingButton>
           </Reveal>
 
         </div>
 
-        <Reveal delay={2} className="min-w-0 -translate-y-[1.25vw]">
+        <Reveal delay={2} className="min-w-0 lg:-translate-y-[1.25vw]">
           <HeroVideoEditor />
         </Reveal>
       </div>
 
-      <div className="relative z-10 mt-[0.9vw]">
-        <Marquee items={hero.marquee} />
+      <div className="relative z-10 -mx-4 mt-3 lg:mx-0 lg:mt-[0.9vw]">
+        <Marquee items={hero.marquee} speed="slow" />
       </div>
     </section>
   );

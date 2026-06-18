@@ -19,9 +19,9 @@ export function HeroSection() {
 
       <div className="relative z-10">
         <Reveal delay={1}>
-          <h1 className="mt-4 max-w-[92vw] font-poppins text-[clamp(2.9rem,11.5vw,4.85rem)] font-medium leading-[0.98] tracking-[-0.048em] text-text-primary">
+          <h1 className="mt-4 w-full max-w-none font-poppins text-[clamp(1.72rem,8.55vw,4.85rem)] font-medium leading-[0.98] tracking-[-0.058em] text-text-primary">
             <span className="block">{hero.headline}</span>
-            <span className="block text-brand-blue">{hero.headlineEm}</span>
+            <span className="block whitespace-nowrap text-brand-blue">{hero.headlineEm}</span>
             <span className="block">{fitLine}</span>
           </h1>
         </Reveal>
