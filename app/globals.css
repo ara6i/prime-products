@@ -927,6 +927,8 @@ body {
   .ps-hero-title-em {
     display: block !important;
     white-space: nowrap !important;
+    font-size: clamp(1.72rem, 8.25vw, 2.85rem) !important;
+    letter-spacing: -0.07em !important;
   }
 
   .ps-hero-cta-row {
@@ -947,11 +949,19 @@ body {
   .ps-hero-title {
     font-size: clamp(1.88rem, 9.25vw, 3rem) !important;
   }
+
+  .ps-hero-title-em {
+    font-size: clamp(1.6rem, 7.85vw, 2.55rem) !important;
+  }
 }
 
 @media (max-width: 330px) {
   .ps-hero-title {
     font-size: clamp(1.55rem, 8vw, 2.6rem) !important;
+  }
+
+  .ps-hero-title-em {
+    font-size: clamp(1.48rem, 7.4vw, 2.35rem) !important;
   }
 }
 
