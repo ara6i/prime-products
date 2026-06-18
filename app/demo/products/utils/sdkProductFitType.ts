@@ -1,5 +1,14 @@
 import type { DemoProductView } from "../types";
 
+interface ProductFitSource {
+  category?: string;
+  subcategory?: string;
+  name?: string;
+  description?: string;
+  material?: string;
+  tags?: string[];
+}
+
 const FIT_RULES: Array<{ fitType: string; pattern: RegExp }> = [
   {
     fitType: "shoe",
@@ -47,16 +56,21 @@ const FIT_RULES: Array<{ fitType: string; pattern: RegExp }> = [
   },
 ];
 
-export function inferSdkProductFitType(product: DemoProductView): string | undefined {
+export function inferSdkProductFitTypeFromSource(product: ProductFitSource): string | undefined {
   const text = [
     product.category,
     product.subcategory,
     product.name,
     product.description,
     product.material,
+    ...(product.tags ?? []),
   ]
     .filter(Boolean)
     .join(" ");
 
   return FIT_RULES.find((rule) => rule.pattern.test(text))?.fitType;
+}
+
+export function inferSdkProductFitType(product: DemoProductView): string | undefined {
+  return inferSdkProductFitTypeFromSource(product);
 }

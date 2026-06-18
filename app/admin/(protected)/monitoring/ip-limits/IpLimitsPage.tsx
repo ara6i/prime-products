@@ -279,7 +279,7 @@ export function IpLimitsPage({ initialData, surface = "monitoring" }: IpLimitsPa
       <section className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h3 className="text-base font-semibold text-text-primary">SDK IP/Product Limit</h3>
-          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${settings.envHardDisabled || !demoLimitEnabled ? "bg-amber-50 text-amber-700" : "bg-green-50 text-green-700"}`}>
+          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${settings.envHardDisabled || !demoLimitEnabled ? "bg-customer-warning-bg text-customer-warning-text" : "bg-customer-success-bg text-customer-success-text"}`}>
             {settings.envHardDisabled ? "Env off" : demoLimitEnabled ? "On" : "Off"}
           </span>
         </div>
@@ -303,7 +303,7 @@ export function IpLimitsPage({ initialData, surface = "monitoring" }: IpLimitsPa
           </span>
         </div>
 
-        <div className="mt-4 grid gap-2 rounded-lg border border-customer-border bg-white p-4 sm:grid-cols-[minmax(0,1fr)_160px] sm:items-center">
+        <div className="mt-4 grid gap-2 rounded-lg border border-customer-border bg-customer-card p-4 sm:grid-cols-[minmax(0,1fr)_160px] sm:items-center">
           <div>
             <p className="text-sm font-semibold text-text-primary">Allowed attempts</p>
             <p className="mt-1 text-xs text-text-body">Applies only to configured SDK API key IDs. Default is 1.</p>
@@ -318,7 +318,7 @@ export function IpLimitsPage({ initialData, surface = "monitoring" }: IpLimitsPa
               ...current,
               sdkMaxAttemptsPerIpProduct: normalizeAttemptCount(event.target.value),
             }))}
-            className="rounded-lg border border-customer-border bg-white px-3 py-2 text-sm font-semibold text-text-primary outline-none focus:border-brand-blue"
+            className="rounded-lg border border-customer-border bg-customer-card px-3 py-2 text-sm font-semibold text-text-primary outline-none focus:border-brand-blue"
           />
         </div>
 
@@ -341,13 +341,13 @@ export function IpLimitsPage({ initialData, surface = "monitoring" }: IpLimitsPa
               value={ipAddress}
               onChange={(event) => setIpAddress(event.target.value)}
               placeholder="IP address"
-              className="rounded-lg border border-customer-border bg-white px-3 py-2 text-sm outline-none focus:border-brand-blue"
+              className="rounded-lg border border-customer-border bg-customer-card px-3 py-2 text-sm text-text-primary outline-none placeholder:text-customer-muted focus:border-brand-blue"
             />
             <input
               value={productId}
               onChange={(event) => setProductId(event.target.value)}
               placeholder="Product ID optional"
-              className="rounded-lg border border-customer-border bg-white px-3 py-2 text-sm outline-none focus:border-brand-blue"
+              className="rounded-lg border border-customer-border bg-customer-card px-3 py-2 text-sm text-text-primary outline-none placeholder:text-customer-muted focus:border-brand-blue"
             />
           </div>
           <button
@@ -376,13 +376,13 @@ export function IpLimitsPage({ initialData, surface = "monitoring" }: IpLimitsPa
               value={whitelistIp}
               onChange={(event) => setWhitelistIp(event.target.value)}
               placeholder="IP address"
-              className="rounded-lg border border-customer-border bg-white px-3 py-2 text-sm outline-none focus:border-brand-blue"
+              className="rounded-lg border border-customer-border bg-customer-card px-3 py-2 text-sm text-text-primary outline-none placeholder:text-customer-muted focus:border-brand-blue"
             />
             <input
               value={whitelistLabel}
               onChange={(event) => setWhitelistLabel(event.target.value)}
               placeholder="Label optional"
-              className="rounded-lg border border-customer-border bg-white px-3 py-2 text-sm outline-none focus:border-brand-blue"
+              className="rounded-lg border border-customer-border bg-customer-card px-3 py-2 text-sm text-text-primary outline-none placeholder:text-customer-muted focus:border-brand-blue"
             />
           </div>
           <button
@@ -466,7 +466,7 @@ export function IpLimitsPage({ initialData, surface = "monitoring" }: IpLimitsPa
               type="button"
               disabled={isPending}
               onClick={() => removeWhitelist(entry.id)}
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-customer-border px-3 text-sm font-semibold text-red-700 disabled:opacity-50"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-customer-border px-3 text-sm font-semibold text-customer-danger-text disabled:opacity-50"
             >
               <Trash2 className="h-4 w-4" />
               Remove

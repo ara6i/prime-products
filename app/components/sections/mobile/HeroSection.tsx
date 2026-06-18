@@ -1,45 +1,36 @@
 "use client";
 
 import { Reveal } from "../../shared/Reveal";
-import { Eyebrow } from "../../shared/Eyebrow";
 import { LandingButton } from "../../shared/LandingButton";
 import { Marquee } from "../../shared/Marquee";
 import { usePilotModal } from "../../shared/PilotModalContext";
-import { HeroTrustBadge } from "../shared/HeroTrustBadge";
+import { HeroVideoEditor } from "../shared/HeroVideoEditor";
 import { useLandingLanguage } from "@/app/landing/i18n";
 
 export function HeroSection() {
   const { open: openPilot } = usePilotModal();
   const { content, translate } = useLandingLanguage();
   const { hero } = content;
+  const fitLine = translate("for fit.").replace(/\.$/, "");
 
   return (
-    <section className="relative overflow-hidden px-5 pb-10 pt-20">
+    <section className="relative isolate overflow-hidden border-b border-brand-blue/10 bg-white px-4 pb-5 pt-4">
       <HeroBackground />
 
-      <div className="relative z-10 flex flex-col items-center gap-5 text-center">
-        <Reveal variant="fade">
-          <Eyebrow>{hero.eyebrow}</Eyebrow>
-        </Reveal>
-
+      <div className="relative z-10">
         <Reveal delay={1}>
-          <h1 className="text-[40px] font-semibold leading-[1.05] tracking-[-0.025em] text-text-primary">
-            {hero.headline}{" "}
-            <em className="not-italic bg-gradient-to-br from-brand-blue to-accent-purple bg-clip-text font-serif italic text-transparent">
-              {hero.headlineEm}
-            </em>
-            <br />
-            {translate("for fit.")}
+          <h1 className="mt-4 max-w-[92vw] font-poppins text-[clamp(2.9rem,11.5vw,4.85rem)] font-medium leading-[0.98] tracking-[-0.048em] text-text-primary">
+            <span className="block">{hero.headline}</span>
+            <span className="block text-brand-blue">{hero.headlineEm}</span>
+            <span className="block">{fitLine}</span>
           </h1>
         </Reveal>
 
-        <Reveal delay={2} className="h-px w-12 bg-gradient-to-r from-transparent via-brand-blue to-transparent" />
-
         <Reveal delay={2}>
-          <p className="text-base leading-[1.5] text-text-body">{hero.subhead}</p>
+          <p className="mt-4 max-w-[21rem] text-[14.5px] leading-[1.45] text-text-body">{hero.subhead}</p>
         </Reveal>
 
-        <Reveal delay={3} className="flex w-full flex-col gap-3 pt-2">
+        <Reveal delay={3} className="mt-4 grid grid-cols-1 gap-2.5 min-[380px]:grid-cols-2">
           <LandingButton onClick={openPilot} variant="primary" size="lg" icon="arrow-right" className="w-full">
             {hero.primaryLabel}
           </LandingButton>
@@ -48,13 +39,13 @@ export function HeroSection() {
           </LandingButton>
         </Reveal>
 
-        <Reveal delay={4} className="pt-1">
-          <HeroTrustBadge />
+        <Reveal delay={4} className="mt-4">
+          <HeroVideoEditor variant="mobile" />
         </Reveal>
       </div>
 
-      <div className="relative z-10 mt-8 -mx-5">
-        <Marquee items={hero.marquee} />
+      <div className="relative z-10 mt-3 -mx-4">
+        <Marquee items={hero.marquee} speed="slow" />
       </div>
     </section>
   );
@@ -62,18 +53,18 @@ export function HeroSection() {
 
 function HeroBackground() {
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0">
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
       <div
-        className="absolute inset-0 opacity-30"
+        className="absolute inset-0 opacity-25"
         style={{
           backgroundImage:
             "linear-gradient(rgba(33,84,239,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(33,84,239,0.08) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-          maskImage: "radial-gradient(ellipse at 50% 0%, black 35%, transparent 80%)",
+          backgroundSize: "44px 44px",
+          maskImage: "linear-gradient(180deg, black 0%, transparent 80%)",
         }}
       />
-      <div className="ps-glow absolute -top-16 left-1/3 h-[260px] w-[260px] rounded-full bg-brand-blue/25 blur-[80px]" />
-      <div className="ps-glow absolute top-40 right-1/4 h-[240px] w-[240px] rounded-full bg-accent-purple/20 blur-[80px]" style={{ animationDelay: "-3s" }} />
+      <div className="absolute -left-24 top-14 h-64 w-64 rounded-full bg-brand-blue/12 blur-[80px]" />
+      <div className="absolute right-[-70px] top-28 h-64 w-64 rounded-full bg-brand-blue-light/45 blur-[90px]" />
     </div>
   );
 }

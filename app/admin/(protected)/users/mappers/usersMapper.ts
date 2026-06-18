@@ -47,7 +47,7 @@ function sourceLabel(item: AdminProfileUserRaw): string {
 function sourceTone(item: AdminProfileUserRaw): string {
   if (item.source === "shopify") return "bg-customer-blue text-brand-blue";
   return item.kind === "synced"
-    ? "bg-emerald-50 text-emerald-700"
+    ? "bg-customer-success-bg text-customer-success-text"
     : "bg-customer-soft text-text-body";
 }
 
@@ -211,7 +211,7 @@ function sourceLabelForProfiles(profiles: ProfileUserListItem[]): string {
 
 function sourceToneForProfiles(profiles: ProfileUserListItem[]): string {
   const sources = new Set(profiles.map((profile) => profile.raw.source));
-  if (sources.size > 1) return "bg-slate-100 text-slate-700";
+  if (sources.size > 1) return "bg-customer-soft text-text-body";
   const primary = profiles[0];
   return primary ? sourceTone(primary.raw) : "bg-customer-soft text-text-body";
 }

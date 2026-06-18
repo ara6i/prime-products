@@ -106,7 +106,7 @@ function ToolbarButton({ title, active = false, disabled = false, onClick, child
       onClick={onClick}
       className={cn(
         "cursor-pointer rounded-full border border-transparent text-text-body transition-colors hover:bg-customer-card",
-        active && "border-brand-blue/35 bg-brand-blue-light text-brand-blue-dark shadow-[0_0_0_0.104vw_rgba(33,84,239,0.08)] hover:bg-brand-blue-light",
+        active && "border-brand-blue/35 bg-customer-blue text-brand-blue shadow-[0_0_0_0.104vw_rgba(33,84,239,0.08)] hover:bg-customer-blue",
       )}
     >
       {children}

@@ -1,6 +1,6 @@
 # PrimeStyleAI Unified Project Context
 
-Last updated: 2026-06-11
+Last updated: 2026-06-17
 Owner workspace: `/home/ara6i/Projects`
 Local Mac workspace: `/Users/arashsn/Projects/PrimeStyleAI`
 
@@ -35,6 +35,7 @@ Main domains:
 - `https://primestyleai.com` -> `prime-products` (nginx -> `localhost:3001`)
 - `https://api.primestyleai.com` -> backend API (`localhost:4000`)
 - `https://shopify.primestyleai.com` -> Shopify app
+- MongoDB is hosted on DigitalOcean.
 
 Important: do not confuse repo name `prime-products` with production domain (`primestyleai.com`).
 
@@ -63,10 +64,10 @@ Important test-login note:
 - It is not app source code and should not be copied into production nginx.
 - Production `primestyleai.com` must not return a `WWW-Authenticate` header.
 
-Current frontend state (updated 2026-06-11):
+Current frontend state (updated 2026-06-18):
 - `prime-products` production and test are promoted through Git branches, not manual droplet copy/paste.
-- Latest frontend runtime package bump: exact npm package `@primestyleai/tryon@5.10.198`.
-- Both production and test frontend should install exact SDK version `5.10.198`.
+- Latest frontend runtime package bump in this repo: exact npm package `@primestyleai/tryon@5.10.220` on `staging`.
+- Test frontend should install exact SDK version `5.10.220` after `origin/staging` has been deployed. Production remains tied to its promoted `main` branch until explicitly released.
 
 Current backend state (verified 2026-05-25):
 - Production backend and test backend code are intentionally identical by file tree after the backend feedback/Shopify release.
@@ -161,11 +162,14 @@ Operational note:
 Repo:
 - `/home/ara6i/Projects/primestyleai-tryon-sdk`
 
-Version state as of 2026-06-11:
-- SDK repo `main` and npm registry `latest` are `@primestyleai/tryon@5.10.198`.
-- `prime-products` `main` and `staging` should depend on exact npm version `5.10.198`.
-- Test and production frontend servers should both install SDK `5.10.198`.
-- `5.10.198` includes the latest SDK UI, Clarity session tagging, generated try-on watermark removal, mobile size-detail footer cleanup, and mobile scanner visibility tuning.
+Version state as of 2026-06-18:
+- SDK repo `main` package version is `@primestyleai/tryon@5.10.220`.
+- `prime-products` local `staging` package files depend on exact npm version `5.10.220`.
+- Test frontend should install SDK `5.10.220` after `origin/staging` has been deployed. Production should not be changed unless `main` is explicitly promoted.
+- npm registry `latest` was verified locally as `@primestyleai/tryon@5.10.220` on 2026-06-18.
+- `5.10.220` is the current SDK repo release commit (`Release SDK 5.10.220 profile flow updates`).
+- `5.10.219` included profile upload parity work.
+- `5.10.198` included SDK UI, Clarity session tagging, generated try-on watermark removal, mobile size-detail footer cleanup, and mobile scanner visibility tuning.
 - `5.10.178` added try-on result UI updates: pinned desktop result actions, mobile sticky result actions, collapsible/sent-lock try-on feedback, and updated result image actions.
 - `5.10.177` lowers the mobile Metric/Imperial unit switch on garment and accessory AI scan body-details screens without changing the shoe reference flow.
 - `5.10.176` removes the mobile multi-section fit percentage badge (`% FIT MATCH`) from the SDK result screen.
@@ -248,7 +252,7 @@ Important guardrail:
 ## 7) Local Development Workflow Notes
 
 SDK local iteration:
-- Preferred committed/deployed dependency is the published npm version, currently exact `@primestyleai/tryon@5.10.198`.
+- Preferred committed/deployed dependency is the published npm version, currently exact `@primestyleai/tryon@5.10.220` in local `staging` package files.
 - Temporary local SDK iteration can use `npm pack` + `npm install <tgz> --no-save` into `prime-products`.
 - Before committing or deploying `prime-products`, replace any `file:../primestyleai-tryon-sdk/*.tgz` dependency with the published npm package version.
 - Avoid `npm link` due to Turbopack resolution issues with exports/symlink path.
@@ -256,11 +260,12 @@ SDK local iteration:
 Mac local run snapshot (verified 2026-05-23):
 - `prime-products` runs with `npm run dev` at `http://localhost:3000`.
 - `primeStyleAI-backend` runs with `npm run dev` at `http://localhost:4000`; health is `http://localhost:4000/api/health`.
+- Current intended local wiring: localhost frontend connects to the local backend at `localhost:4000`, and the local backend connects to the test/staging database.
 - Local frontend env used for local backend wiring:
   - `NEXT_PUBLIC_API_URL=http://localhost:4000`
   - `NEXT_PUBLIC_API_BASE_URL=http://localhost:4000`
   - `NEXT_PUBLIC_PRIMESTYLE_API_URL=http://localhost:4000`
-- Local backend env used when no `.env` exists:
+- Local backend fallback env used only when no `.env` exists:
   - `PORT=4000`
   - `MONGO_URI=mongodb://127.0.0.1:27017/primestyleai`
   - `CORS_ORIGIN=http://localhost:3000`
@@ -275,6 +280,7 @@ Local branch guardrail:
 
 Admin API routing note:
 - Admin dashboard frontend calls prefer `PRIMESTYLE_ADMIN_API_INTERNAL_URL`, then fall back to `PRIMESTYLE_API_INTERNAL_URL` and `NEXT_PUBLIC_API_BASE_URL`.
+- The admin dashboard is served from the test frontend/server, but it is connected to live backend/live MongoDB data, not the staging/test database.
 - Use this when the staging/test admin dashboard needs to read live backend/live MongoDB data without moving customer, demo, or public app traffic to the live backend.
 
 ## 8) Backend Operations Snapshot (Droplet Diagnostic Context)

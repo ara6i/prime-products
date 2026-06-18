@@ -341,6 +341,35 @@
   --customer-shadow-card: 0 0.052vw 0.104vw rgba(0, 0, 0, 0.22), 0 0 0 0.052vw rgba(255, 255, 255, 0.04);
 }
 
+[data-admin-theme="dark"] {
+  --admin-surface-page: #0E1421;
+  --admin-surface-card: #141D2D;
+  --admin-surface-sidebar: #141D2D;
+  --admin-border: #273348;
+  --admin-border-soft: #344258;
+  --admin-row-hover: #1B2638;
+  --admin-muted: #1B2638;
+  --admin-shadow-card: 0 0.052vw 0.104vw rgba(0, 0, 0, 0.22), 0 0 0 0.052vw rgba(255, 255, 255, 0.04);
+  --admin-shadow-elevated: 0 0.208vw 0.833vw rgba(0, 0, 0, 0.28), 0 0 0 0.052vw rgba(255, 255, 255, 0.04);
+  --admin-map-fill: #1B2638;
+  --admin-map-stroke: #344258;
+  --admin-map-scale-0: #172B52;
+  --admin-map-scale-1: #254171;
+  --admin-map-scale-2: #315DA8;
+  --admin-map-scale-3: #4A7AF6;
+  --admin-map-scale-4: #8EADFF;
+  --admin-status-active-bg: #123C2A;
+  --admin-status-active-text: #72E2A5;
+  --admin-status-suspended-bg: #3D1D22;
+  --admin-status-suspended-text: #FF9A9A;
+  --admin-status-uninstalled-bg: #1B2638;
+  --admin-status-uninstalled-text: #9AA6BA;
+  --admin-source-shopify-bg: #123C2A;
+  --admin-source-shopify-text: #72E2A5;
+  --admin-source-sdk-bg: #172B52;
+  --admin-source-sdk-text: #AFC4FF;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

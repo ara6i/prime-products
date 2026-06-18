@@ -78,7 +78,7 @@ export function FeedbacksDesktop({ view }: FeedbacksDesktopProps) {
 
       {view.hasItems ? (
         <div className="overflow-hidden rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card">
-          <div className="grid grid-cols-[15vw_8vw_minmax(18vw,1fr)_17vw_17vw] gap-[1vw] bg-surface-light px-[1.25vw] py-[0.8vw] text-[clamp(12px,0.72vw,14px)] font-semibold uppercase tracking-[0.08em] text-customer-muted">
+          <div className="grid grid-cols-[15vw_8vw_minmax(18vw,1fr)_17vw_17vw] gap-[1vw] bg-customer-soft px-[1.25vw] py-[0.8vw] text-[clamp(12px,0.72vw,14px)] font-semibold uppercase tracking-[0.08em] text-customer-muted">
             <span>Customer</span>
             <span>Rating</span>
             <span>Note</span>

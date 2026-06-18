@@ -262,7 +262,7 @@ export function UserProfileDetailPage({ user }: UserProfileDetailPageProps) {
           </section>
 
           {missingItems.length ? (
-            <div className="rounded-[var(--radius-customer-card)] border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+            <div className="rounded-[var(--radius-customer-card)] border border-customer-warning-text/25 bg-customer-warning-bg px-4 py-3 text-sm font-medium text-customer-warning-text">
               Latest profile missing: {missingItems.join(", ")}
             </div>
           ) : null}

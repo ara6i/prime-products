@@ -40,7 +40,7 @@ export function AdminDashboardSidebar({ navItems }: AdminDashboardSidebarProps) 
           if (hasChildren && !item.disabled) {
             return (
               <details key={item.label} open={item.active} className="group">
-                <summary className="flex h-[clamp(44px,2.75vw,54px)] cursor-pointer list-none items-center justify-start gap-[0.833vw] rounded-[0.833vw] px-[0.833vw] text-[clamp(14px,0.84vw,16px)] font-semibold text-text-body transition-colors hover:bg-surface-light group-open:bg-brand-blue-light group-open:text-brand-blue-dark [&::-webkit-details-marker]:hidden">
+                <summary className="flex h-[clamp(44px,2.75vw,54px)] cursor-pointer list-none items-center justify-start gap-[0.833vw] rounded-[0.833vw] px-[0.833vw] text-[clamp(14px,0.84vw,16px)] font-semibold text-text-body transition-colors hover:bg-customer-soft group-open:bg-customer-blue group-open:text-brand-blue [&::-webkit-details-marker]:hidden">
                   {content}
                   <span className="text-[clamp(14px,0.84vw,16px)] transition-transform group-open:rotate-45" aria-hidden>
                     +

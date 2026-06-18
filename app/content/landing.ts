@@ -210,7 +210,7 @@ export const GARMENTS: GarmentsContent = {
 export const INTEGRATIONS: IntegrationContent = {
   eyebrow: "Ship it your way",
   title: "Four ways to integrate.",
-  subtitle: "SDK and REST API are live today. Widget and Shopify app are next up — get on the list and we'll ping you the day they ship.",
+  subtitle: "SDK, Shopify app, and REST API are live today. Widget is next up — get on the list and we'll ping you the day it ships.",
   methods: [
     {
       id: "sdk",
@@ -218,6 +218,14 @@ export const INTEGRATIONS: IntegrationContent = {
       title: "React & JavaScript SDK",
       body: "Typed, tree-shakable, ships with full sizing + try-on components. Three lines and you're live.",
       docsHref: `${DOCS_HREF}#sdk`,
+      badge: "Available",
+    },
+    {
+      id: "shopify",
+      label: "Shopify",
+      title: "Shopify App",
+      body: "One-click install. Trained on your size chart, themed to your store, live on every product page in minutes.",
+      docsHref: SHOPIFY_APP_HREF,
       badge: "Available",
     },
     {
@@ -235,14 +243,6 @@ export const INTEGRATIONS: IntegrationContent = {
       body: "Zero-code embed. Paste a single <script> on your product page — works with any CMS or storefront.",
       docsHref: `${DOCS_HREF}#widget`,
       comingSoon: true,
-    },
-    {
-      id: "shopify",
-      label: "Shopify",
-      title: "Shopify App",
-      body: "One-click install. Trained on your size chart, themed to your store, live on every product page in minutes.",
-      docsHref: SHOPIFY_APP_HREF,
-      badge: "Available",
     },
   ],
 };

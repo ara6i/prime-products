@@ -29,7 +29,7 @@ export function BehaviorPage({ projectId, view }: BehaviorPageProps) {
       </div>
 
       <div className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-6 shadow-sm">
-        <div className="overflow-x-auto rounded-2xl border border-customer-border bg-white">
+        <div className="overflow-x-auto rounded-2xl border border-customer-border bg-customer-card">
           <table className="w-full min-w-[760px] border-collapse text-left">
             <thead className="bg-customer-soft">
               <tr>

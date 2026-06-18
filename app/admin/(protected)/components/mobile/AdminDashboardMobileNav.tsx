@@ -22,7 +22,7 @@ export function AdminDashboardMobileNav({ navItems }: AdminDashboardMobileNavPro
         if (hasChildren && !item.disabled) {
           return (
             <details key={item.label} open={item.active} className="group shrink-0">
-              <summary className="flex h-[11vw] cursor-pointer list-none items-center justify-center gap-[2.2vw] rounded-full px-[4.6vw] text-[3.6vw] font-semibold text-text-body transition-colors hover:bg-surface-light group-open:bg-brand-blue-light group-open:text-brand-blue-dark [&::-webkit-details-marker]:hidden">
+              <summary className="flex h-[11vw] cursor-pointer list-none items-center justify-center gap-[2.2vw] rounded-full px-[4.6vw] text-[3.6vw] font-semibold text-text-body transition-colors hover:bg-customer-soft group-open:bg-customer-blue group-open:text-brand-blue [&::-webkit-details-marker]:hidden">
                 {content}
                 <span className="text-[3vw] transition-transform group-open:rotate-45" aria-hidden>
                   +

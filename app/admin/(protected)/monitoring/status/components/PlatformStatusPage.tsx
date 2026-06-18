@@ -24,12 +24,12 @@ export function PlatformStatusPage({ view }: PlatformStatusPageProps) {
           {view.services.every((service) => service.tone === "success") ? (
             <CheckCircle2 className="h-6 w-6 text-admin-status-active-text" />
           ) : (
-            <AlertTriangle className="h-6 w-6 text-[#986500]" />
+            <AlertTriangle className="h-6 w-6 text-customer-warning-text" />
           )}
           <h3 className="text-xl font-semibold text-text-primary">{view.title}</h3>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl border border-customer-border bg-white">
+        <div className="overflow-x-auto rounded-2xl border border-customer-border bg-customer-card">
           <table className="w-full min-w-[720px] border-collapse text-left">
             <thead className="bg-customer-soft">
               <tr>
@@ -52,7 +52,7 @@ export function PlatformStatusPage({ view }: PlatformStatusPageProps) {
                       className={
                         service.tone === "success"
                           ? "inline-flex rounded-full bg-admin-status-active-bg px-3 py-1 text-xs font-semibold text-admin-status-active-text"
-                          : "inline-flex rounded-full bg-[#fff3dc] px-3 py-1 text-xs font-semibold text-[#986500]"
+                          : "inline-flex rounded-full bg-customer-warning-bg px-3 py-1 text-xs font-semibold text-customer-warning-text"
                       }
                     >
                       {service.label}

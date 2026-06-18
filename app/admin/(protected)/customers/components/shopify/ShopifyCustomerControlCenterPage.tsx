@@ -74,7 +74,7 @@ const customerToneClasses = {
   blue: "bg-brand-blue/10 text-brand-blue",
   green: "bg-customer-success-bg text-customer-success-text",
   yellow: "bg-customer-warning-bg text-customer-warning-text",
-  purple: "bg-violet-100 text-violet-700",
+  purple: "bg-accent-purple/15 text-accent-purple",
 } as const;
 
 function CustomerMetricBlock({ card }: { card: ShopifyMetricCard }) {
@@ -339,7 +339,7 @@ function BillingOverrideForm({
             id="shopify-plan"
             value={plan}
             onChange={(event) => setPlan(event.target.value)}
-            className="mt-[0.313vw] h-[2.5vw] w-full rounded-[0.833vw] border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none focus:border-transparent focus:ring-2 focus:ring-brand-blue max-lg:mt-[1vw] max-lg:h-[10vw] max-lg:rounded-[4vw]"
+            className="mt-[0.313vw] h-[2.5vw] w-full rounded-[0.833vw] border border-customer-border bg-customer-card px-3 text-sm text-text-primary outline-none focus:border-transparent focus:ring-2 focus:ring-brand-blue max-lg:mt-[1vw] max-lg:h-[10vw] max-lg:rounded-[4vw]"
           >
             {allowedPlans.map((option) => (
               <option key={option} value={option}>
@@ -496,7 +496,7 @@ function BillingAutomationControls({
           <h3 className="text-[clamp(17px,1.05vw,21px)] font-semibold text-text-primary max-lg:text-[4.4vw]">Email automation test lab</h3>
           <p className="mt-[0.208vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:text-[3vw]">Choose a test state, then save.</p>
         </div>
-        <span className={`rounded-full px-[0.729vw] py-[0.313vw] text-[clamp(11px,0.68vw,13px)] font-semibold max-lg:px-[3vw] max-lg:py-[1.5vw] max-lg:text-[2.8vw] ${view.trial.canUseStorefront ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}>
+        <span className={`rounded-full px-[0.729vw] py-[0.313vw] text-[clamp(11px,0.68vw,13px)] font-semibold max-lg:px-[3vw] max-lg:py-[1.5vw] max-lg:text-[2.8vw] ${view.trial.canUseStorefront ? "bg-customer-success-bg text-customer-success-text" : "bg-customer-danger-bg text-customer-danger-text"}`}>
           {view.trial.statusLabel}
         </span>
       </div>
@@ -521,7 +521,7 @@ function BillingAutomationControls({
               id="shopify-automation-action"
               value={selectedAction}
               onChange={(event) => setSelectedAction(event.target.value as ShopifyBillingAutomationTestPayload["action"])}
-              className="mt-[0.313vw] h-[2.5vw] w-full rounded-[0.833vw] border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none focus:border-transparent focus:ring-2 focus:ring-brand-blue max-lg:mt-[1vw] max-lg:h-[10vw] max-lg:rounded-[4vw]"
+              className="mt-[0.313vw] h-[2.5vw] w-full rounded-[0.833vw] border border-customer-border bg-customer-card px-3 text-sm text-text-primary outline-none focus:border-transparent focus:ring-2 focus:ring-brand-blue max-lg:mt-[1vw] max-lg:h-[10vw] max-lg:rounded-[4vw]"
             >
               {actions.map((item) => (
                 <option key={item.action} value={item.action}>
@@ -566,7 +566,7 @@ function StoreAccessControls({
           <h3 className="text-[clamp(17px,1.05vw,21px)] font-semibold text-text-primary max-lg:text-[4.4vw]">Store access</h3>
           <p className="mt-[0.208vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:text-[3vw]">Control whether this Shopify merchant can use PrimeStyleAI storefront services.</p>
         </div>
-        <span className={`rounded-full px-[0.729vw] py-[0.313vw] text-[clamp(11px,0.68vw,13px)] font-semibold max-lg:px-[3vw] max-lg:py-[1.5vw] max-lg:text-[2.8vw] ${isActive ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
+        <span className={`rounded-full px-[0.729vw] py-[0.313vw] text-[clamp(11px,0.68vw,13px)] font-semibold max-lg:px-[3vw] max-lg:py-[1.5vw] max-lg:text-[2.8vw] ${isActive ? "bg-customer-success-bg text-customer-success-text" : "bg-customer-warning-bg text-customer-warning-text"}`}>
           {view.statusLabel}
         </span>
       </div>

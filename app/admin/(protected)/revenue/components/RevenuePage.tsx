@@ -63,7 +63,7 @@ function MetricCard({
   helper: string;
   tone?: "neutral" | "blue" | "green";
 }) {
-  const valueClass = tone === "blue" ? "text-brand-blue" : tone === "green" ? "text-emerald-700" : "text-text-primary";
+  const valueClass = tone === "blue" ? "text-brand-blue" : tone === "green" ? "text-customer-success-text" : "text-text-primary";
 
   return (
     <article className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-5">
@@ -96,7 +96,7 @@ function RevenueTabs({ activeView }: { activeView: RevenueView }) {
             className={[
               "rounded-[var(--radius-customer-card)] border p-4 transition",
               isActive
-                ? "border-brand-blue bg-blue-50 text-text-primary shadow-[0_12px_30px_rgba(37,91,255,0.10)]"
+                ? "border-brand-blue bg-customer-blue text-text-primary shadow-[0_12px_30px_rgba(37,91,255,0.10)]"
                 : "border-customer-border bg-customer-card text-text-body hover:border-brand-blue/45",
             ].join(" ")}
           >
@@ -238,7 +238,7 @@ function TopStoresTable({
       {stores.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="min-w-[920px] w-full text-left text-sm">
-            <thead className="bg-surface-light text-xs uppercase tracking-[0.1em] text-customer-muted">
+            <thead className="bg-customer-soft text-xs uppercase tracking-[0.1em] text-customer-muted">
               <tr>
                 <th className="px-5 py-3 font-semibold">Store</th>
                 <th className="px-5 py-3 font-semibold">Monthly</th>

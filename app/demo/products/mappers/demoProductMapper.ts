@@ -9,6 +9,7 @@ import type {
   DemoSizeGuide,
   DemoCompleteLookProduct,
 } from "../types";
+import { inferSdkProductFitTypeFromSource } from "../utils/sdkProductFitType";
 
 const DEMO_BRAND = "PrimeStyleAI";
 
@@ -67,10 +68,26 @@ function toCard(p: DemoProductApi): DemoProductCard {
     name: cleanProductName(rawBrand, rawName),
     brand: DEMO_BRAND,
     category: p.category ?? "",
+    subcategory: p.subcategory ?? "",
+    gender: p.gender ?? "",
+    tags: p.tags ?? [],
+    fitType: inferSdkProductFitTypeFromSource({
+      category: p.category,
+      subcategory: p.subcategory,
+      name: rawName,
+      tags: p.tags,
+    }) ?? "apparel",
     price: typeof p.price === "number" ? p.price : null,
     originalPrice: typeof p.original_price === "number" ? p.original_price : null,
     currency: p.currency ?? "USD",
     image: proxyImage(p.image_urls?.[0] ?? p.gallery?.[0] ?? p.variant_image_urls?.[0] ?? ""),
+    hoverImage: proxyImage(p.image_urls?.[1] ?? p.gallery?.[1] ?? p.variant_image_urls?.[1] ?? p.image_urls?.[0] ?? p.gallery?.[0] ?? p.variant_image_urls?.[0] ?? ""),
+    colorVariants: buildColorVariants(p).map((variant) => ({
+      name: variant.name,
+      hex: variant.hex,
+      available: variant.available,
+      image: variant.images[0],
+    })),
     // Tuxedo: always show model image — skip the AI-generated (model-free) cover
     generatedCover: proxyImage((!modelImage && gc && gc !== COVER_SKIP) ? gc : undefined) || undefined,
     // Mark checked so the frontend won't call the cover API again
@@ -169,7 +186,7 @@ function buildColorVariants(p: DemoProductApi): DemoColorVariant[] {
     images: proxyImages(v.images),
     sizes: (v.sizes ?? []).map((s) => ({
       name: s.name ?? "",
-      available: isAvailable(s.availability),
+      available: isAvailable(),
     })),
   }));
 }
@@ -246,7 +263,7 @@ function buildSizes(p: DemoProductApi): DemoSizeOption[] {
   if (p.variant_sizes?.length) {
     return p.variant_sizes.map((s) => ({
       name: s.name ?? "",
-      available: isAvailable(s.availability),
+      available: isAvailable(),
     }));
   }
   if (p.sizes?.length) {
@@ -256,13 +273,13 @@ function buildSizes(p: DemoProductApi): DemoSizeOption[] {
   if (first?.sizes?.length) {
     return first.sizes.map((s) => ({
       name: s.name ?? "",
-      available: isAvailable(s.availability),
+      available: isAvailable(),
     }));
   }
   return [];
 }
 
-function isAvailable(_status?: string): boolean {
+function isAvailable(): boolean {
   return true; // Demo: always show all sizes as available
 }
 

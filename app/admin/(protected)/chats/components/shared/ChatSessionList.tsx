@@ -56,8 +56,8 @@ function ChatTabs({
             value={tab.value}
             disabled={isLoading}
             className={mobile
-              ? "rounded-full border border-customer-border px-[4vw] py-[2vw] text-[3.2vw] font-semibold data-[state=active]:border-brand-blue data-[state=active]:bg-brand-blue-light data-[state=active]:text-brand-blue-dark"
-              : "rounded-full border border-customer-border px-[0.938vw] py-[0.417vw] text-[clamp(12px,0.72vw,14px)] font-semibold data-[state=active]:border-brand-blue data-[state=active]:bg-brand-blue-light data-[state=active]:text-brand-blue-dark"}
+              ? "rounded-full border border-customer-border px-[4vw] py-[2vw] text-[3.2vw] font-semibold data-[state=active]:border-brand-blue data-[state=active]:bg-customer-blue data-[state=active]:text-brand-blue"
+              : "rounded-full border border-customer-border px-[0.938vw] py-[0.417vw] text-[clamp(12px,0.72vw,14px)] font-semibold data-[state=active]:border-brand-blue data-[state=active]:bg-customer-blue data-[state=active]:text-brand-blue"}
           >
             {tab.label}
           </TabsTrigger>
@@ -107,7 +107,7 @@ export function ChatSessionList({
                     </span>
                   ) : null}
                   {item.ratingScore ? (
-                    <span className="inline-flex items-center gap-[1vw] rounded-full bg-brand-blue-light px-[2.5vw] py-[1vw] text-[2.8vw] font-semibold text-brand-blue">
+                    <span className="inline-flex items-center gap-[1vw] rounded-full bg-customer-blue px-[2.5vw] py-[1vw] text-[2.8vw] font-semibold text-brand-blue">
                       <Star className="h-[3vw] w-[3vw] fill-current" />
                       {item.ratingScore}/5
                     </span>
@@ -213,7 +213,7 @@ export function ChatSessionList({
                   </td>
                   <td className="px-[0.833vw] py-[0.625vw] align-middle">
                     {item.hasUnread ? (
-                      <span className="inline-flex rounded-full bg-brand-blue-light px-[0.521vw] py-[0.156vw] text-[clamp(11px,0.68vw,13px)] font-semibold text-brand-blue">
+                      <span className="inline-flex rounded-full bg-customer-blue px-[0.521vw] py-[0.156vw] text-[clamp(11px,0.68vw,13px)] font-semibold text-brand-blue">
                         {item.unreadAdminCount}
                       </span>
                     ) : (

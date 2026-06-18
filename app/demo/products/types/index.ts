@@ -65,10 +65,16 @@ export interface DemoProductCard {
   name: string;
   brand: string;
   category: string;
+  subcategory: string;
+  gender: string;
+  tags: string[];
+  fitType: string;
   price: number | null;
   originalPrice: number | null;
   currency: string;
   image: string;
+  hoverImage: string;
+  colorVariants: Array<{ name: string; hex: string; available: boolean; image?: string }>;
   /** Pre-generated model-free cover Cloudinary URL (only set when a real cover exists). */
   generatedCover?: string;
   /** True when cover detection has already run (real URL or SKIP). No API call needed. */

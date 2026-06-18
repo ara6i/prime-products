@@ -28,9 +28,9 @@ function sourceLabel(source: AdminBugReportRawItem["source"]): string {
 }
 
 function severityTone(severity: AdminBugReportRawItem["severity"]): string {
-  if (severity === "critical" || severity === "high") return "bg-red-50 text-red-700";
-  if (severity === "medium") return "bg-amber-50 text-amber-700";
-  return "bg-blue-50 text-brand-blue";
+  if (severity === "critical" || severity === "high") return "bg-customer-danger-bg text-customer-danger-text";
+  if (severity === "medium") return "bg-customer-warning-bg text-customer-warning-text";
+  return "bg-customer-blue text-brand-blue";
 }
 
 function productMeta(item: AdminBugReportRawItem): string {
