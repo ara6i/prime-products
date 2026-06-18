@@ -28,8 +28,10 @@ export function HeroSection() {
           <Reveal delay={1}>
             <h1 className="ps-hero-title mt-4 w-full max-w-none font-poppins text-[clamp(1.72rem,8.55vw,4.85rem)] font-medium leading-[0.98] tracking-[-0.058em] text-text-primary lg:mt-[1.45vw] lg:max-w-[41vw] lg:text-[clamp(3.35rem,4.8vw,6.15rem)] lg:leading-[1.02] lg:tracking-[-0.052em]">
               <span className="lg:hidden">
-                <span className="ps-hero-title-word block">{hero.headline}</span>
-                <span className="ps-hero-title-em block text-brand-blue">{hero.headlineEm}</span>
+                <span className="ps-hero-title-main block">
+                  <span className="ps-hero-title-word">{hero.headline}</span>{" "}
+                  <span className="ps-hero-title-em text-brand-blue">{hero.headlineEm}</span>
+                </span>
                 <span className="ps-hero-title-word block">{fitLine}</span>
               </span>
               <span className="hidden lg:block">
