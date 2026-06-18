@@ -910,6 +910,27 @@ body {
 }
 .ps-float { animation: ps-float 5s ease-in-out infinite; }
 
+@media (max-width: 767px) {
+  .ps-hero-title {
+    width: 100% !important;
+    max-width: none !important;
+    font-size: clamp(1.75rem, 8.55vw, 2.25rem) !important;
+    line-height: 0.98 !important;
+    letter-spacing: -0.058em !important;
+  }
+
+  .ps-hero-title-em {
+    display: block !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .ps-hero-title {
+    font-size: clamp(1.62rem, 8.15vw, 2rem) !important;
+  }
+}
+
 /* Customer login floating badges (server-safe, no styled-jsx). */
 @keyframes ps-float-login-primary {
   0%, 100% { transform: translateY(0); }
