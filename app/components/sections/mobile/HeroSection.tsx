@@ -12,44 +12,39 @@ export function HeroSection() {
   const { content, translate } = useLandingLanguage();
   const { hero } = content;
   const fitLine = translate("for fit.").replace(/\.$/, "");
-  const headlineEmWords = hero.headlineEm.split(/\s+/).filter(Boolean);
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-brand-blue/10 bg-white px-4 pb-5 pt-4">
+    <section className="relative isolate overflow-hidden border-b border-brand-blue/10 bg-white px-1 pb-5 pt-4">
       <HeroBackground />
 
       <div className="relative z-10">
         <Reveal delay={1}>
           <h1 className="ps-hero-title mt-4 w-full max-w-none font-poppins text-[clamp(1.72rem,8.55vw,4.85rem)] font-medium leading-[0.98] tracking-[-0.058em] text-text-primary">
-            <span className="ps-hero-title-word inline">{hero.headline}</span>{" "}
-            {headlineEmWords.map((word, index) => (
-              <span key={`${word}-${index}`} className="ps-hero-title-em inline text-brand-blue">
-                {word}{" "}
-              </span>
-            ))}
-            <span className="ps-hero-title-word inline">{fitLine}</span>
+            <span className="ps-hero-title-word block">{hero.headline}</span>
+            <span className="ps-hero-title-em block text-brand-blue">{hero.headlineEm}</span>
+            <span className="ps-hero-title-word block">{fitLine}</span>
           </h1>
         </Reveal>
 
         <Reveal delay={2}>
-          <p className="mt-4 max-w-[21rem] text-[14.5px] leading-[1.45] text-text-body">{hero.subhead}</p>
+          <p className="mt-3 max-w-[20rem] px-1 text-[13px] leading-[1.4] text-text-body">{hero.subhead}</p>
         </Reveal>
 
-        <Reveal delay={3} className="mt-4 grid grid-cols-1 gap-2.5 min-[380px]:grid-cols-2">
-          <LandingButton onClick={openPilot} variant="primary" size="lg" icon="arrow-right" className="w-full">
-            {hero.primaryLabel}
-          </LandingButton>
-          <LandingButton href={hero.secondaryHref} variant="outline" size="lg" className="w-full">
-            {hero.secondaryLabel}
-          </LandingButton>
-        </Reveal>
-
-        <Reveal delay={4} className="mt-4">
+        <Reveal delay={3} className="mt-4 px-3">
           <HeroVideoEditor variant="mobile" />
+        </Reveal>
+
+        <Reveal delay={4} className="ps-hero-cta-row mt-3 flex gap-2">
+          <LandingButton onClick={openPilot} variant="primary" size="md" icon="arrow-right" className="h-10 min-w-0 flex-1 basis-0 gap-1.5 overflow-hidden px-2.5 text-[12.5px]">
+            Apply pilot
+          </LandingButton>
+          <LandingButton href={hero.secondaryHref} variant="outline" size="md" className="h-10 min-w-0 flex-1 basis-0 overflow-hidden px-2.5 text-[12.5px]">
+            See action
+          </LandingButton>
         </Reveal>
       </div>
 
-      <div className="relative z-10 mt-3 -mx-4">
+      <div className="relative z-10 mt-3 -mx-1">
         <Marquee items={hero.marquee} speed="slow" />
       </div>
     </section>

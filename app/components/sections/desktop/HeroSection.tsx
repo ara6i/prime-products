@@ -13,10 +13,9 @@ export function HeroSection() {
   const { content, translate } = useLandingLanguage();
   const { hero } = content;
   const fitLine = translate("for fit.").replace(/\.$/, "");
-  const headlineEmWords = hero.headlineEm.split(/\s+/).filter(Boolean);
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-brand-blue/10 bg-white px-4 pb-5 pt-4 lg:px-[3.125vw] lg:pb-[2.4vw] lg:pt-[2.2vw]">
+    <section className="relative isolate overflow-hidden border-b border-brand-blue/10 bg-white px-1 pb-5 pt-4 lg:px-[3.125vw] lg:pb-[2.4vw] lg:pt-[2.2vw]">
       <HeroBackground />
 
       <div className="relative z-10 grid grid-cols-1 gap-4 pt-3 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-[4.25vw] lg:pt-[2.3vw]">
@@ -29,13 +28,9 @@ export function HeroSection() {
           <Reveal delay={1}>
             <h1 className="ps-hero-title mt-4 w-full max-w-none font-poppins text-[clamp(1.72rem,8.55vw,4.85rem)] font-medium leading-[0.98] tracking-[-0.058em] text-text-primary lg:mt-[1.45vw] lg:max-w-[41vw] lg:text-[clamp(3.35rem,4.8vw,6.15rem)] lg:leading-[1.02] lg:tracking-[-0.052em]">
               <span className="lg:hidden">
-                <span className="ps-hero-title-word inline">{hero.headline}</span>{" "}
-                {headlineEmWords.map((word, index) => (
-                  <span key={`${word}-${index}`} className="ps-hero-title-em inline text-brand-blue">
-                    {word}{" "}
-                  </span>
-                ))}
-                <span className="ps-hero-title-word inline">{fitLine}</span>
+                <span className="ps-hero-title-word block">{hero.headline}</span>
+                <span className="ps-hero-title-em block text-brand-blue">{hero.headlineEm}</span>
+                <span className="ps-hero-title-word block">{fitLine}</span>
               </span>
               <span className="hidden lg:block">
                 <span className="block">{hero.headline}</span>
@@ -46,12 +41,12 @@ export function HeroSection() {
           </Reveal>
 
           <Reveal delay={2}>
-            <p className="mt-4 max-w-[21rem] text-[14.5px] leading-[1.45] text-text-body lg:mt-[1.35vw] lg:max-w-[38vw] lg:text-[clamp(1.05rem,1vw,1.25rem)] lg:leading-[1.55]">
+            <p className="mt-3 max-w-[20rem] px-1 text-[13px] leading-[1.4] text-text-body lg:mt-[1.35vw] lg:max-w-[38vw] lg:px-0 lg:text-[clamp(1.05rem,1vw,1.25rem)] lg:leading-[1.55]">
               {hero.subhead}
             </p>
           </Reveal>
 
-          <Reveal delay={3} className="mt-4 grid grid-cols-1 gap-2.5 min-[380px]:grid-cols-2 lg:mt-[1.5vw] lg:flex lg:flex-wrap lg:items-center lg:gap-[0.75vw]">
+          <Reveal delay={3} className="mt-3 hidden grid-cols-2 gap-2 px-3 lg:mt-[1.5vw] lg:flex lg:flex-wrap lg:items-center lg:gap-[0.75vw] lg:px-0">
             <LandingButton onClick={openPilot} variant="primary" size="lg" icon="arrow-right" className="w-full lg:w-auto">
               {hero.primaryLabel}
             </LandingButton>
@@ -62,12 +57,21 @@ export function HeroSection() {
 
         </div>
 
-        <Reveal delay={2} className="min-w-0 lg:-translate-y-[1.25vw]">
+        <Reveal delay={3} className="min-w-0 px-3 lg:px-0 lg:-translate-y-[1.25vw]">
           <HeroVideoEditor />
+        </Reveal>
+
+        <Reveal delay={4} className="ps-hero-cta-row flex gap-2 lg:hidden">
+          <LandingButton onClick={openPilot} variant="primary" size="md" icon="arrow-right" className="h-10 min-w-0 flex-1 basis-0 gap-1.5 overflow-hidden px-2.5 text-[12.5px]">
+            Apply pilot
+          </LandingButton>
+          <LandingButton href={hero.secondaryHref} variant="outline" size="md" className="h-10 min-w-0 flex-1 basis-0 overflow-hidden px-2.5 text-[12.5px]">
+            See action
+          </LandingButton>
         </Reveal>
       </div>
 
-      <div className="relative z-10 -mx-4 mt-3 lg:mx-0 lg:mt-[0.9vw]">
+      <div className="relative z-10 -mx-1 mt-3 lg:mx-0 lg:mt-[0.9vw]">
         <Marquee items={hero.marquee} speed="slow" />
       </div>
     </section>
