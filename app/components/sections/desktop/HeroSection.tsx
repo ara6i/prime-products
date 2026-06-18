@@ -13,6 +13,7 @@ export function HeroSection() {
   const { content, translate } = useLandingLanguage();
   const { hero } = content;
   const fitLine = translate("for fit.").replace(/\.$/, "");
+  const headlineEmWords = hero.headlineEm.split(/\s+/).filter(Boolean);
 
   return (
     <section className="relative isolate overflow-hidden border-b border-brand-blue/10 bg-white px-4 pb-5 pt-4 lg:px-[3.125vw] lg:pb-[2.4vw] lg:pt-[2.2vw]">
@@ -27,9 +28,20 @@ export function HeroSection() {
 
           <Reveal delay={1}>
             <h1 className="ps-hero-title mt-4 w-full max-w-none font-poppins text-[clamp(1.72rem,8.55vw,4.85rem)] font-medium leading-[0.98] tracking-[-0.058em] text-text-primary lg:mt-[1.45vw] lg:max-w-[41vw] lg:text-[clamp(3.35rem,4.8vw,6.15rem)] lg:leading-[1.02] lg:tracking-[-0.052em]">
-              <span className="block">{hero.headline}</span>
-              <span className="ps-hero-title-em block whitespace-nowrap text-brand-blue">{hero.headlineEm}</span>
-              <span className="block">{fitLine}</span>
+              <span className="lg:hidden">
+                <span className="ps-hero-title-word inline">{hero.headline}</span>{" "}
+                {headlineEmWords.map((word, index) => (
+                  <span key={`${word}-${index}`} className="ps-hero-title-em inline text-brand-blue">
+                    {word}{" "}
+                  </span>
+                ))}
+                <span className="ps-hero-title-word inline">{fitLine}</span>
+              </span>
+              <span className="hidden lg:block">
+                <span className="block">{hero.headline}</span>
+                <span className="block text-brand-blue">{hero.headlineEm}</span>
+                <span className="block">{fitLine}</span>
+              </span>
             </h1>
           </Reveal>
 
