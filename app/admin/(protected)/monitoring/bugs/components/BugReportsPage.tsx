@@ -1,6 +1,15 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
+import { Maximize2, X } from "lucide-react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/app/shared/components/ui/dialog";
 import type { BugReportItem, BugReportsViewModel } from "../types";
 
 interface BugReportsPageProps {
@@ -20,17 +29,28 @@ function EmptyState({ activeTab }: { activeTab: BugTab }) {
   );
 }
 
-function ReportsTable({ items, onView }: { items: BugReportItem[]; onView: (item: BugReportItem) => void }) {
+function ReportsTable({
+  items,
+  onView,
+  onPreviewImage,
+}: {
+  items: BugReportItem[];
+  onView: (item: BugReportItem) => void;
+  onPreviewImage: (item: BugReportItem) => void;
+}) {
+  const showPreviewColumn = items.some((item) => item.source === "visual-qa" && item.previewUrl);
+
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[900px] text-left text-sm">
+      <table className="w-full min-w-[980px] text-left text-sm">
         <thead className="border-b border-customer-border bg-customer-soft text-xs font-semibold uppercase tracking-[0.1em] text-customer-muted">
           <tr>
             <th className="px-4 py-3">Severity</th>
+            {showPreviewColumn ? <th className="px-4 py-3">Generated image</th> : null}
             <th className="px-4 py-3">Issue</th>
-            <th className="px-4 py-3">Product</th>
-            <th className="px-4 py-3">Context</th>
-            <th className="px-4 py-3">Last seen</th>
+            <th className="px-4 py-3">Store</th>
+            <th className="px-4 py-3">Platform</th>
+            <th className="px-4 py-3">Date / time</th>
             <th className="px-4 py-3 text-right">Action</th>
           </tr>
         </thead>
@@ -42,18 +62,44 @@ function ReportsTable({ items, onView }: { items: BugReportItem[]; onView: (item
                   {item.severityLabel}
                 </span>
               </td>
+              {showPreviewColumn ? (
+                <td className="px-4 py-4">
+                  {item.source === "visual-qa" && item.previewUrl ? (
+                    <button
+                      type="button"
+                      onClick={() => onPreviewImage(item)}
+                      className="group relative block overflow-hidden rounded-xl border border-customer-border bg-slate-950"
+                      aria-label={`Open generated image full screen for ${item.title}`}
+                    >
+                      <Image
+                        src={item.previewUrl}
+                        alt="Generated try-on issue preview"
+                        width={64}
+                        height={80}
+                        className="h-20 w-16 object-contain"
+                        loading="lazy"
+                        unoptimized
+                      />
+                      <span className="absolute inset-0 flex items-center justify-center bg-slate-950/0 text-white opacity-0 transition group-hover:bg-slate-950/45 group-hover:opacity-100">
+                        <Maximize2 className="h-4 w-4" />
+                      </span>
+                    </button>
+                  ) : (
+                    <span className="text-xs text-customer-muted">No image</span>
+                  )}
+                </td>
+              ) : null}
               <td className="max-w-[280px] px-4 py-4">
                 <p className="font-semibold text-text-primary">{item.title}</p>
                 <p className="mt-1 line-clamp-2 text-xs text-text-body">{item.summary}</p>
               </td>
               <td className="max-w-[220px] px-4 py-4">
-                <p className="font-semibold text-text-primary">{item.productTitle}</p>
-                <p className="mt-1 text-xs text-customer-muted">{item.productMeta}</p>
+                <p className="font-semibold text-text-primary">{item.storeLabel}</p>
               </td>
-              <td className="max-w-[220px] px-4 py-4 text-xs text-text-body">
-                <p>{item.sourceLabel}</p>
-                <p className="mt-1">{item.deviceLabel}</p>
-                <p className="mt-1">{item.visitorLabel}</p>
+              <td className="px-4 py-4 text-xs text-text-body">
+                <span className="inline-flex rounded-full bg-customer-soft px-2.5 py-1 font-semibold text-brand-blue">
+                  {item.platformLabel}
+                </span>
               </td>
               <td className="px-4 py-4 text-xs text-customer-muted">{item.dateLabel}</td>
               <td className="px-4 py-4 text-right">
@@ -73,16 +119,84 @@ function ReportsTable({ items, onView }: { items: BugReportItem[]; onView: (item
   );
 }
 
-function DetailDialog({ item, onClose }: { item: BugReportItem; onClose: () => void }) {
+function FullScreenImageDialog({
+  item,
+  open,
+  onOpenChange,
+}: {
+  item: BugReportItem | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const previewUrl = item?.previewUrl;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        showCloseButton={false}
+        className="h-[calc(100svh-1rem)] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] overflow-hidden rounded-[28px] border border-white/10 bg-slate-950 p-0 shadow-[0_40px_140px_rgba(0,0,0,0.65)] sm:max-w-[calc(100vw-1rem)]"
+      >
+        <div className="flex h-full min-h-0 flex-col">
+          <div className="flex items-start justify-between gap-4 border-b border-white/10 bg-slate-950/95 px-5 py-4 text-white">
+            <div className="min-w-0">
+              <DialogTitle className="truncate text-base font-semibold text-white">
+                {item?.title ?? "Generated try-on image"}
+              </DialogTitle>
+              <DialogDescription className="mt-1 truncate text-sm text-slate-300">
+                {item ? `${item.storeLabel} · ${item.dateLabel}` : "Full-screen admin image preview"}
+              </DialogDescription>
+            </div>
+            <DialogClose asChild>
+              <button
+                type="button"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white transition hover:bg-white/20"
+                aria-label="Close full-screen image"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </DialogClose>
+          </div>
+
+          <div className="flex min-h-0 flex-1 items-center justify-center p-3 sm:p-5">
+            {previewUrl ? (
+              <div className="relative h-full w-full">
+                <Image
+                  src={previewUrl}
+                  alt="Full-screen generated try-on image flagged by AI QA"
+                  fill
+                  sizes="100vw"
+                  className="rounded-2xl object-contain"
+                  priority
+                  unoptimized
+                />
+              </div>
+            ) : (
+              <div className="flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-slate-700 text-center text-sm text-slate-300">
+                Generated image was not captured for this QA issue.
+              </div>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function DetailDialog({
+  item,
+  onClose,
+  onPreviewImage,
+}: {
+  item: BugReportItem;
+  onClose: () => void;
+  onPreviewImage: (item: BugReportItem) => void;
+}) {
+  const isVisualQaIssue = item.isVisualTryOnIssue;
   const details = [
-    ["Source", item.sourceLabel],
-    ["Status", item.status],
-    ["Categories", item.categoryLabel],
-    ["Product", item.productMeta],
+    ["Platform", item.platformLabel],
     ["Store", item.storeLabel],
-    ["Profile", item.profileLabel],
-    ["Visitor", item.visitorLabel],
-    ["Device", item.deviceLabel],
+    ["Date / time", item.dateLabel],
+    ["Issue", item.summary],
   ];
 
   return (
@@ -101,7 +215,7 @@ function DetailDialog({ item, onClose }: { item: BugReportItem; onClose: () => v
           </button>
         </div>
 
-        <div className="grid gap-4 p-5 lg:grid-cols-[minmax(0,1fr)_220px]">
+        <div className={`grid gap-4 p-5 ${isVisualQaIssue ? "lg:grid-cols-[minmax(0,1fr)_300px]" : ""}`}>
           <dl className="grid gap-3 sm:grid-cols-2">
             {details.map(([label, value]) => (
               <div key={label} className="rounded-lg bg-customer-soft p-3">
@@ -111,22 +225,39 @@ function DetailDialog({ item, onClose }: { item: BugReportItem; onClose: () => v
             ))}
           </dl>
 
-          {item.previewUrl ? (
-            <img src={item.previewUrl} alt="Flagged try-on preview" className="h-[220px] w-full rounded-lg border border-customer-border object-cover" />
-          ) : (
-            <div className="flex h-[220px] items-center justify-center rounded-lg border border-dashed border-customer-border text-sm text-customer-muted">
-              No preview
-            </div>
-          )}
+          {isVisualQaIssue ? (
+            <figure className="rounded-2xl border border-customer-border bg-slate-950 p-3">
+              {item.previewUrl ? (
+                <button
+                  type="button"
+                  onClick={() => onPreviewImage(item)}
+                  className="group relative block w-full overflow-hidden rounded-xl"
+                  aria-label={`Open generated image full screen for ${item.title}`}
+                >
+                  <Image
+                    src={item.previewUrl}
+                    alt="Generated try-on image flagged by AI QA"
+                    width={520}
+                    height={520}
+                    className="h-[420px] w-full rounded-xl object-contain transition duration-300 group-hover:scale-[1.01]"
+                    unoptimized
+                  />
+                  <span className="absolute bottom-3 right-3 inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-semibold text-slate-950 shadow-lg">
+                    <Maximize2 className="h-3.5 w-3.5" />
+                    Full screen
+                  </span>
+                </button>
+              ) : (
+                <div className="flex h-[260px] items-center justify-center rounded-xl border border-dashed border-slate-700 text-center text-sm text-slate-300">
+                  Generated image was not captured for this QA issue.
+                </div>
+              )}
+              <figcaption className="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-slate-300">
+                Generated try-on image
+              </figcaption>
+            </figure>
+          ) : null}
         </div>
-
-        {item.productUrl ? (
-          <div className="border-t border-customer-border p-5">
-            <a href={item.productUrl} target="_blank" rel="noreferrer" className="text-sm font-semibold text-brand-blue">
-              Open product
-            </a>
-          </div>
-        ) : null}
       </div>
     </div>
   );
@@ -135,9 +266,10 @@ function DetailDialog({ item, onClose }: { item: BugReportItem; onClose: () => v
 export function BugReportsPage({ view, sentryProjectUrl }: BugReportsPageProps) {
   const [activeTab, setActiveTab] = useState<BugTab>("tryon");
   const [selectedItem, setSelectedItem] = useState<BugReportItem | null>(null);
+  const [fullScreenItem, setFullScreenItem] = useState<BugReportItem | null>(null);
 
-  const tryOnItems = useMemo(() => view.items.filter((item) => item.source === "visual-qa"), [view.items]);
-  const runtimeItems = useMemo(() => view.items.filter((item) => item.source !== "visual-qa"), [view.items]);
+  const tryOnItems = useMemo(() => view.items.filter((item) => item.isVisualTryOnIssue), [view.items]);
+  const runtimeItems = useMemo(() => view.items.filter((item) => !item.isVisualTryOnIssue), [view.items]);
   const activeItems = activeTab === "tryon" ? tryOnItems : runtimeItems;
 
   return (
@@ -176,10 +308,29 @@ export function BugReportsPage({ view, sentryProjectUrl }: BugReportsPageProps) 
       </div>
 
       <section className="overflow-hidden rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card">
-        {activeItems.length ? <ReportsTable items={activeItems} onView={setSelectedItem} /> : <EmptyState activeTab={activeTab} />}
+        {activeItems.length ? (
+          <ReportsTable
+            items={activeItems}
+            onView={setSelectedItem}
+            onPreviewImage={setFullScreenItem}
+          />
+        ) : <EmptyState activeTab={activeTab} />}
       </section>
 
-      {selectedItem ? <DetailDialog item={selectedItem} onClose={() => setSelectedItem(null)} /> : null}
+      {selectedItem ? (
+        <DetailDialog
+          item={selectedItem}
+          onClose={() => setSelectedItem(null)}
+          onPreviewImage={setFullScreenItem}
+        />
+      ) : null}
+      <FullScreenImageDialog
+        item={fullScreenItem}
+        open={Boolean(fullScreenItem)}
+        onOpenChange={(open) => {
+          if (!open) setFullScreenItem(null);
+        }}
+      />
     </section>
   );
 }

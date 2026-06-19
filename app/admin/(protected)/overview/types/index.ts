@@ -21,6 +21,7 @@ export interface ShopifyDashboardRaw {
     active: number;
     suspended: number;
     uninstalled: number;
+    uninstalledInRange?: number;
     inRange: number;
     growthPct: number;
     series: Array<{ label: string; installs: number }>;
@@ -72,6 +73,13 @@ export interface OverviewMetric {
   tone?: "blue" | "green" | "yellow" | "purple";
 }
 
+export interface OverviewSignal {
+  label: string;
+  value: string;
+  helper: string;
+  tone: "blue" | "green" | "yellow" | "purple";
+}
+
 export interface ShopifyDashboardView {
   tryOnRange: ShopifyDashboardRange;
   installRange: ShopifyDashboardRange;
@@ -85,6 +93,7 @@ export interface ShopifyDashboardView {
   revenueSeries: Array<{ date: string; label: string; completed: number; initiated: number }>;
   installSeries: Array<{ label: string; installs: number }>;
   installFunnel: Array<{ label: string; value: string; helper: string }>;
+  signals: OverviewSignal[];
   topMerchants: Array<{ title: string; meta: string; value: string; accent: "blue" | "yellow" | "purple" }>;
   deviceBubbles: Array<{ label: string; value: string; percent: number; tone: "blue" | "yellow" | "purple" }>;
   map: PreparedMapData;

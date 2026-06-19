@@ -62,6 +62,20 @@ const TABS: IntegrationTab[] = [
     },
   },
   {
+    value: "shopify",
+    label: "Shopify",
+    icon: <ShoppingBag className="h-4 w-4 shrink-0" />,
+    content: {
+      status: "available",
+      title: "Shopify App",
+      description:
+        "A native Shopify app trained on your own size chart. Themed automatically to match your store and live on every product page in minutes — no theme edits, no developer required, no maintenance tax.",
+      primaryHref: SHOPIFY_APP_HREF,
+      primaryLabel: "Install on Shopify",
+      visual: { kind: "soon", tag: "shopify" },
+    },
+  },
+  {
     value: "api",
     label: "API",
     icon: <Zap className="h-4 w-4 shrink-0" />,
@@ -89,20 +103,6 @@ const TABS: IntegrationTab[] = [
       visual: { kind: "soon", tag: "widget" },
     },
   },
-  {
-    value: "shopify",
-    label: "Shopify",
-    icon: <ShoppingBag className="h-4 w-4 shrink-0" />,
-    content: {
-      status: "available",
-      title: "Shopify App",
-      description:
-        "A native Shopify app trained on your own size chart. Themed automatically to match your store and live on every product page in minutes — no theme edits, no developer required, no maintenance tax.",
-      primaryHref: SHOPIFY_APP_HREF,
-      primaryLabel: "Install on Shopify",
-      visual: { kind: "soon", tag: "shopify" },
-    },
-  },
 ];
 
 export function IntegrationsSection() {
@@ -111,7 +111,7 @@ export function IntegrationsSection() {
   const { translate } = useLandingLanguage();
 
   return (
-    <section id="integrations" className="relative overflow-hidden px-8 py-[clamp(5rem,7vw,7rem)]">
+    <section id="integrations" className="relative scroll-mt-24 overflow-hidden px-8 py-[clamp(5rem,7vw,7rem)]">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -125,7 +125,7 @@ export function IntegrationsSection() {
         <SectionHeading
           eyebrow={translate("Ship it your way")}
           title={translate("Four ways to integrate.")}
-          subtitle={translate("SDK and REST API are live today. Widget and Shopify app are next up.")}
+          subtitle={translate("SDK, Shopify app, and REST API are live today. Widget is next up.")}
         />
 
         <Reveal variant="fade" delay={1}>

@@ -116,8 +116,8 @@ export const LANDING_STRING_TRANSLATIONS = {
       "Nivel gratis · SDK, Widget, API, Shopify · Sin tarjeta de crédito",
     "Ship it your way": "Intégralo a tu manera",
     "Four ways to integrate.": "Cuatro formas de integrar.",
-    "SDK and REST API are live today. Widget and Shopify app are next up.":
-      "El SDK y la API REST ya están disponibles. El widget y la app de Shopify vienen después.",
+    "SDK, Shopify app, and REST API are live today. Widget is next up.":
+      "El SDK, la app de Shopify y la API REST ya están disponibles. El widget viene después.",
     "React & JavaScript SDK": "SDK React y JavaScript",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, Remix, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.":
       "Un SDK tipado con componentes de talla, talla inteligente y prueba virtual incluidos. Funciona con Next.js, Vite, Remix o JavaScript. Agrega tres componentes y tienes una experiencia completa sin crear tu propia UI.",
@@ -346,8 +346,8 @@ export const LANDING_STRING_TRANSLATIONS = {
       "Kostenloser Einstieg · SDK, Widget, API, Shopify · Keine Kreditkarte nötig",
     "Ship it your way": "Integriere es auf deine Weise",
     "Four ways to integrate.": "Vier Integrationswege.",
-    "SDK and REST API are live today. Widget and Shopify app are next up.":
-      "SDK und REST API sind heute live. Widget und Shopify-App folgen.",
+    "SDK, Shopify app, and REST API are live today. Widget is next up.":
+      "SDK, Shopify-App und REST API sind heute live. Widget folgt.",
     "React & JavaScript SDK": "React- und JavaScript-SDK",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, Remix, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.":
       "Ein vollständig typisiertes SDK mit Größen-, Smart-Size- und Try-on-Komponenten. Framework-agnostisch für Next.js, Vite, Remix oder JavaScript.",
@@ -576,8 +576,8 @@ export const LANDING_STRING_TRANSLATIONS = {
       "Offre gratuite · SDK, Widget, API, Shopify · Aucune carte requise",
     "Ship it your way": "Intégrez à votre façon",
     "Four ways to integrate.": "Quatre façons d’intégrer.",
-    "SDK and REST API are live today. Widget and Shopify app are next up.":
-      "Le SDK et l’API REST sont disponibles. Le widget et l’app Shopify arrivent ensuite.",
+    "SDK, Shopify app, and REST API are live today. Widget is next up.":
+      "Le SDK, l’app Shopify et l’API REST sont disponibles. Le widget arrive ensuite.",
     "React & JavaScript SDK": "SDK React et JavaScript",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, Remix, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.":
       "Un SDK typé avec taille, taille intelligente et essayage virtuel intégrés. Compatible Next.js, Vite, Remix ou JavaScript. Trois composants suffisent.",
@@ -790,7 +790,7 @@ export const LANDING_STRING_TRANSLATIONS = {
     "Free tier · SDK, Widget, API, Shopify · No credit card required": "Livello gratuito · SDK, widget, API, Shopify · Nessuna carta di credito richiesta",
     "Ship it your way": "Spediscilo a modo tuo",
     "Four ways to integrate.": "Quattro modi per integrarsi.",
-    "SDK and REST API are live today. Widget and Shopify app are next up.": "SDK e API REST sono attivi oggi. Il prossimo passo sarà il widget e l'app Shopify.",
+    "SDK, Shopify app, and REST API are live today. Widget is next up.": "SDK, app Shopify e API REST sono attivi oggi. Il widget sarà il prossimo.",
     "React & JavaScript SDK": "SDK React e JavaScript",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, Remix, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.": "Un SDK completamente tipizzato con componenti di dimensionamento, smart-size e prova virtuale integrati. Shakerable e indipendente dal framework: sembra nativo in Next.js, Vite, Remix o semplice JavaScript. Inserisci tre componenti e avrai un'esperienza di adattamento completa senza scrivere alcuna interfaccia utente personalizzata.",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.": "Un SDK completamente tipizzato con componenti di dimensionamento, smart-size e prova virtuale integrati. Shakerable e indipendente dal framework: sembra nativo in Next.js, Vite o semplice JavaScript. Inserisci tre componenti e avrai un'esperienza di adattamento completa senza scrivere alcuna interfaccia utente personalizzata.",
@@ -994,7 +994,7 @@ export const LANDING_STRING_TRANSLATIONS = {
     "Free tier · SDK, Widget, API, Shopify · No credit card required": "Nível gratuito · SDK, Widget, API, Shopify · Não é necessário cartão de crédito",
     "Ship it your way": "Envie do seu jeito",
     "Four ways to integrate.": "Quatro maneiras de integrar.",
-    "SDK and REST API are live today. Widget and Shopify app are next up.": "SDK e API REST estão disponíveis hoje. O widget e o aplicativo Shopify são os próximos.",
+    "SDK, Shopify app, and REST API are live today. Widget is next up.": "SDK, aplicativo Shopify e API REST estão disponíveis hoje. O widget é o próximo.",
     "React & JavaScript SDK": "SDK de reação e JavaScript",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, Remix, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.": "Um SDK totalmente digitado com dimensionamento, tamanho inteligente e componentes de teste virtual integrados. Agitável em árvore e independente de estrutura - parece nativo em Next.js, Vite, Remix ou JavaScript simples. Adicione três componentes e você terá uma experiência de ajuste completa sem escrever nenhuma interface de usuário própria.",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.": "Um SDK totalmente digitado com dimensionamento, tamanho inteligente e componentes de teste virtual integrados. Agitável em árvore e independente de estrutura - parece nativo em Next.js, Vite ou JavaScript simples. Adicione três componentes e você terá uma experiência de ajuste completa sem escrever nenhuma interface de usuário própria.",
@@ -1198,7 +1198,7 @@ export const LANDING_STRING_TRANSLATIONS = {
     "Free tier · SDK, Widget, API, Shopify · No credit card required": "無料枠 · SDK、ウィジェット、API、Shopify · クレジット カードは不要",
     "Ship it your way": "ご希望の方法で発送します",
     "Four ways to integrate.": "統合する 4 つの方法。",
-    "SDK and REST API are live today. Widget and Shopify app are next up.": "SDK と REST API は現在公開されています。次はウィジェットとShopifyアプリです。",
+    "SDK, Shopify app, and REST API are live today. Widget is next up.": "SDK、Shopifyアプリ、REST API は現在公開されています。次はウィジェットです。",
     "React & JavaScript SDK": "React と JavaScript SDK",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, Remix, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.": "サイジング、スマートサイズ、仮想試着コンポーネントが組み込まれた完全に型指定された SDK。ツリーシェイク可能でフレームワークに依存しない - Next.js、Vite、Remix、またはプレーンな JavaScript でネイティブに感じられます。 3 つのコンポーネントを追加すると、独自の UI を作成しなくても、完全なフィット感を得ることができます。",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.": "サイジング、スマートサイズ、仮想試着コンポーネントが組み込まれた完全に型指定された SDK。ツリーシェイク可能でフレームワークに依存しない - Next.js、Vite、またはプレーンな JavaScript でネイティブに感じられます。 3 つのコンポーネントを追加すると、独自の UI を作成しなくても、完全なフィット感を得ることができます。",
@@ -1402,7 +1402,7 @@ export const LANDING_STRING_TRANSLATIONS = {
     "Free tier · SDK, Widget, API, Shopify · No credit card required": "免费套餐 · SDK、Widget、API、Shopify · 无需信用卡",
     "Ship it your way": "按照您的方式运送",
     "Four ways to integrate.": "四种整合方式。",
-    "SDK and REST API are live today. Widget and Shopify app are next up.": "SDK 和 REST API 现已上线。接下来是 Widget 和 Shopify 应用程序。",
+    "SDK, Shopify app, and REST API are live today. Widget is next up.": "SDK、Shopify 应用和 REST API 现已上线。接下来是 Widget。",
     "React & JavaScript SDK": "React 和 JavaScript SDK",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, Remix, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.": "一个完全类型化的 SDK，内置大小调整、智能大小和虚拟试用组件。可摇动树且与框架无关 — 在 Next.js、Vite、Remix 或纯 JavaScript 中感觉原生。只需添加三个组件，您就可以获得完整的合身体验，而无需编写自己的任何 UI。",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.": "一个完整类型的 SDK，内置大小调整、智能大小和虚拟试用组件。可摇动树且与框架无关 — 在 Next.js、Vite 或纯 JavaScript 中感觉原生。只需添加三个组件，您就可以获得完整的合身体验，而无需编写自己的任何 UI。",
@@ -1606,7 +1606,7 @@ export const LANDING_STRING_TRANSLATIONS = {
     "Free tier · SDK, Widget, API, Shopify · No credit card required": "무료 등급 · SDK, 위젯, API, Shopify · 신용카드 불필요",
     "Ship it your way": "원하는 방식으로 배송하세요",
     "Four ways to integrate.": "통합하는 네 가지 방법.",
-    "SDK and REST API are live today. Widget and Shopify app are next up.": "SDK와 REST API가 오늘 출시되었습니다. 다음은 위젯과 Shopify 앱입니다.",
+    "SDK, Shopify app, and REST API are live today. Widget is next up.": "SDK, Shopify 앱, REST API가 오늘 출시되었습니다. 다음은 위젯입니다.",
     "React & JavaScript SDK": "반응 및 자바스크립트 SDK",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, Remix, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.": "크기 조정, 스마트 크기 및 가상 시험 구성 요소가 내장된 완전한 유형의 SDK입니다. 트리 흔들림이 가능하고 프레임워크에 구애받지 않으며 Next.js, Vite, Remix 또는 일반 JavaScript에서 기본으로 느껴집니다. 세 가지 구성 요소를 추가하면 UI를 직접 작성하지 않고도 완벽한 피팅 경험을 얻을 수 있습니다.",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.": "크기 조정, 스마트 크기 및 가상 시험 구성 요소가 내장된 완전한 유형의 SDK입니다. 트리 흔들림이 가능하고 프레임워크에 구애받지 않으며 Next.js, Vite 또는 일반 JavaScript에서 기본으로 느껴집니다. 세 가지 구성 요소를 추가하면 UI를 직접 작성하지 않고도 완벽한 피팅 경험을 얻을 수 있습니다.",
@@ -1810,7 +1810,7 @@ export const LANDING_STRING_TRANSLATIONS = {
     "Free tier · SDK, Widget, API, Shopify · No credit card required": "طبقة مجانية · SDK، Widget، API، Shopify · لا يلزم وجود بطاقة ائتمان",
     "Ship it your way": "شحنها في طريقك",
     "Four ways to integrate.": "أربع طرق للتكامل.",
-    "SDK and REST API are live today. Widget and Shopify app are next up.": "SDK وREST API موجودان اليوم. تطبيق Widget وShopify هو التالي.",
+    "SDK, Shopify app, and REST API are live today. Widget is next up.": "SDK وتطبيق Shopify وREST API موجودة اليوم. Widget هو التالي.",
     "React & JavaScript SDK": "رد الفعل وجافا سكريبت SDK",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, Remix, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.": "مجموعة SDK مكتوبة بالكامل مع مكونات الحجم والحجم الذكي والتجربة الافتراضية المضمنة. قابلة للاهتزاز ولا تعتمد على إطار العمل - تبدو أصلية في Next.js أو Vite أو Remix أو JavaScript العادي. قم بإسقاط ثلاثة مكونات وستحصل على تجربة ملائمة كاملة دون كتابة أي واجهة مستخدم خاصة بك.",
     "A fully-typed SDK with sizing, smart-size, and virtual try-on components built in. Tree-shakable and framework-agnostic — feels native in Next.js, Vite, or plain JavaScript. Drop in three components and you have a complete fit experience without writing any UI of your own.": "مجموعة SDK مكتوبة بالكامل مع مكونات الحجم والحجم الذكي والتجربة الافتراضية المضمنة. قابلة للاهتزاز ولا تعتمد على إطار العمل - تبدو أصلية في Next.js أو Vite أو JavaScript العادي. قم بإسقاط ثلاثة مكونات وستحصل على تجربة ملائمة كاملة دون كتابة أي واجهة مستخدم خاصة بك.",

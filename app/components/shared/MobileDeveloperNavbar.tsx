@@ -38,8 +38,7 @@ function useShowStagingAdminLogin(): boolean {
 }
 
 interface MobileDeveloperNavbarProps {
-  /** "demo" trims the mobile nav to just customer login inline — no
-   *  hamburger menu needed since there's nothing else to show. */
+  /** "demo" trims the mobile nav to logo plus staging-only admin action. */
   variant?: "default" | "demo";
   sectionHrefPrefix?: string;
 }
@@ -100,15 +99,6 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
               Admin Panel
             </Link>
           )}
-          <Button
-            asChild
-            variant="outline"
-            className="h-[34px] max-w-[118px] px-3 text-[11.5px] font-semibold rounded-full whitespace-nowrap cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
-          >
-            <Link href={CUSTOMER_LOGIN_PATH} className="truncate">
-              {t.nav.customerLogin}
-            </Link>
-          </Button>
           {!isDemo && (
             <LandingLanguageSwitcher
               language={language}

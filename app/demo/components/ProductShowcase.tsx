@@ -4,29 +4,7 @@ import { useState } from "react";
 import { Star, ShoppingBag, Heart, Truck, Ruler, X, Globe } from "lucide-react";
 import type { CatalogProductViewModel } from "@/app/dashboard/catalog/mapper/catalogMapper";
 import { PrimeStyleTryon } from "@primestyleai/tryon/react";
-
-const SDK_LOCALES = [
-  { code: "en", label: "English" },
-  { code: "es", label: "Español" },
-  { code: "fr", label: "Français" },
-  { code: "de", label: "Deutsch" },
-  { code: "it", label: "Italiano" },
-  { code: "sv", label: "Svenska" },
-  { code: "ja", label: "日本語" },
-  { code: "cs", label: "Čeština" },
-  { code: "da", label: "Dansk" },
-  { code: "nl", label: "Nederlands" },
-  { code: "nb", label: "Norsk" },
-  { code: "pl", label: "Polski" },
-  { code: "pt-br", label: "Português (BR)" },
-  { code: "pt-pt", label: "Português (PT)" },
-  { code: "fi", label: "Suomi" },
-  { code: "tr", label: "Türkçe" },
-  { code: "th", label: "ไทย" },
-  { code: "zh-cn", label: "中文 (简体)" },
-  { code: "zh-tw", label: "中文 (繁體)" },
-  { code: "ko", label: "한국어" },
-];
+import { SDK_LOCALES, type DemoSdkLocale } from "@/app/demo/products/utils/sdkLocale";
 
 const SIZE_GUIDE_DATA = {
   sizes: ["XS", "S", "M", "L", "XL", "XXL"],
@@ -182,7 +160,7 @@ export function ProductShowcase({ product }: ProductShowcaseProps) {
   const [selectedColor, setSelectedColor] = useState(
     product.color_variants[0]?.name || product.color
   );
-  const [sdkLocale, setSdkLocale] = useState("en");
+  const [sdkLocale, setSdkLocale] = useState<DemoSdkLocale>("en");
 
   const images = product.image_urls.slice(0, 5);
   const hasDiscount = product.original_price > product.price;
@@ -341,7 +319,7 @@ export function ProductShowcase({ product }: ProductShowcaseProps) {
                   <Globe className="h-3 w-3 text-brand-blue/50" />
                   <select
                     value={sdkLocale}
-                    onChange={(e) => setSdkLocale(e.target.value)}
+                    onChange={(e) => setSdkLocale(e.target.value as DemoSdkLocale)}
                     className="appearance-none bg-transparent text-brand-blue/70 text-[10px] lg:text-[0.6vw] font-medium cursor-pointer outline-none"
                   >
                     {SDK_LOCALES.map((l) => (

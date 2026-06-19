@@ -20,7 +20,11 @@ export function AdminDashboardThemeProvider({ children }: AdminDashboardThemePro
 
   return (
     <AdminDashboardThemeContext.Provider value={value}>
-      <div data-customer-theme={value.theme} className="min-h-screen bg-customer-page text-text-primary transition-colors">
+      <div
+        data-admin-theme={value.theme}
+        data-customer-theme={value.theme}
+        className="min-h-screen bg-customer-page text-text-primary transition-colors"
+      >
         {children}
       </div>
     </AdminDashboardThemeContext.Provider>

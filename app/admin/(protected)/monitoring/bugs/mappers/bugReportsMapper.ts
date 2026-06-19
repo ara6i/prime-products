@@ -16,6 +16,7 @@ function formatDate(value: string): string {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
+    year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
@@ -27,31 +28,55 @@ function sourceLabel(source: AdminBugReportRawItem["source"]): string {
   return "Client";
 }
 
+function isParserReport(item: AdminBugReportRawItem): boolean {
+  return (
+    item.categories.includes("qa_malformed_response") ||
+    item.categories.includes("qa_parser_error") ||
+    item.metadata?.malformedResponse === true
+  );
+}
+
+function platformLabel(item: AdminBugReportRawItem): string {
+  if (item.sourceChannel === "shopify" || item.store?.source === "shopify") return "Shopify";
+  if (item.sourceChannel === "sdk" || item.store?.source === "sdk") return "SDK";
+  return item.source === "visual-qa" ? "SDK" : "Unknown";
+}
+
 function severityTone(severity: AdminBugReportRawItem["severity"]): string {
-  if (severity === "critical" || severity === "high") return "bg-red-50 text-red-700";
-  if (severity === "medium") return "bg-amber-50 text-amber-700";
-  return "bg-blue-50 text-brand-blue";
+  if (severity === "critical" || severity === "high") return "bg-customer-danger-bg text-customer-danger-text";
+  if (severity === "medium") return "bg-customer-warning-bg text-customer-warning-text";
+  return "bg-customer-blue text-brand-blue";
+}
+
+function shortId(value: string | null): string | null {
+  return value ? value.slice(-8) : null;
 }
 
 function productMeta(item: AdminBugReportRawItem): string {
   const pieces = [
-    item.sourceChannel ? item.sourceChannel.toUpperCase() : null,
-    item.store?.shopDomain ? `Store ${item.store.shopDomain}` : null,
     item.productId ? `Product ${item.productId}` : null,
-    item.jobId ? `Job ${item.jobId}` : null,
+    item.jobId ? `Job ${shortId(item.jobId)}` : null,
   ].filter(Boolean);
   return pieces.join(" · ") || "No product context";
 }
 
 function storeLabel(item: AdminBugReportRawItem): string {
-  if (item.store?.shopName || item.store?.shopDomain) {
-    const name = item.store.shopName || item.store.shopDomain;
-    const plan = item.store.plan ? ` · ${item.store.plan}` : "";
-    const status = item.store.status ? ` · ${item.store.status}` : "";
-    return `${name}${plan}${status}`;
-  }
-  if (item.storeProfileId) return `SDK store profile ${item.storeProfileId}`;
-  return "No store context";
+  const name = item.store?.name || item.store?.storeProfileName || item.store?.projectName || item.store?.apiKeyName;
+  const domain = item.store?.domain || item.store?.shopDomain || item.store?.originHost || item.store?.allowedDomains?.[0] || null;
+  if (name && domain && name !== domain) return `${name} · ${domain}`;
+  if (name || domain) return name || domain || "Unknown store";
+  if (item.storeProfileId) return `Store ${shortId(item.storeProfileId)}`;
+  return "Unknown store";
+}
+
+function storeMeta(item: AdminBugReportRawItem): string {
+  const pieces = [
+    item.store?.projectName ? `Project ${item.store.projectName}` : null,
+    item.store?.apiKeyName ? `API key ${item.store.apiKeyName}` : null,
+    item.store?.keyPrefix ? `Key ${item.store.keyPrefix}` : null,
+    item.store?.status ? `Status ${item.store.status}` : null,
+  ].filter(Boolean);
+  return pieces.join(" · ");
 }
 
 function profileLabel(item: AdminBugReportRawItem): string {
@@ -69,25 +94,33 @@ function deviceLabel(item: AdminBugReportRawItem): string {
 }
 
 function mapItem(item: AdminBugReportRawItem): BugReportItem {
+  const parserReport = isParserReport(item);
+  const isVisualTryOnIssue = item.source === "visual-qa" && !parserReport;
   return {
     id: item.id,
     source: item.source,
     status: item.status,
     dateLabel: formatDate(item.createdAt),
-    sourceLabel: sourceLabel(item.source),
+    sourceLabel: parserReport ? "QA parser" : sourceLabel(item.source),
+    platformLabel: platformLabel(item),
     severityLabel: item.severity.toUpperCase(),
     severityTone: severityTone(item.severity),
-    title: item.title,
-    summary: item.summary,
+    title: parserReport ? "QA parser error" : item.title,
+    summary: parserReport
+      ? "AI QA could not return valid JSON with a clear visible reason after retry. No visual try-on defect was confirmed."
+      : item.summary,
     categoryLabel: item.categories.length ? item.categories.join(", ") : "uncategorized",
     productTitle: item.productTitle || "Untitled product",
     productMeta: productMeta(item),
     productUrl: item.productUrl,
     storeLabel: storeLabel(item),
+    storeMeta: storeMeta(item),
+    jobLabel: item.jobId || "No job id",
     profileLabel: profileLabel(item),
     visitorLabel: visitorLabel(item),
     deviceLabel: deviceLabel(item),
     previewUrl: item.resultPreviewDataUrl,
+    isVisualTryOnIssue,
   };
 }
 

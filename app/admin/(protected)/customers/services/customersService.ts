@@ -9,6 +9,7 @@ import type {
   ShopifyRevenueAnalyticsRaw,
   ShopifyTryOnOverview,
   ShopifyTryOnRange,
+  ShopifyUninstallReport,
 } from "../types";
 
 function createCustomerSearchParams(query: AdminCustomerListQuery): string {
@@ -33,6 +34,10 @@ export async function fetchAdminShopifyTryOnOverview(
   return adminFetch<ShopifyTryOnOverview>(
     `/api/admin/analytics/shopify-tryons?range=${encodeURIComponent(range)}`,
   );
+}
+
+export async function fetchAdminShopifyUninstallReport(): Promise<ShopifyUninstallReport> {
+  return adminFetch<ShopifyUninstallReport>("/api/admin/shopify-uninstalls");
 }
 
 export async function fetchAdminCustomer(

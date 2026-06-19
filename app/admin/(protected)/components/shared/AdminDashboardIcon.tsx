@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 import {
   CameraIcon,
   DashboardIcon,
@@ -8,6 +9,7 @@ import {
   NewChatIcon,
   PeopleIcon,
   SettingsIcon,
+  ShoppingBagIcon,
   TicketIcon,
   UserIcon,
 } from "@/app/shared/components/icons";
@@ -20,11 +22,40 @@ interface AdminDashboardIconProps {
   className?: string;
 }
 
+function ShopifyGlyphIcon({ size = 24, className }: IconProps) {
+  return (
+    <Image
+      src="/images/landing/ps/shopify/glyph-color.svg"
+      alt=""
+      width={size}
+      height={size}
+      aria-hidden
+      className={className}
+    />
+  );
+}
+
+function PrimeStyleLogoIcon({ size = 24, className }: IconProps) {
+  return (
+    <Image
+      src="/images/landing/optimized/logo-navbar-small.webp"
+      alt=""
+      width={size}
+      height={size}
+      aria-hidden
+      className={className}
+    />
+  );
+}
+
 const iconMap = {
   dashboard: DashboardIcon,
   revenue: MonetizationOnIcon,
   support: HeadsetIcon,
   customers: UserIcon,
+  stores: ShoppingBagIcon,
+  shopify: ShopifyGlyphIcon,
+  sdk: PrimeStyleLogoIcon,
   tickets: TicketIcon,
   chats: NewChatIcon,
   merchants: PeopleIcon,

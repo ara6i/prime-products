@@ -62,6 +62,20 @@ const TABS: IntegrationTab[] = [
     },
   },
   {
+    value: "shopify",
+    label: "Shopify",
+    icon: <ShoppingBag className="h-3.5 w-3.5 shrink-0" />,
+    content: {
+      status: "available",
+      title: "Shopify App",
+      description:
+        "A native Shopify app trained on your own size chart. Themed to match your store, live on every product page in minutes — no theme edits, no developer required.",
+      primaryHref: SHOPIFY_APP_HREF,
+      primaryLabel: "Install on Shopify",
+      visual: { kind: "soon", tag: "shopify" },
+    },
+  },
+  {
     value: "api",
     label: "API",
     icon: <Zap className="h-3.5 w-3.5 shrink-0" />,
@@ -89,20 +103,6 @@ const TABS: IntegrationTab[] = [
       visual: { kind: "soon", tag: "widget" },
     },
   },
-  {
-    value: "shopify",
-    label: "Shopify",
-    icon: <ShoppingBag className="h-3.5 w-3.5 shrink-0" />,
-    content: {
-      status: "available",
-      title: "Shopify App",
-      description:
-        "A native Shopify app trained on your own size chart. Themed to match your store, live on every product page in minutes — no theme edits, no developer required.",
-      primaryHref: SHOPIFY_APP_HREF,
-      primaryLabel: "Install on Shopify",
-      visual: { kind: "soon", tag: "shopify" },
-    },
-  },
 ];
 
 export function IntegrationsSection() {
@@ -111,7 +111,7 @@ export function IntegrationsSection() {
   const { translate } = useLandingLanguage();
 
   return (
-    <section id="integrations" className="relative overflow-hidden px-5 py-14">
+    <section id="integrations" className="relative scroll-mt-20 overflow-hidden px-5 py-14">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -127,7 +127,7 @@ export function IntegrationsSection() {
           {translate("Four ways to integrate.")}
         </h2>
         <p className="text-[15px] leading-[1.55] text-text-body">
-          {translate("SDK and REST API are live today. Widget and Shopify app are next up.")}
+          {translate("SDK, Shopify app, and REST API are live today. Widget is next up.")}
         </p>
       </Reveal>
 

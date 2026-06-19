@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, CalendarDays } from "lucide-react";
 import { flagFromIso2 } from "@/app/customer/dashboard/utils/geo";
-import type { OverviewMetric, ShopifyDashboardRange, ShopifyDashboardView } from "../types";
+import type { OverviewMetric, OverviewSignal, ShopifyDashboardRange, ShopifyDashboardView } from "../types";
 import { InstallBarChart, TryOnAreaChart } from "./OverviewCharts";
 
 interface ShopifyOverviewPageProps {
@@ -19,7 +19,7 @@ const toneClasses: Record<NonNullable<OverviewMetric["tone"]>, string> = {
   blue: "bg-brand-blue/10 text-brand-blue",
   green: "bg-customer-success-bg text-customer-success-text",
   yellow: "bg-customer-warning-bg text-customer-warning-text",
-  purple: "bg-violet-100 text-violet-700",
+  purple: "bg-accent-purple/15 text-accent-purple",
 };
 
 const mapBucketClasses = [
@@ -57,7 +57,7 @@ function buildDashboardHref({
   date?: string | null;
 }) {
   const params = new URLSearchParams({ tryOnRange, installRange });
-  if (date && tryOnRange === "today") params.set("date", date);
+  if (date && (tryOnRange === "today" || installRange === "today")) params.set("date", date);
   return `/admin?${params.toString()}`;
 }
 
@@ -150,7 +150,7 @@ function CalendarCard({ value, view }: { value: string; view: ShopifyDashboardVi
         return (
           <Link
             key={cell.date}
-            href={buildDashboardHref({ tryOnRange: "today", installRange: view.installRange, date: cell.date })}
+            href={buildDashboardHref({ tryOnRange: "today", installRange: "today", date: cell.date })}
             className={`flex aspect-square items-center justify-center rounded-[0.521vw] text-[clamp(10px,0.58vw,12px)] max-lg:rounded-[2.4vw] max-lg:text-[2.8vw] ${exactDay ? "bg-brand-blue text-white" : highlighted ? "bg-brand-blue/20 text-brand-blue" : "bg-customer-soft text-customer-muted"}`}
           >
             {cell.day}
@@ -165,25 +165,107 @@ function CalendarCard({ value, view }: { value: string; view: ShopifyDashboardVi
   );
 }
 
-function TopMerchants({ view }: { view: ShopifyDashboardView }) {
+function FunnelSummary({ view }: { view: ShopifyDashboardView }) {
   return (
-    <section className="rounded-[1.042vw] bg-customer-card p-[1.042vw] shadow-customer-card max-lg:rounded-[5vw] max-lg:p-[4vw]">
-      <div className="mb-[0.833vw] flex items-center justify-between max-lg:mb-[3vw]">
-        <h3 className="text-[clamp(15px,0.94vw,18px)] font-semibold text-text-primary max-lg:text-[4vw]">Top merchants</h3>
-        <span className="rounded-full bg-customer-soft px-[0.625vw] py-[0.26vw] text-[clamp(11px,0.64vw,12px)] text-customer-muted max-lg:px-[3vw] max-lg:py-[1vw] max-lg:text-[2.8vw]">Try-ons</span>
+    <section className="rounded-[0.938vw] border border-customer-border bg-customer-soft/50 p-[0.833vw] max-lg:rounded-[4vw] max-lg:p-[3.5vw]">
+      <div className="flex items-start justify-between gap-[0.833vw] max-lg:gap-[3vw]">
+        <div>
+          <h3 className="text-[clamp(14px,0.84vw,16px)] font-semibold text-text-primary max-lg:text-[3.8vw]">Shopify funnel</h3>
+          <p className="mt-[0.208vw] text-[clamp(11px,0.64vw,12px)] text-customer-muted max-lg:mt-[1vw] max-lg:text-[2.8vw]">Install to paid conversion</p>
+        </div>
+        <span className="rounded-full bg-customer-card px-[0.625vw] py-[0.26vw] text-[clamp(10px,0.6vw,12px)] font-semibold text-brand-blue shadow-sm max-lg:px-[3vw] max-lg:py-[1vw] max-lg:text-[2.8vw]">
+          Live data
+        </span>
       </div>
-      <div className="space-y-[0.625vw] max-lg:space-y-[3vw]">
-        {view.topMerchants.length > 0 ? view.topMerchants.map((merchant) => (
-          <div key={merchant.title} className="grid grid-cols-[1fr_auto] items-center gap-[0.833vw] max-lg:gap-[3vw]">
-            <div className="min-w-0">
-              <p className="truncate text-[clamp(12px,0.72vw,14px)] font-medium text-text-primary max-lg:text-[3.2vw]">{merchant.title}</p>
-              <p className="mt-[0.156vw] truncate text-[clamp(10px,0.6vw,12px)] text-customer-muted max-lg:text-[2.8vw]">{merchant.meta}</p>
+
+      {view.installFunnel.length ? (
+        <div className="mt-[0.833vw] grid grid-cols-2 gap-[0.521vw] max-lg:mt-[3vw] max-lg:gap-[2vw]">
+          {view.installFunnel.map((item) => (
+            <div key={item.label} className="rounded-[0.729vw] bg-customer-card px-[0.729vw] py-[0.625vw] shadow-sm max-lg:rounded-[3vw] max-lg:px-[3vw] max-lg:py-[2.5vw]">
+              <p className="text-[clamp(10px,0.58vw,12px)] font-semibold uppercase tracking-[0.08em] text-customer-muted max-lg:text-[2.7vw]">{item.label}</p>
+              <p className="mt-[0.313vw] text-[clamp(18px,1.15vw,22px)] font-semibold leading-none text-text-primary max-lg:mt-[1vw] max-lg:text-[5vw]">{item.value}</p>
+              <p className="mt-[0.208vw] line-clamp-1 text-[clamp(10px,0.58vw,12px)] text-text-body max-lg:mt-[1vw] max-lg:text-[2.8vw]">{item.helper}</p>
             </div>
-            <span className={`rounded-[0.625vw] px-[0.729vw] py-[0.521vw] text-[clamp(15px,0.94vw,18px)] font-semibold max-lg:rounded-[3vw] max-lg:px-[3vw] max-lg:py-[2vw] max-lg:text-[4vw] ${toneClasses[merchant.accent]}`}>{merchant.value}</span>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-[0.833vw] rounded-[0.729vw] bg-customer-card p-[0.833vw] text-[clamp(12px,0.72vw,14px)] text-customer-muted max-lg:mt-[3vw] max-lg:rounded-[3vw] max-lg:p-[3vw] max-lg:text-[3.2vw]">
+          No funnel data yet.
+        </p>
+      )}
+    </section>
+  );
+}
+
+function TopStoresTable({ view }: { view: ShopifyDashboardView }) {
+  return (
+    <section className="rounded-[0.938vw] border border-customer-border bg-customer-soft/50 p-[0.833vw] max-lg:rounded-[4vw] max-lg:p-[3.5vw]">
+      <div className="flex items-start justify-between gap-[0.833vw] max-lg:gap-[3vw]">
+        <div>
+          <h3 className="text-[clamp(14px,0.84vw,16px)] font-semibold text-text-primary max-lg:text-[3.8vw]">Top active stores</h3>
+          <p className="mt-[0.208vw] text-[clamp(11px,0.64vw,12px)] text-customer-muted max-lg:mt-[1vw] max-lg:text-[2.8vw]">Ranked by selected-range try-ons</p>
+        </div>
+        <Link href="/admin/customers/shopify" className="rounded-full bg-customer-card px-[0.625vw] py-[0.26vw] text-[clamp(10px,0.6vw,12px)] font-semibold text-brand-blue shadow-sm hover:text-brand-blue/80 max-lg:px-[3vw] max-lg:py-[1vw] max-lg:text-[2.8vw]">
+          View all
+        </Link>
+      </div>
+
+      <div className="mt-[0.833vw] space-y-[0.521vw] max-lg:mt-[3vw] max-lg:space-y-[2vw]">
+        {view.topMerchants.length > 0 ? view.topMerchants.slice(0, 4).map((merchant, index) => (
+          <div key={`${merchant.title}-${index}`} className="grid grid-cols-[auto_1fr_auto] items-center gap-[0.625vw] rounded-[0.729vw] bg-customer-card px-[0.729vw] py-[0.625vw] shadow-sm max-lg:gap-[2.5vw] max-lg:rounded-[3vw] max-lg:px-[3vw] max-lg:py-[2.5vw]">
+            <span className="flex h-[1.563vw] w-[1.563vw] items-center justify-center rounded-full bg-brand-blue text-[clamp(10px,0.58vw,12px)] font-semibold text-white max-lg:h-[7vw] max-lg:w-[7vw] max-lg:text-[2.8vw]">
+              {index + 1}
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-[clamp(12px,0.72vw,14px)] font-semibold text-text-primary max-lg:text-[3.2vw]">{merchant.title}</p>
+              <p className="mt-[0.156vw] truncate text-[clamp(10px,0.58vw,12px)] text-customer-muted max-lg:mt-[0.8vw] max-lg:text-[2.8vw]">{merchant.meta}</p>
+            </div>
+            <span className={`rounded-[0.625vw] px-[0.729vw] py-[0.417vw] text-[clamp(13px,0.82vw,16px)] font-semibold max-lg:rounded-[3vw] max-lg:px-[3vw] max-lg:py-[1.7vw] max-lg:text-[3.6vw] ${toneClasses[merchant.accent]}`}>
+              {merchant.value}
+            </span>
           </div>
         )) : (
-          <p className="rounded-[0.833vw] bg-customer-soft p-[1vw] text-[clamp(12px,0.72vw,14px)] text-customer-muted max-lg:rounded-[4vw] max-lg:p-[4vw] max-lg:text-[3.2vw]">No merchant try-ons yet.</p>
+          <p className="rounded-[0.729vw] bg-customer-card p-[0.833vw] text-[clamp(12px,0.72vw,14px)] text-customer-muted max-lg:rounded-[3vw] max-lg:p-[3vw] max-lg:text-[3.2vw]">
+            No store try-ons yet.
+          </p>
         )}
+      </div>
+    </section>
+  );
+}
+
+function SignalPill({ signal }: { signal: OverviewSignal }) {
+  return (
+    <div className="rounded-[0.833vw] border border-customer-border bg-customer-card px-[0.833vw] py-[0.625vw] shadow-sm max-lg:rounded-[3.5vw] max-lg:px-[3.5vw] max-lg:py-[2.5vw]">
+      <div className="flex items-center justify-between gap-[0.625vw] max-lg:gap-[2vw]">
+        <p className="truncate text-[clamp(10px,0.6vw,12px)] font-semibold uppercase tracking-[0.08em] text-customer-muted max-lg:text-[2.7vw]">{signal.label}</p>
+        <span className={`h-[0.521vw] w-[0.521vw] rounded-full max-lg:h-[2vw] max-lg:w-[2vw] ${toneClasses[signal.tone]}`} />
+      </div>
+      <p className="mt-[0.313vw] text-[clamp(18px,1.15vw,23px)] font-semibold leading-none text-text-primary max-lg:mt-[1vw] max-lg:text-[5vw]">{signal.value}</p>
+      <p className="mt-[0.208vw] truncate text-[clamp(10px,0.58vw,12px)] text-text-body max-lg:mt-[1vw] max-lg:text-[2.8vw]">{signal.helper}</p>
+    </div>
+  );
+}
+
+function SignalStrip({ view }: { view: ShopifyDashboardView }) {
+  return (
+    <div className="grid grid-cols-4 gap-[0.625vw] max-lg:grid-cols-2 max-lg:gap-[2vw]">
+      {view.signals.map((signal) => (
+        <SignalPill key={signal.label} signal={signal} />
+      ))}
+    </div>
+  );
+}
+
+function InstallActivity({ view }: { view: ShopifyDashboardView }) {
+  return (
+    <section className="rounded-[1.042vw] bg-customer-card p-[1.042vw] shadow-customer-card max-lg:rounded-[5vw] max-lg:p-[4vw]">
+      <div className="flex items-start justify-between">
+        <MetricBlock metric={view.installs} />
+        <RangeTabs active={view.installRange} target="installs" view={view} />
+      </div>
+      <div className="mt-[1.146vw] h-[13.5vw] max-lg:mt-[4vw] max-lg:h-[58vw]">
+        <InstallBarChart data={view.installSeries} />
       </div>
     </section>
   );
@@ -264,44 +346,28 @@ export function ShopifyOverviewPage({ view }: ShopifyOverviewPageProps) {
     <section className="space-y-[1.042vw] rounded-[1.563vw] bg-customer-soft p-[1.042vw] max-lg:space-y-[4vw] max-lg:rounded-[6vw] max-lg:p-[3vw]">
       <ShellNav />
 
-      <div className="grid grid-cols-[1.5fr_0.75fr] gap-[1.042vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
-        <section className="rounded-[1.042vw] bg-customer-card p-[1.042vw] shadow-customer-card max-lg:rounded-[5vw] max-lg:p-[4vw]">
-          <div className="flex items-start justify-between gap-[1vw] max-lg:gap-[4vw]">
-            <MetricBlock metric={view.revenue} />
-            <RangeTabs active={view.tryOnRange} target="tryOns" view={view} />
+      <section className="rounded-[1.042vw] bg-customer-card p-[1.042vw] shadow-customer-card max-lg:rounded-[5vw] max-lg:p-[4vw]">
+        <div className="flex items-start justify-between gap-[1vw] max-lg:flex-col max-lg:gap-[4vw]">
+          <MetricBlock metric={view.revenue} />
+          <RangeTabs active={view.tryOnRange} target="tryOns" view={view} />
+        </div>
+        <div className="mt-[1.146vw] grid grid-cols-[1fr_9vw] gap-[1vw] max-lg:mt-[4vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
+          <div className="h-[13.5vw] max-lg:h-[58vw]">
+            <TryOnAreaChart data={view.revenueSeries} />
           </div>
-          <div className="mt-[1.146vw] grid grid-cols-[1fr_9vw] gap-[1vw] max-lg:mt-[4vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
-            <div className="h-[13.5vw] max-lg:h-[58vw]">
-              <TryOnAreaChart data={view.revenueSeries} />
-            </div>
-            <CalendarCard value={view.revenue.value} view={view} />
-          </div>
-        </section>
+          <CalendarCard value={view.revenue.value} view={view} />
+        </div>
+        <div className="mt-[1.042vw] grid grid-cols-[0.9fr_1.1fr] gap-[0.833vw] max-lg:mt-[4vw] max-lg:grid-cols-1 max-lg:gap-[3vw]">
+          <FunnelSummary view={view} />
+          <TopStoresTable view={view} />
+        </div>
+        <div className="mt-[0.833vw] max-lg:mt-[3vw]">
+          <SignalStrip view={view} />
+        </div>
+      </section>
 
-        <section className="rounded-[1.042vw] bg-customer-card p-[1.042vw] shadow-customer-card max-lg:rounded-[5vw] max-lg:p-[4vw]">
-          <div className="flex items-start justify-between">
-            <MetricBlock metric={view.installs} />
-            <RangeTabs active={view.installRange} target="installs" view={view} />
-          </div>
-          <div className="mt-[1.146vw] h-[13.5vw] max-lg:mt-[4vw] max-lg:h-[58vw]">
-            <InstallBarChart data={view.installSeries} />
-          </div>
-          {view.installFunnel.length ? (
-            <div className="mt-[1vw] grid grid-cols-2 gap-[0.625vw] max-lg:mt-[4vw] max-lg:gap-[2vw]">
-              {view.installFunnel.map((item) => (
-                <div key={item.label} className="rounded-[0.625vw] bg-customer-soft px-[0.729vw] py-[0.625vw] max-lg:rounded-[3vw] max-lg:px-[3vw] max-lg:py-[2.5vw]">
-                  <p className="text-[clamp(11px,0.64vw,12px)] font-semibold uppercase tracking-[0.08em] text-customer-muted max-lg:text-[2.8vw]">{item.label}</p>
-                  <p className="mt-[0.313vw] text-[clamp(18px,1.25vw,24px)] font-semibold text-text-primary max-lg:mt-[1vw] max-lg:text-[5vw]">{item.value}</p>
-                  <p className="mt-[0.208vw] text-[clamp(11px,0.64vw,12px)] text-text-body max-lg:mt-[1vw] max-lg:text-[3vw]">{item.helper}</p>
-                </div>
-              ))}
-            </div>
-          ) : null}
-        </section>
-      </div>
-
-      <div className="grid grid-cols-[0.75fr_0.75fr_1.5fr] gap-[1.042vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
-        <TopMerchants view={view} />
+      <div className="grid grid-cols-[0.85fr_0.65fr_1.5fr] gap-[1.042vw] max-lg:grid-cols-1 max-lg:gap-[4vw]">
+        <InstallActivity view={view} />
         <DeviceSplit view={view} />
         <ImpressionsMap view={view} />
       </div>

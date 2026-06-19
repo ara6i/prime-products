@@ -341,6 +341,35 @@
   --customer-shadow-card: 0 0.052vw 0.104vw rgba(0, 0, 0, 0.22), 0 0 0 0.052vw rgba(255, 255, 255, 0.04);
 }
 
+[data-admin-theme="dark"] {
+  --admin-surface-page: #0E1421;
+  --admin-surface-card: #141D2D;
+  --admin-surface-sidebar: #141D2D;
+  --admin-border: #273348;
+  --admin-border-soft: #344258;
+  --admin-row-hover: #1B2638;
+  --admin-muted: #1B2638;
+  --admin-shadow-card: 0 0.052vw 0.104vw rgba(0, 0, 0, 0.22), 0 0 0 0.052vw rgba(255, 255, 255, 0.04);
+  --admin-shadow-elevated: 0 0.208vw 0.833vw rgba(0, 0, 0, 0.28), 0 0 0 0.052vw rgba(255, 255, 255, 0.04);
+  --admin-map-fill: #1B2638;
+  --admin-map-stroke: #344258;
+  --admin-map-scale-0: #172B52;
+  --admin-map-scale-1: #254171;
+  --admin-map-scale-2: #315DA8;
+  --admin-map-scale-3: #4A7AF6;
+  --admin-map-scale-4: #8EADFF;
+  --admin-status-active-bg: #123C2A;
+  --admin-status-active-text: #72E2A5;
+  --admin-status-suspended-bg: #3D1D22;
+  --admin-status-suspended-text: #FF9A9A;
+  --admin-status-uninstalled-bg: #1B2638;
+  --admin-status-uninstalled-text: #9AA6BA;
+  --admin-source-shopify-bg: #123C2A;
+  --admin-source-shopify-text: #72E2A5;
+  --admin-source-sdk-bg: #172B52;
+  --admin-source-sdk-text: #AFC4FF;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -880,6 +909,90 @@ body {
   50%      { transform: translateY(-6px); }
 }
 .ps-float { animation: ps-float 5s ease-in-out infinite; }
+
+@media (max-width: 767px) {
+  .ps-hero-title {
+    width: 100% !important;
+    max-width: none !important;
+    text-align: center !important;
+    font-size: inherit !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .ps-hero-title-main {
+    display: none !important;
+    white-space: normal !important;
+    font-size: inherit !important;
+    letter-spacing: 0 !important;
+  }
+
+  .ps-hero-title-word {
+    display: block !important;
+    white-space: normal !important;
+    letter-spacing: 0 !important;
+  }
+
+  .ps-hero-title-main .ps-hero-title-word {
+    font-size: clamp(2.05rem, 9vw, 3.05rem) !important;
+    line-height: 1.02 !important;
+  }
+
+  .ps-hero-title-em {
+    display: block !important;
+    white-space: normal !important;
+    font-size: clamp(3.35rem, 14.6vw, 4.95rem) !important;
+    line-height: 0.92 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .ps-hero-title > .ps-hero-title-word {
+    display: none !important;
+    font-size: clamp(2.25rem, 10vw, 3.25rem) !important;
+    line-height: 1.02 !important;
+  }
+
+  .ps-hero-cta-row {
+    box-sizing: border-box !important;
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+    margin-left: 12px !important;
+    margin-right: 12px !important;
+  }
+
+  .ps-hero-cta-row > * {
+    min-width: 0 !important;
+    flex: 1 1 0 !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .ps-hero-title-main .ps-hero-title-word {
+    font-size: clamp(1.9rem, 8.8vw, 2.85rem) !important;
+  }
+
+  .ps-hero-title-em {
+    font-size: clamp(3.05rem, 14.2vw, 4.5rem) !important;
+  }
+
+  .ps-hero-title > .ps-hero-title-word {
+    font-size: clamp(2.05rem, 9.7vw, 3rem) !important;
+  }
+}
+
+@media (max-width: 330px) {
+  .ps-hero-title-main .ps-hero-title-word {
+    font-size: clamp(1.75rem, 8.3vw, 2.6rem) !important;
+  }
+
+  .ps-hero-title-em {
+    font-size: clamp(2.75rem, 13.4vw, 4.1rem) !important;
+  }
+
+  .ps-hero-title > .ps-hero-title-word {
+    font-size: clamp(1.9rem, 9.1vw, 2.8rem) !important;
+  }
+}
 
 /* Customer login floating badges (server-safe, no styled-jsx). */
 @keyframes ps-float-login-primary {

@@ -43,7 +43,16 @@ export interface AdminProfileUserRaw {
   measurementsUnit: string | null;
   measurements: Record<string, number>;
   sizeHistoryCount: number;
+  topSizes: Array<{
+    size: string;
+    count: number;
+    productId: string | null;
+    productTitle: string | null;
+    productImage: string | null;
+    lastSeenAt: string | null;
+  }>;
   photoStored: boolean;
+  photoUrl: string | null;
   profileEventCount: number;
   tryOnCount: number;
   eventCount: number;
@@ -84,12 +93,35 @@ export interface ProfileUserListItem {
   countryLabel: string;
   activityLabel: string;
   lastSeenLabel: string;
+  photoUrl: string | null;
   detailRows: Array<{ label: string; value: string }>;
   measurementRows: Array<{ label: string; value: string }>;
 }
 
+export interface ProfileUserGroupItem {
+  id: string;
+  primaryProfile: ProfileUserListItem;
+  profiles: ProfileUserListItem[];
+  userLabel: string;
+  accountLabel: string;
+  sourceLabel: string;
+  sourceTone: string;
+  originLabel: string;
+  deviceLabel: string;
+  countryLabel: string;
+  activityLabel: string;
+  lastSeenLabel: string;
+  profileCount: number;
+  tryOnCount: number;
+  profileEventCount: number;
+  searchText: string;
+}
+
 export interface ProfileUsersViewModel {
   summary: AdminProfileUsersResponse["summary"];
-  items: ProfileUserListItem[];
+  items: ProfileUserGroupItem[];
+  profileItems: ProfileUserListItem[];
+  profileTotal: number;
+  userTotal: number;
   hasUsers: boolean;
 }

@@ -16,6 +16,7 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
   const usersActive = activeHref.startsWith("/admin/users");
   const monitoringActive = activeHref.startsWith("/admin/monitoring");
   const supportActive = activeHref.startsWith("/admin/chats") || activeHref.startsWith("/admin/tickets");
+  const settingsActive = activeHref.startsWith("/admin/settings");
 
   return [
     {
@@ -26,37 +27,37 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
       disabled: false,
     },
     {
-      label: "Users",
+      label: "Profile Users",
       href: "/admin/users",
       icon: "customers",
       active: usersActive,
       disabled: false,
     },
     {
-      label: "Customers",
-      href: "/admin/customers/sdk",
-      icon: "customers",
+      label: "Stores",
+      href: "/admin/customers/shopify",
+      icon: "stores",
       active: customersActive,
       disabled: false,
       children: [
         {
-          label: "SDK Customers",
-          href: "/admin/customers/sdk",
-          icon: "customers",
-          active: activeHref.startsWith("/admin/customers/sdk"),
+          label: "Shopify Stores",
+          href: "/admin/customers/shopify",
+          icon: "shopify",
+          active: activeHref.startsWith("/admin/customers/shopify"),
           disabled: false,
         },
         {
-          label: "Shopify Customers",
-          href: "/admin/customers/shopify",
-          icon: "customers",
-          active: activeHref.startsWith("/admin/customers/shopify"),
+          label: "SDK Stores",
+          href: "/admin/customers/sdk",
+          icon: "sdk",
+          active: activeHref.startsWith("/admin/customers/sdk"),
           disabled: false,
         },
         {
           label: "Feedbacks",
           href: "/admin/customers/feedbacks",
-          icon: "customers",
+          icon: "reports",
           active: activeHref === "/admin/customers/feedbacks" || activeHref === "/admin/reports/feedbacks",
           disabled: false,
         },
@@ -90,14 +91,14 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
           active: activeHref.startsWith("/admin/monitoring/bugs"),
           disabled: false,
         },
-        {
-          label: "IP Limits",
-          href: "/admin/monitoring/ip-limits",
-          icon: "behavior",
-          active: activeHref.startsWith("/admin/monitoring/ip-limits"),
-          disabled: false,
-        },
       ],
+    },
+    {
+      label: "Settings",
+      href: "/admin/settings",
+      icon: "settings",
+      active: settingsActive,
+      disabled: false,
     },
     {
       label: "Support",

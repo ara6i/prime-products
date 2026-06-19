@@ -6,11 +6,13 @@ import dynamic from "next/dynamic";
 import { ArrowLeft, Ruler, Sparkles } from "lucide-react";
 import { usePrimeStyleSize } from "@primestyleai/tryon/react";
 import type { RecommendForProductInput } from "@primestyleai/tryon/react";
+import { useLandingLanguage } from "@/app/landing/i18n";
 import type { DemoProductView } from "../../../types";
 import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
 import { useSizingAutoSelect } from "../../hooks/useSizingAutoSelect";
 import { useProfileAnalysisDisplay } from "../../hooks/useProfileAnalysisDisplay";
+import { landingLanguageToSdkLocale } from "../../../utils/sdkLocale";
 import { inferSdkProductFitType } from "../../../utils/sdkProductFitType";
 import {
   DemoBagButton,
@@ -63,6 +65,7 @@ function positivePrice(value: number | null | undefined): number | undefined {
 }
 
 export function DesktopProductDetail({ product }: Props) {
+  const { language } = useLandingLanguage();
   const [selectedColor, setSelectedColor] = useState(product.selectedColor);
   const [jacketSizeNum, setJacketSizeNum] = useState("");
   const [jacketLength, setJacketLength] = useState("");
@@ -82,6 +85,7 @@ export function DesktopProductDetail({ product }: Props) {
     () => (product.sizes.length ? product.sizes : (activeVariant?.sizes ?? [])),
     [activeVariant, product.sizes],
   );
+  const sdkLocale = useMemo(() => landingLanguageToSdkLocale(language), [language]);
 
   // Footwear / headwear / eyewear never use the jacket+length split UI.
   // Without this gate, shoe sizes like "US 10" / "EU 42" trip the
@@ -609,7 +613,7 @@ export function DesktopProductDetail({ product }: Props) {
               productCurrency="USD"
               productImages={images}
               productCarouselItems={sdkCarouselItems}
-              locale="en"
+              locale={sdkLocale}
               productTitle={product.name}
               productCategory={product.category}
               productGender={product.gender}

@@ -22,23 +22,32 @@ export function AdminDashboardMobileNav({ navItems }: AdminDashboardMobileNavPro
         if (hasChildren && !item.disabled) {
           return (
             <details key={item.label} open={item.active} className="group shrink-0">
-              <summary className="flex h-[11vw] cursor-pointer list-none items-center justify-center gap-[2.2vw] rounded-full px-[4.6vw] text-[3.6vw] font-semibold text-text-body transition-colors hover:bg-surface-light group-open:bg-brand-blue-light group-open:text-brand-blue-dark [&::-webkit-details-marker]:hidden">
+              <summary className="flex h-[11vw] cursor-pointer list-none items-center justify-center gap-[2.2vw] rounded-full px-[4.6vw] text-[3.6vw] font-semibold text-text-body transition-colors hover:bg-customer-soft group-open:bg-customer-blue group-open:text-brand-blue [&::-webkit-details-marker]:hidden">
                 {content}
                 <span className="text-[3vw] transition-transform group-open:rotate-45" aria-hidden>
                   +
                 </span>
               </summary>
               <div className="mt-[1.5vw] flex flex-col gap-[1vw]">
-                {item.children?.map((child) => (
-                  <Button
-                    key={child.label}
-                    asChild
-                    variant={child.active ? "tunal" : "ghost"}
-                    className="h-[10vw] shrink-0 rounded-full px-[4.5vw] text-[3.4vw] font-semibold"
-                  >
-                    <Link href={child.href}>{child.label}</Link>
-                  </Button>
-                ))}
+                {item.children?.map((child) => {
+                  const iconClass =
+                    child.icon === "sdk"
+                      ? "h-[6vw] w-[6vw] object-contain"
+                      : "h-[4vw] w-[4vw] object-contain";
+                  return (
+                    <Button
+                      key={child.label}
+                      asChild
+                      variant={child.active ? "tunal" : "ghost"}
+                      className="h-[10vw] shrink-0 gap-[2vw] rounded-full px-[4.5vw] text-[3.4vw] font-semibold"
+                    >
+                      <Link href={child.href}>
+                        <AdminDashboardIcon name={child.icon} size={child.icon === "sdk" ? 24 : 16} className={iconClass} />
+                        {child.label}
+                      </Link>
+                    </Button>
+                  );
+                })}
               </div>
             </details>
           );

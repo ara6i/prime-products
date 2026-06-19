@@ -20,7 +20,7 @@ interface AdminPageProps {
 function parseRange(raw: string | string[] | undefined): ShopifyDashboardRange {
   const value = Array.isArray(raw) ? raw[0] : raw;
   if (value === "today" || value === "week" || value === "month" || value === "range") return value;
-  return "month";
+  return "today";
 }
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {

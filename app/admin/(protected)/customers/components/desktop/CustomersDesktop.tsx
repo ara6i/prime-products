@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
 import type { UseAdminCustomersResult } from "../../hooks/useAdminCustomers";
 import { CustomerList } from "../shared/CustomerList";
+import { ShopifyUninstallReportCard } from "../shopify/ShopifyUninstallReportCard";
 
 interface CustomersDesktopProps {
   customers: UseAdminCustomersResult;
@@ -48,6 +49,14 @@ export function CustomersDesktop({ customers }: CustomersDesktopProps) {
           </Button>
         </form>
       </div>
+
+      {customers.view.shopifyUninstallReport ? (
+        <ShopifyUninstallReportCard
+          report={customers.view.shopifyUninstallReport}
+          isSyncing={customers.isSyncingShopifyUninstalls}
+          onSync={customers.syncShopifyUninstalls}
+        />
+      ) : null}
 
       <CustomerList
         items={customers.view.items}
