@@ -123,6 +123,32 @@ export async function mapShopifyDashboardOverview(raw: ShopifyDashboardRaw): Pro
         helper: `${formatNumber(funnel.paid)} paid · ${formatNumber(funnel.free)} free`,
       },
     ] : [],
+    signals: [
+      {
+        label: "Failed try-ons",
+        value: formatNumber(raw.tryOns.failed),
+        helper: raw.tryOns.failed === 0 ? "No failed Shopify try-ons in range" : "Needs review in try-on logs",
+        tone: raw.tryOns.failed === 0 ? "green" : "yellow",
+      },
+      {
+        label: "Active stores",
+        value: formatNumber(raw.installs.active),
+        helper: `${formatNumber(raw.installs.total)} total installs`,
+        tone: "blue",
+      },
+      {
+        label: "Paid stores",
+        value: formatNumber(funnel?.paid ?? 0),
+        helper: funnel ? `${funnel.freeToPaidRatePct}% free-to-paid` : "Billing funnel unavailable",
+        tone: "green",
+      },
+      {
+        label: "Uninstalls",
+        value: formatNumber(raw.installs.uninstalledInRange ?? raw.installs.uninstalled),
+        helper: funnel ? `${funnel.uninstallRatePct}% in selected range` : "Selected range count",
+        tone: (raw.installs.uninstalledInRange ?? raw.installs.uninstalled) > 0 ? "yellow" : "green",
+      },
+    ],
     topMerchants: raw.topMerchants.map((merchant, index) => ({
       title: merchant.shopName || merchant.shopDomain,
       meta: `${merchant.ownerEmail ?? merchant.shopDomain} · ${merchant.status}`,

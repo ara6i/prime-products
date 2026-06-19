@@ -1,68 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, Database, LockKeyhole, RotateCcw, ShieldCheck, X } from "lucide-react";
-import { toast } from "sonner";
+import { LockKeyhole, ShieldCheck, X } from "lucide-react";
 import { IpLimitsPage, type IpLimitsResponse } from "../monitoring/ip-limits/IpLimitsPage";
-
-const RESET_PHRASE = "RESET OVERVIEW DATA";
-
-type ResetResult = {
-  deletedShopifyEvents?: number;
-  updatedShopifyShops?: number;
-  database?: string | null;
-  message?: string;
-};
-
-async function readJson(response: Response): Promise<ResetResult> {
-  const text = await response.text();
-  try {
-    return text ? (JSON.parse(text) as ResetResult) : {};
-  } catch {
-    return { message: text };
-  }
-}
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/app/shared/components/ui/dialog";
 
 export function SettingsPage({ ipLimits }: { ipLimits: IpLimitsResponse }) {
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [confirmation, setConfirmation] = useState("");
-  const [resetResult, setResetResult] = useState<ResetResult | null>(null);
-  const [isResetting, setIsResetting] = useState(false);
-  const canReset = confirmation.trim() === RESET_PHRASE;
-
-  const closeConfirm = () => {
-    if (isResetting) return;
-    setIsConfirmOpen(false);
-    setConfirmation("");
-  };
-
-  const resetOverviewData = () => {
-    if (!canReset) return;
-
-    setIsResetting(true);
-    void (async () => {
-      try {
-        const response = await fetch("/api/admin/analytics/shopify-dashboard/reset", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ confirmation: RESET_PHRASE }),
-        });
-        const result = await readJson(response);
-        if (!response.ok) throw new Error(result.message || "Overview reset failed");
-
-        setResetResult(result);
-        setIsConfirmOpen(false);
-        setConfirmation("");
-        toast.success("Overview analytics reset completed");
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Overview reset failed";
-        toast.error(message);
-        setResetResult({ message });
-      } finally {
-        setIsResetting(false);
-      }
-    })();
-  };
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isUnlockConfirmOpen, setIsUnlockConfirmOpen] = useState(false);
 
   return (
     <section className="space-y-7">
@@ -70,138 +21,91 @@ export function SettingsPage({ ipLimits }: { ipLimits: IpLimitsResponse }) {
         <div className="absolute -right-16 -top-20 h-56 w-56 rounded-full border border-brand-blue/15 bg-customer-card/40" aria-hidden />
         <div className="absolute bottom-6 right-8 hidden h-20 w-20 rotate-12 rounded-[28px] border border-customer-success-text/25 bg-customer-success-bg/70 lg:block" aria-hidden />
 
-        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-end">
+        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-center">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-brand-blue/15 bg-customer-card/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-brand-blue">
               <LockKeyhole className="h-3.5 w-3.5" />
               Admin settings
             </div>
             <h1 className="mt-5 max-w-3xl text-4xl font-semibold tracking-[-0.04em] text-text-primary lg:text-5xl">
-              Sensitive controls in one place.
+              Sensitive controls are locked.
             </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-text-body lg:text-base">
-              Manage abuse protection and staging dashboard cleanup with explicit confirmations before anything sensitive changes.
+          </div>
+
+          <div className="rounded-[24px] border border-customer-border bg-customer-card/80 p-4 shadow-[0_16px_50px_rgba(36,58,94,0.08)] backdrop-blur">
+            <p className="text-sm font-semibold text-text-primary">
+              {isUnlocked ? "Sensitive controls enabled" : "Unlock required"}
             </p>
-          </div>
-
-          <div className="grid gap-3 rounded-[24px] border border-customer-border bg-customer-card/75 p-4 shadow-[0_16px_50px_rgba(36,58,94,0.08)] backdrop-blur">
-            <a
-              href="#ip-limits"
-              className="flex items-center gap-3 rounded-2xl border border-customer-border bg-customer-soft px-4 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-brand-blue/40"
+            <button
+              type="button"
+              onClick={() => setIsUnlockConfirmOpen(true)}
+              disabled={isUnlocked}
+              className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-brand-blue px-5 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(44,123,255,0.22)] transition-transform hover:-translate-y-0.5 disabled:cursor-default disabled:bg-customer-success-text disabled:hover:translate-y-0"
             >
-              <ShieldCheck className="h-5 w-5 text-brand-blue" />
-              IP limit rules
-            </a>
-            <a
-              href="#danger-zone"
-              className="flex items-center gap-3 rounded-2xl border border-customer-danger-text/25 bg-customer-danger-bg px-4 py-3 text-sm font-semibold text-customer-danger-text transition-colors hover:border-customer-danger-text/45"
-            >
-              <AlertTriangle className="h-5 w-5" />
-              Reset overview data
-            </a>
+              <ShieldCheck className="h-4 w-4" />
+              {isUnlocked ? "Unlocked" : "Unlock sensitive controls"}
+            </button>
           </div>
         </div>
       </section>
 
-      <section
-        id="danger-zone"
-        className="overflow-hidden rounded-[28px] border border-customer-danger-text/25 bg-[linear-gradient(135deg,var(--customer-danger-bg)_0%,var(--customer-surface-card)_58%)] shadow-[0_18px_60px_rgba(153,27,27,0.08)]"
-      >
-        <div className="grid gap-5 p-5 lg:grid-cols-[1fr_auto] lg:items-center lg:p-6">
-          <div className="flex gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-customer-danger-bg text-customer-danger-text">
-              <Database className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-customer-danger-text">Danger zone</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-text-primary">Reset overview data</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-text-body">
-                Clears Shopify analytics events and resets Shopify try-on counters/last-used markers for the connected test or explicitly enabled database.
-                It does not delete stores, billing, subscriptions, installs, users, or profiles.
-              </p>
-              {resetResult ? (
-                <p className="mt-3 rounded-2xl border border-customer-danger-text/25 bg-customer-card px-4 py-3 text-sm font-semibold text-text-body">
-                  {resetResult.message
-                    ? resetResult.message
-                    : `Deleted ${resetResult.deletedShopifyEvents ?? 0} event(s), updated ${resetResult.updatedShopifyShops ?? 0} shop counter(s).`}
-                </p>
-              ) : null}
-            </div>
-          </div>
+      <div className={`space-y-7 transition ${isUnlocked ? "" : "pointer-events-none select-none opacity-45 blur-[1px]"}`} aria-disabled={!isUnlocked}>
+        <section id="ip-limits" className="rounded-[28px] border border-customer-border bg-customer-card/80 p-4 shadow-[0_18px_70px_rgba(36,58,94,0.08)] lg:p-6">
+          <IpLimitsPage initialData={ipLimits} surface="settings" />
+        </section>
+      </div>
 
-          <button
-            type="button"
-            onClick={() => setIsConfirmOpen(true)}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-red-700 px-5 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(185,28,28,0.24)] transition-transform hover:-translate-y-0.5"
-          >
-            <RotateCcw className="h-4 w-4" />
-            Reset data
-          </button>
-        </div>
-      </section>
-
-      <section id="ip-limits" className="rounded-[28px] border border-customer-border bg-customer-card/80 p-4 shadow-[0_18px_70px_rgba(36,58,94,0.08)] lg:p-6">
-        <IpLimitsPage initialData={ipLimits} surface="settings" />
-      </section>
-
-      {isConfirmOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm">
-          <section className="w-full max-w-lg overflow-hidden rounded-[28px] border border-customer-danger-text/25 bg-customer-card shadow-[0_30px_100px_rgba(15,23,42,0.30)]">
-            <div className="flex items-start justify-between gap-4 border-b border-customer-danger-text/25 bg-customer-danger-bg px-6 py-5">
+      <Dialog open={isUnlockConfirmOpen} onOpenChange={setIsUnlockConfirmOpen}>
+        <DialogContent
+          showCloseButton={false}
+          className="w-[calc(100vw-2rem)] max-w-lg overflow-hidden rounded-[28px] border border-brand-blue/20 bg-customer-card p-0 shadow-[0_30px_100px_rgba(15,23,42,0.30)] duration-300 ease-out data-[state=closed]:slide-out-to-bottom-2 data-[state=open]:slide-in-from-bottom-3"
+        >
+            <div className="flex items-start justify-between gap-4 border-b border-customer-border bg-customer-soft px-6 py-5">
               <div className="flex gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-customer-card text-customer-danger-text">
-                  <AlertTriangle className="h-5 w-5" />
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-blue text-white">
+                  <LockKeyhole className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-text-primary">Confirm overview reset</h3>
-                  <p className="mt-1 text-sm leading-5 text-text-body">This action clears analytics history for the overview dashboard.</p>
+                  <DialogTitle className="text-lg font-semibold leading-6 text-text-primary">Unlock sensitive controls?</DialogTitle>
+                  <DialogDescription className="mt-1 text-sm leading-5 text-text-body">
+                    If you continue, this page will allow changes that can touch sensitive admin data.
+                  </DialogDescription>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={closeConfirm}
-                disabled={isResetting}
-                className="rounded-full p-2 text-text-body hover:bg-customer-card disabled:opacity-50"
-                aria-label="Close confirmation"
-              >
-                <X className="h-5 w-5" />
-              </button>
+              <DialogClose asChild>
+                <button
+                  type="button"
+                  className="rounded-full p-2 text-text-body transition-colors hover:bg-customer-card"
+                  aria-label="Close unlock confirmation"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </DialogClose>
             </div>
 
-            <div className="space-y-4 px-6 py-5">
-              <div className="rounded-2xl border border-customer-danger-text/25 bg-customer-danger-bg px-4 py-3 text-sm leading-6 text-customer-danger-text">
-                Type <span className="font-bold">{RESET_PHRASE}</span> to enable the reset button.
-              </div>
-              <input
-                value={confirmation}
-                onChange={(event) => setConfirmation(event.target.value)}
-                placeholder={RESET_PHRASE}
-                className="w-full rounded-2xl border border-customer-border bg-customer-card px-4 py-3 text-sm font-semibold text-text-primary outline-none transition-colors focus:border-red-400"
-                autoFocus
-              />
-              <div className="flex flex-wrap justify-end gap-3">
+            <div className="flex flex-wrap justify-end gap-3 px-6 py-5">
+              <DialogClose asChild>
                 <button
                   type="button"
-                  onClick={closeConfirm}
-                  disabled={isResetting}
-                  className="inline-flex h-11 items-center justify-center rounded-2xl border border-customer-border px-4 text-sm font-semibold text-text-body disabled:opacity-50"
+                  className="inline-flex h-11 items-center justify-center rounded-2xl border border-customer-border px-4 text-sm font-semibold text-text-body transition-colors hover:bg-customer-soft"
                 >
-                  Cancel
+                  Keep locked
                 </button>
-                <button
-                  type="button"
-                  onClick={resetOverviewData}
-                  disabled={!canReset || isResetting}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-red-700 px-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                  {isResetting ? "Resetting..." : "Confirm reset"}
-                </button>
-              </div>
+              </DialogClose>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsUnlocked(true);
+                  setIsUnlockConfirmOpen(false);
+                }}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-blue px-4 text-sm font-semibold text-white"
+              >
+                <ShieldCheck className="h-4 w-4" />
+                Enable controls
+              </button>
             </div>
-          </section>
-        </div>
-      ) : null}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

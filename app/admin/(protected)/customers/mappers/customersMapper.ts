@@ -10,6 +10,7 @@ import type {
   CustomerStatCard,
   CustomersViewModel,
   ShopifyTryOnOverview,
+  ShopifyUninstallReport,
 } from "../types";
 
 const sourceLabels: Record<AdminCustomerSource, string> = {
@@ -211,6 +212,7 @@ export function mapCustomersPage(
   response: AdminCustomersResponse,
   source: AdminCustomerSource,
   overview?: ShopifyTryOnOverview | null,
+  uninstallReport?: ShopifyUninstallReport | null,
 ): CustomersViewModel {
   return {
     source,
@@ -218,6 +220,7 @@ export function mapCustomersPage(
     eyebrow: "Customers",
     description: sourceDescription(source),
     rangeLabel: source === "shopify" ? rangeLabel(overview?.range) : null,
+    shopifyUninstallReport: source === "shopify" ? uninstallReport ?? null : null,
     stats: mapStats(response, source, overview),
     items: response.stores.map((store) =>
       source === "shopify" ? mapShopifyCustomerStore(store, overview) : mapCustomerStore(store),
@@ -299,6 +302,7 @@ function shopifySections(detail: AdminCustomerDetailRaw): CustomerDetailSection[
   const raw = detail.raw;
   const profile = detail.storeProfile;
   const billingCurrency = raw?.billingCurrency ?? raw?.currency ?? "USD";
+  const isUninstalled = raw?.status === "uninstalled" || detail.store.status === "uninstalled";
 
   return [
     compactSection("Store", [
@@ -311,6 +315,12 @@ function shopifySections(detail: AdminCustomerDetailRaw): CustomerDetailSection[
       field("Installed", formatDate(raw?.installedAt ?? detail.store.installedAt)),
       field("Last used", formatDate(raw?.lastUsedAt ?? detail.store.lastUsedAt)),
       field("Uninstalled", formatDate(raw?.uninstalledAt)),
+      ...(isUninstalled ? [
+        field("Uninstall reason", raw?.uninstallReason ?? detail.store.uninstallReason ?? "Not synced from Partner API"),
+        field("Uninstall details", raw?.uninstallReasonDescription ?? detail.store.uninstallReasonDescription ?? "Not available"),
+        field("Reason source", titleCase(raw?.uninstallReasonSource ?? detail.store.uninstallReasonSource)),
+        field("Reason synced", formatDate(raw?.uninstallReasonSyncedAt ?? detail.store.uninstallReasonSyncedAt)),
+      ] : []),
     ]),
     compactSection("Usage", [
       field("Plan", titleCase(raw?.plan ?? detail.store.plan)),

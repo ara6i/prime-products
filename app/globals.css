@@ -914,27 +914,42 @@ body {
   .ps-hero-title {
     width: 100% !important;
     max-width: none !important;
-    font-size: clamp(2rem, 9.65vw, 3.25rem) !important;
-    line-height: 0.98 !important;
-    letter-spacing: -0.058em !important;
+    text-align: center !important;
+    font-size: inherit !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
   }
 
   .ps-hero-title-main {
-    display: block !important;
-    white-space: nowrap !important;
-    font-size: clamp(1.46rem, 7vw, 2.65rem) !important;
-    letter-spacing: -0.07em !important;
+    display: none !important;
+    white-space: normal !important;
+    font-size: inherit !important;
+    letter-spacing: 0 !important;
   }
 
   .ps-hero-title-word {
-    display: inline !important;
+    display: block !important;
+    white-space: normal !important;
+    letter-spacing: 0 !important;
+  }
+
+  .ps-hero-title-main .ps-hero-title-word {
+    font-size: clamp(2.05rem, 9vw, 3.05rem) !important;
+    line-height: 1.02 !important;
   }
 
   .ps-hero-title-em {
-    display: inline !important;
-    white-space: inherit !important;
-    font-size: inherit !important;
-    letter-spacing: inherit !important;
+    display: block !important;
+    white-space: normal !important;
+    font-size: clamp(3.35rem, 14.6vw, 4.95rem) !important;
+    line-height: 0.92 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .ps-hero-title > .ps-hero-title-word {
+    display: none !important;
+    font-size: clamp(2.25rem, 10vw, 3.25rem) !important;
+    line-height: 1.02 !important;
   }
 
   .ps-hero-cta-row {
@@ -952,22 +967,30 @@ body {
 }
 
 @media (max-width: 360px) {
-  .ps-hero-title {
-    font-size: clamp(1.88rem, 9.25vw, 3rem) !important;
+  .ps-hero-title-main .ps-hero-title-word {
+    font-size: clamp(1.9rem, 8.8vw, 2.85rem) !important;
   }
 
-  .ps-hero-title-main {
-    font-size: clamp(1.36rem, 6.7vw, 2.45rem) !important;
+  .ps-hero-title-em {
+    font-size: clamp(3.05rem, 14.2vw, 4.5rem) !important;
+  }
+
+  .ps-hero-title > .ps-hero-title-word {
+    font-size: clamp(2.05rem, 9.7vw, 3rem) !important;
   }
 }
 
 @media (max-width: 330px) {
-  .ps-hero-title {
-    font-size: clamp(1.55rem, 8vw, 2.6rem) !important;
+  .ps-hero-title-main .ps-hero-title-word {
+    font-size: clamp(1.75rem, 8.3vw, 2.6rem) !important;
   }
 
-  .ps-hero-title-main {
-    font-size: clamp(1.24rem, 6.3vw, 2.22rem) !important;
+  .ps-hero-title-em {
+    font-size: clamp(2.75rem, 13.4vw, 4.1rem) !important;
+  }
+
+  .ps-hero-title > .ps-hero-title-word {
+    font-size: clamp(1.9rem, 9.1vw, 2.8rem) !important;
   }
 }
 

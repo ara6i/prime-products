@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
 import type { UseAdminCustomersResult } from "../../hooks/useAdminCustomers";
 import { CustomerList } from "../shared/CustomerList";
+import { ShopifyUninstallReportCard } from "../shopify/ShopifyUninstallReportCard";
 
 interface CustomersMobileProps {
   customers: UseAdminCustomersResult;
@@ -37,6 +38,15 @@ export function CustomersMobile({ customers }: CustomersMobileProps) {
           Search
         </Button>
       </form>
+
+      {customers.view.shopifyUninstallReport ? (
+        <ShopifyUninstallReportCard
+          report={customers.view.shopifyUninstallReport}
+          isSyncing={customers.isSyncingShopifyUninstalls}
+          onSync={customers.syncShopifyUninstalls}
+          mobile
+        />
+      ) : null}
 
       <CustomerList
         items={customers.view.items}

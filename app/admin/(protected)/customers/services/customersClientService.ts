@@ -13,6 +13,7 @@ import type {
   ShopifyRevenueAnalyticsRaw,
   ShopifyTryOnOverview,
   ShopifyTryOnRange,
+  ShopifyUninstallReport,
   ShopifyUsageLimitsPayload,
 } from "../types";
 
@@ -48,6 +49,28 @@ export async function fetchAdminShopifyTryOnOverviewClient(
     throw new Error("Failed to load Shopify try-on analytics");
   }
   return (await response.json()) as ShopifyTryOnOverview;
+}
+
+export async function fetchAdminShopifyUninstallReportClient(): Promise<ShopifyUninstallReport> {
+  const response = await fetch("/api/admin/shopify-uninstalls", {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to load Shopify uninstall reports");
+  }
+  return (await response.json()) as ShopifyUninstallReport;
+}
+
+export async function syncAdminShopifyUninstallReportClient(): Promise<ShopifyUninstallReport> {
+  const response = await fetch("/api/admin/shopify-uninstalls/sync", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: "{}",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to sync Shopify uninstall reports");
+  }
+  return (await response.json()) as ShopifyUninstallReport;
 }
 
 export async function fetchAdminCustomerClient(

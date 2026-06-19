@@ -8,8 +8,8 @@ interface ShopifyDashboardOverviewQuery {
 }
 
 export async function fetchShopifyDashboardOverview({
-  tryOnRange = "month",
-  installRange = "month",
+  tryOnRange = "today",
+  installRange = "today",
   date,
 }: ShopifyDashboardOverviewQuery = {}): Promise<ShopifyDashboardRaw> {
   const params = new URLSearchParams({

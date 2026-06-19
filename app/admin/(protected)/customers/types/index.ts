@@ -18,7 +18,52 @@ export interface AdminCustomerStoreRaw {
   tryOnsRemaining: number | null;
   lastUsedAt: string | null;
   installedAt: string;
+  uninstalledAt?: string | null;
+  uninstallReason?: string | null;
+  uninstallReasonDescription?: string | null;
+  uninstallReasonSource?: string | null;
+  uninstallReasonSyncedAt?: string | null;
   storeProfileId: string | null;
+}
+
+export interface ShopifyUninstallReportItem {
+  id: string;
+  shopName: string;
+  shopDomain: string;
+  ownerEmail: string | null;
+  status: string;
+  installedAt: string | null;
+  uninstalledAt: string | null;
+  reason: string | null;
+  reasonDescription: string | null;
+  reasonSource: string | null;
+  reasonSyncedAt: string | null;
+}
+
+export interface ShopifyUninstallReport {
+  partnerApi: {
+    configured: boolean;
+    message: string;
+    lastSyncedAt: string | null;
+  };
+  sync: {
+    config: {
+      configured: boolean;
+      message: string;
+    };
+    received: number;
+    matched: number;
+    updated: number;
+    syncedAt: string | null;
+    message: string;
+  } | null;
+  summary: {
+    totalUninstalled: number;
+    withReason: number;
+    missingReason: number;
+    topReasons: Array<{ reason: string; count: number }>;
+  };
+  items: ShopifyUninstallReportItem[];
 }
 
 export interface ShopifyControlCenterRaw {
@@ -331,6 +376,10 @@ export interface ShopifyCustomerRawDetails {
   billingScheduledEffectiveAt?: string | null;
   installedAt?: string | null;
   uninstalledAt?: string | null;
+  uninstallReason?: string | null;
+  uninstallReasonDescription?: string | null;
+  uninstallReasonSource?: string | null;
+  uninstallReasonSyncedAt?: string | null;
   lastUsedAt?: string | null;
   createdAt?: string | null;
   updatedAt?: string | null;
@@ -390,6 +439,7 @@ export interface CustomersViewModel {
   eyebrow: string;
   description: string;
   rangeLabel: string | null;
+  shopifyUninstallReport: ShopifyUninstallReport | null;
   stats: CustomerStatCard[];
   items: CustomerListItem[];
   pagination: {

@@ -19,13 +19,19 @@ export function HeroSection() {
 
       <div className="relative z-10">
         <Reveal delay={1}>
-          <h1 className="ps-hero-title mt-4 w-full max-w-none font-poppins text-[clamp(1.72rem,8.55vw,4.85rem)] font-medium leading-[0.98] tracking-[-0.058em] text-text-primary">
-            <span className="ps-hero-title-main block">
-              <span className="ps-hero-title-word">{hero.headline}</span>{" "}
-              <span className="ps-hero-title-em text-brand-blue">{hero.headlineEm}</span>
-            </span>
-            <span className="ps-hero-title-word block">{fitLine}</span>
-          </h1>
+          <>
+            <h1 className="sr-only">{`${hero.headline} ${hero.headlineEm} ${fitLine}`}</h1>
+            <div
+              aria-hidden="true"
+              className="ps-hero-mobile-title mt-4 px-1 font-poppins text-[clamp(2rem,9.7vw,3rem)] font-medium leading-[0.98] tracking-[-0.055em] text-text-primary lg:hidden"
+            >
+              <span className="block whitespace-nowrap">
+                <span>{hero.headline}</span>{" "}
+                <span className="text-brand-blue">{hero.headlineEm}</span>
+              </span>
+              <span className="block">{fitLine}</span>
+            </div>
+          </>
         </Reveal>
 
         <Reveal delay={2}>
