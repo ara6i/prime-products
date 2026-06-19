@@ -31,6 +31,9 @@ export function HeroSection() {
               </span>
               <span className="block text-center">{fitLine}</span>
             </div>
+            <p className="mt-3 px-5 text-center font-poppins text-[14px] font-medium leading-[1.35] tracking-[-0.01em] text-text-muted lg:hidden">
+              Stop returns. Start confidence.
+            </p>
           </>
         </Reveal>
 

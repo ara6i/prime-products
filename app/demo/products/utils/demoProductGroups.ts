@@ -35,9 +35,9 @@ export const DEMO_PRODUCT_GROUPS: DemoProductGroupConfig[] = [
   {
     id: "uniform",
     label: "Uniform",
-    kicker: "004 / Women's uniform studio",
-    title: "Women's medical uniforms ready for sizing tests.",
-    description: "Scrub sets stay separated as women products with their own uniform testing rack.",
+    kicker: "004 / Uniform studio",
+    title: "Medical uniforms ready for sizing tests.",
+    description: "Scrub sets stay separated as uniform products with their own testing rack.",
   },
 ];
 
