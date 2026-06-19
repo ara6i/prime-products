@@ -29,13 +29,9 @@ export function HeroSection() {
                 <span>{hero.headline}</span>{" "}
                 <span className="text-brand-blue">{hero.headlineEm}</span>
               </span>
-              <span className="block">{fitLine}</span>
+              <span className="block text-center">{fitLine}</span>
             </div>
           </>
-        </Reveal>
-
-        <Reveal delay={2}>
-          <p className="mt-3 max-w-[20rem] px-1 text-[13px] leading-[1.4] text-text-body">{hero.subhead}</p>
         </Reveal>
 
         <Reveal delay={3} className="mt-4 px-3">
