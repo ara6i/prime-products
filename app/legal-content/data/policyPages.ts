@@ -156,101 +156,405 @@ export const POLICY_PAGES = {
     title: "Privacy Policy",
     eyebrow: "PrimeStyleAI legal",
     description:
-      "How PrimeStyleAI processes information in connection with its developer services, APIs, SDKs, and integrations.",
-    lastUpdated: "May 23, 2026",
-    effectiveDate: "May 23, 2026",
+      "How PrimeStyleAI collects, uses, stores, processes, protects, and shares information across its websites, applications, APIs, SDKs, profiles, sizing recommendations, and virtual try-on services.",
+    lastUpdated: "June 20, 2026",
+    effectiveDate: "June 20, 2026",
     location: "Laguna Niguel, California, USA",
     tone: "legal",
     intro: [
-      "This Privacy Policy describes how PrimeStyleAI processes information in connection with the Services.",
-      "In most cases, Customer is the data controller for End User data collected on Customer's properties, and PrimeStyleAI acts as a data processor solely to generate Outputs and operate the Services.",
+      'PrimeStyleAI, Inc. ("PrimeStyleAI," "we," "our," or "us") respects your privacy and is committed to protecting your personal information.',
+      'This Privacy Policy explains how PrimeStyleAI collects, uses, stores, processes, protects, and shares information when users access PrimeStyleAI services, websites, applications, APIs, software development kits ("SDKs"), virtual try-on experiences, AI-powered sizing recommendations, and related services (collectively, the "Services").',
+      "By creating an account, using the Services, or submitting information through the Services, you acknowledge that you have read and understood this Privacy Policy.",
     ],
     quickNotes: [
-      "User-uploaded images are processed transiently for rendering and are not stored persistently by default.",
-      "Customer is typically the controller for End User data collected through Customer integrations.",
-      "PrimeStyleAI does not sell personal information as defined under CCPA/CPRA.",
+      "PrimeStyleAI profiles may include profile photographs, measurements, sizing preferences, fit preferences, account information, authentication provider information, and profile history.",
+      "PrimeStyleAI does not use photographs for facial recognition, biometric identification, identity verification, surveillance, or law enforcement purposes.",
+      "PrimeStyleAI does not sell personal information and does not knowingly share personal information for cross-context behavioral advertising.",
     ],
     sections: [
       {
-        title: "2.1 Data We Process",
+        title: "1. Scope",
+        body: ["This Privacy Policy applies to:"],
         items: [
-          "Product images and product metadata provided by Customer.",
-          "User-uploaded images and associated request metadata submitted through Customer's integration, processed transiently.",
-          "Technical logs and usage data, such as API calls, timestamps, error logs, IP address, and device/browser information, for security and performance.",
-          "Account and billing data for Authorized Users, including name, business email, and role, as needed to operate the developer portal.",
+          "PrimeStyleAI websites.",
+          "PrimeStyleAI applications.",
+          "PrimeStyleAI SDK integrations.",
+          "PrimeStyleAI APIs.",
+          "PrimeStyleAI retailer integrations.",
+          "PrimeStyleAI user profiles.",
+          "PrimeStyleAI virtual try-on services.",
+          "PrimeStyleAI sizing recommendation services.",
         ],
-      },
-      {
-        title: "2.2 How We Use Data",
-        items: [
-          "Provide and operate the Services, including rendering Outputs, authenticating sessions, and preventing abuse.",
-          "Maintain security, rate limiting, and fraud prevention.",
-          "Monitor reliability and improve performance through aggregated analytics.",
-          "Comply with legal obligations and enforce our Terms.",
-        ],
-      },
-      {
-        title: "2.3 Legal Bases Under GDPR and UK GDPR",
         subsections: [
           {
-            title: "Contractual Necessity, Art. 6(1)(b)",
-            body: ["Customer account administration and providing the Services."],
+            title: "This Privacy Policy does not apply to",
+            items: [
+              "Third-party websites.",
+              "Retailer privacy practices.",
+              "Third-party authentication providers.",
+              "Third-party services not operated by PrimeStyleAI.",
+            ],
+            body: ["Users should review the privacy policies of any third-party websites or services they access."],
+          },
+        ],
+      },
+      {
+        title: "2. Definitions",
+        subsections: [
+          {
+            title: "User",
+            body: ["Any individual who creates, accesses, or uses a PrimeStyleAI account or profile."],
           },
           {
-            title: "Legitimate Interests, Art. 6(1)(f)",
-            body: ["Security, abuse prevention, and service improvement."],
+            title: "Retailer",
+            body: ["A merchant, brand, marketplace, or website that integrates PrimeStyleAI services."],
           },
           {
-            title: "Legal Obligation, Art. 6(1)(c)",
-            body: ["Where applicable by law."],
+            title: "User Profile",
+            body: ["A PrimeStyleAI account containing photographs, measurements, sizing preferences, profile settings, and related information."],
+          },
+          {
+            title: "Generated Output",
+            body: ["AI-generated recommendations, sizing suggestions, confidence scores, virtual try-on results, or similar outputs generated by PrimeStyleAI."],
+          },
+          {
+            title: "Personal Information",
+            body: ["Information that identifies, relates to, describes, or can reasonably be associated with an individual."],
           },
         ],
       },
       {
-        title: "2.4 Data Retention",
+        title: "3. PrimeStyleAI User Profiles",
         body: [
-          "User-uploaded images are intended to be processed transiently for rendering and are not stored persistently by default. We retain technical logs for a limited period necessary for security, troubleshooting, and compliance, typically 30 to 180 days, unless a longer period is required by law or agreed in writing. Customer may request details of current retention settings.",
+          "PrimeStyleAI offers users the ability to create reusable profiles.",
+          "PrimeStyleAI profiles are designed to allow users to access sizing recommendations and virtual try-on functionality across participating websites and applications that integrate the PrimeStyleAI Decision Engine.",
+          "Users retain control of their profile information and may update or delete profile information at any time, subject to applicable legal obligations and limited backup retention periods.",
+        ],
+        items: [
+          "Profile photographs.",
+          "Body measurements.",
+          "Height.",
+          "Weight.",
+          "Sizing preferences.",
+          "Clothing fit preferences.",
+          "Account information.",
+          "Authentication provider information.",
+          "Profile history.",
         ],
       },
       {
-        title: "2.5 Sharing and Subprocessors",
-        body: [
-          "We may share data with service providers, also called subprocessors, that help us provide the Services, such as cloud hosting providers and AI infrastructure providers. We require subprocessors to protect data through contractual obligations. A current list of subprocessors may be provided upon request or via a DPA exhibit.",
+        title: "4. Information We Collect",
+        subsections: [
+          {
+            title: "4.1 Information Provided by Users",
+            body: ["Users may provide:"],
+            items: [
+              "Name.",
+              "Email address.",
+              "Profile photographs.",
+              "Height.",
+              "Weight.",
+              "Body measurements.",
+              "Clothing size preferences.",
+              "Fit preferences.",
+              "Support communications.",
+              "Account settings.",
+            ],
+          },
+          {
+            title: "4.2 Authentication Information",
+            body: [
+              "Users may authenticate through Google, Apple, LinkedIn, and other supported identity providers.",
+              "PrimeStyleAI may receive limited account information from these providers, including name, email address, profile image, and account identifier.",
+              "PrimeStyleAI does not receive or store passwords associated with third-party authentication providers.",
+            ],
+          },
+          {
+            title: "4.3 Photographs and Uploaded Content",
+            body: [
+              "Users may upload photographs for body measurement estimation, sizing recommendations, virtual try-on experiences, and profile creation.",
+              "PrimeStyleAI stores profile photographs to enable reusable user profiles.",
+              "Photographs are used solely to provide PrimeStyleAI services and related functionality.",
+            ],
+            items: [
+              "PrimeStyleAI does not use photographs for facial recognition.",
+              "PrimeStyleAI does not use photographs for biometric identification.",
+              "PrimeStyleAI does not use photographs for identity verification.",
+              "PrimeStyleAI does not use photographs for surveillance.",
+              "PrimeStyleAI does not use photographs for law enforcement purposes.",
+            ],
+          },
+          {
+            title: "4.4 Measurement Information",
+            body: ["PrimeStyleAI may collect or generate measurements entered manually by users, estimated through PrimeStyleAI technology, or updated by users at any time."],
+            items: [
+              "Height.",
+              "Weight.",
+              "Chest measurements.",
+              "Bust measurements.",
+              "Waist measurements.",
+              "Hip measurements.",
+              "Shoulder measurements.",
+              "Inseam measurements.",
+              "Other body measurements relevant to apparel sizing.",
+            ],
+          },
+          {
+            title: "4.5 Automatically Collected Information",
+            body: [
+              "PrimeStyleAI may automatically collect IP address, browser type, device information, operating system, session information, referral URLs, error logs, API activity, and usage statistics.",
+              "This information helps us secure the Services, prevent abuse, improve performance, troubleshoot issues, and maintain reliability.",
+            ],
+          },
         ],
       },
       {
-        title: "2.6 International Transfers",
-        body: [
-          "We are based in the United States and may process data in the U.S. and other jurisdictions where we or our subprocessors operate. Where required for transfers from the EEA, UK, or Switzerland, we will use appropriate safeguards such as Standard Contractual Clauses and supplementary measures, typically through a Data Processing Addendum.",
+        title: "5. How We Use Information",
+        body: ["PrimeStyleAI may use collected information to:"],
+        subsections: [
+          {
+            title: "Provide Services",
+            items: [
+              "Generate sizing recommendations.",
+              "Generate confidence scores.",
+              "Enable virtual try-on functionality.",
+              "Operate user profiles.",
+              "Authenticate users.",
+            ],
+          },
+          {
+            title: "Improve Services",
+            items: [
+              "Improve sizing accuracy.",
+              "Improve service performance.",
+              "Improve reliability.",
+              "Improve user experience.",
+            ],
+          },
+          {
+            title: "Security",
+            items: [
+              "Detect abuse.",
+              "Detect fraud.",
+              "Protect user accounts.",
+              "Enforce policies.",
+              "Monitor service integrity.",
+            ],
+          },
+          {
+            title: "Customer Support",
+            items: [
+              "Respond to inquiries.",
+              "Resolve support requests.",
+              "Troubleshoot technical issues.",
+            ],
+          },
+          {
+            title: "Legal Compliance",
+            items: [
+              "Comply with applicable laws.",
+              "Enforce agreements.",
+              "Protect rights and property.",
+              "Respond to lawful requests.",
+            ],
+          },
         ],
       },
       {
-        title: "2.7 Security",
+        title: "6. Cross-Site Profile Usage",
         body: [
-          "We implement reasonable administrative, technical, and organizational measures designed to protect data, including encryption in transit, access controls, and monitoring. No security measure is perfect; therefore, we cannot guarantee absolute security.",
+          "PrimeStyleAI profiles may be used across participating websites and applications that integrate the PrimeStyleAI Decision Engine.",
+          "When users access participating retailers using their PrimeStyleAI profile, PrimeStyleAI may utilize stored profile information to generate recommended size, size confidence score, and virtual try-on functionality.",
+          "Retailers receive only the outputs necessary to provide PrimeStyleAI functionality, such as recommended size and confidence score.",
+        ],
+        items: [
+          "Retailers do not receive direct access to stored profile photographs.",
+          "Retailers do not receive direct access to body measurements.",
+          "Retailers do not receive direct access to height.",
+          "Retailers do not receive direct access to weight.",
+          "Retailers do not receive direct access to profile history.",
+          "Retailers do not receive direct access to user account information maintained by PrimeStyleAI.",
         ],
       },
       {
-        title: "2.8 End User Rights",
+        title: "7. Artificial Intelligence Processing",
         body: [
-          "Because Customer is typically the controller, End Users should direct privacy requests to the Customer. Where PrimeStyleAI is directly responsible under applicable law, data subjects may request access, correction, deletion, restriction, or portability.",
+          "PrimeStyleAI utilizes artificial intelligence technologies to provide sizing recommendations, confidence scores, virtual try-on functionality, profile analysis, and related services.",
+          "To provide these services, PrimeStyleAI may use proprietary technologies as well as authorized third-party infrastructure providers, including cloud-based artificial intelligence platforms.",
+          "PrimeStyleAI may process user-uploaded photographs, body measurements, product images, product metadata, and user profile information solely for the purpose of providing PrimeStyleAI services.",
+          "PrimeStyleAI does not use user photographs or profile information for advertising purposes.",
+          "PrimeStyleAI does not use user photographs for facial recognition, biometric identification, identity verification, surveillance, or law enforcement purposes.",
+          "PrimeStyleAI does not permit user-submitted photographs or profile information to be used for training public artificial intelligence models where prohibited by contractual or technical safeguards.",
         ],
       },
       {
-        title: "2.9 California Privacy Under CCPA and CPRA",
+        title: "8. Generated Images and Virtual Try-On Content",
         body: [
-          "PrimeStyleAI does not sell personal information as defined under CCPA/CPRA. California residents may have rights to know, delete, and correct personal information. Because PrimeStyleAI generally acts as a service provider/processor for Customer, requests should be submitted to the Customer first. Authorized Users may contact us for account-related data requests.",
+          "PrimeStyleAI may generate virtual try-on images and related outputs.",
+          "Generated images may be stored using authorized cloud storage providers solely for service delivery and user access.",
+          "Unless deleted sooner, generated try-on images are generally retained for up to sixty (60) days and are then automatically deleted.",
+          "PrimeStyleAI reserves the right to modify retention periods for operational, legal, or security reasons.",
+        ],
+        items: [
+          "Generated images are accessible only to the authenticated user.",
+          "Generated images are not shared directly with participating retailers.",
+          "Generated images are not made publicly available by PrimeStyleAI.",
+          "Generated images may be deleted by the user at any time.",
+          "Generated images may be deleted upon user request.",
         ],
       },
       {
-        title: "2.10 Children's Data",
+        title: "9. Data Retention",
         body: [
-          "The Services are intended for business use and are not directed to children. Customer must not knowingly submit personal data of children to the Services.",
+          "PrimeStyleAI retains information only for as long as reasonably necessary to provide services, comply with legal obligations, resolve disputes, enforce agreements, and maintain platform security.",
+        ],
+        subsections: [
+          {
+            title: "User Profiles",
+            body: ["User profiles may be retained until the user deletes the profile, the user requests deletion, PrimeStyleAI determines the account is inactive for an extended period, or retention is otherwise required by law."],
+          },
+          {
+            title: "Profile Photographs",
+            body: ["Profile photographs may be retained until the user removes them, the profile is deleted, or PrimeStyleAI receives a valid deletion request."],
+          },
+          {
+            title: "Measurements and Preferences",
+            body: ["Measurements, sizing preferences, and profile settings may be retained until deleted or modified by the user."],
+          },
+          {
+            title: "Technical Logs",
+            body: ["Security logs, API logs, and system logs may be retained for periods generally ranging from thirty (30) to one hundred eighty (180) days, unless longer retention is required for legal, security, or operational purposes."],
+          },
+        ],
+      },
+      {
+        title: "10. User Rights and Profile Management",
+        body: [
+          "PrimeStyleAI provides users with meaningful control over their information.",
+          "Upon deletion, PrimeStyleAI will make reasonable efforts to remove user information from active systems, subject to security requirements, backup recovery systems, fraud prevention requirements, legal obligations, and regulatory compliance obligations.",
+          "Certain residual copies may remain temporarily in secure backups until normal deletion cycles occur.",
+        ],
+        items: [
+          "Access profile information.",
+          "Update profile information.",
+          "Modify measurements.",
+          "Replace profile photographs.",
+          "Delete generated history.",
+          "Delete virtual try-on history.",
+          "Export available account information.",
+          "Delete their account.",
+          "Request deletion of stored data.",
+        ],
+      },
+      {
+        title: "11. Sharing of Information",
+        body: [
+          "PrimeStyleAI does not sell personal information.",
+          "PrimeStyleAI does not provide participating retailers with access to stored user photographs, body measurements, height, weight, user profile history, authentication credentials, or PrimeStyleAI account information.",
+        ],
+        subsections: [
+          {
+            title: "Service Providers",
+            body: ["PrimeStyleAI may share information with authorized providers that assist in cloud hosting, data storage, security monitoring, authentication services, artificial intelligence processing, customer support, and analytics."],
+          },
+          {
+            title: "Legal Authorities",
+            body: ["PrimeStyleAI may share information where required by law, court order, subpoena, regulatory request, or to protect rights, safety, property, or security."],
+          },
+          {
+            title: "Corporate Transactions",
+            body: ["PrimeStyleAI may share information in connection with mergers, acquisitions, financing transactions, asset sales, or bankruptcy proceedings, subject to applicable confidentiality protections."],
+          },
+        ],
+      },
+      {
+        title: "12. Subprocessors",
+        body: [
+          "PrimeStyleAI may engage subprocessors to assist in providing services.",
+          "PrimeStyleAI requires subprocessors to implement reasonable safeguards designed to protect personal information.",
+          "A current list of significant subprocessors may be provided upon request or through applicable enterprise agreements.",
+        ],
+        items: [
+          "Cloud hosting providers.",
+          "Identity providers.",
+          "Artificial intelligence providers.",
+          "Image storage providers.",
+          "Monitoring providers.",
+          "Security providers.",
+        ],
+      },
+      {
+        title: "13. Security",
+        body: [
+          "PrimeStyleAI implements administrative, technical, and organizational measures designed to protect information.",
+          "No system can guarantee absolute security.",
+          "Users acknowledge that no method of transmission or storage is completely secure and that PrimeStyleAI cannot guarantee absolute protection against all security incidents.",
+        ],
+        items: [
+          "Encryption in transit.",
+          "Access controls.",
+          "Authentication protections.",
+          "Network monitoring.",
+          "Logging and auditing.",
+          "Security reviews.",
+          "Infrastructure protections.",
+        ],
+      },
+      {
+        title: "14. International Transfers",
+        body: [
+          "PrimeStyleAI is headquartered in the United States.",
+          "Information may be processed, stored, or transferred in the United States, countries where PrimeStyleAI operates, and countries where authorized subprocessors operate.",
+          "Where required, PrimeStyleAI will implement appropriate safeguards for international transfers, including contractual protections and other mechanisms recognized under applicable law.",
+        ],
+      },
+      {
+        title: "15. GDPR and UK GDPR Rights",
+        body: [
+          "Where applicable, users may have rights to access personal information, correct inaccurate information, delete personal information, restrict processing, object to processing, obtain portability of information, and withdraw consent where consent is relied upon.",
+          "Requests may be submitted using the contact information provided below.",
+          "PrimeStyleAI will respond within timeframes required by applicable law.",
+        ],
+      },
+      {
+        title: "16. California Privacy Rights",
+        body: [
+          "Residents of California may have rights under the California Consumer Privacy Act (CCPA) and California Privacy Rights Act (CPRA), including rights to know what personal information is collected, request deletion, request correction, and limit certain uses of information where applicable.",
+          "PrimeStyleAI does not sell personal information.",
+          "PrimeStyleAI does not knowingly share personal information for cross-context behavioral advertising.",
+        ],
+      },
+      {
+        title: "17. Children's Privacy",
+        body: [
+          "PrimeStyleAI services are not directed toward children.",
+          "Users must be at least eighteen (18) years of age or the age of majority in their jurisdiction to create a PrimeStyleAI profile unless otherwise permitted by applicable law and accompanied by appropriate parental or guardian consent.",
+          "PrimeStyleAI does not knowingly collect personal information from children.",
+          "If PrimeStyleAI becomes aware that information has been collected from a child in violation of applicable law, reasonable efforts will be made to delete such information.",
+        ],
+      },
+      {
+        title: "18. Changes to This Privacy Policy",
+        body: [
+          "PrimeStyleAI may update this Privacy Policy from time to time.",
+          "Changes become effective when posted.",
+          "Where required by law, users may receive additional notice of material changes.",
+          "Continued use of the Services after changes become effective constitutes acceptance of the revised Privacy Policy.",
+        ],
+      },
+      {
+        title: "19. Important Disclaimer",
+        body: [
+          "PrimeStyleAI sizing recommendations, body measurements, confidence scores, virtual try-on experiences, and related outputs are predictive estimates generated through software and artificial intelligence technologies.",
+          "These outputs are intended solely to assist purchasing decisions and are not guarantees of actual garment fit, appearance, comfort, performance, satisfaction, or product suitability.",
+          "Users and retailers should exercise independent judgment when making purchasing decisions.",
         ],
       },
     ],
     contactTitle: "Contact PrimeStyleAI",
-    contactBody: "For privacy questions or requests, contact PrimeStyleAI in Laguna Niguel, California, USA.",
+    contactBody:
+      "For questions, requests, privacy inquiries, access requests, correction requests, deletion requests, data portability requests, privacy complaints, or security concerns, contact PrimeStyleAI at Admin@primestyleai.com or visit www.primestyleai.com. PrimeStyleAI will make reasonable efforts to respond within applicable legal timeframes.",
+    contactEmail: "Admin@primestyleai.com",
   },
 
   cookiePolicy: {
@@ -258,13 +562,13 @@ export const POLICY_PAGES = {
     title: "Cookie Policy",
     eyebrow: "PrimeStyleAI legal",
     description:
-      "How PrimeStyleAI uses cookies, local storage, analytics, attribution, and related technologies across myaifitting.com and primestyleai.com.",
+      "How PrimeStyleAI uses cookies, local storage, analytics, attribution, and related technologies across primestyleai.com.",
     lastUpdated: "February 6, 2026",
     effectiveDate: "February 6, 2026",
     location: "Laguna Niguel, California, USA",
     tone: "legal",
     intro: [
-      "This Cookie Policy explains how PrimeStyleAI uses cookies and similar technologies on myaifitting.com and primestyleai.com, collectively the Services.",
+      "This Cookie Policy explains how PrimeStyleAI uses cookies and similar technologies on primestyleai.com, collectively the Services.",
       "This policy should be read together with our Privacy Policy.",
     ],
     quickNotes: [
@@ -412,7 +716,7 @@ export const POLICY_PAGES = {
         title: "2. Data Controller Information",
         body: [
           "For purposes of GDPR and CCPA/CPRA, PrimeStyleAI is the Data Controller.",
-          "Company: PrimeStyleAI. Websites: myaifitting.com and primestyleai.com. Location: Laguna Niguel, California, USA.",
+          "Company: PrimeStyleAI. Website: primestyleai.com. Location: Laguna Niguel, California, USA.",
         ],
       },
       {
@@ -685,7 +989,7 @@ export const POLICY_PAGES = {
     effectiveDate: "February 6, 2026",
     tone: "pricing",
     intro: [
-      "This Pricing Policy explains how pricing, plans, tokens, and billing work on PrimeStyleAI, operated through myaifitting.com and primestyleai.com.",
+      "This Pricing Policy explains how pricing, plans, tokens, and billing work on PrimeStyleAI, operated through primestyleai.com.",
       "This policy should be read together with our Terms of Service, Privacy Policy, Refund & Cancellation Policy, and Cookie Policy.",
     ],
     quickNotes: [
