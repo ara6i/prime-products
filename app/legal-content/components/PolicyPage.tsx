@@ -93,6 +93,8 @@ function PolicySectionBlock({ section }: { section: PolicySection }) {
 
 export function PolicyPage({ page }: PolicyPageProps) {
   const styles = toneStyles[page.tone];
+  const contactEmail = page.contactEmail ?? "Support@PrimeStyleAI.com";
+  const contactPhone = page.contactPhone ?? "+1 (949) 364-4449";
 
   return (
     <PublicPolicyChrome>
@@ -128,8 +130,8 @@ export function PolicyPage({ page }: PolicyPageProps) {
               ) : null}
               <div className="rounded-2xl border border-[#DDE6F5] bg-white p-4">
                 <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Support</p>
-                <a className="mt-1 block break-words font-semibold text-slate-950 hover:text-[#2154EF]" href="mailto:Support@PrimeStyleAI.com">
-                  Support@PrimeStyleAI.com
+                <a className="mt-1 block break-words font-semibold text-slate-950 hover:text-[#2154EF]" href={`mailto:${contactEmail}`}>
+                  {contactEmail}
                 </a>
               </div>
             </div>
@@ -180,11 +182,11 @@ export function PolicyPage({ page }: PolicyPageProps) {
               <h2 className="mt-3 text-[24px] font-semibold tracking-[-0.025em] text-slate-950 md:text-[30px]">{page.contactTitle}</h2>
               <p className="mt-3 max-w-2xl text-[16px] leading-[1.75] text-slate-600">{page.contactBody}</p>
               <div className="mt-6 flex flex-col gap-3 text-sm font-semibold sm:flex-row">
-                <a href="mailto:Support@PrimeStyleAI.com" className="rounded-full bg-[#2154EF] px-5 py-3 text-white transition hover:bg-[#1747D9]">
-                  Support@PrimeStyleAI.com
+                <a href={`mailto:${contactEmail}`} className="rounded-full bg-[#2154EF] px-5 py-3 text-white transition hover:bg-[#1747D9]">
+                  {contactEmail}
                 </a>
-                <a href="tel:+19493644449" className="rounded-full border border-[#C9D8F4] bg-white px-5 py-3 text-slate-950 transition hover:border-[#2154EF]/35 hover:text-[#2154EF]">
-                  +1 (949) 364-4449
+                <a href={`tel:${contactPhone.replace(/[^+\d]/g, "")}`} className="rounded-full border border-[#C9D8F4] bg-white px-5 py-3 text-slate-950 transition hover:border-[#2154EF]/35 hover:text-[#2154EF]">
+                  {contactPhone}
                 </a>
               </div>
             </section>

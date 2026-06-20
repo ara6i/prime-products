@@ -27,4 +27,6 @@ export type PolicyPageContent = {
   sections: PolicySection[];
   contactTitle: string;
   contactBody: string;
+  contactEmail?: string;
+  contactPhone?: string;
 };
