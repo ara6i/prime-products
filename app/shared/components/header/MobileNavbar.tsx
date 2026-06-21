@@ -24,13 +24,13 @@ const DEVELOPER_ITEMS = [
   {
     title: "Documentation",
     icon: BookOpen,
-    href: "/customer/dashboard",
+    href: "https://preview.myaifitting.com/developer/docs?preview=1",
     desc: "SDK dashboard",
   },
   {
     title: "Dashboard",
     icon: LayoutDashboard,
-    href: "https://preview.myaifitting.com/developer/dashboard/keys",
+    href: "https://preview.myaifitting.com/developer/dashboard/keys?preview=1",
     desc: "Keys, billing & usage",
   },
 ];

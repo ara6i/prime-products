@@ -139,7 +139,7 @@ export function CodePanel({ productImage }: CodePanelProps) {
 
         <div className="pt-2">
           <a
-            href="/customer/dashboard"
+            href="https://preview.myaifitting.com/developer/docs?preview=1"
             className="inline-flex items-center gap-1.5 lg:gap-[0.2vw] text-xs lg:text-[0.7vw] text-brand-blue hover:underline font-medium"
           >
             Full Documentation
@@ -151,7 +151,7 @@ export function CodePanel({ productImage }: CodePanelProps) {
       {/* Get API Key CTA */}
       <div className="px-4 py-4 lg:px-[0.8vw] lg:py-[0.8vw] border-t border-brand-blue/10 bg-brand-blue/5">
         <a
-          href="https://preview.myaifitting.com/developer/dashboard/keys"
+          href="https://preview.myaifitting.com/developer/dashboard/keys?preview=1"
           className="block w-full text-center py-2.5 lg:py-[0.4vw] rounded-lg bg-brand-blue text-white font-semibold text-sm lg:text-[0.9vw] hover:bg-brand-blue-dark transition"
         >
           Get Your API Key
