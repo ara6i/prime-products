@@ -33,7 +33,7 @@ function BodyText({ paragraphs }: { paragraphs?: string[] }) {
   return (
     <div className="space-y-3">
       {paragraphs.map((paragraph) => (
-        <p key={paragraph} className="text-[15px] leading-[1.78] text-slate-600 md:text-[16px]">
+        <p key={paragraph} className="break-words text-[15px] leading-[1.78] text-slate-600 md:text-[16px]">
           {paragraph}
         </p>
       ))}
@@ -49,7 +49,7 @@ function BulletList({ items }: { items?: string[] }) {
       {items.map((item) => (
         <li key={item} className="flex gap-3 text-[15px] leading-[1.7] text-slate-600 md:text-[16px]">
           <span className="mt-[0.65em] h-1.5 w-1.5 flex-none rounded-full bg-[#2154EF]" />
-          <span>{item}</span>
+          <span className="min-w-0 break-words">{item}</span>
         </li>
       ))}
     </ul>
@@ -101,8 +101,8 @@ export function PolicyPage({ page }: PolicyPageProps) {
     <main className="bg-[#F8FBFF] text-slate-950">
       <section className="mx-auto flex w-full max-w-6xl flex-col px-5 py-10 md:px-8 md:py-14 lg:px-10">
         <header className="border-b border-[#DDE6F5] pb-8 md:pb-10">
-          <div className="flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-3xl">
+          <div className="flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
+            <div className="min-w-0 max-w-3xl lg:flex-1">
               <div className={`inline-flex rounded-full border px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.18em] ${styles.badge}`}>
               {page.eyebrow}
                 </div>
@@ -115,22 +115,22 @@ export function PolicyPage({ page }: PolicyPageProps) {
               <div className={`mt-6 h-1 w-24 rounded-full ${styles.accent}`} />
             </div>
 
-            <div className="grid gap-3 text-sm text-slate-600 sm:grid-cols-3 lg:w-[520px]">
+            <div className="grid w-full min-w-0 gap-3 text-sm text-slate-600 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.35fr)] lg:w-[600px] lg:flex-none">
               {page.lastUpdated ? (
-                <div className="rounded-2xl border border-[#DDE6F5] bg-white p-4">
+                <div className="min-w-0 rounded-2xl border border-[#DDE6F5] bg-white p-4">
                   <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Updated</p>
-                  <p className="mt-1 font-semibold text-slate-950">{page.lastUpdated}</p>
+                  <p className="mt-2 text-[15px] font-semibold leading-snug text-slate-950">{page.lastUpdated}</p>
                 </div>
               ) : null}
               {page.effectiveDate ? (
-                <div className="rounded-2xl border border-[#DDE6F5] bg-white p-4">
+                <div className="min-w-0 rounded-2xl border border-[#DDE6F5] bg-white p-4">
                   <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Effective</p>
-                  <p className="mt-1 font-semibold text-slate-950">{page.effectiveDate}</p>
+                  <p className="mt-2 text-[15px] font-semibold leading-snug text-slate-950">{page.effectiveDate}</p>
                 </div>
               ) : null}
-              <div className="rounded-2xl border border-[#DDE6F5] bg-white p-4">
+              <div className="min-w-0 rounded-2xl border border-[#DDE6F5] bg-white p-4">
                 <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Support</p>
-                <a className="mt-1 block break-words font-semibold text-slate-950 hover:text-[#2154EF]" href={`mailto:${contactEmail}`}>
+                <a className="mt-2 block text-[14px] font-semibold leading-snug text-slate-950 [overflow-wrap:anywhere] hover:text-[#2154EF]" href={`mailto:${contactEmail}`}>
                   {contactEmail}
                 </a>
               </div>
@@ -182,7 +182,7 @@ export function PolicyPage({ page }: PolicyPageProps) {
               <h2 className="mt-3 text-[24px] font-semibold tracking-[-0.025em] text-slate-950 md:text-[30px]">{page.contactTitle}</h2>
               <p className="mt-3 max-w-2xl text-[16px] leading-[1.75] text-slate-600">{page.contactBody}</p>
               <div className="mt-6 flex flex-col gap-3 text-sm font-semibold sm:flex-row">
-                <a href={`mailto:${contactEmail}`} className="rounded-full bg-[#2154EF] px-5 py-3 text-white transition hover:bg-[#1747D9]">
+                <a href={`mailto:${contactEmail}`} className="min-w-0 rounded-full bg-[#2154EF] px-5 py-3 text-center text-white [overflow-wrap:anywhere] transition hover:bg-[#1747D9]">
                   {contactEmail}
                 </a>
                 <a href={`tel:${contactPhone.replace(/[^+\d]/g, "")}`} className="rounded-full border border-[#C9D8F4] bg-white px-5 py-3 text-slate-950 transition hover:border-[#2154EF]/35 hover:text-[#2154EF]">
