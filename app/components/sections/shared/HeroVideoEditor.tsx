@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { cn } from "@/app/shared/lib/utils";
 
-const VIDEO_SRC = "/videos/primestyleai-shopify-tryon-1080p.mp4";
-const VIDEO_POSTER = "/videos/primestyleai-shopify-tryon-poster.jpg";
+const VIDEO_SRC = "/videos/primestyleai-product-demo.mp4";
+const VIDEO_POSTER = "/videos/primestyleai-product-demo-thumbnail.png";
 
 interface HeroVideoEditorProps {
   variant?: "desktop" | "mobile";
