@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
-const PREVIEW = "https://preview.myaifitting.com";
+const DEVELOPER_PORTAL = "https://preview.myaifitting.com";
 const siteAuthEnabled = process.env.PRIME_PRODUCTS_SITE_AUTH_ENABLED === "true";
 
 const nextConfig: NextConfig = {
@@ -20,11 +20,12 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      { source: "/dashboard", destination: `${PREVIEW}/developer/dashboard`, permanent: false },
-      { source: "/dashboard/:path*", destination: `${PREVIEW}/developer/dashboard/:path*`, permanent: false },
+      { source: "/dashboard", destination: `${DEVELOPER_PORTAL}/developer/dashboard?preview=1`, permanent: false },
+      { source: "/dashboard/:path*", destination: `${DEVELOPER_PORTAL}/developer/dashboard/:path*?preview=1`, permanent: false },
+      { source: "/customer/login", destination: `${DEVELOPER_PORTAL}/developer/login?preview=1`, permanent: false },
       ...(siteAuthEnabled
         ? []
-        : [{ source: "/login", destination: `${PREVIEW}/developer/login`, permanent: false }]),
+        : [{ source: "/login", destination: `${DEVELOPER_PORTAL}/developer/login?preview=1`, permanent: false }]),
     ];
   },
   async rewrites() {
