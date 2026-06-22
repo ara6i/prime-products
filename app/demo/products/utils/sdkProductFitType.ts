@@ -23,6 +23,14 @@ const FIT_RULES: Array<{ fitType: string; pattern: RegExp }> = [
     pattern: /\b(sunglass|sunglasses|eyewear|eyeglasses|glasses|spectacles|optical|goggles|frames|aviator|wayfarer|lens)\b/i,
   },
   {
+    fitType: "bag",
+    pattern: /\b(handbag|handbags|bag|bags|tote|totes|shoulder bag|hobo bag|crossbody|clutch|satchel|backpack|backpacks|weekender|duffle|duffel|wallet|wallets|purse|purses|briefcase|belt bag|fanny pack|luggage|suitcase|suitcases|leather goods)\b/i,
+  },
+  {
+    fitType: "apparel",
+    pattern: /\b(shirt|shirts|t-shirt|tee|top|tops|dress|dresses|jacket|jackets|coat|coats|pants|trousers|jeans|skirt|skirts|shorts|suit|suits|tuxedo|tuxedos|blazer|blazers|hoodie|hoodies|sweater|sweaters|cardigan|cardigans|apparel|clothing|garment|garments|uniform|scrub|scrubs)\b/i,
+  },
+  {
     fitType: "belt",
     pattern: /\b(belt|belts|waist belt)\b/i,
   },
@@ -45,10 +53,6 @@ const FIT_RULES: Array<{ fitType: string; pattern: RegExp }> = [
   {
     fitType: "watch",
     pattern: /\b(watch|watches|timepiece|timepieces)\b/i,
-  },
-  {
-    fitType: "bag",
-    pattern: /\b(handbag|handbags|bag|bags|tote|totes|shoulder bag|hobo bag|crossbody|clutch|satchel|backpack|backpacks|weekender|duffle|duffel|wallet|wallets|purse|purses|briefcase|belt bag|fanny pack|luggage|suitcase|suitcases|leather goods)\b/i,
   },
   {
     fitType: "accessory",
