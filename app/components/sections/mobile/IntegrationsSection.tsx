@@ -18,9 +18,10 @@ const SHOPIFY_APP_HREF = "https://apps.shopify.com/primestyleai";
 type Visual =
   | {
       kind: "video";
-      webm: string;
+      webm?: string;
       mp4: string;
       poster: string;
+      label: string;
     }
   | { kind: "code" }
   | { kind: "soon"; tag: "widget" | "shopify" };
@@ -58,6 +59,7 @@ const TABS: IntegrationTab[] = [
         webm: "/images/landing/ps/optimized/sdk-demo.webm",
         mp4: "/images/landing/ps/optimized/sdk-demo.mp4",
         poster: "/images/landing/ps/optimized/sdk-demo-poster.webp",
+        label: "SDK demo",
       },
     },
   },
@@ -72,7 +74,12 @@ const TABS: IntegrationTab[] = [
         "A native Shopify app trained on your own size chart. Themed to match your store, live on every product page in minutes — no theme edits, no developer required.",
       primaryHref: SHOPIFY_APP_HREF,
       primaryLabel: "Install on Shopify",
-      visual: { kind: "soon", tag: "shopify" },
+      visual: {
+        kind: "video",
+        mp4: "/videos/primestyleai-product-demo.mp4",
+        poster: "/videos/primestyleai-product-demo-cover-20260623.png",
+        label: "Shopify app demo",
+      },
     },
   },
   {
@@ -253,12 +260,15 @@ function TabVisualMobile({
   tab: IntegrationTab;
   translate: (value: string, replacements?: Record<string, string | number>) => string;
 }) {
+  const isShopifyPlaceholder =
+    tab.content.visual.kind === "soon" && tab.content.visual.tag === "shopify";
+
   switch (tab.content.visual.kind) {
     case "video":
       return (
         <div className="w-full max-w-full overflow-hidden rounded-xl bg-white">
           <video
-            aria-label={translate("SDK demo")}
+            aria-label={translate(tab.content.visual.label)}
             autoPlay
             loop
             muted
@@ -267,7 +277,7 @@ function TabVisualMobile({
             preload="none"
             className="block h-auto w-full max-w-full"
           >
-            <source src={tab.content.visual.webm} type="video/webm" />
+            {tab.content.visual.webm ? <source src={tab.content.visual.webm} type="video/webm" /> : null}
             <source src={tab.content.visual.mp4} type="video/mp4" />
           </video>
         </div>
@@ -315,22 +325,33 @@ function TabVisualMobile({
     case "soon":
       return (
         <div className="relative flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border border-brand-blue/10 bg-white p-6 text-center">
-          {tab.content.visual.tag === "shopify" ? (
+          {isShopifyPlaceholder ? (
             <Image
               src="/images/landing/ps/shopify-glyph.svg"
               alt="Shopify"
               width={56}
               height={56}
-              className="grayscale opacity-60"
+              className="object-contain"
             />
           ) : (
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-blue-pale text-brand-blue-dark">
               <LayoutGrid className="h-5 w-5" />
             </div>
           )}
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-text-primary/15 bg-surface-segment px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-text-hint">
-            <Clock3 className="h-3 w-3" />
-            {translate("Coming soon")}
+          <span
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em]",
+              isShopifyPlaceholder
+                ? "border-status-success/25 bg-status-success/10 text-status-success"
+                : "border-text-primary/15 bg-surface-segment text-text-hint"
+            )}
+          >
+            {isShopifyPlaceholder ? (
+              <span className="h-1 w-1 rounded-full bg-status-success" />
+            ) : (
+              <Clock3 className="h-3 w-3" />
+            )}
+            {translate(isShopifyPlaceholder ? "Available today" : "Coming soon")}
           </span>
         </div>
       );
