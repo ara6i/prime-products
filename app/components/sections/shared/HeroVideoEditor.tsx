@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { cn } from "@/app/shared/lib/utils";
 
 const VIDEO_SRC = "/videos/primestyleai-product-demo.mp4";
-const VIDEO_POSTER = "/videos/primestyleai-product-demo-thumbnail.png";
+const VIDEO_POSTER = "/videos/primestyleai-product-demo-cover-20260623.png";
 
 interface HeroVideoEditorProps {
   variant?: "desktop" | "mobile";
@@ -103,8 +103,19 @@ export function HeroVideoEditor({ variant = "desktop" }: HeroVideoEditorProps) {
             muted={isMuted}
             loop
             playsInline
-            preload="metadata"
+            preload="none"
             className="absolute inset-0 h-full w-full object-cover"
+          />
+          {/* Keep the approved thumbnail visible until playback starts. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={VIDEO_POSTER}
+            alt=""
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute inset-0 z-[1] h-full w-full object-cover transition-opacity duration-300",
+              isPlaying ? "opacity-0" : "opacity-100"
+            )}
           />
 
           <div

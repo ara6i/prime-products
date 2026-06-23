@@ -18,9 +18,10 @@ const SHOPIFY_APP_HREF = "https://apps.shopify.com/primestyleai";
 type Visual =
   | {
       kind: "video";
-      webm: string;
+      webm?: string;
       mp4: string;
       poster: string;
+      label: string;
     }
   | { kind: "code" }
   | { kind: "soon"; tag: "widget" | "shopify" };
@@ -58,6 +59,7 @@ const TABS: IntegrationTab[] = [
         webm: "/images/landing/ps/optimized/sdk-demo.webm",
         mp4: "/images/landing/ps/optimized/sdk-demo.mp4",
         poster: "/images/landing/ps/optimized/sdk-demo-poster.webp",
+        label: "SDK demo",
       },
     },
   },
@@ -72,7 +74,12 @@ const TABS: IntegrationTab[] = [
         "A native Shopify app trained on your own size chart. Themed automatically to match your store and live on every product page in minutes — no theme edits, no developer required, no maintenance tax.",
       primaryHref: SHOPIFY_APP_HREF,
       primaryLabel: "Install on Shopify",
-      visual: { kind: "soon", tag: "shopify" },
+      visual: {
+        kind: "video",
+        mp4: "/videos/primestyleai-product-demo.mp4",
+        poster: "/videos/primestyleai-product-demo-cover-20260623.png",
+        label: "Shopify app demo",
+      },
     },
   },
   {
@@ -274,7 +281,7 @@ function VideoFrame({
 }) {
   return (
     <video
-      aria-label={translate("SDK demo")}
+      aria-label={translate(visual.label)}
       autoPlay
       loop
       muted
@@ -283,7 +290,7 @@ function VideoFrame({
       preload="none"
       className="w-full rounded-2xl shadow-[0_16px_48px_rgba(33,84,239,0.1)]"
     >
-      <source src={visual.webm} type="video/webm" />
+      {visual.webm ? <source src={visual.webm} type="video/webm" /> : null}
       <source src={visual.mp4} type="video/mp4" />
     </video>
   );
@@ -349,6 +356,8 @@ function SoonFrame({
   tag: "widget" | "shopify";
   translate: (value: string, replacements?: Record<string, string | number>) => string;
 }) {
+  const isShopify = tag === "shopify";
+
   return (
     <div className="relative flex aspect-[5/4] w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-2xl border border-brand-blue/10 bg-white p-10 text-center shadow-[0_16px_48px_rgba(33,84,239,0.08)]">
       <div
@@ -357,13 +366,13 @@ function SoonFrame({
         style={{ background: "radial-gradient(ellipse at center, rgba(218,231,255,0.6), transparent 70%)" }}
       />
 
-      {tag === "shopify" ? (
+      {isShopify ? (
         <Image
           src="/images/landing/ps/shopify-glyph.svg"
           alt="Shopify"
           width={72}
           height={72}
-          className="relative grayscale opacity-60"
+          className="relative"
         />
       ) : (
         <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-blue-pale text-brand-blue-dark">
@@ -372,12 +381,19 @@ function SoonFrame({
       )}
 
       <div className="relative flex flex-col items-center gap-1.5">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-text-primary/15 bg-surface-segment px-3 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-text-hint">
-          <Clock3 className="h-3 w-3" />
-          {translate("Coming soon")}
+        <span
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-medium uppercase tracking-[0.12em]",
+            isShopify
+              ? "border-status-success/25 bg-status-success/10 text-status-success"
+              : "border-text-primary/15 bg-surface-segment text-text-hint"
+          )}
+        >
+          {isShopify ? <span className="h-1 w-1 rounded-full bg-status-success" /> : <Clock3 className="h-3 w-3" />}
+          {translate(isShopify ? "Available today" : "Coming soon")}
         </span>
         <span className="font-mono text-xs text-text-hint">
-          {tag === "shopify" ? translate("Shopify App") : translate("Drop-in Widget")}
+          {isShopify ? translate("Shopify App") : translate("Drop-in Widget")}
         </span>
       </div>
     </div>
