@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
 import { ArrowUpRight, Camera, Ruler, Sparkles } from "lucide-react";
-import { useEffect, useMemo, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { cn } from "@/app/shared/lib/utils";
 import type { DemoProductCard } from "../types";
 import {
@@ -22,7 +22,9 @@ export function DemoProductShowcase({ products }: DemoProductShowcaseProps) {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
   const groupedProducts = useMemo(() => groupDemoProducts(products), [products]);
+  const categoryAnchorRef = useRef<HTMLDivElement>(null);
   const [selectedGroup, setSelectedGroup] = useState<DemoProductGroupId>("women");
+  const [categoryDocked, setCategoryDocked] = useState(false);
   const [introProgress, setIntroProgress] = useState(0);
   const [introComplete, setIntroComplete] = useState(false);
   const [transitionProduct, setTransitionProduct] = useState<DemoProductCard | null>(null);
@@ -57,6 +59,36 @@ export function DemoProductShowcase({ products }: DemoProductShowcaseProps) {
     return () => cancelAnimationFrame(frame);
   }, [reduceMotion]);
 
+  useEffect(() => {
+    let frame = 0;
+
+    const updateCategoryDock = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const anchor = categoryAnchorRef.current;
+        if (!anchor) {
+          setCategoryDocked(false);
+          return;
+        }
+
+        const topOffset = window.matchMedia("(min-width: 1024px)").matches ? 0 : 64;
+        const activationBuffer = window.matchMedia("(min-width: 1024px)").matches ? 12 : 18;
+        const shouldDock = anchor.getBoundingClientRect().top <= topOffset + activationBuffer;
+        setCategoryDocked((current) => (current === shouldDock ? current : shouldDock));
+      });
+    };
+
+    updateCategoryDock();
+    window.addEventListener("scroll", updateCategoryDock, { passive: true });
+    window.addEventListener("resize", updateCategoryDock);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateCategoryDock);
+      window.removeEventListener("resize", updateCategoryDock);
+    };
+  }, []);
+
   const fallbackGroup = DEMO_PRODUCT_GROUPS.find((group) => groupedProducts[group.id].length > 0)?.id ?? "women";
   const activeGroup = groupedProducts[selectedGroup].length > 0 ? selectedGroup : fallbackGroup;
   const activeConfig = DEMO_PRODUCT_GROUPS.find((group) => group.id === activeGroup) ?? DEMO_PRODUCT_GROUPS[0];
@@ -83,10 +115,21 @@ export function DemoProductShowcase({ products }: DemoProductShowcaseProps) {
   }
 
   return (
-    <main className="min-h-screen overflow-hidden bg-white text-[#101828]">
+    <main className="min-h-screen bg-white text-[#101828]">
       <IntroOverlay progress={reduceMotion ? 100 : introProgress} complete={introComplete || !!reduceMotion} />
       <ProductRouteTransition product={transitionProduct} />
       <ViewMoreCursor visible={viewCursorVisible && !reduceMotion} x={hoverCursorX} y={hoverCursorY} />
+      {categoryDocked ? (
+        <div className="fixed inset-x-0 top-16 z-40 border-b border-[#d9e6ff] bg-white/92 px-5 py-3 shadow-[0_14px_34px_rgba(33,84,239,0.08)] backdrop-blur-xl md:px-8 lg:top-0 lg:px-10">
+          <div className="mx-auto max-w-[1440px]">
+            <CategoryTabs
+              activeGroup={activeGroup}
+              groupedProducts={groupedProducts}
+              onChange={setSelectedGroup}
+            />
+          </div>
+        </div>
+      ) : null}
 
       <section className="relative min-h-[calc(100svh-72px)] bg-white text-[#101828]">
         <div className="absolute inset-x-0 top-0 h-px bg-[#2154EF]/20" />
@@ -129,11 +172,19 @@ export function DemoProductShowcase({ products }: DemoProductShowcaseProps) {
                 </AnimatePresence>
               </div>
 
-              <CategoryTabs
-                activeGroup={activeGroup}
-                groupedProducts={groupedProducts}
-                onChange={setSelectedGroup}
-              />
+              <div
+                ref={categoryAnchorRef}
+              >
+                {categoryDocked ? (
+                  <div aria-hidden className="h-[34px] md:h-[46px]" />
+                ) : (
+                  <CategoryTabs
+                    activeGroup={activeGroup}
+                    groupedProducts={groupedProducts}
+                    onChange={setSelectedGroup}
+                  />
+                )}
+              </div>
             </div>
           </div>
 

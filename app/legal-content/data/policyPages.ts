@@ -7,8 +7,8 @@ export const POLICY_PAGES = {
     eyebrow: "PrimeStyleAI legal",
     description:
       "Business terms for using the PrimeStyleAI API, SDK, developer portal, documentation, and related integration tools.",
-    lastUpdated: "May 23, 2026",
-    effectiveDate: "May 23, 2026",
+    lastUpdated: "June 25, 2026",
+    effectiveDate: "June 25, 2026",
     location: "Laguna Niguel, California, USA",
     tone: "legal",
     intro: [
@@ -16,7 +16,7 @@ export const POLICY_PAGES = {
       "The Services are offered strictly for business use by Customers, Authorized Users, and integrations operating on Customer properties.",
     ],
     quickNotes: [
-      "Outputs are simulated AI-generated representations and are not fit guarantees.",
+      "Measurement estimates, size recommendations, confidence scores, and virtual try-on outputs are algorithmic estimates only.",
       "Customer remains responsible for its products, sizing charts, marketing claims, and End User relationship.",
       "Customer must protect API credentials and comply with applicable law.",
     ],
@@ -30,7 +30,9 @@ export const POLICY_PAGES = {
           "End User means Customer's customers or site/app visitors interacting with Customer's properties.",
           "Services means the PrimeStyleAI API, SDK, developer portal, documentation, and related tools.",
           "Output means AI-generated images, visualizations, or other results produced by the Services.",
-          "Customer Data means data submitted by Customer or End Users through Customer, including product images and user-uploaded images.",
+          "Customer Data means information submitted by Customer through the Services, including product images, product metadata, sizing information, and integration-related content.",
+          "User Profile Data means information voluntarily submitted directly by End Users to PrimeStyleAI, including profile photographs, measurements, height, weight, fit preferences, account information, recommendation history, and virtual try-on history.",
+          "User Profile Data is controlled by PrimeStyleAI and governed by the PrimeStyleAI Privacy Policy.",
         ],
       },
       {
@@ -66,29 +68,71 @@ export const POLICY_PAGES = {
       {
         title: "1.6 AI Output Disclaimer and No Sizing or Fit Guarantee",
         body: [
-          "Outputs are simulated AI-generated representations. Outputs may not accurately reflect real-world garment fit, sizing, drape, color, texture, pattern alignment, lighting, or other attributes. The Services do not provide professional fitting, tailoring, medical, or biometric services. Customer remains solely responsible for product information, sizing charts, advertising claims, and all customer-facing representations.",
+          "The Services may generate measurement estimates, size recommendations, confidence scores, virtual try-on visualizations, and fit-related outputs. Such outputs are algorithmic estimates only.",
+          "PrimeStyleAI does not guarantee measurement accuracy, sizing accuracy, product fit, product comfort, product appearance, or customer satisfaction.",
+          "Outputs may not accurately reflect real-world garment fit, sizing, drape, color, texture, pattern alignment, lighting, or other attributes. The Services do not provide professional fitting, tailoring, medical, or biometric services.",
         ],
       },
       {
-        title: "1.7 No Performance Guarantees and No Reliance",
+        title: "1.7 User Profiles and Cross-Site Functionality",
+        body: [
+          "PrimeStyleAI may permit End Users to create reusable profiles for use across participating websites and applications utilizing the PrimeStyleAI Services.",
+          "Such profiles may include photographs, measurements, height, weight, fit preferences, recommendation history, and virtual try-on history.",
+          "End Users retain control over profile information and may modify or delete profile information in accordance with PrimeStyleAI policies.",
+          "Customer acknowledges that User Profile Data is maintained by PrimeStyleAI and is not transferred to Customer except for recommendation outputs necessary to provide the Services.",
+        ],
+      },
+      {
+        title: "1.8 Biometric Disclaimer",
+        body: [
+          "PrimeStyleAI does not provide biometric identification services.",
+          "Photographs submitted to the Services are not used for identity verification, facial recognition, biometric authentication, or surveillance.",
+        ],
+      },
+      {
+        title: "1.9 Data Control and Deletion",
+        body: [
+          "User Profile Data may be modified or deleted by the applicable End User in accordance with the PrimeStyleAI Privacy Policy and Profile Deletion Policy.",
+        ],
+      },
+      {
+        title: "1.10 IP Protection",
+        body: [
+          "Customer shall not use the Services to train competing AI systems, benchmark the Services for publication without written consent, or build competing sizing, fit prediction, recommendation, or virtual try-on systems using information derived from the Services.",
+        ],
+      },
+      {
+        title: "1.11 Customer Responsibility",
+        body: [
+          "Customer remains solely responsible for product descriptions, size charts, product measurements, product quality, product inventory, advertising claims, customer communications, and sales transactions.",
+        ],
+      },
+      {
+        title: "1.12 Incorporation by Reference",
+        body: [
+          "The PrimeStyleAI Privacy Policy, Cookie Policy, AI Decision Engine & Measurement Disclaimer, and any applicable Data Processing Addendum are incorporated into and form part of these Terms.",
+        ],
+      },
+      {
+        title: "1.13 No Performance Guarantees and No Reliance",
         body: [
           "We do not guarantee any business outcome, including conversion lift, revenue impact, return reduction, or customer satisfaction. Any projections, examples, or pilot modeling are illustrative only. Customer agrees not to rely on the Services or Outputs for any purpose other than evaluation and permitted business use and assumes all risk of use.",
         ],
       },
       {
-        title: "1.8 Beta Features, Availability, and Third-Party Dependencies",
+        title: "1.14 Beta Features, Availability, and Third-Party Dependencies",
         body: [
           "Some features may be labeled beta or preview and are provided as-is. Service performance may vary and may be affected by third-party infrastructure and AI providers. We may modify, suspend, or discontinue features at any time.",
         ],
       },
       {
-        title: "1.9 Fees, Usage, and Taxes",
+        title: "1.15 Fees, Usage, and Taxes",
         body: [
           "Fees, if any, are governed by an order form, pilot agreement, or separate commercial agreement. Unless otherwise specified, fees are non-refundable. Customer is responsible for applicable taxes, duties, and similar governmental assessments, excluding taxes on our income.",
         ],
       },
       {
-        title: "1.10 Intellectual Property and Feedback",
+        title: "1.16 Intellectual Property and Feedback",
         items: [
           "We retain all right, title, and interest in the Services, including all software, models, algorithms, documentation, and improvements.",
           "Customer retains rights in Customer Data. Customer grants us a limited license to process Customer Data to provide the Services.",
@@ -96,44 +140,44 @@ export const POLICY_PAGES = {
         ],
       },
       {
-        title: "1.11 Confidentiality",
+        title: "1.17 Confidentiality",
         body: [
           "Each party may receive the other's Confidential Information. Each party will protect the other's Confidential Information using reasonable care and will use it only to perform under these Terms or the applicable agreement. Obligations do not apply to information that is public without breach, independently developed, or lawfully obtained from a third party.",
         ],
       },
       {
-        title: "1.12 Suspension and Termination",
+        title: "1.18 Suspension and Termination",
         items: [
           "We may suspend or terminate access immediately for violation of these Terms, suspected abuse, security risk, or legal compliance reasons.",
           "Upon termination, Customer must stop using the Services and delete stored credentials and any non-public documentation we provided, except as required for records.",
         ],
       },
       {
-        title: "1.13 Disclaimer of Warranties",
+        title: "1.19 Disclaimer of Warranties",
         body: [
           "TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SERVICES AND OUTPUTS ARE PROVIDED AS IS AND AS AVAILABLE, WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, AND ACCURACY OR RELIABILITY OF OUTPUTS.",
         ],
       },
       {
-        title: "1.14 Limitation of Liability",
+        title: "1.20 Limitation of Liability",
         body: [
           "TO THE MAXIMUM EXTENT PERMITTED BY LAW: (A) IN NO EVENT WILL PRIMESTYLEAI BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, OR FOR LOST PROFITS, LOST REVENUE, BUSINESS INTERRUPTION, OR LOSS OF GOODWILL; AND (B) PRIMESTYLEAI'S TOTAL AGGREGATE LIABILITY ARISING OUT OF OR RELATED TO THE SERVICES OR THESE TERMS WILL NOT EXCEED THE GREATER OF (I) USD $100 OR (II) THE FEES PAID BY CUSTOMER TO PRIMESTYLEAI FOR THE SERVICES IN THE TWELVE (12) MONTHS PRECEDING THE EVENT GIVING RISE TO THE CLAIM.",
         ],
       },
       {
-        title: "1.15 Indemnification by Customer",
+        title: "1.21 Indemnification by Customer",
         body: [
           "Customer will defend, indemnify, and hold harmless PrimeStyleAI and its officers, directors, employees, and agents from and against any third-party claims, damages, liabilities, and expenses, including reasonable attorneys' fees, arising from Customer Data, Customer's products, sizing, descriptions, marketing claims, sales practices, relationship with End Users, violation of applicable law, or misuse of the Services.",
         ],
       },
       {
-        title: "1.16 Compliance, Export, and Sanctions",
+        title: "1.22 Compliance, Export, and Sanctions",
         body: [
           "Customer will comply with all applicable laws. Customer represents it is not subject to sanctions and will not use or permit use of the Services in violation of U.S. export controls or sanctions laws, including by providing access to restricted parties or jurisdictions.",
         ],
       },
       {
-        title: "1.17 Governing Law, Arbitration, and Class Action Waiver",
+        title: "1.23 Governing Law, Arbitration, and Class Action Waiver",
         body: [
           "These Terms are governed by the laws of the State of California, USA, without regard to conflict-of-law rules. Any dispute arising out of or relating to these Terms or the Services shall be resolved by binding arbitration administered by the American Arbitration Association in Orange County, California, in English, before a single arbitrator.",
           "EACH PARTY WAIVES THE RIGHT TO A JURY TRIAL AND AGREES THAT CLAIMS MAY BE BROUGHT ONLY IN AN INDIVIDUAL CAPACITY AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS, COLLECTIVE, OR REPRESENTATIVE PROCEEDING.",
@@ -141,14 +185,16 @@ export const POLICY_PAGES = {
         ],
       },
       {
-        title: "1.18 Changes to the Terms",
+        title: "1.24 Changes to the Terms",
         body: [
           "We may update these Terms from time to time. If changes are material, we will post the updated Terms with a new Last Updated date. Continued use of the Services after changes become effective constitutes acceptance.",
         ],
       },
     ],
     contactTitle: "Contact PrimeStyleAI",
-    contactBody: "For questions about these Terms, contact PrimeStyleAI in Laguna Niguel, California, USA.",
+    contactBody:
+      "For questions about these Terms, contact PrimeStyleAI in Laguna Niguel, California, USA at support@primestyleai.com, privacy@primestyleai.com, or legal@primestyleai.com.",
+    contactEmail: "support@primestyleai.com",
   },
 
   privacyPolicy: {
@@ -562,19 +608,19 @@ export const POLICY_PAGES = {
     title: "Cookie Policy",
     eyebrow: "PrimeStyleAI legal",
     description:
-      "How PrimeStyleAI uses cookies, local storage, analytics, attribution, and related technologies across primestyleai.com.",
-    lastUpdated: "February 6, 2026",
-    effectiveDate: "February 6, 2026",
+      "How PrimeStyleAI uses cookies and similar technologies across primestyleai.com, applications, developer portals, dashboards, profile services, APIs, SDK-enabled experiences, and related Services.",
+    lastUpdated: "June 25, 2026",
+    effectiveDate: "June 25, 2026",
     location: "Laguna Niguel, California, USA",
     tone: "legal",
     intro: [
-      "This Cookie Policy explains how PrimeStyleAI uses cookies and similar technologies on primestyleai.com, collectively the Services.",
+      "This Cookie Policy explains how PrimeStyleAI uses cookies and similar technologies across PrimeStyleAI websites, applications, developer portals, dashboards, profile services, APIs, and SDK-enabled experiences where applicable, collectively the Services.",
       "This policy should be read together with our Privacy Policy.",
     ],
     quickNotes: [
-      "We use cookies to operate, secure, and improve the Services.",
-      "We may use analytics and affiliate attribution technologies.",
-      "We do not use cookies to sell personal data.",
+      "We use cookies to operate, secure, authenticate, and improve the Services.",
+      "Cookies may support reusable PrimeStyleAI profiles and cross-site profile functionality.",
+      "PrimeStyleAI does not sell personal information as defined by applicable California privacy laws.",
     ],
     sections: [
       {
@@ -586,58 +632,77 @@ export const POLICY_PAGES = {
       },
       {
         title: "2. How We Use Cookies",
-        body: ["PrimeStyleAI uses cookies for the following purposes:"],
+        body: ["PrimeStyleAI uses cookies and similar technologies to:"],
         items: [
-          "To operate and secure our Services",
-          "To remember user preferences and settings",
-          "To analyze usage and improve performance",
-          "To support affiliate attribution and analytics",
-          "To prevent fraud, abuse, and misuse",
+          "Operate and secure the Services.",
+          "Authenticate users.",
+          "Maintain user sessions.",
+          "Remember user preferences.",
+          "Support PrimeStyleAI user profiles.",
+          "Enable cross-site profile functionality.",
+          "Improve performance and reliability.",
+          "Measure feature usage and engagement.",
+          "Prevent fraud, abuse, and unauthorized access.",
+          "Support analytics and service improvements.",
+          "Comply with legal and regulatory obligations.",
         ],
       },
       {
-        title: "3. Types of Cookies We Use",
+        title: "3. Profile and Authentication Cookies",
+        body: [
+          "PrimeStyleAI may use cookies and similar technologies to maintain user login sessions, authenticate user accounts, support reusable PrimeStyleAI profiles, remember profile preferences, and support cross-site profile functionality across participating websites.",
+          "These cookies help provide a consistent user experience across PrimeStyleAI-powered integrations.",
+        ],
+      },
+      {
+        title: "4. Types of Cookies We Use",
         subsections: [
           {
-            title: "3.1 Strictly Necessary Cookies",
+            title: "4.1 Strictly Necessary Cookies",
             body: [
               "These cookies are essential for the website to function properly and cannot be disabled. Without these cookies, core features of the Services may not work.",
             ],
             items: ["Account login and authentication", "Security and fraud prevention", "Session management"],
           },
           {
-            title: "3.2 Functional Cookies",
+            title: "4.2 Functional Cookies",
             body: ["These cookies allow us to remember choices you make and provide enhanced functionality."],
             items: ["Language or region preferences", "Saved user settings", "Feature personalization"],
           },
           {
-            title: "3.3 Analytics & Performance Cookies",
+            title: "4.3 Analytics & Performance Cookies",
             body: [
               "These cookies help us understand how users interact with our Services so we can improve usability and performance. Analytics data is typically aggregated and anonymized where possible.",
             ],
             items: ["Page visits and navigation patterns", "Feature usage", "Error monitoring and performance metrics"],
           },
           {
-            title: "3.4 Affiliate & Attribution Cookies",
-            body: ["PrimeStyleAI participates in affiliate marketing programs."],
+            title: "4.4 Analytics Technologies",
+            body: [
+              "Analytics information may include pages visited, features used, session duration, device type, browser type, performance metrics, and error reports.",
+              "Where feasible, analytics data is aggregated or pseudonymized.",
+            ],
             items: [
-              "When you click a link to a third-party retailer, affiliate cookies may be placed by the retailer or affiliate network",
-              "These cookies help track referrals and attribute commissions",
-              "PrimeStyleAI does not control retailer or affiliate network cookies",
-              "Retailer and affiliate cookie usage is governed by their own privacy and cookie policies",
+              "Pages visited.",
+              "Features used.",
+              "Session duration.",
+              "Device type.",
+              "Browser type.",
+              "Performance metrics.",
+              "Error reports.",
             ],
           },
         ],
       },
       {
-        title: "4. Third-Party Cookies",
+        title: "5. Third-Party Cookies",
         body: [
-          "We may allow third-party services to place cookies on our Services, including analytics providers, payment processors, affiliate networks, infrastructure providers, and security providers.",
-          "These third parties may collect information according to their own privacy policies. PrimeStyleAI does not control how third parties use their cookies.",
+          "PrimeStyleAI may use trusted third-party providers to support functionality including cloud hosting, authentication services, analytics services, security monitoring, performance monitoring, customer support tools, and artificial intelligence infrastructure.",
+          "PrimeStyleAI does not control the privacy practices of third-party providers.",
         ],
       },
       {
-        title: "5. Managing Cookies",
+        title: "6. Managing Cookies",
         subsections: [
           {
             title: "Browser Controls",
@@ -660,13 +725,14 @@ export const POLICY_PAGES = {
         ],
       },
       {
-        title: "6. Do Not Track Signals",
+        title: "7. Do Not Track and Global Privacy Control Signals",
         body: [
           "Some browsers offer a Do Not Track setting. At this time, PrimeStyleAI does not respond to DNT signals, as there is no consistent industry standard for compliance.",
+          "Where required by applicable law, PrimeStyleAI may recognize valid Global Privacy Control (GPC) signals as requests to opt out of certain data processing activities.",
         ],
       },
       {
-        title: "7. Legal Basis for EEA and UK Users",
+        title: "8. Legal Basis for EEA and UK Users",
         items: [
           "Necessary cookies are processed based on legitimate interest",
           "Non-essential cookies are processed based on consent, where required",
@@ -674,14 +740,29 @@ export const POLICY_PAGES = {
         ],
       },
       {
-        title: "8. Updates to This Cookie Policy",
+        title: "9. California Privacy Rights",
+        body: [
+          "California residents may have rights under the CCPA and CPRA.",
+          "PrimeStyleAI does not sell personal information as defined by applicable California privacy laws.",
+        ],
+      },
+      {
+        title: "10. Cookie Retention",
+        body: [
+          "Different cookies may remain active for different periods, including session cookies and persistent cookies.",
+        ],
+      },
+      {
+        title: "11. Updates to This Cookie Policy",
         body: [
           "We may update this Cookie Policy periodically. Changes will be reflected by updating the Last Updated date. Continued use of the Services after changes take effect constitutes acceptance of the updated policy.",
         ],
       },
     ],
-    contactTitle: "9. Contact Us",
-    contactBody: "For questions about our use of cookies, contact PrimeStyleAI in Laguna Niguel, California, USA.",
+    contactTitle: "12. Contact Us",
+    contactBody:
+      "For questions about our use of cookies, contact PrimeStyleAI in Laguna Niguel, California, USA at support@primestyleai.com, privacy@primestyleai.com, or legal@primestyleai.com.",
+    contactEmail: "support@primestyleai.com",
   },
 
   gdprCcpa: {
