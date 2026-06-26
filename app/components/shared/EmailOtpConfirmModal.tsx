@@ -50,15 +50,16 @@ export function EmailOtpConfirmModal({ open, onOpenChange, email, onVerified }: 
         <DialogPrimitive.Overlay className="fixed inset-0 z-[80] bg-text-primary/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
         <DialogPrimitive.Content
           className={cn(
-            "fixed z-[90] flex flex-col overflow-y-auto overscroll-contain border border-brand-blue/10 bg-white shadow-[0_32px_80px_rgba(33,84,239,0.25)]",
-            "inset-x-0 bottom-0 max-h-[90vh] w-full rounded-t-3xl rounded-b-none",
+            "fixed z-[90] flex flex-col overflow-hidden overscroll-contain border border-brand-blue/10 bg-white shadow-[0_32px_80px_rgba(33,84,239,0.25)]",
+            "inset-x-0 bottom-0 max-h-[86dvh] w-full rounded-t-[24px] rounded-b-none",
             "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom",
-            "md:inset-x-auto md:bottom-auto md:left-1/2 md:top-1/2 md:w-[94vw] md:max-w-[500px] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl",
+            "md:inset-x-auto md:bottom-auto md:left-1/2 md:top-1/2 md:max-h-[90vh] md:w-[94vw] md:max-w-[500px] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl",
             "md:data-[state=open]:fade-in-0 md:data-[state=open]:zoom-in-95 md:data-[state=closed]:fade-out-0 md:data-[state=closed]:zoom-out-95"
           )}
         >
-          <div className="flex items-center justify-between border-b border-brand-blue/10 bg-gradient-to-br from-brand-blue-pale/55 via-white to-brand-blue-pale/30 px-5 py-4 md:px-6">
-            <DialogPrimitive.Title className="text-lg font-semibold text-text-primary">{translate("Confirm your email")}</DialogPrimitive.Title>
+          <div className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-text-primary/15 md:hidden" aria-hidden />
+          <div className="flex shrink-0 items-center justify-between border-b border-brand-blue/10 bg-gradient-to-br from-brand-blue-pale/55 via-white to-brand-blue-pale/30 px-4 py-3.5 md:px-6 md:py-4">
+            <DialogPrimitive.Title className="text-base font-semibold text-text-primary md:text-lg">{translate("Confirm your email")}</DialogPrimitive.Title>
             <DialogPrimitive.Close
               className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-hint transition-colors hover:bg-brand-blue-pale/60 hover:text-text-primary"
               aria-label={translate("Close")}
@@ -67,8 +68,8 @@ export function EmailOtpConfirmModal({ open, onOpenChange, email, onVerified }: 
             </DialogPrimitive.Close>
           </div>
 
-          <div className="flex flex-col gap-5 px-5 pb-6 pt-5 md:px-6 md:pb-7">
-            <div className="rounded-2xl border border-brand-blue/12 bg-brand-blue-pale/35 p-4">
+          <div className="flex flex-col gap-4 overflow-y-auto px-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-4 md:gap-5 md:px-6 md:pb-7 md:pt-5">
+            <div className="rounded-2xl border border-brand-blue/12 bg-brand-blue-pale/35 p-3.5 md:p-4">
               <div className="flex items-start gap-3">
                 <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-brand-blue shadow-[0_8px_18px_rgba(33,84,239,0.18)]">
                   <Mail className="h-4 w-4" strokeWidth={2.1} />
@@ -98,7 +99,7 @@ export function EmailOtpConfirmModal({ open, onOpenChange, email, onVerified }: 
                   }
                 }}
                 placeholder="123456"
-                className="h-12 w-full rounded-xl border border-text-primary/12 bg-white px-3 text-center text-lg tracking-[0.26em] text-text-primary placeholder:tracking-normal placeholder:text-text-hint focus:border-brand-blue focus:outline-none focus:ring-2 focus:ring-brand-blue/15"
+                className="h-12 w-full rounded-xl border border-text-primary/12 bg-white px-3 text-center text-[16px] font-semibold tracking-[0.24em] text-text-primary placeholder:font-normal placeholder:tracking-normal placeholder:text-text-hint focus:border-brand-blue focus:outline-none focus:ring-2 focus:ring-brand-blue/15 md:text-lg"
               />
             </label>
 
@@ -113,7 +114,7 @@ export function EmailOtpConfirmModal({ open, onOpenChange, email, onVerified }: 
                 onClick={() => void handleConfirm()}
                 disabled={verifying || requesting}
                 className={cn(
-                  "inline-flex h-11 w-full items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold text-white transition-all",
+                  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold text-white transition-all sm:h-11",
                   verifying || requesting
                     ? "cursor-wait bg-brand-blue/70"
                     : "bg-brand-blue hover:-translate-y-0.5 hover:bg-brand-blue-dark hover:shadow-[0_16px_32px_rgba(33,84,239,0.2)]"
@@ -128,7 +129,7 @@ export function EmailOtpConfirmModal({ open, onOpenChange, email, onVerified }: 
                 onClick={() => void requestOtp()}
                 disabled={requesting || cooldownSecondsLeft > 0 || verifying}
                 className={cn(
-                  "inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border px-5 text-sm font-semibold transition-all",
+                  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border px-5 text-sm font-semibold transition-all sm:h-11",
                   requesting || cooldownSecondsLeft > 0 || verifying
                     ? "cursor-not-allowed border-text-primary/12 bg-text-primary/5 text-text-hint"
                     : "border-brand-blue/25 bg-white text-brand-blue hover:-translate-y-0.5 hover:border-brand-blue hover:bg-brand-blue-pale/35"
