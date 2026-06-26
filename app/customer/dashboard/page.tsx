@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { logoutAction } from "@/app/customer/login/actions";
 import { getCustomerMe } from "@/app/customer/shared/services/customerAuthService";
 import { isCustomerOnboardingCompleted } from "@/app/customer/shared/services/customerOnboardingCompletion";
@@ -26,7 +26,7 @@ export default async function CustomerDashboardPage({ searchParams }: CustomerDa
   const me = await getCustomerMe();
 
   if (!me) redirect("/customer/login");
-  if (me.role !== "merchant") notFound();
+  if (me.role !== "merchant") redirect("/customer/login");
   if (!(await isCustomerOnboardingCompleted(me.username))) redirect("/customer/onboarding");
 
   const rawDashboard = await getCustomerDashboardOverview(range);

@@ -48,12 +48,14 @@ export interface CustomerDashboardRawOverview {
     apiSuccessRate: number;
     avgResponseTimeMs: number;
   };
+  billing?: CustomerDashboardRawBilling | null;
   activity: CustomerDashboardRawActivityPoint[];
   topProducts: CustomerDashboardRawTopProduct[];
   api: {
     endpoints: CustomerDashboardRawEndpoint[];
     recentRequests: CustomerDashboardRawRequest[];
   };
+  review?: CustomerDashboardRawReview | null;
   dailyActivity?: CustomerDashboardDailyPoint[];
   funnel?: CustomerDashboardFunnelStep[];
   deviceSplit?: CustomerDashboardDeviceSlice[];
@@ -61,6 +63,32 @@ export interface CustomerDashboardRawOverview {
   sizeInsights?: CustomerDashboardSizeInsight[];
   hourHistogram?: number[];
   weekdayHistogram?: number[];
+}
+
+export interface CustomerDashboardRawBilling {
+  status: "free" | "active" | "cancelled" | "expired" | "past_due";
+  active: boolean;
+  planName: string;
+  selectedProductCount: number;
+  productAccessLimit: number;
+  monthlyTryOnLimit: number;
+  tryOnPackPrice: number;
+  platformFee: number;
+  totalMonthlyPrice: number;
+  autoRefillEnabled: boolean;
+  addOnTryOnsCurrentPeriod: number;
+  totalTryOnLimit: number;
+  lemonSqueezySubscriptionId: string | null;
+  currentPeriodEnd: string | null;
+}
+
+export interface CustomerDashboardRawReview {
+  id: string | null;
+  status: "draft" | "domain_pending" | "auto_reviewing" | "manual_review" | "approved" | "rejected";
+  approvalSource: "auto" | "manual" | null;
+  submittedAt: string | null;
+  reviewedAt: string | null;
+  notes: string | null;
 }
 
 export interface CustomerDashboardRawActivityPoint {
@@ -101,6 +129,7 @@ export type CustomerDashboardIconKey =
   | "tryOn"
   | "sizing"
   | "api"
+  | "docs"
   | "security"
   | "billing"
   | "settings"
@@ -204,6 +233,9 @@ export interface CustomerDashboardViewModel {
   domain: string;
   ownerEmail: string;
   projectName: string;
+  workspaceStatus: CustomerWorkspaceStatus;
+  productionKeyReady: boolean;
+  latestKeyPrefix: string | null;
   pageTitle: string;
   dataModeLabel: string;
   statusLabel: string;

@@ -93,10 +93,10 @@ export default async function CustomerLoginPage() {
                     Customer Dashboard
                   </span>
                   <h2 className="mt-3 text-[30px] font-semibold leading-[1.08] tracking-[-0.02em] text-text-primary">
-                    Welcome back
+                    Log in or create your workspace
                   </h2>
                   <p className="mt-2 text-[15px] leading-[1.6] text-text-body">
-                    Sign in with your username and password to continue.
+                    Start SDK onboarding, verify your domain, and request production access.
                   </p>
                 </div>
 

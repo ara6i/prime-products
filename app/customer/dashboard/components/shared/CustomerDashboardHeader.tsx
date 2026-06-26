@@ -19,7 +19,9 @@ interface CustomerDashboardHeaderProps {
   viewOptions: CustomerDashboardViewOption[];
   logoutAction: () => Promise<void>;
   compact?: boolean;
+  compactTitle?: string;
   leftSlot?: ReactNode;
+  showAnalyticsControls?: boolean;
 }
 
 export function CustomerDashboardHeader({
@@ -34,7 +36,9 @@ export function CustomerDashboardHeader({
   viewOptions,
   logoutAction,
   compact = false,
+  compactTitle = "Overview",
   leftSlot,
+  showAnalyticsControls = true,
 }: CustomerDashboardHeaderProps) {
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between gap-[var(--spacing-customer-gap-lg)] border-b border-customer-border bg-customer-card/95 px-[var(--spacing-customer-content-x)] py-[1.042vw] backdrop-blur max-lg:px-[4vw] max-lg:py-[4vw]">
@@ -43,7 +47,7 @@ export function CustomerDashboardHeader({
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-[var(--spacing-customer-gap-sm)] max-lg:gap-[2vw]">
             <h1 className={compact ? "text-[5vw] font-semibold tracking-[-0.04em] text-text-primary" : "text-customer-2xl font-semibold tracking-[-0.04em] text-text-primary"}>
-              {compact ? "Overview" : pageTitle}
+              {compact ? compactTitle : pageTitle}
             </h1>
             <StatusPill label={statusLabel} tone={statusTone} />
           </div>
@@ -54,8 +58,12 @@ export function CustomerDashboardHeader({
       </div>
 
       <div className="flex shrink-0 items-center gap-[var(--spacing-customer-gap-sm)] max-lg:gap-[2vw]">
-        <CustomerDashboardRangeSelector options={rangeOptions} selectedLabel={rangeLabel} />
-        <CustomerDashboardViewSelector options={viewOptions} />
+        {showAnalyticsControls ? (
+          <>
+            <CustomerDashboardRangeSelector options={rangeOptions} selectedLabel={rangeLabel} />
+            <CustomerDashboardViewSelector options={viewOptions} />
+          </>
+        ) : null}
         <CustomerDashboardThemeToggle />
         <form action={logoutAction}>
           <Button

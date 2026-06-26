@@ -3,6 +3,7 @@ import { CustomerCountriesMapCard } from "../shared/CustomerCountriesMapCard";
 import { CustomerDashboardCard } from "../shared/CustomerDashboardCard";
 import { CustomerDashboardHeader } from "../shared/CustomerDashboardHeader";
 import { CustomerDashboardSidebar } from "../shared/CustomerDashboardSidebar";
+import { CustomerSetupCard } from "../shared/CustomerSetupCard";
 import { DailyActivityChart } from "../shared/DailyActivityChart";
 import { DeviceSplitChart } from "../shared/DeviceSplitChart";
 import { FunnelCard } from "../shared/FunnelCard";
@@ -42,6 +43,10 @@ export function CustomerDashboardDesktop({ dashboard, logoutAction }: CustomerDa
         />
 
         <main className="px-[var(--spacing-customer-content-x)] py-[var(--spacing-customer-content-y)]">
+          <div className="mb-[var(--spacing-customer-gap-lg)]">
+            <CustomerSetupCard dashboard={dashboard} />
+          </div>
+
           <section className="grid grid-cols-4 gap-[var(--spacing-customer-gap-md)]">
             {dashboard.metricCards.map((metric) => (
               <MetricCard key={metric.label} metric={metric} />

@@ -14,6 +14,11 @@ const DEFAULT_ADMIN_HOSTS = [
   "admin.localhost",
 ];
 
+const PUBLIC_PRODUCTION_HOSTS = new Set([
+  "primestyleai.com",
+  "www.primestyleai.com",
+]);
+
 function getAdminHosts(): string[] {
   const env = process.env.ADMIN_HOSTS;
   if (!env) return DEFAULT_ADMIN_HOSTS;
@@ -31,6 +36,25 @@ export async function proxy(req: NextRequest) {
   const isSiteLoginPath = pathname === "/login" || pathname.startsWith("/login/");
   const isTryOnTestRoute = isTryOnTestPath(pathname);
   const isTryOnTestApiRoute = isTryOnTestApiPath(pathname);
+  const isPublicProductionHost = PUBLIC_PRODUCTION_HOSTS.has(host);
+
+  if (isPublicProductionHost && (pathname === "/admin" || pathname.startsWith("/admin/"))) {
+    const redirectUrl = url.clone();
+    redirectUrl.pathname = "/";
+    redirectUrl.search = "";
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  if (isPublicProductionHost && (pathname === "/test-lab" || pathname.startsWith("/test-lab/"))) {
+    return new NextResponse("Not found", { status: 404 });
+  }
+
+  if (isPublicProductionHost && (isTryOnTestRoute || isTryOnTestApiRoute)) {
+    if (isTryOnTestApiRoute) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 });
+    }
+    return new NextResponse("Not found", { status: 404 });
+  }
 
   if ((isTryOnTestRoute || isTryOnTestApiRoute) && !isTestLabAvailableForHost(host)) {
     if (isTryOnTestApiRoute) {

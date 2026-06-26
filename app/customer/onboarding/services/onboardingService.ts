@@ -1,69 +1,128 @@
 import { customerFetch } from "@/app/customer/shared/services/customerFetch";
+import { isCustomerApiLocalBackend } from "@/app/customer/shared/services/customerApiBase";
 import type {
   DomainVerificationResult,
-  MerchantApiKeyResult,
   MerchantOnboardingData,
+  MerchantOnboardingProfileInput,
+  MerchantOnboardingProfileResult,
+  MerchantOnboardingReviewResult,
 } from "../types";
 
-function isLocalBackend(): boolean {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
-  return /https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(baseUrl);
-}
-
-function createLocalDomainVerification(data: MerchantOnboardingData): DomainVerificationResult {
-  return {
-    verified: true,
-    checkedAt: new Date().toISOString(),
-    record: data.dns.record,
-    foundValues: [data.dns.record.value],
-  };
-}
-
-function createLocalApiKeyResult(data: MerchantOnboardingData): MerchantApiKeyResult {
-  const slug = data.store.username.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  const key = `ps_demo_${slug}_${Date.now().toString(36)}`;
-
-  return {
-    created: true,
-    key,
-    id: `local-${slug}`,
-    keyPrefix: "ps_demo",
-    allowedDomains: [data.store.domain, `www.${data.store.domain}`],
-    projectId: `local-project-${slug}`,
-    storeProfileId: `local-store-${slug}`,
-    message: "Local demo key created. No live production key was generated.",
-  };
-}
-
 export async function getMerchantOnboarding(): Promise<MerchantOnboardingData> {
-  return customerFetch<MerchantOnboardingData>("/api/customer/onboarding");
+  const data = await customerFetch<MerchantOnboardingData>("/api/customer/onboarding");
+  return normalizeMerchantOnboardingData(data);
 }
 
-export async function verifyMerchantDomain(): Promise<DomainVerificationResult> {
+export async function saveMerchantOnboardingProfile(
+  profile: MerchantOnboardingProfileInput,
+): Promise<MerchantOnboardingProfileResult> {
   try {
-    const result = await customerFetch<DomainVerificationResult>("/api/customer/onboarding/domain/verify", {
+    const result = await customerFetch<MerchantOnboardingProfileResult>("/api/customer/onboarding/profile", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(profile),
     });
 
-    if (result.verified || !isLocalBackend()) return result;
-
-    const data = await getMerchantOnboarding();
-    return createLocalDomainVerification(data);
+    return {
+      ...result,
+      onboarding: normalizeMerchantOnboardingData(result.onboarding),
+    };
   } catch (error) {
-    if (!isLocalBackend()) throw error;
+    if (!isCustomerApiLocalBackend()) throw error;
     const data = await getMerchantOnboarding();
-    return createLocalDomainVerification(data);
+    const now = new Date().toISOString();
+    const profileResult = {
+      ...profile,
+      websiteDomain: domainFromWebsite(profile.website) ?? data.store.domain,
+      catalogDescription: profile.catalogDescription.trim() || null,
+      completed: true,
+      completedAt: now,
+      updatedAt: now,
+    };
+    const fallbackData: MerchantOnboardingData = {
+      ...data,
+      store: {
+        ...data.store,
+        storeName: profileResult.websiteDomain,
+        merchantName: profileResult.name,
+        domain: profileResult.websiteDomain,
+        ownerEmail: profileResult.email,
+      },
+      profile: profileResult,
+      review: {
+        id: null,
+        status: "domain_pending",
+        approvalSource: null,
+        submittedAt: null,
+        reviewedAt: null,
+        notes: null,
+        checks: [],
+        aiReview: null,
+      },
+      dns: {
+        ...data.dns,
+        record: {
+          ...data.dns.record,
+          host: profileResult.websiteDomain === "localhost"
+            ? "_primestyleai.localhost"
+            : `_primestyleai.${profileResult.websiteDomain}`,
+        },
+      },
+    };
+    return {
+      ok: true,
+      profile: profileResult,
+      onboarding: fallbackData,
+    };
   }
 }
 
-export async function createMerchantApiKey(): Promise<MerchantApiKeyResult> {
+export async function verifyMerchantDomain(): Promise<DomainVerificationResult> {
+  return customerFetch<DomainVerificationResult>("/api/customer/onboarding/domain/verify", {
+    method: "POST",
+  });
+}
+
+export async function submitMerchantOnboardingReview(): Promise<MerchantOnboardingReviewResult> {
+  return customerFetch<MerchantOnboardingReviewResult>("/api/customer/onboarding/review/submit", {
+    method: "POST",
+  });
+}
+
+function normalizeMerchantOnboardingData(data: MerchantOnboardingData): MerchantOnboardingData {
+  return {
+    ...data,
+    profile: data.profile ?? {
+      name: data.store.merchantName,
+      email: data.store.ownerEmail,
+      website: data.store.domain === "localhost" ? "" : `https://${data.store.domain}`,
+      websiteDomain: data.store.domain === "localhost" ? "" : data.store.domain,
+      monthlyVisitors: "",
+      catalogDescription: null,
+      toolIntegration: "react-sdk",
+      shareData: false,
+      completed: false,
+      completedAt: null,
+      updatedAt: null,
+    },
+    review: data.review ?? {
+      id: null,
+      status: "draft",
+      approvalSource: null,
+      submittedAt: null,
+      reviewedAt: null,
+      notes: null,
+      checks: [],
+      aiReview: null,
+    },
+  };
+}
+
+function domainFromWebsite(value: string): string | null {
   try {
-    return await customerFetch<MerchantApiKeyResult>("/api/customer/onboarding/api-key", {
-      method: "POST",
-    });
-  } catch (error) {
-    if (!isLocalBackend()) throw error;
-    const data = await getMerchantOnboarding();
-    return createLocalApiKeyResult(data);
+    const url = new URL(/^https?:\/\//i.test(value) ? value : `https://${value}`);
+    return url.hostname.replace(/^www\./i, "").toLowerCase();
+  } catch {
+    return null;
   }
 }

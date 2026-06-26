@@ -249,12 +249,16 @@ function mapMetrics(metrics: DashboardMetrics, days: number): CustomerDashboardM
   ];
 }
 
-function mapNavItems(): CustomerDashboardNavItem[] {
+type CustomerDashboardNavKey = "overview" | "docs" | "products" | "plans" | "settings";
+
+function mapNavItems(activeNav: CustomerDashboardNavKey = "overview"): CustomerDashboardNavItem[] {
   return [
-    { label: "Overview", href: "/customer/dashboard", icon: "dashboard", active: true, disabled: false },
+    { label: "Overview", href: "/customer/dashboard", icon: "dashboard", active: activeNav === "overview", disabled: false },
+    { label: "Documentation", href: "/customer/dashboard/docs", icon: "docs", active: activeNav === "docs", disabled: false },
+    { label: "Products", href: "/customer/dashboard/products", icon: "products", active: activeNav === "products", disabled: false },
+    { label: "Plans", href: "/customer/dashboard/plans", icon: "billing", active: activeNav === "plans", disabled: false },
+    { label: "Settings", href: "/customer/dashboard/settings", icon: "settings", active: activeNav === "settings", disabled: false },
     { label: "Analytics", href: "/customer/dashboard/analytics", icon: "behavior", active: false, disabled: true },
-    { label: "Products", href: "/customer/dashboard/products", icon: "products", active: false, disabled: true },
-    { label: "Settings", href: "/customer/dashboard/settings", icon: "settings", active: false, disabled: true },
   ];
 }
 
@@ -453,6 +457,7 @@ function mapNumberSections({
 export function mapCustomerDashboard(
   raw: CustomerDashboardRawOverview,
   activeView: CustomerDashboardView = "charts",
+  activeNav: CustomerDashboardNavKey = "overview",
 ): CustomerDashboardViewModel {
   const ready = raw.workspace.status === "ready";
   const live = hasLiveActivity(raw);
@@ -473,7 +478,18 @@ export function mapCustomerDashboard(
     domain: raw.store.domain,
     ownerEmail: raw.store.ownerEmail,
     projectName: raw.workspace.projectName ?? "Production workspace",
-    pageTitle: "Analytics Overview",
+    workspaceStatus: raw.workspace.status,
+    productionKeyReady: raw.setup.productionKeyReady,
+    latestKeyPrefix: raw.workspace.latestKeyPrefix,
+    pageTitle: activeNav === "docs"
+      ? "Documentation"
+      : activeNav === "products"
+        ? "Products"
+        : activeNav === "plans"
+          ? "Plans"
+          : activeNav === "settings"
+            ? "Settings"
+            : "Analytics Overview",
     dataModeLabel: live ? "Live storefront data" : "Preview analytics data",
     statusLabel: ready ? "Live workspace" : "Setup needs attention",
     statusTone: ready ? "success" : "warning",
@@ -481,7 +497,7 @@ export function mapCustomerDashboard(
     activeView,
     rangeOptions: mapRangeOptions(activeRange, activeView),
     viewOptions: mapViewOptions(activeRange, activeView),
-    navItems: mapNavItems(),
+    navItems: mapNavItems(activeNav),
     metricCards: mapMetrics(metrics, raw.range.days),
     dailyActivity,
     funnel,

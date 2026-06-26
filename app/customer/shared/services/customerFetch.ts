@@ -1,8 +1,8 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { getCustomerApiBaseUrl } from "./customerApiBase";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 const CUSTOMER_SESSION_COOKIE_NAME = "customer_session";
 const BACKEND_SESSION_COOKIE_NAME = "customer_session";
 
@@ -12,7 +12,9 @@ export type CustomerFetchError = {
 };
 
 export async function customerFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  if (!API_BASE_URL) {
+  const apiBaseUrl = getCustomerApiBaseUrl();
+
+  if (!apiBaseUrl) {
     throw new Error("API base URL is not configured");
   }
 
@@ -23,7 +25,7 @@ export async function customerFetch<T>(path: string, init?: RequestInit): Promis
     throw err;
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(`${apiBaseUrl}${path}`, {
     ...init,
     headers: {
       ...(init?.headers ?? {}),

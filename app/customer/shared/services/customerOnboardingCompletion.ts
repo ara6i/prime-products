@@ -1,27 +1,30 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { customerFetch } from "./customerFetch";
 
 const COOKIE_NAME = "merchant_onboarding_completed";
-const MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
+
+interface CustomerOnboardingGateResponse {
+  review?: {
+    status?: string | null;
+  } | null;
+}
 
 export async function isCustomerOnboardingCompleted(username?: string | null): Promise<boolean> {
-  const cookieStore = await cookies();
-  const value = cookieStore.get(COOKIE_NAME)?.value;
-  if (!value) return false;
-  if (!username) return value === "1" || value.length > 0;
-  return value === "1" || value === username;
+  void username;
+  try {
+    const data = await customerFetch<CustomerOnboardingGateResponse>("/api/customer/onboarding");
+    return data.review?.status === "approved";
+  } catch {
+    return false;
+  }
 }
 
 export async function markCustomerOnboardingCompleted(username: string): Promise<void> {
+  void username;
   const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, username, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: MAX_AGE_SECONDS,
-  });
+  cookieStore.delete(COOKIE_NAME);
 }
 
 export async function clearCustomerOnboardingCompleted(): Promise<void> {
