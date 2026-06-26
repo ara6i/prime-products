@@ -12,6 +12,7 @@ import { FeaturesSection } from "./sections/mobile/FeaturesSection";
 import { SdkDemoSection } from "./sections/mobile/SdkDemoSection";
 import { ScaleSection } from "./sections/mobile/ScaleSection";
 import { GarmentsSection } from "./sections/mobile/GarmentsSection";
+import { PricingSection } from "./sections/mobile/PricingSection";
 import { CtaBannerSection } from "./sections/mobile/CtaBannerSection";
 import { AskAiSection } from "./sections/shared/AskAiSection";
 import { PilotContactSection } from "./sections/shared/PilotContactSection";
@@ -31,6 +32,7 @@ export function MobileDeveloperLanding() {
         <section id="demo"><SdkDemoSection /></section>
         <ScaleSection />
         <GarmentsSection />
+        <PricingSection />
         <PilotContactSection />
         <CtaBannerSection />
         <AskAiSection />

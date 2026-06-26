@@ -30,6 +30,7 @@ export { GenerateIcon } from "./GenerateIcon";
 export { RefreshIcon } from "./RefreshIcon";
 export { HandymanIcon } from "./HandymanIcon";
 export { CalendarIcon } from "./CalendarIcon";
+export { DocumentationIcon } from "./DocumentationIcon";
 export { FileDownloadIcon } from "./FileDownloadIcon";
 export { ShareIcon } from "./ShareIcon";
 export { DeleteIcon } from "./DeleteIcon";

@@ -3,11 +3,12 @@
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
 import { usePilotModal } from "./PilotModalContext";
 import { LandingLanguageSwitcher, useLandingLanguage } from "@/app/landing/i18n";
 
-type SectionLabelKey = "features" | "demo" | "integrations" | "contact";
+type SectionLabelKey = "features" | "demo" | "pricing" | "integrations" | "contact";
 
 const SECTION_LINKS: Array<{
   labelKey: SectionLabelKey;
@@ -16,23 +17,34 @@ const SECTION_LINKS: Array<{
 }> = [
   { labelKey: "features", href: "#features" },
   { labelKey: "demo", href: "/demo/products", external: true },
+  { labelKey: "pricing", href: "#pricing" },
   { labelKey: "integrations", href: "#integrations" },
   { labelKey: "contact", href: "#contact" },
 ];
 const CUSTOMER_LOGIN_PATH = "/customer/login";
 const ADMIN_LOGIN_PATH = "/admin/login";
 const STAGING_HOSTS = new Set(["test-fe-9a7k.primestyleai.com"]);
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 
 function subscribeToHostname(): () => void {
   return () => undefined;
 }
 
-function getBrowserStagingSnapshot(): boolean {
-  return STAGING_HOSTS.has(window.location.hostname.toLowerCase());
+function getBrowserInternalSnapshot(): boolean {
+  const hostname = window.location.hostname.toLowerCase();
+  return STAGING_HOSTS.has(hostname) || LOCAL_HOSTS.has(hostname);
 }
 
-function useShowStagingAdminLogin(): boolean {
-  return useSyncExternalStore(subscribeToHostname, getBrowserStagingSnapshot, () => false);
+function getBrowserLocalSnapshot(): boolean {
+  return LOCAL_HOSTS.has(window.location.hostname.toLowerCase());
+}
+
+function useShowInternalAdminLogin(): boolean {
+  return useSyncExternalStore(subscribeToHostname, getBrowserInternalSnapshot, () => false);
+}
+
+function useShowLocalTools(): boolean {
+  return useSyncExternalStore(subscribeToHostname, getBrowserLocalSnapshot, () => false);
 }
 
 interface DeveloperNavbarProps {
@@ -42,12 +54,13 @@ interface DeveloperNavbarProps {
 
 export function DeveloperNavbar({ variant = "default" }: DeveloperNavbarProps) {
   const isDemo = variant === "demo";
-  const showAdminLogin = useShowStagingAdminLogin();
+  const showAdminLogin = useShowInternalAdminLogin();
+  const showLocalTools = useShowLocalTools();
   const { open: openPilot } = usePilotModal();
   const { language, setLanguage, t } = useLandingLanguage();
 
   return (
-    <nav className="sticky top-0 z-40 flex items-center gap-[0.833vw] px-[3.125vw] py-[0.625vw] w-full mx-auto bg-white/80 backdrop-blur-md border-b border-text-primary/8">
+    <nav className="sticky top-0 z-[70] flex items-center gap-[0.833vw] px-[3.125vw] py-[0.625vw] w-full mx-auto bg-white/80 backdrop-blur-md border-b border-text-primary/8">
       <Link href="/">
         <Image
           src="/images/landing/optimized/logo-navbar-small.webp"
@@ -92,22 +105,41 @@ export function DeveloperNavbar({ variant = "default" }: DeveloperNavbarProps) {
             onLanguageChange={setLanguage}
           />
         )}
-        {showAdminLogin && (
+        {showLocalTools ? (
+          <div className="group relative">
+            <button
+              type="button"
+              className="inline-flex h-[2.604vw] items-center gap-[0.35vw] rounded-[52.083vw] border border-brand-blue bg-white px-[1.15vw] text-[0.833vw] font-semibold leading-[1.354vw] text-brand-blue transition-colors hover:bg-brand-blue hover:text-white"
+            >
+              Dashboards
+              <ChevronDown className="h-[0.9vw] w-[0.9vw] transition-transform group-hover:rotate-180" aria-hidden />
+            </button>
+            <div className="pointer-events-none absolute right-0 top-full z-[80] min-w-[10.5vw] pt-[0.45vw] opacity-0 transition duration-150 group-hover:pointer-events-auto group-hover:opacity-100">
+              <div className="rounded-[0.8vw] border border-gray-200 bg-white p-[0.35vw] shadow-xl shadow-black/10">
+                <LocalToolLink href={CUSTOMER_LOGIN_PATH} label="Customer" />
+                <LocalToolLink href={ADMIN_LOGIN_PATH} label="Admin" />
+                <LocalToolLink href="/test-lab" label="Test Lab" />
+              </div>
+            </div>
+          </div>
+        ) : showAdminLogin ? (
           <Link
             href={ADMIN_LOGIN_PATH}
             className="text-[0.833vw] font-semibold leading-[1.354vw] text-text-body transition-colors hover:text-brand-blue whitespace-nowrap"
           >
             Admin Panel
           </Link>
+        ) : null}
+        {!showLocalTools && (
+          <Button
+            asChild
+            variant="outline"
+            size="default"
+            className="h-[2.604vw] px-[1.15vw] text-[0.833vw] leading-[1.354vw] rounded-[52.083vw] whitespace-nowrap cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
+          >
+            <Link href={CUSTOMER_LOGIN_PATH}>{t.nav.customerLogin}</Link>
+          </Button>
         )}
-        <Button
-          asChild
-          variant="outline"
-          size="default"
-          className="h-[2.604vw] px-[1.15vw] text-[0.833vw] leading-[1.354vw] rounded-[52.083vw] whitespace-nowrap cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
-        >
-          <Link href={CUSTOMER_LOGIN_PATH}>{t.nav.customerLogin}</Link>
-        </Button>
         <Button
           variant="primary"
           size="default"
@@ -119,5 +151,16 @@ export function DeveloperNavbar({ variant = "default" }: DeveloperNavbarProps) {
         </Button>
       </div>
     </nav>
+  );
+}
+
+function LocalToolLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="block rounded-[0.5vw] px-[0.75vw] py-[0.55vw] text-[0.78vw] font-semibold text-gray-900 transition-colors hover:bg-gray-50 hover:text-brand-blue"
+    >
+      {label}
+    </Link>
   );
 }

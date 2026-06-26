@@ -1,10 +1,10 @@
 "use client";
 
-import { ApiKeyPanel } from "./ApiKeyPanel";
+import { BusinessProfilePanel } from "./BusinessProfilePanel";
 import { DnsVerificationPanel } from "./DnsVerificationPanel";
-import { EnvironmentReadyPanel } from "./EnvironmentReadyPanel";
-import { OnboardingHero } from "./OnboardingHero";
 import { OnboardingStepRail } from "./OnboardingStepRail";
+import { ReviewPanel } from "./ReviewPanel";
+import { WelcomePanel } from "./WelcomePanel";
 import { useMerchantOnboarding } from "../hooks/useMerchantOnboarding";
 import type { MerchantOnboardingViewModel } from "../types";
 
@@ -15,35 +15,35 @@ interface MerchantOnboardingClientProps {
 export function MerchantOnboardingClient({ onboarding }: MerchantOnboardingClientProps) {
   const {
     activeStepId,
+    onboarding: currentOnboarding,
     domainVerified,
     verifying,
-    creatingKey,
     completing,
     verificationResult,
-    apiKeyResult,
     steps,
+    updateOnboarding,
     goBack,
     goNext,
     selectStep,
     copyText,
     verifyDomain,
-    createApiKey,
-    completeOnboarding,
+    submitReview,
   } = useMerchantOnboarding(onboarding);
 
   const activePanel = {
-    environment: (
-      <EnvironmentReadyPanel
-        storeName={onboarding.storeName}
-        domain={onboarding.domain}
-        ownerEmail={onboarding.ownerEmail}
-        invitationCode={onboarding.invitationCode}
-        onContinue={goNext}
+    welcome: (
+      <WelcomePanel onContinue={goNext} />
+    ),
+    business: (
+      <BusinessProfilePanel
+        profile={currentOnboarding.profile}
+        onSaved={updateOnboarding}
       />
     ),
     domain: (
       <DnsVerificationPanel
-        record={onboarding.dnsRecord}
+        record={currentOnboarding.dnsRecord}
+        domain={currentOnboarding.domain}
         verified={domainVerified}
         verifying={verifying}
         result={verificationResult}
@@ -53,47 +53,71 @@ export function MerchantOnboardingClient({ onboarding }: MerchantOnboardingClien
         onContinue={goNext}
       />
     ),
-    "api-key": (
-      <ApiKeyPanel
-        domainVerified={domainVerified}
-        creatingKey={creatingKey}
+    review: (
+      <ReviewPanel
+        review={currentOnboarding.review}
         completing={completing}
-        apiKeyResult={apiKeyResult}
-        onCopy={copyText}
-        onCreateKey={createApiKey}
-        onContinue={completeOnboarding}
         onBack={goBack}
+        onSubmit={submitReview}
       />
     ),
   }[activeStepId];
 
   return (
-    <main className="h-dvh overflow-hidden bg-[#f4f8ff] px-5 py-5 text-text-primary">
-      <div className="mx-auto flex h-full w-full max-w-[1260px] flex-col gap-5">
-        <OnboardingHero
-          storeName={onboarding.storeName}
-          domain={onboarding.domain}
-        />
+    <main className="h-dvh overflow-hidden bg-white text-text-primary">
+      <div className="grid h-full lg:grid-cols-[360px_1fr]">
+        <aside className="hidden min-h-0 border-r border-[#e6edf7] bg-[#f7faff] px-8 py-8 lg:flex lg:flex-col">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-blue">
+              PrimeStyleAI
+            </p>
+            <h1 className="mt-3 text-2xl font-semibold leading-tight tracking-[-0.03em] text-[#111827]">
+              SDK onboarding
+            </h1>
+            <p className="mt-3 max-w-[260px] text-sm leading-6 text-[#5f6b7a]">
+              Set up the merchant workspace, verify the domain, and submit for review.
+            </p>
+          </div>
 
-        <section className="grid min-h-0 flex-1 overflow-hidden rounded-[34px] border border-brand-blue/10 bg-white lg:grid-cols-[310px_1fr]">
-          <aside className="hidden border-r border-brand-blue/10 bg-[#f8fbff] px-8 py-9 lg:block">
+          <div className="mt-10 min-h-0 flex-1">
             <OnboardingStepRail
               steps={steps}
               activeStepId={activeStepId}
               onStepSelect={selectStep}
             />
-          </aside>
+          </div>
+        </aside>
 
-          <div className="flex min-h-0 items-center px-6 py-7 sm:px-8 lg:px-12 lg:py-10">
-            <div className="mx-auto w-full max-w-[760px]">
-              <div className="mb-6 lg:hidden">
+        <section className="flex min-h-0 flex-col">
+          <header className="shrink-0 border-b border-[#edf2f7] bg-white px-5 py-4 sm:px-8">
+            <div className="mx-auto flex max-w-[920px] items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-blue">
+                  Merchant setup
+                </p>
+                <p className="mt-1 truncate text-sm text-[#667085]">
+                  {currentOnboarding.storeName} · {currentOnboarding.domain}
+                </p>
+              </div>
+              <span className="rounded-full border border-[#dbe6f5] bg-[#f8fbff] px-3 py-1.5 text-xs font-semibold text-brand-blue">
+                SDK
+              </span>
+            </div>
+          </header>
+
+          <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-9">
+            <div className={`mx-auto w-full ${activeStepId === "domain" ? "max-w-[1040px]" : "max-w-[820px]"}`}>
+              <div className="mb-6 rounded-2xl border border-[#e6edf7] bg-[#f8fbff] p-4 lg:hidden">
                 <OnboardingStepRail
                   steps={steps}
                   activeStepId={activeStepId}
                   onStepSelect={selectStep}
+                  compact
                 />
               </div>
-              {activePanel}
+              <div className="rounded-2xl border border-[#e6edf7] bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] sm:p-8 lg:p-10">
+                {activePanel}
+              </div>
             </div>
           </div>
         </section>

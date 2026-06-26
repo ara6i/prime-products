@@ -20,8 +20,25 @@ export interface DemoLabProductApplyData {
 }
 
 export async function fetchDemoProductOptions(baseUrl: string): Promise<DemoLabProductOption[]> {
-  const data = await fetchJson<DemoProductListApi>(apiUrl(baseUrl, `${DEMO_PRODUCTS_PATH}?page=1&limit=100`));
-  return (data.items ?? [])
+  const limit = 100;
+  const firstPage = await fetchJson<DemoProductListApi>(
+    apiUrl(baseUrl, `${DEMO_PRODUCTS_PATH}?page=1&limit=${limit}`),
+  );
+  const totalPages = Math.max(1, Number(firstPage.totalPages) || 1);
+  const restPages =
+    totalPages > 1
+      ? await Promise.all(
+          Array.from({ length: totalPages - 1 }, (_, index) =>
+            fetchJson<DemoProductListApi>(
+              apiUrl(baseUrl, `${DEMO_PRODUCTS_PATH}?page=${index + 2}&limit=${limit}`),
+            ),
+          ),
+        )
+      : [];
+
+  const seen = new Set<string>();
+  return [firstPage, ...restPages]
+    .flatMap((page) => page.items ?? [])
     .map((product) => ({
       id: product.product_id ?? product._id ?? "",
       name: cleanProductName(product.brand ?? "", product.name ?? "Untitled"),
@@ -29,7 +46,11 @@ export async function fetchDemoProductOptions(baseUrl: string): Promise<DemoLabP
       category: product.category ?? "",
       imageUrl: pickProductImage(product),
     }))
-    .filter((product) => product.id);
+    .filter((product) => {
+      if (!product.id || seen.has(product.id)) return false;
+      seen.add(product.id);
+      return true;
+    });
 }
 
 export async function fetchDemoProductForLab(baseUrl: string, productId: string): Promise<DemoLabProductApplyData> {

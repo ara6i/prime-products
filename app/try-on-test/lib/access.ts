@@ -35,7 +35,8 @@ export function isTestLabAvailableForHost(hostHeader: string | null | undefined)
 }
 
 export function isTryOnTestPath(pathname: string): boolean {
-  return pathname === "/try-on-test" || pathname.startsWith("/try-on-test/");
+  return pathname === "/test-lab" || pathname.startsWith("/test-lab/")
+    || pathname === "/try-on-test" || pathname.startsWith("/try-on-test/");
 }
 
 export function isTryOnTestApiPath(pathname: string): boolean {

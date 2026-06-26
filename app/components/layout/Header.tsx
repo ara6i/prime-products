@@ -8,8 +8,8 @@ import { Button } from "@/app/shared/components/ui";
 
 const DEVELOPER_DROPDOWN = [
   { title: "SDK in Action", icon: Play, href: "/demo/products", desc: "Try it on real products" },
-  { title: "Documentation", icon: BookOpen, href: "https://preview.myaifitting.com/developer/docs?preview=1", desc: "SDK dashboard" },
-  { title: "Dashboard", icon: LayoutDashboard, href: "https://preview.myaifitting.com/developer/dashboard/keys?preview=1", desc: "Keys, billing & usage" },
+  { title: "Documentation", icon: BookOpen, href: "/customer/dashboard/docs", desc: "SDK, Shopify & API" },
+  { title: "Dashboard", icon: LayoutDashboard, href: "/customer/login", desc: "Keys, billing & usage" },
 ];
 
 interface HeaderProps {

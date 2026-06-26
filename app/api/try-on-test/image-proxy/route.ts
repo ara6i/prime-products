@@ -9,6 +9,8 @@ const ALLOWED_IMAGE_HOSTS = new Set([
   "cdn-images.farfetch-contents.com",
   "image.menswearhouse.com",
   "images.bloomingdalesassets.com",
+  "images.asos-media.com",
+  "shopcdnpro.grainajz.com",
 ]);
 
 export async function GET(request: NextRequest) {

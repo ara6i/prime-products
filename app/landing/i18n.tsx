@@ -25,6 +25,7 @@ type LandingTranslation = {
   nav: {
     features: string;
     demo: string;
+    pricing: string;
     integrations: string;
     contact: string;
     customerLogin: string;
@@ -64,6 +65,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
     nav: {
       features: "Features",
       demo: "Demo",
+      pricing: "Pricing",
       integrations: "Integrations",
       contact: "Contact",
       customerLogin: "Customer login",
@@ -83,6 +85,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
     nav: {
       features: "Funciones",
       demo: "Demo",
+      pricing: "Precios",
       integrations: "Integraciones",
       contact: "Contacto",
       customerLogin: "Acceso clientes",
@@ -102,6 +105,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
     nav: {
       features: "Fonctionnalités",
       demo: "Démo",
+      pricing: "Tarifs",
       integrations: "Intégrations",
       contact: "Contact",
       customerLogin: "Connexion client",
@@ -121,6 +125,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
     nav: {
       features: "Funktionen",
       demo: "Demo",
+      pricing: "Preise",
       integrations: "Integrationen",
       contact: "Kontakt",
       customerLogin: "Kundenlogin",
@@ -140,6 +145,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
     nav: {
       features: "Funzioni",
       demo: "Demo",
+      pricing: "Prezzi",
       integrations: "Integrazioni",
       contact: "Contatti",
       customerLogin: "Accesso clienti",
@@ -159,6 +165,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
     nav: {
       features: "Recursos",
       demo: "Demo",
+      pricing: "Preços",
       integrations: "Integrações",
       contact: "Contato",
       customerLogin: "Login do cliente",
@@ -178,6 +185,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
     nav: {
       features: "機能",
       demo: "デモ",
+      pricing: "料金",
       integrations: "連携",
       contact: "お問い合わせ",
       customerLogin: "顧客ログイン",
@@ -197,6 +205,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
     nav: {
       features: "功能",
       demo: "演示",
+      pricing: "价格",
       integrations: "集成",
       contact: "联系",
       customerLogin: "客户登录",
@@ -216,6 +225,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
     nav: {
       features: "기능",
       demo: "데모",
+      pricing: "가격",
       integrations: "연동",
       contact: "문의",
       customerLogin: "고객 로그인",
@@ -235,6 +245,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
     nav: {
       features: "الميزات",
       demo: "تجربة",
+      pricing: "الأسعار",
       integrations: "التكاملات",
       contact: "تواصل معنا",
       customerLogin: "دخول العملاء",

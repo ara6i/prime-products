@@ -61,7 +61,18 @@ export default async function AdminCustomerDetailRoute({ params, searchParams }:
   if (source === "shopify") {
     const controlCenter = await fetchAdminShopifyControlCenter(id).catch(() => null);
     if (!controlCenter) {
-      notFound();
+      const customer = await fetchAdminCustomer(source, id).catch(() => null);
+      if (!customer) {
+        notFound();
+      }
+
+      return (
+        <AdminDashboardThemeProvider>
+          <AdminDashboardShell logoutAction={logoutAction} activeHref="/admin/customers/shopify">
+            <CustomerDetailPage customer={mapCustomerDetail(customer)} />
+          </AdminDashboardShell>
+        </AdminDashboardThemeProvider>
+      );
     }
 
     const selectedRange = parseDateRange(query) ?? defaultDateRange();

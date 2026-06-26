@@ -5,6 +5,7 @@ const DEVELOPER_PORTAL = "https://myaifitting.com";
 const siteAuthEnabled = process.env.PRIME_PRODUCTS_SITE_AUTH_ENABLED === "true";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["127.0.0.1", "localhost", "192.168.6.123"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },

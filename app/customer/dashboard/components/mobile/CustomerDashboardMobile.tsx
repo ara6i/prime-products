@@ -3,6 +3,7 @@ import { CountrySplitCard } from "../shared/CountrySplitCard";
 import { CustomerCountriesMapCard } from "../shared/CustomerCountriesMapCard";
 import { CustomerDashboardCard } from "../shared/CustomerDashboardCard";
 import { CustomerDashboardHeader } from "../shared/CustomerDashboardHeader";
+import { CustomerSetupCard } from "../shared/CustomerSetupCard";
 import { DailyActivityChart } from "../shared/DailyActivityChart";
 import { DeviceSplitChart } from "../shared/DeviceSplitChart";
 import { FunnelCard } from "../shared/FunnelCard";
@@ -49,6 +50,8 @@ export function CustomerDashboardMobile({ dashboard, logoutAction }: CustomerDas
       <CustomerDashboardMobileNav navItems={dashboard.navItems} />
 
       <main className="flex flex-col gap-[5vw] px-[4vw] pb-[8vw]">
+        <CustomerSetupCard dashboard={dashboard} />
+
         <section className="grid grid-cols-1 gap-[3vw] min-[520px]:grid-cols-2">
           {dashboard.metricCards.map((metric) => (
             <MetricCard key={metric.label} metric={metric} />

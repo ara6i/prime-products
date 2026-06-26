@@ -14,6 +14,7 @@ interface AdminDashboardShellProps {
 function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
   const customersActive = activeHref.startsWith("/admin/customers") || activeHref.startsWith("/admin/reports/feedbacks");
   const usersActive = activeHref.startsWith("/admin/users");
+  const verificationActive = activeHref.startsWith("/admin/verification");
   const monitoringActive = activeHref.startsWith("/admin/monitoring");
   const supportActive = activeHref.startsWith("/admin/chats") || activeHref.startsWith("/admin/tickets");
   const settingsActive = activeHref.startsWith("/admin/settings");
@@ -62,6 +63,13 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
           disabled: false,
         },
       ],
+    },
+    {
+      label: "Verification Center",
+      href: "/admin/verification",
+      icon: "reports",
+      active: verificationActive,
+      disabled: false,
     },
     {
       label: "Monitoring",

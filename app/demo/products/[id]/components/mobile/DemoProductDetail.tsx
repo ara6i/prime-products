@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { ChevronLeft, Camera, Ruler, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, Camera, Ruler, ChevronRight, ShoppingBag, Sparkles } from "lucide-react";
 import { usePrimeStyleSize } from "@primestyleai/tryon/react";
 import type { RecommendForProductInput } from "@primestyleai/tryon/react";
 import { useLandingLanguage } from "@/app/landing/i18n";
@@ -16,7 +16,6 @@ import { useProfileAnalysisDisplay } from "../../hooks/useProfileAnalysisDisplay
 import { landingLanguageToSdkLocale } from "../../../utils/sdkLocale";
 import { inferSdkProductFitType } from "../../../utils/sdkProductFitType";
 import {
-  DemoBagButton,
   DemoBagDrawer,
   buildDemoBagItem,
   mergeDemoBagItem,
@@ -452,23 +451,36 @@ export function MobileProductDetail({ product }: Props) {
       {/* Header */}
       <header className="flex-shrink-0 bg-white z-10 border-b border-border-light">
         <div className="flex items-center px-4 py-3 gap-3">
-          <button onClick={() => router.back()} className="w-9 h-9 flex-shrink-0 rounded-full border border-border-light bg-surface-light flex items-center justify-center">
-            <ChevronLeft className="h-4 w-4 text-text-hint" />
+          <button
+            type="button"
+            onClick={() => router.back()}
+            aria-label="Back"
+            className="-ml-2 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-text-primary active:bg-surface-light"
+          >
+            <ChevronLeft className="h-[19px] w-[19px]" strokeWidth={2.4} />
           </button>
           <div className="flex-1 min-w-0 text-center">
             <p className="text-[10px] text-brand-blue font-semibold tracking-[0.15em] uppercase leading-none mb-0.5">{product.brand}</p>
             <p className="text-sm font-semibold text-text-primary truncate leading-tight">{product.name}</p>
           </div>
-          <DemoBagButton
-            count={bagCount}
+          <button
+            type="button"
             onClick={() => setBagOpen(true)}
-            className="h-9 w-9 flex-shrink-0"
-          />
+            aria-label={`Open bag, ${bagCount} item${bagCount === 1 ? "" : "s"}`}
+            className="-mr-2 relative flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-text-primary active:bg-surface-light"
+          >
+            <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={2.1} />
+            {bagCount > 0 && (
+              <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-blue px-1 text-[10px] font-bold leading-none text-white">
+                {bagCount > 99 ? "99+" : bagCount}
+              </span>
+            )}
+          </button>
         </div>
       </header>
 
       {/* Scrollable body */}
-      <div className="flex-1 min-h-0 overflow-y-auto pb-28">
+      <div className="flex-1 min-h-0 overflow-y-auto pb-28 [padding-bottom:calc(7rem+env(safe-area-inset-bottom)+96px)]">
         {/* Image carousel — square aspect, full-bleed contain so the entire
             product photo is visible no matter the source aspect ratio. */}
         <div className="relative bg-surface-light aspect-square" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>

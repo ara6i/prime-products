@@ -3,6 +3,7 @@ import { cn } from "@/app/shared/lib/utils";
 
 interface CustomerDashboardCardProps {
   children: ReactNode;
+  id?: string;
   title?: string;
   description?: string;
   action?: ReactNode;
@@ -12,6 +13,7 @@ interface CustomerDashboardCardProps {
 
 export function CustomerDashboardCard({
   children,
+  id,
   title,
   description,
   action,
@@ -20,6 +22,7 @@ export function CustomerDashboardCard({
 }: CustomerDashboardCardProps) {
   return (
     <section
+      id={id}
       className={cn(
         "rounded-customer-card border border-customer-border bg-customer-card shadow-customer-card",
         className,
