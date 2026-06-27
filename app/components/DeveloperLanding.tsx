@@ -12,6 +12,7 @@ import { FeaturesSection } from "./sections/desktop/FeaturesSection";
 import { SdkDemoSection } from "./sections/desktop/SdkDemoSection";
 import { ScaleSection } from "./sections/desktop/ScaleSection";
 import { GarmentsSection } from "./sections/desktop/GarmentsSection";
+import { PricingSection } from "./sections/desktop/PricingSection";
 import { CtaBannerSection } from "./sections/desktop/CtaBannerSection";
 import { AskAiSection } from "./sections/shared/AskAiSection";
 import { PilotContactSection } from "./sections/shared/PilotContactSection";
@@ -31,6 +32,7 @@ export function DeveloperLanding() {
         <section id="demo"><SdkDemoSection /></section>
         <ScaleSection />
         <GarmentsSection />
+        <PricingSection />
         <PilotContactSection />
         <CtaBannerSection />
         <AskAiSection />
