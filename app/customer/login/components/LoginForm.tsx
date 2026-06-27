@@ -40,6 +40,7 @@ declare global {
 const SUPPORT_EMAIL = "support@primestyleai.com";
 const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
 const appleClientId = process.env.NEXT_PUBLIC_APPLE_CLIENT_ID ?? "";
+const showCustomerSocialAuth = process.env.NEXT_PUBLIC_CUSTOMER_SOCIAL_AUTH_ENABLED === "true";
 const initialLoginState: LoginState = { error: null, errorId: 0 };
 const initialSignupState: SignupState = { error: null, errorId: 0, verificationEmail: null, message: null };
 const initialVerifyState: VerifySignupState = { error: null, errorId: 0 };
@@ -158,15 +159,19 @@ export function LoginForm() {
 
   return (
     <div className="flex flex-col gap-[var(--spacing-admin-gap-md)] max-lg:gap-4">
-      <Script
-        src="https://accounts.google.com/gsi/client"
-        strategy="lazyOnload"
-        onLoad={initializeGoogle}
-      />
-      <Script
-        src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"
-        strategy="lazyOnload"
-      />
+      {showCustomerSocialAuth ? (
+        <>
+          <Script
+            src="https://accounts.google.com/gsi/client"
+            strategy="lazyOnload"
+            onLoad={initializeGoogle}
+          />
+          <Script
+            src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"
+            strategy="lazyOnload"
+          />
+        </>
+      ) : null}
 
       <div className="grid grid-cols-2 rounded-full border border-brand-blue/15 bg-brand-blue-pale/35 p-1">
         {(["login", "signup"] as const).map((item) => (
@@ -196,41 +201,45 @@ export function LoginForm() {
         <SignupFields formAction={signupFormAction} pending={signupPending} error={signupState.error} />
       )}
 
-      <div className="relative py-1 text-center text-xs font-semibold uppercase tracking-[0.12em] text-text-hint">
-        <span className="relative z-10 bg-white px-3">or continue with</span>
-        <span className="absolute left-0 top-1/2 h-px w-full bg-brand-blue/10" aria-hidden />
-      </div>
+      {showCustomerSocialAuth ? (
+        <>
+          <div className="relative py-1 text-center text-xs font-semibold uppercase tracking-[0.12em] text-text-hint">
+            <span className="relative z-10 bg-white px-3">or continue with</span>
+            <span className="absolute left-0 top-1/2 h-px w-full bg-brand-blue/10" aria-hidden />
+          </div>
 
-      {requiresSignupConsent ? (
-        <label className="flex items-start gap-3 rounded-2xl border border-brand-blue/12 bg-[#f8fbff] p-4 text-sm leading-6 text-text-body">
-          <input
-            type="checkbox"
-            checked={socialConsent}
-            onChange={(event) => setSocialConsent(event.target.checked)}
-            className="mt-1 h-4 w-4 rounded border-brand-blue/30 text-brand-blue focus:ring-brand-blue"
-          />
-          <span>
-            I agree to the{" "}
-            <Link href="/terms" className="font-semibold text-brand-blue hover:underline">Terms of Service</Link>, acknowledge the{" "}
-            <Link href="/privacy-policy" className="font-semibold text-brand-blue hover:underline">Privacy Policy</Link>, understand that my profile photo and measurements may be stored to provide cross-site sizing and virtual try-on services, and understand recommendations are estimates, not guarantees.
-          </span>
-        </label>
+          {requiresSignupConsent ? (
+            <label className="flex items-start gap-3 rounded-2xl border border-brand-blue/12 bg-[#f8fbff] p-4 text-sm leading-6 text-text-body">
+              <input
+                type="checkbox"
+                checked={socialConsent}
+                onChange={(event) => setSocialConsent(event.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-brand-blue/30 text-brand-blue focus:ring-brand-blue"
+              />
+              <span>
+                I agree to the{" "}
+                <Link href="/terms" className="font-semibold text-brand-blue hover:underline">Terms of Service</Link>, acknowledge the{" "}
+                <Link href="/privacy-policy" className="font-semibold text-brand-blue hover:underline">Privacy Policy</Link>, understand that my profile photo and measurements may be stored to provide cross-site sizing and virtual try-on services, and understand recommendations are estimates, not guarantees.
+              </span>
+            </label>
+          ) : null}
+
+          <div className="grid grid-cols-2 gap-3">
+            <SocialButton
+              icon={<GoogleIcon className="h-5 w-5" />}
+              label="Google"
+              disabled={socialPending}
+              onClick={startGoogle}
+            />
+            <SocialButton
+              icon={<AppleIcon className="h-5 w-5" />}
+              label="Apple"
+              disabled={socialPending || !appleClientId}
+              onClick={startApple}
+            />
+          </div>
+        </>
       ) : null}
-
-      <div className="grid grid-cols-2 gap-3">
-        <SocialButton
-          icon={<GoogleIcon className="h-5 w-5" />}
-          label="Google"
-          disabled={socialPending}
-          onClick={startGoogle}
-        />
-        <SocialButton
-          icon={<AppleIcon className="h-5 w-5" />}
-          label="Apple"
-          disabled={socialPending || !appleClientId}
-          onClick={startApple}
-        />
-      </div>
 
       <p className="text-center text-xs leading-5 text-text-hint">
         Need support?{" "}
