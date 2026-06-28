@@ -11,6 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout release candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run live release guard
+        env:
+          LIVE_RELEASE_BASE: ${{ github.event.before }}
+          LIVE_RELEASE_HEAD: ${{ github.sha }}
+        run: npm run guard:live -- --base "$LIVE_RELEASE_BASE" --head "$LIVE_RELEASE_HEAD"
+
       - name: Deploy to DigitalOcean Droplet
         uses: appleboy/ssh-action@v1.0.3
         with:

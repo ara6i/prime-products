@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "guard:live": "node scripts/live-release-guard.mjs",
     "process-images": "tsx scripts/process-platform-images.ts"
   },
   "dependencies": {

@@ -14,10 +14,12 @@ const DEFAULT_ADMIN_HOSTS = [
   "admin.localhost",
 ];
 
-const PUBLIC_PRODUCTION_HOSTS = new Set([
+const DEFAULT_PUBLIC_PRODUCTION_HOSTS = [
   "primestyleai.com",
   "www.primestyleai.com",
-]);
+  "myaifitting.com",
+  "www.myaifitting.com",
+];
 
 function getAdminHosts(): string[] {
   const env = process.env.ADMIN_HOSTS;
@@ -25,9 +27,16 @@ function getAdminHosts(): string[] {
   return env.split(",").map((h) => h.trim().toLowerCase()).filter(Boolean);
 }
 
+function getPublicProductionHosts(): string[] {
+  const env = process.env.PRIME_PRODUCTS_PUBLIC_PRODUCTION_HOSTS;
+  if (!env) return DEFAULT_PUBLIC_PRODUCTION_HOSTS;
+  return env.split(",").map((h) => h.trim().toLowerCase()).filter(Boolean);
+}
+
 export async function proxy(req: NextRequest) {
   const host = normalizeHost(req.headers.get("host"));
   const adminHosts = getAdminHosts();
+  const publicProductionHosts = getPublicProductionHosts();
   const isAdminHost = adminHosts.includes(host);
   const siteAuthEnabled = isSiteAuthEnabled();
 
@@ -36,16 +45,28 @@ export async function proxy(req: NextRequest) {
   const isSiteLoginPath = pathname === "/login" || pathname.startsWith("/login/");
   const isTryOnTestRoute = isTryOnTestPath(pathname);
   const isTryOnTestApiRoute = isTryOnTestApiPath(pathname);
-  const isPublicProductionHost = PUBLIC_PRODUCTION_HOSTS.has(host);
+  const isPublicProductionHost = publicProductionHosts.includes(host);
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+  const isAdminApiRoute = pathname === "/api/admin" || pathname.startsWith("/api/admin/");
+  const isTestLabRoute = pathname === "/test-lab" || pathname.startsWith("/test-lab/");
+  const isTestLabApiRoute = pathname === "/api/test-lab" || pathname.startsWith("/api/test-lab/");
 
-  if (isPublicProductionHost && (pathname === "/admin" || pathname.startsWith("/admin/"))) {
+  if (isPublicProductionHost && isAdminApiRoute) {
+    return NextResponse.json({ message: "Not found" }, { status: 404 });
+  }
+
+  if (isPublicProductionHost && isAdminRoute) {
     const redirectUrl = url.clone();
     redirectUrl.pathname = "/";
     redirectUrl.search = "";
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (isPublicProductionHost && (pathname === "/test-lab" || pathname.startsWith("/test-lab/"))) {
+  if (isPublicProductionHost && isTestLabApiRoute) {
+    return NextResponse.json({ message: "Not found" }, { status: 404 });
+  }
+
+  if (isPublicProductionHost && isTestLabRoute) {
     return new NextResponse("Not found", { status: 404 });
   }
 
@@ -103,8 +124,8 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // /admin/* passes through on any host — accessible at both
-  // admin.primestyleai.com/* and primestyleai.com/admin/*.
+  // Non-admin, non-public-production hosts can still expose staging/local tools
+  // according to their environment allowlists.
   return NextResponse.next();
 }
 
