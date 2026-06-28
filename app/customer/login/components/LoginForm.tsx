@@ -41,6 +41,7 @@ const SUPPORT_EMAIL = "support@primestyleai.com";
 const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
 const appleClientId = process.env.NEXT_PUBLIC_APPLE_CLIENT_ID ?? "";
 const showCustomerSocialAuth = process.env.NEXT_PUBLIC_CUSTOMER_SOCIAL_AUTH_ENABLED === "true";
+const showCustomerSignup = process.env.NEXT_PUBLIC_CUSTOMER_SIGNUP_ENABLED === "true";
 const initialLoginState: LoginState = { error: null, errorId: 0 };
 const initialSignupState: SignupState = { error: null, errorId: 0, verificationEmail: null, message: null };
 const initialVerifyState: VerifySignupState = { error: null, errorId: 0 };
@@ -173,22 +174,24 @@ export function LoginForm() {
         </>
       ) : null}
 
-      <div className="grid grid-cols-2 rounded-full border border-brand-blue/15 bg-brand-blue-pale/35 p-1">
-        {(["login", "signup"] as const).map((item) => (
-          <button
-            key={item}
-            type="button"
-            onClick={() => setMode(item)}
-            className={`h-10 rounded-full text-sm font-semibold transition-colors ${
-              mode === item ? "bg-white text-brand-blue shadow-sm" : "text-text-body hover:text-brand-blue"
-            }`}
-          >
-            {item === "login" ? "Log in" : "Sign up"}
-          </button>
-        ))}
-      </div>
+      {showCustomerSignup ? (
+        <div className="grid grid-cols-2 rounded-full border border-brand-blue/15 bg-brand-blue-pale/35 p-1">
+          {(["login", "signup"] as const).map((item) => (
+            <button
+              key={item}
+              type="button"
+              onClick={() => setMode(item)}
+              className={`h-10 rounded-full text-sm font-semibold transition-colors ${
+                mode === item ? "bg-white text-brand-blue shadow-sm" : "text-text-body hover:text-brand-blue"
+              }`}
+            >
+              {item === "login" ? "Log in" : "Sign up"}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
-      {mode === "login" ? (
+      {!showCustomerSignup || mode === "login" ? (
         <LoginFields formAction={loginFormAction} pending={loginPending} error={loginState.error} />
       ) : signupState.verificationEmail ? (
         <VerifyFields
