@@ -7,7 +7,7 @@ import { Button } from "@/app/shared/components/ui";
 import { usePilotModal } from "./PilotModalContext";
 import { LandingLanguageSwitcher, useLandingLanguage } from "@/app/landing/i18n";
 
-type SectionLabelKey = "features" | "demo" | "integrations" | "contact";
+type SectionLabelKey = "features" | "demo" | "pricing" | "integrations" | "contact";
 
 const SECTION_LINKS: Array<{
   labelKey: SectionLabelKey;
@@ -16,12 +16,14 @@ const SECTION_LINKS: Array<{
 }> = [
   { labelKey: "features", href: "#features" },
   { labelKey: "demo", href: "/demo/products", external: true },
+  { labelKey: "pricing", href: "#pricing" },
   { labelKey: "integrations", href: "#integrations" },
   { labelKey: "contact", href: "#contact" },
 ];
 const CUSTOMER_LOGIN_PATH = "/customer/login";
 const ADMIN_LOGIN_PATH = "/admin/login";
 const STAGING_HOSTS = new Set(["test-fe-9a7k.primestyleai.com"]);
+const CUSTOMER_LOGIN_HIDDEN_HOSTS = new Set(["primestyleai.com", "www.primestyleai.com"]);
 
 function subscribeToHostname(): () => void {
   return () => undefined;
@@ -31,8 +33,16 @@ function getBrowserStagingSnapshot(): boolean {
   return STAGING_HOSTS.has(window.location.hostname.toLowerCase());
 }
 
+function getBrowserCustomerLoginSnapshot(): boolean {
+  return !CUSTOMER_LOGIN_HIDDEN_HOSTS.has(window.location.hostname.toLowerCase());
+}
+
 function useShowStagingAdminLogin(): boolean {
   return useSyncExternalStore(subscribeToHostname, getBrowserStagingSnapshot, () => false);
+}
+
+function useShowCustomerLogin(): boolean {
+  return useSyncExternalStore(subscribeToHostname, getBrowserCustomerLoginSnapshot, () => false);
 }
 
 interface DeveloperNavbarProps {
@@ -43,6 +53,7 @@ interface DeveloperNavbarProps {
 export function DeveloperNavbar({ variant = "default" }: DeveloperNavbarProps) {
   const isDemo = variant === "demo";
   const showAdminLogin = useShowStagingAdminLogin();
+  const showCustomerLogin = useShowCustomerLogin();
   const { open: openPilot } = usePilotModal();
   const { language, setLanguage, t } = useLandingLanguage();
 
@@ -100,14 +111,16 @@ export function DeveloperNavbar({ variant = "default" }: DeveloperNavbarProps) {
             Admin Panel
           </Link>
         )}
-        <Button
-          asChild
-          variant="outline"
-          size="default"
-          className="h-[2.604vw] px-[1.15vw] text-[0.833vw] leading-[1.354vw] rounded-[52.083vw] whitespace-nowrap cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
-        >
-          <Link href={CUSTOMER_LOGIN_PATH}>{t.nav.customerLogin}</Link>
-        </Button>
+        {showCustomerLogin && (
+          <Button
+            asChild
+            variant="outline"
+            size="default"
+            className="h-[2.604vw] px-[1.15vw] text-[0.833vw] leading-[1.354vw] rounded-[52.083vw] whitespace-nowrap cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
+          >
+            <Link href={CUSTOMER_LOGIN_PATH}>{t.nav.customerLogin}</Link>
+          </Button>
+        )}
         <Button
           variant="primary"
           size="default"

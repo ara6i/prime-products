@@ -7,7 +7,7 @@ import { Button } from "@/app/shared/components/ui";
 import { cn } from "@/app/shared/lib/utils";
 import { LandingLanguageSwitcher, useLandingLanguage } from "@/app/landing/i18n";
 
-type SectionLabelKey = "features" | "demo" | "integrations" | "contact";
+type SectionLabelKey = "features" | "demo" | "pricing" | "integrations" | "contact";
 
 const SECTION_LINKS: Array<{
   labelKey: SectionLabelKey;
@@ -16,12 +16,14 @@ const SECTION_LINKS: Array<{
 }> = [
   { labelKey: "features", href: "#features" },
   { labelKey: "demo", href: "/demo/products", external: true },
+  { labelKey: "pricing", href: "#pricing" },
   { labelKey: "integrations", href: "#integrations" },
   { labelKey: "contact", href: "#contact" },
 ];
 const CUSTOMER_LOGIN_PATH = "/customer/login";
 const ADMIN_LOGIN_PATH = "/admin/login";
 const STAGING_HOSTS = new Set(["test-fe-9a7k.primestyleai.com"]);
+const CUSTOMER_LOGIN_HIDDEN_HOSTS = new Set(["primestyleai.com", "www.primestyleai.com"]);
 
 const NAV_HEIGHT = 64;
 
@@ -33,8 +35,16 @@ function getBrowserStagingSnapshot(): boolean {
   return STAGING_HOSTS.has(window.location.hostname.toLowerCase());
 }
 
+function getBrowserCustomerLoginSnapshot(): boolean {
+  return !CUSTOMER_LOGIN_HIDDEN_HOSTS.has(window.location.hostname.toLowerCase());
+}
+
 function useShowStagingAdminLogin(): boolean {
   return useSyncExternalStore(subscribeToHostname, getBrowserStagingSnapshot, () => false);
+}
+
+function useShowCustomerLogin(): boolean {
+  return useSyncExternalStore(subscribeToHostname, getBrowserCustomerLoginSnapshot, () => false);
 }
 
 interface MobileDeveloperNavbarProps {
@@ -48,6 +58,7 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
   const close = () => setOpen(false);
   const isDemo = variant === "demo";
   const showAdminLogin = useShowStagingAdminLogin();
+  const showCustomerLogin = useShowCustomerLogin();
   const resolveHref = (href: string) => href.startsWith("#") ? `${sectionHrefPrefix}${href}` : href;
   const { language, setLanguage, t } = useLandingLanguage();
 
@@ -175,19 +186,21 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
               )}
             </div>
 
-            <div className="flex-shrink-0 px-4 py-4 border-t border-gray-100">
-              <div className="grid grid-cols-1 gap-2">
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full h-11 text-[14px] font-semibold rounded-2xl cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
-                >
-                  <Link href={CUSTOMER_LOGIN_PATH} onClick={close}>
-                    {t.nav.customerLogin}
-                  </Link>
-                </Button>
+            {showCustomerLogin && (
+              <div className="flex-shrink-0 px-4 py-4 border-t border-gray-100">
+                <div className="grid grid-cols-1 gap-2">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="w-full h-11 text-[14px] font-semibold rounded-2xl cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
+                  >
+                    <Link href={CUSTOMER_LOGIN_PATH} onClick={close}>
+                      {t.nav.customerLogin}
+                    </Link>
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </>
       )}
