@@ -3,7 +3,6 @@
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
 import { usePilotModal } from "./PilotModalContext";
 import { LandingLanguageSwitcher, useLandingLanguage } from "@/app/landing/i18n";
@@ -26,10 +25,8 @@ const SECTION_LINKS: SectionLink[] = [
   { labelKey: "integrations", href: "#integrations" },
   { labelKey: "contact", href: "#contact" },
 ];
-const CUSTOMER_LOGIN_PATH = "/customer/login";
 const CUSTOMER_DASHBOARD_PATH = "/customer/dashboard";
 const ADMIN_LOGIN_PATH = "/admin/login";
-const PDP_STUDIO_PATH = "/pdp-studio";
 const STAGING_HOSTS = new Set(["test-fe-9a7k.primestyleai.com"]);
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 
@@ -42,16 +39,8 @@ function getBrowserInternalSnapshot(): boolean {
   return STAGING_HOSTS.has(hostname) || LOCAL_HOSTS.has(hostname);
 }
 
-function getBrowserLocalSnapshot(): boolean {
-  return LOCAL_HOSTS.has(window.location.hostname.toLowerCase());
-}
-
 function useShowInternalAdminLogin(): boolean {
   return useSyncExternalStore(subscribeToHostname, getBrowserInternalSnapshot, () => false);
-}
-
-function useShowLocalTools(): boolean {
-  return useSyncExternalStore(subscribeToHostname, getBrowserLocalSnapshot, () => false);
 }
 
 interface DeveloperNavbarProps {
@@ -63,7 +52,6 @@ interface DeveloperNavbarProps {
 export function DeveloperNavbar({ variant = "default", sectionHrefPrefix = "" }: DeveloperNavbarProps) {
   const isDemo = variant === "demo";
   const showAdminLogin = useShowInternalAdminLogin();
-  const showLocalTools = useShowLocalTools();
   const { open: openPilot } = usePilotModal();
   const { language, setLanguage, t } = useLandingLanguage();
   const resolveHref = (href: string) => href.startsWith("#") ? `${sectionHrefPrefix}${href}` : href;
@@ -116,25 +104,7 @@ export function DeveloperNavbar({ variant = "default", sectionHrefPrefix = "" }:
             onLanguageChange={setLanguage}
           />
         )}
-        {showLocalTools ? (
-          <div className="group relative">
-            <button
-              type="button"
-              className="inline-flex h-[2.604vw] items-center gap-[0.35vw] rounded-[52.083vw] border border-brand-blue bg-white px-[1.15vw] text-[0.833vw] font-semibold leading-[1.354vw] text-brand-blue transition-colors hover:bg-brand-blue hover:text-white"
-            >
-              Dashboards
-              <ChevronDown className="h-[0.9vw] w-[0.9vw] transition-transform group-hover:rotate-180" aria-hidden />
-            </button>
-            <div className="pointer-events-none absolute right-0 top-full z-[80] min-w-[10.5vw] pt-[0.45vw] opacity-0 transition duration-150 group-hover:pointer-events-auto group-hover:opacity-100">
-              <div className="rounded-[0.8vw] border border-gray-200 bg-white p-[0.35vw] shadow-xl shadow-black/10">
-                <LocalToolLink href={CUSTOMER_LOGIN_PATH} label="Customer" />
-                <LocalToolLink href={PDP_STUDIO_PATH} label="PDP Studio" />
-                <LocalToolLink href={ADMIN_LOGIN_PATH} label="Admin" />
-                <LocalToolLink href="/test-lab" label="Test Lab" />
-              </div>
-            </div>
-          </div>
-        ) : showAdminLogin ? (
+        {showAdminLogin ? (
           <Link
             href={ADMIN_LOGIN_PATH}
             className="text-[0.833vw] font-semibold leading-[1.354vw] text-text-body transition-colors hover:text-brand-blue whitespace-nowrap"
@@ -161,16 +131,5 @@ export function DeveloperNavbar({ variant = "default", sectionHrefPrefix = "" }:
         </Button>
       </div>
     </nav>
-  );
-}
-
-function LocalToolLink({ href, label }: { href: string; label: string }) {
-  return (
-    <Link
-      href={href}
-      className="block rounded-[0.5vw] px-[0.75vw] py-[0.55vw] text-[0.78vw] font-semibold text-gray-900 transition-colors hover:bg-gray-50 hover:text-brand-blue"
-    >
-      {label}
-    </Link>
   );
 }

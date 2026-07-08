@@ -3,7 +3,7 @@
 import { useState, useEffect, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
 import { cn } from "@/app/shared/lib/utils";
 import { LandingLanguageSwitcher, useLandingLanguage } from "@/app/landing/i18n";
@@ -26,7 +26,6 @@ const SECTION_LINKS: SectionLink[] = [
   { labelKey: "integrations", href: "#integrations" },
   { labelKey: "contact", href: "#contact" },
 ];
-const CUSTOMER_LOGIN_PATH = "/customer/login";
 const CUSTOMER_DASHBOARD_PATH = "/customer/dashboard";
 const ADMIN_LOGIN_PATH = "/admin/login";
 const STAGING_HOSTS = new Set(["test-fe-9a7k.primestyleai.com"]);
@@ -43,16 +42,8 @@ function getBrowserInternalSnapshot(): boolean {
   return STAGING_HOSTS.has(hostname) || LOCAL_HOSTS.has(hostname);
 }
 
-function getBrowserLocalSnapshot(): boolean {
-  return LOCAL_HOSTS.has(window.location.hostname.toLowerCase());
-}
-
 function useShowInternalAdminLogin(): boolean {
   return useSyncExternalStore(subscribeToHostname, getBrowserInternalSnapshot, () => false);
-}
-
-function useShowLocalTools(): boolean {
-  return useSyncExternalStore(subscribeToHostname, getBrowserLocalSnapshot, () => false);
 }
 
 interface MobileDeveloperNavbarProps {
@@ -63,11 +54,9 @@ interface MobileDeveloperNavbarProps {
 
 export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix = "" }: MobileDeveloperNavbarProps) {
   const [open, setOpen] = useState(false);
-  const [dashboardsOpen, setDashboardsOpen] = useState(false);
   const close = () => setOpen(false);
   const isDemo = variant === "demo";
   const showAdminLogin = useShowInternalAdminLogin();
-  const showLocalTools = useShowLocalTools();
   const resolveHref = (href: string) => href.startsWith("#") ? `${sectionHrefPrefix}${href}` : href;
   const { language, setLanguage, t } = useLandingLanguage();
 
@@ -110,7 +99,7 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
         </Link>
 
         <div className="flex items-center gap-1.5">
-          {showAdminLogin && !showLocalTools && (
+          {showAdminLogin && (
             <Link
               href={ADMIN_LOGIN_PATH}
               className="hidden min-[390px]:inline-flex h-[34px] items-center rounded-full px-2.5 text-[11.5px] font-semibold text-text-body hover:text-brand-blue"
@@ -167,35 +156,7 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
             style={{ top: NAV_HEIGHT, maxHeight: `calc(100svh - ${NAV_HEIGHT}px)` }}
           >
             <div className="flex-1 overflow-y-auto px-3 py-3">
-              {showLocalTools ? (
-                <div className="mb-2 rounded-2xl border border-gray-200 bg-gray-50 p-2">
-                  <button
-                    type="button"
-                    aria-expanded={dashboardsOpen}
-                    onClick={() => setDashboardsOpen((value) => !value)}
-                    className="flex h-11 w-full items-center justify-between rounded-xl px-3 text-[15px] font-semibold text-gray-900 transition-colors hover:bg-white"
-                  >
-                    Dashboards
-                    <ChevronDown
-                      className={cn("h-4 w-4 text-brand-blue transition-transform", dashboardsOpen ? "rotate-180" : "")}
-                      aria-hidden
-                    />
-                  </button>
-                  <div
-                    className={cn(
-                      "grid overflow-hidden transition-[grid-template-rows,opacity] duration-200",
-                      dashboardsOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                    )}
-                  >
-                    <div className="min-h-0">
-                      <MobileLocalToolLink href={CUSTOMER_LOGIN_PATH} label="Customer" onClick={close} />
-                      <MobileLocalToolLink href="/pdp-studio" label="PDP Studio" onClick={close} />
-                      <MobileLocalToolLink href={ADMIN_LOGIN_PATH} label="Admin" onClick={close} />
-                      <MobileLocalToolLink href="/test-lab" label="Test Lab" onClick={close} />
-                    </div>
-                  </div>
-                </div>
-              ) : showAdminLogin ? (
+              {showAdminLogin ? (
                 <Link
                   href={ADMIN_LOGIN_PATH}
                   onClick={close}
@@ -249,17 +210,5 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
         </>
       )}
     </>
-  );
-}
-
-function MobileLocalToolLink({ href, label, onClick }: { href: string; label: string; onClick: () => void }) {
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className="flex h-11 items-center rounded-xl px-3 text-[15px] font-medium text-gray-900 transition-colors hover:bg-white"
-    >
-      {label}
-    </Link>
   );
 }
