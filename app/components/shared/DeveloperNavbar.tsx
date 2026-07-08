@@ -97,12 +97,10 @@ export function DeveloperNavbar({ variant = "default" }: DeveloperNavbarProps) {
       )}
 
       <div className={`flex items-center gap-[1.25vw] ${isDemo ? "ml-auto" : ""}`}>
-        {!isDemo && (
-          <LandingLanguageSwitcher
-            language={language}
-            onLanguageChange={setLanguage}
-          />
-        )}
+        <LandingLanguageSwitcher
+          language={language}
+          onLanguageChange={setLanguage}
+        />
         {showAdminLogin && (
           <Link
             href={ADMIN_LOGIN_PATH}

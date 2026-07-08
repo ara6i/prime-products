@@ -9,6 +9,7 @@ import {
 } from "@/app/shared/components/ui/sheet";
 import { cn } from "@/app/shared/lib/utils";
 import type { DemoSizeGuide, DemoSizeGuideSection, DemoSizeGuideRegion, DemoSizeGuideFilter } from "../../types";
+import { useDemoTranslation } from "../../utils/demoTranslations";
 
 interface Props {
   guide: DemoSizeGuide;
@@ -131,6 +132,14 @@ function displayColumnHeader(
     return `${baseHeaderLabel(key)} (${unit})`;
   }
   return displayMeasurementHeader(key, unit, sourceUnit);
+}
+
+function translateHeaderLabel(label: string, translateTerm: (value: string) => string): string {
+  const explicitUnit = getExplicitUnit(label);
+  if (explicitUnit) {
+    return `${translateTerm(baseHeaderLabel(label))} (${explicitUnit})`;
+  }
+  return translateTerm(label);
 }
 
 function getColumnSourceUnit(
@@ -310,9 +319,11 @@ function TransposedSizeTable({
   unit: Unit;
   sourceUnit: Unit | null;
 }) {
+  const { translateDemo, translateDemoTerm } = useDemoTranslation();
+
   if (rows.length === 0) {
     return (
-      <p className="text-xs text-text-hint italic">No sizes match the selected options.</p>
+      <p className="text-xs text-text-hint italic">{translateDemo("noSizesMatch")}</p>
     );
   }
 
@@ -379,7 +390,7 @@ function TransposedSizeTable({
         <thead>
           <tr>
             <th className="text-left py-2.5 pr-3 text-xs text-brand-blue font-semibold uppercase tracking-wider border-b border-border-light bg-white sticky left-0">
-              {sizeKey}
+              {translateDemoTerm(sizeKey)}
             </th>
             {rows.map((r, i) => (
               <th
@@ -398,7 +409,7 @@ function TransposedSizeTable({
           {measurementKeys.map((mKey) => (
             <tr key={mKey}>
               <td className="py-2.5 pr-3 text-xs font-semibold uppercase tracking-wider text-text-primary whitespace-nowrap border-b border-border-light bg-white sticky left-0">
-                {displayColumnHeader(mKey, unit, sourceUnit, candidateMeasurementKeys)}
+                {translateHeaderLabel(displayColumnHeader(mKey, unit, sourceUnit, candidateMeasurementKeys), translateDemoTerm)}
               </td>
               {rows.map((r, i) => (
                 <td
@@ -436,6 +447,7 @@ function SizeTable({
   allRegionColumns: Set<string>;
   regionPrimaryColumn?: string | null;
 }) {
+  const { translateDemoTerm } = useDemoTranslation();
   const rowKeys = Object.keys(section.rows[0] || {});
   // Prefer the actual size axis (Size/Standard/Length/Fit) over
   // regionPrimaryColumn. The region's first column is a MEASUREMENT
@@ -517,7 +529,7 @@ function SizeTable({
 
   return (
     <div className="mb-5">
-      <h3 className="text-sm font-semibold text-text-primary mb-2">{section.name}</h3>
+      <h3 className="text-sm font-semibold text-text-primary mb-2">{translateDemoTerm(section.name)}</h3>
       {section.description && (
         <p className="text-xs text-text-hint mb-2">{section.description}</p>
       )}
@@ -526,14 +538,14 @@ function SizeTable({
           <thead>
             <tr className="border-b border-border-light">
               <th className="text-left py-2.5 pr-3 text-xs text-brand-blue font-semibold uppercase tracking-wider">
-                {labelKey}
+                {translateDemoTerm(labelKey)}
               </th>
               {colKeys.map((key) => (
                 <th
                   key={key}
                   className="text-left py-2.5 px-2.5 text-xs text-text-hint font-medium uppercase tracking-wider whitespace-nowrap"
                 >
-                  {displayHeader(key)}
+                  {translateHeaderLabel(displayHeader(key), translateDemoTerm)}
                 </th>
               ))}
             </tr>
@@ -568,6 +580,7 @@ function SizeTable({
 
 export function SizeGuideModal({ guide, open, onClose }: Props) {
   const [unit, setUnit] = useState<Unit>("cm");
+  const { translateDemo } = useDemoTranslation();
   const defaultRegionCode = guide.regions?.[0]?.code || "";
   const [regionCodeOverride, setRegionCodeOverride] = useState<string>("");
   const regionCode = regionCodeOverride || defaultRegionCode;
@@ -695,7 +708,7 @@ export function SizeGuideModal({ guide, open, onClose }: Props) {
                         : "text-text-hint hover:text-text-body"
                     )}
                   >
-                    {u === "cm" ? "CM" : "Inches"}
+                    {u === "cm" ? "CM" : translateDemo("inches")}
                   </button>
                 ))}
               </div>
@@ -739,14 +752,14 @@ export function SizeGuideModal({ guide, open, onClose }: Props) {
 
           {guide.unit && (
             <p className="text-xs text-text-caption mt-1">
-              All measurements in {unit === "cm" ? "centimeters" : "inches"}
+              {translateDemo("allMeasurementsIn", { unit: unit === "cm" ? translateDemo("centimeters") : translateDemo("inches") })}
             </p>
           )}
 
           {guide.fitTerms && guide.fitTerms.length > 0 && (
             <div className="mt-5 p-4 bg-surface-light border border-border-light rounded-xl">
               <h4 className="text-xs font-semibold text-text-primary mb-2.5 uppercase tracking-wider">
-                Fit Terms
+                {translateDemo("fitTerms")}
               </h4>
               <div className="space-y-2">
                 {guide.fitTerms.map((ft, i) => (
@@ -764,7 +777,7 @@ export function SizeGuideModal({ guide, open, onClose }: Props) {
           {guide.howToMeasure && guide.howToMeasure.length > 0 && (
             <div className="mt-4 p-4 bg-surface-light border border-border-light rounded-xl">
               <h4 className="text-xs font-semibold text-text-primary mb-2.5 uppercase tracking-wider">
-                How to Measure
+                {translateDemo("howToMeasure")}
               </h4>
               <ul className="space-y-2">
                 {guide.howToMeasure.map((tip, i) => (
@@ -785,7 +798,7 @@ export function SizeGuideModal({ guide, open, onClose }: Props) {
           {guide.guideImages && guide.guideImages.length > 0 && (
             <div className="mt-4">
               <h4 className="text-xs font-semibold text-text-primary mb-2.5 uppercase tracking-wider">
-                Measurement Guide
+                {translateDemo("measurementGuide")}
               </h4>
               <div className="grid grid-cols-2 gap-3">
                 {guide.guideImages.map((img, i) => (

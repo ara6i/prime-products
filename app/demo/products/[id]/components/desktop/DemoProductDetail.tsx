@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { ArrowLeft, Ruler, Sparkles } from "lucide-react";
 import { usePrimeStyleSize } from "@primestyleai/tryon/react";
 import type { RecommendForProductInput } from "@primestyleai/tryon/react";
-import { useLandingLanguage } from "@/app/landing/i18n";
+import { LandingLanguageSwitcher } from "@/app/landing/i18n";
 import type { DemoProductView } from "../../../types";
 import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
@@ -14,6 +14,7 @@ import { useSizingAutoSelect } from "../../hooks/useSizingAutoSelect";
 import { useProfileAnalysisDisplay } from "../../hooks/useProfileAnalysisDisplay";
 import { landingLanguageToSdkLocale } from "../../../utils/sdkLocale";
 import { inferSdkProductFitType } from "../../../utils/sdkProductFitType";
+import { useDemoTranslation } from "../../../utils/demoTranslations";
 import {
   DemoBagButton,
   DemoBagDrawer,
@@ -60,12 +61,24 @@ type DemoPrimeStyleSizeInput = RecommendForProductInput & {
   productCurrency?: string;
 };
 
+type DemoAutoSizeSection = {
+  size?: string;
+  recommendedSize?: string;
+  length?: string;
+};
+
+type DemoAutoSizeRawResult = {
+  recommendedSize?: string;
+  recommendedLength?: string;
+  sections?: Record<string, DemoAutoSizeSection>;
+};
+
 function positivePrice(value: number | null | undefined): number | undefined {
   return typeof value === "number" && value > 0 ? value : undefined;
 }
 
 export function DesktopProductDetail({ product }: Props) {
-  const { language } = useLandingLanguage();
+  const { language, setLanguage, translateDemo } = useDemoTranslation();
   const [selectedColor, setSelectedColor] = useState(product.selectedColor);
   const [jacketSizeNum, setJacketSizeNum] = useState("");
   const [jacketLength, setJacketLength] = useState("");
@@ -172,9 +185,10 @@ export function DesktopProductDetail({ product }: Props) {
       image: images[0] ?? product.primaryImage,
       color: selectedColor,
       payload,
+      suggestedSizeLabel: translateDemo("suggestedSize"),
     });
     setBagItems((current) => mergeDemoBagItem(current, item));
-  }, [images, product, selectedColor]);
+  }, [images, product, selectedColor, translateDemo]);
   const incrementBagItem = useCallback((lineId: string) => {
     setBagItems((current) => current.map((item) => (
       item.lineId === lineId ? { ...item, quantity: item.quantity + 1 } : item
@@ -245,12 +259,12 @@ export function DesktopProductDetail({ product }: Props) {
 
   const lastAutoSelectedRef = useRef<string | null>(null);
   useEffect(() => {
-    const raw = autoSize.result?.raw as any;
+    const raw = autoSize.result?.raw as DemoAutoSizeRawResult | undefined;
     if (!raw || parsedSizes.length === 0) return;
     const recoKey = JSON.stringify({
       size: raw.recommendedSize, length: raw.recommendedLength,
       sections: raw.sections
-        ? Object.fromEntries(Object.entries(raw.sections as Record<string, any>).map(([k, v]) => [k, { size: (v as any)?.size, length: (v as any)?.length, recommendedSize: (v as any)?.recommendedSize }]))
+        ? Object.fromEntries(Object.entries(raw.sections).map(([k, v]) => [k, { size: v.size, length: v.length, recommendedSize: v.recommendedSize }]))
         : null,
     });
     if (lastAutoSelectedRef.current === recoKey) return;
@@ -340,7 +354,7 @@ export function DesktopProductDetail({ product }: Props) {
     console.log("raw.recommendedLength:", raw.recommendedLength);
     console.log("raw.sections:", raw.sections);
     console.log("parsedSizes:", parsedSizes.map(p => ({ original: p.original, number: p.number, length: p.length, available: p.available })));
-    const sections = raw.sections as Record<string, any> | undefined;
+    const sections = raw.sections;
     // Backend can include "Jacket Length" / "Pant Length" pseudo-sections
     // alongside the real "Jacket" / "Pants" sections — those carry only the
     // length string, not a size, and shouldn't be matched as the primary
@@ -348,14 +362,14 @@ export function DesktopProductDetail({ product }: Props) {
     const isLengthOnly = (n: string) => /\blength\b/i.test(n);
     if (sections && Object.keys(sections).length > 0) {
       const entries = Object.entries(sections).filter(([n]) => !isLengthOnly(n));
-      console.log("[autosize] section entries (Length-only filtered):", entries.map(([n, s]: [string, any]) => ({ name: n, size: s?.size, recommendedSize: s?.recommendedSize, length: s?.length })));
+      console.log("[autosize] section entries (Length-only filtered):", entries.map(([n, s]) => ({ name: n, size: s.size, recommendedSize: s.recommendedSize, length: s.length })));
       for (const [name, sec] of entries) {
         const lc = name.toLowerCase();
         if (!/pant|trouser/.test(lc)) continue;
-        const sizeStr = (sec as any)?.size || (sec as any)?.recommendedSize;
-        console.log(`[autosize] pants iter "${name}" → sizeStr=${sizeStr} length=${(sec as any)?.length}`);
+        const sizeStr = sec.size || sec.recommendedSize;
+        console.log(`[autosize] pants iter "${name}" → sizeStr=${sizeStr} length=${sec.length}`);
         if (!sizeStr) continue;
-        applyPants(sizeStr, (sec as any)?.length);
+        applyPants(sizeStr, sec.length);
       }
       const isJacketLike = (n: string) => /jacket|coat|blazer|tuxedo|suit/.test(n.toLowerCase());
       const isPants = (n: string) => /pant|trouser/.test(n.toLowerCase());
@@ -363,10 +377,10 @@ export function DesktopProductDetail({ product }: Props) {
       console.log("[autosize] jacket target picked:", target ? target[0] : "(none)");
       if (target) {
         const [, sec] = target;
-        const sizeStr = (sec as any)?.size || (sec as any)?.recommendedSize;
-        console.log(`[autosize] jacket sizeStr=${sizeStr} length=${(sec as any)?.length}`);
+        const sizeStr = sec.size || sec.recommendedSize;
+        console.log(`[autosize] jacket sizeStr=${sizeStr} length=${sec.length}`);
         if (sizeStr) {
-          const applied = applyJacket(sizeStr, (sec as any)?.length);
+          const applied = applyJacket(sizeStr, sec.length);
           console.log(`[autosize] applyJacket returned ${applied}`);
         }
       }
@@ -402,13 +416,20 @@ export function DesktopProductDetail({ product }: Props) {
           style={{ fontSize: '0.85vw' }}
         >
           <ArrowLeft style={{ width: '0.9vw', height: '0.9vw' }} />
-          Back
+          {translateDemo("back")}
         </Link>
-        <DemoBagButton
-          count={bagCount}
-          onClick={() => setBagOpen(true)}
-          className="h-[2.1vw] w-[2.1vw]"
-        />
+        <div className="flex items-center gap-[0.7vw]">
+          <LandingLanguageSwitcher
+            language={language}
+            onLanguageChange={setLanguage}
+            compact
+          />
+          <DemoBagButton
+            count={bagCount}
+            onClick={() => setBagOpen(true)}
+            className="h-[2.1vw] w-[2.1vw]"
+          />
+        </div>
       </nav>
 
       {/* Three-column layout: [LEFT sticky info] [CENTER scrollable images] [RIGHT sticky purchase] */}
@@ -441,7 +462,7 @@ export function DesktopProductDetail({ product }: Props) {
 
             {product.material && (
               <div style={{ fontSize: '0.75vw' }} className="flex items-center gap-[0.5vw] text-text-caption mt-[1vw]">
-                <span className="whitespace-nowrap">Material</span>
+                <span className="whitespace-nowrap">{translateDemo("material")}</span>
                 <span className="flex-1 h-px bg-border-light" />
                 <span className="text-text-body text-right">{product.material}</span>
               </div>
@@ -482,7 +503,7 @@ export function DesktopProductDetail({ product }: Props) {
             {product.colorVariants.length > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-[0.8vw]">
-                  <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider">Color</span>
+                  <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider">{translateDemo("color")}</span>
                   <span style={{ fontSize: '0.82vw' }} className="text-text-body">{selectedColor}</span>
                 </div>
                 <div className="flex gap-[0.5vw] flex-wrap">
@@ -508,29 +529,29 @@ export function DesktopProductDetail({ product }: Props) {
             {profileAnalysis.showAnalyzing ? (
               <div className="inline-flex items-center gap-[0.35vw] px-[0.7vw] py-[0.3vw] rounded-full bg-brand-blue/10 text-brand-blue font-semibold ps-analyzing-pulse self-start" style={{ fontSize: '0.7vw' }}>
                 <Sparkles style={{ width: '0.75vw', height: '0.75vw' }} className="ps-analyzing-spin" />
-                <span key={profileAnalysis.message} className="ps-analyzing-text">{profileAnalysis.message}</span>
+                <span key={profileAnalysis.message} className="ps-analyzing-text">{translateDemo("analyzing")}</span>
               </div>
             ) : profileAnalysis.showComplete ? (
               <div className="inline-flex items-center gap-[0.35vw] px-[0.7vw] py-[0.3vw] rounded-full bg-emerald-50 text-emerald-700 font-semibold self-start" style={{ fontSize: '0.7vw' }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                Analyzed by your profile
+                {translateDemo("analyzedByProfile")}
               </div>
             ) : null}
 
             {/* Size selector */}
             {sizes.length > 0 && isOneSizeOnly ? (
               <div>
-                <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider block mb-[0.6vw]">Size</span>
+                <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider block mb-[0.6vw]">{translateDemo("size")}</span>
                 <div className="w-full rounded-lg border border-border-light bg-surface-light px-[0.85vw] py-[0.7vw] text-text-primary font-medium" style={{ fontSize: '0.82vw' }}>
                   {oneSizeLabel}
                 </div>
               </div>
             ) : sizes.length > 0 && hasSplitSizes ? (
               <div className={`space-y-[0.6vw] ${justAutoFilled ? "ps-autofill-flash" : ""}`}>
-                <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider block">Size</span>
+                <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider block">{translateDemo("size")}</span>
                 <div className="flex gap-[0.5vw]">
                   <div className="flex-1">
-                    <label style={{ fontSize: '0.72vw' }} className="text-text-caption block mb-[0.3vw]">{pantsWaistSizes.length > 0 ? "Jacket" : isDress ? "Dress" : "Size"}</label>
+                    <label style={{ fontSize: '0.72vw' }} className="text-text-caption block mb-[0.3vw]">{pantsWaistSizes.length > 0 ? translateDemo("jacket") : isDress ? translateDemo("dress") : translateDemo("size")}</label>
                     <SizeSelect
                       value={jacketSizeNum}
                       onChange={handleSizeNumberSelect}
@@ -539,12 +560,12 @@ export function DesktopProductDetail({ product }: Props) {
                         label: num,
                         disabled: !parsedSizes.some((s) => s.number === num && s.available),
                       }))}
-                      placeholder="Select"
+                      placeholder={translateDemo("select")}
                     />
                   </div>
                   {allUniqueLengths.length > 0 && (
                     <div className="flex-1">
-                      <label style={{ fontSize: '0.72vw' }} className="text-text-caption block mb-[0.3vw]">Length</label>
+                      <label style={{ fontSize: '0.72vw' }} className="text-text-caption block mb-[0.3vw]">{translateDemo("length")}</label>
                       <SizeSelect
                         value={jacketLength}
                         onChange={handleLengthSelect}
@@ -554,7 +575,7 @@ export function DesktopProductDetail({ product }: Props) {
                           label: len,
                           disabled: !!(jacketSizeNum && !availableLengths.has(len)),
                         }))}
-                        placeholder="Select"
+                        placeholder={translateDemo("select")}
                       />
                     </div>
                   )}
@@ -564,23 +585,23 @@ export function DesktopProductDetail({ product }: Props) {
                   <div className="flex gap-[0.5vw]">
                     {pantsWaistSizes.length > 0 && (
                       <div className="flex-1">
-                        <label style={{ fontSize: '0.72vw' }} className="text-text-caption block mb-[0.3vw]">Pants</label>
+                        <label style={{ fontSize: '0.72vw' }} className="text-text-caption block mb-[0.3vw]">{translateDemo("pants")}</label>
                         <SizeSelect
                           value={pantsWaistSize}
                           onChange={setPantsWaistSize}
                           options={pantsWaistSizes.map((s) => ({ value: s, label: s }))}
-                          placeholder="Select"
+                          placeholder={translateDemo("select")}
                         />
                       </div>
                     )}
                     {pantsLengthSizes.length > 0 && (
                       <div className="flex-1">
-                        <label style={{ fontSize: '0.72vw' }} className="text-text-caption block mb-[0.3vw]">Length</label>
+                        <label style={{ fontSize: '0.72vw' }} className="text-text-caption block mb-[0.3vw]">{translateDemo("length")}</label>
                         <SizeSelect
                           value={pantsLengthSize}
                           onChange={setPantsLengthSize}
                           options={pantsLengthSizes.map((len) => ({ value: len, label: len }))}
-                          placeholder="Select"
+                          placeholder={translateDemo("select")}
                         />
                       </div>
                     )}
@@ -589,16 +610,16 @@ export function DesktopProductDetail({ product }: Props) {
               </div>
             ) : sizes.length > 0 ? (
               <div className={justAutoFilled ? "ps-autofill-flash" : ""}>
-                <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider block mb-[0.6vw]">Size</span>
+                <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider block mb-[0.6vw]">{translateDemo("size")}</span>
                 <SizeSelect
                   value={selectedSize}
                   onChange={setSelectedSize}
                   options={sizes.map((size) => ({
                     value: size.name,
-                    label: size.available ? size.name : `${size.name} — Sold out`,
+                    label: size.available ? size.name : `${size.name} - ${translateDemo("soldOut")}`,
                     disabled: !size.available,
                   }))}
-                  placeholder="Select size"
+                  placeholder={translateDemo("selectSize")}
                 />
               </div>
             ) : null}
@@ -622,7 +643,10 @@ export function DesktopProductDetail({ product }: Props) {
               productDescription={product.description}
               productMaterial={product.material}
               sizeGuideData={product.sizeGuideData}
-              buttonText="See How It Fits"
+              buttonText={translateDemo("seeHowItFits")}
+              addToBagLabel={translateDemo("addToBag")}
+              continueShoppingLabel={translateDemo("continueShopping")}
+              backToProductPageLabel={translateDemo("backToProductPage")}
               onComplete={handleSizingComplete}
               onAddToBag={handleAddToBag}
               buttonStyles={sdkButtonStyles}
@@ -639,13 +663,13 @@ export function DesktopProductDetail({ product }: Props) {
                 >
                   <span className="flex items-center gap-[0.4vw]">
                     <Ruler style={{ width: '0.85vw', height: '0.85vw' }} />
-                    Size Guide
+                    {translateDemo("sizeGuide")}
                   </span>
                   <span>→</span>
                 </button>
               )}
               <button className="w-full flex items-center justify-between text-text-hint hover:text-text-primary transition-colors border-b border-border-light pb-[0.6vw]" style={{ fontSize: '0.8vw' }}>
-                <span>Shipping &amp; Returns</span>
+                <span>{translateDemo("shippingReturns")}</span>
                 <span>→</span>
               </button>
             </div>
@@ -677,11 +701,13 @@ export function DesktopProductDetail({ product }: Props) {
 }
 
 function CompleteLookRow({ products }: { products: DemoProductView["completeLook"] }) {
+  const { translateDemo } = useDemoTranslation();
+
   return (
     <div className="border-t border-border-light pt-[1vw]">
       <div className="flex items-center justify-between mb-[0.75vw]">
-        <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider">Complete the look</span>
-        <span style={{ fontSize: '0.68vw' }} className="text-text-disabled">{products.length} items</span>
+        <span style={{ fontSize: '0.78vw' }} className="text-text-hint uppercase tracking-wider">{translateDemo("completeLook")}</span>
+        <span style={{ fontSize: '0.68vw' }} className="text-text-disabled">{translateDemo("itemsCount", { count: products.length })}</span>
       </div>
       <div className="grid grid-cols-4 gap-[0.55vw] pb-[0.2vw]">
         {products.map((item) => (

@@ -110,13 +110,11 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
               Admin Panel
             </Link>
           )}
-          {!isDemo && (
-            <LandingLanguageSwitcher
-              language={language}
-              onLanguageChange={setLanguage}
-              compact
-            />
-          )}
+          <LandingLanguageSwitcher
+            language={language}
+            onLanguageChange={setLanguage}
+            compact
+          />
           {!isDemo && (
             <Button
               variant="icon"

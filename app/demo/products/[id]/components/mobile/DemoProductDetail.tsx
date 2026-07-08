@@ -4,10 +4,10 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { ChevronLeft, Camera, Ruler, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, Ruler, Sparkles } from "lucide-react";
 import { usePrimeStyleSize } from "@primestyleai/tryon/react";
 import type { RecommendForProductInput } from "@primestyleai/tryon/react";
-import { useLandingLanguage } from "@/app/landing/i18n";
+import { LandingLanguageSwitcher } from "@/app/landing/i18n";
 import type { DemoProductView } from "../../../types";
 import { SizeGuideModal } from "../SizeGuideModal";
 import { SizeSelect } from "../SizeSelect";
@@ -15,6 +15,7 @@ import { useSizingAutoSelect } from "../../hooks/useSizingAutoSelect";
 import { useProfileAnalysisDisplay } from "../../hooks/useProfileAnalysisDisplay";
 import { landingLanguageToSdkLocale } from "../../../utils/sdkLocale";
 import { inferSdkProductFitType } from "../../../utils/sdkProductFitType";
+import { useDemoTranslation } from "../../../utils/demoTranslations";
 import {
   DemoBagButton,
   DemoBagDrawer,
@@ -60,19 +61,29 @@ type DemoPrimeStyleSizeInput = RecommendForProductInput & {
   productCurrency?: string;
 };
 
+type DemoAutoSizeSection = {
+  size?: string;
+  recommendedSize?: string;
+  length?: string;
+};
+
+type DemoAutoSizeRawResult = {
+  recommendedSize?: string;
+  recommendedLength?: string;
+  sections?: Record<string, DemoAutoSizeSection>;
+};
+
 function positivePrice(value: number | null | undefined): number | undefined {
   return typeof value === "number" && value > 0 ? value : undefined;
 }
 
 export function MobileProductDetail({ product }: Props) {
   const router = useRouter();
-  const { language } = useLandingLanguage();
+  const { language, setLanguage, translateDemo } = useDemoTranslation();
   const [currentImage, setCurrentImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(product.selectedColor);
   const [jacketSizeNum, setJacketSizeNum] = useState("");
   const [jacketLength, setJacketLength] = useState("");
-  const [jacketOpen, setJacketOpen] = useState(false);
-  const [pantsOpen, setPantsOpen] = useState(false);
   const [selectedSize, setSelectedSize] = useState("");
   const [descExpanded, setDescExpanded] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
@@ -177,9 +188,10 @@ export function MobileProductDetail({ product }: Props) {
       image: images[0] ?? product.primaryImage,
       color: selectedColor,
       payload,
+      suggestedSizeLabel: translateDemo("suggestedSize"),
     });
     setBagItems((current) => mergeDemoBagItem(current, item));
-  }, [images, product, selectedColor]);
+  }, [images, product, selectedColor, translateDemo]);
   const incrementBagItem = useCallback((lineId: string) => {
     setBagItems((current) => current.map((item) => (
       item.lineId === lineId ? { ...item, quantity: item.quantity + 1 } : item
@@ -256,13 +268,13 @@ export function MobileProductDetail({ product }: Props) {
   // patterns to bridge those two shapes.
   const lastAutoSelectedRef = useRef<string | null>(null);
   useEffect(() => {
-    const raw = autoSize.result?.raw as any;
+    const raw = autoSize.result?.raw as DemoAutoSizeRawResult | undefined;
     if (!raw || parsedSizes.length === 0) return;
     const recoKey = JSON.stringify({
       size: raw.recommendedSize,
       length: raw.recommendedLength,
       sections: raw.sections
-        ? Object.fromEntries(Object.entries(raw.sections as Record<string, any>).map(([k, v]) => [k, { size: (v as any)?.size, length: (v as any)?.length, recommendedSize: (v as any)?.recommendedSize }]))
+        ? Object.fromEntries(Object.entries(raw.sections).map(([k, v]) => [k, { size: v.size, length: v.length, recommendedSize: v.recommendedSize }]))
         : null,
     });
     if (lastAutoSelectedRef.current === recoKey) return;
@@ -372,12 +384,11 @@ export function MobileProductDetail({ product }: Props) {
       if (len) setPantsLengthSize(len);
     };
 
-    const sections = raw.sections as Record<string, any> | undefined;
+    const sections = raw.sections;
     // Backend can include "Jacket Length" / "Pant Length" pseudo-sections
     // alongside the real "Jacket" / "Pants" sections — those carry only a
     // length value, not a size, and shouldn't be matched as primary targets.
     const isLengthOnly = (n: string) => /\blength\b/i.test(n);
-    // eslint-disable-next-line no-console
     console.log("[demo:auto-select] mobile", { raw, parsedSizes, sections });
 
     if (sections && Object.keys(sections).length > 0) {
@@ -385,9 +396,9 @@ export function MobileProductDetail({ product }: Props) {
       for (const [name, sec] of entries) {
         const lc = name.toLowerCase();
         if (!/pant|trouser/.test(lc)) continue;
-        const sizeStr = (sec as any)?.size || (sec as any)?.recommendedSize;
+        const sizeStr = sec.size || sec.recommendedSize;
         if (!sizeStr) continue;
-        applyPants(sizeStr, (sec as any)?.length);
+        applyPants(sizeStr, sec.length);
       }
       const isJacketLike = (n: string) => /jacket|coat|blazer|tuxedo|suit/.test(n.toLowerCase());
       const isPants = (n: string) => /pant|trouser/.test(n.toLowerCase());
@@ -396,16 +407,14 @@ export function MobileProductDetail({ product }: Props) {
         entries.find(([n]) => !isPants(n));
       if (target) {
         const [name, sec] = target;
-        const sizeStr = (sec as any)?.size || (sec as any)?.recommendedSize;
+        const sizeStr = sec.size || sec.recommendedSize;
         if (sizeStr) {
-          const ok = applyJacket(sizeStr, (sec as any)?.length);
-          // eslint-disable-next-line no-console
-          console.log("[demo:auto-select] jacket section", name, { size: sizeStr, length: (sec as any)?.length }, "→", ok ? "matched" : "NO MATCH");
+          const ok = applyJacket(sizeStr, sec.length);
+          console.log("[demo:auto-select] jacket section", name, { size: sizeStr, length: sec.length }, "→", ok ? "matched" : "NO MATCH");
         }
       }
     } else if (raw.recommendedSize) {
       const ok = applyJacket(raw.recommendedSize, raw.recommendedLength || undefined);
-      // eslint-disable-next-line no-console
       console.log("[demo:auto-select] single-piece", raw.recommendedSize, "→", ok ? "matched" : "NO MATCH");
     }
 
@@ -421,8 +430,6 @@ export function MobileProductDetail({ product }: Props) {
     setSelectedSize("");
     setJacketSizeNum("");
     setJacketLength("");
-    setJacketOpen(false);
-    setPantsOpen(false);
   };
 
   const [touchStart, setTouchStart] = useState(0);
@@ -434,18 +441,6 @@ export function MobileProductDetail({ product }: Props) {
       if (diff < 0 && currentImage > 0) setCurrentImage((p) => p - 1);
     }
   };
-
-  const jacketSelected = !!(jacketSizeNum && jacketLength);
-  const pantsSelected = !!(pantsWaistSize && pantsLengthSize);
-
-  const sizeBtn = (active: boolean, available: boolean) =>
-    `rounded-lg border font-medium transition-all duration-150 ${
-      active
-        ? "bg-brand-blue text-white border-brand-blue"
-        : available
-        ? "bg-surface-light text-text-body border-border-light hover:border-brand-blue/30"
-        : "bg-transparent text-text-disabled border-border-light cursor-not-allowed line-through"
-    }`;
 
   return (
     <div className="fixed inset-0 bg-white flex flex-col overflow-hidden pt-safe pb-safe text-text-primary">
@@ -459,11 +454,18 @@ export function MobileProductDetail({ product }: Props) {
             <p className="text-[10px] text-brand-blue font-semibold tracking-[0.15em] uppercase leading-none mb-0.5">{product.brand}</p>
             <p className="text-sm font-semibold text-text-primary truncate leading-tight">{product.name}</p>
           </div>
-          <DemoBagButton
-            count={bagCount}
-            onClick={() => setBagOpen(true)}
-            className="h-9 w-9 flex-shrink-0"
-          />
+          <div className="flex flex-shrink-0 items-center gap-1">
+            <LandingLanguageSwitcher
+              language={language}
+              onLanguageChange={setLanguage}
+              compact
+            />
+            <DemoBagButton
+              count={bagCount}
+              onClick={() => setBagOpen(true)}
+              className="h-9 w-9 flex-shrink-0"
+            />
+          </div>
         </div>
       </header>
 
@@ -481,7 +483,7 @@ export function MobileProductDetail({ product }: Props) {
               style={{ opacity: 1 }}
             />
           ) : (
-            <div className="aspect-square flex items-center justify-center text-text-disabled">No image</div>
+            <div className="aspect-square flex items-center justify-center text-text-disabled">{translateDemo("noImage")}</div>
           )}
           <div className="absolute top-4 right-4 px-2.5 py-1 bg-black/40 backdrop-blur-sm rounded-full">
             <span className="text-[10px] text-white/60 font-mono">{currentImage + 1}/{images.length}</span>
@@ -529,7 +531,7 @@ export function MobileProductDetail({ product }: Props) {
           {product.colorVariants.length > 0 && (
             <div className="space-y-2.5">
               <div className="space-y-1">
-                <span className="block text-[11px] text-text-hint uppercase tracking-[0.14em] leading-none">Color</span>
+                <span className="block text-[11px] text-text-hint uppercase tracking-[0.14em] leading-none">{translateDemo("color")}</span>
                 <span className="block max-w-full text-[12px] leading-snug text-text-body break-words">
                   {selectedColor}
                 </span>
@@ -555,11 +557,11 @@ export function MobileProductDetail({ product }: Props) {
           {sizes.length > 0 && isOneSizeOnly ? (
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] text-text-hint uppercase tracking-[0.14em]">Size</span>
+                <span className="text-[11px] text-text-hint uppercase tracking-[0.14em]">{translateDemo("size")}</span>
                 {product.sizeGuide && (
                   <button onClick={() => setSizeGuideOpen(true)} className="text-[12px] text-brand-blue flex items-center gap-1">
                     <Ruler className="h-3 w-3" />
-                    Size Guide
+                    {translateDemo("sizeGuide")}
                   </button>
                 )}
               </div>
@@ -570,11 +572,11 @@ export function MobileProductDetail({ product }: Props) {
           ) : sizes.length > 0 && hasSplitSizes ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] text-text-hint uppercase tracking-[0.14em]">Your Size</span>
+                <span className="text-[11px] text-text-hint uppercase tracking-[0.14em]">{translateDemo("yourSize")}</span>
                 {product.sizeGuide && (
                   <button onClick={() => setSizeGuideOpen(true)} className="text-[12px] text-brand-blue flex items-center gap-1">
                     <Ruler className="h-3 w-3" />
-                    Size Guide
+                    {translateDemo("sizeGuide")}
                   </button>
                 )}
               </div>
@@ -583,14 +585,14 @@ export function MobileProductDetail({ product }: Props) {
               {profileAnalysis.showAnalyzing ? (
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-brand-blue/10 text-brand-blue ps-analyzing-pulse">
                   <Sparkles className="h-3 w-3 ps-analyzing-spin" />
-                  <span key={profileAnalysis.message} className="ps-analyzing-text">{profileAnalysis.message}</span>
+                  <span key={profileAnalysis.message} className="ps-analyzing-text">{translateDemo("analyzing")}</span>
                 </div>
               ) : profileAnalysis.showComplete ? (
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
-                  Analyzed by your profile
+                  {translateDemo("analyzedByProfile")}
                 </div>
               ) : null}
 
@@ -600,7 +602,7 @@ export function MobileProductDetail({ product }: Props) {
               <div className={`rounded-xl border border-border-light bg-surface-light p-3 ${justAutoFilled ? "ps-autofill-flash" : ""}`}>
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <label className="text-[11px] text-text-hint uppercase tracking-[0.12em] mb-2 block">{pantsWaistSizes.length > 0 ? "Jacket Size" : isDress ? "Dress" : "Size"}</label>
+                    <label className="text-[11px] text-text-hint uppercase tracking-[0.12em] mb-2 block">{pantsWaistSizes.length > 0 ? translateDemo("jacketSize") : isDress ? translateDemo("dress") : translateDemo("size")}</label>
                     <SizeSelect
                       value={jacketSizeNum}
                       onChange={handleSizeNumberSelect}
@@ -609,13 +611,13 @@ export function MobileProductDetail({ product }: Props) {
                         label: num,
                         disabled: !parsedSizes.some((s) => s.number === num && s.available),
                       }))}
-                      placeholder="Select size"
+                      placeholder={translateDemo("selectSize")}
                     />
                   </div>
 
                   {allUniqueLengths.length > 0 && (
                     <div className="flex-1">
-                      <label className="text-[11px] text-text-hint uppercase tracking-[0.12em] mb-2 block">{pantsWaistSizes.length > 0 ? "Jacket Length" : "Length"}</label>
+                      <label className="text-[11px] text-text-hint uppercase tracking-[0.12em] mb-2 block">{pantsWaistSizes.length > 0 ? translateDemo("jacketLength") : translateDemo("length")}</label>
                       <SizeSelect
                         value={jacketLength}
                         onChange={handleLengthSelect}
@@ -625,7 +627,7 @@ export function MobileProductDetail({ product }: Props) {
                           label: len,
                           disabled: !!(jacketSizeNum && !availableLengths.has(len)),
                         }))}
-                        placeholder="Select length"
+                        placeholder={translateDemo("selectLength")}
                       />
                     </div>
                   )}
@@ -636,23 +638,23 @@ export function MobileProductDetail({ product }: Props) {
               <div className={`rounded-xl border border-border-light bg-surface-light p-3 ${justAutoFilled ? "ps-autofill-flash" : ""}`}>
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <label className="text-[11px] text-text-hint uppercase tracking-[0.12em] mb-2 block">Pants Size</label>
+                    <label className="text-[11px] text-text-hint uppercase tracking-[0.12em] mb-2 block">{translateDemo("pantsSize")}</label>
                     <SizeSelect
                       value={pantsWaistSize}
                       onChange={setPantsWaistSize}
                       options={pantsWaistSizes.map((s) => ({ value: s, label: s }))}
-                      placeholder="Select size"
+                      placeholder={translateDemo("selectSize")}
                     />
                   </div>
 
                   {pantsLengthSizes.length > 0 && (
                     <div className="flex-1">
-                      <label className="text-[11px] text-text-hint uppercase tracking-[0.12em] mb-2 block">Pants Length</label>
+                      <label className="text-[11px] text-text-hint uppercase tracking-[0.12em] mb-2 block">{translateDemo("pantsLength")}</label>
                       <SizeSelect
                         value={pantsLengthSize}
                         onChange={setPantsLengthSize}
                         options={pantsLengthSizes.map((len) => ({ value: len, label: len }))}
-                        placeholder="Select length"
+                        placeholder={translateDemo("selectLength")}
                       />
                     </div>
                   )}
@@ -663,11 +665,11 @@ export function MobileProductDetail({ product }: Props) {
             /* Simple sizes — dropdown for consistency */
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] text-text-hint uppercase tracking-[0.14em]">Size</span>
+                <span className="text-[11px] text-text-hint uppercase tracking-[0.14em]">{translateDemo("size")}</span>
                 {product.sizeGuide && (
                   <button onClick={() => setSizeGuideOpen(true)} className="text-[12px] text-brand-blue flex items-center gap-1">
                     <Ruler className="h-3 w-3" />
-                    Size Guide
+                    {translateDemo("sizeGuide")}
                   </button>
                 )}
               </div>
@@ -675,14 +677,14 @@ export function MobileProductDetail({ product }: Props) {
               {profileAnalysis.showAnalyzing ? (
                 <div className="inline-flex items-center gap-1.5 mb-2.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-brand-blue/10 text-brand-blue ps-analyzing-pulse">
                   <Sparkles className="h-3 w-3 ps-analyzing-spin" />
-                  <span key={profileAnalysis.message} className="ps-analyzing-text">{profileAnalysis.message}</span>
+                  <span key={profileAnalysis.message} className="ps-analyzing-text">{translateDemo("analyzing")}</span>
                 </div>
               ) : profileAnalysis.showComplete ? (
                 <div className="inline-flex items-center gap-1.5 mb-2.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
-                  Analyzed by your profile
+                  {translateDemo("analyzedByProfile")}
                 </div>
               ) : null}
               <SizeSelect
@@ -690,10 +692,10 @@ export function MobileProductDetail({ product }: Props) {
                 onChange={setSelectedSize}
                 options={sizes.map((size) => ({
                   value: size.name,
-                  label: size.available ? size.name : `${size.name} — Sold out`,
+                  label: size.available ? size.name : `${size.name} - ${translateDemo("soldOut")}`,
                   disabled: !size.available,
                 }))}
-                placeholder="Select size"
+                placeholder={translateDemo("selectSize")}
               />
             </div>
           ) : null}
@@ -718,7 +720,10 @@ export function MobileProductDetail({ product }: Props) {
             productDescription={product.description}
             productMaterial={product.material}
             sizeGuideData={product.sizeGuideData}
-            buttonText="See How It Fits"
+            buttonText={translateDemo("seeHowItFits")}
+            addToBagLabel={translateDemo("addToBag")}
+            continueShoppingLabel={translateDemo("continueShopping")}
+            backToProductPageLabel={translateDemo("backToProductPage")}
             onComplete={handleSizingComplete}
             onAddToBag={handleAddToBag}
             buttonStyles={sdkButtonStyles}
@@ -728,8 +733,8 @@ export function MobileProductDetail({ product }: Props) {
           {product.description && (
             <div className="border-t border-border-light pt-5">
               <button onClick={() => setDescExpanded(!descExpanded)} className="w-full flex items-center justify-between mb-3">
-                <span className="text-[11px] text-text-hint uppercase tracking-[0.14em]">Description</span>
-                <span className="text-[12px] text-brand-blue">{descExpanded ? "Less" : "More"}</span>
+                <span className="text-[11px] text-text-hint uppercase tracking-[0.14em]">{translateDemo("description")}</span>
+                <span className="text-[12px] text-brand-blue">{descExpanded ? translateDemo("less") : translateDemo("more")}</span>
               </button>
               <div className={`text-[13px] text-text-hint leading-[1.65] overflow-hidden transition-all duration-300 [&_a]:text-brand-blue [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-1 [&_p]:mb-2 ${descExpanded ? "max-h-[2000px]" : "max-h-[66px]"}`} dangerouslySetInnerHTML={{ __html: product.description }} />
             </div>
@@ -737,7 +742,7 @@ export function MobileProductDetail({ product }: Props) {
 
           {product.material && (
             <div className="flex items-center gap-2 text-[11px] pb-4">
-              <span className="text-text-caption">Material</span>
+              <span className="text-text-caption">{translateDemo("material")}</span>
               <span className="h-px flex-1 bg-border-light" />
               <span className="text-text-hint">{product.material}</span>
             </div>
@@ -769,11 +774,13 @@ export function MobileProductDetail({ product }: Props) {
 }
 
 function CompleteLookRow({ products }: { products: DemoProductView["completeLook"] }) {
+  const { translateDemo } = useDemoTranslation();
+
   return (
     <div className="border-t border-border-light pt-5 pb-1">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-text-hint uppercase tracking-wider">Complete the look</span>
-        <span className="text-[11px] text-text-disabled">{products.length} items</span>
+        <span className="text-sm text-text-hint uppercase tracking-wider">{translateDemo("completeLook")}</span>
+        <span className="text-[11px] text-text-disabled">{translateDemo("itemsCount", { count: products.length })}</span>
       </div>
       <div className="grid grid-cols-4 gap-2 pb-2">
         {products.map((item) => (

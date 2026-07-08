@@ -29,8 +29,8 @@ function formatNumber(value: number): string {
 }
 
 export function PricingSection() {
-  const [productTierIndex, setProductTierIndex] = useState(1);
-  const [tryOnPackIndex, setTryOnPackIndex] = useState(2);
+  const [productTierIndex, setProductTierIndex] = useState(0);
+  const [tryOnPackIndex, setTryOnPackIndex] = useState(0);
   const selectedProductTier = PRODUCT_PACKAGE_TIERS[productTierIndex];
   const selectedTryOnPack = TRY_ON_PACKAGE_TIERS[tryOnPackIndex];
   const totalMonthlyPrice = selectedProductTier.price + selectedTryOnPack.price;
