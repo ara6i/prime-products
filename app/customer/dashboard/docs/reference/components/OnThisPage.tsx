@@ -83,10 +83,10 @@ export function OnThisPage({ containerSelector = "[data-docs-content]" }: OnThis
 
   return (
     <aside className="sticky top-24 self-start">
-      <p className="text-[11px] font-semibold tracking-wider text-gray-500 uppercase mb-3">
+      <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-customer-muted">
         On this page
       </p>
-      <ul className="space-y-2 border-l border-gray-200">
+      <ul className="space-y-2 border-l border-customer-border">
         {items.map((item) => {
           const active = item.id === activeId;
           return (
@@ -106,7 +106,7 @@ export function OnThisPage({ containerSelector = "[data-docs-content]" }: OnThis
                   item.level === 3 && "pl-6",
                   active
                     ? "text-[#2154EF] font-medium border-[#2154EF]"
-                    : "text-gray-500 hover:text-gray-800 border-transparent"
+                    : "border-transparent text-customer-muted hover:text-text-primary"
                 )}
               >
                 {item.text}

@@ -1,7 +1,7 @@
 /**
  * MediaPipe BlazePose wrapper for the AI Sizing Lab.
  * - Loads PoseLandmarker from CDN (same bundle the SDK uses).
- * - Returns 33 landmarks AND a 0..255 body segmentation mask.
+ * - Returns 33 landmarks and, when requested, a 0..255 body segmentation mask.
  * - Browser-only (uses CDN dynamic import).
  */
 
@@ -10,23 +10,27 @@ import type { PoseResult } from "../types";
 const POSE_LANDMARK_COUNT = 33;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-let landmarker: any = null;
-let loadingPromise: Promise<void> | null = null;
+let landmarkerWithMask: any = null;
+let landmarkerWithoutMask: any = null;
+let loadingPromiseWithMask: Promise<void> | null = null;
+let loadingPromiseWithoutMask: Promise<void> | null = null;
 
-async function loadMediaPipe(): Promise<void> {
-  if (landmarker) return;
-  if (loadingPromise) return loadingPromise;
-  loadingPromise = (async () => {
+async function loadMediaPipe(includeMask: boolean): Promise<any> {
+  if (includeMask && landmarkerWithMask) return landmarkerWithMask;
+  if (!includeMask && landmarkerWithoutMask) return landmarkerWithoutMask;
+  const existing = includeMask ? loadingPromiseWithMask : loadingPromiseWithoutMask;
+  if (existing) return existing;
+  const loadingPromise = (async () => {
     const vision = await import(
       /* webpackIgnore: true */
-      // @ts-ignore dynamic CDN import
+      // @ts-expect-error dynamic CDN import
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.33/vision_bundle.mjs"
     );
     const { FilesetResolver, PoseLandmarker } = vision;
     const fileset = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.33/wasm"
     );
-    landmarker = await PoseLandmarker.createFromOptions(fileset, {
+    const landmarker = await PoseLandmarker.createFromOptions(fileset, {
       baseOptions: {
         modelAssetPath:
           "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task",
@@ -34,12 +38,14 @@ async function loadMediaPipe(): Promise<void> {
       },
       runningMode: "IMAGE",
       numPoses: 1,
-      // Enable segmentation mask output — that's what gives us the
-      // outer-silhouette width per Y-row instead of relying on
-      // bone-to-bone hip landmarks.
-      outputSegmentationMasks: true,
+      outputSegmentationMasks: includeMask,
     });
+    if (includeMask) landmarkerWithMask = landmarker;
+    else landmarkerWithoutMask = landmarker;
+    return landmarker;
   })();
+  if (includeMask) loadingPromiseWithMask = loadingPromise;
+  else loadingPromiseWithoutMask = loadingPromise;
   return loadingPromise;
 }
 
@@ -80,10 +86,11 @@ async function extractMask(mpMask: any): Promise<{ data: Uint8ClampedArray; widt
   return { data: out, width: w, height: h };
 }
 
-/** Detect 33-point pose + 0..255 body mask. Returns null on failure. */
-export async function detectPoseAndMask(imageSrc: string): Promise<PoseResult | null> {
+/** Detect 33-point pose and optionally a 0..255 body mask. Returns null on failure. */
+export async function detectPoseAndMask(imageSrc: string, options: { includeMask?: boolean } = {}): Promise<PoseResult | null> {
   try {
-    await loadMediaPipe();
+    const includeMask = options.includeMask ?? true;
+    const landmarker = await loadMediaPipe(includeMask);
     const img = await loadImage(imageSrc);
     const result = landmarker.detect(img);
     if (!result?.landmarks?.length || result.landmarks[0].length < POSE_LANDMARK_COUNT) {
@@ -97,8 +104,8 @@ export async function detectPoseAndMask(imageSrc: string): Promise<PoseResult | 
       visibility: p.visibility ?? 0,
     }));
 
-    // segmentationMasks is an array (one per pose). Take the first.
-    const mpMask = result.segmentationMasks?.[0] ?? null;
+    // segmentationMasks is only requested for lab visual/mask paths.
+    const mpMask = includeMask ? result.segmentationMasks?.[0] ?? null : null;
     const mask = mpMask ? await extractMask(mpMask) : null;
 
     return {

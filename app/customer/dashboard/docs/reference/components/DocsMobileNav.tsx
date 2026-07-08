@@ -54,21 +54,21 @@ export function DocsMobileNav({ navigation, activeId }: DocsMobileNavProps) {
       {/* Collapsed bar */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full px-4 py-3 bg-[#FFFFFF]/95 backdrop-blur-md border-b border-gray-200"
+        className="flex w-full items-center justify-between border-b border-customer-border bg-customer-card px-4 py-3 backdrop-blur-md"
       >
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-xs text-[#2154EF] font-semibold uppercase tracking-wider flex-shrink-0">
             Docs
           </span>
-          <span className="text-gray-600 flex-shrink-0">/</span>
-          <span className="text-sm text-gray-700 font-medium truncate">
+          <span className="shrink-0 text-text-body">/</span>
+          <span className="truncate text-sm font-medium text-text-primary">
             {activeTitle}
           </span>
         </div>
         {isOpen ? (
-          <X className="size-4 text-gray-600 flex-shrink-0" />
+          <X className="size-4 shrink-0 text-text-body" />
         ) : (
-          <ChevronDown className="size-4 text-gray-600 flex-shrink-0" />
+          <ChevronDown className="size-4 shrink-0 text-text-body" />
         )}
       </button>
 
@@ -77,12 +77,12 @@ export function DocsMobileNav({ navigation, activeId }: DocsMobileNavProps) {
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-white/60 z-30"
+            className="fixed inset-0 z-30 bg-customer-page/75"
             onClick={() => setIsOpen(false)}
           />
 
           {/* Dropdown menu */}
-          <nav className="absolute top-full left-0 right-0 z-40 bg-[#F9FAFB] border-b border-gray-200 max-h-[70vh] overflow-y-auto overscroll-contain">
+          <nav className="absolute left-0 right-0 top-full z-40 max-h-[70vh] overflow-y-auto overscroll-contain border-b border-customer-border bg-customer-card">
             <div className="py-2">
               {navigation.map((section) => {
                 const Icon = section.icon;
@@ -98,7 +98,7 @@ export function DocsMobileNav({ navigation, activeId }: DocsMobileNavProps) {
                         "flex items-center gap-2.5 w-full px-4 py-2.5 text-sm font-medium transition-colors",
                         isSectionActive
                           ? "text-[#2154EF] bg-[#2154EF]/5"
-                          : "text-gray-600 active:bg-white/5"
+                          : "text-text-body active:bg-customer-soft"
                       )}
                     >
                       {Icon && <Icon className="size-4 flex-shrink-0" />}
@@ -106,7 +106,7 @@ export function DocsMobileNav({ navigation, activeId }: DocsMobileNavProps) {
                     </button>
 
                     {section.children && (
-                      <div className="ml-4 border-l border-gray-200">
+                      <div className="ml-4 border-l border-customer-border">
                         {section.children.map((child) => (
                           <button
                             key={child.id}
@@ -115,7 +115,7 @@ export function DocsMobileNav({ navigation, activeId }: DocsMobileNavProps) {
                               "block w-full text-left pl-6 pr-4 py-2 text-sm transition-colors",
                               activeId === child.id
                                 ? "text-[#2154EF] font-medium"
-                                : "text-gray-500 active:text-gray-700"
+                                : "text-customer-muted active:text-text-primary"
                             )}
                           >
                             {child.title}

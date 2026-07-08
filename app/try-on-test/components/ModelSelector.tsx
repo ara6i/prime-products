@@ -32,7 +32,7 @@ export function ModelSelector({ value, onChange, disabled, entry }: ModelSelecto
             "disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-text-hint",
           )}
         >
-          {TRY_ON_MODELS.map((m) => (
+          {TRY_ON_MODELS.filter((m) => m.family !== "openai").map((m) => (
             <option key={m.id} value={m.id}>
               [{m.family === "vertex" ? "Vertex" : "Gemini"}] {m.label} — {m.status}
             </option>

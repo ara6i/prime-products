@@ -129,15 +129,16 @@ export interface ShopifyControlCenterRaw {
     accessMessage: string;
     canUseStorefront: boolean;
   };
-  storeProfile: {
-    id: string;
-    source: string;
-    status: string;
-    storeName: string;
-    hasSizeGuideMapping: boolean;
-    createdAt: string | null;
-    updatedAt: string | null;
-  } | null;
+	  storeProfile: {
+	    id: string;
+	    source: string;
+	    status: string;
+	    storeName: string;
+	    hasSizeGuideMapping: boolean;
+	    styleMatchEnabled?: boolean | null;
+	    createdAt: string | null;
+	    updatedAt: string | null;
+	  } | null;
   technical: {
     subscriptionId: string | null;
     usageLineItemId: string | null;
@@ -264,6 +265,13 @@ export interface ShopifyControlCenterMutationResponse {
   controlCenter: ShopifyControlCenterRaw;
 }
 
+export interface StyleMatchSettingMutationResponse {
+  ok: boolean;
+  styleMatchEnabled: boolean;
+  storeProfileId: string | null;
+  controlCenter?: ShopifyControlCenterRaw;
+}
+
 export interface AdminCustomersResponse {
   stores: AdminCustomerStoreRaw[];
   pagination: {
@@ -294,8 +302,9 @@ export interface StoreProfileRaw {
     originalHeaders: string[];
     learnedAt: string;
     confirmedAt: string | null;
-  } | null;
-  status: string;
+	  } | null;
+	  styleMatchEnabled?: boolean | null;
+	  status: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -466,14 +475,21 @@ export interface CustomerDetailView {
   sourceLabel: string;
   store: CustomerListItem;
   sections: CustomerDetailSection[];
-  sizeGuide: {
-    unitLabel: string;
-    learnedLabel: string;
-    confirmedLabel: string;
-    originalHeaders: string[];
-    mappings: StoreProfileHeaderMappingRaw[];
-  } | null;
-}
+	  sizeGuide: {
+	    unitLabel: string;
+	    learnedLabel: string;
+	    confirmedLabel: string;
+	    originalHeaders: string[];
+	    mappings: StoreProfileHeaderMappingRaw[];
+	  } | null;
+	  styleMatch: {
+	    enabled: boolean;
+	    canUpdate: boolean;
+	    source: AdminCustomerSource;
+	    storeId: string;
+	    storeProfileId: string | null;
+	  };
+	}
 
 export interface ShopifyMetricCard {
   label: string;
@@ -521,11 +537,16 @@ export interface ShopifyControlCenterView {
     tryOnsRemaining: number;
     tryOnsUsed: number;
   };
-  profile: {
-    label: string;
-    helper: string;
-  };
-  technicalRows: CustomerDetailField[];
+	  profile: {
+	    label: string;
+	    helper: string;
+	  };
+	  styleMatch: {
+	    enabled: boolean;
+	    canUpdate: boolean;
+	    helper: string;
+	  };
+	  technicalRows: CustomerDetailField[];
   analytics: {
     rangeLabel: string;
     behaviorCards: ShopifyMetricCard[];

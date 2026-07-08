@@ -18,7 +18,7 @@ export function CustomerDashboardProductsMobile({ dashboard, initialProducts, lo
         storeName={dashboard.storeName}
         projectName={dashboard.projectName}
         pageTitle={dashboard.pageTitle}
-        dataModeLabel="CSV product workspace"
+        dataModeLabel="Catalog workspace"
         rangeLabel={dashboard.rangeLabel}
         statusLabel={dashboard.statusLabel}
         statusTone={dashboard.statusTone}
@@ -43,7 +43,7 @@ export function CustomerDashboardProductsMobile({ dashboard, initialProducts, lo
       <CustomerDashboardMobileNav navItems={dashboard.navItems} />
 
       <main className="px-[4vw] pb-[8vw]">
-        <CustomerProductCsvWorkspace initialProducts={initialProducts} />
+        <CustomerProductCsvWorkspace initialProducts={initialProducts} verifiedWebsiteUrl={dashboard.domain} />
       </main>
     </div>
   );

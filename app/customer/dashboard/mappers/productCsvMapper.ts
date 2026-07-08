@@ -11,10 +11,10 @@ export const CUSTOMER_PRODUCT_COLLECTION_ALL = "__all__";
 
 export const customerProductSelectionFilterOptions: Array<{ label: string; value: CustomerProductSelectionFilter }> = [
   { label: "All products", value: "all" },
-  { label: "Current cycle", value: "current-cycle" },
-  { label: "Not current cycle", value: "not-current-cycle" },
-  { label: "Live storefront", value: "live" },
-  { label: "Off storefront", value: "off" },
+  { label: "Included now", value: "current-cycle" },
+  { label: "Not included now", value: "not-current-cycle" },
+  { label: "Fit button shown", value: "live" },
+  { label: "Fit button hidden", value: "off" },
 ];
 
 export const customerProductInventoryFilterOptions: Array<{ label: string; value: CustomerProductInventoryFilter }> = [

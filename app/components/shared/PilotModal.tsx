@@ -14,7 +14,7 @@ interface PilotModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-type ToolIntegration = "react-sdk" | "api" | "shopify";
+type ToolIntegration = "react-sdk" | "shopify";
 type ShareData = "yes" | "no";
 
 interface FormState {
@@ -301,7 +301,6 @@ export function PilotModal({ open, onOpenChange }: PilotModalProps) {
                     onChange={(v) => setField("toolIntegration")(v as ToolIntegration)}
                     options={[
                       { value: "react-sdk", label: "React SDK" },
-                      { value: "api", label: "API" },
                       { value: "shopify", label: "Shopify app" },
                     ].map((option) => ({ ...option, label: translate(option.label) }))}
                   />

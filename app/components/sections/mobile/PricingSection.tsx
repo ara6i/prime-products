@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CheckCheck, ChevronDown } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, CheckCheck, ChevronDown } from "lucide-react";
 import { Reveal } from "../../shared/Reveal";
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -12,6 +14,7 @@ import {
 import { PRICING, PRODUCT_PACKAGE_TIERS, TRY_ON_PACKAGE_TIERS } from "../../../content/landing";
 
 const [FREE_PLAN, CUSTOM_PLAN] = PRICING.tiers;
+const JOIN_PRIMESTYLEAI_HREF = "/customer/login";
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -26,8 +29,8 @@ function formatNumber(value: number): string {
 }
 
 export function PricingSection() {
-  const [productTierIndex, setProductTierIndex] = useState(1);
-  const [tryOnPackIndex, setTryOnPackIndex] = useState(2);
+  const [productTierIndex, setProductTierIndex] = useState(0);
+  const [tryOnPackIndex, setTryOnPackIndex] = useState(0);
   const selectedProductTier = PRODUCT_PACKAGE_TIERS[productTierIndex];
   const selectedTryOnPack = TRY_ON_PACKAGE_TIERS[tryOnPackIndex];
   const totalMonthlyPrice = selectedProductTier.price + selectedTryOnPack.price;
@@ -52,7 +55,7 @@ export function PricingSection() {
         </Reveal>
       </article>
 
-      <div className="rounded-3xl border border-brand-blue/10 bg-white p-3 shadow-[0_8px_24px_rgba(33,84,239,0.06)]">
+      <div className="rounded-[22px] border border-brand-blue/10 bg-white p-3 shadow-[0_8px_24px_rgba(33,84,239,0.06)]">
         <div className="flex flex-col gap-3">
           <FreePlanMobile />
           <CustomPlanBuilderMobile
@@ -91,6 +94,15 @@ function FreePlanMobile() {
         </ul>
       </div>
 
+      <div className="flex justify-center pt-5">
+        <Button variant="primary" size="default" className="h-10 w-auto min-w-[210px] gap-2 rounded-full px-5 text-sm font-semibold !text-white" asChild>
+          <Link href={JOIN_PRIMESTYLEAI_HREF}>
+            Join PrimeStyleAI
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </Link>
+        </Button>
+      </div>
+
     </div>
   );
 }
@@ -124,9 +136,9 @@ function CustomPlanBuilderMobile({
       <h3 className="mt-3 text-2xl font-semibold tracking-[-0.01em]">{CUSTOM_PLAN.name}</h3>
       <p className="mt-1 text-sm leading-[1.5] text-text-body">{CUSTOM_PLAN.description}</p>
 
-      <div className="mt-4 rounded-2xl bg-white p-4 ring-1 ring-inset ring-brand-blue/10">
+      <div className="mt-4 grid grid-cols-1 gap-3 rounded-2xl bg-white p-4 ring-1 ring-inset ring-brand-blue/10">
         {builderStats.map((stat) => (
-          <div key={stat.label} className="mb-3 last:mb-0">
+          <div key={stat.label}>
             <p className="text-[11px] text-text-hint">{stat.label}</p>
             <p className="text-sm font-semibold leading-tight text-text-primary">{stat.value}</p>
           </div>

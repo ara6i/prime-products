@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { PoseResult } from "../types";
+import type { MeasurementMaskMode, PoseResult } from "../types";
 import { POSE_IDX } from "../lib/poseDetector";
+import { createMeasurementMask } from "../lib/bodyMaskGeometry";
 
 interface Props {
   imageUrl: string;
@@ -11,6 +12,7 @@ interface Props {
   pose: PoseResult | null;
   showMask: boolean;
   showLandmarks: boolean;
+  maskMode?: MeasurementMaskMode;
 }
 
 /**
@@ -20,7 +22,15 @@ interface Props {
  *  - all 33 landmark dots, colored by z-depth
  *      (blue = forward / closer to camera, red = backward / farther)
  */
-export function PreviewCanvas({ imageUrl, imageWidth, imageHeight, pose, showMask, showLandmarks }: Props) {
+export function PreviewCanvas({
+  imageUrl,
+  imageWidth,
+  imageHeight,
+  pose,
+  showMask,
+  showLandmarks,
+  maskMode = "raw",
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -32,94 +42,18 @@ export function PreviewCanvas({ imageUrl, imageWidth, imageHeight, pose, showMas
     if (!ctx) return;
 
     const draw = async () => {
-      ctx.clearRect(0, 0, imageWidth, imageHeight);
-      await new Promise<void>((resolve) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, imageWidth, imageHeight);
-          resolve();
-        };
-        img.onerror = () => resolve();
-        img.src = imageUrl;
+      await drawPoseOverlay(ctx, {
+        imageUrl,
+        imageWidth,
+        imageHeight,
+        pose,
+        showMask,
+        showLandmarks,
+        maskMode,
       });
-
-      if (showMask && pose?.mask && pose.maskWidth > 0 && pose.maskHeight > 0) {
-        const mc = document.createElement("canvas");
-        mc.width = pose.maskWidth;
-        mc.height = pose.maskHeight;
-        const mctx = mc.getContext("2d");
-        if (mctx) {
-          const imgData = mctx.createImageData(pose.maskWidth, pose.maskHeight);
-          for (let i = 0; i < pose.mask.length; i++) {
-            const v = pose.mask[i]!;
-            const o = i * 4;
-            imgData.data[o] = 80;
-            imgData.data[o + 1] = 220;
-            imgData.data[o + 2] = 120;
-            imgData.data[o + 3] = Math.min(140, v);
-          }
-          mctx.putImageData(imgData, 0, 0);
-          ctx.drawImage(mc, 0, 0, imageWidth, imageHeight);
-        }
-      }
-
-      if (showLandmarks && pose?.landmarks?.length) {
-        const lm = pose.landmarks;
-        const lH = lm[POSE_IDX.LEFT_HIP];
-        const rH = lm[POSE_IDX.RIGHT_HIP];
-        const lS = lm[POSE_IDX.LEFT_SHOULDER];
-        const rS = lm[POSE_IDX.RIGHT_SHOULDER];
-
-        if (lH && rH) {
-          ctx.strokeStyle = "#2154ef";
-          ctx.lineWidth = Math.max(2, imageWidth * 0.005);
-          ctx.beginPath();
-          ctx.moveTo(lH.x * imageWidth, lH.y * imageHeight);
-          ctx.lineTo(rH.x * imageWidth, rH.y * imageHeight);
-          ctx.stroke();
-        }
-        if (lS && rS) {
-          ctx.strokeStyle = "#22c55e";
-          ctx.lineWidth = Math.max(2, imageWidth * 0.005);
-          ctx.beginPath();
-          ctx.moveTo(lS.x * imageWidth, lS.y * imageHeight);
-          ctx.lineTo(rS.x * imageWidth, rS.y * imageHeight);
-          ctx.stroke();
-        }
-
-        // Determine z-range across all landmarks for color mapping
-        let zMin = Infinity, zMax = -Infinity;
-        for (const p of lm) {
-          if (p.z < zMin) zMin = p.z;
-          if (p.z > zMax) zMax = p.z;
-        }
-        const zRange = Math.max(0.001, zMax - zMin);
-
-        const baseR = Math.max(3, imageWidth * 0.006);
-        for (let i = 0; i < lm.length; i++) {
-          const p = lm[i]!;
-          // Normalize z to 0..1 (0 = closest, 1 = farthest)
-          const tNorm = (p.z - zMin) / zRange;
-          // Blue (closer) → Red (farther)
-          const r = Math.round(60 + tNorm * 195);
-          const g = Math.round(80 - tNorm * 60);
-          const b = Math.round(255 - tNorm * 215);
-          ctx.fillStyle = `rgb(${r},${g},${b})`;
-          ctx.strokeStyle = "rgba(0,0,0,0.4)";
-          ctx.lineWidth = Math.max(1, imageWidth * 0.001);
-
-          const x = p.x * imageWidth;
-          const y = p.y * imageHeight;
-          ctx.beginPath();
-          ctx.arc(x, y, baseR, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.stroke();
-        }
-      }
     };
     void draw();
-  }, [imageUrl, imageWidth, imageHeight, pose, showMask, showLandmarks]);
+  }, [imageUrl, imageWidth, imageHeight, pose, showMask, showLandmarks, maskMode]);
 
   return (
     <div className="space-y-2">
@@ -148,4 +82,110 @@ export function PreviewCanvas({ imageUrl, imageWidth, imageHeight, pose, showMas
       ) : null}
     </div>
   );
+}
+
+async function drawPoseOverlay(
+  ctx: CanvasRenderingContext2D,
+  {
+    imageUrl,
+    imageWidth,
+    imageHeight,
+    pose,
+    showMask,
+    showLandmarks,
+    maskMode,
+  }: {
+    imageUrl: string;
+    imageWidth: number;
+    imageHeight: number;
+    pose: PoseResult | null;
+    showMask: boolean;
+    showLandmarks: boolean;
+    maskMode: MeasurementMaskMode;
+  },
+) {
+  ctx.clearRect(0, 0, imageWidth, imageHeight);
+  const img = await new Promise<HTMLImageElement | null>((resolve) => {
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.onload = () => resolve(image);
+    image.onerror = () => resolve(null);
+    image.src = imageUrl;
+  });
+
+  const displayMask = pose ? createMeasurementMask(pose, imageWidth, imageHeight, maskMode) : null;
+  if (img) {
+    ctx.drawImage(img, 0, 0, imageWidth, imageHeight);
+  }
+
+  if (showMask && displayMask && pose?.mask && pose.maskWidth > 0 && pose.maskHeight > 0) {
+    const maskCanvas = document.createElement("canvas");
+    maskCanvas.width = pose.maskWidth;
+    maskCanvas.height = pose.maskHeight;
+    const maskContext = maskCanvas.getContext("2d");
+    if (maskContext) {
+      const imgData = maskContext.createImageData(pose.maskWidth, pose.maskHeight);
+      for (let i = 0; i < displayMask.length; i++) {
+        const v = displayMask[i]!;
+        const offset = i * 4;
+        imgData.data[offset] = 80;
+        imgData.data[offset + 1] = 220;
+        imgData.data[offset + 2] = 120;
+        imgData.data[offset + 3] = Math.min(140, v);
+      }
+      maskContext.putImageData(imgData, 0, 0);
+      ctx.drawImage(maskCanvas, 0, 0, imageWidth, imageHeight);
+    }
+  }
+
+  if (showLandmarks && pose?.landmarks?.length) {
+    const lm = pose.landmarks;
+    const lH = lm[POSE_IDX.LEFT_HIP];
+    const rH = lm[POSE_IDX.RIGHT_HIP];
+    const lS = lm[POSE_IDX.LEFT_SHOULDER];
+    const rS = lm[POSE_IDX.RIGHT_SHOULDER];
+
+    if (lH && rH) {
+      ctx.strokeStyle = "#2154ef";
+      ctx.lineWidth = Math.max(2, imageWidth * 0.005);
+      ctx.beginPath();
+      ctx.moveTo(lH.x * imageWidth, lH.y * imageHeight);
+      ctx.lineTo(rH.x * imageWidth, rH.y * imageHeight);
+      ctx.stroke();
+    }
+    if (lS && rS) {
+      ctx.strokeStyle = "#22c55e";
+      ctx.lineWidth = Math.max(2, imageWidth * 0.005);
+      ctx.beginPath();
+      ctx.moveTo(lS.x * imageWidth, lS.y * imageHeight);
+      ctx.lineTo(rS.x * imageWidth, rS.y * imageHeight);
+      ctx.stroke();
+    }
+
+    let zMin = Infinity;
+    let zMax = -Infinity;
+    for (const p of lm) {
+      if (p.z < zMin) zMin = p.z;
+      if (p.z > zMax) zMax = p.z;
+    }
+    const zRange = Math.max(0.001, zMax - zMin);
+
+    const baseR = Math.max(3, imageWidth * 0.006);
+    for (const p of lm) {
+      const tNorm = (p.z - zMin) / zRange;
+      const r = Math.round(60 + tNorm * 195);
+      const g = Math.round(80 - tNorm * 60);
+      const b = Math.round(255 - tNorm * 215);
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      ctx.strokeStyle = "rgba(0,0,0,0.4)";
+      ctx.lineWidth = Math.max(1, imageWidth * 0.001);
+
+      const x = p.x * imageWidth;
+      const y = p.y * imageHeight;
+      ctx.beginPath();
+      ctx.arc(x, y, baseR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
 }

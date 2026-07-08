@@ -596,6 +596,45 @@ function StoreAccessControls({
   );
 }
 
+function StyleMatchControls({
+  view,
+  isSaving,
+  onUpdateStyleMatch,
+}: {
+  view: ShopifyControlCenterView;
+  isSaving: boolean;
+  onUpdateStyleMatch: (enabled: boolean) => Promise<void>;
+}) {
+  return (
+    <section className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-[1.042vw] max-lg:rounded-[5vw] max-lg:p-[4vw]">
+      <div className="flex flex-wrap items-center justify-between gap-[1vw] max-lg:gap-[3vw]">
+        <div>
+          <h3 className="text-[clamp(17px,1.05vw,21px)] font-semibold text-text-primary max-lg:text-[4.4vw]">Style RAG</h3>
+          <p className="mt-[0.208vw] text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:text-[3vw]">
+            {view.styleMatch.helper}
+          </p>
+        </div>
+        <span className={`rounded-full px-[0.729vw] py-[0.313vw] text-[clamp(11px,0.68vw,13px)] font-semibold max-lg:px-[3vw] max-lg:py-[1.5vw] max-lg:text-[2.8vw] ${view.styleMatch.enabled ? "bg-customer-success-bg text-customer-success-text" : "bg-customer-soft text-customer-muted"}`}>
+          {view.styleMatch.enabled ? "Enabled" : "Disabled"}
+        </span>
+      </div>
+
+      <div className="mt-[1.042vw] flex flex-wrap gap-[0.625vw] max-lg:mt-[4vw] max-lg:gap-[2vw]">
+        <Button
+          type="button"
+          disabled={isSaving || !view.styleMatch.canUpdate}
+          variant={view.styleMatch.enabled ? "outline-dark" : "primary"}
+          onClick={() => void onUpdateStyleMatch(!view.styleMatch.enabled)}
+          className="h-[2.292vw] px-[1.042vw] text-[clamp(13px,0.78vw,15px)] font-semibold max-lg:h-[10vw] max-lg:px-[5vw] max-lg:text-[3.3vw]"
+        >
+          <Power className="h-[0.833vw] w-[0.833vw] max-lg:h-[4vw] max-lg:w-[4vw]" />
+          {view.styleMatch.enabled ? "Disable RAG" : "Enable RAG"}
+        </Button>
+      </div>
+    </section>
+  );
+}
+
 function AnalyticsPanel({ view, initialDateRange }: { view: ShopifyControlCenterView; initialDateRange: { from: string; to: string } }) {
   const [sessions, tryOns, completion, sizeAcceptance] = view.analytics.behaviorCards;
   const [paidRevenue, tryOnRevenue, conversion, refundRate] = view.analytics.revenueCards;
@@ -683,15 +722,21 @@ function SettingsPanel({
           isSaving={customer.isSaving}
           onSetStatus={customer.setStatus}
         />
-        <SmallRows
-          rows={[
-            { label: "Plan", value: view.planLabel, helper: "Current billing plan" },
-            { label: "Subscription", value: view.subscriptionLabel },
-            { label: "Due date", value: view.currentPeriodEndLabel },
-            { label: "Size profile", value: view.profile.label, helper: view.profile.helper },
-          ]}
+        <StyleMatchControls
+          view={view}
+          isSaving={customer.isSaving}
+          onUpdateStyleMatch={customer.updateStyleMatch}
         />
       </div>
+
+      <SmallRows
+        rows={[
+          { label: "Plan", value: view.planLabel, helper: "Current billing plan" },
+          { label: "Subscription", value: view.subscriptionLabel },
+          { label: "Due date", value: view.currentPeriodEndLabel },
+          { label: "Size profile", value: view.profile.label, helper: view.profile.helper },
+        ]}
+      />
 
       <MetricGrid cards={view.billingCards} />
       <BillingOverrideForm

@@ -1,5 +1,4 @@
-import { CustomerDashboardHeader } from "../shared/CustomerDashboardHeader";
-import { CustomerDashboardSidebar } from "../shared/CustomerDashboardSidebar";
+import { CustomerDashboardShell } from "../shared/CustomerDashboardShell";
 import { CustomerPlansWorkspace } from "./CustomerPlansWorkspace";
 import type { CustomerDashboardViewModel } from "../../types";
 import type { CustomerPlansViewModel } from "../../types/plans";
@@ -12,32 +11,14 @@ interface CustomerDashboardPlansDesktopProps {
 
 export function CustomerDashboardPlansDesktop({ dashboard, plans, logoutAction }: CustomerDashboardPlansDesktopProps) {
   return (
-    <div className="hidden min-h-screen text-text-primary lg:flex">
-      <CustomerDashboardSidebar
-        navItems={dashboard.navItems}
-        storeName={dashboard.storeName}
-        domain={dashboard.domain}
-      />
-
-      <div className="min-w-0 flex-1">
-        <CustomerDashboardHeader
-          storeName={dashboard.storeName}
-          projectName={dashboard.projectName}
-          pageTitle={dashboard.pageTitle}
-          dataModeLabel="Billing workspace"
-          rangeLabel={dashboard.rangeLabel}
-          statusLabel={dashboard.statusLabel}
-          statusTone={dashboard.statusTone}
-          rangeOptions={dashboard.rangeOptions}
-          viewOptions={dashboard.viewOptions}
-          logoutAction={logoutAction}
-          showAnalyticsControls={false}
-        />
-
-        <main className="px-[var(--spacing-customer-content-x)] py-[var(--spacing-customer-content-y)]">
-          <CustomerPlansWorkspace plans={plans} />
-        </main>
-      </div>
-    </div>
+    <CustomerDashboardShell
+      dashboard={dashboard}
+      logoutAction={logoutAction}
+      dataModeLabel="Billing workspace"
+      showAnalyticsControls={false}
+      contentClassName="py-1"
+    >
+      <CustomerPlansWorkspace plans={plans} />
+    </CustomerDashboardShell>
   );
 }

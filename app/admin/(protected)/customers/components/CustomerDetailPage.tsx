@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
 import type { CustomerDetailSection, CustomerDetailView } from "../types";
+import { updateCustomerStyleMatchSettingClient } from "../services/customersClientService";
 
 interface CustomerDetailPageProps {
   customer: CustomerDetailView;
@@ -21,6 +23,65 @@ function DetailSection({ section }: { section: CustomerDetailSection }) {
           </div>
         ))}
       </dl>
+    </section>
+  );
+}
+
+function StyleMatchSettingsCard({ customer }: { customer: CustomerDetailView }) {
+  const [enabled, setEnabled] = useState(customer.styleMatch.enabled);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function toggleStyleMatch() {
+    if (!customer.styleMatch.canUpdate || saving) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const response = await updateCustomerStyleMatchSettingClient(
+        customer.styleMatch.source,
+        customer.styleMatch.storeId,
+        !enabled,
+      );
+      setEnabled(response.styleMatchEnabled);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not update style RAG setting");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <section className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-[1.042vw] max-lg:rounded-[5vw] max-lg:p-[4vw]">
+      <div className="flex flex-wrap items-center justify-between gap-[1vw] max-lg:gap-[3vw]">
+        <div>
+          <h3 className="text-[clamp(16px,1vw,20px)] font-semibold text-text-primary max-lg:text-[4.4vw]">Style RAG</h3>
+          <p className="mt-[0.25vw] text-[clamp(12px,0.72vw,14px)] text-customer-muted max-lg:mt-[1vw] max-lg:text-[3vw]">
+            Controls SDK outfit matching for this store. Default is off.
+          </p>
+        </div>
+        <span className={`rounded-full px-[0.729vw] py-[0.313vw] text-[clamp(11px,0.68vw,13px)] font-semibold max-lg:px-[3vw] max-lg:py-[1.5vw] max-lg:text-[2.8vw] ${enabled ? "bg-customer-success-bg text-customer-success-text" : "bg-customer-soft text-customer-muted"}`}>
+          {enabled ? "Enabled" : "Disabled"}
+        </span>
+      </div>
+
+      <div className="mt-[0.833vw] flex flex-wrap items-center gap-[0.625vw] max-lg:mt-[3vw] max-lg:gap-[2vw]">
+        <Button
+          type="button"
+          variant={enabled ? "outline-dark" : "primary"}
+          disabled={!customer.styleMatch.canUpdate || saving}
+          onClick={() => void toggleStyleMatch()}
+          className="h-[2.292vw] justify-center rounded-[0.833vw] px-[1.042vw] text-[clamp(13px,0.78vw,15px)] font-semibold max-lg:h-[10vw] max-lg:rounded-[4vw] max-lg:px-[5vw] max-lg:text-[3.3vw]"
+        >
+          {saving ? "Saving..." : enabled ? "Disable RAG" : "Enable RAG"}
+        </Button>
+        <p className="text-[clamp(12px,0.72vw,14px)] text-text-body max-lg:text-[3vw]">
+          {customer.styleMatch.storeProfileId ? `Profile ${customer.styleMatch.storeProfileId}` : "No store profile linked"}
+        </p>
+      </div>
+
+      {error ? (
+        <p className="mt-[0.625vw] text-[clamp(12px,0.72vw,14px)] font-semibold text-customer-danger-text max-lg:mt-[2vw] max-lg:text-[3vw]">{error}</p>
+      ) : null}
     </section>
   );
 }
@@ -76,6 +137,8 @@ export function CustomerDetailPage({ customer }: CustomerDetailPageProps) {
           <DetailSection key={section.title} section={section} />
         ))}
       </div>
+
+      <StyleMatchSettingsCard customer={customer} />
 
       <section className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-[1.042vw] max-lg:rounded-[5vw] max-lg:p-[4vw]">
         <div className="flex flex-wrap items-center justify-between gap-[1vw] max-lg:gap-[3vw]">

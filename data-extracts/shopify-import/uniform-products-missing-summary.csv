@@ -1,0 +1,4 @@
+Handle,Title,ProductID,Category,Subcategory,Gender,Variants,Images,InventoryPerVariant,Status
+printed-stretch-medical-scrub-set,Printed Stretch Medical Scrub Set,uniform_medical_scrub_1,Uniforms,Medical Uniforms,unisex,15,13,100,InStock
+breathable-cotton-medical-scrub-set,Breathable Cotton Medical Scrub Set,uniform_medical_scrub_2,Uniforms,Medical Uniforms,unisex,15,13,100,InStock
+unisex-v-neck-medical-scrub-set,Unisex V-Neck Medical Scrub Set,uniform_medical_scrub_3,Uniforms,Medical Uniforms,unisex,15,13,100,InStock

@@ -74,7 +74,7 @@ export function HeroSection() {
 
 function HeroTechStack() {
   return (
-    <div className="grid grid-cols-3 gap-[0.6vw]">
+    <div className="grid grid-cols-2 gap-[0.6vw]">
       <a href={SHOPIFY_APP_HREF} target="_blank" rel="noopener noreferrer" aria-label="Install the PrimeStyleAI Shopify app" className="group flex min-w-[8.2vw] flex-col gap-[0.34vw] rounded-[0.95vw] border border-brand-blue/15 bg-white px-[0.85vw] py-[0.68vw] text-brand-blue shadow-[0_14px_32px_rgba(33,84,239,0.09)] transition-all duration-200 hover:-translate-y-px hover:border-brand-blue/35 hover:bg-brand-blue-pale/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/30">
         <span className="flex items-center gap-[0.38vw] text-[0.72vw] font-semibold uppercase tracking-[0.12em]">
           <Image src="/images/landing/ps/shopify-glyph.svg" alt="" width={22} height={22} className="h-[1.08vw] w-[1.08vw]" />
@@ -93,15 +93,6 @@ function HeroTechStack() {
           React components
         </span>
       </a>
-      <a href="#integrations" aria-label="Learn more about the PrimeStyleAI API" className="group flex min-w-[8.2vw] flex-col gap-[0.34vw] rounded-[0.95vw] border border-brand-blue/15 bg-white px-[0.85vw] py-[0.68vw] text-brand-blue shadow-[0_14px_32px_rgba(33,84,239,0.09)] transition-all duration-200 hover:-translate-y-px hover:border-brand-blue/35 hover:bg-brand-blue-pale/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/30">
-        <span className="flex items-center gap-[0.38vw] text-[0.72vw] font-semibold uppercase tracking-[0.12em]">
-          <ApiIcon className="h-[1.08vw] w-[1.08vw]" />
-          API
-        </span>
-        <span className="text-[0.58vw] font-medium leading-[1.2] tracking-normal text-text-body transition-colors group-hover:text-brand-blue">
-          REST access
-        </span>
-      </a>
     </div>
   );
 }
@@ -115,16 +106,6 @@ function ReactLogoIcon({ className }: { className?: string }) {
         <ellipse rx="11" ry="4.2" transform="rotate(60)" />
         <ellipse rx="11" ry="4.2" transform="rotate(120)" />
       </g>
-    </svg>
-  );
-}
-
-function ApiIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="m8 9-4 3 4 3" />
-      <path d="m16 9 4 3-4 3" />
-      <path d="m14 5-4 14" />
     </svg>
   );
 }

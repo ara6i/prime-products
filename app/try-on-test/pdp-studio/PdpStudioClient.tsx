@@ -33,14 +33,22 @@ import { TRY_ON_TEST_CONFIG } from "../lib/config";
 import { getModelEntry, TRY_ON_MODELS, type TryOnModelEntry, type TryOnModelId } from "../lib/models";
 import { describeRunPhase, isLivePhase } from "../lib/runPhase";
 
-const GEMINI_MODELS = TRY_ON_MODELS.filter((model) => model.family === "gemini");
+const PDP_STUDIO_MODELS = TRY_ON_MODELS.filter((model) => model.family === "gemini" || model.family === "openai");
+const PDP_STUDIO_API_CONFIG = {
+  ...TRY_ON_TEST_CONFIG,
+  apiKey:
+    process.env.NEXT_PUBLIC_PRIMESTYLE_TEST_LAB_API_KEY ??
+    process.env.NEXT_PUBLIC_TEST_LAB_API_KEY ??
+    TRY_ON_TEST_CONFIG.apiKey,
+  apiPrefix: "/api/test-lab/sdk-mirror",
+} as const;
 const DEFAULT_PDP_GEMINI_MODEL: TryOnModelId = "gemini-3-pro-image-preview";
 
 export function PdpStudioClient() {
   const photo = useImageFile("Photo input");
   const cloth = useImageFile("Cloth input");
   const stopwatch = useStopwatch();
-  const submission = useTryOnSubmission(TRY_ON_TEST_CONFIG);
+  const submission = useTryOnSubmission(PDP_STUDIO_API_CONFIG);
   const [selectedModelId, setSelectedModelId] = useState<TryOnModelId>(DEFAULT_PDP_GEMINI_MODEL);
   const [prompt, setPrompt] = useState("");
   const [products, setProducts] = useState<DemoLabProductOption[]>([]);
@@ -277,7 +285,7 @@ export function PdpStudioClient() {
             <MessageSquareText className="h-4 w-4 text-brand-blue" aria-hidden />
             Prompt
           </span>
-          <GeminiModelPicker
+          <PdpStudioModelPicker
             value={selectedModelId}
             entry={selectedModel}
             disabled={isLive}
@@ -341,7 +349,7 @@ function ProductThumb({ product }: { product: DemoLabProductOption | null }) {
   );
 }
 
-function GeminiModelPicker({
+function PdpStudioModelPicker({
   value,
   entry,
   disabled,
@@ -373,7 +381,7 @@ function GeminiModelPicker({
         avoidCollisions={false}
         className="w-[var(--radix-dropdown-menu-trigger-width)] rounded-2xl border-gray-200 bg-white p-1 text-slate-950"
       >
-        {GEMINI_MODELS.map((model) => {
+        {PDP_STUDIO_MODELS.map((model) => {
           const selected = model.id === value;
           return (
             <DropdownMenuItem
@@ -386,7 +394,9 @@ function GeminiModelPicker({
             >
               <span className="min-w-0">
                 <span className="block truncate text-sm font-semibold">{model.label}</span>
-                <span className="block truncate text-xs text-slate-500">{model.status}</span>
+                <span className="block truncate text-xs text-slate-500">
+                  {model.family === "openai" ? "OpenAI" : "Gemini"} · {model.status}
+                </span>
               </span>
               {selected ? <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-blue" aria-hidden /> : null}
             </DropdownMenuItem>

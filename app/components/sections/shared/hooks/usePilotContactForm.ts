@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { getPilotRequestUrl } from "../../../shared/pilotRequest";
 import { useLandingLanguage } from "@/app/landing/i18n";
 
-export type ToolIntegration = "react-sdk" | "api" | "shopify";
+export type ToolIntegration = "react-sdk" | "shopify";
 export type ShareData = "yes" | "no";
 
 export type FormState = {

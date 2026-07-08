@@ -52,10 +52,12 @@ export class TryOnApiError extends Error {
 export interface TryOnApiClientConfig {
   baseUrl: string;
   apiKey?: string;
+  apiPrefix?: string;
 }
 
 export function createTryOnApiClient(config: TryOnApiClientConfig) {
   const { baseUrl, apiKey } = config;
+  const apiPrefix = (config.apiPrefix ?? "/api/v1").replace(/\/+$/, "");
   const trimmedApiKey = apiKey?.trim();
   const headers: HeadersInit = {
     "Content-Type": "application/json",
@@ -66,7 +68,7 @@ export function createTryOnApiClient(config: TryOnApiClientConfig) {
   }
 
   async function submit(payload: SubmitTryOnPayload): Promise<SubmitTryOnResponse> {
-    const res = await fetch(`${baseUrl}/api/v1/tryon`, {
+    const res = await fetch(`${baseUrl}${apiPrefix}/tryon`, {
       method: "POST",
       headers,
       body: JSON.stringify(payload),
@@ -85,7 +87,7 @@ export function createTryOnApiClient(config: TryOnApiClientConfig) {
   }
 
   function streamUrl(): string {
-    const streamPath = `${baseUrl}/api/v1/tryon/stream`;
+    const streamPath = `${baseUrl}${apiPrefix}/tryon/stream`;
     if (!trimmedApiKey) return streamPath;
 
     const streamUrl = streamPath.startsWith("http")

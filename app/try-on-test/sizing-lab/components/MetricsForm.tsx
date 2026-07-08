@@ -26,10 +26,10 @@ export function MetricsForm({ metrics, onChange }: Props) {
   const heightFt = Math.floor(totalIn / 12);
   const heightInRemainder = Math.round((totalIn - heightFt * 12) * 10) / 10;
 
-  // Display: round display values to a clean step (1 lb / 0.5 kg) so the
-  // input doesn't jiggle as the kg <-> lb round-trip introduces decimal noise.
+  // Display: keep metric kg precise for dataset rows; round pounds to a clean
+  // whole-number step so kg <-> lb round-trips do not jiggle the input.
   const wDisplay = isMetric
-    ? Math.round(metrics.weightKg * 2) / 2
+    ? Math.round(metrics.weightKg * 100) / 100
     : Math.round(kgToLb(metrics.weightKg));
   const bmi = metrics.heightCm > 0
     ? (metrics.weightKg / Math.pow(metrics.heightCm / 100, 2)).toFixed(1)
@@ -48,22 +48,39 @@ export function MetricsForm({ metrics, onChange }: Props) {
     const kg = isMetric ? v : lbToKg(v);
     onChange({ ...metrics, weightKg: kg });
   };
+  const setBust = (v: number) => {
+    const cm = isMetric ? v : inToCm(v);
+    onChange({ ...metrics, bustCm: cm });
+  };
   const setGender = (g: Gender) => {
     onChange({
       ...metrics,
       gender: g,
+      bustCm: g === "female" ? metrics.bustCm ?? null : null,
       braSize: g === "female"
         ? metrics.braSize ?? { region: "US", band: 34, cup: "C" }
         : null,
+      cup: g === "female" ? metrics.cup ?? metrics.braSize?.cup ?? "C" : null,
     });
   };
 
   const bra = metrics.gender === "female" ? metrics.braSize ?? null : null;
   const setBra = (patch: Partial<NonNullable<MetricsInput["braSize"]>>) => {
     const next = { ...(metrics.braSize ?? { region: "US" as BraRegion, band: 34, cup: "C" }), ...patch };
-    onChange({ ...metrics, braSize: next });
+    onChange({ ...metrics, braSize: next, cup: next.cup });
   };
-  const bustCm = bra ? bustFromBraCm(bra.region, bra.band, bra.cup) : null;
+  const setCup = (cup: string) => {
+    if (bra) {
+      setBra({ cup });
+      return;
+    }
+    onChange({ ...metrics, cup });
+  };
+  const directBustCm = metrics.gender === "female" && metrics.bustCm && metrics.bustCm > 0 ? metrics.bustCm : null;
+  const braBustCm = bra ? bustFromBraCm(bra.region, bra.band, bra.cup) : null;
+  const bustCm = directBustCm ?? braBustCm;
+  const bustDisplay = bustCm ? (isMetric ? bustCm : cmToIn(bustCm)) : 0;
+  const selectedCup = metrics.cup ?? bra?.cup ?? "C";
   const bandRange = bra ? bandRangeForRegion(bra.region) : null;
 
   return (
@@ -135,7 +152,7 @@ export function MetricsForm({ metrics, onChange }: Props) {
           onChange={setWeight}
           min={isMetric ? 30 : 66}
           max={isMetric ? 200 : 441}
-          step={isMetric ? 0.5 : 1}
+          step={isMetric ? 0.05 : 1}
         />
         <div>
           <label className="text-xs text-text-secondary block mb-1.5">Gender</label>
@@ -160,35 +177,23 @@ export function MetricsForm({ metrics, onChange }: Props) {
         )}
       </p>
 
-      {bra && bandRange && (
+      {metrics.gender === "female" && (
         <div className="pt-3 border-t border-gray-100">
-          <h4 className="text-xs font-semibold text-text-primary mb-2 uppercase tracking-wider">Bra size</h4>
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <label className="text-xs text-text-secondary block mb-1.5">Region</label>
-              <select
-                value={bra.region}
-                onChange={(e) => setBra({ region: e.target.value as BraRegion })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
-              >
-                {REGIONS.map((r) => (
-                  <option key={r} value={r}>{r}</option>
-                ))}
-              </select>
-            </div>
+          <h4 className="text-xs font-semibold text-text-primary mb-2 uppercase tracking-wider">Bust / bra</h4>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <NumField
-              label={`Band (${bandRange.unit})`}
-              value={bra.band}
-              onChange={(v) => setBra({ band: v })}
-              min={bandRange.min}
-              max={bandRange.max}
-              step={bandRange.step}
+              label={`Bust (${isMetric ? "cm" : "in"})`}
+              value={Math.round(bustDisplay * 10) / 10}
+              onChange={setBust}
+              min={isMetric ? 50 : 20}
+              max={isMetric ? 160 : 63}
+              step={isMetric ? 0.5 : 0.25}
             />
             <div>
               <label className="text-xs text-text-secondary block mb-1.5">Cup</label>
               <select
-                value={bra.cup}
-                onChange={(e) => setBra({ cup: e.target.value })}
+                value={selectedCup}
+                onChange={(e) => setCup(e.target.value)}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
               >
                 {BRA_CUPS.map((c) => (
@@ -196,12 +201,36 @@ export function MetricsForm({ metrics, onChange }: Props) {
                 ))}
               </select>
             </div>
+            {bra && bandRange ? (
+              <>
+                <div>
+                  <label className="text-xs text-text-secondary block mb-1.5">Region</label>
+                  <select
+                    value={bra.region}
+                    onChange={(e) => setBra({ region: e.target.value as BraRegion })}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white"
+                  >
+                    {REGIONS.map((r) => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
+                  </select>
+                </div>
+                <NumField
+                  label={`Band (${bandRange.unit})`}
+                  value={bra.band}
+                  onChange={(v) => setBra({ band: v })}
+                  min={bandRange.min}
+                  max={bandRange.max}
+                  step={bandRange.step}
+                />
+              </>
+            ) : null}
           </div>
-          {bustCm != null && (
+          {bra && braBustCm != null && !directBustCm ? (
             <p className="text-xs text-text-hint mt-2 font-mono">
-              bustFromBra({bra.region}, {bra.band}, {bra.cup}) → <span className="text-brand-blue">{bustCm} cm ({cmToIn(bustCm).toFixed(1)} in)</span>
+              bustFromBra({bra.region}, {bra.band}, {bra.cup}) → <span className="text-brand-blue">{braBustCm} cm ({cmToIn(braBustCm).toFixed(1)} in)</span>
             </p>
-          )}
+          ) : null}
         </div>
       )}
     </div>

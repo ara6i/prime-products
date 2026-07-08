@@ -14,7 +14,7 @@ export function useImageInput() {
   useEffect(() => {
     const url = state.previewUrl;
     return () => {
-      if (url) URL.revokeObjectURL(url);
+      if (url?.startsWith("blob:")) URL.revokeObjectURL(url);
     };
   }, [state.previewUrl]);
 
@@ -30,9 +30,19 @@ export function useImageInput() {
     setState({ file, previewUrl, width: dims.w, height: dims.h });
   }, []);
 
+  const selectUrl = useCallback(async (url: string) => {
+    const dims = await new Promise<{ w: number; h: number }>((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
+      img.onerror = () => resolve({ w: 0, h: 0 });
+      img.src = url;
+    });
+    setState({ file: null, previewUrl: url, width: dims.w, height: dims.h });
+  }, []);
+
   const clear = useCallback(() => {
     setState({ file: null, previewUrl: null, width: 0, height: 0 });
   }, []);
 
-  return { state, selectFile, clear };
+  return { state, selectFile, selectUrl, clear };
 }

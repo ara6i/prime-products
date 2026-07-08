@@ -6,7 +6,7 @@ interface MetricCardProps {
 }
 
 const toneClasses: Record<CustomerDashboardMetricCard["tone"], string> = {
-  blue: "bg-customer-blue text-brand-blue",
+  blue: "bg-customer-blue text-brand-blue [[data-customer-theme=dark]_&]:bg-customer-soft [[data-customer-theme=dark]_&]:text-white",
   green: "bg-customer-success-bg text-customer-success-text",
   neutral: "bg-customer-soft text-text-body",
   amber: "bg-customer-warning-bg text-customer-warning-text",

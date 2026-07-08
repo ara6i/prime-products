@@ -1,11 +1,39 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
+import { existsSync } from "node:fs";
+import path from "node:path";
 
 const DEVELOPER_PORTAL = "https://myaifitting.com";
 const siteAuthEnabled = process.env.PRIME_PRODUCTS_SITE_AUTH_ENABLED === "true";
+const localWorkspaceRoot = path.resolve(process.cwd(), "..");
+const localSdkReactEntry = path.join(localWorkspaceRoot, "primestyleai-tryon-sdk/src/react/index.ts");
+const localSdkReactAlias = path.relative(localWorkspaceRoot, localSdkReactEntry);
+const useLocalSdkSource =
+  process.env.NODE_ENV === "development" &&
+  process.env.PRIME_PRODUCTS_USE_PACKAGED_SDK !== "true" &&
+  existsSync(localSdkReactEntry);
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1", "localhost", "192.168.6.123"],
+  ...(useLocalSdkSource ? { transpilePackages: ["@primestyleai/tryon"] } : {}),
+  ...(useLocalSdkSource
+    ? {
+        turbopack: {
+          root: localWorkspaceRoot,
+          resolveAlias: {
+            "@primestyleai/tryon/react": localSdkReactAlias,
+          },
+        },
+        webpack(config) {
+          config.resolve = config.resolve ?? {};
+          config.resolve.alias = {
+            ...(config.resolve.alias ?? {}),
+            "@primestyleai/tryon/react": localSdkReactEntry,
+          };
+          return config;
+        },
+      }
+    : {}),
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
@@ -15,6 +43,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "ali.a.yximgs.com" },
       { protocol: "https", hostname: "s15-kling.klingai.com" },
       { protocol: "https", hostname: "cdn.shopify.com" },
+      { protocol: "https", hostname: "media.licdn.com" },
+      { protocol: "https", hostname: "drive.google.com" },
       { protocol: "https", hostname: "images.bloomingdalesassets.com" },
       { protocol: "https", hostname: "image.menswearhouse.com" },
     ],

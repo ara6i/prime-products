@@ -24,7 +24,7 @@ function toneClasses(tone: CustomerPlanSummaryCard["tone"]): string {
     case "green":
       return "text-customer-success-text";
     case "blue":
-      return "text-brand-blue";
+      return "text-brand-blue [[data-customer-theme=dark]_&]:text-white";
     case "amber":
       return "text-customer-warning-text";
     case "rose":
@@ -44,14 +44,14 @@ function UsageProgress({ percent }: { percent: number }) {
 
 function AtGlanceCard({ card, usagePercent }: { card: CustomerPlanSummaryCard; usagePercent?: number }) {
   return (
-    <div className="rounded-[0.833vw] border border-customer-border bg-customer-soft px-[1.042vw] py-[0.938vw] max-lg:rounded-[4vw] max-lg:px-[4vw] max-lg:py-[3.6vw]">
-      <p className="text-customer-xs font-semibold uppercase tracking-[0.12em] text-customer-muted max-lg:text-[2.6vw]">
+    <div className="rounded-[0.833vw] border border-customer-border bg-customer-soft px-[1.042vw] py-[0.938vw] [[data-customer-theme=dark]_&]:border-customer-border-strong [[data-customer-theme=dark]_&]:bg-[#111827] max-lg:rounded-[4vw] max-lg:px-[4vw] max-lg:py-[3.6vw]">
+      <p className="text-customer-xs font-semibold uppercase tracking-[0.12em] text-customer-muted [[data-customer-theme=dark]_&]:text-white max-lg:text-[2.6vw]">
         {card.label}
       </p>
       <p className={`mt-[0.313vw] text-customer-xl font-semibold tracking-[-0.035em] max-lg:mt-[1vw] max-lg:text-[5vw] ${toneClasses(card.tone)}`}>
         {card.value}
       </p>
-      <p className="mt-[0.208vw] text-customer-xs leading-[1.45] text-text-body max-lg:mt-[1vw] max-lg:text-[2.9vw]">
+      <p className="mt-[0.208vw] text-customer-xs leading-[1.45] text-text-body [[data-customer-theme=dark]_&]:text-white max-lg:mt-[1vw] max-lg:text-[2.9vw]">
         {card.detail}
       </p>
       {typeof usagePercent === "number" ? <UsageProgress percent={usagePercent} /> : null}

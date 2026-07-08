@@ -22,10 +22,10 @@ interface EndpointBlockProps {
 
 const METHOD_STYLES: Record<string, string> = {
   GET: "bg-[#2154EF]/10 text-[#2154EF] border-[#2154EF]/20",
-  POST: "bg-green-100 text-green-700 border-green-200",
-  PUT: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  DELETE: "bg-red-100 text-red-700 border-red-200",
-  PATCH: "bg-purple-100 text-purple-700 border-purple-200",
+  POST: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+  PUT: "bg-amber-500/12 text-amber-500 border-amber-500/20",
+  DELETE: "bg-red-500/10 text-red-500 border-red-500/20",
+  PATCH: "bg-purple-500/10 text-purple-500 border-purple-500/20",
 };
 
 export function EndpointBlock({
@@ -44,7 +44,7 @@ export function EndpointBlock({
   return (
     <div className="my-6 space-y-4">
       {/* Endpoint pill */}
-      <div className="flex items-center gap-3 border border-gray-200 bg-gray-50 rounded-lg px-4 py-3">
+      <div className="flex items-center gap-3 rounded-lg border border-customer-border bg-customer-soft px-4 py-3">
         <span
           className={cn(
             "inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wide border font-mono",
@@ -53,9 +53,9 @@ export function EndpointBlock({
         >
           {method}
         </span>
-        <code className="text-[14px] font-mono text-gray-900 flex-1 truncate">{path}</code>
+        <code className="flex-1 truncate font-mono text-[14px] text-text-primary">{path}</code>
         {auth && (
-          <span className="flex items-center gap-1 text-[12px] text-gray-500">
+          <span className="flex items-center gap-1 text-[12px] text-customer-muted">
             <Lock className="size-3" />
             Auth
           </span>
@@ -63,7 +63,7 @@ export function EndpointBlock({
       </div>
 
       {/* Description */}
-      <p className="text-[16px] leading-[1.7] text-gray-700">{description}</p>
+      <p className="text-[16px] leading-[1.7] text-text-body">{description}</p>
 
       {children}
 
@@ -79,7 +79,7 @@ export function EndpointBlock({
 
       {codeExamples && codeExamples.length > 0 && (
         <div className="mt-6">
-          <h4 className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
+          <h4 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-customer-muted">
             Example Request
           </h4>
           <TabbedCodeBlock examples={codeExamples} />
@@ -88,9 +88,9 @@ export function EndpointBlock({
 
       {responseExample && (
         <div className="mt-6">
-          <h4 className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
+          <h4 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-customer-muted">
             Response{" "}
-            <span className="text-green-600 font-mono">{responseStatus}</span>
+            <span className="font-mono text-customer-success-text">{responseStatus}</span>
           </h4>
           <CodeBlock code={responseExample} language="json" />
         </div>

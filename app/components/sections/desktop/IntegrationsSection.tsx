@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Tabs as TabsPrimitive } from "radix-ui";
-import { Package, Zap, LayoutGrid, ShoppingBag, Clock3 } from "lucide-react";
+import { Package, LayoutGrid, ShoppingBag, Clock3 } from "lucide-react";
 import { Reveal } from "../../shared/Reveal";
 import { SectionHeading } from "../../shared/SectionHeading";
 import { LandingButton } from "../../shared/LandingButton";
@@ -27,7 +27,7 @@ type Visual =
   | { kind: "soon"; tag: "widget" | "shopify" };
 
 type IntegrationTab = {
-  value: "sdk" | "api" | "widget" | "shopify";
+  value: "sdk" | "widget" | "shopify";
   label: string;
   icon: React.ReactNode;
   content: {
@@ -83,20 +83,6 @@ const TABS: IntegrationTab[] = [
     },
   },
   {
-    value: "api",
-    label: "API",
-    icon: <Zap className="h-4 w-4 shrink-0" />,
-    content: {
-      status: "available",
-      title: "REST API",
-      description:
-        "Direct endpoints for photo sizing, smart sizing, virtual try-on, and catalog sync. Webhook events keep long-running jobs in your own queue, and a typed OpenAPI spec means clients in any language. Build the experience you want — we just return the answer.",
-      primaryHref: "#pilot",
-      primaryLabel: "Apply for free pilot",
-      visual: { kind: "code" },
-    },
-  },
-  {
     value: "widget",
     label: "Widget",
     icon: <LayoutGrid className="h-4 w-4 shrink-0" />,
@@ -131,8 +117,8 @@ export function IntegrationsSection() {
       <div className="mx-auto flex w-[86.111vw] flex-col gap-10">
         <SectionHeading
           eyebrow={translate("Ship it your way")}
-          title={translate("Four ways to integrate.")}
-          subtitle={translate("SDK, Shopify app, and REST API are live today. Widget is next up.")}
+          title={translate("Three ways to integrate.")}
+          subtitle={translate("SDK and Shopify app are live today. Widget is next up.")}
         />
 
         <Reveal variant="fade" delay={1}>

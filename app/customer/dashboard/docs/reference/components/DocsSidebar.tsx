@@ -39,10 +39,10 @@ export function DocsSidebar({ navigation, activeId }: DocsSidebarProps) {
     section.children?.some((c) => activeId === c.id) ?? false;
 
   return (
-    <aside className="sticky top-16 h-[calc(100vh-4rem)] border-r border-gray-200 bg-white">
+    <aside className="sticky top-16 h-[calc(100vh-4rem)] border-r border-customer-border bg-customer-card">
       <ScrollArea className="h-full">
         <nav className="px-6 py-8">
-          <p className="text-[11px] font-semibold tracking-wider text-gray-500 uppercase mb-3">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-customer-muted">
             Documentation
           </p>
 
@@ -64,14 +64,14 @@ export function DocsSidebar({ navigation, activeId }: DocsSidebarProps) {
                       "group flex items-center gap-2 w-full text-left text-sm transition-colors",
                       sectionActive
                         ? "text-[#2154EF] font-semibold"
-                        : "text-gray-700 hover:text-gray-900 font-medium"
+                        : "font-medium text-text-body hover:text-text-primary"
                     )}
                   >
                     {Icon && (
                       <Icon
                         className={cn(
                           "size-4 flex-shrink-0",
-                          sectionActive ? "text-[#2154EF]" : "text-gray-400 group-hover:text-gray-600"
+                          sectionActive ? "text-[#2154EF]" : "text-customer-muted group-hover:text-text-body"
                         )}
                       />
                     )}
@@ -79,7 +79,7 @@ export function DocsSidebar({ navigation, activeId }: DocsSidebarProps) {
                     {hasChildren && (
                       <ChevronRight
                         className={cn(
-                          "size-3.5 text-gray-400 transition-transform duration-200",
+                          "size-3.5 text-customer-muted transition-transform duration-200",
                           isExpanded && "rotate-90"
                         )}
                       />
@@ -98,7 +98,7 @@ export function DocsSidebar({ navigation, activeId }: DocsSidebarProps) {
                                 "block w-full text-left text-[13px] leading-6 transition-colors",
                                 active
                                   ? "text-[#2154EF] font-semibold border-l-2 border-[#2154EF] -ml-3 pl-3"
-                                  : "text-gray-600 hover:text-gray-900"
+                                  : "text-text-body hover:text-text-primary"
                               )}
                             >
                               {child.title}

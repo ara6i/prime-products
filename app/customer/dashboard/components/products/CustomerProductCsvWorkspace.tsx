@@ -11,6 +11,7 @@ import {
 import { ProductFilterDropdown } from "./ProductFilterDropdown";
 import { ProductImportSummaryStrip } from "./ProductImportSummaryStrip";
 import { ProductSelectionRow } from "./ProductSelectionRow";
+import { ProductAutoDetectDialog } from "./ProductAutoDetectDialog";
 import { ProductUploadDialog } from "./ProductUploadDialog";
 import type {
   CustomerProductCsvParseResult,
@@ -21,9 +22,10 @@ import type {
 
 interface CustomerProductCsvWorkspaceProps {
   initialProducts?: CustomerProductCsvParseResult;
+  verifiedWebsiteUrl: string;
 }
 
-export function CustomerProductCsvWorkspace({ initialProducts }: CustomerProductCsvWorkspaceProps) {
+export function CustomerProductCsvWorkspace({ initialProducts, verifiedWebsiteUrl }: CustomerProductCsvWorkspaceProps) {
   const workspace = useCustomerProductCsvWorkspace(initialProducts);
   const collectionOptions: Array<CustomerProductFilterOption<string>> = [
     { label: "All collections", value: CUSTOMER_PRODUCT_COLLECTION_ALL },
@@ -33,13 +35,16 @@ export function CustomerProductCsvWorkspace({ initialProducts }: CustomerProduct
   return (
     <CustomerDashboardCard
       title="Product selection"
-      description="Demo products are preloaded so you can review sorting, activation, inventory, and cycle behavior before uploading a merchant CSV."
+      description="Demo products are preloaded so you can review sorting, coverage, inventory, and fit-button visibility before importing products."
       action={
-        <ProductUploadDialog
-          currentFileName={workspace.fileName}
-          error={workspace.error}
-          onApply={workspace.importFile}
-        />
+        <div className="flex shrink-0 flex-wrap justify-end gap-[0.521vw] max-lg:w-full max-lg:gap-[2vw]">
+          <ProductUploadDialog
+            currentFileName={workspace.fileName}
+            error={workspace.error}
+            onApply={workspace.importFile}
+          />
+          <ProductAutoDetectDialog verifiedWebsiteUrl={verifiedWebsiteUrl} />
+        </div>
       }
       bodyClassName="!p-0"
     >
@@ -92,7 +97,7 @@ export function CustomerProductCsvWorkspace({ initialProducts }: CustomerProduct
               No products loaded yet.
             </p>
             <p className="mx-auto mt-[0.313vw] max-w-[30vw] text-customer-sm leading-[1.6] text-text-body max-lg:mt-[2vw] max-lg:max-w-none max-lg:text-[3.3vw]">
-              Use the upload button above to open the CSV import modal and preview product coverage.
+              Upload a CSV or use Auto Detect from the actions above.
             </p>
           </div>
         </div>

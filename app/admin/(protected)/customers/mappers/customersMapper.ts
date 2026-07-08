@@ -276,6 +276,7 @@ function sdkSections(detail: AdminCustomerDetailRaw): CustomerDetailSection[] {
       field("Store profile id", profile?._id ?? detail.store.storeProfileId),
       field("Store name", profile?.storeName ?? detail.store.storeName),
       field("Source", sourceLabels[detail.source]),
+      field("Style RAG", formatBoolean(profile?.styleMatchEnabled)),
       field("Size charts", detail.stats.chartCount),
       field("Created", formatDate(profile?.createdAt ?? detail.store.installedAt)),
       field("Updated", formatDate(profile?.updatedAt)),
@@ -353,6 +354,7 @@ function shopifySections(detail: AdminCustomerDetailRaw): CustomerDetailSection[
     compactSection("Store Profile", [
       field("Store profile id", profile?._id ?? detail.store.storeProfileId),
       field("Profile source", profile?.source ? sourceLabels[profile.source] : sourceLabels[detail.source]),
+      field("Style RAG", formatBoolean(profile?.styleMatchEnabled)),
       field("Profile created", formatDate(profile?.createdAt)),
       field("Profile updated", formatDate(profile?.updatedAt)),
     ]),
@@ -368,6 +370,13 @@ export function mapCustomerDetail(detail: AdminCustomerDetailRaw): CustomerDetai
     sourceLabel: sourceLabels[detail.source],
     store: mappedStore,
     sections: detail.source === "shopify" ? shopifySections(detail) : sdkSections(detail),
+    styleMatch: {
+      enabled: profile?.styleMatchEnabled === true,
+      canUpdate: Boolean(profile?._id ?? detail.store.storeProfileId),
+      source: detail.source,
+      storeId: detail.store.id,
+      storeProfileId: profile?._id ?? detail.store.storeProfileId,
+    },
     sizeGuide: profile?.sizeGuideConfig
       ? {
           unitLabel: profile.sizeGuideConfig.unit.toUpperCase(),

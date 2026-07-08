@@ -92,7 +92,7 @@ function IpLimitPanel({
   const statusText = useMemo(() => {
     if (!apiKeyReady) return "Create a production key first";
     if (ipLimit.envHardDisabled) return "Disabled by environment";
-    if (!ipLimit.globalEnabled || !ipLimit.sdkEnabled) return "Disabled by PrimeStyleAI admin";
+    if (!ipLimit.globalEnabled || !ipLimit.sdkEnabled) return "Limits are off";
     if (productEnabled && storeEnabled) return "Both limits are on";
     if (productEnabled) return "Per-product limit is on";
     if (storeEnabled) return "Global limit is on";
@@ -124,7 +124,7 @@ function IpLimitPanel({
           <h2 className="mt-1 text-customer-xl font-semibold tracking-[-0.035em] text-text-primary">Try-on limits</h2>
         </div>
         <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
-          (productEnabled || storeEnabled) && !disabled ? "bg-green-50 text-green-700" : "bg-customer-soft text-text-body"
+          (productEnabled || storeEnabled) && !disabled ? "bg-customer-success-bg text-customer-success-text" : "bg-customer-soft text-text-body"
         }`}>
           {(productEnabled || storeEnabled) && !disabled ? <ShieldCheck className="h-4 w-4" aria-hidden /> : <ShieldOff className="h-4 w-4" aria-hidden />}
           {statusText}
@@ -216,14 +216,14 @@ function LimitScopeCard({
           <span className="block text-sm font-semibold text-text-primary">{title}</span>
           <span className="mt-1 block text-sm leading-6 text-text-body">{description}</span>
         </span>
-        <span className={`relative mt-0.5 h-7 w-12 shrink-0 rounded-full transition-colors ${enabled ? "bg-brand-blue" : "bg-[#d8e0ef]"}`}>
-          <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${enabled ? "translate-x-6" : "translate-x-1"}`} />
+        <span className={`relative mt-0.5 h-7 w-12 shrink-0 rounded-full transition-colors ${enabled ? "bg-brand-blue" : "bg-customer-border-strong"}`}>
+          <span className={`absolute top-1 h-5 w-5 rounded-full bg-customer-card shadow-sm transition-transform ${enabled ? "translate-x-6" : "translate-x-1"}`} />
         </span>
       </button>
 
       <div className="mt-4">
         <p className="text-sm font-semibold text-text-primary">Allowed try-ons</p>
-        <div className="mt-3 flex h-11 items-center rounded-full border border-customer-border bg-white p-1">
+        <div className="mt-3 flex h-11 items-center rounded-full border border-customer-border bg-customer-card p-1">
           <button
             type="button"
             disabled={disabled}
@@ -301,7 +301,7 @@ function CreateKeyPanel({
           <h2 className="mt-1 text-customer-xl font-semibold tracking-[-0.035em] text-text-primary">API key</h2>
         </div>
         {keyState.ready ? (
-          <span className="inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
+          <span className="inline-flex items-center gap-2 rounded-full bg-customer-success-bg px-3 py-1 text-xs font-semibold text-customer-success-text">
             <CheckCircle2 className="h-4 w-4" aria-hidden />
             Ready
           </span>
@@ -325,18 +325,18 @@ function CreateKeyPanel({
                 disabled={pending || keyState.ready}
                 onChange={(event) => setKeyName(event.target.value)}
                 placeholder={`${settings.store.storeName} production key`}
-                className="mt-2 h-11 w-full rounded-xl border border-customer-border bg-white px-3 text-sm font-semibold text-text-primary outline-none transition-colors focus:border-brand-blue disabled:cursor-not-allowed disabled:bg-customer-soft disabled:text-text-body"
+                className="mt-2 h-11 w-full rounded-xl border border-customer-border bg-customer-card px-3 text-sm font-semibold text-text-primary outline-none transition-colors focus:border-brand-blue disabled:cursor-not-allowed disabled:bg-customer-soft disabled:text-text-body"
               />
             </label>
             {keyState.oneTimeKey ? (
-              <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-green-700">Shown once</p>
-                <div className="mt-2 flex flex-wrap items-center gap-2 rounded-lg bg-white p-2">
+              <div className="mt-4 rounded-xl border border-customer-border bg-customer-success-bg p-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-customer-success-text">Shown once</p>
+                <div className="mt-2 flex flex-wrap items-center gap-2 rounded-lg bg-customer-card p-2">
                   <code className="min-w-0 flex-1 break-all text-xs text-text-primary">{keyState.oneTimeKey}</code>
                   <button
                     type="button"
                     onClick={() => copy(keyState.oneTimeKey!, "API key")}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-full border border-green-200 px-3 text-xs font-semibold text-green-700"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-full border border-customer-border px-3 text-xs font-semibold text-customer-success-text"
                   >
                     <Copy className="h-3.5 w-3.5" aria-hidden />
                     Copy

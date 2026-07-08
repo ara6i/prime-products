@@ -8,6 +8,7 @@ import {
   fetchAdminShopifyRevenueClient,
   resetCustomerSizeGuideMappingClient,
   runShopifyBillingAutomationTestClient,
+  updateCustomerStyleMatchSettingClient,
   updateShopifyBillingOverrideClient,
   updateShopifyStatusClient,
   updateShopifyUsageLimitsClient,
@@ -38,6 +39,7 @@ export interface UseShopifyCustomerControlCenterResult {
   updateUsage: (payload: ShopifyUsageLimitsPayload) => Promise<void>;
   runAutomationTest: (payload: ShopifyBillingAutomationTestPayload) => Promise<void>;
   setStatus: (status: "active" | "suspended") => Promise<void>;
+  updateStyleMatch: (enabled: boolean) => Promise<void>;
   resetSizeGuideMapping: () => Promise<void>;
 }
 
@@ -123,6 +125,13 @@ export function useShopifyCustomerControlCenter(
     }, status === "active" ? "Shop activated." : "Shop suspended.");
   }, [runMutation, state.controlCenter.store.id]);
 
+  const updateStyleMatch = useCallback(async (enabled: boolean) => {
+    await runMutation(async () => {
+      const response = await updateCustomerStyleMatchSettingClient("shopify", state.controlCenter.store.id, enabled);
+      return response.controlCenter ?? null;
+    }, enabled ? "Style RAG enabled." : "Style RAG disabled.");
+  }, [runMutation, state.controlCenter.store.id]);
+
   const resetSizeGuideMapping = useCallback(async () => {
     await runMutation(async () => {
       await resetCustomerSizeGuideMappingClient("shopify", state.controlCenter.store.id);
@@ -141,6 +150,7 @@ export function useShopifyCustomerControlCenter(
       updateUsage,
       runAutomationTest,
       setStatus,
+      updateStyleMatch,
       resetSizeGuideMapping,
     }),
     [
@@ -152,6 +162,7 @@ export function useShopifyCustomerControlCenter(
       resetSizeGuideMapping,
       runAutomationTest,
       setStatus,
+      updateStyleMatch,
       updateBilling,
       updateUsage,
     ],

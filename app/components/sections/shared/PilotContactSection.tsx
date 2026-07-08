@@ -77,7 +77,6 @@ const SOCIAL_LINKS = [
 
 const INTEGRATION_OPTIONS: RadioOption<ToolIntegration>[] = [
   { value: "react-sdk", label: "React SDK" },
-  { value: "api", label: "API" },
   { value: "shopify", label: "Shopify app" },
 ];
 

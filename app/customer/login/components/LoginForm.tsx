@@ -38,11 +38,41 @@ declare global {
 }
 
 const SUPPORT_EMAIL = "support@primestyleai.com";
-const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
-const appleClientId = process.env.NEXT_PUBLIC_APPLE_CLIENT_ID ?? "";
+const googleClientId =
+  process.env.NEXT_PUBLIC_CUSTOMER_GOOGLE_CLIENT_ID ??
+  process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ??
+  "";
+const appleClientId =
+  process.env.NEXT_PUBLIC_CUSTOMER_APPLE_CLIENT_ID ??
+  process.env.NEXT_PUBLIC_APPLE_CLIENT_ID ??
+  "";
+const appleRedirectUri =
+  process.env.NEXT_PUBLIC_CUSTOMER_APPLE_REDIRECT_URI ??
+  process.env.NEXT_PUBLIC_SDK_APPLE_REDIRECT_URI ??
+  process.env.NEXT_PUBLIC_APPLE_REDIRECT_URI ??
+  "";
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  process.env.NEXT_PUBLIC_APP_URL ??
+  "";
 const initialLoginState: LoginState = { error: null, errorId: 0 };
 const initialSignupState: SignupState = { error: null, errorId: 0, verificationEmail: null, message: null };
 const initialVerifyState: VerifySignupState = { error: null, errorId: 0 };
+
+function buildCustomerLoginRedirect(origin: string): string {
+  return `${origin.replace(/\/+$/, "")}/customer/login`;
+}
+
+function getAppleRedirectUri(): string {
+  const configuredRedirect = appleRedirectUri.trim();
+  if (configuredRedirect) return configuredRedirect;
+
+  const configuredSiteUrl = siteUrl.trim();
+  if (configuredSiteUrl) return buildCustomerLoginRedirect(configuredSiteUrl);
+
+  if (typeof window === "undefined") return "";
+  return buildCustomerLoginRedirect(window.location.origin);
+}
 
 export function LoginForm() {
   const router = useRouter();
@@ -128,12 +158,17 @@ export function LoginForm() {
       toast.error("Apple login is not configured.");
       return;
     }
+    const redirectURI = getAppleRedirectUri();
+    if (!redirectURI) {
+      toast.error("Apple login redirect is not configured.");
+      return;
+    }
     startSocialTransition(async () => {
       try {
         window.AppleID?.auth?.init({
           clientId: appleClientId,
           scope: "name email",
-          redirectURI: `${window.location.origin}/customer/login`,
+          redirectURI,
           usePopup: true,
         });
         const result = await window.AppleID?.auth?.signIn();

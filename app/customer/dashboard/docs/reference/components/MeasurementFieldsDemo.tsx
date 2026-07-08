@@ -87,13 +87,13 @@ export function MeasurementFieldsDemo() {
   );
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-[#FFFFFF] overflow-hidden mt-6 lg:mt-[1vw]">
-      <div className="px-5 py-4 lg:px-[1vw] lg:py-[0.8vw] border-b border-gray-200">
-        <h4 className="text-sm lg:text-[0.9vw] font-semibold text-gray-900 mb-3 lg:mb-[0.5vw]">
+    <div className="mt-6 overflow-hidden rounded-xl border border-customer-border bg-customer-card lg:mt-[1vw]">
+      <div className="border-b border-customer-border px-5 py-4 lg:px-[1vw] lg:py-[0.8vw]">
+        <h4 className="mb-3 text-sm font-semibold text-text-primary lg:mb-[0.5vw] lg:text-[0.9vw]">
           Which measurements should I send?
         </h4>
         <div className="flex flex-wrap gap-3 lg:gap-[0.5vw]">
-          <div className="flex gap-0 border border-gray-300 rounded-lg overflow-hidden">
+          <div className="flex gap-0 overflow-hidden rounded-lg border border-customer-border">
             {(["male", "female"] as Gender[]).map((g) => (
               <button
                 key={g}
@@ -103,23 +103,23 @@ export function MeasurementFieldsDemo() {
                 }}
                 className={`px-4 py-2 lg:px-[0.8vw] lg:py-[0.3vw] text-xs lg:text-[0.7vw] font-semibold transition-all ${
                   gender === g
-                    ? "bg-[#2154EF] text-[#111]"
-                    : "bg-transparent text-gray-600 hover:text-gray-900"
+                    ? "bg-[#2154EF] text-white"
+                    : "bg-transparent text-text-body hover:text-text-primary"
                 }`}
               >
                 {g === "male" ? "Men's" : "Women's"}
               </button>
             ))}
           </div>
-          <div className="flex gap-0 border border-gray-300 rounded-lg overflow-hidden">
+          <div className="flex gap-0 overflow-hidden rounded-lg border border-customer-border">
             {categories.map((c) => (
               <button
                 key={c}
                 onClick={() => setCategory(c)}
                 className={`px-3 py-2 lg:px-[0.6vw] lg:py-[0.3vw] text-xs lg:text-[0.7vw] font-medium transition-all whitespace-nowrap ${
                   category === c
-                    ? "bg-[#2154EF] text-[#111]"
-                    : "bg-transparent text-gray-600 hover:text-gray-900"
+                    ? "bg-[#2154EF] text-white"
+                    : "bg-transparent text-text-body hover:text-text-primary"
                 }`}
               >
                 {c === "tops"
@@ -135,12 +135,12 @@ export function MeasurementFieldsDemo() {
         </div>
       </div>
 
-      <div className="px-5 py-4 lg:px-[1vw] lg:py-[0.8vw] border-b border-gray-200">
-        <p className="text-xs lg:text-[0.7vw] text-gray-500 mb-3 lg:mb-[0.5vw]">
+      <div className="border-b border-customer-border px-5 py-4 lg:px-[1vw] lg:py-[0.8vw]">
+        <p className="mb-3 text-xs text-customer-muted lg:mb-[0.5vw] lg:text-[0.7vw]">
           {gender === "male" ? "Men's" : "Women's"} — {CATEGORY_LABELS[category]}
         </p>
         {fields.length === 0 ? (
-          <p className="text-sm text-gray-500 italic">
+          <p className="text-sm italic text-customer-muted">
             Dresses category is only available for Women&apos;s sizing.
           </p>
         ) : (
@@ -148,18 +148,18 @@ export function MeasurementFieldsDemo() {
             {fields.map((f) => (
               <div
                 key={f.key}
-                className="rounded-lg border border-gray-200 bg-[#F9FAFB] p-3 lg:p-[0.6vw]"
+                className="rounded-lg border border-customer-border bg-customer-soft p-3 lg:p-[0.6vw]"
               >
-                <div className="text-[10px] lg:text-[0.6vw] uppercase tracking-wider text-gray-500 mb-1">
+                <div className="mb-1 text-[10px] uppercase tracking-wider text-customer-muted lg:text-[0.6vw]">
                   {f.label}
                 </div>
                 <div className="text-lg lg:text-[1.1vw] font-bold text-[#2154EF]">
                   {f.example}
-                  <span className="text-xs lg:text-[0.7vw] font-normal text-gray-500 ml-1">
+                  <span className="ml-1 text-xs font-normal text-customer-muted lg:text-[0.7vw]">
                     {f.unit}
                   </span>
                 </div>
-                <div className="text-[10px] lg:text-[0.6vw] text-gray-600 mt-1 font-mono">
+                <div className="mt-1 font-mono text-[10px] text-text-body lg:text-[0.6vw]">
                   measurements.{f.key}
                 </div>
               </div>
@@ -169,10 +169,10 @@ export function MeasurementFieldsDemo() {
       </div>
 
       <div className="relative">
-        <pre className="p-5 lg:p-[1vw] text-[11px] sm:text-[12px] lg:text-[0.75vw] font-mono text-gray-700 overflow-x-auto leading-relaxed max-h-[300px] lg:max-h-[20vw]">
+        <pre className="max-h-[300px] overflow-x-auto p-5 font-mono text-[11px] leading-relaxed text-text-body sm:text-[12px] lg:max-h-[20vw] lg:p-[1vw] lg:text-[0.75vw]">
           <code>{jsonPayload}</code>
         </pre>
-        <div className="absolute top-3 right-3 px-2 py-1 rounded bg-white/5 text-[10px] text-gray-500 font-mono">
+        <div className="absolute right-3 top-3 rounded bg-customer-soft px-2 py-1 font-mono text-[10px] text-customer-muted">
           Request body
         </div>
       </div>

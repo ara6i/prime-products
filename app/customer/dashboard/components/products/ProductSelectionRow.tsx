@@ -65,7 +65,7 @@ function ProductSwitch({
     >
       <span
         className={cn(
-          "absolute left-0 top-1/2 h-[1.146vw] w-[1.146vw] -translate-y-1/2 rounded-full bg-white shadow-[0_0.104vw_0.313vw_rgba(15,23,42,0.2)] transition-transform max-lg:h-[5vw] max-lg:w-[5vw]",
+          "absolute left-0 top-1/2 h-[1.146vw] w-[1.146vw] -translate-y-1/2 rounded-full bg-customer-card shadow-[0_0.104vw_0.313vw_rgba(15,23,42,0.2)] transition-transform max-lg:h-[5vw] max-lg:w-[5vw]",
           checked ? "translate-x-[1.458vw] max-lg:translate-x-[6.2vw]" : "translate-x-[0.208vw] max-lg:translate-x-[1vw]",
         )}
       />
@@ -92,6 +92,10 @@ export function ProductSelectionRow({
 }: ProductSelectionRowProps) {
   const hasInventory = productHasInventory(product);
   const storefrontDisabled = !state.currentCycle || !hasInventory;
+  const coverageBadge = state.currentCycle ? "Covered now" : "Not covered";
+  const fitButtonBadge = state.currentStorefront ? "Fit button shown" : "Fit button hidden";
+  const fitButtonLabel = state.currentStorefront ? "Shown" : "Hidden";
+  const coverageActionLabel = state.currentCycle ? "Remove coverage" : "Include now";
 
   return (
     <article className="border-b border-customer-border last:border-b-0">
@@ -103,8 +107,8 @@ export function ProductSelectionRow({
             <h3 className="truncate text-[clamp(13px,0.78vw,15px)] font-semibold text-text-primary max-lg:max-w-full max-lg:text-[3.5vw]">
               {product.title}
             </h3>
-            {state.currentStorefront ? <StatusBadge tone="green">Live</StatusBadge> : <StatusBadge>Off</StatusBadge>}
-            {state.currentCycle ? <StatusBadge tone="blue">Current cycle</StatusBadge> : <StatusBadge tone="warning">Not included</StatusBadge>}
+            {state.currentCycle ? <StatusBadge tone="blue">{coverageBadge}</StatusBadge> : <StatusBadge tone="warning">{coverageBadge}</StatusBadge>}
+            {state.currentStorefront ? <StatusBadge tone="green">{fitButtonBadge}</StatusBadge> : <StatusBadge>{fitButtonBadge}</StatusBadge>}
           </div>
           <p className="mt-[0.208vw] truncate text-[clamp(12px,0.68vw,13px)] text-customer-muted max-lg:mt-[1vw] max-lg:text-[3vw]">
             {product.collection} · {productInventorySummary(product)}
@@ -119,19 +123,19 @@ export function ProductSelectionRow({
         <div className="flex items-center gap-[var(--spacing-customer-gap-lg)] max-lg:col-span-2 max-lg:grid max-lg:grid-cols-3 max-lg:gap-[3vw]">
           <div className="min-w-[7.292vw] max-lg:min-w-0">
             <p className="text-[0.573vw] font-semibold uppercase tracking-[0.12em] text-customer-muted max-lg:text-[2.5vw]">
-              Current storefront
+              Fit button
             </p>
             <div className="mt-[0.417vw] flex items-center gap-[var(--spacing-customer-gap-sm)] max-lg:mt-[1.5vw] max-lg:gap-[2vw]">
               <ProductSwitch checked={state.currentStorefront} disabled={storefrontDisabled} onToggle={onToggleStorefront} />
               <span className="text-[clamp(12px,0.72vw,14px)] font-semibold text-text-primary max-lg:text-[3vw]">
-                {state.currentStorefront ? "Live" : "Off"}
+                {fitButtonLabel}
               </span>
             </div>
           </div>
 
           <div className="min-w-[7.292vw] max-lg:min-w-0">
             <p className="text-[0.573vw] font-semibold uppercase tracking-[0.12em] text-customer-muted max-lg:text-[2.5vw]">
-              Current cycle
+              Plan coverage
             </p>
             <Button
               type="button"
@@ -140,7 +144,7 @@ export function ProductSelectionRow({
               onClick={onToggleCycle}
               className="mt-[0.417vw] h-[1.563vw] px-[0.625vw] text-[0.625vw] max-lg:mt-[1.5vw] max-lg:h-[7vw] max-lg:px-[3vw] max-lg:text-[2.8vw]"
             >
-              {state.currentCycle ? "Included" : "Add"}
+              {coverageActionLabel}
             </Button>
           </div>
 
@@ -152,7 +156,7 @@ export function ProductSelectionRow({
               onClick={onToggleExpanded}
               className="h-[1.563vw] rounded-full px-[0.625vw] text-[0.625vw] text-brand-blue max-lg:h-[7vw] max-lg:px-[3vw] max-lg:text-[2.8vw]"
             >
-              {expanded ? "Hide" : "Info"}
+              {expanded ? "Hide details" : "Details"}
             </Button>
           </div>
         </div>

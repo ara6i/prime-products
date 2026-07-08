@@ -11,6 +11,7 @@ import type {
   ShopifyControlCenterMutationResponse,
   ShopifyControlCenterRaw,
   ShopifyRevenueAnalyticsRaw,
+  StyleMatchSettingMutationResponse,
   ShopifyTryOnOverview,
   ShopifyTryOnRange,
   ShopifyUninstallReport,
@@ -164,6 +165,25 @@ export async function updateShopifyUsageLimitsClient(
     throw new Error("Failed to update usage limits");
   }
   return (await response.json()) as ShopifyControlCenterMutationResponse;
+}
+
+export async function updateCustomerStyleMatchSettingClient(
+  source: AdminCustomerSource,
+  id: string,
+  enabled: boolean,
+): Promise<StyleMatchSettingMutationResponse> {
+  const response = await fetch(
+    `/api/admin/stores/${encodeURIComponent(source)}/${encodeURIComponent(id)}/style-match`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enabled }),
+    },
+  );
+  if (!response.ok) {
+    throw new Error("Failed to update style RAG setting");
+  }
+  return (await response.json()) as StyleMatchSettingMutationResponse;
 }
 
 export async function runShopifyBillingAutomationTestClient(

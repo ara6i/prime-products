@@ -10,19 +10,26 @@ import { LandingLanguageSwitcher, useLandingLanguage } from "@/app/landing/i18n"
 
 type SectionLabelKey = "features" | "demo" | "pricing" | "integrations" | "contact";
 
-const SECTION_LINKS: Array<{
-  labelKey: SectionLabelKey;
+type SectionLink = {
   href: string;
   external?: boolean;
-}> = [
+} & (
+  | { labelKey: SectionLabelKey; label?: never }
+  | { label: string; labelKey?: never }
+);
+
+const SECTION_LINKS: SectionLink[] = [
   { labelKey: "features", href: "#features" },
   { labelKey: "demo", href: "/demo/products", external: true },
+  { label: "Blog", href: "/blog" },
   { labelKey: "pricing", href: "#pricing" },
   { labelKey: "integrations", href: "#integrations" },
   { labelKey: "contact", href: "#contact" },
 ];
 const CUSTOMER_LOGIN_PATH = "/customer/login";
+const CUSTOMER_DASHBOARD_PATH = "/customer/dashboard";
 const ADMIN_LOGIN_PATH = "/admin/login";
+const PDP_STUDIO_PATH = "/pdp-studio";
 const STAGING_HOSTS = new Set(["test-fe-9a7k.primestyleai.com"]);
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 
@@ -50,14 +57,16 @@ function useShowLocalTools(): boolean {
 interface DeveloperNavbarProps {
   /** "demo" trims the navbar down to just the customer login action, right-aligned. */
   variant?: "default" | "demo";
+  sectionHrefPrefix?: string;
 }
 
-export function DeveloperNavbar({ variant = "default" }: DeveloperNavbarProps) {
+export function DeveloperNavbar({ variant = "default", sectionHrefPrefix = "" }: DeveloperNavbarProps) {
   const isDemo = variant === "demo";
   const showAdminLogin = useShowInternalAdminLogin();
   const showLocalTools = useShowLocalTools();
   const { open: openPilot } = usePilotModal();
   const { language, setLanguage, t } = useLandingLanguage();
+  const resolveHref = (href: string) => href.startsWith("#") ? `${sectionHrefPrefix}${href}` : href;
 
   return (
     <nav className="sticky top-0 z-[70] flex items-center gap-[0.833vw] px-[3.125vw] py-[0.625vw] w-full mx-auto bg-white/80 backdrop-blur-md border-b border-text-primary/8">
@@ -74,27 +83,29 @@ export function DeveloperNavbar({ variant = "default" }: DeveloperNavbarProps) {
 
       {!isDemo && (
         <div className="flex items-center gap-[1.5vw] flex-1 ml-[1vw]">
-          {SECTION_LINKS.map((l) =>
-            l.external ? (
+          {SECTION_LINKS.map((l) => {
+            const label = l.label ?? t.nav[l.labelKey];
+
+            return l.external ? (
               <a
                 key={l.href}
-                href={l.href}
+                href={resolveHref(l.href)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[0.833vw] leading-[1.625] text-black hover:text-[#1a6cff] transition-colors"
               >
-                {t.nav[l.labelKey]}
+                {label}
               </a>
             ) : (
               <Link
                 key={l.href}
-                href={l.href}
+                href={resolveHref(l.href)}
                 className="text-[0.833vw] leading-[1.625] text-black hover:text-[#1a6cff] transition-colors"
               >
-                {t.nav[l.labelKey]}
+                {label}
               </Link>
-            )
-          )}
+            );
+          })}
         </div>
       )}
 
@@ -117,6 +128,7 @@ export function DeveloperNavbar({ variant = "default" }: DeveloperNavbarProps) {
             <div className="pointer-events-none absolute right-0 top-full z-[80] min-w-[10.5vw] pt-[0.45vw] opacity-0 transition duration-150 group-hover:pointer-events-auto group-hover:opacity-100">
               <div className="rounded-[0.8vw] border border-gray-200 bg-white p-[0.35vw] shadow-xl shadow-black/10">
                 <LocalToolLink href={CUSTOMER_LOGIN_PATH} label="Customer" />
+                <LocalToolLink href={PDP_STUDIO_PATH} label="PDP Studio" />
                 <LocalToolLink href={ADMIN_LOGIN_PATH} label="Admin" />
                 <LocalToolLink href="/test-lab" label="Test Lab" />
               </div>
@@ -130,16 +142,14 @@ export function DeveloperNavbar({ variant = "default" }: DeveloperNavbarProps) {
             Admin Panel
           </Link>
         ) : null}
-        {!showLocalTools && (
-          <Button
-            asChild
-            variant="outline"
-            size="default"
-            className="h-[2.604vw] px-[1.15vw] text-[0.833vw] leading-[1.354vw] rounded-[52.083vw] whitespace-nowrap cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
-          >
-            <Link href={CUSTOMER_LOGIN_PATH}>{t.nav.customerLogin}</Link>
-          </Button>
-        )}
+        <Button
+          asChild
+          variant="outline"
+          size="default"
+          className="h-[2.604vw] px-[1.15vw] text-[0.833vw] leading-[1.354vw] rounded-[52.083vw] whitespace-nowrap cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
+        >
+          <Link href={CUSTOMER_DASHBOARD_PATH}>Join PrimeStyleAI</Link>
+        </Button>
         <Button
           variant="primary"
           size="default"

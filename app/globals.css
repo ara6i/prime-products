@@ -315,17 +315,17 @@
 }
 
 [data-customer-theme="dark"] {
-  --text-primary: #F5F7FB;
-  --text-secondary: #DCE3EE;
-  --text-body: #B7C1D1;
-  --text-muted: #9AA6BA;
-  --customer-surface-page: #0E1421;
-  --customer-surface-card: #141D2D;
-  --customer-surface-soft: #1B2638;
-  --customer-surface-blue: #172B52;
-  --customer-border: #273348;
-  --customer-border-strong: #344258;
-  --customer-muted: #9AA6BA;
+  --text-primary: #EEF4FF;
+  --text-secondary: #D8E2F0;
+  --text-body: #B9C6D8;
+  --text-muted: #91A0B6;
+  --customer-surface-page: #111827;
+  --customer-surface-card: #172131;
+  --customer-surface-soft: #202B3C;
+  --customer-surface-blue: #1B315A;
+  --customer-border: #2D394C;
+  --customer-border-strong: #3B4960;
+  --customer-muted: #91A0B6;
   --customer-success-bg: #123C2A;
   --customer-success-text: #72E2A5;
   --customer-warning-bg: #423411;
@@ -683,6 +683,41 @@ html {
 
 body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+[data-customer-theme="dark"] [data-docs-shell] [class*="text-gray-9"],
+[data-customer-theme="dark"] [data-docs-shell] [class*="text-gray-8"] {
+  color: var(--text-primary) !important;
+}
+
+[data-customer-theme="dark"] [data-docs-shell] [class*="text-gray-7"],
+[data-customer-theme="dark"] [data-docs-shell] [class*="text-gray-6"] {
+  color: var(--text-body) !important;
+}
+
+[data-customer-theme="dark"] [data-docs-shell] [class*="text-gray-5"],
+[data-customer-theme="dark"] [data-docs-shell] [class*="text-gray-4"] {
+  color: var(--customer-muted) !important;
+}
+
+[data-customer-theme="dark"] [data-docs-shell] [class*="border-gray-"] {
+  border-color: var(--customer-border) !important;
+}
+
+[data-customer-theme="dark"] [data-docs-shell] [class*="bg-[#F9FAFB]"],
+[data-customer-theme="dark"] [data-docs-shell] [class*="bg-[#FFFFFF]"],
+[data-customer-theme="dark"] [data-docs-shell] [class*="bg-[#EFF5FF]"],
+[data-customer-theme="dark"] [data-docs-shell] [class*="bg-gray-"] {
+  background-color: var(--customer-surface-soft) !important;
+}
+
+[data-customer-theme="dark"] [data-docs-shell] [class*="bg-[#2154EF]/5"] {
+  background-color: rgba(33, 84, 239, 0.14) !important;
+}
+
+[data-customer-theme="dark"] [data-docs-shell] code:not(pre code) {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: var(--text-primary) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════

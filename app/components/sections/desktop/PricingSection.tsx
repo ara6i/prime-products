@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CheckCheck, ChevronDown } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, CheckCheck, ChevronDown } from "lucide-react";
 import { Reveal } from "../../shared/Reveal";
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -12,6 +14,7 @@ import {
 import { PRICING, PRODUCT_PACKAGE_TIERS, TRY_ON_PACKAGE_TIERS } from "../../../content/landing";
 
 const [FREE_PLAN, CUSTOM_PLAN] = PRICING.tiers;
+const JOIN_PRIMESTYLEAI_HREF = "/customer/login";
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -26,8 +29,8 @@ function formatNumber(value: number): string {
 }
 
 export function PricingSection() {
-  const [productTierIndex, setProductTierIndex] = useState(1);
-  const [tryOnPackIndex, setTryOnPackIndex] = useState(2);
+  const [productTierIndex, setProductTierIndex] = useState(0);
+  const [tryOnPackIndex, setTryOnPackIndex] = useState(0);
   const selectedProductTier = PRODUCT_PACKAGE_TIERS[productTierIndex];
   const selectedTryOnPack = TRY_ON_PACKAGE_TIERS[tryOnPackIndex];
   const totalMonthlyPrice = selectedProductTier.price + selectedTryOnPack.price;
@@ -43,7 +46,7 @@ export function PricingSection() {
 
   return (
     <section id="pricing" className="relative scroll-mt-[12rem] overflow-hidden px-8 pb-[clamp(5rem,7vw,7rem)] pt-[clamp(4rem,6vw,6rem)]">
-      <div className="mx-auto w-[88.889vw]">
+      <div className="mx-auto w-[min(86vw,78rem)]">
         <article className="mb-8 flex flex-col items-start gap-4 text-left">
           <h2 className="text-[clamp(2rem,1.6rem+1.8vw,3rem)] font-medium leading-[1.15] tracking-[-0.02em] text-text-primary">
             {PRICING.title}
@@ -54,8 +57,8 @@ export function PricingSection() {
           </Reveal>
         </article>
 
-        <div className="rounded-3xl border border-brand-blue/10 bg-white p-3 shadow-[0_24px_64px_rgba(33,84,239,0.06)]">
-          <div className="mx-auto grid max-w-[76rem] grid-cols-[0.82fr_1.18fr] gap-4 items-stretch">
+        <div className="rounded-[1.4rem] border border-brand-blue/10 bg-white p-3 shadow-[0_24px_64px_rgba(33,84,239,0.06)]">
+          <div className="mx-auto grid max-w-[76rem] items-stretch gap-4 lg:grid-cols-[0.84fr_1.16fr]">
             <PricingCardReveal index={0}>
               <FreePlanCard />
             </PricingCardReveal>
@@ -116,9 +119,9 @@ function PricingCardReveal({ index, children }: { index: number; children: React
 
 function FreePlanCard() {
   return (
-    <div className="relative flex h-full flex-col justify-between rounded-2xl bg-white pt-4 text-text-primary shadow-[inset_0_0_0_1px_rgba(33,84,239,0.08)]">
-      <div className="p-6 pt-0">
-        <h3 className="mb-2 text-3xl font-semibold tracking-[-0.01em] text-text-primary">{FREE_PLAN.name}</h3>
+    <div className="relative flex h-full flex-col rounded-2xl bg-white p-6 text-text-primary shadow-[inset_0_0_0_1px_rgba(33,84,239,0.08)]">
+      <div>
+        <h3 className="mb-2 text-[1.65rem] font-semibold tracking-[-0.01em] text-text-primary">{FREE_PLAN.name}</h3>
         <p className="mb-4 text-sm leading-[1.5] text-text-body">{FREE_PLAN.description}</p>
 
         <div className="space-y-3 border-t border-text-primary/10 pt-4">
@@ -134,6 +137,15 @@ function FreePlanCard() {
             ))}
           </ul>
         </div>
+      </div>
+
+      <div className="mt-auto flex justify-center pt-6">
+        <Button variant="primary" size="default" className="h-10 w-auto min-w-[13.5rem] gap-2 rounded-full px-6 text-sm font-semibold !text-white" asChild>
+          <Link href={JOIN_PRIMESTYLEAI_HREF}>
+            Join PrimeStyleAI
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </Link>
+        </Button>
       </div>
 
     </div>
@@ -159,17 +171,17 @@ function CustomPlanBuilder({
 }) {
   return (
     <div className="relative flex h-full flex-col rounded-2xl border border-brand-blue/12 bg-[#f8fbff] p-6 text-text-primary shadow-[inset_0_0_0_1px_rgba(255,255,255,0.8)]">
-      <div className="grid grid-cols-[1fr_15rem] gap-6">
+      <div className="grid grid-cols-[minmax(0,1fr)_minmax(12.5rem,15rem)] gap-5">
         <div className="min-w-0">
           <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-brand-blue ring-1 ring-inset ring-brand-blue/15">
             Live plan builder
           </span>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-5xl font-semibold leading-none text-text-primary">{formatCurrency(totalMonthlyPrice)}</span>
+            <span className="text-[2.65rem] font-semibold leading-none tracking-[-0.03em] text-text-primary">{formatCurrency(totalMonthlyPrice)}</span>
             <span className="text-sm text-text-hint">/month</span>
           </div>
-          <h3 className="mt-4 text-3xl font-semibold tracking-[-0.01em]">{CUSTOM_PLAN.name}</h3>
-          <p className="mt-2 max-w-[44ch] text-sm leading-[1.55] text-text-body">{CUSTOM_PLAN.description}</p>
+          <h3 className="mt-3 text-[1.65rem] font-semibold tracking-[-0.01em]">{CUSTOM_PLAN.name}</h3>
+          <p className="mt-2 max-w-[42ch] text-sm leading-[1.55] text-text-body">{CUSTOM_PLAN.description}</p>
         </div>
 
         <div className="rounded-2xl bg-white p-4 ring-1 ring-inset ring-brand-blue/10">

@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { getPdpStudioMe } from "@/app/pdp-studio/shared/pdpStudioAuthService";
 import { TabNav } from "../components/TabNav";
 import { isTestLabAvailableForHost } from "../lib/access";
 import { PdpStudioClient } from "./PdpStudioClient";
@@ -11,6 +12,8 @@ export const metadata = {
 export default async function PdpStudioPage() {
   const headerStore = await headers();
   if (!isTestLabAvailableForHost(headerStore.get("host"))) notFound();
+  const me = await getPdpStudioMe();
+  if (!me) redirect("/pdp-studio");
 
   return (
     <main className="min-h-screen bg-gray-50">

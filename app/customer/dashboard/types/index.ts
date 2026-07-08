@@ -1,3 +1,5 @@
+import type { CustomerOverviewViewModel } from "./overview";
+
 export type CustomerDashboardRange = "7d" | "30d" | "90d";
 
 export type CustomerDashboardView = "charts" | "numbers";
@@ -255,4 +257,5 @@ export interface CustomerDashboardViewModel {
   hourHistogram: number[];
   weekdayHistogram: number[];
   numberSections: CustomerDashboardNumberSection[];
+  overview: CustomerOverviewViewModel;
 }

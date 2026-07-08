@@ -28,7 +28,7 @@ export function SectionHeading({ id, level = 2, children, className }: SectionHe
       id={id}
       onClick={handleClick}
       className={cn(
-        "group relative flex items-center scroll-mt-24 cursor-pointer text-gray-900 tracking-tight",
+        "group relative flex items-center scroll-mt-24 cursor-pointer text-text-primary tracking-tight",
         level === 2 && "text-[28px] font-semibold leading-tight mt-12 mb-4",
         level === 3 && "text-[20px] font-semibold leading-snug mt-8 mb-3",
         className
@@ -37,7 +37,7 @@ export function SectionHeading({ id, level = 2, children, className }: SectionHe
       <Link2
         aria-hidden
         className={cn(
-          "absolute -ml-6 size-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity",
+          "absolute -ml-6 size-4 text-customer-muted opacity-0 transition-opacity group-hover:opacity-100",
           level === 2 ? "top-2.5" : "top-1.5"
         )}
       />

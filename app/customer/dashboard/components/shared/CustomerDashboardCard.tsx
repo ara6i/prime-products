@@ -29,7 +29,7 @@ export function CustomerDashboardCard({
       )}
     >
       {title ? (
-        <div className="flex items-start justify-between gap-[var(--spacing-customer-gap-md)] px-[var(--spacing-customer-card)] pt-[var(--spacing-customer-card)]">
+        <div className="flex items-start justify-between gap-[var(--spacing-customer-gap-md)] px-[var(--spacing-customer-card)] pt-[var(--spacing-customer-card)] max-lg:flex-wrap">
           <div className="min-w-0">
             <h2 className="text-customer-xl font-semibold tracking-[-0.03em] text-text-primary max-lg:text-[5vw]">
               {title}

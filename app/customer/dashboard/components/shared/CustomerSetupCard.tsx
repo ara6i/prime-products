@@ -39,7 +39,7 @@ export function CustomerSetupCard({ dashboard }: CustomerSetupCardProps) {
       <section className="rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card p-[var(--spacing-customer-card)]">
         <div className="flex flex-wrap items-start justify-between gap-[var(--spacing-customer-gap-md)]">
           <div>
-            <p className="inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
+            <p className="inline-flex items-center gap-2 rounded-full bg-customer-success-bg px-3 py-1 text-xs font-semibold text-customer-success-text">
               <CheckCircle2 className="h-4 w-4" aria-hidden />
               Production key ready
             </p>
@@ -63,7 +63,7 @@ export function CustomerSetupCard({ dashboard }: CustomerSetupCardProps) {
   }
 
   return (
-    <section className="rounded-[var(--radius-customer-card)] border border-brand-blue/15 bg-gradient-to-br from-white to-[#f7faff] p-[var(--spacing-customer-card)] shadow-[0_18px_42px_rgba(33,84,239,0.08)]">
+    <section className="rounded-[var(--radius-customer-card)] border border-brand-blue/15 bg-customer-card p-[var(--spacing-customer-card)] shadow-customer-card">
       <div className="flex flex-wrap items-start justify-between gap-[var(--spacing-customer-gap-md)]">
         <div>
           <p className="inline-flex items-center gap-2 rounded-full bg-brand-blue/10 px-3 py-1 text-xs font-semibold text-brand-blue">
@@ -89,7 +89,7 @@ export function CustomerSetupCard({ dashboard }: CustomerSetupCardProps) {
       </div>
 
       <div className="mt-[var(--spacing-customer-gap-md)] grid gap-[var(--spacing-customer-gap-sm)] lg:grid-cols-[1fr_auto]">
-        <div className="rounded-2xl border border-customer-border bg-white p-4">
+        <div className="rounded-2xl border border-customer-border bg-customer-soft p-4">
           <div className="flex items-center gap-2 text-sm font-semibold text-text-primary">
             <Terminal className="h-4 w-4 text-brand-blue" aria-hidden />
             Install SDK
@@ -100,7 +100,7 @@ export function CustomerSetupCard({ dashboard }: CustomerSetupCardProps) {
         </div>
         <Link
           href="/customer/dashboard/docs#sdk-installation"
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-brand-blue/20 bg-white px-5 text-sm font-semibold text-brand-blue transition-colors hover:bg-brand-blue/5"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-brand-blue/20 bg-customer-card px-5 text-sm font-semibold text-brand-blue transition-colors hover:bg-brand-blue/5"
         >
           Open docs
           <ExternalLink className="h-4 w-4" aria-hidden />
@@ -108,14 +108,14 @@ export function CustomerSetupCard({ dashboard }: CustomerSetupCardProps) {
       </div>
 
       {apiKey ? (
-        <div className="mt-[var(--spacing-customer-gap-md)] rounded-2xl border border-green-200 bg-green-50 p-4">
-          <p className="text-sm font-semibold text-green-800">Copy this key now. It will not be shown again.</p>
-          <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl bg-white p-3">
+        <div className="mt-[var(--spacing-customer-gap-md)] rounded-2xl border border-customer-border bg-customer-success-bg p-4">
+          <p className="text-sm font-semibold text-customer-success-text">Copy this key now. It will not be shown again.</p>
+          <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl bg-customer-card p-3">
             <code className="min-w-0 flex-1 break-all text-sm text-text-primary">{apiKey}</code>
             <button
               type="button"
               onClick={() => copy(apiKey, "API key")}
-              className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-green-200 px-3 text-sm font-semibold text-green-700"
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-customer-border px-3 text-sm font-semibold text-customer-success-text"
             >
               <Copy className="h-4 w-4" aria-hidden />
               Copy

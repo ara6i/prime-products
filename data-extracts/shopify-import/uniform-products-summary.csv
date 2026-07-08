@@ -1,0 +1,8 @@
+Handle,Title,ProductID,Category,Subcategory,Gender,Variants,Images,InventoryPerVariant,Status
+men-s-classic-medical-scrub-uniform-set,Men's Classic Medical Scrub Uniform Set,uniform_men_scrub_42019,Uniforms,Men's Medical Scrubs,men,6,5,100,InStock
+men-s-multi-pocket-medical-scrub-set,Men's Multi-Pocket Medical Scrub Set,uniform_men_scrub_42109,Uniforms,Men's Medical Scrubs,men,6,5,100,InStock
+healthcare-pro-v-neck-scrub-set,Healthcare Pro V-Neck Scrub Set,uniform_men_scrub_42392,Uniforms,Men's Medical Scrubs,men,6,4,100,InStock
+adjustable-ribbon-scrub-cap,Adjustable Ribbon Scrub Cap,uniform_scrub_cap_adjustable_ribbon_alt,Uniforms,Medical Scrub Caps,unisex,1,5,100,InStock
+adjustable-ponytail-scrub-cap,Adjustable Ponytail Scrub Cap,uniform_scrub_cap_ponytail_ribbon,Uniforms,Medical Scrub Caps,unisex,1,5,100,InStock
+puffy-easy-clean-medical-scrub-cap,Puffy Easy-Clean Medical Scrub Cap,uniform_scrub_cap_puffy_easy_clean,Uniforms,Medical Scrub Caps,unisex,1,4,100,InStock
+solid-trim-hospital-scrub-cap,Solid Trim Hospital Scrub Cap,uniform_scrub_cap_solid_trim,Uniforms,Medical Scrub Caps,unisex,1,5,100,InStock

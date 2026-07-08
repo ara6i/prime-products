@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useSyncExternalStore } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { Button } from "@/app/shared/components/ui";
@@ -9,18 +10,24 @@ import { LandingLanguageSwitcher, useLandingLanguage } from "@/app/landing/i18n"
 
 type SectionLabelKey = "features" | "demo" | "pricing" | "integrations" | "contact";
 
-const SECTION_LINKS: Array<{
-  labelKey: SectionLabelKey;
+type SectionLink = {
   href: string;
   external?: boolean;
-}> = [
+} & (
+  | { labelKey: SectionLabelKey; label?: never }
+  | { label: string; labelKey?: never }
+);
+
+const SECTION_LINKS: SectionLink[] = [
   { labelKey: "features", href: "#features" },
   { labelKey: "demo", href: "/demo/products", external: true },
+  { label: "Blog", href: "/blog" },
   { labelKey: "pricing", href: "#pricing" },
   { labelKey: "integrations", href: "#integrations" },
   { labelKey: "contact", href: "#contact" },
 ];
 const CUSTOMER_LOGIN_PATH = "/customer/login";
+const CUSTOMER_DASHBOARD_PATH = "/customer/dashboard";
 const ADMIN_LOGIN_PATH = "/admin/login";
 const STAGING_HOSTS = new Set(["test-fe-9a7k.primestyleai.com"]);
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
@@ -92,13 +99,12 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
         style={{ height: NAV_HEIGHT }}
       >
         <Link href="/" onClick={close}>
-          <img
+          <Image
             src="/images/landing/optimized/logo-navbar-small.webp"
             alt="PrimeStyleAI"
             width={68}
             height={64}
-            loading="eager"
-            fetchPriority="high"
+            priority
             className="object-contain h-[52px] w-auto"
           />
         </Link>
@@ -118,6 +124,14 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
               onLanguageChange={setLanguage}
               compact
             />
+          )}
+          {!isDemo && (
+            <Link
+              href={CUSTOMER_DASHBOARD_PATH}
+              className="hidden min-[430px]:inline-flex h-[34px] items-center rounded-full bg-brand-blue px-3 text-[11px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-blue-dark"
+            >
+              Join PrimeStyleAI
+            </Link>
           )}
           {!isDemo && (
             <Button
@@ -175,6 +189,7 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
                   >
                     <div className="min-h-0">
                       <MobileLocalToolLink href={CUSTOMER_LOGIN_PATH} label="Customer" onClick={close} />
+                      <MobileLocalToolLink href="/pdp-studio" label="PDP Studio" onClick={close} />
                       <MobileLocalToolLink href={ADMIN_LOGIN_PATH} label="Admin" onClick={close} />
                       <MobileLocalToolLink href="/test-lab" label="Test Lab" onClick={close} />
                     </div>
@@ -190,8 +205,10 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
                 </Link>
               ) : null}
 
-              {SECTION_LINKS.map((link) =>
-                link.external ? (
+              {SECTION_LINKS.map((link) => {
+                const label = link.label ?? t.nav[link.labelKey];
+
+                return link.external ? (
                   <a
                     key={link.href}
                     href={resolveHref(link.href)}
@@ -200,7 +217,7 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
                     onClick={close}
                     className="flex items-center h-11 px-3 rounded-xl text-[15px] font-medium text-gray-900 hover:bg-gray-50 transition-colors"
                   >
-                    {t.nav[link.labelKey]}
+                    {label}
                   </a>
                 ) : (
                   <Link
@@ -209,27 +226,25 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
                     onClick={close}
                     className="flex items-center h-11 px-3 rounded-xl text-[15px] font-medium text-gray-900 hover:bg-gray-50 transition-colors"
                   >
-                    {t.nav[link.labelKey]}
+                    {label}
                   </Link>
-                )
-              )}
+                );
+              })}
             </div>
 
-            {!showLocalTools && (
-              <div className="flex-shrink-0 px-4 py-4 border-t border-gray-100">
-                <div className="grid grid-cols-1 gap-2">
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full h-11 text-[14px] font-semibold rounded-2xl cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
-                  >
-                    <Link href={CUSTOMER_LOGIN_PATH} onClick={close}>
-                      {t.nav.customerLogin}
-                    </Link>
-                  </Button>
-                </div>
+            <div className="flex-shrink-0 px-4 py-4 border-t border-gray-100">
+              <div className="grid grid-cols-1 gap-2">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full h-11 text-[14px] font-semibold rounded-2xl cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
+                >
+                  <Link href={CUSTOMER_DASHBOARD_PATH} onClick={close}>
+                    Join PrimeStyleAI
+                  </Link>
+                </Button>
               </div>
-            )}
+            </div>
           </div>
         </>
       )}

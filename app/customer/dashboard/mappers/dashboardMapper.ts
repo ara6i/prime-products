@@ -17,6 +17,7 @@ import type {
   CustomerDashboardViewModel,
   CustomerDashboardViewOption,
 } from "../types";
+import { mapCustomerOverview } from "./customerOverviewMapper";
 import { formatCompactNumber, formatPercent, formatShortDate } from "../utils/formatters";
 
 interface DashboardMetrics {
@@ -29,18 +30,6 @@ interface DashboardMetrics {
   addToCart: number;
   completionRate: number;
   sizeAcceptanceRate: number;
-}
-
-interface PreviewDashboardData {
-  metrics: DashboardMetrics;
-  dailyActivity: CustomerDashboardDailyPoint[];
-  funnel: CustomerDashboardFunnelStep[];
-  deviceSplit: CustomerDashboardDeviceSlice[];
-  countrySplit: CustomerDashboardCountrySlice[];
-  topProducts: CustomerDashboardTopProduct[];
-  sizeInsights: CustomerDashboardSizeInsight[];
-  hourHistogram: number[];
-  weekdayHistogram: number[];
 }
 
 const rangeOptions: Array<{ label: string; value: CustomerDashboardRange }> = [
@@ -58,132 +47,10 @@ function hasLiveActivity(raw: CustomerDashboardRawOverview): boolean {
   return raw.metrics.tryOnsStarted > 0 || raw.metrics.uniqueVisitors > 0 || raw.metrics.productViews > 0;
 }
 
-function scaleByRange(value: number, days: number): number {
-  return Math.max(1, Math.round((value / 30) * days));
-}
-
 function daysToRange(days: number): CustomerDashboardRange {
   if (days <= 7) return "7d";
   if (days >= 90) return "90d";
   return "30d";
-}
-
-function toIsoDate(daysAgo: number): string {
-  const date = new Date();
-  date.setDate(date.getDate() - daysAgo);
-  return date.toISOString();
-}
-
-function createPreviewActivity(days: number): CustomerDashboardDailyPoint[] {
-  const visiblePoints = days <= 7 ? 7 : days <= 30 ? 10 : 12;
-  const step = Math.max(1, Math.floor(days / visiblePoints));
-  const baseline = days <= 7 ? 92 : days >= 90 ? 580 : 240;
-
-  return Array.from({ length: visiblePoints }, (_, index) => {
-    const remaining = (visiblePoints - index - 1) * step;
-    const lift = index * (days <= 7 ? 11 : days >= 90 ? 38 : 19);
-    const wave = Math.round(Math.sin(index * 1.15) * (days <= 7 ? 12 : days >= 90 ? 58 : 26));
-    const initiated = Math.max(12, baseline + lift + wave);
-    const completed = Math.round(initiated * (0.68 + (index % 3) * 0.025));
-
-    return {
-      date: toIsoDate(remaining),
-      initiated,
-      completed,
-      failed: Math.max(1, Math.round(initiated * 0.018)),
-    };
-  });
-}
-
-function createPreviewHistogram(days: number): number[] {
-  const scale = days <= 7 ? 1 : days >= 90 ? 7 : 3;
-  return Array.from({ length: 24 }, (_, hour) => {
-    const morning = hour >= 9 && hour <= 12 ? 14 : 0;
-    const evening = hour >= 18 && hour <= 22 ? 24 : 0;
-    const base = hour >= 7 && hour <= 23 ? 5 : 1;
-    return (base + morning + evening + (hour % 4)) * scale;
-  });
-}
-
-function createPreviewWeekdays(days: number): number[] {
-  const scale = days <= 7 ? 1 : days >= 90 ? 8 : 3;
-  return [38, 52, 61, 59, 66, 74, 48].map((value) => value * scale);
-}
-
-function createPreviewData(raw: CustomerDashboardRawOverview): PreviewDashboardData {
-  const days = raw.range.days;
-  const metrics: DashboardMetrics = {
-    productViews: scaleByRange(38200, days),
-    uniqueVisitors: scaleByRange(12430, days),
-    tryOnsStarted: scaleByRange(4820, days),
-    tryOnsCompleted: scaleByRange(3470, days),
-    sizeRecommendations: scaleByRange(3510, days),
-    sizeAccepted: scaleByRange(2350, days),
-    addToCart: scaleByRange(918, days),
-    completionRate: 0.72,
-    sizeAcceptanceRate: 0.67,
-  };
-
-  return {
-    metrics,
-    dailyActivity: createPreviewActivity(days),
-    funnel: [
-      { step: "Product views", count: metrics.productViews },
-      { step: "Try-ons started", count: metrics.tryOnsStarted },
-      { step: "Try-ons completed", count: metrics.tryOnsCompleted },
-      { step: "Cart adds", count: metrics.addToCart },
-    ],
-    deviceSplit: [
-      { device: "mobile", count: Math.round(metrics.tryOnsStarted * 0.64) },
-      { device: "desktop", count: Math.round(metrics.tryOnsStarted * 0.29) },
-      { device: "tablet", count: Math.round(metrics.tryOnsStarted * 0.07) },
-    ],
-    countrySplit: [
-      { iso2: "US", name: "United States", count: scaleByRange(1850, days) },
-      { iso2: "GB", name: "United Kingdom", count: scaleByRange(740, days) },
-      { iso2: "CA", name: "Canada", count: scaleByRange(520, days) },
-      { iso2: "DE", name: "Germany", count: scaleByRange(390, days) },
-      { iso2: "FR", name: "France", count: scaleByRange(330, days) },
-      { iso2: "AE", name: "United Arab Emirates", count: scaleByRange(270, days) },
-    ],
-    topProducts: [
-      { productId: "preview-linen-shirt", productTitle: "Linen Shirt", tryOns: scaleByRange(4820, days) },
-      { productId: "preview-tailored-blazer", productTitle: "Tailored Blazer", tryOns: scaleByRange(3590, days) },
-      { productId: "preview-midi-dress", productTitle: "Midi Dress", tryOns: scaleByRange(5210, days) },
-      { productId: "preview-straight-jeans", productTitle: "Straight Jeans", tryOns: scaleByRange(4100, days) },
-      { productId: "preview-oversized-coat", productTitle: "Oversized Coat", tryOns: scaleByRange(2960, days) },
-    ].sort((a, b) => b.tryOns - a.tryOns),
-    sizeInsights: [
-      {
-        gender: "women",
-        shoppers: scaleByRange(6820, days),
-        recommendations: scaleByRange(2180, days),
-        accepted: scaleByRange(1504, days),
-        changedAfterTryOn: scaleByRange(642, days),
-        acceptanceRate: 0.69,
-        topSizes: [
-          { label: "S", count: scaleByRange(510, days), percent: 34 },
-          { label: "M", count: scaleByRange(465, days), percent: 31 },
-          { label: "L", count: scaleByRange(302, days), percent: 20 },
-        ],
-      },
-      {
-        gender: "men",
-        shoppers: scaleByRange(5610, days),
-        recommendations: scaleByRange(1330, days),
-        accepted: scaleByRange(944, days),
-        changedAfterTryOn: scaleByRange(386, days),
-        acceptanceRate: 0.71,
-        topSizes: [
-          { label: "M", count: scaleByRange(348, days), percent: 37 },
-          { label: "L", count: scaleByRange(292, days), percent: 31 },
-          { label: "XL", count: scaleByRange(179, days), percent: 19 },
-        ],
-      },
-    ],
-    hourHistogram: createPreviewHistogram(days),
-    weekdayHistogram: createPreviewWeekdays(days),
-  };
 }
 
 function mapDailyActivity(raw: CustomerDashboardRawOverview): CustomerDashboardDailyPoint[] {
@@ -249,31 +116,39 @@ function mapMetrics(metrics: DashboardMetrics, days: number): CustomerDashboardM
   ];
 }
 
-type CustomerDashboardNavKey = "overview" | "docs" | "products" | "plans" | "settings";
+type CustomerDashboardNavKey = "overview" | "analytics" | "docs" | "products" | "plans" | "settings";
 
 function mapNavItems(activeNav: CustomerDashboardNavKey = "overview"): CustomerDashboardNavItem[] {
   return [
     { label: "Overview", href: "/customer/dashboard", icon: "dashboard", active: activeNav === "overview", disabled: false },
+    { label: "Analytics", href: "/customer/dashboard/analytics", icon: "behavior", active: activeNav === "analytics", disabled: false },
     { label: "Documentation", href: "/customer/dashboard/docs", icon: "docs", active: activeNav === "docs", disabled: false },
     { label: "Products", href: "/customer/dashboard/products", icon: "products", active: activeNav === "products", disabled: false },
     { label: "Plans", href: "/customer/dashboard/plans", icon: "billing", active: activeNav === "plans", disabled: false },
     { label: "Settings", href: "/customer/dashboard/settings", icon: "settings", active: activeNav === "settings", disabled: false },
-    { label: "Analytics", href: "/customer/dashboard/analytics", icon: "behavior", active: false, disabled: true },
   ];
 }
 
-function mapRangeOptions(activeRange: CustomerDashboardRange, activeView: CustomerDashboardView): CustomerDashboardRangeOption[] {
+function mapRangeOptions(
+  activeRange: CustomerDashboardRange,
+  activeView: CustomerDashboardView,
+  baseHref: string,
+): CustomerDashboardRangeOption[] {
   return rangeOptions.map((option) => ({
     ...option,
-    href: `/customer/dashboard?range=${option.value}&view=${activeView}`,
+    href: `${baseHref}?range=${option.value}&view=${activeView}`,
     active: option.value === activeRange,
   }));
 }
 
-function mapViewOptions(activeRange: CustomerDashboardRange, activeView: CustomerDashboardView): CustomerDashboardViewOption[] {
+function mapViewOptions(
+  activeRange: CustomerDashboardRange,
+  activeView: CustomerDashboardView,
+  baseHref: string,
+): CustomerDashboardViewOption[] {
   return viewOptions.map((option) => ({
     ...option,
-    href: `/customer/dashboard?range=${activeRange}&view=${option.value}`,
+    href: `${baseHref}?range=${activeRange}&view=${option.value}`,
     active: option.value === activeView,
   }));
 }
@@ -461,17 +336,22 @@ export function mapCustomerDashboard(
 ): CustomerDashboardViewModel {
   const ready = raw.workspace.status === "ready";
   const live = hasLiveActivity(raw);
-  const preview = live ? null : createPreviewData(raw);
-  const metrics = preview?.metrics ?? raw.metrics;
+  const metrics = raw.metrics;
   const activeRange = daysToRange(raw.range.days);
-  const dailyActivity = preview?.dailyActivity ?? mapDailyActivity(raw);
-  const funnel = preview?.funnel ?? mapFunnel(raw);
-  const deviceSplit = preview?.deviceSplit ?? raw.deviceSplit ?? [];
-  const countrySplit = preview?.countrySplit ?? raw.countrySplit ?? [];
-  const topProducts = preview?.topProducts ?? mapTopProducts(raw);
-  const sizeInsights = preview?.sizeInsights ?? raw.sizeInsights ?? [];
-  const hourHistogram = preview?.hourHistogram ?? normalizeHistogram(raw.hourHistogram, 24);
-  const weekdayHistogram = preview?.weekdayHistogram ?? normalizeHistogram(raw.weekdayHistogram, 7);
+  const dailyActivity = mapDailyActivity(raw);
+  const funnel = mapFunnel(raw);
+  const deviceSplit = raw.deviceSplit ?? [];
+  const countrySplit = raw.countrySplit ?? [];
+  const topProducts = mapTopProducts(raw);
+  const sizeInsights = raw.sizeInsights ?? [];
+  const hourHistogram = normalizeHistogram(raw.hourHistogram, 24);
+  const weekdayHistogram = normalizeHistogram(raw.weekdayHistogram, 7);
+  const overview = mapCustomerOverview(raw, {
+    metrics,
+    dailyActivity,
+    topProducts,
+    live,
+  });
 
   return {
     storeName: raw.store.storeName,
@@ -481,7 +361,9 @@ export function mapCustomerDashboard(
     workspaceStatus: raw.workspace.status,
     productionKeyReady: raw.setup.productionKeyReady,
     latestKeyPrefix: raw.workspace.latestKeyPrefix,
-    pageTitle: activeNav === "docs"
+    pageTitle: activeNav === "analytics"
+      ? "Analytics"
+      : activeNav === "docs"
       ? "Documentation"
       : activeNav === "products"
         ? "Products"
@@ -489,14 +371,22 @@ export function mapCustomerDashboard(
           ? "Plans"
           : activeNav === "settings"
             ? "Settings"
-            : "Analytics Overview",
-    dataModeLabel: live ? "Live storefront data" : "Preview analytics data",
+            : "Overview",
+    dataModeLabel: live ? "Live SDK data" : "No SDK events yet",
     statusLabel: ready ? "Live workspace" : "Setup needs attention",
     statusTone: ready ? "success" : "warning",
     rangeLabel: `Last ${raw.range.days} days`,
     activeView,
-    rangeOptions: mapRangeOptions(activeRange, activeView),
-    viewOptions: mapViewOptions(activeRange, activeView),
+    rangeOptions: mapRangeOptions(
+      activeRange,
+      activeView,
+      activeNav === "analytics" ? "/customer/dashboard/analytics" : "/customer/dashboard",
+    ),
+    viewOptions: mapViewOptions(
+      activeRange,
+      activeView,
+      activeNav === "analytics" ? "/customer/dashboard/analytics" : "/customer/dashboard",
+    ),
     navItems: mapNavItems(activeNav),
     metricCards: mapMetrics(metrics, raw.range.days),
     dailyActivity,
@@ -517,5 +407,6 @@ export function mapCustomerDashboard(
       hourHistogram,
       weekdayHistogram,
     }),
+    overview,
   };
 }

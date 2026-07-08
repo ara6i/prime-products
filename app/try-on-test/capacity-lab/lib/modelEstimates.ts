@@ -12,7 +12,7 @@ export interface CapacityTryOnModelEstimate {
   quotaLabel: string;
 }
 
-const MODEL_LIMITS: Record<TryOnModelId, Omit<CapacityTryOnModelEstimate, "modelId" | "modelLabel">> = {
+const MODEL_LIMITS: Partial<Record<TryOnModelId, Omit<CapacityTryOnModelEstimate, "modelId" | "modelLabel">>> = {
   "gemini-3-pro-image-preview": {
     tokensPerTryOn: 3500,
     rpmLimit: 500,
@@ -63,6 +63,9 @@ const MODEL_LIMITS: Record<TryOnModelId, Omit<CapacityTryOnModelEstimate, "model
 export function getCapacityTryOnModelEstimate(modelId: TryOnModelId): CapacityTryOnModelEstimate {
   const model = getModelEntry(modelId);
   const limits = MODEL_LIMITS[modelId];
+  if (!limits) {
+    throw new Error(`No capacity estimate configured for ${modelId}`);
+  }
 
   return {
     modelId,

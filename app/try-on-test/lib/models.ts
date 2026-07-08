@@ -2,18 +2,21 @@
  * Allowlist of models the test page can target. Mirrors the backend zod
  * enum at `developer/public-vto.validation.ts` — keep them in sync.
  *
- * Two families:
+ * Three families:
  *  - Gemini (`@google/genai` generateContent) → take a prompt + 2 images.
+ *  - OpenAI (`images.edit`) → test-lab PDP Studio only; takes a prompt + 2 images.
  *  - Vertex (`virtual-try-on-*`) → purpose-built try-on, no prompt needed.
  */
 export type TryOnModelId =
   | "gemini-3-pro-image-preview"
   | "gemini-3.1-flash-image-preview"
   | "gemini-2.5-flash-image"
+  | "gpt-image-1"
+  | "gpt-image-1-mini"
   | "virtual-try-on-001"
   | "virtual-try-on-preview-08-04";
 
-export type ModelFamily = "gemini" | "vertex";
+export type ModelFamily = "gemini" | "openai" | "vertex";
 
 export interface TryOnModelEntry {
   id: TryOnModelId;
@@ -48,6 +51,22 @@ export const TRY_ON_MODELS: readonly TryOnModelEntry[] = [
     label: "Nano Banana (Gemini 2.5 Flash Image)",
     status: "GA",
     description: "Fastest + cheapest Gemini image model. Fixed 1290 tokens.",
+    acceptsPrompt: true,
+  },
+  {
+    id: "gpt-image-1",
+    family: "openai",
+    label: "OpenAI GPT Image 1",
+    status: "GA",
+    description: "OpenAI image edit model for prompt + model photo + product image tests in PDP Studio.",
+    acceptsPrompt: true,
+  },
+  {
+    id: "gpt-image-1-mini",
+    family: "openai",
+    label: "OpenAI GPT Image 1 Mini",
+    status: "GA",
+    description: "Lower-cost OpenAI image edit model for fast PDP Studio experiments.",
     acceptsPrompt: true,
   },
   {

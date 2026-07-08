@@ -80,7 +80,7 @@ export function LoginMobileHeader() {
           open ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0",
         )}
         style={{ top: NAV_HEIGHT, maxHeight: `calc(100svh - ${NAV_HEIGHT}px)` }}
-        aria-label="Customer login mobile menu"
+        aria-label="Join PrimeStyleAI mobile menu"
       >
         <div className="flex-1 overflow-y-auto px-3 py-3">
           {MENU_LINKS.map((link) =>

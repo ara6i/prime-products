@@ -12,25 +12,37 @@ export function usePoseAnalysis() {
   const [error, setError] = useState<string | null>(null);
   const [elapsedMs, setElapsedMs] = useState<number>(0);
 
-  const analyze = useCallback(async (imageUrl: string) => {
+  const analyze = useCallback(async (
+    imageUrl: string,
+    refine?: (result: PoseResult) => Promise<PoseResult | null>,
+    options: { includeMask?: boolean } = {},
+  ): Promise<PoseResult | null> => {
     setStatus("loading");
     setError(null);
     setPose(null);
     const t0 = performance.now();
     try {
-      const result = await detectPoseAndMask(imageUrl);
+      const rawResult = await detectPoseAndMask(imageUrl, { includeMask: options.includeMask ?? true });
       const dt = performance.now() - t0;
       setElapsedMs(Math.round(dt));
-      if (!result) {
+      if (!rawResult) {
         setError("MediaPipe returned no usable landmarks");
         setStatus("error");
-        return;
+        return null;
+      }
+      const result = refine ? await refine(rawResult) : rawResult;
+      if (!result) {
+        setError("MediaPipe returned no usable measurement mask");
+        setStatus("error");
+        return null;
       }
       setPose(result);
       setStatus("ready");
+      return result;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Pose detection failed");
       setStatus("error");
+      return null;
     }
   }, []);
 

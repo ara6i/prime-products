@@ -231,6 +231,13 @@ export function mapShopifyControlCenter(
         ? `Profile updated ${formatDate(raw.storeProfile.updatedAt)}`
         : "No linked Shopify store profile",
     },
+    styleMatch: {
+      enabled: raw.storeProfile?.styleMatchEnabled === true,
+      canUpdate: Boolean(raw.storeProfile?.id),
+      helper: raw.storeProfile
+        ? "Controls SDK outfit matching for this Shopify merchant."
+        : "No linked Shopify store profile",
+    },
     technicalRows: [
       technicalField("Subscription id", raw.technical.subscriptionId),
       technicalField("Usage line item id", raw.technical.usageLineItemId),

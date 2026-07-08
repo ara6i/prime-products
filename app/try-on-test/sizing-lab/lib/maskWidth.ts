@@ -129,28 +129,19 @@ export function scanMaskBandWidth(
   threshold = 64,
   exclusions: ExclusionBox[] = [],
 ): { widthPx: number; centerX: number; leftX: number; rightX: number } | null {
-  const widths: number[] = [];
-  const centers: number[] = [];
-  const lefts: number[] = [];
-  const rights: number[] = [];
+  const rows: Array<{ widthPx: number; centerX: number; leftX: number; rightX: number }> = [];
   for (let dy = -bandPx; dy <= bandPx; dy++) {
     const row = scanMaskBodyAtRow(mask, width, height, centerY + dy, centerX, threshold, 4, exclusions);
     if (row) {
-      widths.push(row.widthPx);
-      centers.push((row.leftX + row.rightX) / 2);
-      lefts.push(row.leftX);
-      rights.push(row.rightX);
+      rows.push({
+        widthPx: row.widthPx,
+        centerX: (row.leftX + row.rightX) / 2,
+        leftX: row.leftX,
+        rightX: row.rightX,
+      });
     }
   }
-  if (widths.length === 0) return null;
-  widths.sort((a, b) => a - b);
-  centers.sort((a, b) => a - b);
-  lefts.sort((a, b) => a - b);
-  rights.sort((a, b) => a - b);
-  return {
-    widthPx: widths[Math.floor(widths.length / 2)]!,
-    centerX: centers[Math.floor(centers.length / 2)]!,
-    leftX: lefts[Math.floor(lefts.length / 2)]!,
-    rightX: rights[Math.floor(rights.length / 2)]!,
-  };
+  if (rows.length === 0) return null;
+  rows.sort((a, b) => a.widthPx - b.widthPx);
+  return rows[Math.floor(rows.length / 2)]!;
 }

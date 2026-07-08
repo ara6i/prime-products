@@ -2,13 +2,17 @@
 
 import { useMemo } from "react";
 import { computeTrouserWaist } from "../lib/waistFormula";
-import type { MetricsInput, PoseResult, WaistTrace } from "../types";
+import type { MeasurementMaskMode, MetricsInput, PoseResult, WaistTrace } from "../types";
 
 export function useWaistCalculation(
   pose: PoseResult | null,
   imageWidth: number,
   imageHeight: number,
   metrics: MetricsInput,
+  sidePose: PoseResult | null = null,
+  sideImageWidth = 0,
+  sideImageHeight = 0,
+  maskMode: MeasurementMaskMode = "ignore-arms",
 ): WaistTrace | null {
   return useMemo(() => {
     if (!pose) return null;
@@ -21,6 +25,10 @@ export function useWaistCalculation(
       metrics.heightCm,
       metrics.weightKg,
       metrics.gender,
+      sidePose,
+      sideImageWidth,
+      sideImageHeight,
+      maskMode,
     );
-  }, [pose, imageWidth, imageHeight, metrics.heightCm, metrics.weightKg, metrics.gender]);
+  }, [pose, imageWidth, imageHeight, metrics.heightCm, metrics.weightKg, metrics.gender, sidePose, sideImageWidth, sideImageHeight, maskMode]);
 }

@@ -1,5 +1,4 @@
-import { CustomerDashboardHeader } from "../shared/CustomerDashboardHeader";
-import { CustomerDashboardSidebar } from "../shared/CustomerDashboardSidebar";
+import { CustomerDashboardShell } from "../shared/CustomerDashboardShell";
 import { CustomerProductCsvWorkspace } from "./CustomerProductCsvWorkspace";
 import type { CustomerDashboardViewModel } from "../../types";
 import type { CustomerProductCsvParseResult } from "../../types/products";
@@ -12,32 +11,14 @@ interface CustomerDashboardProductsDesktopProps {
 
 export function CustomerDashboardProductsDesktop({ dashboard, initialProducts, logoutAction }: CustomerDashboardProductsDesktopProps) {
   return (
-    <div className="hidden min-h-screen text-text-primary lg:flex">
-      <CustomerDashboardSidebar
-        navItems={dashboard.navItems}
-        storeName={dashboard.storeName}
-        domain={dashboard.domain}
-      />
-
-      <div className="min-w-0 flex-1">
-        <CustomerDashboardHeader
-          storeName={dashboard.storeName}
-          projectName={dashboard.projectName}
-          pageTitle={dashboard.pageTitle}
-          dataModeLabel="CSV product workspace"
-          rangeLabel={dashboard.rangeLabel}
-          statusLabel={dashboard.statusLabel}
-          statusTone={dashboard.statusTone}
-          rangeOptions={dashboard.rangeOptions}
-          viewOptions={dashboard.viewOptions}
-          logoutAction={logoutAction}
-          showAnalyticsControls={false}
-        />
-
-        <main className="px-[var(--spacing-customer-content-x)] py-[var(--spacing-customer-content-y)]">
-          <CustomerProductCsvWorkspace initialProducts={initialProducts} />
-        </main>
-      </div>
-    </div>
+    <CustomerDashboardShell
+      dashboard={dashboard}
+      logoutAction={logoutAction}
+      dataModeLabel="Catalog workspace"
+      showAnalyticsControls={false}
+      contentClassName="py-1"
+    >
+      <CustomerProductCsvWorkspace initialProducts={initialProducts} verifiedWebsiteUrl={dashboard.domain} />
+    </CustomerDashboardShell>
   );
 }
