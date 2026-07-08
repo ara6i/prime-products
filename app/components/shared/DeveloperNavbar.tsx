@@ -66,7 +66,7 @@ export function DeveloperNavbar({ variant = "default", sectionHrefPrefix = "" }:
   const showAdminLogin = useShowInternalAdminLogin();
   const showLocalTools = useShowLocalTools();
   const { open: openPilot } = usePilotModal();
-  const { language, setLanguage, t } = useLandingLanguage();
+  const { language, setLanguage, t, translate } = useLandingLanguage();
   const resolveHref = (href: string) => href.startsWith("#") ? `${sectionHrefPrefix}${href}` : href;
 
   return (
@@ -111,12 +111,10 @@ export function DeveloperNavbar({ variant = "default", sectionHrefPrefix = "" }:
       )}
 
       <div className={`flex items-center gap-[1.25vw] ${isDemo ? "ml-auto" : ""}`}>
-        {!isDemo && (
-          <LandingLanguageSwitcher
-            language={language}
-            onLanguageChange={setLanguage}
-          />
-        )}
+        <LandingLanguageSwitcher
+          language={language}
+          onLanguageChange={setLanguage}
+        />
         {showLocalTools ? (
           <div className="group relative">
             <button
@@ -149,7 +147,7 @@ export function DeveloperNavbar({ variant = "default", sectionHrefPrefix = "" }:
           size="default"
           className="h-[2.604vw] px-[1.15vw] text-[0.833vw] leading-[1.354vw] rounded-[52.083vw] whitespace-nowrap cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
         >
-          <Link href={CUSTOMER_DASHBOARD_PATH}>Join PrimeStyleAI</Link>
+          <Link href={CUSTOMER_DASHBOARD_PATH}>{translate("Join PrimeStyleAI")}</Link>
         </Button>
         <Button
           variant="primary"

@@ -70,7 +70,7 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
   const showAdminLogin = useShowInternalAdminLogin();
   const showLocalTools = useShowLocalTools();
   const resolveHref = (href: string) => href.startsWith("#") ? `${sectionHrefPrefix}${href}` : href;
-  const { language, setLanguage, t } = useLandingLanguage();
+  const { language, setLanguage, t, translate } = useLandingLanguage();
 
   useEffect(() => {
     if (!open) return;
@@ -119,19 +119,17 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
               Admin Panel
             </Link>
           )}
-          {!isDemo && (
-            <LandingLanguageSwitcher
-              language={language}
-              onLanguageChange={setLanguage}
-              compact
-            />
-          )}
+          <LandingLanguageSwitcher
+            language={language}
+            onLanguageChange={setLanguage}
+            compact
+          />
           {!isDemo && (
             <Link
               href={CUSTOMER_DASHBOARD_PATH}
               className="hidden min-[430px]:inline-flex h-[34px] items-center rounded-full bg-brand-blue px-3 text-[11px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-blue-dark"
             >
-              Join PrimeStyleAI
+              {translate("Join PrimeStyleAI")}
             </Link>
           )}
           {!isDemo && (
@@ -241,7 +239,7 @@ export function MobileDeveloperNavbar({ variant = "default", sectionHrefPrefix =
                   className="w-full h-11 text-[14px] font-semibold rounded-2xl cursor-pointer border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
                 >
                   <Link href={CUSTOMER_DASHBOARD_PATH} onClick={close}>
-                    Join PrimeStyleAI
+                    {translate("Join PrimeStyleAI")}
                   </Link>
                 </Button>
               </div>

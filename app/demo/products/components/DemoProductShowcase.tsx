@@ -9,10 +9,10 @@ import { cn } from "@/app/shared/lib/utils";
 import type { DemoProductCard } from "../types";
 import {
   DEMO_PRODUCT_GROUPS,
-  formatDemoFitType,
   groupDemoProducts,
   type DemoProductGroupId,
 } from "../utils/demoProductGroups";
+import { useDemoTranslation } from "../utils/demoTranslations";
 
 interface DemoProductShowcaseProps {
   products: DemoProductCard[];
@@ -36,9 +36,11 @@ export function DemoProductShowcase({ products }: DemoProductShowcaseProps) {
 
   useEffect(() => {
     if (reduceMotion) {
-      setIntroProgress(100);
-      setIntroComplete(true);
-      return;
+      const id = window.setTimeout(() => {
+        setIntroProgress(100);
+        setIntroComplete(true);
+      }, 0);
+      return () => window.clearTimeout(id);
     }
 
     let frame = 0;
@@ -93,10 +95,11 @@ export function DemoProductShowcase({ products }: DemoProductShowcaseProps) {
 
   const fallbackGroup = DEMO_PRODUCT_GROUPS.find((group) => groupedProducts[group.id].length > 0)?.id ?? "women";
   const activeGroup = groupedProducts[selectedGroup].length > 0 ? selectedGroup : fallbackGroup;
-  const activeConfig = DEMO_PRODUCT_GROUPS.find((group) => group.id === activeGroup) ?? DEMO_PRODUCT_GROUPS[0];
   const activeProducts = groupedProducts[activeGroup];
   const featuredProduct = activeProducts[0] ?? products[0];
   const heroSupportingProducts = activeProducts.slice(1, 4);
+  const { translateDemo, translateDemoGroup } = useDemoTranslation();
+  const activeCopy = translateDemoGroup(activeGroup);
 
   function openProduct(event: MouseEvent<HTMLAnchorElement>, product: DemoProductCard) {
     if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
@@ -140,8 +143,8 @@ export function DemoProductShowcase({ products }: DemoProductShowcaseProps) {
         <div className="mx-auto grid min-h-[calc(100svh-72px)] w-full max-w-[1440px] grid-cols-1 gap-8 px-5 pb-10 pt-6 md:px-8 md:pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(340px,0.62fr)] lg:items-end lg:px-10 lg:pb-12">
           <div className="relative z-10 flex min-h-[44svh] flex-col justify-center gap-6 md:min-h-[52svh] md:gap-8 lg:min-h-[68vh]">
             <div className="flex items-center justify-between gap-4 text-xs uppercase tracking-[0.18em] text-[#2154EF]/65 lg:absolute lg:left-0 lg:right-0 lg:top-0">
-              <span>PrimeStyleAI demo</span>
-              <span>{String(products.length).padStart(3, "0")} products</span>
+              <span>{translateDemo("primeStyleDemo")}</span>
+              <span>{translateDemo("productsCount", { count: String(products.length).padStart(3, "0") })}</span>
             </div>
 
             <div className="flex -translate-y-1 flex-col justify-center gap-6 pt-4 md:-translate-y-4 md:gap-8 md:pt-8 lg:-translate-y-16 lg:pt-24">
@@ -153,7 +156,7 @@ export function DemoProductShowcase({ products }: DemoProductShowcaseProps) {
                   transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
                   className="mb-5 text-xs uppercase tracking-[0.2em] text-[#2154EF]"
                 >
-                  {activeConfig.kicker}
+                  {activeCopy.kicker}
                 </motion.p>
 
                 <AnimatePresence mode="wait">
@@ -165,10 +168,10 @@ export function DemoProductShowcase({ products }: DemoProductShowcaseProps) {
                     transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
                   >
                     <h1 className="max-w-[980px] text-[clamp(2.65rem,12vw,4.1rem)] font-semibold leading-[0.95] tracking-normal md:text-7xl lg:text-8xl">
-                      {activeConfig.title}
+                      {activeCopy.title}
                     </h1>
                     <p className="mt-6 max-w-[620px] text-base leading-7 text-[#475467] md:text-lg">
-                      {activeConfig.description}
+                      {activeCopy.description}
                     </p>
                   </motion.div>
                 </AnimatePresence>
@@ -202,13 +205,13 @@ export function DemoProductShowcase({ products }: DemoProductShowcaseProps) {
         <div className="mx-auto max-w-[1440px]">
           <div className="mb-8 flex flex-col gap-4 border-b border-[#2154EF]/15 pb-6 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-[#2154EF]/70">Selected rack</p>
-              <h2 className="mt-2 text-3xl font-semibold tracking-normal md:text-5xl">{activeConfig.label}</h2>
+              <p className="text-xs uppercase tracking-[0.18em] text-[#2154EF]/70">{translateDemo("selectedRack")}</p>
+              <h2 className="mt-2 text-3xl font-semibold tracking-normal md:text-5xl">{activeCopy.label}</h2>
             </div>
             <div className="flex items-center gap-3 text-sm text-[#475467]">
-              <span>{activeProducts.length} pieces</span>
+              <span>{translateDemo("piecesCount", { count: activeProducts.length })}</span>
               <span className="h-1 w-1 bg-[#2154EF]/40" />
-              <span>Category accurate</span>
+              <span>{translateDemo("categoryAccurate")}</span>
             </div>
           </div>
 
@@ -257,6 +260,8 @@ function CategoryTabs({
   groupedProducts: Record<DemoProductGroupId, DemoProductCard[]>;
   onChange: (group: DemoProductGroupId) => void;
 }) {
+  const { translateDemo, translateDemoGroup } = useDemoTranslation();
+
   return (
     <div className="relative -mx-5 px-5 md:mx-0 md:px-0">
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-white to-transparent md:hidden" />
@@ -265,6 +270,7 @@ function CategoryTabs({
         {DEMO_PRODUCT_GROUPS.map((group) => {
           const active = activeGroup === group.id;
           const count = groupedProducts[group.id].length;
+          const groupCopy = translateDemoGroup(group.id);
 
           return (
             <button
@@ -273,7 +279,7 @@ function CategoryTabs({
               onClick={() => onChange(group.id)}
               disabled={count === 0}
               aria-pressed={active}
-              aria-label={`${group.label} category, ${count} products`}
+              aria-label={translateDemo("categoryAria", { label: groupCopy.label, count })}
               className={cn(
                 "relative min-w-[120px] snap-start overflow-hidden rounded-full border px-4 py-2.5 text-left transition-all duration-300 md:min-w-0 md:rounded-none md:border-0 md:px-4 md:py-4 md:transition-colors",
                 active
@@ -291,7 +297,7 @@ function CategoryTabs({
               )}
               <span className="relative z-10 flex items-center gap-2 md:justify-between md:gap-4">
                 <span className="h-1.5 w-1.5 rounded-full bg-current/70 md:hidden" />
-                <span className="text-[12px] font-semibold leading-none md:text-sm">{group.label}</span>
+                <span className="text-[12px] font-semibold leading-none md:text-sm">{groupCopy.label}</span>
                 <span
                   className={cn(
                     "hidden rounded-full px-1.5 py-0.5 font-mono text-[10px] leading-none sm:inline md:bg-transparent md:p-0 md:text-xs md:text-current",
@@ -318,6 +324,8 @@ function HeroProductPanel({
   supportingProducts: DemoProductCard[];
   onOpenProduct: (event: MouseEvent<HTMLAnchorElement>, product: DemoProductCard) => void;
 }) {
+  const { translateDemo, translateDemoFitType } = useDemoTranslation();
+
   if (!product) {
     return <div className="hidden lg:block" />;
   }
@@ -339,8 +347,8 @@ function HeroProductPanel({
           <ProductImage product={product} className="transition-transform duration-700 group-hover:scale-105" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0b1f5e]/75 via-[#2154EF]/10 to-transparent" />
           <div className="absolute left-4 right-4 top-4 flex items-center justify-between text-xs uppercase tracking-[0.18em] text-white/80">
-            <span>Featured</span>
-            <span>{formatDemoFitType(product.fitType)}</span>
+            <span>{translateDemo("featured")}</span>
+            <span>{translateDemoFitType(product.fitType)}</span>
           </div>
           <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
             <p className="text-xs uppercase tracking-[0.18em] text-white/55">{product.category}</p>
@@ -395,6 +403,7 @@ function ProductTile({
   onHoverEnd: () => void;
 }) {
   const featured = index === 0;
+  const { translateDemo, translateDemoFitType } = useDemoTranslation();
 
   return (
     <motion.article
@@ -423,7 +432,7 @@ function ProductTile({
             <div className="absolute inset-0 bg-gradient-to-t from-[#0b1f5e]/70 via-[#2154EF]/0 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             <div className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-[#2154EF] transition-transform duration-500 group-hover:scale-x-100" />
             <div className="absolute bottom-4 left-4 right-4 flex translate-y-5 items-center justify-between gap-4 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-              <span className="text-sm font-semibold text-white">View more</span>
+              <span className="text-sm font-semibold text-white">{translateDemo("viewMore")}</span>
               <span className="flex h-10 w-10 items-center justify-center bg-white text-[#2154EF]">
                 <ArrowUpRight className="h-5 w-5" />
               </span>
@@ -438,12 +447,12 @@ function ProductTile({
               {product.name}
             </h3>
             <div className="mt-3 flex flex-wrap gap-2 text-xs text-[#475467]">
-              <span className="border border-[#d9e6ff] bg-white px-2 py-1">{formatDemoFitType(product.fitType)}</span>
+              <span className="border border-[#d9e6ff] bg-white px-2 py-1">{translateDemoFitType(product.fitType)}</span>
               {product.subcategory && <span className="border border-[#d9e6ff] bg-white px-2 py-1">{product.subcategory}</span>}
             </div>
           </div>
           <div className="text-right text-sm font-semibold text-[#101828]">
-            {product.price !== null ? formatProductPrice(product.price, product.currency) : "Demo"}
+            {product.price !== null ? formatProductPrice(product.price, product.currency) : translateDemo("demoFallback")}
           </div>
         </div>
       </Link>
@@ -460,6 +469,8 @@ function ViewMoreCursor({
   x: ReturnType<typeof useSpring>;
   y: ReturnType<typeof useSpring>;
 }) {
+  const { translateDemo } = useDemoTranslation();
+
   return (
     <AnimatePresence>
       {visible && (
@@ -471,7 +482,7 @@ function ViewMoreCursor({
           style={{ x, y }}
           className="pointer-events-none fixed left-0 top-0 z-[80] hidden h-24 w-24 items-center justify-center rounded-full border border-[#2154EF] bg-[#2154EF] text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-white shadow-[0_18px_50px_rgba(33,84,239,0.32)] lg:flex"
         >
-          View more
+          {translateDemo("viewMore")}
         </motion.div>
       )}
     </AnimatePresence>
@@ -483,6 +494,7 @@ function ProductImageSlider({ product }: { product: DemoProductCard }) {
   const hoverSrc = product.hoverImage || product.image;
   const hasHoverImage = !!hoverSrc && hoverSrc !== baseSrc;
   const [generating, setGenerating] = useState(!product.coverChecked && !!product.image);
+  const { translateDemo } = useDemoTranslation();
 
   useEffect(() => {
     if (product.coverChecked || !product.image) return;
@@ -511,7 +523,7 @@ function ProductImageSlider({ product }: { product: DemoProductCard }) {
   if (!baseSrc) {
     return (
       <div className="absolute inset-0 flex items-center justify-center bg-[#eef4ff] text-sm uppercase tracking-[0.16em] text-[#2154EF]/45">
-        No image
+        {translateDemo("noImage")}
       </div>
     );
   }
@@ -551,6 +563,7 @@ function ProductImage({ product, className, useOriginal = false }: { product: De
   const initialSrc = useOriginal ? product.image : product.generatedCover || product.image;
   const [coverSrc, setCoverSrc] = useState<string>(initialSrc);
   const [generating, setGenerating] = useState(!useOriginal && !product.coverChecked && !!product.image);
+  const { translateDemo } = useDemoTranslation();
 
   useEffect(() => {
     if (useOriginal) return;
@@ -580,7 +593,7 @@ function ProductImage({ product, className, useOriginal = false }: { product: De
   if (!coverSrc) {
     return (
       <div className="absolute inset-0 flex items-center justify-center bg-[#eef4ff] text-sm uppercase tracking-[0.16em] text-[#2154EF]/45">
-        No image
+        {translateDemo("noImage")}
       </div>
     );
   }
@@ -600,7 +613,8 @@ function ProductImage({ product, className, useOriginal = false }: { product: De
 }
 
 function EditorialTicker({ reduceMotion }: { reduceMotion: boolean }) {
-  const ticker = "AI sizing / virtual try-on / men / women / accessories / uniform / ";
+  const { translateDemo } = useDemoTranslation();
+  const ticker = translateDemo("ticker");
 
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden border-y border-[#2154EF]/10 py-3 text-xs uppercase tracking-[0.22em] text-[#2154EF]/35">
@@ -618,6 +632,8 @@ function EditorialTicker({ reduceMotion }: { reduceMotion: boolean }) {
 }
 
 function IntroOverlay({ progress, complete }: { progress: number; complete: boolean }) {
+  const { translateDemo } = useDemoTranslation();
+
   return (
     <AnimatePresence>
       {!complete && (
@@ -629,7 +645,7 @@ function IntroOverlay({ progress, complete }: { progress: number; complete: bool
         >
           <div className="flex items-center justify-between text-xs uppercase tracking-[0.18em] text-[#2154EF]/60">
             <span>PrimeStyleAI</span>
-            <span>Live demo</span>
+            <span>{translateDemo("liveDemo")}</span>
           </div>
           <div>
             <div className="mb-4 h-px w-full bg-[#d9e6ff]">
@@ -637,7 +653,7 @@ function IntroOverlay({ progress, complete }: { progress: number; complete: bool
             </div>
             <div className="flex items-end justify-between gap-6">
               <p className="max-w-[520px] text-xl font-medium leading-tight md:text-3xl">
-                Preparing the fitting room.
+                {translateDemo("preparingFittingRoom")}
               </p>
               <span className="font-mono text-5xl leading-none md:text-7xl">{String(progress).padStart(3, "0")}</span>
             </div>
@@ -649,6 +665,8 @@ function IntroOverlay({ progress, complete }: { progress: number; complete: bool
 }
 
 function ProductRouteTransition({ product }: { product: DemoProductCard | null }) {
+  const { translateDemo } = useDemoTranslation();
+
   return (
     <AnimatePresence>
       {product && (
@@ -660,14 +678,14 @@ function ProductRouteTransition({ product }: { product: DemoProductCard | null }
           className="fixed inset-0 z-[90] flex items-end bg-white p-5 text-[#101828] md:p-8"
         >
           <div className="w-full">
-            <p className="mb-3 text-xs uppercase tracking-[0.18em] text-[#2154EF]">Opening product</p>
+            <p className="mb-3 text-xs uppercase tracking-[0.18em] text-[#2154EF]">{translateDemo("openingProduct")}</p>
             <div className="flex flex-col gap-4 border-t border-[#2154EF]/15 pt-5 md:flex-row md:items-end md:justify-between">
               <h2 className="max-w-[780px] text-4xl font-semibold leading-none tracking-normal md:text-7xl">{product.name}</h2>
               <div className="flex items-center gap-3 text-sm text-[#475467]">
                 <Camera className="h-4 w-4" />
-                <span>Try-on</span>
+                <span>{translateDemo("tryOn")}</span>
                 <Ruler className="h-4 w-4" />
-                <span>Size match</span>
+                <span>{translateDemo("sizeMatch")}</span>
               </div>
             </div>
           </div>
@@ -678,12 +696,14 @@ function ProductRouteTransition({ product }: { product: DemoProductCard | null }
 }
 
 function EmptyState() {
+  const { translateDemo } = useDemoTranslation();
+
   return (
     <div className="border border-[#d9e6ff] bg-white px-5 py-16 text-center">
       <Sparkles className="mx-auto mb-4 h-8 w-8 text-[#2154EF]/45" />
-      <h3 className="text-xl font-semibold tracking-normal text-[#101828]">No demo products yet</h3>
+      <h3 className="text-xl font-semibold tracking-normal text-[#101828]">{translateDemo("noDemoProductsYet")}</h3>
       <p className="mx-auto mt-2 max-w-[420px] text-sm leading-6 text-[#475467]">
-        Sync the demo catalog before testing the category experience.
+        {translateDemo("syncDemoCatalog")}
       </p>
     </div>
   );
