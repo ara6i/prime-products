@@ -1,6 +1,7 @@
 import type { MeasurementDebugRow, MeasurementMaskMode, PoseResult, WaistTrace } from "../types";
 import type { HipsTrace } from "./hipsFormula";
 import { computeMaskHeightScale, computePoseScale, measureMaskWidthAtY, type MaskWidthMeasurement } from "./bodyMaskGeometry";
+import { estimateDepthRatioFromTable, type DepthRatioTableEstimate } from "./depthRatioTable";
 import { ellipseCircumferenceCm } from "./waistFormula";
 
 export const SIZING_LAB_GEMINI_GUIDE_PROMPT_VERSION = "anatomical-source-grid-v26";
@@ -447,6 +448,8 @@ export interface GeminiGuideLine {
 
 export type GeminiGuideRowKind = "waist" | "trouserWaist" | "hips";
 export type GeminiGuideDepthRatioOverrides = Partial<Record<GeminiGuideRowKind, number>>;
+export type GeminiGuideCircumferenceModel = "ellipse" | "body-shape-superellipse" | "hip-flare-superellipse";
+export type GeminiGuideDepthRatioTableRangeStatus = "inside" | "table-fallback-low" | "table-fallback-high";
 export type GeminiGuideEdgeTrust =
   | "manual-body-edge"
   | "visible-mask-edge"
@@ -464,6 +467,20 @@ export interface GeminiBodyGuide {
     loose_clothing?: boolean;
   };
   notes?: string;
+}
+
+export interface GeminiGuideDepthRatioTableComparison {
+  table: DepthRatioTableEstimate;
+  formulaDepthRatio: number;
+  acceptedDepthRatio: number;
+  rangeStatus: GeminiGuideDepthRatioTableRangeStatus;
+  rangeMin: number;
+  rangeMax: number;
+  depthCm: number;
+  guidedCm: number;
+  circumferenceModel: GeminiGuideCircumferenceModel;
+  shapeExponent: number | null;
+  shapeFlareRatio: number | null;
 }
 
 export interface GeminiGuideMeasurementRow {
@@ -487,7 +504,7 @@ export interface GeminiGuideMeasurementRow {
   maskRightXNorm: number | null;
   maskYNorm: number | null;
   edgeTrust: GeminiGuideEdgeTrust;
-  depthSource: "side-mask-at-guide-row" | "side-guide-red-pixel" | "side-guide-json" | "side-guide-manual-coordinate" | "front-formula" | "manual-tape-front-formula" | "manual-depth-ratio";
+  depthSource: "side-mask-at-guide-row" | "side-guide-red-pixel" | "side-guide-json" | "side-guide-manual-coordinate" | "front-formula" | "manual-tape-front-formula" | "manual-depth-ratio" | "depth-ratio-table";
   sideDepthCandidateCm: number | null;
   sideDepthCandidateRatio: number | null;
   sideDepthRawCm: number | null;
@@ -498,6 +515,7 @@ export interface GeminiGuideMeasurementRow {
   depthRatioOverride: number | null;
   depthRatio: number;
   depthCm: number;
+  depthRatioTable: GeminiGuideDepthRatioTableComparison | null;
   maskWidthCm: number | null;
   curveHorizontalCm: number;
   curveChordCm: number;
@@ -506,7 +524,7 @@ export interface GeminiGuideMeasurementRow {
   rawCm: number;
   guidedCm: number;
   circumferenceDeltaCm: number;
-  circumferenceModel: "ellipse" | "body-shape-superellipse" | "hip-flare-superellipse";
+  circumferenceModel: GeminiGuideCircumferenceModel;
   shapeExponent: number | null;
   shapeFlareRatio: number | null;
 }
@@ -836,6 +854,112 @@ function applyCircumferenceModel(
     circumferenceModel: circumference.model,
     shapeExponent: circumference.shapeExponent == null ? null : round(circumference.shapeExponent, 3),
     shapeFlareRatio: circumference.shapeFlareRatio == null ? null : round(circumference.shapeFlareRatio, 3),
+  };
+}
+
+function applyDepthRatioTableComparison(args: {
+  row: GeminiGuideMeasurementRow | null;
+  gender: WaistTrace["gender"];
+  bmi: number;
+  waistWidthCm: number | null;
+  waistDepthCm: number | null;
+  trouserWidthCm: number | null;
+  trouserDepthCm: number | null;
+  hipWidthCm: number | null;
+  hipDepthCm: number | null;
+  useBodyShapeCircumference: boolean;
+}): GeminiGuideMeasurementRow | null {
+  const { row } = args;
+  if (!row || row.formulaWidthCm <= 0 || !Number.isFinite(args.bmi) || args.bmi <= 0) return row;
+  const table = estimateDepthRatioFromTable({
+    rowKind: row.kind,
+    gender: args.gender,
+    bmi: args.bmi,
+    waistWidthCm: args.waistWidthCm,
+    hipWidthCm: args.hipWidthCm,
+  });
+  if (!table) return row;
+  const rangeMin = table.depthRatioP10;
+  const rangeMax = table.depthRatioP90;
+  const formulaDepthRatio = row.baseDepthRatio;
+  const rangeStatus: GeminiGuideDepthRatioTableRangeStatus = formulaDepthRatio < rangeMin
+    ? "table-fallback-low"
+    : formulaDepthRatio > rangeMax
+      ? "table-fallback-high"
+      : "inside";
+  const manualOverrideActive = row.depthRatioOverride != null;
+  const acceptedDepthRatio = manualOverrideActive ? row.depthRatio : table.depthRatio;
+
+  const shouldUseBodyShapeCircumference = args.useBodyShapeCircumference || row.circumferenceModel !== "ellipse";
+  const tableDepthCm = row.formulaWidthCm * table.depthRatio;
+  const tableCircumference = shouldUseBodyShapeCircumference
+    ? bodyShapeCircumference({
+        kind: row.kind,
+        widthCm: row.formulaWidthCm,
+        depthCm: tableDepthCm,
+        waistWidthCm: args.waistWidthCm,
+        waistDepthCm: args.waistDepthCm,
+        trouserWidthCm: args.trouserWidthCm,
+        trouserDepthCm: args.trouserDepthCm,
+        hipWidthCm: args.hipWidthCm,
+        hipDepthCm: args.hipDepthCm,
+      })
+    : {
+        guidedCm: ellipseCircumferenceCm(row.formulaWidthCm, tableDepthCm),
+        model: "ellipse" as const,
+        shapeExponent: null,
+        shapeFlareRatio: null,
+      };
+
+  const tableComparison: GeminiGuideDepthRatioTableComparison = {
+    table,
+    formulaDepthRatio: round(formulaDepthRatio, 3),
+    acceptedDepthRatio: round(acceptedDepthRatio, 3),
+    rangeStatus,
+    rangeMin: round(rangeMin, 3),
+    rangeMax: round(rangeMax, 3),
+    depthCm: round(tableDepthCm, 1),
+    guidedCm: round(tableCircumference.guidedCm, 1),
+    circumferenceModel: tableCircumference.model,
+    shapeExponent: tableCircumference.shapeExponent == null ? null : round(tableCircumference.shapeExponent, 3),
+    shapeFlareRatio: tableCircumference.shapeFlareRatio == null ? null : round(tableCircumference.shapeFlareRatio, 3),
+  };
+
+  const acceptedDepthCm = row.formulaWidthCm * acceptedDepthRatio;
+  const acceptedCircumference = shouldUseBodyShapeCircumference
+    ? bodyShapeCircumference({
+        kind: row.kind,
+        widthCm: row.formulaWidthCm,
+        depthCm: acceptedDepthCm,
+        waistWidthCm: args.waistWidthCm,
+        waistDepthCm: args.waistDepthCm,
+        trouserWidthCm: args.trouserWidthCm,
+        trouserDepthCm: args.trouserDepthCm,
+        hipWidthCm: args.hipWidthCm,
+        hipDepthCm: args.hipDepthCm,
+      })
+    : {
+        guidedCm: ellipseCircumferenceCm(row.formulaWidthCm, acceptedDepthCm),
+        model: "ellipse" as const,
+        shapeExponent: null,
+        shapeFlareRatio: null,
+      };
+
+  return {
+    ...row,
+    depthSource: manualOverrideActive ? "manual-depth-ratio" : "depth-ratio-table",
+    sideDepthAccepted: false,
+    depthRatio: round(acceptedDepthRatio, 3),
+    depthCm: round(acceptedDepthCm, 1),
+    guidedCm: round(acceptedCircumference.guidedCm, 1),
+    circumferenceDeltaCm: round(acceptedCircumference.guidedCm - row.rawCm, 1),
+    circumferenceModel: acceptedCircumference.model,
+    shapeExponent: acceptedCircumference.shapeExponent == null ? null : round(acceptedCircumference.shapeExponent, 3),
+    shapeFlareRatio: acceptedCircumference.shapeFlareRatio == null ? null : round(acceptedCircumference.shapeFlareRatio, 3),
+    depthRatioTable: {
+      ...tableComparison,
+      acceptedDepthRatio: round(acceptedDepthRatio, 3),
+    },
   };
 }
 
@@ -1177,6 +1301,7 @@ function buildGuideRow(args: {
     depthRatioOverride: manualDepthRatioOverride == null ? null : round(manualDepthRatioOverride, 3),
     depthRatio: round(boundedDepthRatio, 3),
     depthCm: round(depthCm, 1),
+    depthRatioTable: null,
     maskWidthCm: maskWidthCm == null ? null : round(maskWidthCm, 1),
     curveHorizontalCm: round(selectedFormulaWidthCm, 1),
     curveChordCm: round(curveGeometry.chordPx * cmPerFormulaPx, 1),
@@ -1511,7 +1636,46 @@ export function computeGeminiGuideMeasurement(args: {
         }),
       );
 
-  const rows = [modeledWaist, modeledTrouserWaist, modeledHips].filter((row): row is GeminiGuideMeasurementRow => Boolean(row));
+  const tableGender = scaledHipsTrace?.gender ?? waistTrace.gender;
+  const tableBmi = scaledHipsTrace?.bmi ?? waistTrace.bmi;
+  const tableWaist = applyDepthRatioTableComparison({
+    row: modeledWaist,
+    gender: tableGender,
+    bmi: tableBmi,
+    waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
+    waistDepthCm: null,
+    trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
+    trouserDepthCm: null,
+    hipWidthCm: modeledHips?.formulaWidthCm ?? null,
+    hipDepthCm: null,
+    useBodyShapeCircumference: false,
+  });
+  const tableTrouserWaist = applyDepthRatioTableComparison({
+    row: modeledTrouserWaist,
+    gender: tableGender,
+    bmi: tableBmi,
+    waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
+    waistDepthCm: null,
+    trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
+    trouserDepthCm: null,
+    hipWidthCm: modeledHips?.formulaWidthCm ?? null,
+    hipDepthCm: null,
+    useBodyShapeCircumference: false,
+  });
+  const tableHips = applyDepthRatioTableComparison({
+    row: modeledHips,
+    gender: tableGender,
+    bmi: tableBmi,
+    waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
+    waistDepthCm: null,
+    trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
+    trouserDepthCm: null,
+    hipWidthCm: modeledHips?.formulaWidthCm ?? null,
+    hipDepthCm: null,
+    useBodyShapeCircumference: false,
+  });
+
+  const rows = [tableWaist, tableTrouserWaist, tableHips].filter((row): row is GeminiGuideMeasurementRow => Boolean(row));
   if (!rows.length) return null;
 
   return {
@@ -1521,9 +1685,9 @@ export function computeGeminiGuideMeasurement(args: {
     sideHeightCmPerPx: sideScale ? round(sideScale.cmPerPx, 5) : null,
     sideHeightScaleSource: sideScale ? (sideMaskScale ? "mask-height" : "pose-landmarks") : null,
     sideScaleDeltaPct: sideScale && activeCmPerPx > 0 ? round(((sideScale.cmPerPx / activeCmPerPx) - 1) * 100, 1) : null,
-    waist: modeledWaist,
-    trouserWaist: modeledTrouserWaist,
-    hips: modeledHips,
+    waist: tableWaist,
+    trouserWaist: tableTrouserWaist,
+    hips: tableHips,
     rows,
     debugRows: rows.map((row) => ({
       id: `${row.rowSource === "pose-mask-fallback" ? "fallback-guide" : row.rowSource === "manual-adjusted-coordinate" ? "manual-adjusted-guide" : row.rowSource === "manual-coordinate" ? "manual-guide" : "gemini-guide"}-${row.kind}`,
@@ -1786,6 +1950,7 @@ function buildImageGuideRow(args: {
     depthRatioOverride: null,
     depthRatio: 0,
     depthCm: 0,
+    depthRatioTable: null,
     maskWidthCm: maskMeasurement?.widthCm == null ? null : round(maskMeasurement.widthCm, 1),
     curveHorizontalCm: round(selectedFormulaWidthCm, 1),
     curveChordCm: round(curveGeometry.chordPx * args.cmPerPx, 1),

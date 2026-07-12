@@ -315,6 +315,22 @@ const NEGAR_2_MANUAL_ROW_PRESET = {
   hips: { yPx: 816, leftXPx: 458, rightXPx: 733 },
 };
 
+const SHANE_MANUAL_ROW_PRESET = {
+  sourceImageHeight: 4284,
+  sourceImageWidth: 5712,
+  waist: { yPx: 2384, leftXPx: 2215, rightXPx: 2781 },
+  trouserWaist: { yPx: 2150, leftXPx: 2236, rightXPx: 2773 },
+  hips: { yPx: 2593, leftXPx: 2176, rightXPx: 2791 },
+};
+
+const SHANE_MANUAL_HEIGHT_PRESET = {
+  sourceImageHeight: 4284,
+  sourceImageWidth: 5712,
+  topYPx: 1146,
+  bottomYPx: 3958,
+  centerXPx: 2493,
+};
+
 const BAHAR_TAPE_ROW_PRESET = {
   sourceImageHeight: 4080,
   sourceImageWidth: 3072,
@@ -330,6 +346,19 @@ const NADIA_TAPE_ROW_PRESET = {
   trouserWaist: { tapeCm: 53, yPx: 1962 },
   hips: { tapeCm: 64, yPx: 2176 },
 };
+
+function buildSavedManualHeightScaleOverride(
+  setId: string,
+  imageUrl: string,
+): ManualHeightScaleOverride | null {
+  if (setId !== "shane") return null;
+  return {
+    sourceKey: `${imageUrl}:${SHANE_MANUAL_HEIGHT_PRESET.sourceImageWidth}x${SHANE_MANUAL_HEIGHT_PRESET.sourceImageHeight}`,
+    topYNorm: SHANE_MANUAL_HEIGHT_PRESET.topYPx / SHANE_MANUAL_HEIGHT_PRESET.sourceImageHeight,
+    bottomYNorm: SHANE_MANUAL_HEIGHT_PRESET.bottomYPx / SHANE_MANUAL_HEIGHT_PRESET.sourceImageHeight,
+    centerXNorm: SHANE_MANUAL_HEIGHT_PRESET.centerXPx / SHANE_MANUAL_HEIGHT_PRESET.sourceImageWidth,
+  };
+}
 
 interface ManualScaleEvidence {
   source: "vertical-tape" | "mask-height" | "pose-landmarks" | "manual-height";
@@ -606,7 +635,7 @@ export function SizingLabPage() {
     clearGeminiGuide();
     setManualGuide(null);
     setManualSideGuide(null);
-    setManualHeightScaleOverride(null);
+    setManualHeightScaleOverride(buildSavedManualHeightScaleOverride(row.setId, row.frontImageUrl));
     clearGeminiCorrection();
     clearBackendSdkTrace();
     setAnalysisTotalMs(null);
@@ -2073,6 +2102,9 @@ export function SizingLabPage() {
                     imageUrl={image.state.previewUrl}
                     imageWidth={image.state.width}
                     imageHeight={image.state.height}
+                    targetNaturalWaistCm={selectedDatasetNaturalWaistCm}
+                    targetTrouserWaistCm={selectedDatasetTrouserWaistCm}
+                    targetHipsCm={selectedDataset?.hipsCm}
                     responseDebug={geminiGuideResponseDebug}
                   />
                 </div>
@@ -2207,6 +2239,17 @@ function buildManualGuideFromTrace(
       imageWidth,
       imageHeight,
       "Manual coordinate guide seeded from Negar 2 user-confirmed rows and endpoints.",
+    );
+  }
+  const shanePreset = selectedDatasetId === "shane"
+    ? SHANE_MANUAL_ROW_PRESET
+    : null;
+  if (shanePreset) {
+    return buildManualGuideFromPreset(
+      shanePreset,
+      imageWidth,
+      imageHeight,
+      "Manual coordinate guide seeded from Shane saved rows and endpoints.",
     );
   }
   const negar4TapePreset = selectedDatasetId === "negar-4"

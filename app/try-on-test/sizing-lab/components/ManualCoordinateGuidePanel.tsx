@@ -7,7 +7,7 @@ import type { MaskHeightScaleAudit } from "../types";
 
 type GuideKind = "waist" | "trouserWaist" | "hips";
 type SvgDragEvent = React.PointerEvent<SVGSVGElement> | React.MouseEvent<SVGSVGElement>;
-type SvgHandleDragEvent = React.PointerEvent<SVGCircleElement> | React.MouseEvent<SVGCircleElement>;
+type SvgHandleDragEvent = React.PointerEvent<SVGElement> | React.MouseEvent<SVGElement>;
 type WindowDragEvent = PointerEvent | MouseEvent;
 type MeasurementMode = "circumference" | "side-depth";
 type ScaleProofHandle = "start" | "end";
@@ -119,7 +119,7 @@ export function ManualCoordinateGuidePanel({
   scaleEvidence,
   comparisonScaleEvidence,
   title = "Manual coordinate guide",
-  description = "Drag the red start/end line by hand. Red endpoints own the active formula span; blue dashed visible-edge evidence is not used in calculation.",
+  description = "Drag either red endpoint left/right, or grab the left/right half of the red line. Red endpoint span owns the active formula width; blue dashed visible-edge evidence is not used in calculation.",
   resetLabel = "Reset from mask rows",
   labelSuffix = "manual coordinate",
   measurementMode = "circumference",
@@ -304,6 +304,20 @@ export function ManualCoordinateGuidePanel({
     };
   };
 
+  const startLineDrag = (kind: GuideKind, event: SvgHandleDragEvent) => {
+    const activeGuide = normalizedGuideRef.current ?? normalizedGuide;
+    const svg = svgRef.current;
+    const line = activeGuide ? normalizeLine(activeGuide[kind], imageWidth, imageHeight) : null;
+    if (!svg || !line?.points?.length) return;
+    const point = getImagePointFromClient(svg, event.clientX, event.clientY);
+    const firstIndex = 0;
+    const lastIndex = line.points.length - 1;
+    const pointIndex = Math.abs(point.x - line.points[firstIndex]!.x_px) <= Math.abs(point.x - line.points[lastIndex]!.x_px)
+      ? firstIndex
+      : lastIndex;
+    startHandleDrag({ kind, pointIndex }, event);
+  };
+
   const startLinkedHandleDrag = (
     target: { kind: GuideKind; pointIndex: number },
     event: SvgHandleDragEvent,
@@ -338,6 +352,21 @@ export function ManualCoordinateGuidePanel({
       window.removeEventListener("pointerup", stop);
       window.removeEventListener("mouseup", stop);
     };
+  };
+
+  const startLinkedLineDrag = (kind: GuideKind, event: SvgHandleDragEvent) => {
+    const activeGuide = linkedNormalizedGuideRef.current ?? linkedNormalizedGuide;
+    const svg = linkedSvgRef.current;
+    if (!linkedEditor || !svg || !activeGuide) return;
+    const line = normalizeLine(activeGuide[kind], linkedEditor.imageWidth, linkedEditor.imageHeight);
+    if (!line?.points?.length) return;
+    const point = getImagePointFromClient(svg, event.clientX, event.clientY);
+    const firstIndex = 0;
+    const lastIndex = line.points.length - 1;
+    const pointIndex = Math.abs(point.x - line.points[firstIndex]!.x_px) <= Math.abs(point.x - line.points[lastIndex]!.x_px)
+      ? firstIndex
+      : lastIndex;
+    startLinkedHandleDrag({ kind, pointIndex }, event);
   };
 
   const startScaleProofHandleDrag = (
@@ -644,6 +673,7 @@ export function ManualCoordinateGuidePanel({
               zoom={zoom}
               labelSuffix={labelSuffix}
               onHandleDragStart={startHandleDrag}
+              onLineDragStart={startLineDrag}
             />
           ) : null}
           <ScaleProofRulerSvg
@@ -717,6 +747,7 @@ export function ManualCoordinateGuidePanel({
               zoom={zoom}
               labelSuffix={linkedLabelSuffix}
               onHandleDragStart={startLinkedHandleDrag}
+              onLineDragStart={startLinkedLineDrag}
             />
           </svg>
         </div>
@@ -767,7 +798,7 @@ export function ManualCoordinateGuidePanel({
             </div>
           ) : renderImageViewport("normal")}
           <div className="flex flex-wrap items-center gap-3 text-[11px] text-red-900">
-            <span>Drag handles: start and end only. Scroll while zoomed.</span>
+            <span>Drag a red endpoint, or grab either half of the red line. Left/right span changes the result; Y-only movement does not.</span>
             {hoverLabel ? <span className="font-mono font-semibold">{hoverLabel}</span> : null}
           </div>
           {scaleEvidence ? <ManualScaleEvidence evidence={scaleEvidence} /> : null}
@@ -781,6 +812,19 @@ export function ManualCoordinateGuidePanel({
               onReset={resetManualHeightScaleOverride}
             />
           ) : null}
+          {measurement ? (
+            <ScaleSensitivityPanel
+              measurement={measurement}
+              heightCm={heightCm}
+              heightScaleLine={heightScaleLine}
+            />
+          ) : null}
+          <ManualCoordinateInputs
+            guide={normalizedGuide}
+            imageWidth={imageWidth}
+            imageHeight={imageHeight}
+            onChange={onChange}
+          />
           <ScaleProofPanel
             ruler={scaleProofRuler}
             startCm={scaleProofStartCm}
@@ -793,7 +837,14 @@ export function ManualCoordinateGuidePanel({
             onEndCmChange={setScaleProofEndCm}
             onReset={resetScaleProofRuler}
           />
-          {measurement ? <ManualMeasurementTable measurement={measurement} /> : null}
+          {measurement ? (
+            <ManualMeasurementTable
+              measurement={measurement}
+              targetNaturalWaistCm={targetNaturalWaistCm}
+              targetTrouserWaistCm={targetTrouserWaistCm}
+              targetHipsCm={targetHipsCm}
+            />
+          ) : null}
           {isFullscreen ? (
             <div className="fixed inset-0 z-[100] bg-slate-950 text-white">
               <div className="grid h-screen min-h-0 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_420px]">
@@ -859,6 +910,21 @@ export function ManualCoordinateGuidePanel({
                       compact
                     />
                   ) : null}
+                  {measurement ? (
+                    <ScaleSensitivityPanel
+                      measurement={measurement}
+                      heightCm={heightCm}
+                      heightScaleLine={heightScaleLine}
+                      compact
+                    />
+                  ) : null}
+                  <ManualCoordinateInputs
+                    guide={normalizedGuide}
+                    imageWidth={imageWidth}
+                    imageHeight={imageHeight}
+                    onChange={onChange}
+                    compact
+                  />
                   <ScaleProofPanel
                     ruler={scaleProofRuler}
                     startCm={scaleProofStartCm}
@@ -902,6 +968,172 @@ export function ManualCoordinateGuidePanel({
           ) : null}
         </>
       )}
+    </div>
+  );
+}
+
+function ManualCoordinateInputs({
+  guide,
+  imageWidth,
+  imageHeight,
+  onChange,
+  compact = false,
+}: {
+  guide: GeminiBodyGuide | null;
+  imageWidth: number;
+  imageHeight: number;
+  onChange: (guide: GeminiBodyGuide) => void;
+  compact?: boolean;
+}) {
+  if (!guide) return null;
+
+  const updateLine = (kind: GuideKind, field: "y" | "left" | "right", rawValue: string) => {
+    const value = Number(rawValue);
+    if (!Number.isFinite(value)) return;
+    const line = normalizeLine(guide[kind], imageWidth, imageHeight);
+    if (!line) return;
+    const y = field === "y" ? clamp(value, 0, imageHeight - 1) : line.y_px ?? 0;
+    const left = field === "left" ? clamp(value, 0, imageWidth - 1) : line.left_x_px ?? 0;
+    const right = field === "right" ? clamp(value, 0, imageWidth - 1) : line.right_x_px ?? 0;
+    onChange({
+      ...guide,
+      [kind]: lineFromPoints([
+        { x_px: left, y_px: y },
+        { x_px: right, y_px: y },
+      ], 1, imageWidth, imageHeight),
+      notes: "Manual coordinate guide. Red endpoints own the active formula span; visible mask edge is debug evidence only.",
+    });
+  };
+
+  return (
+    <div className={`rounded-lg border border-red-200 bg-white ${compact ? "p-2" : "p-3"}`}>
+      <div className="mb-2 text-xs font-semibold text-red-950">Manual coordinate numbers</div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-[11px]">
+          <thead className="bg-red-50 text-red-950">
+            <tr>
+              <th className="px-2 py-1 font-semibold">Row</th>
+              <th className="px-2 py-1 font-semibold">Y</th>
+              <th className="px-2 py-1 font-semibold">Left</th>
+              <th className="px-2 py-1 font-semibold">Right</th>
+              <th className="px-2 py-1 font-semibold">Span</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-red-100 font-mono text-text-primary">
+            {GUIDE_ROWS.map((row) => {
+              const line = normalizeLine(guide[row.kind], imageWidth, imageHeight);
+              if (!line) return null;
+              const y = Math.round(line.y_px ?? 0);
+              const left = Math.round(line.left_x_px ?? 0);
+              const right = Math.round(line.right_x_px ?? 0);
+              const span = Math.abs(right - left);
+              return (
+                <tr key={row.kind}>
+                  <td className="px-2 py-1 font-sans text-text-secondary">{rowLabel(row.kind)}</td>
+                  {(["y", "left", "right"] as const).map((field) => (
+                    <td key={field} className="px-2 py-1">
+                      <input
+                        type="number"
+                        step={1}
+                        value={field === "y" ? y : field === "left" ? left : right}
+                        onChange={(event) => updateLine(row.kind, field, event.currentTarget.value)}
+                        className={`${compact ? "h-7 w-20" : "h-8 w-24"} rounded-md border border-red-100 bg-white px-2 font-mono text-[11px] text-text-primary`}
+                        aria-label={`${rowLabel(row.kind)} ${field} coordinate`}
+                      />
+                    </td>
+                  ))}
+                  <td className="px-2 py-1">{span}px</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p className="mt-2 text-[10px] leading-4 text-red-900">
+        Circumference follows Left/Right span. Y only changes row placement unless the endpoints or active width change.
+      </p>
+    </div>
+  );
+}
+
+function ScaleSensitivityPanel({
+  measurement,
+  heightCm,
+  heightScaleLine,
+  compact = false,
+}: {
+  measurement: GeminiGuideMeasurement;
+  heightCm?: number;
+  heightScaleLine: HeightScaleLine | null;
+  compact?: boolean;
+}) {
+  const oneCmHeightPct = heightCm && heightCm > 0 ? 100 / heightCm : null;
+  const sevenPctHeightCm = heightCm && heightCm > 0 ? heightCm * 0.07 : null;
+  const spanPx = heightScaleLine?.bodySpanPx ?? null;
+  const onePxSpanPct = spanPx && spanPx > 1 ? (1 / (spanPx - 1)) * 100 : null;
+  const sevenPctSpanPx = spanPx && spanPx > 0 ? spanPx - (spanPx / 1.07) : null;
+
+  return (
+    <div className={`rounded-lg border border-amber-200 bg-amber-50 ${compact ? "p-2" : "p-3"}`}>
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <div className="text-xs font-semibold text-amber-950">Scale / line sensitivity proof</div>
+        <div className="font-mono text-[11px] text-amber-900">
+          active {measurement.activeCmPerPx.toFixed(5)} cm/px
+        </div>
+      </div>
+      <div className="grid gap-2 text-[11px] text-amber-950 sm:grid-cols-3">
+        <div className="rounded bg-white/80 px-2 py-1">
+          <div className="font-semibold">1 cm height error</div>
+          <div className="font-mono">{oneCmHeightPct == null ? "n/a" : `${oneCmHeightPct.toFixed(2)}% scale`}</div>
+        </div>
+        <div className="rounded bg-white/80 px-2 py-1">
+          <div className="font-semibold">7% scale equals</div>
+          <div className="font-mono">
+            {sevenPctHeightCm == null ? "n/a" : `${sevenPctHeightCm.toFixed(1)} cm height error`}
+          </div>
+        </div>
+        <div className="rounded bg-white/80 px-2 py-1">
+          <div className="font-semibold">Yellow span impact</div>
+          <div className="font-mono">
+            {onePxSpanPct == null
+              ? "n/a"
+              : `1px ≈ ${onePxSpanPct.toFixed(3)}%; 7% ≈ ${sevenPctSpanPx?.toFixed(1)}px`}
+          </div>
+        </div>
+      </div>
+      <div className="mt-2 overflow-x-auto rounded border border-amber-100 bg-white">
+        <table className="w-full text-left text-[11px]">
+          <thead className="bg-amber-100 text-amber-950">
+            <tr>
+              <th className="px-2 py-1 font-semibold">Row</th>
+              <th className="px-2 py-1 font-semibold">Endpoint span</th>
+              <th className="px-2 py-1 font-semibold">Result</th>
+              <th className="px-2 py-1 font-semibold">±1 cm height</th>
+              <th className="px-2 py-1 font-semibold">±1% scale</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-amber-100 font-mono text-text-primary">
+            {measurement.rows.map((row) => {
+              const endpointSpanPx = Math.abs(row.rightXPx - row.leftXPx);
+              const oneCmHeightImpact = heightCm && heightCm > 0 ? row.guidedCm / heightCm : null;
+              const onePctImpact = row.guidedCm * 0.01;
+              return (
+                <tr key={row.kind}>
+                  <td className="px-2 py-1 font-sans text-text-secondary">{row.kind}</td>
+                  <td className="px-2 py-1">{endpointSpanPx}px</td>
+                  <td className="px-2 py-1">{row.guidedCm.toFixed(1)} cm</td>
+                  <td className="px-2 py-1">{oneCmHeightImpact == null ? "n/a" : `±${oneCmHeightImpact.toFixed(2)} cm`}</td>
+                  <td className="px-2 py-1">±{onePctImpact.toFixed(2)} cm</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p className="mt-2 text-[10px] leading-4 text-amber-900">
+        Direct owners: yellow height span controls cm/px for every row; red endpoint X-span controls row width.
+        Y position matters when it changes the endpoints/body edge or when side-depth mode uses that row.
+      </p>
     </div>
   );
 }
@@ -1209,7 +1441,14 @@ function ManualRealtimePanel({
           </div>
         )}
       </div>
-      {measurement && !compact ? <ManualMeasurementTable measurement={measurement} /> : null}
+      {measurement && !compact ? (
+        <ManualMeasurementTable
+          measurement={measurement}
+          targetNaturalWaistCm={targetNaturalWaistCm}
+          targetTrouserWaistCm={targetTrouserWaistCm}
+          targetHipsCm={targetHipsCm}
+        />
+      ) : null}
     </div>
   );
 }
@@ -1271,11 +1510,27 @@ function ManualRealtimeRow({
   const overrideValue = depthRatioOverrides?.[row.kind] ?? row.depthRatioOverride ?? null;
   const sliderValue = clamp(overrideValue ?? row.depthRatio, bounds.min, bounds.max);
   const changeDepthRatio = onDepthRatioOverrideChange;
+  const usesTableDepthSource = row.depthSource === "depth-ratio-table";
   const canOverrideRatio = measurementMode === "circumference" && Boolean(changeDepthRatio);
   const displayCm = measurementMode === "side-depth" ? row.formulaWidthCm : row.guidedCm;
   const targetAccuracyPct = targetCm && targetCm > 0
     ? clamp(100 - (Math.abs(displayCm - targetCm) / targetCm) * 100, 0, 100)
     : null;
+  const tableEstimate = measurementMode === "circumference" ? row.depthRatioTable : null;
+  const formulaErrorCm = targetCm && targetCm > 0 ? row.guidedCm - targetCm : null;
+  const tableErrorCm = targetCm && targetCm > 0 && tableEstimate ? tableEstimate.guidedCm - targetCm : null;
+  const closerLabel = formulaErrorCm == null || tableErrorCm == null
+    ? null
+    : Math.abs(tableErrorCm) + 0.05 < Math.abs(formulaErrorCm)
+      ? "ANSUR table closer"
+      : Math.abs(formulaErrorCm) + 0.05 < Math.abs(tableErrorCm)
+        ? "current formula closer"
+        : "tie";
+  const ratioDecision = row.depthSource === "depth-ratio-table"
+    ? `table ${row.depthRatio.toFixed(3)} active`
+    : row.depthSource === "manual-depth-ratio"
+      ? `manual ${row.depthRatio.toFixed(3)} active`
+      : `${row.depthSource} active`;
   const looseEdge = row.edgeTrust === "loose-clothing-untrusted";
 
   return (
@@ -1323,6 +1578,17 @@ function ManualRealtimeRow({
             />
             {row.shapeExponent == null ? null : <MiniStat label="Shape n" value={row.shapeExponent.toFixed(3)} />}
             {row.shapeFlareRatio == null ? null : <MiniStat label="Shape index" value={row.shapeFlareRatio.toFixed(3)} />}
+            {tableEstimate ? (
+              <>
+                <MiniStat label="Table ratio" value={tableEstimate.table.depthRatio.toFixed(3)} />
+                <MiniStat label="ANSUR range" value={`${tableEstimate.rangeMin.toFixed(3)}–${tableEstimate.rangeMax.toFixed(3)}`} />
+                <MiniStat label="Source-ratio status" value={formatDepthTableRangeStatus(tableEstimate.rangeStatus)} />
+                <MiniStat label="Table depth" value={`${tableEstimate.depthCm.toFixed(1)} cm`} />
+                <MiniStat label="Table result" value={`${tableEstimate.guidedCm.toFixed(1)} cm`} />
+                <MiniStat label="ANSUR band" value={tableEstimate.table.bmiBand} />
+                <MiniStat label="ANSUR shape" value={formatDepthTableShape(tableEstimate.table.bodyShape)} />
+              </>
+            ) : null}
           </>
         ) : null}
         {row.sideDepthCandidateCm == null ? null : (
@@ -1335,7 +1601,9 @@ function ManualRealtimeRow({
         )}
         {measurementMode === "circumference" ? (
           <>
-            <MiniStat label="Formula ratio" value={row.baseDepthRatio.toFixed(3)} />
+            <MiniStat label="Raw/source ratio" value={row.baseDepthRatio.toFixed(3)} />
+            {row.depthRatioOverride == null ? null : <MiniStat label="Manual ratio input" value={row.depthRatioOverride.toFixed(3)} />}
+            <MiniStat label="Ratio decision" value={ratioDecision} />
             <MiniStat label="Depth source" value={row.depthSource} />
           </>
         ) : null}
@@ -1375,8 +1643,12 @@ function ManualRealtimeRow({
             Reset
           </button>
           <div className={`${compact ? "col-span-3 text-[10px]" : "col-span-3 text-[11px]"} font-mono text-text-secondary`}>
-            override {overrideValue == null ? "off" : overrideValue.toFixed(3)} · allowed {bounds.min.toFixed(2)}-{bounds.max.toFixed(2)}
+            override {overrideValue == null ? "off; table active" : `${overrideValue.toFixed(3)} active; reset returns to table`} · allowed {bounds.min.toFixed(2)}-{bounds.max.toFixed(2)}
           </div>
+        </div>
+      ) : usesTableDepthSource && measurementMode === "circumference" ? (
+        <div className={`${compact ? "mt-2 p-1.5 text-[10px]" : "mt-3 p-2 text-[11px]"} rounded-md border border-amber-200 bg-amber-50 font-mono text-amber-900`}>
+          Ratio override disabled: depth is table-owned. To change this result, move red endpoints left/right so the active width changes.
         </div>
       ) : null}
       {measurementMode === "circumference" ? (
@@ -1389,6 +1661,34 @@ function ManualRealtimeRow({
           Side guide width = {row.formulaWidthCm.toFixed(1)} cm. This can be used as side depth by the front ellipse when side guide mode is active.
         </div>
       )}
+      {tableEstimate ? (
+        <div className={`${compact ? "mt-2 p-1.5 text-[10px] leading-snug" : "mt-3 p-2 text-[11px] leading-relaxed"} rounded-md border border-emerald-200 bg-emerald-50 font-mono text-emerald-950`}>
+          {row.depthSource === "manual-depth-ratio" ? (
+            <>
+              MANUAL OVERRIDE ACTIVE: slider ratio {row.depthRatio.toFixed(3)} is driving the result. Table ratio {tableEstimate.table.depthRatio.toFixed(3)} remains reference only.
+              <br />
+            </>
+          ) : (
+            <>
+              TABLE SOURCE ACTIVE: raw/source ratio {tableEstimate.formulaDepthRatio.toFixed(3)} is {formatDepthTableRangeStatus(tableEstimate.rangeStatus)}; active table ratio {tableEstimate.acceptedDepthRatio.toFixed(3)} from range {tableEstimate.rangeMin.toFixed(3)}–{tableEstimate.rangeMax.toFixed(3)}.
+              <br />
+            </>
+          )}
+          Table policy: upper-safe = median {tableEstimate.table.depthRatioMedian.toFixed(3)} + 75% toward P90 {tableEstimate.table.depthRatioP90.toFixed(3)}.
+          <br />
+          Line movement rule: active result changes from red endpoint left/right span. Moving this row up/down with the same X span does not change circumference.
+          <br />
+          ANSUR table: D = {row.formulaWidthCm.toFixed(1)} x {tableEstimate.table.depthRatio.toFixed(3)} = {tableEstimate.depthCm.toFixed(1)} cm; ellipse = {tableEstimate.guidedCm.toFixed(1)} cm
+          {targetCm && targetCm > 0 ? (
+            <>
+              <br />
+              target {targetCm.toFixed(1)} cm · formula error {formatSignedCmIn(row.guidedCm - targetCm)} · table error {formatSignedCmIn(tableEstimate.guidedCm - targetCm)} · {closerLabel}
+            </>
+          ) : null}
+          <br />
+          same row width + same active scale; this compares depth ratio only.
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -1424,12 +1724,56 @@ function formatWidthSource(source: GeminiGuideMeasurement["rows"][number]["formu
   return source;
 }
 
+function formatDepthTableShape(shape: NonNullable<GeminiGuideMeasurement["rows"][number]["depthRatioTable"]>["table"]["bodyShape"]): string {
+  if (shape === "curvy-hourglass") return "curvy/hourglass";
+  if (shape === "pear-hip-dominant") return "pear/hip";
+  if (shape === "athletic-inverted") return "athletic/inverted";
+  if (shape === "straight-round") return "straight/round";
+  return "average";
+}
+
+function formatDepthTableRangeStatus(status: NonNullable<GeminiGuideMeasurement["rows"][number]["depthRatioTable"]>["rangeStatus"]): string {
+  if (status === "table-fallback-low") return "below table range";
+  if (status === "table-fallback-high") return "above table range";
+  return "inside table range";
+}
+
 function formatSignedCmIn(valueCm: number): string {
   const sign = valueCm > 0 ? "+" : "";
   return `${sign}${valueCm.toFixed(1)} cm / ${sign}${(valueCm / 2.54).toFixed(1)} in`;
 }
 
-function ManualMeasurementTable({ measurement }: { measurement: GeminiGuideMeasurement }) {
+function targetForRow(
+  kind: GuideKind,
+  targetNaturalWaistCm?: number,
+  targetTrouserWaistCm?: number,
+  targetHipsCm?: number,
+): number | undefined {
+  if (kind === "waist") return targetNaturalWaistCm;
+  if (kind === "trouserWaist") return targetTrouserWaistCm;
+  return targetHipsCm;
+}
+
+function closerLabel(formulaCm: number, tableCm: number | null, targetCm?: number): string {
+  if (!targetCm || targetCm <= 0 || tableCm == null) return "n/a";
+  const formulaError = Math.abs(formulaCm - targetCm);
+  const tableError = Math.abs(tableCm - targetCm);
+  if (tableError + 0.05 < formulaError) return "ANSUR table";
+  if (formulaError + 0.05 < tableError) return "formula";
+  return "tie";
+}
+
+function ManualMeasurementTable({
+  measurement,
+  targetNaturalWaistCm,
+  targetTrouserWaistCm,
+  targetHipsCm,
+}: {
+  measurement: GeminiGuideMeasurement;
+  targetNaturalWaistCm?: number;
+  targetTrouserWaistCm?: number;
+  targetHipsCm?: number;
+}) {
   return (
     <div className="overflow-x-auto rounded-lg border border-red-200 bg-white">
       <table className="w-full text-left text-[11px]">
@@ -1445,33 +1789,60 @@ function ManualMeasurementTable({ measurement }: { measurement: GeminiGuideMeasu
             <th className="px-2 py-2 font-semibold">Side cand</th>
             <th className="px-2 py-2 font-semibold">Raw side</th>
             <th className="px-2 py-2 font-semibold">Depth src</th>
-            <th className="px-2 py-2 font-semibold">Result</th>
+            <th className="px-2 py-2 font-semibold">Active result</th>
+            <th className="px-2 py-2 font-semibold">Table source</th>
+            <th className="px-2 py-2 font-semibold">Target winner</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-red-100 font-mono text-text-primary">
-          {measurement.rows.map((row) => (
-            <tr key={row.kind}>
-              <td className="px-2 py-2 font-sans text-text-secondary">{row.kind}</td>
-              <td className="px-2 py-2">{row.yPx}</td>
-              <td className="px-2 py-2">{row.leftXPx}</td>
-              <td className="px-2 py-2">{row.rightXPx}</td>
-              <td className="px-2 py-2">{row.formulaWidthCm.toFixed(1)} cm</td>
-              <td className="px-2 py-2">{row.maskWidthCm == null ? "n/a" : `${row.maskWidthCm.toFixed(1)} cm`}</td>
-              <td className="px-2 py-2 font-sans text-text-secondary">{formatEdgeTrust(row.edgeTrust)}</td>
-              <td className="px-2 py-2">
-                {row.sideDepthCandidateCm == null
-                  ? "n/a"
-                  : `${row.sideDepthCandidateCm.toFixed(1)} cm / ${row.sideDepthCandidateRatio?.toFixed(3) ?? "n/a"} ${row.sideDepthAccepted ? "used" : "rejected"}`}
-              </td>
-              <td className="px-2 py-2">
-                {row.sideDepthRawCm == null
-                  ? "n/a"
-                  : `${row.sideDepthRawCm.toFixed(1)} cm / ${row.sideDepthRawRatio?.toFixed(3) ?? "n/a"} leak ${row.sideDepthProjectionLeakRatio?.toFixed(3) ?? "n/a"}`}
-              </td>
-              <td className="px-2 py-2 font-sans text-text-secondary">{row.depthSource}</td>
-              <td className="px-2 py-2">{row.guidedCm.toFixed(1)} cm</td>
-            </tr>
-          ))}
+          {measurement.rows.map((row) => {
+            const targetCm = targetForRow(row.kind, targetNaturalWaistCm, targetTrouserWaistCm, targetHipsCm);
+            return (
+              <tr key={row.kind}>
+                <td className="px-2 py-2 font-sans text-text-secondary">{row.kind}</td>
+                <td className="px-2 py-2">{row.yPx}</td>
+                <td className="px-2 py-2">{row.leftXPx}</td>
+                <td className="px-2 py-2">{row.rightXPx}</td>
+                <td className="px-2 py-2">{row.formulaWidthCm.toFixed(1)} cm</td>
+                <td className="px-2 py-2">{row.maskWidthCm == null ? "n/a" : `${row.maskWidthCm.toFixed(1)} cm`}</td>
+                <td className="px-2 py-2 font-sans text-text-secondary">{formatEdgeTrust(row.edgeTrust)}</td>
+                <td className="px-2 py-2">
+                  {row.sideDepthCandidateCm == null
+                    ? "n/a"
+                    : `${row.sideDepthCandidateCm.toFixed(1)} cm / ${row.sideDepthCandidateRatio?.toFixed(3) ?? "n/a"} ${row.sideDepthAccepted ? "used" : "rejected"}`}
+                </td>
+                <td className="px-2 py-2">
+                  {row.sideDepthRawCm == null
+                    ? "n/a"
+                    : `${row.sideDepthRawCm.toFixed(1)} cm / ${row.sideDepthRawRatio?.toFixed(3) ?? "n/a"} leak ${row.sideDepthProjectionLeakRatio?.toFixed(3) ?? "n/a"}`}
+                </td>
+                <td className="px-2 py-2 font-sans text-text-secondary">{row.depthSource}</td>
+                <td className="px-2 py-2">
+                  {row.guidedCm.toFixed(1)} cm
+                  {targetCm && targetCm > 0 ? <span className="block text-red-700">{formatSignedCmIn(row.guidedCm - targetCm)}</span> : null}
+                </td>
+                <td className="px-2 py-2">
+                  {row.depthRatioTable
+                    ? (
+                      <>
+                        {row.depthRatioTable.guidedCm.toFixed(1)} cm
+                        <span className="block text-text-secondary">
+                          r {row.depthRatioTable.table.depthRatio.toFixed(3)} · {formatDepthTableShape(row.depthRatioTable.table.bodyShape)}
+                        </span>
+                        <span className={row.depthRatioTable.rangeStatus === "inside" ? "block text-text-secondary" : "block font-semibold text-amber-700"}>
+                          source {formatDepthTableRangeStatus(row.depthRatioTable.rangeStatus)} · raw {row.depthRatioTable.formulaDepthRatio.toFixed(3)} → active {row.depthRatioTable.acceptedDepthRatio.toFixed(3)}
+                        </span>
+                        {targetCm && targetCm > 0 ? <span className="block text-emerald-700">{formatSignedCmIn(row.depthRatioTable.guidedCm - targetCm)}</span> : null}
+                      </>
+                    )
+                    : "n/a"}
+                </td>
+                <td className="px-2 py-2 font-sans text-text-secondary">
+                  {closerLabel(row.guidedCm, row.depthRatioTable?.guidedCm ?? null, targetCm)}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -1890,6 +2261,7 @@ function ManualGuideSvg({
   zoom,
   labelSuffix,
   onHandleDragStart,
+  onLineDragStart,
 }: {
   guide: GeminiBodyGuide;
   measurement: GeminiGuideMeasurement | null;
@@ -1898,10 +2270,13 @@ function ManualGuideSvg({
   zoom: number;
   labelSuffix: string;
   onHandleDragStart: (target: { kind: GuideKind; pointIndex: number }, event: SvgHandleDragEvent) => void;
+  onLineDragStart: (kind: GuideKind, event: SvgHandleDragEvent) => void;
 }) {
   const viewScale = Math.max(zoom, 1);
   const lineWidth = Math.max(5, imageWidth * 0.005) / viewScale;
+  const lineHitWidth = Math.max(34, imageWidth * 0.025) / viewScale;
   const hitRadius = Math.max(18, imageWidth * 0.018) / viewScale;
+  const endpointRadius = Math.max(4, imageWidth * 0.0035) / viewScale;
   const fontSize = Math.max(18, Math.round(imageWidth * 0.018)) / viewScale;
   const labelPadX = 6 / viewScale;
   const labelPadY = 14 / viewScale;
@@ -1969,10 +2344,23 @@ function ManualGuideSvg({
             <polyline
               points={redPoints.map((point) => `${point.x_px},${point.y_px}`).join(" ")}
               fill="none"
+              stroke="transparent"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={lineHitWidth}
+              pointerEvents="stroke"
+              onPointerDown={(event) => onLineDragStart(row.kind, event)}
+              onMouseDown={(event) => onLineDragStart(row.kind, event)}
+              style={{ cursor: "ew-resize", touchAction: "none" }}
+            />
+            <polyline
+              points={redPoints.map((point) => `${point.x_px},${point.y_px}`).join(" ")}
+              fill="none"
               stroke="#ef4444"
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={lineWidth}
+              pointerEvents="none"
             />
             {redPoints.map((point, index) => (
               <g key={`${row.kind}-${index}`}>
@@ -1985,6 +2373,15 @@ function ManualGuideSvg({
                   onMouseDown={(event) => onHandleDragStart({ kind: row.kind, pointIndex: index }, event)}
                   style={{ cursor: "grab", touchAction: "none" }}
                 />
+                <circle
+                  cx={point.x_px}
+                  cy={point.y_px}
+                  r={endpointRadius}
+                  fill="#ffffff"
+                  stroke="#dc2626"
+                  strokeWidth={Math.max(2, lineWidth * 0.45)}
+                  pointerEvents="none"
+                />
               </g>
             ))}
             <rect
@@ -1993,6 +2390,7 @@ function ManualGuideSvg({
               width={textWidth + (labelPadX * 2)}
               height={labelHeight}
               fill="rgba(255,255,255,0.88)"
+              pointerEvents="none"
             />
             <text
               x={textX}
@@ -2001,6 +2399,7 @@ function ManualGuideSvg({
               fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
               fontSize={fontSize}
               dominantBaseline="middle"
+              pointerEvents="none"
             >
               {label}
             </text>

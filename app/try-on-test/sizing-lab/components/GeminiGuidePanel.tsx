@@ -19,6 +19,9 @@ interface Props {
   title?: string;
   description?: string;
   sourceImageLabel?: string;
+  targetNaturalWaistCm?: number;
+  targetTrouserWaistCm?: number;
+  targetHipsCm?: number;
   responseDebug?: {
     rawText: string;
     returnedText: boolean;
@@ -67,6 +70,9 @@ export function GeminiGuidePanel({
   title = "Coordinate curve guide",
   description,
   sourceImageLabel = "Source image with active curved guide coordinates",
+  targetNaturalWaistCm,
+  targetTrouserWaistCm,
+  targetHipsCm,
   responseDebug,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -194,32 +200,61 @@ export function GeminiGuidePanel({
                   <th className="px-2 py-2 font-semibold">Depth src</th>
                   <th className="px-2 py-2 font-semibold">Depth ratio</th>
                   <th className="px-2 py-2 font-semibold">Depth cm</th>
+                  <th className="px-2 py-2 font-semibold">Active result</th>
+                  <th className="px-2 py-2 font-semibold">Table source</th>
+                  <th className="px-2 py-2 font-semibold">Target winner</th>
                   <th className="px-2 py-2 font-semibold">Row source</th>
                   <th className="px-2 py-2 font-semibold">Curve source</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-purple-100 font-mono text-text-primary">
-                {measurement.rows.map((row) => (
-                  <tr key={row.kind}>
-                    <td className="px-2 py-2 font-sans text-text-secondary">{row.kind}</td>
-                    <td className="px-2 py-2">{row.yPx}</td>
-                    <td className="px-2 py-2">{row.leftXPx}</td>
-                    <td className="px-2 py-2">{row.rightXPx}</td>
-                    <td className="px-2 py-2">{row.confidence.toFixed(2)}</td>
-                    <td className="px-2 py-2">{row.curveHorizontalCm.toFixed(1)}</td>
-                    <td className="px-2 py-2">{row.curveArcCm.toFixed(1)}</td>
-                    <td className="px-2 py-2">{formatSignedCm(row.curveArcDeltaCm)}</td>
-                    <td className="px-2 py-2 font-sans text-text-secondary">{row.depthSource}</td>
-                    <td className="px-2 py-2">{row.depthRatio.toFixed(3)}</td>
-                    <td className="px-2 py-2">{row.depthCm.toFixed(1)}</td>
-                    <td className="px-2 py-2 font-sans text-text-secondary">
-                      {formatGuideRowSource(row.rowSource)}
-                    </td>
-                    <td className="px-2 py-2 font-sans text-text-secondary">
-                      {formatGuideEndpointSource(row)}
-                    </td>
-                  </tr>
-                ))}
+                {measurement.rows.map((row) => {
+                  const targetCm = targetForRow(row.kind, targetNaturalWaistCm, targetTrouserWaistCm, targetHipsCm);
+                  return (
+                    <tr key={row.kind}>
+                      <td className="px-2 py-2 font-sans text-text-secondary">{row.kind}</td>
+                      <td className="px-2 py-2">{row.yPx}</td>
+                      <td className="px-2 py-2">{row.leftXPx}</td>
+                      <td className="px-2 py-2">{row.rightXPx}</td>
+                      <td className="px-2 py-2">{row.confidence.toFixed(2)}</td>
+                      <td className="px-2 py-2">{row.curveHorizontalCm.toFixed(1)}</td>
+                      <td className="px-2 py-2">{row.curveArcCm.toFixed(1)}</td>
+                      <td className="px-2 py-2">{formatSignedCm(row.curveArcDeltaCm)}</td>
+                      <td className="px-2 py-2 font-sans text-text-secondary">{row.depthSource}</td>
+                      <td className="px-2 py-2">{row.depthRatio.toFixed(3)}</td>
+                      <td className="px-2 py-2">{row.depthCm.toFixed(1)}</td>
+                      <td className="px-2 py-2">
+                        {row.guidedCm.toFixed(1)} cm
+                        {targetCm && targetCm > 0 ? <span className="block text-red-700">{formatSignedCm(row.guidedCm - targetCm)}</span> : null}
+                      </td>
+                      <td className="px-2 py-2">
+                        {row.depthRatioTable
+                          ? (
+                            <>
+                              {row.depthRatioTable.guidedCm.toFixed(1)} cm
+                              <span className="block text-text-secondary">
+                                r {row.depthRatioTable.table.depthRatio.toFixed(3)} · {formatDepthTableShape(row.depthRatioTable.table.bodyShape)}
+                              </span>
+                              <span className={row.depthRatioTable.rangeStatus === "inside" ? "block text-text-secondary" : "block font-semibold text-amber-700"}>
+                                source {formatDepthTableRangeStatus(row.depthRatioTable.rangeStatus)} · raw {row.depthRatioTable.formulaDepthRatio.toFixed(3)} → active {row.depthRatioTable.acceptedDepthRatio.toFixed(3)}
+                              </span>
+                              {targetCm && targetCm > 0 ? <span className="block text-emerald-700">{formatSignedCm(row.depthRatioTable.guidedCm - targetCm)}</span> : null}
+                            </>
+                          )
+                          : "n/a"}
+                      </td>
+                      <td className="px-2 py-2 font-sans text-text-secondary">
+                        {closerLabel(row.guidedCm, row.depthRatioTable?.guidedCm ?? null, targetCm)}
+                      </td>
+                      <td className="px-2 py-2 font-sans text-text-secondary">
+                        {formatGuideRowSource(row.rowSource)}
+                      </td>
+                      <td className="px-2 py-2 font-sans text-text-secondary">
+                        {formatGuideEndpointSource(row)}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -411,6 +446,40 @@ function formatCandidateNumber(value: number | undefined, digits = 0): string {
 
 function formatSignedCm(value: number): string {
   return `${value > 0 ? "+" : ""}${value.toFixed(1)}`;
+}
+
+function targetForRow(
+  kind: GeminiGuideMeasurement["rows"][number]["kind"],
+  targetNaturalWaistCm?: number,
+  targetTrouserWaistCm?: number,
+  targetHipsCm?: number,
+): number | undefined {
+  if (kind === "waist") return targetNaturalWaistCm;
+  if (kind === "trouserWaist") return targetTrouserWaistCm;
+  return targetHipsCm;
+}
+
+function closerLabel(formulaCm: number, tableCm: number | null, targetCm?: number): string {
+  if (!targetCm || targetCm <= 0 || tableCm == null) return "n/a";
+  const formulaError = Math.abs(formulaCm - targetCm);
+  const tableError = Math.abs(tableCm - targetCm);
+  if (tableError + 0.05 < formulaError) return "ANSUR table";
+  if (formulaError + 0.05 < tableError) return "formula";
+  return "tie";
+}
+
+function formatDepthTableShape(shape: NonNullable<GeminiGuideMeasurement["rows"][number]["depthRatioTable"]>["table"]["bodyShape"]): string {
+  if (shape === "curvy-hourglass") return "curvy/hourglass";
+  if (shape === "pear-hip-dominant") return "pear/hip";
+  if (shape === "athletic-inverted") return "athletic/inverted";
+  if (shape === "straight-round") return "straight/round";
+  return "average";
+}
+
+function formatDepthTableRangeStatus(status: NonNullable<GeminiGuideMeasurement["rows"][number]["depthRatioTable"]>["rangeStatus"]): string {
+  if (status === "table-fallback-low") return "below table range";
+  if (status === "table-fallback-high") return "above table range";
+  return "inside table range";
 }
 
 function slugifyFileName(value: string): string {

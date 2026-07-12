@@ -188,6 +188,7 @@ function formatGuideDepthSource(source: GeminiGuideMeasurementRow["depthSource"]
   if (source === "side-guide-manual-coordinate") return "side guide manual coordinate";
   if (source === "manual-tape-front-formula") return "manual tape front formula";
   if (source === "manual-depth-ratio") return "manual depth ratio";
+  if (source === "depth-ratio-table") return "depth-ratio table";
   return "front formula";
 }
 

@@ -199,6 +199,26 @@ const EXTRA_ROWS = [
     frontImageUrl: "/try-on-test/sizing-lab/delaram-front.jpg",
     sideImageUrl: "/try-on-test/sizing-lab/delaram-side.jpg",
   },
+  {
+    setId: "shane",
+    label: "Shane · male · 171.2 cm · 73.48 kg",
+    gender: "male" as const,
+    heightCm: 171.2,
+    weightKg: 73.48,
+    age: 0,
+    chestCm: 0,
+    waistCm: 94,
+    waistTarget: "natural" as const,
+    trouserWaistCm: 95,
+    stomachCm: 102,
+    hipsCm: 103.5,
+    pelvisCm: 95,
+    underChestCm: 0,
+    cup: null,
+    bra: null,
+    frontImageUrl: "/try-on-test/sizing-lab/shane-front.jpg",
+    sideImageUrl: "/try-on-test/sizing-lab/shane-side.jpg",
+  },
 ];
 
 export async function GET() {

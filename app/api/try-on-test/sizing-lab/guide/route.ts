@@ -169,12 +169,12 @@ export async function POST(request: NextRequest) {
     }
     const timingPayload = () => buildTimingPayload(startedAt, prepareMs, geminiRoundTripMs, redDetectMs);
     const outputImage = annotatedImage ? await buildOutputImageDebug(annotatedImage) : null;
-    if (isImageGuideModel(model) && !guideFromImage) {
+    if (isImageGuideModel(model) && !guideFromImage && !guideFromText) {
       return NextResponse.json({
         ok: false,
         error: annotatedImage
-          ? `Guide image model returned an image, but the lab did not find the required three waist/trouser-waist/hip red curves after ${MAX_GUIDE_IMAGE_ATTEMPTS} attempt(s). JSON is shown only as debug and was not used for measurement.`
-          : `Guide image model did not return a usable annotated image after ${MAX_GUIDE_IMAGE_ATTEMPTS} attempt(s). JSON is shown only as debug and was not used for measurement.`,
+          ? `Guide image model returned an image, but the lab did not find the required three waist/trouser-waist/hip red curves after ${MAX_GUIDE_IMAGE_ATTEMPTS} attempt(s), and no usable JSON coordinates were returned.`
+          : `Guide image model did not return a usable annotated image after ${MAX_GUIDE_IMAGE_ATTEMPTS} attempt(s), and no usable JSON coordinates were returned.`,
         rawText: rawText.slice(0, 2000),
         guideImageDataUrl: annotatedImage ? `data:${annotatedImage.mimeType};base64,${annotatedImage.base64}` : null,
         gridImageDataUrl: griddedOriginal ? `data:${griddedOriginal.mimeType};base64,${griddedOriginal.base64}` : null,
@@ -194,7 +194,10 @@ export async function POST(request: NextRequest) {
         },
       }, { status: 502 });
     }
-    const mergedGuide = mergeGuideSources(guideFromImage, guideFromText);
+    const usedImageJsonFallback = isImageGuideModel(model) && !guideFromImage && Boolean(guideFromText);
+    const mergedGuide = usedImageJsonFallback && guideFromText
+      ? { guide: guideFromText, source: "gemini-json-red-pixel-fallback" }
+      : mergeGuideSources(guideFromImage, guideFromText);
     if (!mergedGuide) {
       return NextResponse.json({
         ok: false,
@@ -230,6 +233,9 @@ export async function POST(request: NextRequest) {
       promptPreview,
       outputImage,
       guideSource: mergedGuide.source,
+      warning: usedImageJsonFallback
+        ? `Red-pixel detector did not find three valid curves in the returned image after ${MAX_GUIDE_IMAGE_ATTEMPTS} attempt(s). Using Gemini JSON coordinates as fallback.`
+        : null,
       returnedText: Boolean(rawText.trim()),
       returnedImage: Boolean(annotatedImage),
       gridImageDataUrl: griddedOriginal ? `data:${griddedOriginal.mimeType};base64,${griddedOriginal.base64}` : null,
