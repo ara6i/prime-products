@@ -1251,27 +1251,42 @@ function getGeminiApiKey(): string {
     "";
   if (direct) return direct;
 
-  const backendEnvPath = path.resolve(process.cwd(), "../primeStyleAI-backend/.env");
-  if (!existsSync(backendEnvPath)) return "";
-  const parsed = parseEnvFile(readFileSync(backendEnvPath, "utf8"));
-  return (
-    parsed.SIZING_LAB_GEMINI_API_KEY ||
-    parsed.TEST_LAB_GOOGLE_API_KEY ||
-    parsed.TEST_LAB_GEMINI_API_KEY ||
-    parsed.GEMINI_API_KEY ||
-    parsed.GOOGLE_API_KEY ||
-    ""
-  );
+  return getKeyFromBackendEnv([
+    "SIZING_LAB_GEMINI_API_KEY",
+    "TEST_LAB_GOOGLE_API_KEY",
+    "TEST_LAB_GEMINI_API_KEY",
+    "GEMINI_API_KEY",
+    "GOOGLE_API_KEY",
+  ]);
 }
 
 function getOpenAiApiKey(): string {
   const direct = process.env.OPENAI_API_KEY || process.env.SIZING_LAB_OPENAI_API_KEY || "";
   if (direct) return direct;
 
-  const backendEnvPath = path.resolve(process.cwd(), "../primeStyleAI-backend/.env");
-  if (!existsSync(backendEnvPath)) return "";
-  const parsed = parseEnvFile(readFileSync(backendEnvPath, "utf8"));
-  return parsed.OPENAI_API_KEY || parsed.SIZING_LAB_OPENAI_API_KEY || "";
+  return getKeyFromBackendEnv(["OPENAI_API_KEY", "SIZING_LAB_OPENAI_API_KEY"]);
+}
+
+function getKeyFromBackendEnv(keys: string[]): string {
+  for (const backendEnvPath of getBackendEnvPaths()) {
+    if (!existsSync(backendEnvPath)) continue;
+    const parsed = parseEnvFile(readFileSync(backendEnvPath, "utf8"));
+    for (const key of keys) {
+      const value = parsed[key];
+      if (value) return value;
+    }
+  }
+  return "";
+}
+
+function getBackendEnvPaths(): string[] {
+  return [
+    process.env.SIZING_LAB_BACKEND_ENV_PATH,
+    process.env.PRIMESTYLE_BACKEND_ENV_PATH,
+    "/var/www/test-be-9a7k.primestyleai.com/.env",
+    path.resolve(process.cwd(), "../primeStyleAI-backend/.env"),
+    path.resolve(process.cwd(), "../test-be-9a7k.primestyleai.com/.env"),
+  ].filter((value): value is string => Boolean(value));
 }
 
 function extractOpenAiError(payload: unknown): string {
