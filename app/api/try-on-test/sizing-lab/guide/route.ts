@@ -32,7 +32,8 @@ const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
 const MAX_PROMPT_CHARS = 8000;
 const MAX_LANDMARKS = 33;
 const LINE_DETECTION_CONFIDENCE = 0.9;
-const MAX_GUIDE_IMAGE_ATTEMPTS = 3;
+const MAX_GUIDE_IMAGE_ATTEMPTS = 1;
+const DEFAULT_GEMINI_GUIDE_TIMEOUT_MS = 45_000;
 
 interface GuideModelResult {
   text: string;
@@ -286,23 +287,32 @@ async function callGeminiGuide(args: {
     throw new Error("Missing Gemini key. Set SIZING_LAB_GEMINI_API_KEY, TEST_LAB_GEMINI_API_KEY, GEMINI_API_KEY, or GOOGLE_API_KEY.");
   }
   const ai = new GoogleGenAI({ apiKey });
+  const timeoutMs = getGeminiGuideTimeoutMs();
   if (args.model.includes("-image")) {
-    const response = await ai.models.generateContent({
-      model: args.model,
-      contents: buildContents(args.original, args.gridded, buildImageAndJsonGuidePrompt(args.prompt), args.body),
-      config: buildImageConfig(args.model),
-    });
+    const response = await withTimeout(
+      ai.models.generateContent({
+        model: args.model,
+        contents: buildContents(args.original, args.gridded, buildImageAndJsonGuidePrompt(args.prompt), args.body),
+        config: buildImageConfig(args.model),
+      }),
+      timeoutMs,
+      "Gemini curve guide",
+    );
     return {
       text: response.text ?? "",
       annotatedImage: extractGeminiInlineImage(response),
     };
   }
 
-  const response = await ai.models.generateContent({
-    model: args.model,
-    contents: buildContents(args.original, args.gridded, args.prompt, args.body),
-    config: buildConfig(args.model),
-  });
+  const response = await withTimeout(
+    ai.models.generateContent({
+      model: args.model,
+      contents: buildContents(args.original, args.gridded, args.prompt, args.body),
+      config: buildConfig(args.model),
+    }),
+    timeoutMs,
+    "Gemini coordinate guide",
+  );
   return {
     text: response.text ?? "",
     annotatedImage: extractGeminiInlineImage(response),
@@ -337,15 +347,39 @@ async function callGeminiGuideImageOnly(args: {
     throw new Error("Missing Gemini key. Set SIZING_LAB_GEMINI_API_KEY, TEST_LAB_GEMINI_API_KEY, GEMINI_API_KEY, or GOOGLE_API_KEY.");
   }
   const ai = new GoogleGenAI({ apiKey });
-  const response = await ai.models.generateContent({
-    model: args.model,
-    contents: buildContents(args.original, args.gridded, buildImageOnlyGuidePrompt(args.prompt), args.body),
-    config: buildImageConfig(args.model),
-  });
+  const response = await withTimeout(
+    ai.models.generateContent({
+      model: args.model,
+      contents: buildContents(args.original, args.gridded, buildImageOnlyGuidePrompt(args.prompt), args.body),
+      config: buildImageConfig(args.model),
+    }),
+    getGeminiGuideTimeoutMs(),
+    "Gemini curve guide image retry",
+  );
   return {
     text: response.text ?? "",
     annotatedImage: extractGeminiInlineImage(response),
   };
+}
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`${label} timed out after ${Math.round(timeoutMs / 1000)}s.`)), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+function getGeminiGuideTimeoutMs(): number {
+  const requested = Number(process.env.SIZING_LAB_GEMINI_GUIDE_TIMEOUT_MS);
+  if (Number.isFinite(requested) && requested >= 5_000 && requested <= 120_000) return requested;
+  return DEFAULT_GEMINI_GUIDE_TIMEOUT_MS;
 }
 
 async function callGuideImageOnly(args: {
