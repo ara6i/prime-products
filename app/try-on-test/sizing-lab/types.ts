@@ -57,6 +57,20 @@ export interface PoseResult {
   maskLabels?: string[];
 }
 
+export interface MaskHeightScaleAudit {
+  cmPerPx: number;
+  heightCm: number;
+  topYNorm: number;
+  bottomYNorm: number;
+  leftXNorm: number;
+  rightXNorm: number;
+  centerXNorm: number;
+  bodySpanPx: number;
+  threshold: number;
+  imageWidth: number;
+  imageHeight: number;
+}
+
 export interface WaistInputs {
   metrics: MetricsInput;
   pose: PoseResult;
@@ -88,8 +102,12 @@ export interface WaistTrace {
   maskMode: MeasurementMaskMode;
 
   /** Scale */
+  scaleSource?: "mask-height" | "pose-landmarks";
+  frontHeightScaleAudit?: MaskHeightScaleAudit;
   noseToAnkleNormY: number;
   cmPerPx: number;
+  sideScaleSource?: "mask-height" | "pose-landmarks";
+  sideHeightScaleAudit?: MaskHeightScaleAudit;
   sideNoseToAnkleNormY?: number;
   sideCmPerPx?: number;
   sideImageWidth?: number;

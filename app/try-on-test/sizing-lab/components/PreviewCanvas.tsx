@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { MeasurementMaskMode, PoseResult } from "../types";
+import type { MaskHeightScaleAudit, MeasurementMaskMode, PoseResult } from "../types";
 import { POSE_IDX } from "../lib/poseDetector";
 import { createMeasurementMask } from "../lib/bodyMaskGeometry";
 
@@ -13,6 +13,7 @@ interface Props {
   showMask: boolean;
   showLandmarks: boolean;
   maskMode?: MeasurementMaskMode;
+  heightAudit?: MaskHeightScaleAudit | null;
 }
 
 /**
@@ -30,6 +31,7 @@ export function PreviewCanvas({
   showMask,
   showLandmarks,
   maskMode = "raw",
+  heightAudit = null,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -50,10 +52,11 @@ export function PreviewCanvas({
         showMask,
         showLandmarks,
         maskMode,
+        heightAudit,
       });
     };
     void draw();
-  }, [imageUrl, imageWidth, imageHeight, pose, showMask, showLandmarks, maskMode]);
+  }, [imageUrl, imageWidth, imageHeight, pose, showMask, showLandmarks, maskMode, heightAudit]);
 
   return (
     <div className="space-y-2">
@@ -94,6 +97,7 @@ async function drawPoseOverlay(
     showMask,
     showLandmarks,
     maskMode,
+    heightAudit,
   }: {
     imageUrl: string;
     imageWidth: number;
@@ -102,6 +106,7 @@ async function drawPoseOverlay(
     showMask: boolean;
     showLandmarks: boolean;
     maskMode: MeasurementMaskMode;
+    heightAudit: MaskHeightScaleAudit | null;
   },
 ) {
   ctx.clearRect(0, 0, imageWidth, imageHeight);
@@ -136,6 +141,10 @@ async function drawPoseOverlay(
       maskContext.putImageData(imgData, 0, 0);
       ctx.drawImage(maskCanvas, 0, 0, imageWidth, imageHeight);
     }
+  }
+
+  if (heightAudit) {
+    drawMaskHeightAudit(ctx, heightAudit, imageWidth, imageHeight);
   }
 
   if (showLandmarks && pose?.landmarks?.length) {
@@ -188,4 +197,54 @@ async function drawPoseOverlay(
       ctx.stroke();
     }
   }
+}
+
+function drawMaskHeightAudit(
+  ctx: CanvasRenderingContext2D,
+  audit: MaskHeightScaleAudit,
+  imageWidth: number,
+  imageHeight: number,
+) {
+  const topY = audit.topYNorm * imageHeight;
+  const bottomY = audit.bottomYNorm * imageHeight;
+  const x = audit.centerXNorm * imageWidth;
+  const leftX = audit.leftXNorm * imageWidth;
+  const rightX = audit.rightXNorm * imageWidth;
+  const lineWidth = Math.max(2, imageWidth * 0.003);
+  ctx.save();
+  ctx.strokeStyle = "#facc15";
+  ctx.fillStyle = "#facc15";
+  ctx.lineWidth = lineWidth;
+  ctx.setLineDash([Math.max(8, imageWidth * 0.01), Math.max(6, imageWidth * 0.006)]);
+  ctx.beginPath();
+  ctx.moveTo(x, topY);
+  ctx.lineTo(x, bottomY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(leftX, topY);
+  ctx.lineTo(rightX, topY);
+  ctx.moveTo(leftX, bottomY);
+  ctx.lineTo(rightX, bottomY);
+  ctx.stroke();
+  for (const y of [topY, bottomY]) {
+    ctx.beginPath();
+    ctx.arc(x, y, Math.max(5, imageWidth * 0.006), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(0,0,0,0.65)";
+    ctx.lineWidth = Math.max(1, imageWidth * 0.0015);
+    ctx.stroke();
+    ctx.strokeStyle = "#facc15";
+    ctx.lineWidth = lineWidth;
+  }
+  const label = `mask height ${Math.round(topY)}-${Math.round(bottomY)}px · ${audit.bodySpanPx.toFixed(1)}px`;
+  ctx.font = `${Math.max(11, imageWidth * 0.014)}px ui-monospace, SFMono-Regular, Menlo, monospace`;
+  const metrics = ctx.measureText(label);
+  const labelX = Math.min(Math.max(6, x + 10), Math.max(6, imageWidth - metrics.width - 14));
+  const labelY = Math.max(20, topY + 24);
+  ctx.fillStyle = "rgba(0,0,0,0.72)";
+  ctx.fillRect(labelX - 5, labelY - 15, metrics.width + 10, 21);
+  ctx.fillStyle = "#facc15";
+  ctx.fillText(label, labelX, labelY);
+  ctx.restore();
 }

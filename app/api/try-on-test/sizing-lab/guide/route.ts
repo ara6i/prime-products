@@ -14,7 +14,13 @@ import { isSiteAuthEnabled, SITE_AUTH_COOKIE_NAME, verifySiteSessionToken } from
 import { isTestLabAvailableForHost } from "@/app/try-on-test/lib/access";
 import {
   DEFAULT_SIZING_LAB_GEMINI_GUIDE_PROMPT,
+  DEFAULT_SIZING_LAB_GEMINI_SIDE_GUIDE_PROMPT,
+  NEGAR_2_METER_ROW_GEMINI_GUIDE_PROMPT,
+  NEGAR_2_METER_ROW_GEMINI_GUIDE_PROMPT_VERSION,
+  NEGAR_4_METER_ROW_GEMINI_GUIDE_PROMPT,
+  NEGAR_4_METER_ROW_GEMINI_GUIDE_PROMPT_VERSION,
   SIZING_LAB_GEMINI_GUIDE_PROMPT_VERSION,
+  SIZING_LAB_GEMINI_SIDE_GUIDE_PROMPT_VERSION,
   type GeminiBodyGuide,
 } from "@/app/try-on-test/sizing-lab/lib/geminiGuide";
 
@@ -37,6 +43,8 @@ interface GuideRequestBody {
   imageDataUrl?: string;
   model?: string;
   prompt?: string;
+  guideMode?: "front" | "side";
+  datasetSetId?: string;
   imageWidth?: number;
   imageHeight?: number;
   inputImageWidth?: number;
@@ -78,10 +86,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "Image is too large for Gemini curve guide." }, { status: 413 });
   }
 
-  const prompt = resolvePrompt(body.prompt);
-  if (!prompt) {
+  const promptIsCustom = typeof body.prompt === "string" && body.prompt.trim().length > 0;
+  const basePrompt = resolvePrompt(body.prompt, body.guideMode);
+  if (!basePrompt) {
     return NextResponse.json({ ok: false, error: `Gemini guide prompt must be ${MAX_PROMPT_CHARS} characters or less.` }, { status: 400 });
   }
+  const promptOverride = promptIsCustom ? null : resolveDatasetPromptOverride(body);
+  const prompt = promptOverride ? promptOverride.prompt : basePrompt;
+  if (prompt.length > MAX_PROMPT_CHARS) {
+    return NextResponse.json({ ok: false, error: `Gemini guide prompt must be ${MAX_PROMPT_CHARS} characters or less.` }, { status: 400 });
+  }
+  const basePromptSource = promptIsCustom ? "custom" : body.guideMode === "side" ? "side-default" : "default";
+  const basePromptVersion = promptIsCustom ? "custom" : resolvePromptVersion(body.guideMode);
+  const promptSource = promptOverride ? promptOverride.source : basePromptSource;
+  const promptVersion = promptOverride ? promptOverride.version : basePromptVersion;
 
   const startedAt = performance.now();
   let prepareMs = 0;
@@ -149,6 +167,7 @@ export async function POST(request: NextRequest) {
       }
     }
     const timingPayload = () => buildTimingPayload(startedAt, prepareMs, geminiRoundTripMs, redDetectMs);
+    const outputImage = annotatedImage ? await buildOutputImageDebug(annotatedImage) : null;
     if (isImageGuideModel(model) && !guideFromImage) {
       return NextResponse.json({
         ok: false,
@@ -161,9 +180,10 @@ export async function POST(request: NextRequest) {
         returnedText: Boolean(rawText.trim()),
         returnedImage: Boolean(annotatedImage),
         guideSource: "red-pixel-detector-failed",
-        promptSource: typeof body.prompt === "string" && body.prompt.trim() ? "custom" : "default",
-        promptVersion: typeof body.prompt === "string" && body.prompt.trim() ? "custom" : SIZING_LAB_GEMINI_GUIDE_PROMPT_VERSION,
+        promptSource,
+        promptVersion,
         promptPreview,
+        outputImage,
         geminiMs: Math.round(performance.now() - startedAt),
         timings: timingPayload(),
         inputImage: buildServerInputImageDebug(geminiInputImage, body),
@@ -186,9 +206,10 @@ export async function POST(request: NextRequest) {
         returnedText: Boolean(rawText.trim()),
         returnedImage: Boolean(annotatedImage),
         guideSource: annotatedImage ? "red-pixel-detector-failed" : "gemini-json-failed",
-        promptSource: typeof body.prompt === "string" && body.prompt.trim() ? "custom" : "default",
-        promptVersion: typeof body.prompt === "string" && body.prompt.trim() ? "custom" : SIZING_LAB_GEMINI_GUIDE_PROMPT_VERSION,
+        promptSource,
+        promptVersion,
         promptPreview,
+        outputImage,
         geminiMs: Math.round(performance.now() - startedAt),
         timings: timingPayload(),
         inputImage: buildServerInputImageDebug(geminiInputImage, body),
@@ -203,9 +224,10 @@ export async function POST(request: NextRequest) {
       guide: mergedGuide.guide,
       rawText,
       model,
-      promptSource: typeof body.prompt === "string" && body.prompt.trim() ? "custom" : "default",
-      promptVersion: typeof body.prompt === "string" && body.prompt.trim() ? "custom" : SIZING_LAB_GEMINI_GUIDE_PROMPT_VERSION,
+      promptSource,
+      promptVersion,
       promptPreview,
+      outputImage,
       guideSource: mergedGuide.source,
       returnedText: Boolean(rawText.trim()),
       returnedImage: Boolean(annotatedImage),
@@ -292,7 +314,9 @@ function buildImageAndJsonGuidePrompt(coordinatePrompt: string): string {
     "Single-response image annotation plus coordinate task.",
     "Return both outputs in this same response:",
     "1. An edited version of the grid overlay image with exactly three thick red curved lines.",
-    "2. JSON text with waist, trouserWaist, and hips coordinates for those exact same red curves.",
+    "2. JSON text with coordinates for those exact same red curves, using the keys requested by the coordinate task context.",
+    "If the coordinate task context requests line 1, line 2, and line 3 keys, use those exact keys.",
+    "If the coordinate task context specifies exact grid y_px rows, those exact rows override MediaPipe landmarks and anatomical guesses.",
     "Do not return image-only. Do not return JSON-only unless the model is technically unable to return an image.",
     "The JSON points must sit on the red pixels you draw. If they disagree, the response is wrong.",
     "Use the grid overlay image sent-pixel coordinates, not original camera pixels.",
@@ -344,18 +368,13 @@ function buildImageOnlyGuidePrompt(coordinatePrompt: string): string {
   return [
     "Image annotation task. Return an annotated IMAGE of the grid overlay image. JSON-only text is not acceptable for this pass.",
     "Before drawing, use the source photo to locate the body, then draw on the grid overlay image.",
-    "Draw exactly three thick curved red guide lines on the grid overlay image only:",
-    "1. waist = the narrowest part. Check the body where it is the narrowest.",
-    "2. trouserWaist = where the body should wear belt. Use the trouser belt/waistband/top opening position.",
-    "3. hips = the widest part of ass. Use the maximum ass/seat/hip width, not crotch or thigh width.",
-    "Each red curve must run from the real left body edge to the real right body edge at that level. Do not draw short center segments.",
-    "Ignore arms, hands, shadows, labels, grid lines, loose garment flare, and background. If fitted black clothing covers the body, estimate the body edge under the clothing.",
-    "Use the trouser waistband only for trouserWaist, not for waist. Do not use random compression wrinkles as measurement rows.",
-    "Do not invent or follow any centimeter distance. Choose rows by visible anatomy/clothing meaning only.",
+    "Draw exactly the three red guide curves defined by the coordinate task context below.",
+    "The coordinate task context defines whether this is a front guide or side-profile depth guide.",
+    "Do not add labels, arrows, dots, helper lines, masks, measurements, or extra colored marks.",
     "Preserve the grid overlay image content. Do not crop, gray out, recolor, blur, mask, or remove the person/grid; only add the three red curves.",
     "Do not return only text. The response must include the edited grid overlay image with the red curves.",
     "",
-    "Coordinate task context from the normal prompt, for row definitions only:",
+    "Coordinate task context:",
     coordinatePrompt,
   ].join("\n");
 }
@@ -481,15 +500,14 @@ function buildOpenAiImageGuidePrompt(coordinatePrompt: string, body: GuideReques
     "Image 2 = the same source photo with the pixel grid overlay. Return an edited version of Image 2.",
     "If only one image is present, use that image for both visual reading and the output image.",
     "Preserve the grid overlay image content. Do not crop, gray out, recolor, blur, mask, remove, or redraw the person/grid.",
-    "Only add exactly three thick red curved guide lines:",
-    "1. waist = the narrowest part. Check the body where it is the narrowest.",
-    "2. trouserWaist = where the body should wear belt. Use the trouser belt/waistband/top opening position.",
-    "3. hips = the widest part of ass. Use the maximum ass/seat/hip width, not crotch or thigh width.",
-    "Each red curve must run from the real left body edge to the real right body edge at that level. Do not draw short center segments.",
+    "Only add exactly the three thick red curved guide lines defined by the coordinate task context below.",
+    "The coordinate task context defines whether this is a front guide or side-profile depth guide.",
     "Do not add text labels, arrows, dots, masks, helper lines, measurements, or extra colored marks.",
-    "Do not invent or follow any centimeter target. Choose rows by visible anatomy/clothing meaning only.",
+    "If the coordinate task context specifies exact grid rows or tape marks, use those exact rows.",
+    "Exact grid rows override MediaPipe landmarks and anatomical guesses.",
+    "Otherwise, choose rows by visible anatomy/clothing meaning only.",
     "",
-    "Coordinate context is included only to explain scale and landmarks. The measurement will come from red pixels in your returned image.",
+    "Coordinate context is included only to explain scale and the requested rows. The measurement will come from red pixels in your returned image.",
     formatGuideContext(body),
     "",
     coordinatePrompt,
@@ -615,11 +633,42 @@ function buildGridSvg(width: number, height: number): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${lines.join("")}</svg>`;
 }
 
-function resolvePrompt(requestedPrompt?: string): string | null {
+function resolveDefaultPrompt(mode?: GuideRequestBody["guideMode"]): string {
+  return mode === "side"
+    ? DEFAULT_SIZING_LAB_GEMINI_SIDE_GUIDE_PROMPT
+    : DEFAULT_SIZING_LAB_GEMINI_GUIDE_PROMPT;
+}
+
+function resolvePromptVersion(mode?: GuideRequestBody["guideMode"]): string {
+  return mode === "side"
+    ? SIZING_LAB_GEMINI_SIDE_GUIDE_PROMPT_VERSION
+    : SIZING_LAB_GEMINI_GUIDE_PROMPT_VERSION;
+}
+
+function resolvePrompt(requestedPrompt?: string, mode?: GuideRequestBody["guideMode"]): string | null {
   const prompt = typeof requestedPrompt === "string" && requestedPrompt.trim()
     ? requestedPrompt.trim()
-    : DEFAULT_SIZING_LAB_GEMINI_GUIDE_PROMPT;
+    : resolveDefaultPrompt(mode);
   return prompt.length <= MAX_PROMPT_CHARS ? prompt : null;
+}
+
+function resolveDatasetPromptOverride(body: GuideRequestBody): { prompt: string; source: string; version: string } | null {
+  if (body.guideMode === "side") return null;
+  if (body.datasetSetId === "negar-2") {
+    return {
+      source: "negar-2-meter-rows",
+      version: NEGAR_2_METER_ROW_GEMINI_GUIDE_PROMPT_VERSION,
+      prompt: NEGAR_2_METER_ROW_GEMINI_GUIDE_PROMPT,
+    };
+  }
+  if (body.datasetSetId === "negar-4") {
+    return {
+      source: "negar-4-meter-rows",
+      version: NEGAR_4_METER_ROW_GEMINI_GUIDE_PROMPT_VERSION,
+      prompt: NEGAR_4_METER_ROW_GEMINI_GUIDE_PROMPT,
+    };
+  }
+  return null;
 }
 
 function buildContents(
@@ -879,6 +928,28 @@ function base64ByteLength(base64: string): number {
   return Math.max(0, Math.floor((clean.length * 3) / 4) - padding);
 }
 
+async function buildOutputImageDebug(image: { mimeType: string; base64: string }) {
+  const bytes = base64ByteLength(image.base64);
+  try {
+    const metadata = await sharp(Buffer.from(image.base64, "base64")).metadata();
+    return {
+      mimeType: image.mimeType,
+      kb: round(bytes / 1024, 1),
+      width: metadata.width ?? 0,
+      height: metadata.height ?? 0,
+      requestedSize: "model default",
+    };
+  } catch {
+    return {
+      mimeType: image.mimeType,
+      kb: round(bytes / 1024, 1),
+      width: 0,
+      height: 0,
+      requestedSize: "model default",
+    };
+  }
+}
+
 async function detectGuideFromAnnotatedImage(
   image: { mimeType: string; base64: string },
   body: GuideRequestBody,
@@ -897,7 +968,8 @@ async function detectGuideFromAnnotatedImage(
   const wantsNaturalWaist = /natural\s+waist|top red curve is waist|"waist"/i.test(prompt);
   const wantsTrouserWaist = /trouser\s*waist|trouserWaist/i.test(prompt);
   const wantsHips = /\bhips?\b|hip\/seat/i.test(prompt);
-  const wantsThreeRows = wantsNaturalWaist && wantsTrouserWaist && wantsHips;
+  const wantsGenericThreeLines = /line\s*1/i.test(prompt) && /line\s*2/i.test(prompt) && /line\s*3/i.test(prompt);
+  const wantsThreeRows = wantsGenericThreeLines || (wantsNaturalWaist && wantsTrouserWaist && wantsHips);
 
   if (wantsThreeRows && lines.length < 3) return null;
 
@@ -1082,9 +1154,9 @@ function normalizeGuideJson(value: unknown): GeminiBodyGuide {
   if (!value || typeof value !== "object") return {};
   const record = value as Record<string, unknown>;
   const guide: GeminiBodyGuide = {
-    waist: normalizeGuideLine(record.waist),
-    trouserWaist: normalizeGuideLine(record.trouserWaist ?? record.trouser_waist ?? record.trouser),
-    hips: normalizeGuideLine(record.hips ?? record.hip),
+    waist: normalizeGuideLine(record.waist ?? readLineAlias(record, 1)),
+    trouserWaist: normalizeGuideLine(record.trouserWaist ?? record.trouser_waist ?? record.trouser ?? readLineAlias(record, 2)),
+    hips: normalizeGuideLine(record.hips ?? record.hip ?? readLineAlias(record, 3)),
   };
   if (record.occlusion && typeof record.occlusion === "object") {
     guide.occlusion = record.occlusion as GeminiBodyGuide["occlusion"];
@@ -1093,6 +1165,10 @@ function normalizeGuideJson(value: unknown): GeminiBodyGuide {
     guide.notes = record.notes;
   }
   return guide;
+}
+
+function readLineAlias(record: Record<string, unknown>, index: number): unknown {
+  return record[`line ${index}`] ?? record[`line${index}`] ?? record[`line_${index}`] ?? record[`Line ${index}`];
 }
 
 function normalizeGuideLine(value: unknown): GeminiBodyGuide["waist"] {

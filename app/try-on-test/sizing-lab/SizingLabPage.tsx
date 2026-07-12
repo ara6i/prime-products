@@ -13,16 +13,28 @@ import { MaskPreview } from "./components/MaskPreview";
 import { HipsCard } from "./components/HipsCard";
 import { GeminiCalibrationPanel } from "./components/GeminiCalibrationPanel";
 import { GeminiGuidePanel } from "./components/GeminiGuidePanel";
+import { ManualCoordinateGuidePanel, type ManualHeightScaleOverride } from "./components/ManualCoordinateGuidePanel";
 import { computeHips, type HipsTrace } from "./lib/hipsFormula";
+import { computePoseScale, measureMaskWidthAtY } from "./lib/bodyMaskGeometry";
 import { detectSegmenterMeasurementMask, removeBackgroundWithSegmenter } from "./lib/imageSegmenter";
 import { detectPoseAndMask } from "./lib/poseDetector";
 import { calibrateGeminiMaskMeasurements } from "./lib/geminiMaskCalibration";
 import { DEFAULT_SIZING_LAB_GEMINI_PROMPT } from "./lib/geminiNormalizePrompt";
 import {
+  buildGeminiGuideDebugRows,
+  computeGeminiGuideImageMeasurement,
   computeGeminiGuideMeasurement,
   DEFAULT_SIZING_LAB_GEMINI_GUIDE_PROMPT,
+  DEFAULT_SIZING_LAB_GEMINI_SIDE_GUIDE_PROMPT,
+  NEGAR_2_METER_ROW_GEMINI_GUIDE_PROMPT,
+  NEGAR_2_METER_ROW_GEMINI_GUIDE_PROMPT_VERSION,
+  NEGAR_4_METER_ROW_GEMINI_GUIDE_PROMPT,
+  NEGAR_4_METER_ROW_GEMINI_GUIDE_PROMPT_VERSION,
   SIZING_LAB_GEMINI_GUIDE_PROMPT_VERSION,
+  SIZING_LAB_GEMINI_SIDE_GUIDE_PROMPT_VERSION,
   type GeminiBodyGuide,
+  type GeminiGuideDepthRatioOverrides,
+  type GeminiGuideLine,
 } from "./lib/geminiGuide";
 import {
   DEFAULT_SIZING_LAB_GEMINI_CORRECTION_PROMPT,
@@ -36,7 +48,7 @@ import {
 import { useImageInput } from "./hooks/useImageInput";
 import { usePoseAnalysis } from "./hooks/usePoseAnalysis";
 import { useWaistCalculation } from "./hooks/useWaistCalculation";
-import type { MeasurementDebugRow, MeasurementMaskMode, MetricsInput, PoseResult, WaistTrace } from "./types";
+import type { MaskHeightScaleAudit, MeasurementDebugRow, MeasurementMaskMode, MetricsInput, PoseResult, WaistTrace } from "./types";
 
 interface DatasetRow {
   setId: string;
@@ -50,6 +62,9 @@ interface DatasetRow {
   waistTarget?: "natural" | "trouser";
   trouserWaistCm?: number;
   hipsCm: number;
+  waistSideDepthCm?: number;
+  trouserWaistSideDepthCm?: number;
+  hipsSideDepthCm?: number;
   pelvisCm: number;
   underChestCm: number;
   cup?: string | null;
@@ -68,8 +83,8 @@ const DEFAULT_METRICS: MetricsInput = {
   cup: null,
 };
 
-type AnalysisPath = "raw" | "landmark" | "mask-guide" | "segmenter" | "backend-sdk" | "gemini" | "gemini-calibrated" | "gemini-guide";
-type PoseSource = "original-raw" | "original-segmenter" | "gemini" | "gemini-calibrated" | "gemini-guide";
+type AnalysisPath = "raw" | "landmark" | "mask-guide" | "manual-guide" | "segmenter" | "backend-sdk" | "gemini" | "gemini-calibrated" | "gemini-guide" | "gemini-guide-side";
+type PoseSource = "original-raw" | "original-segmenter" | "gemini" | "gemini-calibrated" | "gemini-guide" | "gemini-guide-side" | "manual-guide";
 interface GuideInputImageDebug {
   originalKb: number;
   compressedKb: number;
@@ -84,6 +99,14 @@ interface GuideInputImageDebug {
   prepMs: number;
 }
 
+interface GuideOutputImageDebug {
+  mimeType?: string;
+  kb?: number;
+  width?: number;
+  height?: number;
+  requestedSize?: string;
+}
+
 interface GeminiGuideTimingDebug {
   browserPrepMs?: number;
   apiTotalMs?: number;
@@ -96,6 +119,32 @@ interface GeminiGuideTimingDebug {
 interface GeminiGuideCandidateDebug {
   redPixel?: GeminiBodyGuide | null;
   geminiJson?: GeminiBodyGuide | null;
+}
+
+interface GeminiGuideResponseDebug {
+  rawText: string;
+  returnedText: boolean;
+  returnedImage: boolean;
+  guideSource: string;
+  inputImage?: GuideInputImageDebug;
+  outputImage?: GuideOutputImageDebug | null;
+  timings?: GeminiGuideTimingDebug;
+  guideCandidates?: GeminiGuideCandidateDebug;
+}
+
+interface GeminiGuideRunResult {
+  ok: boolean;
+  error?: string;
+  guide: GeminiBodyGuide | null;
+  geminiMs: number | null;
+  gridImageDataUrl: string | null;
+  guideImageDataUrl: string | null;
+  promptDebug: {
+    source: string;
+    version: string;
+    preview: string;
+  };
+  responseDebug: GeminiGuideResponseDebug;
 }
 
 type GeminiImageModelCode =
@@ -214,6 +263,11 @@ const ANALYSIS_PATHS: Array<{
     description: "No Gemini. Shows the current mask-derived natural waist, estimated trouser waist, and hip guide rows.",
   },
   {
+    value: "manual-guide",
+    label: "Manual coordinate",
+    description: "No model. Drag waist, trouser-waist, and hip red guide points by hand; formulas update from those coordinates.",
+  },
+  {
     value: "segmenter",
     label: "MediaPipe Segmenter",
     description: "Google multiclass mask removes background, hair, and face before row cleanup.",
@@ -238,9 +292,61 @@ const ANALYSIS_PATHS: Array<{
     label: "Coordinate curve guide",
     description: "A guide model gets the source photo plus grid overlay, then returns visible curved red lines and/or matching JSON coordinates.",
   },
+  {
+    value: "gemini-guide-side",
+    label: "Gemini guide row + side photo",
+    description: "Separate mode. Gemini draws front guide curves and side-profile guide curves; front width plus side-guide depth drives the ellipse formula.",
+  },
 ];
 
+const NEGAR_4_MANUAL_TAPE_ROW_PRESET = {
+  sourceImageHeight: 2048,
+  sourceImageWidth: 1136,
+  waist: { tapeCm: 41, yPx: 774, leftXPx: 282, rightXPx: 654 },
+  trouserWaist: { tapeCm: 48, yPx: 875, leftXPx: 269, rightXPx: 660 },
+  hips: { tapeCm: 61, yPx: 1050, leftXPx: 240, rightXPx: 680 },
+};
+
+const NEGAR_2_MANUAL_ROW_PRESET = {
+  sourceImageHeight: 1600,
+  sourceImageWidth: 1200,
+  waist: { yPx: 644, leftXPx: 498, rightXPx: 711 },
+  trouserWaist: { yPx: 708, leftXPx: 482, rightXPx: 725 },
+  hips: { yPx: 816, leftXPx: 458, rightXPx: 733 },
+};
+
+const BAHAR_TAPE_ROW_PRESET = {
+  sourceImageHeight: 4080,
+  sourceImageWidth: 3072,
+  waist: { tapeCm: 40, yPx: 1792 },
+  trouserWaist: { tapeCm: 51, yPx: 2000 },
+  hips: { tapeCm: 62, yPx: 2200 },
+};
+
+const NADIA_TAPE_ROW_PRESET = {
+  sourceImageHeight: 4080,
+  sourceImageWidth: 3072,
+  waist: { tapeCm: 42, yPx: 1728 },
+  trouserWaist: { tapeCm: 53, yPx: 1962 },
+  hips: { tapeCm: 64, yPx: 2176 },
+};
+
+interface ManualScaleEvidence {
+  source: "vertical-tape" | "mask-height" | "pose-landmarks" | "manual-height";
+  activeCmPerPx: number;
+  heightCmPerPx: number | null;
+  pxPerCm: number;
+  scaleDeltaPct: number | null;
+  anchors: Array<{ label: string; tapeCm: number; yPx: number }>;
+  heightAudit?: MaskHeightScaleAudit | null;
+}
+
+function nowMs(): number {
+  return globalThis.performance?.now?.() ?? Date.now();
+}
+
 export function SizingLabPage() {
+  const manualWorkbenchRef = useRef<HTMLDivElement | null>(null);
   const image = useImageInput();
   const geminiInputImage = useImageInput();
   const normalizedImage = useImageInput();
@@ -280,20 +386,23 @@ export function SizingLabPage() {
   const [geminiGuide, setGeminiGuide] = useState<GeminiBodyGuide | null>(null);
   const [geminiGuideGridImageUrl, setGeminiGuideGridImageUrl] = useState<string | null>(null);
   const [geminiGuideLineImageUrl, setGeminiGuideLineImageUrl] = useState<string | null>(null);
+  const [sideGeminiGuideMs, setSideGeminiGuideMs] = useState<number | null>(null);
+  const [sideGeminiGuide, setSideGeminiGuide] = useState<GeminiBodyGuide | null>(null);
+  const [sideGeminiGuideGridImageUrl, setSideGeminiGuideGridImageUrl] = useState<string | null>(null);
+  const [sideGeminiGuideLineImageUrl, setSideGeminiGuideLineImageUrl] = useState<string | null>(null);
   const [geminiGuidePromptDebug, setGeminiGuidePromptDebug] = useState<{
     source: string;
     version: string;
     preview: string;
   } | null>(null);
-  const [geminiGuideResponseDebug, setGeminiGuideResponseDebug] = useState<{
-    rawText: string;
-    returnedText: boolean;
-    returnedImage: boolean;
-	    guideSource: string;
-	    inputImage?: GuideInputImageDebug;
-	    timings?: GeminiGuideTimingDebug;
-	    guideCandidates?: GeminiGuideCandidateDebug;
-	  } | null>(null);
+  const [geminiGuideResponseDebug, setGeminiGuideResponseDebug] = useState<GeminiGuideResponseDebug | null>(null);
+  const [sideGeminiGuideResponseDebug, setSideGeminiGuideResponseDebug] = useState<GeminiGuideResponseDebug | null>(null);
+  const [manualGuide, setManualGuide] = useState<GeminiBodyGuide | null>(null);
+  const [manualSideGuide, setManualSideGuide] = useState<GeminiBodyGuide | null>(null);
+  const [manualAdjustedGeminiGuide, setManualAdjustedGeminiGuide] = useState<GeminiBodyGuide | null>(null);
+  const [manualAdjustedSideGeminiGuide, setManualAdjustedSideGeminiGuide] = useState<GeminiBodyGuide | null>(null);
+  const [manualHeightScaleOverride, setManualHeightScaleOverride] = useState<ManualHeightScaleOverride | null>(null);
+  const [guideDepthRatioOverrides, setGuideDepthRatioOverrides] = useState<GeminiGuideDepthRatioOverrides>({});
   const [geminiCorrectionStatus, setGeminiCorrectionStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [geminiCorrectionError, setGeminiCorrectionError] = useState<string | null>(null);
   const [geminiCorrectionMs, setGeminiCorrectionMs] = useState<number | null>(null);
@@ -306,6 +415,7 @@ export function SizingLabPage() {
   const [analysisTotalMs, setAnalysisTotalMs] = useState<number | null>(null);
   const [runningStartedAt, setRunningStartedAt] = useState<number | null>(null);
   const [runningElapsedMs, setRunningElapsedMs] = useState<number>(0);
+  const [manualAutoScrollToken, setManualAutoScrollToken] = useState(0);
 
   // Reset pose when image cleared
   useEffect(() => {
@@ -345,22 +455,30 @@ export function SizingLabPage() {
       ? selectedDataset.waistCm
       : undefined;
   const usesBackendSdk = analysisPath === "backend-sdk";
-  const activeUseSidePhoto = useSidePhoto && !usesBackendSdk;
   const usesGeminiCalibration = analysisPath === "gemini-calibrated";
   const usesGeminiGuide = analysisPath === "gemini-guide";
+  const usesGeminiGuideWithSide = analysisPath === "gemini-guide-side";
+  const usesManualGuide = analysisPath === "manual-guide";
+  const usesModelCoordinateGuide = usesGeminiGuide || usesGeminiGuideWithSide;
+  const usesCoordinateGuide = usesModelCoordinateGuide || usesManualGuide;
+  const activeUseSidePhoto = (useSidePhoto || usesGeminiGuideWithSide) && !usesBackendSdk;
   const usesMaskGuide = analysisPath === "mask-guide";
   const usesGemini = analysisPath === "gemini" || usesGeminiCalibration;
   const usesSegmenter = analysisPath === "segmenter";
   const selectedPoseSource: PoseSource = usesGeminiCalibration
     ? "gemini-calibrated"
+    : usesGeminiGuideWithSide
+    ? "gemini-guide-side"
     : usesGeminiGuide
     ? "gemini-guide"
+    : usesManualGuide
+    ? "manual-guide"
     : usesGemini
     ? "gemini"
     : usesSegmenter
       ? "original-segmenter"
       : "original-raw";
-  const maskMode: MeasurementMaskMode = analysisPath === "landmark" || usesMaskGuide || usesSegmenter || usesGeminiGuide ? "ignore-arms" : "raw";
+  const maskMode: MeasurementMaskMode = analysisPath === "landmark" || usesMaskGuide || usesSegmenter || usesCoordinateGuide ? "ignore-arms" : "raw";
   const poseMatchesPath = poseSource === selectedPoseSource;
   const displayPose = poseMatchesPath && pose.pose
     ? usesBackendSdk
@@ -372,12 +490,24 @@ export function SizingLabPage() {
   const selectedGeminiModel = GEMINI_IMAGE_MODELS.find((model) => model.value === geminiModel) ?? GEMINI_IMAGE_MODELS[0]!;
   const selectedGeminiGuideModel = GEMINI_GUIDE_MODELS.find((model) => model.value === geminiGuideModel) ?? GEMINI_GUIDE_MODELS[0]!;
   const displayedElapsedMs = runningStartedAt === null ? analysisTotalMs : runningElapsedMs;
+  const usesNegar2MeterGuidePrompt = selectedDatasetId === "negar-2";
+  const usesNegar4MeterGuidePrompt = selectedDatasetId === "negar-4";
+  const defaultGeminiGuidePrompt = usesNegar2MeterGuidePrompt
+    ? NEGAR_2_METER_ROW_GEMINI_GUIDE_PROMPT
+    : usesNegar4MeterGuidePrompt
+    ? NEGAR_4_METER_ROW_GEMINI_GUIDE_PROMPT
+    : DEFAULT_SIZING_LAB_GEMINI_GUIDE_PROMPT;
+  const defaultGeminiGuidePromptVersion = usesNegar2MeterGuidePrompt
+    ? NEGAR_2_METER_ROW_GEMINI_GUIDE_PROMPT_VERSION
+    : usesNegar4MeterGuidePrompt
+    ? NEGAR_4_METER_ROW_GEMINI_GUIDE_PROMPT_VERSION
+    : SIZING_LAB_GEMINI_GUIDE_PROMPT_VERSION;
   const activeGeminiPrompt = useDefaultGeminiPrompt
     ? DEFAULT_SIZING_LAB_GEMINI_PROMPT
     : geminiPrompt.trim() || DEFAULT_SIZING_LAB_GEMINI_PROMPT;
   const activeGeminiGuidePrompt = useDefaultGeminiGuidePrompt
-    ? DEFAULT_SIZING_LAB_GEMINI_GUIDE_PROMPT
-    : geminiGuidePrompt.trim() || DEFAULT_SIZING_LAB_GEMINI_GUIDE_PROMPT;
+    ? defaultGeminiGuidePrompt
+    : geminiGuidePrompt.trim() || defaultGeminiGuidePrompt;
   const geminiGuideTimings = geminiGuideResponseDebug?.timings;
 
   const clearCalibration = () => {
@@ -389,13 +519,36 @@ export function SizingLabPage() {
 
   const clearGeminiGuide = () => {
     setGeminiGuide(null);
+    setManualAdjustedGeminiGuide(null);
+    setManualAdjustedSideGeminiGuide(null);
+    setGuideDepthRatioOverrides({});
     setGeminiGuideGridImageUrl(null);
     setGeminiGuideLineImageUrl(null);
+    setSideGeminiGuide(null);
+    setSideGeminiGuideGridImageUrl(null);
+    setSideGeminiGuideLineImageUrl(null);
+    setSideGeminiGuideResponseDebug(null);
+    setSideGeminiGuideMs(null);
     setGeminiGuidePromptDebug(null);
     setGeminiGuideResponseDebug(null);
     setGeminiGuideStatus("idle");
     setGeminiGuideError(null);
     setGeminiGuideMs(null);
+  };
+
+  const updateGuideDepthRatioOverride = (
+    kind: keyof GeminiGuideDepthRatioOverrides,
+    ratio: number | null,
+  ) => {
+    setGuideDepthRatioOverrides((current) => {
+      const next = { ...current };
+      if (ratio == null || !Number.isFinite(ratio)) {
+        delete next[kind];
+      } else {
+        next[kind] = ratio;
+      }
+      return next;
+    });
   };
 
   const clearGeminiCorrection = () => {
@@ -415,10 +568,21 @@ export function SizingLabPage() {
   useEffect(() => {
     if (runningStartedAt === null) return;
     const timer = window.setInterval(() => {
-      setRunningElapsedMs(Math.round(performance.now() - runningStartedAt));
+      setRunningElapsedMs(Math.round(nowMs() - runningStartedAt));
     }, 100);
     return () => window.clearInterval(timer);
   }, [runningStartedAt]);
+
+  useEffect(() => {
+    if (!manualAutoScrollToken || !usesManualGuide || pose.status !== "ready") return undefined;
+    const timeout = window.setTimeout(() => {
+      const target = manualWorkbenchRef.current;
+      if (!target) return;
+      const top = target.getBoundingClientRect().top + window.scrollY - 16;
+      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    }, 100);
+    return () => window.clearTimeout(timeout);
+  }, [manualAutoScrollToken, pose.status, usesManualGuide]);
 
   const selectDataset = (setId: string) => {
     setSelectedDatasetId(setId);
@@ -440,6 +604,9 @@ export function SizingLabPage() {
     setSegmenterMs(null);
     clearCalibration();
     clearGeminiGuide();
+    setManualGuide(null);
+    setManualSideGuide(null);
+    setManualHeightScaleOverride(null);
     clearGeminiCorrection();
     clearBackendSdkTrace();
     setAnalysisTotalMs(null);
@@ -469,6 +636,7 @@ export function SizingLabPage() {
     sidePose.reset();
     if (!enabled) {
       sideImage.clear();
+      setManualSideGuide(null);
       return;
     }
     if (selectedDataset?.sideImageUrl) {
@@ -479,11 +647,17 @@ export function SizingLabPage() {
   const handleAnalysisPathChange = (nextPath: AnalysisPath) => {
     const nextUsesGeminiCalibration = nextPath === "gemini-calibrated";
     const nextUsesGeminiGuide = nextPath === "gemini-guide";
+    const nextUsesGeminiGuideWithSide = nextPath === "gemini-guide-side";
+    const nextUsesManualGuide = nextPath === "manual-guide";
     const nextUsesGemini = nextPath === "gemini" || nextUsesGeminiCalibration;
     const nextSource: PoseSource = nextUsesGeminiCalibration
       ? "gemini-calibrated"
+      : nextUsesGeminiGuideWithSide
+      ? "gemini-guide-side"
       : nextUsesGeminiGuide
       ? "gemini-guide"
+      : nextUsesManualGuide
+      ? "manual-guide"
       : nextUsesGemini
       ? "gemini"
       : nextPath === "segmenter"
@@ -504,6 +678,8 @@ export function SizingLabPage() {
     setSegmenterMs(null);
     clearCalibration();
     clearGeminiGuide();
+    setManualGuide(null);
+    setManualSideGuide(null);
     clearGeminiCorrection();
     clearBackendSdkTrace();
     setRunningStartedAt(null);
@@ -511,6 +687,12 @@ export function SizingLabPage() {
     if (poseSource && poseSource !== nextSource) {
       pose.reset();
       setPoseSource(null);
+    }
+    if (nextUsesGeminiGuideWithSide) {
+      setUseSidePhoto(true);
+      if (selectedDataset?.sideImageUrl && !sideImage.state.previewUrl) {
+        void sideImage.selectUrl(selectedDataset.sideImageUrl);
+      }
     }
   };
 
@@ -532,6 +714,8 @@ export function SizingLabPage() {
     setSegmenterMs(null);
     clearCalibration();
     clearGeminiGuide();
+    setManualGuide(null);
+    setManualSideGuide(null);
     clearGeminiCorrection();
     clearBackendSdkTrace();
     setAnalysisTotalMs(null);
@@ -559,6 +743,8 @@ export function SizingLabPage() {
     clearCalibration();
     clearGeminiGuide();
     clearGeminiCorrection();
+    setManualGuide(null);
+    setManualSideGuide(null);
     clearBackendSdkTrace();
     setAnalysisTotalMs(null);
     setRunningStartedAt(null);
@@ -567,7 +753,7 @@ export function SizingLabPage() {
 
   const runAnalysis = async () => {
     if (!image.state.previewUrl) return;
-    const totalStartedAt = performance.now();
+    const totalStartedAt = nowMs();
     setGeminiError(null);
     setGeminiBgError(null);
     setSegmenterError(null);
@@ -580,9 +766,14 @@ export function SizingLabPage() {
     setGeminiGuide(null);
     setGeminiGuideGridImageUrl(null);
     setGeminiGuideLineImageUrl(null);
+    setSideGeminiGuide(null);
+    setSideGeminiGuideGridImageUrl(null);
+    setSideGeminiGuideLineImageUrl(null);
+    setSideGeminiGuideResponseDebug(null);
+    setSideGeminiGuideMs(null);
     setGeminiGuidePromptDebug(null);
     setGeminiGuideResponseDebug(null);
-    setGeminiGuideStatus(usesGeminiGuide ? "loading" : "idle");
+    setGeminiGuideStatus(usesModelCoordinateGuide ? "loading" : "idle");
     setGeminiGuideError(null);
     setGeminiGuideMs(null);
     clearGeminiCorrection();
@@ -627,16 +818,16 @@ export function SizingLabPage() {
         await normalizedImage.selectUrl(frontUrl);
         setGeminiStatus("ready");
         if (usesGeminiCalibration) {
-          const calibrationStartedAt = performance.now();
+          const calibrationStartedAt = nowMs();
           const calibrationPose = await detectPoseAndMask(image.state.previewUrl);
           if (!calibrationPose) {
             setCalibrationStatus("error");
             setCalibrationError("Original image calibration mask failed");
-            setCalibrationMs(Math.round(performance.now() - calibrationStartedAt));
+            setCalibrationMs(Math.round(nowMs() - calibrationStartedAt));
           } else {
             currentOriginalCalibrationPose = calibrationPose;
             setOriginalCalibrationPose(calibrationPose);
-            setCalibrationMs(Math.round(performance.now() - calibrationStartedAt));
+            setCalibrationMs(Math.round(nowMs() - calibrationStartedAt));
           }
         }
       } catch (error) {
@@ -646,7 +837,7 @@ export function SizingLabPage() {
         setGeminiError(error instanceof Error ? error.message : "Gemini normalization failed");
         setGeminiBgError(error instanceof Error ? error.message : "Background removal failed before Gemini");
         setCalibrationError(error instanceof Error ? error.message : "Gemini calibration failed");
-        const elapsed = Math.round(performance.now() - totalStartedAt);
+        const elapsed = Math.round(nowMs() - totalStartedAt);
         setAnalysisTotalMs(elapsed);
         setRunningElapsedMs(elapsed);
         setRunningStartedAt(null);
@@ -751,81 +942,69 @@ export function SizingLabPage() {
         }
       }
     }
-    if (usesGeminiGuide) {
+    if (usesModelCoordinateGuide) {
       if (!frontPoseResult) {
         setGeminiGuideStatus("error");
         setGeminiGuideError("MediaPipe landmarks failed, so the coordinate guide cannot run");
       } else {
         try {
-          const guideInputImage = await imageUrlToCompressedDataUrl(
-            image.state.previewUrl,
-            image.state.width,
-            image.state.height,
-          );
-          const response = await fetch("/api/try-on-test/sizing-lab/guide", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              imageDataUrl: guideInputImage.dataUrl,
-              model: geminiGuideModel,
-              prompt: useDefaultGeminiGuidePrompt ? undefined : activeGeminiGuidePrompt,
-              imageWidth: image.state.width,
-              imageHeight: image.state.height,
-              inputImageWidth: guideInputImage.debug.sentWidth,
-              inputImageHeight: guideInputImage.debug.sentHeight,
-              metrics: {
-                heightCm: metrics.heightCm,
-                weightKg: metrics.weightKg,
-                gender: metrics.gender,
-              },
-              landmarks: buildGeminiGuideLandmarks(frontPoseResult, image.state.width, image.state.height),
-            }),
+          const frontGuideRun = await requestGeminiGuideRun({
+            imageUrl: image.state.previewUrl,
+            imageWidth: image.state.width,
+            imageHeight: image.state.height,
+            model: geminiGuideModel,
+            prompt: activeGeminiGuidePrompt,
+            useDefaultPrompt: useDefaultGeminiGuidePrompt,
+            guideMode: "front",
+            datasetSetId: selectedDatasetId || undefined,
+            metrics,
+            pose: frontPoseResult,
+            errorPrefix: "Gemini guide",
           });
-          const data = await response.json().catch(() => ({ ok: false, error: `Gemini guide route returned ${response.status}` }));
-          if (!response.ok || !data.ok || !data.guide) {
-            setGeminiGuideMs(typeof data.geminiMs === "number" ? data.geminiMs : null);
-            setGeminiGuideGridImageUrl(typeof data.gridImageDataUrl === "string" ? data.gridImageDataUrl : null);
-            setGeminiGuideLineImageUrl(typeof data.guideImageDataUrl === "string" ? data.guideImageDataUrl : null);
-            setGeminiGuidePromptDebug({
-              source: typeof data.promptSource === "string" ? data.promptSource : "unknown",
-              version: typeof data.promptVersion === "string" ? data.promptVersion : "unknown",
-              preview: typeof data.promptPreview === "string" ? data.promptPreview : "",
-            });
-            setGeminiGuideResponseDebug({
-              rawText: typeof data.rawText === "string" ? data.rawText : "",
-              returnedText: Boolean(data.returnedText),
-              returnedImage: Boolean(data.returnedImage),
-	              guideSource: typeof data.guideSource === "string" ? data.guideSource : "failed",
-	              inputImage: mergeGuideInputDebug(guideInputImage.debug, data.inputImage),
-	              timings: normalizeGeminiGuideTimings(data.timings, guideInputImage.debug),
-	              guideCandidates: extractGeminiGuideCandidates(data.guideCandidates),
-	            });
-            const rawText = typeof data.rawText === "string" ? data.rawText.trim() : "";
-            const rawHint = rawText
-              ? ` Raw: ${rawText.slice(0, 360)}`
-              : data.error === "Gemini did not return usable coordinate JSON."
-                ? " Raw: empty/non-text response."
-                : "";
-            throw new Error(`${data.error || `Gemini guide route returned ${response.status}`}${rawHint}`);
+          setGeminiGuideMs(frontGuideRun.geminiMs);
+          setGeminiGuide(frontGuideRun.guide);
+          setManualAdjustedGeminiGuide(selectedDatasetId === "negar-2"
+            ? buildManualGuideFromPreset(
+                NEGAR_2_MANUAL_ROW_PRESET,
+                image.state.width,
+                image.state.height,
+                "Manual adjustment seeded from Negar 2 user-confirmed rows and endpoints.",
+              )
+            : null);
+          setManualAdjustedSideGeminiGuide(null);
+          setGeminiGuideGridImageUrl(frontGuideRun.gridImageDataUrl);
+          setGeminiGuideLineImageUrl(frontGuideRun.guideImageDataUrl);
+          setGeminiGuidePromptDebug(frontGuideRun.promptDebug);
+          setGeminiGuideResponseDebug(frontGuideRun.responseDebug);
+          if (!frontGuideRun.ok) {
+            throw new Error(frontGuideRun.error || "Gemini guide failed");
           }
-          setGeminiGuideMs(typeof data.geminiMs === "number" ? data.geminiMs : null);
-          setGeminiGuide(data.guide as GeminiBodyGuide);
-          setGeminiGuideGridImageUrl(typeof data.gridImageDataUrl === "string" ? data.gridImageDataUrl : null);
-          setGeminiGuideLineImageUrl(typeof data.guideImageDataUrl === "string" ? data.guideImageDataUrl : null);
-          setGeminiGuidePromptDebug({
-            source: typeof data.promptSource === "string" ? data.promptSource : "unknown",
-            version: typeof data.promptVersion === "string" ? data.promptVersion : "unknown",
-            preview: typeof data.promptPreview === "string" ? data.promptPreview : "",
-          });
-          setGeminiGuideResponseDebug({
-            rawText: typeof data.rawText === "string" ? data.rawText : "",
-            returnedText: Boolean(data.returnedText),
-            returnedImage: Boolean(data.returnedImage),
-	            guideSource: typeof data.guideSource === "string" ? data.guideSource : "unknown",
-	            inputImage: mergeGuideInputDebug(guideInputImage.debug, data.inputImage),
-	            timings: normalizeGeminiGuideTimings(data.timings, guideInputImage.debug),
-	            guideCandidates: extractGeminiGuideCandidates(data.guideCandidates),
-	          });
+          if (usesGeminiGuideWithSide) {
+            if (!sideImage.state.previewUrl || !sidePoseResult) {
+              throw new Error("Side guide mode requires a loaded side photo and side MediaPipe landmarks");
+            }
+            const sideGuideRun = await requestGeminiGuideRun({
+              imageUrl: sideImage.state.previewUrl,
+              imageWidth: sideImage.state.width,
+              imageHeight: sideImage.state.height,
+              model: geminiGuideModel,
+              prompt: DEFAULT_SIZING_LAB_GEMINI_SIDE_GUIDE_PROMPT,
+              useDefaultPrompt: true,
+              guideMode: "side",
+              datasetSetId: selectedDatasetId || undefined,
+              metrics,
+              pose: sidePoseResult,
+              errorPrefix: "Side Gemini guide",
+            });
+            setSideGeminiGuideMs(sideGuideRun.geminiMs);
+            setSideGeminiGuide(sideGuideRun.guide);
+            setSideGeminiGuideGridImageUrl(sideGuideRun.gridImageDataUrl);
+            setSideGeminiGuideLineImageUrl(sideGuideRun.guideImageDataUrl);
+            setSideGeminiGuideResponseDebug(sideGuideRun.responseDebug);
+            if (!sideGuideRun.ok) {
+              throw new Error(sideGuideRun.error || "Side Gemini guide failed");
+            }
+          }
           setGeminiGuideStatus("ready");
         } catch (error) {
           setGeminiGuideStatus("error");
@@ -845,10 +1024,13 @@ export function SizingLabPage() {
       }
     }
     setPoseSource(selectedPoseSource);
-    const elapsed = Math.round(performance.now() - totalStartedAt);
+    const elapsed = Math.round(nowMs() - totalStartedAt);
     setAnalysisTotalMs(elapsed);
     setRunningElapsedMs(elapsed);
     setRunningStartedAt(null);
+    if (usesManualGuide) {
+      setManualAutoScrollToken((value) => value + 1);
+    }
   };
 
   const trace = useWaistCalculation(
@@ -876,8 +1058,7 @@ export function SizingLabPage() {
         activeUseSidePhoto ? sidePose.pose : null,
         activeUseSidePhoto ? sideImage.state.width : 0,
         activeUseSidePhoto ? sideImage.state.height : 0,
-        maskMode,
-      )
+    )
     : null;
   const hipDebugRows = hipsTrace?.debugRows ?? [];
   const geminiCalibration = usesGeminiCalibration && poseMatchesPath && pose.pose && originalCalibrationPose
@@ -894,9 +1075,70 @@ export function SizingLabPage() {
       hipsTrace,
     })
     : null;
+  const effectiveManualGuide = usesManualGuide
+    ? manualGuide ?? buildManualGuideFromTrace(trace, hipsTrace, poseMatchesPath ? pose.pose : null, image.state.width, image.state.height, selectedDatasetId, maskMode)
+    : null;
+  const effectiveManualSideGuide = usesManualGuide && activeUseSidePhoto
+    ? manualSideGuide ?? buildManualSideGuideFromPose(
+        activeUseSidePhoto ? sidePose.pose : null,
+        activeUseSidePhoto ? sideImage.state.width : 0,
+        activeUseSidePhoto ? sideImage.state.height : 0,
+        metrics.heightCm,
+        effectiveManualGuide,
+        poseMatchesPath ? pose.pose : null,
+        activeImageState.width,
+        activeImageState.height,
+      )
+    : null;
+  const effectiveCoordinateGuide = usesManualGuide
+    ? effectiveManualGuide
+    : usesModelCoordinateGuide
+      ? manualAdjustedGeminiGuide ?? geminiGuide
+      : null;
+  const effectiveSideCoordinateGuide = usesManualGuide
+    ? effectiveManualSideGuide
+    : usesGeminiGuideWithSide
+      ? manualAdjustedSideGeminiGuide ?? sideGeminiGuide
+    : null;
+  const effectiveCoordinateGuideSource = usesManualGuide
+    ? "manual-coordinate"
+    : manualAdjustedGeminiGuide
+      ? "manual-adjusted-coordinate"
+      : geminiGuideResponseDebug?.guideSource ?? null;
+  const manualTapeScalePreset = usesManualGuide
+    ? selectedDatasetId === "negar-4"
+      ? NEGAR_4_MANUAL_TAPE_ROW_PRESET
+      : selectedDatasetId === "nadia"
+        ? NADIA_TAPE_ROW_PRESET
+        : null
+    : null;
+  const frontManualHeightScaleSourceKey = `${image.state.previewUrl ?? ""}:${image.state.width}x${image.state.height}`;
+  const activeManualHeightScaleOverride = usesManualGuide && manualHeightScaleOverride?.sourceKey === frontManualHeightScaleSourceKey
+    ? manualHeightScaleOverride
+    : null;
+  const manualHeightScaleEvidence = activeManualHeightScaleOverride
+    ? buildManualHeightScaleEvidence(
+        activeManualHeightScaleOverride,
+        metrics.heightCm,
+        trace?.cmPerPx ?? null,
+        trace?.frontHeightScaleAudit,
+        image.state.width,
+        image.state.height,
+      )
+    : null;
+  const manualTapeScaleEvidence = manualTapeScalePreset
+    ? buildVerticalTapeScaleEvidence(manualTapeScalePreset, trace?.cmPerPx ?? null, trace?.frontHeightScaleAudit)
+    : null;
+  const activeFrontScaleOverrideCmPerPx = manualHeightScaleEvidence?.activeCmPerPx ?? null;
+  const activeManualScaleEvidence = manualHeightScaleEvidence ?? buildHeightScaleEvidence(trace?.cmPerPx ?? null, trace?.scaleSource, trace?.frontHeightScaleAudit);
+  const activeSideScaleEvidence = buildHeightScaleEvidence(trace?.sideCmPerPx ?? null, trace?.sideScaleSource, trace?.sideHeightScaleAudit);
   const geminiGuideMeasurement = computeGeminiGuideMeasurement({
-    guide: usesGeminiGuide ? geminiGuide : null,
-    guideSource: geminiGuideResponseDebug?.guideSource ?? null,
+    guide: effectiveCoordinateGuide,
+    guideSource: effectiveCoordinateGuideSource,
+    sideGuide: effectiveSideCoordinateGuide,
+    sideGuideSource: usesManualGuide
+      ? "manual-coordinate"
+      : manualAdjustedSideGeminiGuide ? "manual-adjusted-coordinate" : sideGeminiGuideResponseDebug?.guideSource ?? null,
     pose: poseMatchesPath ? pose.pose : null,
     imageWidth: activeImageState.width,
     imageHeight: activeImageState.height,
@@ -906,11 +1148,38 @@ export function SizingLabPage() {
     maskMode,
     waistTrace: trace,
     hipsTrace,
+    cmPerPxOverride: activeFrontScaleOverrideCmPerPx,
+    depthRatioOverrides: guideDepthRatioOverrides,
+  });
+  const sideGeminiGuideMeasurement = computeGeminiGuideImageMeasurement({
+    guide: effectiveSideCoordinateGuide,
+    guideSource: usesManualGuide
+      ? "manual-coordinate"
+      : manualAdjustedSideGeminiGuide ? "manual-adjusted-coordinate" : sideGeminiGuideResponseDebug?.guideSource ?? null,
+    pose: activeUseSidePhoto ? sidePose.pose : null,
+    imageWidth: activeUseSidePhoto ? sideImage.state.width : 0,
+    imageHeight: activeUseSidePhoto ? sideImage.state.height : 0,
+    heightCm: metrics.heightCm,
+    maskMode,
   });
   const guideDebugRows = geminiGuideMeasurement?.debugRows ?? [];
   const maskGuideDebugRows = usesMaskGuide ? buildMaskGuideDebugRows(trace, hipsTrace) : [];
-  const sideMaskGuideDebugRows = usesMaskGuide ? buildSideMaskGuideDebugRows(hipsTrace) : [];
-  const displayHipDebugRows = usesGeminiGuide
+  const sideMaskGuideDebugRows = usesGeminiGuideWithSide
+    ? buildGeminiGuideDebugRows({
+      guide: effectiveSideCoordinateGuide,
+      guideSource: manualAdjustedSideGeminiGuide ? "manual-adjusted-coordinate" : sideGeminiGuideResponseDebug?.guideSource ?? null,
+      pose: activeUseSidePhoto ? sidePose.pose : null,
+      imageWidth: activeUseSidePhoto ? sideImage.state.width : 0,
+      imageHeight: activeUseSidePhoto ? sideImage.state.height : 0,
+      heightCm: metrics.heightCm,
+      idPrefix: "side-gemini-guide",
+      labelPrefix: "side Gemini",
+      color: "#ef4444",
+    })
+    : usesManualGuide && effectiveManualSideGuide
+      ? sideGeminiGuideMeasurement?.debugRows ?? []
+      : usesMaskGuide ? buildSideMaskGuideDebugRows(hipsTrace) : [];
+  const displayHipDebugRows = usesCoordinateGuide
     ? guideDebugRows
     : usesMaskGuide
       ? maskGuideDebugRows
@@ -1004,6 +1273,7 @@ export function SizingLabPage() {
   ]);
 
   const canAnalyze = !!image.state.previewUrl
+    && (!usesGeminiGuideWithSide || !!sideImage.state.previewUrl)
     && pose.status !== "loading"
     && geminiStatus !== "loading"
     && geminiBgStatus !== "loading"
@@ -1043,10 +1313,11 @@ export function SizingLabPage() {
               <label className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-text-secondary">
                 <input
                   type="checkbox"
-                  checked={useSidePhoto}
+                  checked={activeUseSidePhoto}
+                  disabled={usesGeminiGuideWithSide}
                   onChange={(event) => toggleSidePhoto(event.target.checked)}
                 />
-                Use side photo
+                {usesGeminiGuideWithSide ? "Side photo required" : "Use side photo"}
               </label>
             ) : null}
             <select
@@ -1065,13 +1336,16 @@ export function SizingLabPage() {
         </div>
 
         {selectedDataset ? (
-          <div className="mt-4 grid grid-cols-2 gap-3 text-xs md:grid-cols-4 lg:grid-cols-9">
+          <div className="mt-4 grid grid-cols-2 gap-3 text-xs md:grid-cols-4 lg:grid-cols-12">
             <DatasetStat label="Height" value={selectedDataset.heightCm > 0 ? `${selectedDataset.heightCm} cm` : "missing"} />
             <DatasetStat label="Weight" value={`${selectedDataset.weightKg} kg`} />
             <DatasetStat label="Gender" value={selectedDataset.gender} />
             <DatasetStat label="Natural waist" value={selectedDatasetNaturalWaistCm ? `${selectedDatasetNaturalWaistCm} cm` : "—"} />
             <DatasetStat label="Lower waist" value={selectedDatasetTrouserWaistCm ? `${selectedDatasetTrouserWaistCm} cm` : "—"} />
             <DatasetStat label="Hips" value={`${selectedDataset.hipsCm} cm`} />
+            <DatasetStat label="Side waist" value={selectedDataset.waistSideDepthCm ? `${selectedDataset.waistSideDepthCm} cm` : "—"} />
+            <DatasetStat label="Side lower waist" value={selectedDataset.trouserWaistSideDepthCm ? `${selectedDataset.trouserWaistSideDepthCm} cm` : "—"} />
+            <DatasetStat label="Side hips" value={selectedDataset.hipsSideDepthCm ? `${selectedDataset.hipsSideDepthCm} cm` : "—"} />
             <DatasetStat label="Chest" value={`${selectedDataset.chestCm} cm`} />
             <DatasetStat label="Under chest" value={selectedDataset.underChestCm > 0 ? `${selectedDataset.underChestCm} cm` : "—"} />
             <DatasetStat
@@ -1097,8 +1371,16 @@ export function SizingLabPage() {
             title="Side photo"
             emptyLabel="Upload side full-body photo"
             previewUrl={sideImage.state.previewUrl}
-            onSelect={sideImage.selectFile}
-            onClear={sideImage.clear}
+            onSelect={async (file) => {
+              sidePose.reset();
+              setManualSideGuide(null);
+              await sideImage.selectFile(file);
+            }}
+            onClear={() => {
+              sideImage.clear();
+              sidePose.reset();
+              setManualSideGuide(null);
+            }}
             width={sideImage.state.width}
             height={sideImage.state.height}
           />
@@ -1221,7 +1503,7 @@ export function SizingLabPage() {
             </div>
           </div>
         ) : null}
-        {usesGeminiGuide ? (
+        {usesModelCoordinateGuide ? (
           <div className="mt-4 rounded-xl border border-purple-100 bg-purple-50 px-4 py-3 text-xs text-purple-950">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div>
@@ -1268,13 +1550,14 @@ export function SizingLabPage() {
                   Use default coordinate prompt
                 </label>
                 <span className="text-[11px] font-mono text-purple-800">
-                  default {SIZING_LAB_GEMINI_GUIDE_PROMPT_VERSION}
+                  default {defaultGeminiGuidePromptVersion}
+                  {usesGeminiGuideWithSide ? ` · side ${SIZING_LAB_GEMINI_SIDE_GUIDE_PROMPT_VERSION}` : ""}
                 </span>
                 {!useDefaultGeminiGuidePrompt ? (
                   <button
                     type="button"
                     onClick={() => {
-                      setGeminiGuidePrompt(DEFAULT_SIZING_LAB_GEMINI_GUIDE_PROMPT);
+                      setGeminiGuidePrompt(defaultGeminiGuidePrompt);
                       clearGeminiGuide();
                       setPoseSource(null);
                       setAnalysisTotalMs(null);
@@ -1286,7 +1569,7 @@ export function SizingLabPage() {
                 ) : null}
               </div>
               <textarea
-                value={useDefaultGeminiGuidePrompt ? DEFAULT_SIZING_LAB_GEMINI_GUIDE_PROMPT : geminiGuidePrompt}
+                value={useDefaultGeminiGuidePrompt ? defaultGeminiGuidePrompt : geminiGuidePrompt}
                 onChange={(event) => {
                   setGeminiGuidePrompt(event.target.value);
                   clearGeminiGuide();
@@ -1309,12 +1592,34 @@ export function SizingLabPage() {
                   Last run prompt: {geminiGuidePromptDebug.source} · {geminiGuidePromptDebug.version}
                 </div>
               ) : null}
+              {usesGeminiGuideWithSide ? (
+                <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 p-3">
+                  <div className="text-[11px] font-semibold text-indigo-950">
+                    Side guide default {SIZING_LAB_GEMINI_SIDE_GUIDE_PROMPT_VERSION}
+                  </div>
+                  <textarea
+                    value={DEFAULT_SIZING_LAB_GEMINI_SIDE_GUIDE_PROMPT}
+                    readOnly
+                    rows={6}
+                    className="mt-2 w-full rounded-lg border border-indigo-100 bg-slate-50 px-3 py-2 font-mono text-[11px] leading-relaxed text-text-primary"
+                  />
+                </div>
+              ) : null}
               {!useDefaultGeminiGuidePrompt ? (
                 <div className="mt-2 rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-900">
                   Custom prompt is active. Default prompt edits will not affect this run unless you reset or re-enable default.
                 </div>
               ) : null}
             </div>
+          </div>
+        ) : null}
+        {usesManualGuide ? (
+          <div className="mt-4 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-950">
+            <div className="font-semibold">Manual coordinate guide</div>
+            <p className="mt-1 text-red-900">
+              No Gemini request. Run Analyze once, then drag the red guide points on the source image.
+              Manual coordinates own the active formula width; mask width remains debug evidence.
+            </p>
           </div>
         ) : null}
         {usesMaskGuide ? (
@@ -1387,9 +1692,10 @@ export function SizingLabPage() {
             Path: {selectedPathLabel} ·
             {usesGemini ? ` ${selectedGeminiModel.label} · BG ${geminiBgMs ?? "—"} ms · Gemini ${geminiMs ?? "—"} ms ·` : ""}
             {usesGeminiCalibration ? ` Calibration ${calibrationMs ?? "—"} ms ·` : ""}
-            {usesGeminiGuide
-              ? ` ${selectedGeminiGuideModel.label} guide total ${geminiGuideMs ?? "—"} ms · browser prep ${geminiGuideTimings?.browserPrepMs ?? "—"} ms · model API wait ${geminiGuideTimings?.geminiRoundTripMs ?? "—"} ms · server prep ${geminiGuideTimings?.serverPrepareMs ?? "—"} ms ·`
+            {usesModelCoordinateGuide
+              ? ` ${selectedGeminiGuideModel.label} front guide ${geminiGuideMs ?? "—"} ms${usesGeminiGuideWithSide ? ` · side guide ${sideGeminiGuideMs ?? "—"} ms` : ""} · browser prep ${geminiGuideTimings?.browserPrepMs ?? "—"} ms · model API wait ${geminiGuideTimings?.geminiRoundTripMs ?? "—"} ms · server prep ${geminiGuideTimings?.serverPrepareMs ?? "—"} ms ·`
               : ""}
+            {usesManualGuide ? " Manual coordinate guide · no model ·" : ""}
             {usesSegmenter ? ` Segmenter ${segmenterMs ?? "—"} ms ·` : ""}
             {usesBackendSdk ? " SDK/backend formulas ·" : ""}
             MediaPipe {pose.elapsedMs + (activeUseSidePhoto && sidePose.status === "ready" ? sidePose.elapsedMs : 0)} ms ·
@@ -1452,10 +1758,68 @@ export function SizingLabPage() {
       )}
 
       <section className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_440px]">
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-text-primary mb-3">Preview</h3>
+        <div ref={manualWorkbenchRef} className={`rounded-2xl border border-gray-200 bg-white p-5 shadow-sm ${usesManualGuide ? "lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto lg:overscroll-contain" : ""}`}>
+          <h3 className="mb-3 text-sm font-semibold text-text-primary">
+            {usesManualGuide ? "Manual coordinate editor" : "Preview"}
+          </h3>
           {image.state.previewUrl ? (
             <>
+              {usesManualGuide ? (
+                <div className="space-y-4">
+                  <ManualCoordinateGuidePanel
+                    imageUrl={image.state.previewUrl}
+                    imageWidth={image.state.width}
+                    imageHeight={image.state.height}
+                    guide={effectiveManualGuide}
+                    measurement={geminiGuideMeasurement}
+                    scaleEvidence={activeManualScaleEvidence}
+                    comparisonScaleEvidence={manualTapeScaleEvidence}
+                    heightCm={metrics.heightCm}
+                    manualHeightScaleOverride={activeManualHeightScaleOverride}
+                    onManualHeightScaleOverrideChange={setManualHeightScaleOverride}
+                    targetNaturalWaistCm={selectedDatasetNaturalWaistCm}
+                    targetTrouserWaistCm={selectedDatasetTrouserWaistCm}
+                    targetHipsCm={selectedDataset?.hipsCm}
+                    linkedEditor={activeUseSidePhoto && sideImage.state.previewUrl ? {
+                      imageUrl: sideImage.state.previewUrl,
+                      imageWidth: sideImage.state.width,
+                      imageHeight: sideImage.state.height,
+                      guide: effectiveManualSideGuide,
+                      measurement: sideGeminiGuideMeasurement,
+                      scaleEvidence: activeSideScaleEvidence,
+                      title: "Side photo",
+                      labelSuffix: "side manual coordinate",
+                      measurementMode: "side-depth",
+                      targetNaturalWaistCm: selectedDataset?.waistSideDepthCm,
+                      targetTrouserWaistCm: selectedDataset?.trouserWaistSideDepthCm,
+                      targetHipsCm: selectedDataset?.hipsSideDepthCm,
+                      onChange: setManualSideGuide,
+                      onReset: () => setManualSideGuide(buildManualSideGuideFromPose(sidePose.pose, sideImage.state.width, sideImage.state.height, metrics.heightCm)),
+                    } : null}
+                    depthRatioOverrides={guideDepthRatioOverrides}
+                    onDepthRatioOverrideChange={updateGuideDepthRatioOverride}
+                    onChange={setManualGuide}
+                    onReset={() => setManualGuide(buildManualGuideFromTrace(trace, hipsTrace, poseMatchesPath ? pose.pose : null, image.state.width, image.state.height, selectedDatasetId, maskMode))}
+                  />
+                  <details className="rounded-xl border border-gray-200 bg-white p-3">
+                    <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wider text-text-hint">
+                      Debug preview used for landmarks + mask
+                    </summary>
+                    <div className="mt-3">
+                      <PreviewCanvas
+                        imageUrl={image.state.previewUrl}
+                        imageWidth={image.state.width}
+                        imageHeight={image.state.height}
+                        pose={displayPose}
+                        showMask={usesBackendSdk ? false : showMask}
+                        showLandmarks={showLandmarks}
+                        maskMode={maskMode}
+                        heightAudit={trace?.frontHeightScaleAudit ?? null}
+                      />
+                    </div>
+                  </details>
+                </div>
+              ) : (
               <div className={`grid grid-cols-1 gap-4 ${activeUseSidePhoto || (usesGemini && (geminiInputImage.state.previewUrl || normalizedImage.state.previewUrl)) ? "md:grid-cols-2" : ""} ${usesGemini && geminiInputImage.state.previewUrl && normalizedImage.state.previewUrl ? usesGeminiCalibration && originalCalibrationPose ? "xl:grid-cols-5" : "xl:grid-cols-4" : usesGemini && normalizedImage.state.previewUrl ? "xl:grid-cols-3" : ""}`}>
                   {usesGemini && normalizedImage.state.previewUrl ? (
                 <>
@@ -1531,6 +1895,7 @@ export function SizingLabPage() {
                       showMask={usesBackendSdk ? false : showMask}
                       showLandmarks={showLandmarks}
                       maskMode={maskMode}
+                      heightAudit={trace?.frontHeightScaleAudit ?? null}
                     />
                   </div>
                 </>
@@ -1547,10 +1912,11 @@ export function SizingLabPage() {
                     showMask={usesBackendSdk ? false : showMask}
                     showLandmarks={showLandmarks}
                     maskMode={maskMode}
+                    heightAudit={trace?.frontHeightScaleAudit ?? null}
                   />
                 </div>
               )}
-              {usesGeminiGuide && geminiGuideGridImageUrl ? (
+              {usesCoordinateGuide && geminiGuideGridImageUrl ? (
                 <div className="space-y-2">
                   <div className="text-xs font-semibold uppercase tracking-wider text-purple-700">
                     Image 2: pixel grid overlay sent to coordinate model
@@ -1563,7 +1929,7 @@ export function SizingLabPage() {
                   />
                 </div>
               ) : null}
-              {usesGeminiGuide && geminiGuideLineImageUrl ? (
+              {usesCoordinateGuide && geminiGuideLineImageUrl ? (
                 <div className="space-y-2">
                   <div className="text-xs font-semibold uppercase tracking-wider text-red-700">
                     Model returned curved-line image on grid overlay
@@ -1595,13 +1961,41 @@ export function SizingLabPage() {
                       showMask={showMask}
                       showLandmarks={showLandmarks}
                       maskMode={maskMode}
+                      heightAudit={trace?.sideHeightScaleAudit ?? null}
                     />
                   </div>
                 ) : (
                   <p className="text-sm text-text-secondary py-8 text-center">Upload a side image to measure depth.</p>
                 )
                 : null}
+              {usesGeminiGuideWithSide && sideGeminiGuideGridImageUrl ? (
+                <div className="space-y-2">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-purple-700">
+                    Side image 2: pixel grid overlay sent to coordinate model
+                  </div>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={sideGeminiGuideGridImageUrl}
+                    alt="Side photo with pixel grid overlay"
+                    className="w-full rounded-xl border border-purple-200 bg-black object-contain"
+                  />
+                </div>
+              ) : null}
+              {usesGeminiGuideWithSide && sideGeminiGuideLineImageUrl ? (
+                <div className="space-y-2">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-red-700">
+                    Side model returned curved-line image on grid overlay
+                  </div>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={sideGeminiGuideLineImageUrl}
+                    alt="Side returned image with waist, trouser-waist, and hip red depth curves"
+                    className="w-full rounded-xl border border-red-200 bg-black object-contain"
+                  />
+                </div>
+              ) : null}
               </div>
+              )}
               <GeminiCalibrationPanel
                 calibration={geminiCalibration}
                 geminiPose={poseMatchesPath ? pose.pose : null}
@@ -1612,16 +2006,92 @@ export function SizingLabPage() {
                 originalImageHeight={image.state.height}
                 heightCm={metrics.heightCm}
               />
-              <GeminiGuidePanel
-                measurement={geminiGuideMeasurement}
-                status={geminiGuideStatus}
-                error={geminiGuideError}
-                elapsedMs={geminiGuideMs}
-                imageUrl={image.state.previewUrl}
-                imageWidth={image.state.width}
-                imageHeight={image.state.height}
-                responseDebug={geminiGuideResponseDebug}
-              />
+              {usesModelCoordinateGuide ? (
+                <div className="space-y-4">
+                  {geminiGuide ? (
+                    <ManualCoordinateGuidePanel
+                      imageUrl={image.state.previewUrl}
+                      imageWidth={image.state.width}
+                      imageHeight={image.state.height}
+                      guide={manualAdjustedGeminiGuide ?? geminiGuide}
+                      measurement={geminiGuideMeasurement}
+                      scaleEvidence={buildHeightScaleEvidence(trace?.cmPerPx ?? null, trace?.scaleSource, trace?.frontHeightScaleAudit)}
+                      targetNaturalWaistCm={selectedDatasetNaturalWaistCm}
+                      targetTrouserWaistCm={selectedDatasetTrouserWaistCm}
+                      targetHipsCm={selectedDataset?.hipsCm}
+                      linkedEditor={usesGeminiGuideWithSide && sideGeminiGuide && sideImage.state.previewUrl ? {
+                        imageUrl: sideImage.state.previewUrl,
+                        imageWidth: sideImage.state.width,
+                        imageHeight: sideImage.state.height,
+                        guide: manualAdjustedSideGeminiGuide ?? sideGeminiGuide,
+                        measurement: sideGeminiGuideMeasurement,
+                        scaleEvidence: activeSideScaleEvidence,
+                        title: "Side photo",
+                        labelSuffix: "side manual adjusted",
+                        measurementMode: "side-depth",
+                        targetNaturalWaistCm: selectedDataset?.waistSideDepthCm,
+                        targetTrouserWaistCm: selectedDataset?.trouserWaistSideDepthCm,
+                        targetHipsCm: selectedDataset?.hipsSideDepthCm,
+                        onChange: setManualAdjustedSideGeminiGuide,
+                        onReset: () => setManualAdjustedSideGeminiGuide(null),
+                      } : null}
+                      depthRatioOverrides={guideDepthRatioOverrides}
+                      onDepthRatioOverrideChange={updateGuideDepthRatioOverride}
+                      title="Manual adjustment over Gemini guide"
+                      description="Gemini returned image and JSON stay visible below as evidence. Red guide owns the active formula span; blue dashed line is visible-edge evidence only."
+	                      resetLabel="Reset to Gemini guide"
+	                      labelSuffix="manual adjusted"
+	                      onChange={setManualAdjustedGeminiGuide}
+	                      onReset={() => setManualAdjustedGeminiGuide(null)}
+	                    />
+	                  ) : null}
+	                  {usesGeminiGuideWithSide && sideGeminiGuide && sideImage.state.previewUrl ? (
+	                    <ManualCoordinateGuidePanel
+	                      imageUrl={sideImage.state.previewUrl}
+	                      imageWidth={sideImage.state.width}
+	                      imageHeight={sideImage.state.height}
+                      guide={manualAdjustedSideGeminiGuide ?? sideGeminiGuide}
+                      measurement={sideGeminiGuideMeasurement}
+                      scaleEvidence={activeSideScaleEvidence}
+                      measurementMode="side-depth"
+                      targetNaturalWaistCm={selectedDataset?.waistSideDepthCm}
+                      targetTrouserWaistCm={selectedDataset?.trouserWaistSideDepthCm}
+                      targetHipsCm={selectedDataset?.hipsSideDepthCm}
+                      title="Manual adjustment over side Gemini guide"
+	                      description="Side guide is separate. Drag each side-photo line independently; its width becomes side depth evidence for the front ellipse in side-guide mode."
+	                      resetLabel="Reset side Gemini guide"
+	                      labelSuffix="side manual adjusted"
+	                      onChange={setManualAdjustedSideGeminiGuide}
+	                      onReset={() => setManualAdjustedSideGeminiGuide(null)}
+	                    />
+	                  ) : null}
+	                  <GeminiGuidePanel
+                    measurement={geminiGuideMeasurement}
+                    status={geminiGuideStatus}
+                    error={geminiGuideError}
+                    elapsedMs={geminiGuideMs}
+                    imageUrl={image.state.previewUrl}
+                    imageWidth={image.state.width}
+                    imageHeight={image.state.height}
+                    responseDebug={geminiGuideResponseDebug}
+                  />
+                </div>
+              ) : null}
+              {usesGeminiGuideWithSide ? (
+                <GeminiGuidePanel
+                  measurement={sideGeminiGuideMeasurement}
+                  status={geminiGuideStatus}
+                  error={geminiGuideError}
+                  elapsedMs={sideGeminiGuideMs}
+                  imageUrl={sideImage.state.previewUrl}
+                  imageWidth={sideImage.state.width}
+                  imageHeight={sideImage.state.height}
+                  title="Side coordinate curve guide"
+                  description="Separate side-photo guide. The side red curves are measured with the side photo cm/px and are used as depth for the front+side ellipse in this mode only."
+                  sourceImageLabel="Side image with active depth guide coordinates"
+                  responseDebug={sideGeminiGuideResponseDebug}
+                />
+              ) : null}
             </>
           ) : (
             <p className="text-sm text-text-secondary py-8 text-center">Upload an image to see the overlay.</p>
@@ -1630,29 +2100,31 @@ export function SizingLabPage() {
         <div className="space-y-5">
 	          {!usesBackendSdk ? (
 	            <>
-              <ResultCard
-                trace={trace}
-                actualWaistCm={selectedDatasetNaturalWaistCm}
-                actualTrouserWaistCm={selectedDatasetTrouserWaistCm}
-                calibration={geminiCalibration?.naturalWaist ?? null}
-                trouserCalibration={geminiCalibration?.trouserWaist ?? null}
-                guide={geminiGuideMeasurement?.waist ?? null}
-                trouserGuide={geminiGuideMeasurement?.trouserWaist ?? null}
-              />
-              <HipsCard
-                trace={hipsTrace}
-                actualHipsCm={selectedDataset?.hipsCm}
-                calibration={geminiCalibration?.hips ?? null}
-                guide={geminiGuideMeasurement?.hips ?? null}
-              />
-              <GeminiCorrectionPanel
-                status={geminiCorrectionStatus}
-                correction={geminiCorrection}
-                error={geminiCorrectionError}
-	                elapsedMs={geminiCorrectionMs}
-	              />
-	            </>
-	          ) : (
+              <div className={`space-y-5 ${usesManualGuide ? "lg:sticky lg:top-5 lg:z-10 lg:self-start" : ""}`}>
+                <ResultCard
+                  trace={trace}
+                  actualWaistCm={selectedDatasetNaturalWaistCm}
+                  actualTrouserWaistCm={selectedDatasetTrouserWaistCm}
+                  calibration={geminiCalibration?.naturalWaist ?? null}
+                  trouserCalibration={geminiCalibration?.trouserWaist ?? null}
+                  guide={geminiGuideMeasurement?.waist ?? null}
+                  trouserGuide={geminiGuideMeasurement?.trouserWaist ?? null}
+                />
+                <HipsCard
+                  trace={hipsTrace}
+                  actualHipsCm={selectedDataset?.hipsCm}
+                  calibration={geminiCalibration?.hips ?? null}
+                  guide={geminiGuideMeasurement?.hips ?? null}
+                />
+                <GeminiCorrectionPanel
+                  status={geminiCorrectionStatus}
+                  correction={geminiCorrection}
+                  error={geminiCorrectionError}
+		                  elapsedMs={geminiCorrectionMs}
+		                />
+              </div>
+		            </>
+		          ) : (
 	            <BackendDatasetResults
 	              trace={backendSdkTrace}
 	              status={backendSdkStatus}
@@ -1673,8 +2145,8 @@ export function SizingLabPage() {
             trace={trace}
             maskMode={maskMode}
             debugRows={displayHipDebugRows}
-            showTraceRows={!usesGeminiGuide && !usesMaskGuide}
-            debugRowsLabel={usesGeminiGuide ? "Coordinate guide row width" : usesMaskGuide ? "Mask/MediaPipe guide rows" : "selected hip row"}
+            showTraceRows={!usesCoordinateGuide && !usesMaskGuide}
+            debugRowsLabel={usesManualGuide ? "Manual coordinate row width" : usesCoordinateGuide ? "Coordinate guide row width" : usesMaskGuide ? "Mask/MediaPipe guide rows" : "selected hip row"}
           />
         ) : null}
         {activeUseSidePhoto && sidePose.pose && (
@@ -1684,16 +2156,441 @@ export function SizingLabPage() {
             mode="side"
             maskMode={maskMode}
             debugRows={sideMaskGuideDebugRows}
-            debugRowsLabel="side hip depth row"
+            debugRowsLabel={usesGeminiGuideWithSide ? "Side coordinate guide depth rows" : "side hip depth row"}
           />
         )}
       </section>
 
-      <section>
-        <FormulaPanel trace={trace} backendTrace={backendSdkTrace} />
-      </section>
+      {!usesManualGuide ? (
+        <section>
+          <FormulaPanel trace={trace} backendTrace={backendSdkTrace} />
+        </section>
+      ) : null}
     </main>
   );
+}
+
+function buildManualGuideFromTrace(
+  trace: WaistTrace | null,
+  hipsTrace: HipsTrace | null,
+  pose: PoseResult | null,
+  imageWidth: number,
+  imageHeight: number,
+  selectedDatasetId: string,
+  maskMode: MeasurementMaskMode,
+): GeminiBodyGuide | null {
+  if (!trace || imageWidth <= 0 || imageHeight <= 0) return null;
+  const hipsRow = hipsTrace?.debugRows.find((row) => row.id === "hip-selected")
+    ?? hipsTrace?.debugRows.find((row) => row.id === "hip-widest-band");
+  const tapeRowPreset = selectedDatasetId === "bahar"
+    ? BAHAR_TAPE_ROW_PRESET
+    : selectedDatasetId === "nadia"
+      ? NADIA_TAPE_ROW_PRESET
+      : null;
+  if (tapeRowPreset) {
+    return buildManualGuideFromTapeRowPreset(
+      tapeRowPreset,
+      pose,
+      trace.cmPerPx,
+      imageWidth,
+      imageHeight,
+      maskMode,
+      `Manual coordinate guide seeded from ${selectedDatasetId} visible tape rows. Red endpoints start from visible mask edge and stay editable.`,
+    );
+  }
+  const negar2Preset = selectedDatasetId === "negar-2"
+    ? NEGAR_2_MANUAL_ROW_PRESET
+    : null;
+  if (negar2Preset) {
+    return buildManualGuideFromPreset(
+      negar2Preset,
+      imageWidth,
+      imageHeight,
+      "Manual coordinate guide seeded from Negar 2 user-confirmed rows and endpoints.",
+    );
+  }
+  const negar4TapePreset = selectedDatasetId === "negar-4"
+    ? NEGAR_4_MANUAL_TAPE_ROW_PRESET
+    : null;
+  if (negar4TapePreset) {
+    return buildManualGuideFromPreset(
+      negar4TapePreset,
+      imageWidth,
+      imageHeight,
+      `Manual coordinate guide seeded from Negar 4 visible tape rows and user-confirmed endpoints: waist tape ${negar4TapePreset.waist.tapeCm}, trouser ${negar4TapePreset.trouserWaist.tapeCm}, hips ${negar4TapePreset.hips.tapeCm}.`,
+    );
+  }
+  const guide: GeminiBodyGuide = {
+    waist: buildManualGuideLine(
+      trace.naturalWaistYNorm,
+      trace.naturalWaistLeftXNorm,
+      trace.naturalWaistRightXNorm,
+      imageWidth,
+      imageHeight,
+    ),
+    trouserWaist: buildManualGuideLine(
+      trace.trouserWaistYNorm,
+      trace.trouserWaistLeftXNorm,
+      trace.trouserWaistRightXNorm,
+      imageWidth,
+      imageHeight,
+    ),
+    hips: buildManualGuideLine(
+      hipsRow?.yNorm,
+      hipsRow?.leftXNorm,
+      hipsRow?.rightXNorm,
+      imageWidth,
+      imageHeight,
+    ),
+    notes: "Manual coordinate guide seeded from local mask rows.",
+  };
+  return guide.waist || guide.trouserWaist || guide.hips ? guide : null;
+}
+
+function buildManualSideGuideFromPose(
+  pose: PoseResult | null,
+  imageWidth: number,
+  imageHeight: number,
+  heightCm: number,
+  frontGuide: GeminiBodyGuide | null = null,
+  frontPose: PoseResult | null = null,
+  frontImageWidth = 0,
+  frontImageHeight = 0,
+): GeminiBodyGuide | null {
+  if (!pose || imageWidth <= 0 || imageHeight <= 0) return null;
+  const scale = computePoseScale(pose, imageWidth, imageHeight, heightCm);
+  if (!scale) return null;
+  const frontScale = frontPose && frontImageWidth > 0 && frontImageHeight > 0
+    ? computePoseScale(frontPose, frontImageWidth, frontImageHeight, heightCm)
+    : null;
+  const torsoSpan = Math.max(0.04, scale.hipYNorm - scale.shoulderYNorm);
+  const legSpan = Math.max(0.08, scale.bottomYNorm - scale.hipYNorm);
+  const fallbackY = {
+    waist: scale.shoulderYNorm + torsoSpan * 0.58,
+    trouserWaist: scale.shoulderYNorm + torsoSpan * 0.78,
+    hips: scale.hipYNorm + legSpan * 0.13,
+  };
+  const sideYFor = (kind: "waist" | "trouserWaist" | "hips") => {
+    const frontLine = kind === "waist"
+      ? frontGuide?.waist
+      : kind === "trouserWaist"
+        ? frontGuide?.trouserWaist
+        : frontGuide?.hips;
+    const frontYNorm = guideLineYNormForImage(frontLine, frontImageHeight);
+    if (frontYNorm != null && frontScale) {
+      return mapFrontYNormToSideYNorm(frontYNorm, frontScale, scale);
+    }
+    return fallbackY[kind];
+  };
+  const guide: GeminiBodyGuide = {
+    waist: buildManualGuideLineFromYNormMask({
+      yNorm: sideYFor("waist"),
+      pose,
+      imageWidth,
+      imageHeight,
+      cmPerPx: scale.cmPerPx,
+      centerXNorm: scale.hipCenterXNorm,
+      maskMode: "raw",
+      fallbackWidthNorm: 0.09,
+    }),
+    trouserWaist: buildManualGuideLineFromYNormMask({
+      yNorm: sideYFor("trouserWaist"),
+      pose,
+      imageWidth,
+      imageHeight,
+      cmPerPx: scale.cmPerPx,
+      centerXNorm: scale.hipCenterXNorm,
+      maskMode: "raw",
+      fallbackWidthNorm: 0.1,
+    }),
+    hips: buildManualGuideLineFromYNormMask({
+      yNorm: sideYFor("hips"),
+      pose,
+      imageWidth,
+      imageHeight,
+      cmPerPx: scale.cmPerPx,
+      centerXNorm: scale.hipCenterXNorm,
+      maskMode: "raw",
+      fallbackWidthNorm: 0.11,
+    }),
+    notes: "Manual side coordinate guide seeded from side photo mask at the active front row heights. Dataset side widths are comparison only.",
+  };
+  return guide.waist || guide.trouserWaist || guide.hips ? guide : null;
+}
+
+function guideLineYNormForImage(line: GeminiGuideLine | undefined, imageHeight: number): number | null {
+  if (!line || imageHeight <= 0) return null;
+  const yPx = typeof line.y_px === "number" && Number.isFinite(line.y_px)
+    ? line.y_px
+    : typeof line.y_percent === "number" && Number.isFinite(line.y_percent)
+      ? (line.y_percent / 100) * imageHeight
+      : null;
+  if (yPx == null) return null;
+  return clampManualGuideCoord(yPx / imageHeight, 0.02, 0.98);
+}
+
+function mapFrontYNormToSideYNorm(
+  frontYNorm: number,
+  frontScale: NonNullable<ReturnType<typeof computePoseScale>>,
+  sideScale: NonNullable<ReturnType<typeof computePoseScale>>,
+): number {
+  const sideYNorm = frontYNorm <= frontScale.hipYNorm
+    ? sideScale.shoulderYNorm +
+      ((frontYNorm - frontScale.shoulderYNorm) / Math.max(0.01, frontScale.hipYNorm - frontScale.shoulderYNorm)) *
+        (sideScale.hipYNorm - sideScale.shoulderYNorm)
+    : sideScale.hipYNorm +
+      ((frontYNorm - frontScale.hipYNorm) / Math.max(0.01, frontScale.bottomYNorm - frontScale.hipYNorm)) *
+        (sideScale.bottomYNorm - sideScale.hipYNorm);
+  return clampManualGuideCoord(sideYNorm, 0.02, 0.98);
+}
+
+function buildManualGuideFromTapeRowPreset(
+  preset: {
+    sourceImageHeight: number;
+    sourceImageWidth: number;
+    waist: { tapeCm: number; yPx: number };
+    trouserWaist: { tapeCm: number; yPx: number };
+    hips: { tapeCm: number; yPx: number };
+  },
+  pose: PoseResult | null,
+  cmPerPx: number,
+  imageWidth: number,
+  imageHeight: number,
+  maskMode: MeasurementMaskMode,
+  notes: string,
+): GeminiBodyGuide {
+  return {
+    waist: buildManualGuideLineFromTapeRow(preset.waist, preset, pose, cmPerPx, imageWidth, imageHeight, maskMode),
+    trouserWaist: buildManualGuideLineFromTapeRow(preset.trouserWaist, preset, pose, cmPerPx, imageWidth, imageHeight, maskMode),
+    hips: buildManualGuideLineFromTapeRow(preset.hips, preset, pose, cmPerPx, imageWidth, imageHeight, maskMode),
+    notes,
+  };
+}
+
+function buildManualGuideFromPreset(
+  preset: {
+    sourceImageHeight: number;
+    sourceImageWidth: number;
+    waist: { yPx: number; leftXPx: number; rightXPx: number };
+    trouserWaist: { yPx: number; leftXPx: number; rightXPx: number };
+    hips: { yPx: number; leftXPx: number; rightXPx: number };
+  },
+  imageWidth: number,
+  imageHeight: number,
+  notes: string,
+): GeminiBodyGuide {
+  return {
+    waist: buildManualGuideLineFromPreset(preset.waist, preset, imageWidth, imageHeight),
+    trouserWaist: buildManualGuideLineFromPreset(preset.trouserWaist, preset, imageWidth, imageHeight),
+    hips: buildManualGuideLineFromPreset(preset.hips, preset, imageWidth, imageHeight),
+    notes,
+  };
+}
+
+function buildManualGuideLineFromTapeRow(
+  row: { yPx: number },
+  source: { sourceImageWidth: number; sourceImageHeight: number },
+  pose: PoseResult | null,
+  cmPerPx: number,
+  imageWidth: number,
+  imageHeight: number,
+  maskMode: MeasurementMaskMode,
+): GeminiGuideLine {
+  const scaleY = imageHeight / source.sourceImageHeight;
+  const yNorm = clampManualGuideCoord((row.yPx * scaleY) / imageHeight, 0.02, 0.98);
+  return buildManualGuideLineFromYNormMask({
+    yNorm,
+    pose,
+    imageWidth,
+    imageHeight,
+    cmPerPx,
+    centerXNorm: inferPoseCenterXNorm(pose),
+    maskMode,
+    fallbackWidthNorm: 0.18,
+  }) ?? buildManualGuideLine(yNorm, 0.4, 0.6, imageWidth, imageHeight)!;
+}
+
+function buildManualGuideLineFromYNormMask(args: {
+  yNorm: number;
+  pose: PoseResult | null;
+  imageWidth: number;
+  imageHeight: number;
+  cmPerPx: number;
+  centerXNorm: number;
+  maskMode: MeasurementMaskMode;
+  segmentMode?: "center-walk" | "widest";
+  fallbackWidthNorm: number;
+}): GeminiGuideLine | undefined {
+  const yNorm = clampManualGuideCoord(args.yNorm, 0.02, 0.98);
+  const measured = args.pose?.mask
+    ? measureMaskWidthAtY(
+        args.pose,
+        args.imageWidth,
+        args.imageHeight,
+        args.cmPerPx > 0 ? args.cmPerPx : 1,
+        yNorm,
+        args.centerXNorm,
+        3,
+        manualSeedMaskOptions(args.maskMode, args.segmentMode ?? "center-walk"),
+      )
+    : null;
+  const centerXNorm = measured
+    ? (measured.leftXNorm + measured.rightXNorm) / 2
+    : args.centerXNorm;
+  let leftXNorm = measured?.leftXNorm ?? centerXNorm - args.fallbackWidthNorm / 2;
+  let rightXNorm = measured?.rightXNorm ?? centerXNorm + args.fallbackWidthNorm / 2;
+  if (leftXNorm < 0.02) {
+    rightXNorm += 0.02 - leftXNorm;
+    leftXNorm = 0.02;
+  }
+  if (rightXNorm > 0.98) {
+    leftXNorm -= rightXNorm - 0.98;
+    rightXNorm = 0.98;
+  }
+  leftXNorm = clampManualGuideCoord(leftXNorm, 0.02, 0.96);
+  rightXNorm = clampManualGuideCoord(rightXNorm, 0.04, 0.98);
+  return buildManualGuideLine(yNorm, leftXNorm, rightXNorm, args.imageWidth, args.imageHeight);
+}
+
+function manualSeedMaskOptions(maskMode: MeasurementMaskMode, segmentMode: "center-walk" | "widest") {
+  return maskMode === "ignore-arms"
+    ? { excludeLimbs: true, segmentMode, exclusionMode: "limb-capsules" as const }
+    : { excludeLimbs: false, segmentMode, exclusionMode: "none" as const };
+}
+
+function inferPoseCenterXNorm(pose: PoseResult | null): number {
+  const leftHip = pose?.landmarks[23];
+  const rightHip = pose?.landmarks[24];
+  if (leftHip && rightHip) return clampManualGuideCoord((leftHip.x + rightHip.x) / 2, 0.05, 0.95);
+  return 0.5;
+}
+
+function buildVerticalTapeScaleEvidence(
+  preset: {
+    waist: { tapeCm: number; yPx: number };
+    trouserWaist: { tapeCm: number; yPx: number };
+    hips: { tapeCm: number; yPx: number };
+  },
+  heightCmPerPx: number | null,
+  heightAudit?: MaskHeightScaleAudit | null,
+): ManualScaleEvidence {
+  const anchors = [
+    { label: "waist tape row", tapeCm: preset.waist.tapeCm, yPx: preset.waist.yPx },
+    { label: "trouser tape row", tapeCm: preset.trouserWaist.tapeCm, yPx: preset.trouserWaist.yPx },
+    { label: "hip tape row", tapeCm: preset.hips.tapeCm, yPx: preset.hips.yPx },
+  ];
+  const first = anchors[0]!;
+  const last = anchors[anchors.length - 1]!;
+  const pxPerCm = (last.yPx - first.yPx) / (last.tapeCm - first.tapeCm);
+  const activeCmPerPx = 1 / pxPerCm;
+  return {
+    source: "vertical-tape",
+    activeCmPerPx,
+    heightCmPerPx,
+    pxPerCm,
+    scaleDeltaPct: heightCmPerPx && heightCmPerPx > 0
+      ? ((heightCmPerPx / activeCmPerPx) - 1) * 100
+      : null,
+    anchors,
+    heightAudit,
+  };
+}
+
+function buildManualHeightScaleEvidence(
+  override: ManualHeightScaleOverride,
+  heightCm: number,
+  referenceHeightCmPerPx: number | null,
+  heightAudit: MaskHeightScaleAudit | null | undefined,
+  imageWidth: number,
+  imageHeight: number,
+): ManualScaleEvidence | null {
+  if (heightCm <= 0 || imageWidth <= 0 || imageHeight <= 0) return null;
+  const topY = clampManualGuideCoord(override.topYNorm * imageHeight, 0, imageHeight - 1);
+  const bottomY = clampManualGuideCoord(override.bottomYNorm * imageHeight, topY + 1, imageHeight);
+  const bodySpanPx = Math.abs(bottomY - topY);
+  if (bodySpanPx <= 0) return null;
+  const activeCmPerPx = heightCm / bodySpanPx;
+  return {
+    source: "manual-height",
+    activeCmPerPx,
+    heightCmPerPx: referenceHeightCmPerPx,
+    pxPerCm: 1 / activeCmPerPx,
+    scaleDeltaPct: referenceHeightCmPerPx && referenceHeightCmPerPx > 0
+      ? ((referenceHeightCmPerPx / activeCmPerPx) - 1) * 100
+      : null,
+    anchors: [],
+    heightAudit,
+  };
+}
+
+function buildHeightScaleEvidence(
+  heightCmPerPx: number | null,
+  source: ManualScaleEvidence["source"] | undefined = "pose-landmarks",
+  heightAudit?: MaskHeightScaleAudit | null,
+): ManualScaleEvidence | null {
+  if (!heightCmPerPx || heightCmPerPx <= 0) return null;
+  return {
+    source: source === "vertical-tape" ? "pose-landmarks" : source,
+    activeCmPerPx: heightCmPerPx,
+    heightCmPerPx,
+    pxPerCm: 1 / heightCmPerPx,
+    scaleDeltaPct: 0,
+    anchors: [],
+    heightAudit,
+  };
+}
+
+function buildManualGuideLineFromPreset(
+  preset: { yPx: number; leftXPx: number; rightXPx: number },
+  source: { sourceImageWidth: number; sourceImageHeight: number },
+  imageWidth: number,
+  imageHeight: number,
+): GeminiGuideLine {
+  const scaleX = imageWidth / source.sourceImageWidth;
+  const scaleY = imageHeight / source.sourceImageHeight;
+  const yPx = clampManualGuideCoord(Math.round(preset.yPx * scaleY), 0, imageHeight - 1);
+  const leftXPx = clampManualGuideCoord(Math.round(preset.leftXPx * scaleX), 0, imageWidth - 1);
+  const rightXPx = clampManualGuideCoord(Math.round(preset.rightXPx * scaleX), 0, imageWidth - 1);
+  return {
+    y_px: yPx,
+    left_x_px: leftXPx,
+    right_x_px: rightXPx,
+    confidence: 1,
+    points: [
+      { x_px: leftXPx, y_px: yPx },
+      { x_px: rightXPx, y_px: yPx },
+    ],
+  };
+}
+
+function buildManualGuideLine(
+  yNorm: number | undefined,
+  leftXNorm: number | undefined,
+  rightXNorm: number | undefined,
+  imageWidth: number,
+  imageHeight: number,
+): GeminiGuideLine | undefined {
+  if (yNorm == null || leftXNorm == null || rightXNorm == null) return undefined;
+  if (!Number.isFinite(yNorm) || !Number.isFinite(leftXNorm) || !Number.isFinite(rightXNorm)) return undefined;
+  const yPx = clampManualGuideCoord(yNorm * imageHeight, 0, imageHeight - 1);
+  const leftXPx = clampManualGuideCoord(Math.min(leftXNorm, rightXNorm) * imageWidth, 0, imageWidth - 1);
+  const rightXPx = clampManualGuideCoord(Math.max(leftXNorm, rightXNorm) * imageWidth, 0, imageWidth - 1);
+  if (rightXPx <= leftXPx) return undefined;
+  const points = [leftXPx, rightXPx].map((xPx) => ({
+    x_px: Math.round(xPx),
+    y_px: Math.round(yPx),
+  }));
+  return {
+    y_px: Math.round(yPx),
+    left_x_px: Math.round(leftXPx),
+    right_x_px: Math.round(rightXPx),
+    confidence: 1,
+    points,
+  };
+}
+
+function clampManualGuideCoord(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
 }
 
 function buildMaskGuideDebugRows(trace: WaistTrace | null, hipsTrace: HipsTrace | null): MeasurementDebugRow[] {
@@ -2013,6 +2910,83 @@ function mergeGuideInputDebug(
   };
 }
 
+async function requestGeminiGuideRun(args: {
+  imageUrl: string | null;
+  imageWidth: number;
+  imageHeight: number;
+  model: GeminiGuideModelCode;
+  prompt: string;
+  useDefaultPrompt: boolean;
+  metrics: MetricsInput;
+  pose: PoseResult;
+  errorPrefix: string;
+  guideMode?: "front" | "side";
+  datasetSetId?: string;
+}): Promise<GeminiGuideRunResult> {
+  const guideInputImage = await imageUrlToCompressedDataUrl(
+    args.imageUrl,
+    args.imageWidth,
+    args.imageHeight,
+  );
+  const response = await fetch("/api/try-on-test/sizing-lab/guide", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      imageDataUrl: guideInputImage.dataUrl,
+      model: args.model,
+      prompt: args.useDefaultPrompt ? undefined : args.prompt,
+      guideMode: args.guideMode ?? "front",
+      datasetSetId: args.datasetSetId,
+      imageWidth: args.imageWidth,
+      imageHeight: args.imageHeight,
+      inputImageWidth: guideInputImage.debug.sentWidth,
+      inputImageHeight: guideInputImage.debug.sentHeight,
+      metrics: {
+        heightCm: args.metrics.heightCm,
+        weightKg: args.metrics.weightKg,
+        gender: args.metrics.gender,
+      },
+      landmarks: buildGeminiGuideLandmarks(args.pose, args.imageWidth, args.imageHeight),
+    }),
+  });
+  const data = await response.json().catch(() => ({ ok: false, error: `${args.errorPrefix} route returned ${response.status}` }));
+  const responseDebug: GeminiGuideResponseDebug = {
+    rawText: typeof data.rawText === "string" ? data.rawText : "",
+    returnedText: Boolean(data.returnedText),
+    returnedImage: Boolean(data.returnedImage),
+    guideSource: typeof data.guideSource === "string" ? data.guideSource : response.ok ? "unknown" : "failed",
+    inputImage: mergeGuideInputDebug(guideInputImage.debug, data.inputImage),
+    outputImage: data.outputImage && typeof data.outputImage === "object"
+      ? data.outputImage as GuideOutputImageDebug
+      : null,
+    timings: normalizeGeminiGuideTimings(data.timings, guideInputImage.debug),
+    guideCandidates: extractGeminiGuideCandidates(data.guideCandidates),
+  };
+  const result: GeminiGuideRunResult = {
+    ok: Boolean(response.ok && data.ok && data.guide),
+    guide: data.guide ? data.guide as GeminiBodyGuide : null,
+    geminiMs: typeof data.geminiMs === "number" ? data.geminiMs : null,
+    gridImageDataUrl: typeof data.gridImageDataUrl === "string" ? data.gridImageDataUrl : null,
+    guideImageDataUrl: typeof data.guideImageDataUrl === "string" ? data.guideImageDataUrl : null,
+    promptDebug: {
+      source: typeof data.promptSource === "string" ? data.promptSource : "unknown",
+      version: typeof data.promptVersion === "string" ? data.promptVersion : "unknown",
+      preview: typeof data.promptPreview === "string" ? data.promptPreview : "",
+    },
+    responseDebug,
+  };
+  if (!result.ok) {
+    const rawText = responseDebug.rawText.trim();
+    const rawHint = rawText
+      ? ` Raw: ${rawText.slice(0, 360)}`
+      : data.error === "Gemini did not return usable coordinate JSON."
+        ? " Raw: empty/non-text response."
+        : "";
+    result.error = `${data.error || `${args.errorPrefix} route returned ${response.status}`}${rawHint}`;
+  }
+  return result;
+}
+
 function BackendDatasetResults({
   trace,
   status,
@@ -2132,8 +3106,8 @@ function diffCm(predicted: number | null, actual: number | undefined): number | 
   return predicted != null && actual != null ? predicted - actual : null;
 }
 
-const GEMINI_GUIDE_INPUT_MAX_LONG_EDGE = 1536;
-const GEMINI_GUIDE_INPUT_JPEG_QUALITY = 0.68;
+const GEMINI_GUIDE_INPUT_MAX_LONG_EDGE = 4096;
+const GEMINI_GUIDE_INPUT_JPEG_QUALITY = 0.86;
 
 async function imageUrlToDataUrl(url: string | null): Promise<string> {
   if (!url) throw new Error("Missing image URL");
@@ -2147,7 +3121,7 @@ async function imageUrlToCompressedDataUrl(
   expectedWidth: number,
   expectedHeight: number,
 ): Promise<{ dataUrl: string; debug: GuideInputImageDebug }> {
-  const startedAt = performance.now();
+  const startedAt = nowMs();
   if (!url) throw new Error("Missing image URL for Gemini guide");
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Could not load image for Gemini guide (${response.status})`);
@@ -2195,7 +3169,7 @@ async function imageUrlToCompressedDataUrl(
           (!expectedHeight || originalHeight === expectedHeight),
         coordinateScaleX: originalWidth / sentWidth,
         coordinateScaleY: originalHeight / sentHeight,
-        prepMs: Math.round(performance.now() - startedAt),
+        prepMs: Math.round(nowMs() - startedAt),
       },
     };
   } catch {
@@ -2211,7 +3185,7 @@ async function imageUrlToCompressedDataUrl(
         dimensionsPreserved: true,
         coordinateScaleX: 1,
         coordinateScaleY: 1,
-        prepMs: Math.round(performance.now() - startedAt),
+        prepMs: Math.round(nowMs() - startedAt),
       },
     };
   }

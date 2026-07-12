@@ -14,7 +14,14 @@
 
 import type { Gender, MeasurementMaskMode, PoseResult, WaistTrace } from "../types";
 import { POSE_IDX } from "./poseDetector";
-import { computePoseScale, measureMaskWidthAtY, type MaskWidthMeasurement, type PoseScale } from "./bodyMaskGeometry";
+import {
+  applyMaskHeightScaleToPoseScale,
+  computeMaskHeightScale,
+  computePoseScale,
+  measureMaskWidthAtY,
+  type MaskWidthMeasurement,
+  type PoseScale,
+} from "./bodyMaskGeometry";
 
 function clamp(n: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, n));
@@ -248,11 +255,17 @@ export function computeTrouserWaist(
   const lShoulder = lm[POSE_IDX.LEFT_SHOULDER];
   const rShoulder = lm[POSE_IDX.RIGHT_SHOULDER];
   if (!lShoulder || !rShoulder) return null;
-  const frontScale = computePoseScale(pose, imageWidth, imageHeight, heightCm);
+  const rawFrontScale = computePoseScale(pose, imageWidth, imageHeight, heightCm);
+  const frontMaskScale = computeMaskHeightScale(pose, imageWidth, imageHeight, heightCm);
+  const frontScale = applyMaskHeightScaleToPoseScale(rawFrontScale, frontMaskScale);
   if (!frontScale) return null;
-  const sideScale = sidePose && sideImageWidth && sideImageHeight
+  const rawSideScale = sidePose && sideImageWidth && sideImageHeight
     ? computePoseScale(sidePose, sideImageWidth, sideImageHeight, heightCm)
     : null;
+  const sideMaskScale = sidePose && sideImageWidth && sideImageHeight
+    ? computeMaskHeightScale(sidePose, sideImageWidth, sideImageHeight, heightCm)
+    : null;
+  const sideScale = applyMaskHeightScaleToPoseScale(rawSideScale, sideMaskScale);
   const scanMaskOptions = maskOptions(maskMode);
   const sideScanMaskOptions = maskMode === "ignore-arms"
     ? { excludeLimbs: true, exclusionMode: "hands" as const }
@@ -411,7 +424,7 @@ export function computeTrouserWaist(
   const sideTrouserRow = isPlausibleSideDepth(rawSideTrouserRow, trouserBreadthCm, 0.45, 0.95)
     ? rawSideTrouserRow
     : null;
-  const sideTrouserSignal = sideDepthSignal(sideTrouserRow, trouserBreadthCm, projectionLeakRatio, 0.5, 0.9);
+  const sideTrouserSignal = sideDepthSignal(sideTrouserRow, trouserBreadthCm, projectionLeakRatio, 0.45, 0.9);
   const sideTrouser = sideTrouserRow
     ? {
         widthPx: sideTrouserRow.widthPx,
@@ -433,8 +446,12 @@ export function computeTrouserWaist(
     bmi: round(bmi, 2),
     gender,
     maskMode,
+    scaleSource: frontMaskScale ? "mask-height" : "pose-landmarks",
+    frontHeightScaleAudit: frontMaskScale ? roundMaskHeightScaleAudit(frontMaskScale) : undefined,
     noseToAnkleNormY: round(frontScale.bottomYNorm - frontScale.topYNorm, 4),
     cmPerPx: round(frontScale.cmPerPx, 4),
+    sideScaleSource: sideScale ? (sideMaskScale ? "mask-height" : "pose-landmarks") : undefined,
+    sideHeightScaleAudit: sideMaskScale ? roundMaskHeightScaleAudit(sideMaskScale) : undefined,
     sideNoseToAnkleNormY: sideScale ? round(sideScale.bottomYNorm - sideScale.topYNorm, 4) : undefined,
     sideCmPerPx: sideScale ? round(sideScale.cmPerPx, 4) : undefined,
     sideImageWidth: sideScale ? sideImageWidth : undefined,
@@ -506,4 +523,29 @@ export function computeTrouserWaist(
 function round(n: number, d: number): number {
   const m = Math.pow(10, d);
   return Math.round(n * m) / m;
+}
+
+function roundMaskHeightScaleAudit<T extends {
+  cmPerPx: number;
+  heightCm: number;
+  topYNorm: number;
+  bottomYNorm: number;
+  leftXNorm: number;
+  rightXNorm: number;
+  centerXNorm: number;
+  bodySpanPx: number;
+  threshold: number;
+  imageWidth: number;
+  imageHeight: number;
+}>(audit: T): T {
+  return {
+    ...audit,
+    cmPerPx: round(audit.cmPerPx, 5),
+    topYNorm: round(audit.topYNorm, 4),
+    bottomYNorm: round(audit.bottomYNorm, 4),
+    leftXNorm: round(audit.leftXNorm, 4),
+    rightXNorm: round(audit.rightXNorm, 4),
+    centerXNorm: round(audit.centerXNorm, 4),
+    bodySpanPx: round(audit.bodySpanPx, 1),
+  };
 }

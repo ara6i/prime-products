@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { GeminiBodyGuide, GeminiGuideMeasurement } from "../lib/geminiGuide";
 
 type GuideCandidateDebug = {
@@ -16,6 +16,9 @@ interface Props {
   imageUrl: string | null;
   imageWidth: number;
   imageHeight: number;
+  title?: string;
+  description?: string;
+  sourceImageLabel?: string;
   responseDebug?: {
     rawText: string;
     returnedText: boolean;
@@ -34,6 +37,13 @@ interface Props {
       coordinateScaleY?: number;
       prepMs?: number;
     };
+    outputImage?: {
+      mimeType?: string;
+      kb?: number;
+      width?: number;
+      height?: number;
+      requestedSize?: string;
+    } | null;
     timings?: {
       browserPrepMs?: number;
       apiTotalMs?: number;
@@ -54,16 +64,36 @@ export function GeminiGuidePanel({
   imageUrl,
   imageWidth,
   imageHeight,
+  title = "Coordinate curve guide",
+  description,
+  sourceImageLabel = "Source image with active curved guide coordinates",
   responseDebug,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const renderedImageUrlRef = useRef<string | null>(null);
+  const [renderedImageUrl, setRenderedImageUrl] = useState<string | null>(null);
   const hasRedPixelRows = Boolean(measurement?.rows.some((row) => row.rowSource === "red-pixel-detector"));
+  const downloadName = `${slugifyFileName(title)}-active-guide.png`;
+
+  useEffect(() => {
+    return () => {
+      if (renderedImageUrlRef.current) {
+        URL.revokeObjectURL(renderedImageUrlRef.current);
+        renderedImageUrlRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !measurement || !imageUrl) return;
 
     let cancelled = false;
+    if (renderedImageUrlRef.current) {
+      URL.revokeObjectURL(renderedImageUrlRef.current);
+      renderedImageUrlRef.current = null;
+    }
+    setRenderedImageUrl(null);
     const image = new Image();
     image.onload = () => {
       if (cancelled) return;
@@ -77,6 +107,13 @@ export function GeminiGuidePanel({
       context.clearRect(0, 0, width, height);
       context.drawImage(image, 0, 0, width, height);
       drawGuideRows(context, width, height, measurement);
+      canvas.toBlob((blob) => {
+        if (cancelled || !blob) return;
+        const url = URL.createObjectURL(blob);
+        if (renderedImageUrlRef.current) URL.revokeObjectURL(renderedImageUrlRef.current);
+        renderedImageUrlRef.current = url;
+        setRenderedImageUrl(url);
+      }, "image/png");
     };
     image.src = imageUrl;
 
@@ -90,11 +127,10 @@ export function GeminiGuidePanel({
   return (
     <div className="mt-5 rounded-xl border border-purple-200 bg-purple-50 p-4">
       <div className="flex flex-col gap-1">
-        <h4 className="text-sm font-semibold text-purple-950">Coordinate curve guide</h4>
+        <h4 className="text-sm font-semibold text-purple-950">{title}</h4>
         <p className="text-xs text-purple-900">
-          The coordinate model receives the source photo and grid-overlay image, then returns waist, trouser-waist,
-          and hip curved red lines with matching x/y JSON points. JSON curve endpoints or detected red pixels own
-          the active formula width; mask width is debug evidence only.
+          {description ??
+            "The coordinate model receives the source photo and grid-overlay image, then returns waist, trouser-waist, and hip curved red lines with matching x/y JSON points. Red/Gemini/manual endpoints own the active formula span; visible-edge evidence is shown separately."}
           {elapsedMs != null ? ` Model API total ${elapsedMs} ms.` : ""}
         </p>
       </div>
@@ -108,8 +144,29 @@ export function GeminiGuidePanel({
         <div className="mt-3 grid gap-3 lg:grid-cols-2">
           {imageUrl ? (
             <div className="rounded-lg border border-purple-200 bg-white p-3">
-              <div className="mb-2 text-xs font-semibold text-text-primary">
-                Source image with active curved guide coordinates
+              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                <div className="text-xs font-semibold text-text-primary">
+                  {sourceImageLabel}
+                </div>
+                {renderedImageUrl ? (
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold">
+                    <a
+                      href={renderedImageUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded border border-purple-200 px-2 py-1 text-purple-700 hover:bg-purple-50"
+                    >
+                      Open full size
+                    </a>
+                    <a
+                      href={renderedImageUrl}
+                      download={downloadName}
+                      className="rounded border border-purple-200 px-2 py-1 text-purple-700 hover:bg-purple-50"
+                    >
+                      Download PNG
+                    </a>
+                  </div>
+                ) : null}
               </div>
               <canvas
                 ref={canvasRef}
@@ -122,7 +179,7 @@ export function GeminiGuidePanel({
               </p>
             </div>
           ) : null}
-          <div className="overflow-hidden rounded-lg border border-purple-200 bg-white">
+          <div className="overflow-x-auto rounded-lg border border-purple-200 bg-white">
             <table className="w-full text-left text-[11px]">
               <thead className="bg-purple-100 text-purple-950">
                 <tr>
@@ -131,6 +188,12 @@ export function GeminiGuidePanel({
                   <th className="px-2 py-2 font-semibold">Left</th>
                   <th className="px-2 py-2 font-semibold">Right</th>
                   <th className="px-2 py-2 font-semibold">Conf.</th>
+                  <th className="px-2 py-2 font-semibold">Width cm</th>
+                  <th className="px-2 py-2 font-semibold">Arc cm</th>
+                  <th className="px-2 py-2 font-semibold">Arc delta</th>
+                  <th className="px-2 py-2 font-semibold">Depth src</th>
+                  <th className="px-2 py-2 font-semibold">Depth ratio</th>
+                  <th className="px-2 py-2 font-semibold">Depth cm</th>
                   <th className="px-2 py-2 font-semibold">Row source</th>
                   <th className="px-2 py-2 font-semibold">Curve source</th>
                 </tr>
@@ -143,6 +206,12 @@ export function GeminiGuidePanel({
                     <td className="px-2 py-2">{row.leftXPx}</td>
                     <td className="px-2 py-2">{row.rightXPx}</td>
                     <td className="px-2 py-2">{row.confidence.toFixed(2)}</td>
+                    <td className="px-2 py-2">{row.curveHorizontalCm.toFixed(1)}</td>
+                    <td className="px-2 py-2">{row.curveArcCm.toFixed(1)}</td>
+                    <td className="px-2 py-2">{formatSignedCm(row.curveArcDeltaCm)}</td>
+                    <td className="px-2 py-2 font-sans text-text-secondary">{row.depthSource}</td>
+                    <td className="px-2 py-2">{row.depthRatio.toFixed(3)}</td>
+                    <td className="px-2 py-2">{row.depthCm.toFixed(1)}</td>
                     <td className="px-2 py-2 font-sans text-text-secondary">
                       {formatGuideRowSource(row.rowSource)}
                     </td>
@@ -172,6 +241,14 @@ export function GeminiGuidePanel({
                 <div className="rounded bg-slate-50 px-2 py-1">returnedImage: {responseDebug.returnedImage ? "yes" : "no"}</div>
                 <div className="rounded bg-slate-50 px-2 py-1">returnedText: {responseDebug.returnedText ? "yes" : "no"}</div>
                 <div className="rounded bg-slate-50 px-2 py-1 sm:col-span-2">guideSource: {responseDebug.guideSource}</div>
+                {responseDebug.outputImage ? (
+                  <div className="rounded bg-slate-50 px-2 py-1 sm:col-span-2">
+                    outputImage: requested {responseDebug.outputImage.requestedSize ?? "—"}; returned{" "}
+                    {responseDebug.outputImage.width ?? "—"} x {responseDebug.outputImage.height ?? "—"}
+                    {responseDebug.outputImage.kb != null ? `; ${responseDebug.outputImage.kb.toFixed(1)} KB` : ""}
+                    {responseDebug.outputImage.mimeType ? `; ${responseDebug.outputImage.mimeType}` : ""}
+                  </div>
+                ) : null}
                 {responseDebug.inputImage ? (
                   <>
                     <div className="rounded bg-slate-50 px-2 py-1">
@@ -219,6 +296,14 @@ export function GeminiGuidePanel({
             <div className="rounded bg-slate-50 px-2 py-1">returnedImage: {responseDebug.returnedImage ? "yes" : "no"}</div>
             <div className="rounded bg-slate-50 px-2 py-1">returnedText: {responseDebug.returnedText ? "yes" : "no"}</div>
             <div className="rounded bg-slate-50 px-2 py-1 sm:col-span-2">guideSource: {responseDebug.guideSource}</div>
+            {responseDebug.outputImage ? (
+              <div className="rounded bg-slate-50 px-2 py-1 sm:col-span-2">
+                outputImage: requested {responseDebug.outputImage.requestedSize ?? "—"}; returned{" "}
+                {responseDebug.outputImage.width ?? "—"} x {responseDebug.outputImage.height ?? "—"}
+                {responseDebug.outputImage.kb != null ? `; ${responseDebug.outputImage.kb.toFixed(1)} KB` : ""}
+                {responseDebug.outputImage.mimeType ? `; ${responseDebug.outputImage.mimeType}` : ""}
+              </div>
+            ) : null}
             {responseDebug.inputImage ? (
               <>
                 <div className="rounded bg-slate-50 px-2 py-1">
@@ -324,6 +409,18 @@ function formatCandidateNumber(value: number | undefined, digits = 0): string {
   return typeof value === "number" && Number.isFinite(value) ? value.toFixed(digits) : "—";
 }
 
+function formatSignedCm(value: number): string {
+  return `${value > 0 ? "+" : ""}${value.toFixed(1)}`;
+}
+
+function slugifyFileName(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    || "coordinate-guide";
+}
+
 function drawGuideRows(
   context: CanvasRenderingContext2D,
   width: number,
@@ -346,6 +443,8 @@ function drawGuideRows(
       x: point.xNorm * width,
       y: point.yNorm * height,
     }));
+    const startPoint = curvePoints[0] ?? { x: leftX, y };
+    const endPoint = curvePoints[curvePoints.length - 1] ?? { x: rightX, y };
     const rowName = row.kind === "waist" ? "waist" : row.kind === "trouserWaist" ? "trouser" : "hips";
     const label = `${rowName} ${formatGuideEndpointSource(row)}`;
 
@@ -365,16 +464,16 @@ function drawGuideRows(
     context.stroke();
 
     context.beginPath();
-    context.arc(leftX, y, dotRadius, 0, Math.PI * 2);
+    context.arc(startPoint.x, startPoint.y, dotRadius, 0, Math.PI * 2);
     context.fill();
     context.beginPath();
-    context.arc(rightX, y, dotRadius, 0, Math.PI * 2);
+    context.arc(endPoint.x, endPoint.y, dotRadius, 0, Math.PI * 2);
     context.fill();
 
     const text = `${label} · ${row.confidence.toFixed(2)}`;
     const textMetrics = context.measureText(text);
-    const textX = Math.min(width - textMetrics.width - 16, rightX + 14);
-    const textY = Math.max(18, Math.min(height - 18, y - 18));
+    const textX = Math.min(width - textMetrics.width - 16, endPoint.x + 14);
+    const textY = Math.max(18, Math.min(height - 18, endPoint.y - 18));
     context.fillStyle = "rgba(255, 255, 255, 0.86)";
     context.fillRect(textX - 6, textY - 14, textMetrics.width + 12, 28);
     context.fillStyle = "#b91c1c";
@@ -386,13 +485,15 @@ function drawGuideRows(
 
 function formatGuideRowSource(source: GeminiGuideMeasurement["rows"][number]["rowSource"]): string {
   if (source === "red-pixel-detector") return "red-pixel";
+  if (source === "manual-coordinate") return "manual";
+  if (source === "manual-adjusted-coordinate") return "manual adjusted";
   if (source === "pose-mask-fallback") return "pose/mask";
   return "JSON";
 }
 
 function formatGuideEndpointSource(row: GeminiGuideMeasurement["rows"][number]): string {
-  if (row.formulaWidthSource === "mask-at-gemini-row") return "mask endpoints";
   if (row.formulaWidthSource === "gemini-red-line") return "red-pixel curve";
+  if (row.formulaWidthSource === "manual-coordinates") return "manual endpoints";
   if (row.formulaWidthSource === "fallback-line") return "fallback endpoints";
   return "JSON curve";
 }

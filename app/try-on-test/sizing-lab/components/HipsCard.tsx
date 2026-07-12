@@ -90,6 +90,9 @@ export function HipsCard({ trace, actualHipsCm, calibration, guide }: Props) {
                   <Stat label="Guide depth source" value={formatGuideDepthSource(guide.depthSource)} />
                   <Stat label="Guide depth ratio" value={guide.depthRatio.toFixed(3)} />
                   <Stat label="Guide depth" value={`${guide.depthCm.toFixed(1)} cm`} />
+                  <Stat label="Curve horizontal" value={`${guide.curveHorizontalCm.toFixed(1)} cm`} />
+                  <Stat label="Curve arc" value={`${guide.curveArcCm.toFixed(1)} cm`} />
+                  <Stat label="Arc adds" value={formatSignedCm(guide.curveArcDeltaCm)} />
                   <Stat label="MediaPipe mask width at row" value={guide.maskWidthCm == null ? "—" : `${guide.maskWidthCm.toFixed(1)} cm`} />
                   <Stat label="Guide confidence" value={guide.confidence.toFixed(2)} />
                   <Stat label="Guide correction" value={formatSignedCm(guide.circumferenceDeltaCm)} />
@@ -128,25 +131,33 @@ function formatSignedCmIn(value: number): string {
 
 function formatGuideRowSource(source: GeminiGuideMeasurementRow["rowSource"]): string {
   if (source === "red-pixel-detector") return "red-pixel detector";
+  if (source === "manual-coordinate") return "manual coordinate";
+  if (source === "manual-adjusted-coordinate") return "manual adjusted";
   if (source === "pose-mask-fallback") return "pose/mask fallback";
   return "model JSON";
 }
 
 function formatGuideEndpointSource(row: GeminiGuideMeasurementRow): string {
-  if (row.formulaWidthSource === "mask-at-gemini-row") return "mask endpoints at JSON row";
   if (row.formulaWidthSource === "gemini-red-line") return "detected red pixels";
+  if (row.formulaWidthSource === "manual-coordinates") return "manual endpoints";
   if (row.formulaWidthSource === "fallback-line") return "fallback line endpoints";
   return "model JSON curve";
 }
 
 function formatRawGuideWidthLabel(row: GeminiGuideMeasurementRow): string {
   if (row.formulaWidthSource === "gemini-red-line") return "Detected red-line width";
+  if (row.formulaWidthSource === "manual-coordinates") return "Manual endpoint width";
   if (row.formulaWidthSource === "fallback-line") return "Fallback endpoint width";
   return "JSON curve width";
 }
 
 function formatGuideDepthSource(source: GeminiGuideMeasurementRow["depthSource"]): string {
   if (source === "side-mask-at-guide-row") return "side photo";
+  if (source === "side-guide-red-pixel") return "side guide red pixels";
+  if (source === "side-guide-json") return "side guide JSON";
+  if (source === "side-guide-manual-coordinate") return "side guide manual coordinate";
+  if (source === "manual-tape-front-formula") return "manual tape front formula";
+  if (source === "manual-depth-ratio") return "manual depth ratio";
   return "front formula";
 }
 

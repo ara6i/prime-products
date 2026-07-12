@@ -1,4 +1,4 @@
-import type { MeasurementMaskMode, PoseResult } from "../types";
+import type { MaskHeightScaleAudit, MeasurementMaskMode, PoseResult } from "../types";
 import { POSE_IDX } from "./poseDetector";
 import { scanMaskBandWidth, type ExclusionBox } from "./maskWidth";
 
@@ -95,6 +95,78 @@ export function computePoseScale(
     hipBoneCm,
     hipLeftPx,
     hipRightPx,
+  };
+}
+
+export function computeMaskHeightScale(
+  pose: PoseResult,
+  imageWidth: number,
+  imageHeight: number,
+  heightCm: number,
+): MaskHeightScaleAudit | null {
+  if (!pose.mask || pose.maskWidth <= 0 || pose.maskHeight <= 0 || imageHeight <= 0 || heightCm <= 0) return null;
+  const minPixels = Math.max(4, Math.round(pose.maskWidth * 0.006));
+  for (const threshold of [96, 64, 32]) {
+    let topRow = -1;
+    let bottomRow = -1;
+    let leftX = pose.maskWidth;
+    let rightX = -1;
+    for (let y = 0; y < pose.maskHeight; y++) {
+      let count = 0;
+      let rowLeftX = pose.maskWidth;
+      let rowRightX = -1;
+      const rowStart = y * pose.maskWidth;
+      for (let x = 0; x < pose.maskWidth; x++) {
+        if (pose.mask[rowStart + x]! >= threshold) {
+          count++;
+          if (x < rowLeftX) rowLeftX = x;
+          if (x > rowRightX) rowRightX = x;
+        }
+      }
+      if (count < minPixels) continue;
+      if (topRow < 0) topRow = y;
+      bottomRow = y;
+      if (rowLeftX < leftX) leftX = rowLeftX;
+      if (rowRightX > rightX) rightX = rowRightX;
+    }
+    if (topRow >= 0 && bottomRow > topRow) {
+      const topYNorm = topRow / pose.maskHeight;
+      const bottomYNorm = bottomRow / pose.maskHeight;
+      const bodyPx = (bottomYNorm - topYNorm) * imageHeight;
+      if (bodyPx > 0) {
+        const safeLeftX = leftX <= rightX ? leftX : 0;
+        const safeRightX = leftX <= rightX ? rightX : pose.maskWidth - 1;
+        return {
+          cmPerPx: heightCm / bodyPx,
+          heightCm,
+          topYNorm,
+          bottomYNorm,
+          leftXNorm: safeLeftX / pose.maskWidth,
+          rightXNorm: safeRightX / pose.maskWidth,
+          centerXNorm: ((safeLeftX + safeRightX) / 2) / pose.maskWidth,
+          bodySpanPx: bodyPx,
+          threshold,
+          imageWidth,
+          imageHeight,
+        };
+      }
+    }
+  }
+  return null;
+}
+
+export function applyMaskHeightScaleToPoseScale(
+  scale: PoseScale | null,
+  maskScale: ReturnType<typeof computeMaskHeightScale>,
+): PoseScale | null {
+  if (!scale || !maskScale || maskScale.cmPerPx <= 0) return scale;
+  const scaleRatio = maskScale.cmPerPx / scale.cmPerPx;
+  return {
+    ...scale,
+    cmPerPx: maskScale.cmPerPx,
+    topYNorm: maskScale.topYNorm,
+    bottomYNorm: maskScale.bottomYNorm,
+    hipBoneCm: scale.hipBoneCm * scaleRatio,
   };
 }
 

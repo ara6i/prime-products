@@ -48,8 +48,8 @@ export function FormulaPanel({ trace, backendTrace }: Props) {
         formula="cmPerPx = height_cm / detectedFullBodyPx"
         sub={
           trace.sideCmPerPx
-            ? `front noseToAnkleNormY=${trace.noseToAnkleNormY} → cmPerPx=${trace.cmPerPx}; side ${trace.sideImageWidth}×${trace.sideImageHeight}, noseToAnkleNormY=${trace.sideNoseToAnkleNormY} → sideCmPerPx=${trace.sideCmPerPx}`
-            : `noseToAnkleNormY=${trace.noseToAnkleNormY} → cmPerPx = ${trace.cmPerPx}`
+            ? `front source=${trace.scaleSource ?? "pose-landmarks"}, bodySpan=${trace.noseToAnkleNormY} → cmPerPx=${trace.cmPerPx}; side source=${trace.sideScaleSource ?? "pose-landmarks"}, ${trace.sideImageWidth}×${trace.sideImageHeight}, bodySpan=${trace.sideNoseToAnkleNormY} → sideCmPerPx=${trace.sideCmPerPx}`
+            : `source=${trace.scaleSource ?? "pose-landmarks"}, bodySpan=${trace.noseToAnkleNormY} → cmPerPx = ${trace.cmPerPx}`
         }
       />
 
