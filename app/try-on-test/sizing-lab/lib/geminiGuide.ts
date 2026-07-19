@@ -1685,54 +1685,48 @@ export function computeGeminiGuideMeasurement(args: {
   const tableGender = scaledHipsTrace?.gender ?? waistTrace.gender;
   const tableBmi = scaledHipsTrace?.bmi ?? waistTrace.bmi;
   const tableHeightCm = waistTrace.heightCm;
-  // Local ML owns its predicted depth ratios. The WEAR/BMI table remains a
-  // comparison tool for the other guide paths and must not silently replace a
-  // Local ML prediction before the existing circumference calculator runs.
-  const tableWaist = usesLocalMlGuide
-    ? modeledWaist
-    : applyDepthRatioTableComparison({
-        row: modeledWaist,
-        gender: tableGender,
-        bmi: tableBmi,
-        heightCm: tableHeightCm,
-        waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
-        waistDepthCm: null,
-        trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
-        trouserDepthCm: null,
-        hipWidthCm: modeledHips?.formulaWidthCm ?? null,
-        hipDepthCm: null,
-        useBodyShapeCircumference: false,
-      });
-  const tableTrouserWaist = usesLocalMlGuide
-    ? modeledTrouserWaist
-    : applyDepthRatioTableComparison({
-        row: modeledTrouserWaist,
-        gender: tableGender,
-        bmi: tableBmi,
-        heightCm: tableHeightCm,
-        waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
-        waistDepthCm: null,
-        trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
-        trouserDepthCm: null,
-        hipWidthCm: modeledHips?.formulaWidthCm ?? null,
-        hipDepthCm: null,
-        useBodyShapeCircumference: false,
-      });
-  const tableHips = usesLocalMlGuide
-    ? modeledHips
-    : applyDepthRatioTableComparison({
-        row: modeledHips,
-        gender: tableGender,
-        bmi: tableBmi,
-        heightCm: tableHeightCm,
-        waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
-        waistDepthCm: null,
-        trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
-        trouserDepthCm: null,
-        hipWidthCm: modeledHips?.formulaWidthCm ?? null,
-        hipDepthCm: null,
-        useBodyShapeCircumference: false,
-      });
+  // Local ML owns row placement only. After its rows are drawn, reuse the same
+  // WEAR recommendation + manual-slider circumference calculator as Manual
+  // Coordinate. This does not make the WEAR depth formula part of row training.
+  const tableWaist = applyDepthRatioTableComparison({
+    row: modeledWaist,
+    gender: tableGender,
+    bmi: tableBmi,
+    heightCm: tableHeightCm,
+    waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
+    waistDepthCm: null,
+    trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
+    trouserDepthCm: null,
+    hipWidthCm: modeledHips?.formulaWidthCm ?? null,
+    hipDepthCm: null,
+    useBodyShapeCircumference: false,
+  });
+  const tableTrouserWaist = applyDepthRatioTableComparison({
+    row: modeledTrouserWaist,
+    gender: tableGender,
+    bmi: tableBmi,
+    heightCm: tableHeightCm,
+    waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
+    waistDepthCm: null,
+    trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
+    trouserDepthCm: null,
+    hipWidthCm: modeledHips?.formulaWidthCm ?? null,
+    hipDepthCm: null,
+    useBodyShapeCircumference: false,
+  });
+  const tableHips = applyDepthRatioTableComparison({
+    row: modeledHips,
+    gender: tableGender,
+    bmi: tableBmi,
+    heightCm: tableHeightCm,
+    waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
+    waistDepthCm: null,
+    trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
+    trouserDepthCm: null,
+    hipWidthCm: modeledHips?.formulaWidthCm ?? null,
+    hipDepthCm: null,
+    useBodyShapeCircumference: false,
+  });
 
   const rows = [tableWaist, tableTrouserWaist, tableHips].filter((row): row is GeminiGuideMeasurementRow => Boolean(row));
   if (!rows.length) return null;

@@ -2896,7 +2896,7 @@ function FullScreenDepthRatioControls({
           </div>
         ) : null}
         <p className="mt-2 text-[9px] leading-3.5 text-slate-500">
-          No Gemini and no tape labels. Shane 2 and Nadia are checked only after prediction; their saved answers never enter the formula.
+          No Gemini and no tape labels. The saved answer may load as your manual slider, but it never becomes the WEAR recommendation.
         </p>
         {holdoutChecks.length ? (
           <div className={`mt-2 rounded-lg border px-2.5 py-2 ${holdoutPassCount === holdoutChecks.length ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
@@ -2905,7 +2905,7 @@ function FullScreenDepthRatioControls({
               {holdoutPassCount}/{holdoutChecks.length} rows inside the model&apos;s normal validation error
             </div>
             <div className="mt-1 text-[8px] leading-3 text-slate-600">
-              The saved answer can still drive the circumference above. Press “Use WEAR prediction” on a row to make the new formula active there.
+              Your manual slider can still drive the circumference. Press “Use WEAR recommendation” to replace it with WEAR&apos;s untouched value.
             </div>
           </div>
         ) : null}
@@ -2924,16 +2924,21 @@ function FullScreenDepthRatioControls({
             const fallbackBounds = rowDepthRatioBounds(kind);
             const minimum = formula?.supportedMin ?? fallbackBounds.min;
             const maximum = formula?.supportedMax ?? fallbackBounds.max;
-            const tableDefault = formula?.depthRatio ?? row.depthRatio;
+            const wearRecommendedRatio = formula?.depthRatio ?? null;
             const override = depthRatioOverrides?.[kind] ?? row.depthRatioOverride ?? null;
-            const selected = clamp(override ?? row.depthRatio, minimum, maximum);
+            const selected = clamp(override ?? wearRecommendedRatio ?? row.depthRatio, minimum, maximum);
+            const selectedSource = override != null
+              ? "manual slider active"
+              : wearRecommendedRatio != null
+                ? "WEAR active"
+                : "current formula active";
             const knownAnswer = knownDepthRatioAnswers?.[kind] ?? null;
             const holdoutDelta = formula && knownAnswer != null ? formula.depthRatio - knownAnswer : null;
             const holdoutDepthDeltaCm = holdoutDelta == null ? null : holdoutDelta * row.formulaWidthCm;
             const holdoutInsideValidation = formula && holdoutDelta != null
               ? Math.abs(holdoutDelta) <= formula.validationP90AbsError
               : null;
-            const estimatedDepthCm = row.formulaWidthCm * tableDefault;
+            const selectedDepthCm = row.formulaWidthCm * selected;
             const updateRatio = (value: number) => {
               if (!Number.isFinite(value)) return;
               onDepthRatioOverrideChange?.(kind, clamp(value, minimum, maximum));
@@ -2943,7 +2948,7 @@ function FullScreenDepthRatioControls({
                 <div className="flex items-baseline justify-between gap-2">
                   <div>
                     <span className="text-[11px] font-semibold text-slate-800">{label === "trouser" ? "Trouser waist" : rowLabel(kind)}</span>
-                    <span className="ml-1.5 text-[9px] text-slate-500">active slider {selected.toFixed(3)}</span>
+                    <span className="ml-1.5 text-[9px] text-slate-500">{selectedSource}</span>
                   </div>
                   {formula ? (
                     <span className={`rounded px-1.5 py-0.5 text-[8px] font-medium ${formula.confidence === "study-supported"
@@ -2956,18 +2961,24 @@ function FullScreenDepthRatioControls({
                   ) : null}
                 </div>
 
-                <div className="mt-2 grid grid-cols-3 gap-1.5">
+                <div className="mt-2 grid grid-cols-2 gap-1.5">
                   <div className="rounded border border-slate-200 bg-white p-1.5">
                     <div className="text-[8px] text-slate-500">Red front width</div>
                     <div className="mt-0.5 font-mono text-[12px] text-slate-950">{row.formulaWidthCm.toFixed(2)} cm</div>
                   </div>
-                  <div className="rounded border border-violet-200 bg-violet-50 p-1.5">
-                    <div className="text-[8px] text-violet-600">WEAR prediction</div>
-                    <div className="mt-0.5 font-mono text-[12px] text-violet-950">{tableDefault.toFixed(3)}</div>
+                  <div data-testid={`selected-depth-ratio-${kind}`} className={`rounded border p-1.5 ${override != null ? "border-amber-200 bg-amber-50" : "border-emerald-200 bg-emerald-50"}`}>
+                    <div className={`text-[8px] ${override != null ? "text-amber-700" : "text-emerald-700"}`}>Your selected ratio</div>
+                    <div className="mt-0.5 font-mono text-[12px] text-slate-950">{selected.toFixed(3)}</div>
+                    <div className="mt-0.5 text-[8px] text-slate-500">{selectedSource}</div>
                   </div>
-                  <div className="rounded border border-emerald-200 bg-emerald-50 p-1.5">
-                    <div className="text-[8px] text-emerald-700">Estimated depth</div>
-                    <div className="mt-0.5 font-mono text-[12px] text-emerald-950">{estimatedDepthCm.toFixed(2)} cm</div>
+                  <div data-testid={`wear-recommended-depth-ratio-${kind}`} className="rounded border border-violet-200 bg-violet-50 p-1.5">
+                    <div className="text-[8px] text-violet-600">WEAR recommends</div>
+                    <div className="mt-0.5 font-mono text-[12px] text-violet-950">{wearRecommendedRatio == null ? "not available" : wearRecommendedRatio.toFixed(3)}</div>
+                    <div className="mt-0.5 text-[8px] text-violet-600">does not move with your slider</div>
+                  </div>
+                  <div className="rounded border border-slate-200 bg-white p-1.5">
+                    <div className="text-[8px] text-slate-500">Depth from your selection</div>
+                    <div className="mt-0.5 font-mono text-[12px] text-slate-950">{selectedDepthCm.toFixed(2)} cm</div>
                   </div>
                 </div>
 
@@ -3033,10 +3044,10 @@ function FullScreenDepthRatioControls({
                     <button
                       type="button"
                       onClick={() => onDepthRatioOverrideChange?.(kind, null)}
-                      disabled={override == null || !onDepthRatioOverrideChange}
+                      disabled={override == null || wearRecommendedRatio == null || !onDepthRatioOverrideChange}
                       className="text-violet-700 disabled:text-slate-400"
                     >
-                      Use WEAR prediction
+                      Use WEAR recommendation
                     </button>
                   </div>
                 <input
@@ -3062,10 +3073,10 @@ function FullScreenDepthRatioControls({
                   <button
                     type="button"
                     onClick={() => onDepthRatioOverrideChange?.(kind, null)}
-                    disabled={!onDepthRatioOverrideChange}
+                    disabled={wearRecommendedRatio == null || !onDepthRatioOverrideChange}
                     className="rounded border border-violet-200 bg-violet-50 px-1.5 py-1 text-violet-700 hover:bg-violet-100 disabled:opacity-50"
                   >
-                    WEAR <span className="font-mono text-violet-950">{tableDefault.toFixed(3)}</span>
+                    WEAR <span className="font-mono text-violet-950">{wearRecommendedRatio == null ? "n/a" : wearRecommendedRatio.toFixed(3)}</span>
                   </button>
                   <button
                     type="button"
@@ -4023,7 +4034,7 @@ function ManualRealtimeRow({
         <div className={`${compact ? "mt-2 p-1.5 text-[10px] leading-snug" : "mt-3 p-2 text-[11px] leading-relaxed"} rounded-md border border-emerald-200 bg-emerald-50 font-mono text-emerald-950`}>
           {row.depthSource === "manual-depth-ratio" ? (
             <>
-              MANUAL OVERRIDE ACTIVE: slider ratio {row.depthRatio.toFixed(3)} is driving the result. WEAR prediction {tableEstimate.table.depthRatio.toFixed(3)} remains reference only.
+              MANUAL OVERRIDE ACTIVE: your selected ratio {row.depthRatio.toFixed(3)} is driving the result. WEAR recommendation {tableEstimate.table.depthRatio.toFixed(3)} remains reference only.
               <br />
             </>
           ) : (
@@ -4032,7 +4043,7 @@ function ManualRealtimeRow({
               <br />
             </>
           )}
-          WEAR prediction interval: {tableEstimate.table.depthRatioP10.toFixed(3)}–{tableEstimate.table.depthRatioP90.toFixed(3)}; validation MAE {tableEstimate.table.validationMae.toFixed(3)}.
+          WEAR recommendation range: {tableEstimate.table.depthRatioP10.toFixed(3)}–{tableEstimate.table.depthRatioP90.toFixed(3)}; validation MAE {tableEstimate.table.validationMae.toFixed(3)}.
           <br />
           Line movement rule: active result changes from red endpoint left/right span. Moving this row up/down with the same X span does not change circumference.
           <br />
