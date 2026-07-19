@@ -301,7 +301,7 @@ const ANALYSIS_PATHS: Array<{
   {
     value: "local-ml",
     label: "Local ML",
-    description: "Completely separate mode. WEAR 1D currently predicts the three vertical rows; visible-mask endpoints are temporary. Photo endpoints and depth wait for 3D training.",
+    description: "Completely separate mode. WEAR 1D draws the three vertical rows and MediaPipe supplies temporary endpoints; the same Apple/Depth, slider, and circumference calculator as Manual Coordinate runs afterward.",
   },
   {
     value: "segmenter",
@@ -772,11 +772,14 @@ export function SizingLabPage() {
     setBackendSdkError(null);
   };
 
-  const clearLocalMlPrediction = () => {
+  const clearLocalMlPrediction = (
+    savedDepthRatioOverrides: GeminiGuideDepthRatioOverrides = {},
+    savedHeightScaleOverride: ManualHeightScaleOverride | null = null,
+  ) => {
     setLocalMlGuide(null);
     setLocalMlPredictedDepthRatios({});
-    setLocalMlDepthRatioOverrides({});
-    setLocalMlHeightScaleOverride(null);
+    setLocalMlDepthRatioOverrides(savedDepthRatioOverrides);
+    setLocalMlHeightScaleOverride(savedHeightScaleOverride);
     setLocalMlAppleVisionBodyScale(null);
     setLocalMlPredictionStage(null);
     setLocalMlPredictionRows([]);
@@ -799,11 +802,12 @@ export function SizingLabPage() {
     setShahnazPhotoSwitchError(null);
     setAppleVisionBodyScale(null);
     setManualGuide(null);
-    clearLocalMlPrediction();
-    setManualHeightScaleOverride(buildSavedManualHeightScaleOverride(
+    const savedHeightScaleOverride = buildSavedManualHeightScaleOverride(
       nextPhoto === "tape" ? "shahnaz-2" : "shahnaz-2-second",
       nextUrl,
-    ));
+    );
+    clearLocalMlPrediction(selectedDataset?.depthRatioOverrides ?? {}, savedHeightScaleOverride);
+    setManualHeightScaleOverride(savedHeightScaleOverride);
     clearGeminiGuide();
     clearGeminiCorrection();
     clearBackendSdkTrace();
@@ -902,6 +906,7 @@ export function SizingLabPage() {
     setSelectedDatasetId(setId);
     const row = datasetRows.find((item) => item.setId === setId);
     if (!row) return;
+    const savedHeightScaleOverride = buildSavedManualHeightScaleOverride(row.setId, row.frontImageUrl);
     pose.reset();
     sidePose.reset();
     geminiInputImage.clear();
@@ -922,7 +927,7 @@ export function SizingLabPage() {
     clearCalibration();
     clearGeminiGuide(row.depthRatioOverrides ?? {});
     setManualGuide(null);
-    clearLocalMlPrediction();
+    clearLocalMlPrediction(row.depthRatioOverrides ?? {}, savedHeightScaleOverride);
     setShahnazActivePhoto("tape");
     setShahnazTapeGuide(null);
     setShahnazSecondGuide(null);
@@ -930,7 +935,7 @@ export function SizingLabPage() {
     setShahnazPhotoSwitchError(null);
     setManualSideGuide(null);
     setAppleVisionBodyScale(null);
-    setManualHeightScaleOverride(buildSavedManualHeightScaleOverride(row.setId, row.frontImageUrl));
+    setManualHeightScaleOverride(savedHeightScaleOverride);
     clearGeminiCorrection();
     clearBackendSdkTrace();
     setAnalysisTotalMs(null);
@@ -1009,7 +1014,12 @@ export function SizingLabPage() {
     clearCalibration();
     clearGeminiGuide();
     setManualGuide(null);
-    clearLocalMlPrediction();
+    clearLocalMlPrediction(
+      nextUsesLocalMl ? selectedDataset?.depthRatioOverrides ?? {} : {},
+      nextUsesLocalMl && selectedDataset
+        ? buildSavedManualHeightScaleOverride(selectedDataset.setId, selectedDataset.frontImageUrl)
+        : null,
+    );
     setManualSideGuide(null);
     setAppleVisionBodyScale(null);
     clearGeminiCorrection();
@@ -1105,7 +1115,6 @@ export function SizingLabPage() {
       : "MediaPipe is ready. Running the full local ONNX checkpoint…");
     setLocalMlGuide(null);
     setLocalMlPredictedDepthRatios({});
-    setLocalMlDepthRatioOverrides({});
     setLocalMlAppleVisionBodyScale(null);
     setLocalMlPredictionStage(null);
     setLocalMlPredictionRows([]);
@@ -1138,6 +1147,10 @@ export function SizingLabPage() {
     if (!prediction) throw new Error("Local ML returned unsafe or invalid red-line geometry.");
     setLocalMlGuide(prediction.guide);
     setLocalMlPredictedDepthRatios(prediction.depthRatios);
+    // A future 3D checkpoint owns its initial depth ratios. The current
+    // row-only checkpoint deliberately keeps the isolated Manual-calculator
+    // sliders, including any dataset values the user explicitly saved.
+    if (data.depthReady) setLocalMlDepthRatioOverrides({});
     setLocalMlPredictionStage(data.modelStage);
     setLocalMlPredictionRows(data.rows);
     setLocalMlDepthReady(data.depthReady);
@@ -1145,7 +1158,7 @@ export function SizingLabPage() {
     setLocalMlElapsedMs(data.elapsedMs);
     setLocalMlRunStatus("ready");
     setLocalMlMessage(data.modelStage === "wear-1d-row-prior"
-      ? `WEAR 1D placed all three vertical rows in ${(data.elapsedMs / 1000).toFixed(1)} s. MediaPipe supplied temporary visible endpoints. Depth and circumference remain disabled until 3D training.`
+      ? `WEAR 1D placed all three vertical rows in ${(data.elapsedMs / 1000).toFixed(1)} s. MediaPipe supplied temporary visible endpoints. The Manual Coordinate Apple/Depth and circumference calculator runs next; this is not a learned 3D depth result.`
       : `Local ${data.modelVersion} predicted rows, endpoints and depth in ${(data.elapsedMs / 1000).toFixed(1)} s. Minimum confidence ${(prediction.minimumConfidence * 100).toFixed(0)}%. Apple scaling runs next.`);
   };
 
@@ -1211,7 +1224,6 @@ export function SizingLabPage() {
       setLocalMlElapsedMs(null);
       setLocalMlGuide(null);
       setLocalMlPredictedDepthRatios({});
-      setLocalMlDepthRatioOverrides({});
       setLocalMlAppleVisionBodyScale(null);
     }
     setOriginalCalibrationPose(null);
@@ -1760,7 +1772,7 @@ export function SizingLabPage() {
     }
     setLocalMlGuide(null);
     setLocalMlPredictedDepthRatios({});
-    setLocalMlDepthRatioOverrides({});
+    setLocalMlDepthRatioOverrides(selectedDataset?.depthRatioOverrides ?? {});
     setLocalMlAppleVisionBodyScale(null);
     setLocalMlPredictionStage(null);
     setLocalMlPredictionRows([]);
@@ -1810,8 +1822,10 @@ export function SizingLabPage() {
     depthRatioOverrides: activeGuideDepthRatioOverrides,
     localMlDepthRatios: usesLocalMl ? localMlPredictedDepthRatios : undefined,
   });
-  const localMlWaitingFor3d = usesLocalMl && localMlPredictionStage === "wear-1d-row-prior" && !localMlDepthReady;
-  const geminiGuideMeasurement = usesCoordinateWorkbench && (!appleVisionRowCmPerPxOverrides || localMlWaitingFor3d)
+  const localMlUsesManualCalculationFallback = usesLocalMl
+    && localMlPredictionStage === "wear-1d-row-prior"
+    && !localMlDepthReady;
+  const geminiGuideMeasurement = usesCoordinateWorkbench && !appleVisionRowCmPerPxOverrides
     ? null
     : computedGeminiGuideMeasurement;
   const sideGeminiGuideMeasurement = computeGeminiGuideImageMeasurement({
@@ -2618,9 +2632,6 @@ export function SizingLabPage() {
                     imageHeight={activeImageState.height}
                     guide={effectiveCoordinateGuide}
                     measurement={geminiGuideMeasurement}
-                    measurementUnavailableMessage={localMlWaitingFor3d
-                      ? "WEAR 1D has placed the rows, but this stage has no body surface. Add 3D training before showing depth or circumference."
-                      : undefined}
                     pose={poseMatchesPath ? pose.pose : null}
                     scaleEvidence={activeManualScaleEvidence}
                     comparisonScaleEvidence={manualTapeScaleEvidence}
@@ -2683,8 +2694,8 @@ export function SizingLabPage() {
                         : undefined}
                     labelSuffix={usesLocalMl ? "local ML prediction" : undefined}
                     description={usesLocalMl
-                      ? localMlWaitingFor3d
-                        ? "WEAR 1D owns only the vertical row position. MediaPipe supplies temporary visible endpoints. Tape proof, free ruler, Apple scale and full screen remain available; depth sliders and circumference wait for 3D. Manual saved coordinates are not loaded or changed."
+                      ? localMlUsesManualCalculationFallback
+                        ? "Local ML draws the row positions and MediaPipe supplies temporary visible endpoints. From there, Apple/Depth scale, depth sliders, ellipse circumference, tape proof, free ruler and full screen are exactly the Manual Coordinate calculator. Saved Manual red lines remain separate. If this dataset has saved depth sliders, Local ML starts with an isolated copy; those ratios are calculator inputs, not ML predictions."
                         : "The full local checkpoint owns these red lines and initial depth ratios. Apple, tape proof, free ruler, full screen, sliders, and the final calculator are the same tools as Manual Coordinate. Manual saved coordinates are not loaded or changed."
                       : usesShahnazPhotoPair
                         ? "Open Full screen to compare both photos. The selected card alone feeds pixels to Apple Vision, Depth Pro and the circumference results."

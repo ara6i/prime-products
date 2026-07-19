@@ -43,7 +43,7 @@ export function LocalMlRowEvidencePanel({
           </p>
         </div>
         <span className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${depthReady ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
-          {depthReady ? "Rows + depth ready" : "Rows ready · 3D pending"}
+          {depthReady ? "Rows + learned depth ready" : "Rows ready · Manual calculator"}
         </span>
       </div>
 
@@ -56,9 +56,9 @@ export function LocalMlRowEvidencePanel({
           <span className="text-blue-600">2 · MEDIAPIPE MASK</span>
           <div className="mt-1 text-slate-800">Finds temporary visible left and right edges.</div>
         </div>
-        <div className="rounded-lg bg-amber-50 p-2.5">
-          <span className="text-amber-700">3 · FUTURE 3D</span>
-          <div className="mt-1 text-slate-800">Will learn endpoints and hidden depth for circumference.</div>
+        <div className="rounded-lg bg-emerald-50 p-2.5">
+          <span className="text-emerald-700">3 · MANUAL CALCULATOR</span>
+          <div className="mt-1 text-slate-800">Uses the same Apple/Depth scale, depth sliders and circumference formula as Manual Coordinate.</div>
         </div>
       </div>
 
@@ -97,7 +97,7 @@ export function LocalMlRowEvidencePanel({
 
       {rowOnly ? (
         <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] leading-4 text-amber-900">
-          Circumference is intentionally disabled in this mode. WEAR 1D has no photos or body surface, so it cannot teach exact endpoints or front-to-back depth.
+          Only the red-row placement is learned today. The circumference shown below comes from the existing Manual Coordinate calculator, not from trained 3D depth. A dataset&apos;s saved depth sliders may be copied into this isolated calculator, but they are never Local ML predictions. Future 3D training can replace endpoints and depth without changing or retraining this calculator.
         </div>
       ) : null}
       <div className="mt-2 text-[10px] text-slate-500">

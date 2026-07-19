@@ -33,7 +33,7 @@ export function LocalMlTrainingDiagram({
     : fullCheckpointReady
       ? "Rows + depth checkpoint ready"
       : rowPriorReady
-        ? "1D rows ready · 3D pending"
+        ? "1D rows ready · Manual calculator"
         : "Waiting for training data";
 
   return (
@@ -67,15 +67,15 @@ export function LocalMlTrainingDiagram({
           { icon: Camera, title: "Front photo", detail: "MediaPipe finds the visible person; known height, weight and gender enter the row model" },
           { icon: BrainCircuit, title: "WEAR picks row Y", detail: "The model places natural waist, trouser proxy and hip height" },
           { icon: ScanLine, title: "Mask draws endpoints", detail: "Temporary left and right edges come from the visible person mask" },
-          { icon: Ruler, title: "Apple scale remains available", detail: "It can inspect the front-line pixel width, but it cannot invent hidden depth" },
-          { icon: ShieldCheck, title: "Stop before circumference", detail: "The app waits for 3D training instead of showing a fake final value" },
+          { icon: Ruler, title: "Manual Apple/Depth scale", detail: "The exact Manual Coordinate pipeline converts each predicted red-line pixel span into centimetres" },
+          { icon: ShieldCheck, title: "Manual calculator result", detail: "The active depth slider and ellipse formula calculate circumference; this result is labelled as calculator output, not learned 3D depth" },
         ]}
       />
 
       <div className="mt-4 grid gap-2 text-[11px] leading-4 sm:grid-cols-3">
         <Fact label="Current ML responsibility" value="Predict the three vertical anatomical rows" />
         <Fact label="Temporary endpoints" value="Visible MediaPipe mask edges at each predicted row" />
-        <Fact label="Manual Coordinate" value="Create labels, inspect errors and remain unchanged" />
+        <Fact label="Measurement after the lines" value="Reuse the Manual Coordinate calculator without changing its saved red lines" />
       </div>
 
       <p className="mt-3 rounded-lg bg-white px-3 py-2 text-[11px] leading-4 text-amber-800">

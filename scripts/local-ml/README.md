@@ -2,7 +2,7 @@
 
 This local-only experiment is built in two honest stages.
 
-1. `wear-1d-row-prior-v1` is available now. It predicts only the vertical Y position of natural waist, an abdominal-extension proxy for trouser waist, and buttock/hip height. MediaPipe supplies temporary visible-mask endpoints. Circumference is disabled because 1D data has no photos or body surface.
+1. `wear-1d-row-prior-v1` is available now. It predicts only the vertical Y position of natural waist, an abdominal-extension proxy for trouser waist, and buttock/hip height. MediaPipe supplies temporary visible-mask endpoints. After those lines are placed, the sizing lab reuses the exact Manual Coordinate Apple/Depth scale, depth-slider, and ellipse-circumference pipeline. Those results are calculator output, not learned 3D depth.
 2. `front-multitask-v1` is the future photo + 3D model. It will learn visual endpoints, front-to-back depth ratios, and confidence. Apple still owns the separate pixel-to-centimetre scale check.
 
 Neither stage changes Manual Coordinate saved presets.

@@ -123,7 +123,7 @@ export function buildLocalMlGuidePrediction(
     hips: buildLine(safeRows[2]!, imageWidth, imageHeight),
     notes: safeRows.every((row) => row.depthRatio != null)
       ? "Local ML front-multitask-v1 prediction. Apple owns row scale; the existing ellipse calculation owns circumference."
-      : "WEAR 1D predicts vertical anatomical rows only. MediaPipe supplies visible mask endpoints. Circumference waits for future 3D depth training.",
+      : "WEAR 1D predicts vertical anatomical rows only and MediaPipe supplies visible mask endpoints. The existing Manual Coordinate calculator handles scale, depth sliders and circumference; those values are not learned 3D depth.",
   };
   const depthRows = safeRows.filter((row) => row.depthRatio != null);
   return {
