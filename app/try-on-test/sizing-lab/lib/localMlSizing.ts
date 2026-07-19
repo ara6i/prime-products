@@ -9,6 +9,8 @@ export const LOCAL_ML_MODEL_VERSION = "front-multitask-v1";
 export const LOCAL_ML_CHECKPOINT_RELATIVE_PATH = ".local-ml/checkpoints/front-multitask-v1.onnx";
 export const WEAR_ROW_PRIOR_MODEL_VERSION = "wear-1d-row-prior-v1";
 export const WEAR_ROW_PRIOR_RELATIVE_PATH = "app/try-on-test/sizing-lab/models/wear-1d-row-prior-v1.json";
+export const WEAR_DIRECT_DEPTH_MODEL_VERSION = "wear-1d-direct-depth-cohorts-v1";
+export const WEAR_DIRECT_DEPTH_RELATIVE_PATH = "app/try-on-test/sizing-lab/models/wear-1d-direct-depth-cohorts-v1.json";
 
 export type LocalMlModelStage = "wear-1d-row-prior" | "front-multitask-3d";
 
@@ -24,16 +26,34 @@ export interface LocalMlWearReferenceCohort {
   genderMatched: boolean;
 }
 
+export interface LocalMlWearDirectDepthCohort {
+  gender: "male" | "female";
+  heightMinCm: number;
+  heightMaxCm: number;
+  bmiMin: number;
+  bmiMax: number;
+  sampleCount: number;
+  medianDepthRatio: number;
+  p10DepthRatio: number;
+  p90DepthRatio: number;
+  medianBreadthCm: number;
+  medianDepthCm: number;
+  surveys: string[];
+  measurement: string;
+}
+
 export interface LocalMlModelStatusResponse {
   ok: boolean;
   localOnly: true;
   modelVersion: string;
   checkpointReady: boolean;
   rowPriorReady: boolean;
+  directDepthCohortReady: boolean;
   fullCheckpointReady: boolean;
   activeStage: LocalMlModelStage | null;
   checkpointPath: string;
   rowPriorPath: string;
+  directDepthCohortPath: string;
   trainingManifestPath: string;
   message: string;
 }
@@ -56,6 +76,8 @@ export interface LocalMlNormalizedRowPrediction {
   definition?: string;
   /** Anonymous aggregate shown for explanation only; never used to calculate the row. */
   referenceCohort?: LocalMlWearReferenceCohort;
+  /** Direct measured WEAR cohort used as the temporary Local ML body-depth ratio. No regression. */
+  wearDepthCohort?: LocalMlWearDirectDepthCohort;
 }
 
 export interface LocalMlPredictionResponse {
@@ -73,9 +95,11 @@ export interface LocalMlPredictionResponse {
 export interface LocalMlGuidePrediction {
   guide: GeminiBodyGuide;
   depthRatios: GeminiGuideDepthRatioOverrides;
+  directWearDepthRatios: GeminiGuideDepthRatioOverrides;
   confidenceByRow: Partial<Record<GeminiGuideRowKind, number>>;
   minimumConfidence: number;
   depthReady: boolean;
+  directWearDepthReady: boolean;
 }
 
 const ROW_ORDER: GeminiGuideRowKind[] = ["waist", "trouserWaist", "hips"];
@@ -126,6 +150,11 @@ export function buildLocalMlGuidePrediction(
         || row.depthRatio < 0.35
         || row.depthRatio > 1.1
       ))
+      || (row.wearDepthCohort != null && (
+        !Number.isFinite(row.wearDepthCohort.medianDepthRatio)
+        || row.wearDepthCohort.medianDepthRatio < 0.35
+        || row.wearDepthCohort.medianDepthRatio > 1.1
+      ))
       || !finiteUnit(row.confidence)
     ) return null;
   }
@@ -137,14 +166,21 @@ export function buildLocalMlGuidePrediction(
     hips: buildLine(safeRows[2]!, imageWidth, imageHeight),
     notes: safeRows.every((row) => row.depthRatio != null)
       ? "Local ML front-multitask-v1 prediction. Apple owns row scale; the existing ellipse calculation owns circumference."
-      : "WEAR 1D predicts vertical anatomical rows only and MediaPipe supplies visible mask endpoints. The existing Manual Coordinate calculator handles scale, depth sliders and circumference; those values are not learned 3D depth.",
+      : safeRows.every((row) => row.wearDepthCohort != null)
+        ? "WEAR 1D predicts vertical rows; MediaPipe supplies temporary endpoints; direct similar-person WEAR medians supply body depth without regression."
+        : "WEAR 1D predicts vertical anatomical rows only and MediaPipe supplies visible mask endpoints. Body depth is unavailable because a safe direct WEAR cohort was not found.",
   };
   const depthRows = safeRows.filter((row) => row.depthRatio != null);
+  const directWearDepthRows = safeRows.filter((row) => row.wearDepthCohort != null);
   return {
     guide,
     depthRatios: Object.fromEntries(depthRows.map((row) => [row.kind, row.depthRatio])) as GeminiGuideDepthRatioOverrides,
+    directWearDepthRatios: Object.fromEntries(
+      directWearDepthRows.map((row) => [row.kind, row.wearDepthCohort!.medianDepthRatio]),
+    ) as GeminiGuideDepthRatioOverrides,
     confidenceByRow: Object.fromEntries(safeRows.map((row) => [row.kind, row.confidence])),
     minimumConfidence: Math.min(...safeRows.map((row) => row.confidence)),
     depthReady: depthRows.length === ROW_ORDER.length,
+    directWearDepthReady: directWearDepthRows.length === ROW_ORDER.length,
   };
 }

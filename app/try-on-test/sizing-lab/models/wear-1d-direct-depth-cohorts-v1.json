@@ -1,0 +1,4533 @@
+{
+  "version": "wear-1d-direct-depth-cohorts-v1",
+  "method": "Direct median of measured subject depth divided by measured subject breadth; no regression formula.",
+  "heightBinCm": 5.0,
+  "bmiBin": 2.0,
+  "minPeople": 5,
+  "rows": {
+    "waist": {
+      "label": "Natural waist",
+      "measurement": "Measured waist depth / measured waist breadth",
+      "cohorts": [
+        {
+          "gender": "female",
+          "heightMinCm": 147.5,
+          "heightMaxCm": 152.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 7,
+          "medianDepthRatio": 0.695312,
+          "p10DepthRatio": 0.627966,
+          "p90DepthRatio": 0.729923,
+          "medianBreadthCm": 23.6,
+          "medianDepthCm": 16.0,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 147.5,
+          "heightMaxCm": 152.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 48,
+          "medianDepthRatio": 0.708643,
+          "p10DepthRatio": 0.640274,
+          "p90DepthRatio": 0.769431,
+          "medianBreadthCm": 22.1,
+          "medianDepthCm": 15.8,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 147.5,
+          "heightMaxCm": 152.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 34,
+          "medianDepthRatio": 0.708514,
+          "p10DepthRatio": 0.656002,
+          "p90DepthRatio": 0.766573,
+          "medianBreadthCm": 23.3,
+          "medianDepthCm": 16.15,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 147.5,
+          "heightMaxCm": 152.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 33,
+          "medianDepthRatio": 0.726496,
+          "p10DepthRatio": 0.682894,
+          "p90DepthRatio": 0.776653,
+          "medianBreadthCm": 23.8,
+          "medianDepthCm": 17.3,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 147.5,
+          "heightMaxCm": 152.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 10,
+          "medianDepthRatio": 0.775134,
+          "p10DepthRatio": 0.686976,
+          "p90DepthRatio": 0.807656,
+          "medianBreadthCm": 24.35,
+          "medianDepthCm": 19.25,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 147.5,
+          "heightMaxCm": 152.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 5,
+          "medianDepthRatio": 0.788793,
+          "p10DepthRatio": 0.719678,
+          "p90DepthRatio": 0.814067,
+          "medianBreadthCm": 26.7,
+          "medianDepthCm": 21.4,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 52,
+          "medianDepthRatio": 0.689874,
+          "p10DepthRatio": 0.639324,
+          "p90DepthRatio": 0.766344,
+          "medianBreadthCm": 22.1,
+          "medianDepthCm": 15.3,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 146,
+          "medianDepthRatio": 0.706699,
+          "p10DepthRatio": 0.645616,
+          "p90DepthRatio": 0.770627,
+          "medianBreadthCm": 22.6,
+          "medianDepthCm": 16.0,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 166,
+          "medianDepthRatio": 0.715477,
+          "p10DepthRatio": 0.651087,
+          "p90DepthRatio": 0.771243,
+          "medianBreadthCm": 23.4,
+          "medianDepthCm": 16.9,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 118,
+          "medianDepthRatio": 0.717091,
+          "p10DepthRatio": 0.661636,
+          "p90DepthRatio": 0.790785,
+          "medianBreadthCm": 24.75,
+          "medianDepthCm": 17.85,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 53,
+          "medianDepthRatio": 0.744939,
+          "p10DepthRatio": 0.674511,
+          "p90DepthRatio": 0.802308,
+          "medianBreadthCm": 25.6,
+          "medianDepthCm": 19.0,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 12,
+          "medianDepthRatio": 0.762008,
+          "p10DepthRatio": 0.736359,
+          "p90DepthRatio": 0.782723,
+          "medianBreadthCm": 27.35,
+          "medianDepthCm": 20.8,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 15.0,
+          "bmiMax": 17.0,
+          "sampleCount": 7,
+          "medianDepthRatio": 0.633803,
+          "p10DepthRatio": 0.603687,
+          "p90DepthRatio": 0.702679,
+          "medianBreadthCm": 21.4,
+          "medianDepthCm": 13.8,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 117,
+          "medianDepthRatio": 0.686916,
+          "p10DepthRatio": 0.613589,
+          "p90DepthRatio": 0.752213,
+          "medianBreadthCm": 22.0,
+          "medianDepthCm": 15.0,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 278,
+          "medianDepthRatio": 0.69397,
+          "p10DepthRatio": 0.636121,
+          "p90DepthRatio": 0.747676,
+          "medianBreadthCm": 22.8,
+          "medianDepthCm": 15.8,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 302,
+          "medianDepthRatio": 0.706151,
+          "p10DepthRatio": 0.654511,
+          "p90DepthRatio": 0.760163,
+          "medianBreadthCm": 24.1,
+          "medianDepthCm": 17.0,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 209,
+          "medianDepthRatio": 0.715278,
+          "p10DepthRatio": 0.651333,
+          "p90DepthRatio": 0.770395,
+          "medianBreadthCm": 25.5,
+          "medianDepthCm": 18.3,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 68,
+          "medianDepthRatio": 0.733223,
+          "p10DepthRatio": 0.677527,
+          "p90DepthRatio": 0.801658,
+          "medianBreadthCm": 26.35,
+          "medianDepthCm": 19.2,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 18,
+          "medianDepthRatio": 0.743421,
+          "p10DepthRatio": 0.696174,
+          "p90DepthRatio": 0.802271,
+          "medianBreadthCm": 28.45,
+          "medianDepthCm": 21.8,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 10,
+          "medianDepthRatio": 0.767173,
+          "p10DepthRatio": 0.691701,
+          "p90DepthRatio": 0.840919,
+          "medianBreadthCm": 29.0,
+          "medianDepthCm": 22.85,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 15.0,
+          "bmiMax": 17.0,
+          "sampleCount": 12,
+          "medianDepthRatio": 0.662879,
+          "p10DepthRatio": 0.620024,
+          "p90DepthRatio": 0.745631,
+          "medianBreadthCm": 21.2,
+          "medianDepthCm": 14.4,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 133,
+          "medianDepthRatio": 0.688312,
+          "p10DepthRatio": 0.629704,
+          "p90DepthRatio": 0.750652,
+          "medianBreadthCm": 22.3,
+          "medianDepthCm": 15.4,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 277,
+          "medianDepthRatio": 0.688372,
+          "p10DepthRatio": 0.628005,
+          "p90DepthRatio": 0.751513,
+          "medianBreadthCm": 23.3,
+          "medianDepthCm": 16.0,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 288,
+          "medianDepthRatio": 0.703489,
+          "p10DepthRatio": 0.646114,
+          "p90DepthRatio": 0.755138,
+          "medianBreadthCm": 24.6,
+          "medianDepthCm": 17.2,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 190,
+          "medianDepthRatio": 0.702534,
+          "p10DepthRatio": 0.64634,
+          "p90DepthRatio": 0.776516,
+          "medianBreadthCm": 26.0,
+          "medianDepthCm": 18.3,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 84,
+          "medianDepthRatio": 0.723533,
+          "p10DepthRatio": 0.651034,
+          "p90DepthRatio": 0.78917,
+          "medianBreadthCm": 27.35,
+          "medianDepthCm": 19.5,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 14,
+          "medianDepthRatio": 0.74598,
+          "p10DepthRatio": 0.696648,
+          "p90DepthRatio": 0.821401,
+          "medianBreadthCm": 27.65,
+          "medianDepthCm": 21.35,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 6,
+          "medianDepthRatio": 0.777875,
+          "p10DepthRatio": 0.715487,
+          "p90DepthRatio": 0.91619,
+          "medianBreadthCm": 27.15,
+          "medianDepthCm": 21.9,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 31.0,
+          "bmiMax": 33.0,
+          "sampleCount": 7,
+          "medianDepthRatio": 0.773026,
+          "p10DepthRatio": 0.745314,
+          "p90DepthRatio": 0.82373,
+          "medianBreadthCm": 30.4,
+          "medianDepthCm": 23.5,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 85,
+          "medianDepthRatio": 0.674419,
+          "p10DepthRatio": 0.635777,
+          "p90DepthRatio": 0.747248,
+          "medianBreadthCm": 22.6,
+          "medianDepthCm": 15.4,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 196,
+          "medianDepthRatio": 0.686017,
+          "p10DepthRatio": 0.617773,
+          "p90DepthRatio": 0.746753,
+          "medianBreadthCm": 23.55,
+          "medianDepthCm": 16.3,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 146,
+          "medianDepthRatio": 0.695584,
+          "p10DepthRatio": 0.642439,
+          "p90DepthRatio": 0.758624,
+          "medianBreadthCm": 25.2,
+          "medianDepthCm": 17.4,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 117,
+          "medianDepthRatio": 0.711027,
+          "p10DepthRatio": 0.653433,
+          "p90DepthRatio": 0.771877,
+          "medianBreadthCm": 26.6,
+          "medianDepthCm": 18.7,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 38,
+          "medianDepthRatio": 0.718219,
+          "p10DepthRatio": 0.671563,
+          "p90DepthRatio": 0.792593,
+          "medianBreadthCm": 27.5,
+          "medianDepthCm": 19.65,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 16,
+          "medianDepthRatio": 0.722997,
+          "p10DepthRatio": 0.667825,
+          "p90DepthRatio": 0.799394,
+          "medianBreadthCm": 30.0,
+          "medianDepthCm": 21.6,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 24,
+          "medianDepthRatio": 0.654695,
+          "p10DepthRatio": 0.609894,
+          "p90DepthRatio": 0.721558,
+          "medianBreadthCm": 23.0,
+          "medianDepthCm": 15.5,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 75,
+          "medianDepthRatio": 0.692015,
+          "p10DepthRatio": 0.637203,
+          "p90DepthRatio": 0.754297,
+          "medianBreadthCm": 24.0,
+          "medianDepthCm": 16.6,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 44,
+          "medianDepthRatio": 0.685389,
+          "p10DepthRatio": 0.643797,
+          "p90DepthRatio": 0.753797,
+          "medianBreadthCm": 25.55,
+          "medianDepthCm": 17.45,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 35,
+          "medianDepthRatio": 0.714286,
+          "p10DepthRatio": 0.643449,
+          "p90DepthRatio": 0.760045,
+          "medianBreadthCm": 27.1,
+          "medianDepthCm": 19.3,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 7,
+          "medianDepthRatio": 0.691176,
+          "p10DepthRatio": 0.683854,
+          "p90DepthRatio": 0.750958,
+          "medianBreadthCm": 28.0,
+          "medianDepthCm": 19.6,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 5,
+          "medianDepthRatio": 0.72293,
+          "p10DepthRatio": 0.692342,
+          "p90DepthRatio": 0.770769,
+          "medianBreadthCm": 31.4,
+          "medianDepthCm": 22.7,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 7,
+          "medianDepthRatio": 0.682403,
+          "p10DepthRatio": 0.628592,
+          "p90DepthRatio": 0.728467,
+          "medianBreadthCm": 22.8,
+          "medianDepthCm": 15.9,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 9,
+          "medianDepthRatio": 0.696,
+          "p10DepthRatio": 0.666667,
+          "p90DepthRatio": 0.76389,
+          "medianBreadthCm": 25.0,
+          "medianDepthCm": 17.7,
+          "surveys": [
+            "AF68",
+            "ARFE77",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 10,
+          "medianDepthRatio": 0.702757,
+          "p10DepthRatio": 0.664967,
+          "p90DepthRatio": 0.731304,
+          "medianBreadthCm": 26.15,
+          "medianDepthCm": 18.2,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 6,
+          "medianDepthRatio": 0.69847,
+          "p10DepthRatio": 0.685589,
+          "p90DepthRatio": 0.727005,
+          "medianBreadthCm": 28.25,
+          "medianDepthCm": 19.65,
+          "surveys": [
+            "AF68",
+            "ARFE77"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 13,
+          "medianDepthRatio": 0.75,
+          "p10DepthRatio": 0.731507,
+          "p90DepthRatio": 0.765517,
+          "medianBreadthCm": 28.8,
+          "medianDepthCm": 21.3,
+          "surveys": [
+            "AFFLY50",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 12,
+          "medianDepthRatio": 0.769308,
+          "p10DepthRatio": 0.747612,
+          "p90DepthRatio": 0.811649,
+          "medianBreadthCm": 28.4,
+          "medianDepthCm": 21.8,
+          "surveys": [
+            "AFFLY50",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 9,
+          "medianDepthRatio": 0.688406,
+          "p10DepthRatio": 0.644301,
+          "p90DepthRatio": 0.772124,
+          "medianBreadthCm": 26.0,
+          "medianDepthCm": 18.4,
+          "surveys": [
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 54,
+          "medianDepthRatio": 0.712959,
+          "p10DepthRatio": 0.665809,
+          "p90DepthRatio": 0.768462,
+          "medianBreadthCm": 26.2,
+          "medianDepthCm": 18.5,
+          "surveys": [
+            "AFFLY50",
+            "GERMAN68",
+            "KOREAN64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 110,
+          "medianDepthRatio": 0.721543,
+          "p10DepthRatio": 0.669007,
+          "p90DepthRatio": 0.788195,
+          "medianBreadthCm": 27.3,
+          "medianDepthCm": 19.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 121,
+          "medianDepthRatio": 0.725926,
+          "p10DepthRatio": 0.682171,
+          "p90DepthRatio": 0.8,
+          "medianBreadthCm": 28.2,
+          "medianDepthCm": 20.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 67,
+          "medianDepthRatio": 0.766667,
+          "p10DepthRatio": 0.704433,
+          "p90DepthRatio": 0.826428,
+          "medianBreadthCm": 29.4,
+          "medianDepthCm": 22.4,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 32,
+          "medianDepthRatio": 0.774431,
+          "p10DepthRatio": 0.693633,
+          "p90DepthRatio": 0.852567,
+          "medianBreadthCm": 30.35,
+          "medianDepthCm": 23.8,
+          "surveys": [
+            "AFFLY50",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.82132,
+          "p10DepthRatio": 0.784795,
+          "p90DepthRatio": 0.862003,
+          "medianBreadthCm": 32.0,
+          "medianDepthCm": 27.25,
+          "surveys": [
+            "AFFLY50",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 21,
+          "medianDepthRatio": 0.713725,
+          "p10DepthRatio": 0.634241,
+          "p90DepthRatio": 0.745247,
+          "medianBreadthCm": 25.5,
+          "medianDepthCm": 17.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 176,
+          "medianDepthRatio": 0.711403,
+          "p10DepthRatio": 0.66001,
+          "p90DepthRatio": 0.768236,
+          "medianBreadthCm": 26.3,
+          "medianDepthCm": 18.6,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 418,
+          "medianDepthRatio": 0.726293,
+          "p10DepthRatio": 0.67268,
+          "p90DepthRatio": 0.784929,
+          "medianBreadthCm": 27.3,
+          "medianDepthCm": 19.7,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 367,
+          "medianDepthRatio": 0.737374,
+          "p10DepthRatio": 0.681711,
+          "p90DepthRatio": 0.789118,
+          "medianBreadthCm": 28.2,
+          "medianDepthCm": 20.6,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 212,
+          "medianDepthRatio": 0.752254,
+          "p10DepthRatio": 0.697318,
+          "p90DepthRatio": 0.803998,
+          "medianBreadthCm": 29.2,
+          "medianDepthCm": 21.8,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 88,
+          "medianDepthRatio": 0.761331,
+          "p10DepthRatio": 0.714962,
+          "p90DepthRatio": 0.823426,
+          "medianBreadthCm": 30.8,
+          "medianDepthCm": 23.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 27,
+          "medianDepthRatio": 0.767974,
+          "p10DepthRatio": 0.738636,
+          "p90DepthRatio": 0.836306,
+          "medianBreadthCm": 31.1,
+          "medianDepthCm": 25.1,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 31.0,
+          "bmiMax": 33.0,
+          "sampleCount": 5,
+          "medianDepthRatio": 0.778816,
+          "p10DepthRatio": 0.761316,
+          "p90DepthRatio": 0.856812,
+          "medianBreadthCm": 33.7,
+          "medianDepthCm": 25.7,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 36,
+          "medianDepthRatio": 0.686561,
+          "p10DepthRatio": 0.630788,
+          "p90DepthRatio": 0.781725,
+          "medianBreadthCm": 26.0,
+          "medianDepthCm": 18.25,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "KOREAN64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 295,
+          "medianDepthRatio": 0.71161,
+          "p10DepthRatio": 0.649204,
+          "p90DepthRatio": 0.765654,
+          "medianBreadthCm": 26.4,
+          "medianDepthCm": 18.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 696,
+          "medianDepthRatio": 0.722222,
+          "p10DepthRatio": 0.666667,
+          "p90DepthRatio": 0.784113,
+          "medianBreadthCm": 27.1,
+          "medianDepthCm": 19.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 771,
+          "medianDepthRatio": 0.732673,
+          "p10DepthRatio": 0.675277,
+          "p90DepthRatio": 0.788732,
+          "medianBreadthCm": 28.5,
+          "medianDepthCm": 20.7,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 520,
+          "medianDepthRatio": 0.743333,
+          "p10DepthRatio": 0.678419,
+          "p90DepthRatio": 0.804332,
+          "medianBreadthCm": 29.7,
+          "medianDepthCm": 21.9,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 216,
+          "medianDepthRatio": 0.754387,
+          "p10DepthRatio": 0.693997,
+          "p90DepthRatio": 0.827822,
+          "medianBreadthCm": 30.5,
+          "medianDepthCm": 23.2,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 55,
+          "medianDepthRatio": 0.771704,
+          "p10DepthRatio": 0.710279,
+          "p90DepthRatio": 0.853106,
+          "medianBreadthCm": 32.3,
+          "medianDepthCm": 24.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 31.0,
+          "bmiMax": 33.0,
+          "sampleCount": 16,
+          "medianDepthRatio": 0.775489,
+          "p10DepthRatio": 0.726346,
+          "p90DepthRatio": 0.833184,
+          "medianBreadthCm": 33.15,
+          "medianDepthCm": 25.6,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 47,
+          "medianDepthRatio": 0.691057,
+          "p10DepthRatio": 0.638799,
+          "p90DepthRatio": 0.74671,
+          "medianBreadthCm": 25.7,
+          "medianDepthCm": 17.6,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 382,
+          "medianDepthRatio": 0.709997,
+          "p10DepthRatio": 0.647706,
+          "p90DepthRatio": 0.772277,
+          "medianBreadthCm": 26.0,
+          "medianDepthCm": 18.4,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 829,
+          "medianDepthRatio": 0.71875,
+          "p10DepthRatio": 0.66305,
+          "p90DepthRatio": 0.782424,
+          "medianBreadthCm": 27.2,
+          "medianDepthCm": 19.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 971,
+          "medianDepthRatio": 0.733564,
+          "p10DepthRatio": 0.673004,
+          "p90DepthRatio": 0.796154,
+          "medianBreadthCm": 28.5,
+          "medianDepthCm": 20.8,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 614,
+          "medianDepthRatio": 0.741764,
+          "p10DepthRatio": 0.682186,
+          "p90DepthRatio": 0.805652,
+          "medianBreadthCm": 29.8,
+          "medianDepthCm": 22.0,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 310,
+          "medianDepthRatio": 0.754435,
+          "p10DepthRatio": 0.693741,
+          "p90DepthRatio": 0.828571,
+          "medianBreadthCm": 30.85,
+          "medianDepthCm": 23.2,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 78,
+          "medianDepthRatio": 0.758815,
+          "p10DepthRatio": 0.705604,
+          "p90DepthRatio": 0.836228,
+          "medianBreadthCm": 32.0,
+          "medianDepthCm": 24.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 31.0,
+          "bmiMax": 33.0,
+          "sampleCount": 19,
+          "medianDepthRatio": 0.78836,
+          "p10DepthRatio": 0.709948,
+          "p90DepthRatio": 0.819565,
+          "medianBreadthCm": 34.6,
+          "medianDepthCm": 26.6,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 33.0,
+          "bmiMax": 35.0,
+          "sampleCount": 6,
+          "medianDepthRatio": 0.798128,
+          "p10DepthRatio": 0.721114,
+          "p90DepthRatio": 0.815742,
+          "medianBreadthCm": 34.15,
+          "medianDepthCm": 26.95,
+          "surveys": [
+            "AFFLY50",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 34,
+          "medianDepthRatio": 0.689139,
+          "p10DepthRatio": 0.651016,
+          "p90DepthRatio": 0.736624,
+          "medianBreadthCm": 25.45,
+          "medianDepthCm": 17.35,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 265,
+          "medianDepthRatio": 0.717131,
+          "p10DepthRatio": 0.648074,
+          "p90DepthRatio": 0.77298,
+          "medianBreadthCm": 26.0,
+          "medianDepthCm": 18.7,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 581,
+          "medianDepthRatio": 0.720165,
+          "p10DepthRatio": 0.664336,
+          "p90DepthRatio": 0.778157,
+          "medianBreadthCm": 27.3,
+          "medianDepthCm": 19.7,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 704,
+          "medianDepthRatio": 0.727098,
+          "p10DepthRatio": 0.66898,
+          "p90DepthRatio": 0.791667,
+          "medianBreadthCm": 28.9,
+          "medianDepthCm": 21.0,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 452,
+          "medianDepthRatio": 0.732636,
+          "p10DepthRatio": 0.676942,
+          "p90DepthRatio": 0.79774,
+          "medianBreadthCm": 30.3,
+          "medianDepthCm": 22.2,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 201,
+          "medianDepthRatio": 0.746032,
+          "p10DepthRatio": 0.693215,
+          "p90DepthRatio": 0.813411,
+          "medianBreadthCm": 31.4,
+          "medianDepthCm": 23.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 48,
+          "medianDepthRatio": 0.754398,
+          "p10DepthRatio": 0.696951,
+          "p90DepthRatio": 0.831608,
+          "medianBreadthCm": 32.9,
+          "medianDepthCm": 24.8,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 31.0,
+          "bmiMax": 33.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.763379,
+          "p10DepthRatio": 0.711564,
+          "p90DepthRatio": 0.831349,
+          "medianBreadthCm": 33.75,
+          "medianDepthCm": 26.25,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 18,
+          "medianDepthRatio": 0.704827,
+          "p10DepthRatio": 0.640793,
+          "p90DepthRatio": 0.765398,
+          "medianBreadthCm": 25.05,
+          "medianDepthCm": 17.85,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 101,
+          "medianDepthRatio": 0.707692,
+          "p10DepthRatio": 0.648649,
+          "p90DepthRatio": 0.772388,
+          "medianBreadthCm": 26.0,
+          "medianDepthCm": 18.6,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 256,
+          "medianDepthRatio": 0.717148,
+          "p10DepthRatio": 0.65109,
+          "p90DepthRatio": 0.783609,
+          "medianBreadthCm": 27.9,
+          "medianDepthCm": 19.8,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 304,
+          "medianDepthRatio": 0.719448,
+          "p10DepthRatio": 0.659376,
+          "p90DepthRatio": 0.779003,
+          "medianBreadthCm": 29.3,
+          "medianDepthCm": 21.1,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 217,
+          "medianDepthRatio": 0.735294,
+          "p10DepthRatio": 0.686126,
+          "p90DepthRatio": 0.805099,
+          "medianBreadthCm": 31.0,
+          "medianDepthCm": 22.8,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 77,
+          "medianDepthRatio": 0.742424,
+          "p10DepthRatio": 0.6788,
+          "p90DepthRatio": 0.830511,
+          "medianBreadthCm": 32.4,
+          "medianDepthCm": 23.7,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 27,
+          "medianDepthRatio": 0.753582,
+          "p10DepthRatio": 0.715181,
+          "p90DepthRatio": 0.818418,
+          "medianBreadthCm": 33.0,
+          "medianDepthCm": 25.3,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.709416,
+          "p10DepthRatio": 0.687958,
+          "p90DepthRatio": 0.793531,
+          "medianBreadthCm": 25.55,
+          "medianDepthCm": 18.45,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "MARFLY64"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 36,
+          "medianDepthRatio": 0.719722,
+          "p10DepthRatio": 0.661905,
+          "p90DepthRatio": 0.773913,
+          "medianBreadthCm": 26.7,
+          "medianDepthCm": 19.15,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 81,
+          "medianDepthRatio": 0.708475,
+          "p10DepthRatio": 0.639344,
+          "p90DepthRatio": 0.787546,
+          "medianBreadthCm": 28.0,
+          "medianDepthCm": 20.0,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 83,
+          "medianDepthRatio": 0.72119,
+          "p10DepthRatio": 0.66541,
+          "p90DepthRatio": 0.778737,
+          "medianBreadthCm": 30.4,
+          "medianDepthCm": 21.9,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 53,
+          "medianDepthRatio": 0.728972,
+          "p10DepthRatio": 0.673258,
+          "p90DepthRatio": 0.7902,
+          "medianBreadthCm": 31.8,
+          "medianDepthCm": 22.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 19,
+          "medianDepthRatio": 0.735294,
+          "p10DepthRatio": 0.684896,
+          "p90DepthRatio": 0.816557,
+          "medianBreadthCm": 33.4,
+          "medianDepthCm": 24.7,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 5,
+          "medianDepthRatio": 0.747024,
+          "p10DepthRatio": 0.692946,
+          "p90DepthRatio": 0.771112,
+          "medianBreadthCm": 35.4,
+          "medianDepthCm": 25.1,
+          "surveys": [
+            "AFFLY50",
+            "MARFLY64"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 192.5,
+          "heightMaxCm": 197.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 7,
+          "medianDepthRatio": 0.698113,
+          "p10DepthRatio": 0.675663,
+          "p90DepthRatio": 0.707171,
+          "medianBreadthCm": 28.9,
+          "medianDepthCm": 20.4,
+          "surveys": [
+            "AFFLY50",
+            "GERMAN68",
+            "MARFLY64"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 192.5,
+          "heightMaxCm": 197.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 9,
+          "medianDepthRatio": 0.738255,
+          "p10DepthRatio": 0.671862,
+          "p90DepthRatio": 0.765065,
+          "medianBreadthCm": 28.6,
+          "medianDepthCm": 21.1,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 192.5,
+          "heightMaxCm": 197.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 6,
+          "medianDepthRatio": 0.706763,
+          "p10DepthRatio": 0.673672,
+          "p90DepthRatio": 0.809044,
+          "medianBreadthCm": 30.8,
+          "medianDepthCm": 22.05,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "MARFLY64"
+          ]
+        }
+      ]
+    },
+    "trouserWaist": {
+      "label": "Stomach proxy for trouser waist",
+      "measurement": "Measured abdomen or stomach depth / measured breadth; not an exact trouser waistband plane",
+      "cohorts": [
+        {
+          "gender": "female",
+          "heightMinCm": 147.5,
+          "heightMaxCm": 152.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 6,
+          "medianDepthRatio": 0.675134,
+          "p10DepthRatio": 0.643936,
+          "p90DepthRatio": 0.734826,
+          "medianBreadthCm": 27.95,
+          "medianDepthCm": 19.05,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 12,
+          "medianDepthRatio": 0.732341,
+          "p10DepthRatio": 0.667944,
+          "p90DepthRatio": 0.824744,
+          "medianBreadthCm": 27.85,
+          "medianDepthCm": 19.9,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 11,
+          "medianDepthRatio": 0.740741,
+          "p10DepthRatio": 0.629508,
+          "p90DepthRatio": 0.856,
+          "medianBreadthCm": 28.4,
+          "medianDepthCm": 20.1,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.817354,
+          "p10DepthRatio": 0.706179,
+          "p90DepthRatio": 0.828045,
+          "medianBreadthCm": 27.85,
+          "medianDepthCm": 21.8,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 9,
+          "medianDepthRatio": 0.699248,
+          "p10DepthRatio": 0.649457,
+          "p90DepthRatio": 0.770437,
+          "medianBreadthCm": 27.0,
+          "medianDepthCm": 19.2,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 9,
+          "medianDepthRatio": 0.723881,
+          "p10DepthRatio": 0.679993,
+          "p90DepthRatio": 0.809146,
+          "medianBreadthCm": 28.0,
+          "medianDepthCm": 20.2,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 17,
+          "medianDepthRatio": 0.746667,
+          "p10DepthRatio": 0.691668,
+          "p90DepthRatio": 0.831039,
+          "medianBreadthCm": 28.6,
+          "medianDepthCm": 21.5,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 20,
+          "medianDepthRatio": 0.768969,
+          "p10DepthRatio": 0.700825,
+          "p90DepthRatio": 0.842118,
+          "medianBreadthCm": 30.55,
+          "medianDepthCm": 23.05,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 9,
+          "medianDepthRatio": 0.745399,
+          "p10DepthRatio": 0.700723,
+          "p90DepthRatio": 0.821265,
+          "medianBreadthCm": 32.1,
+          "medianDepthCm": 24.1,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.666337,
+          "p10DepthRatio": 0.630455,
+          "p90DepthRatio": 0.72851,
+          "medianBreadthCm": 27.4,
+          "medianDepthCm": 18.7,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 17,
+          "medianDepthRatio": 0.735395,
+          "p10DepthRatio": 0.648584,
+          "p90DepthRatio": 0.782631,
+          "medianBreadthCm": 28.8,
+          "medianDepthCm": 20.5,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 20,
+          "medianDepthRatio": 0.71299,
+          "p10DepthRatio": 0.650717,
+          "p90DepthRatio": 0.755713,
+          "medianBreadthCm": 29.65,
+          "medianDepthCm": 21.55,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 17,
+          "medianDepthRatio": 0.721875,
+          "p10DepthRatio": 0.673408,
+          "p90DepthRatio": 0.827567,
+          "medianBreadthCm": 31.2,
+          "medianDepthCm": 23.4,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.752495,
+          "p10DepthRatio": 0.713448,
+          "p90DepthRatio": 0.838215,
+          "medianBreadthCm": 33.45,
+          "medianDepthCm": 25.0,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 9,
+          "medianDepthRatio": 0.688889,
+          "p10DepthRatio": 0.632719,
+          "p90DepthRatio": 0.736355,
+          "medianBreadthCm": 30.7,
+          "medianDepthCm": 20.6,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 10,
+          "medianDepthRatio": 0.682055,
+          "p10DepthRatio": 0.637396,
+          "p90DepthRatio": 0.750882,
+          "medianBreadthCm": 31.4,
+          "medianDepthCm": 21.9,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 10,
+          "medianDepthRatio": 0.740327,
+          "p10DepthRatio": 0.67572,
+          "p90DepthRatio": 0.792441,
+          "medianBreadthCm": 31.4,
+          "medianDepthCm": 22.95,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 6,
+          "medianDepthRatio": 0.699026,
+          "p10DepthRatio": 0.667713,
+          "p90DepthRatio": 0.780883,
+          "medianBreadthCm": 33.05,
+          "medianDepthCm": 23.3,
+          "surveys": [
+            "ARFE77-abdomen"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 5,
+          "medianDepthRatio": 0.819876,
+          "p10DepthRatio": 0.737851,
+          "p90DepthRatio": 0.836535,
+          "medianBreadthCm": 29.8,
+          "medianDepthCm": 24.1,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 11,
+          "medianDepthRatio": 0.741497,
+          "p10DepthRatio": 0.686411,
+          "p90DepthRatio": 0.808581,
+          "medianBreadthCm": 29.0,
+          "medianDepthCm": 20.8,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 6,
+          "medianDepthRatio": 0.750436,
+          "p10DepthRatio": 0.723682,
+          "p90DepthRatio": 0.808011,
+          "medianBreadthCm": 30.9,
+          "medianDepthCm": 23.1,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 31.0,
+          "bmiMax": 33.0,
+          "sampleCount": 5,
+          "medianDepthRatio": 0.761566,
+          "p10DepthRatio": 0.724679,
+          "p90DepthRatio": 0.778021,
+          "medianBreadthCm": 28.5,
+          "medianDepthCm": 22.2,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.773768,
+          "p10DepthRatio": 0.712756,
+          "p90DepthRatio": 0.796461,
+          "medianBreadthCm": 28.8,
+          "medianDepthCm": 21.15,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 24,
+          "medianDepthRatio": 0.743965,
+          "p10DepthRatio": 0.693535,
+          "p90DepthRatio": 0.796198,
+          "medianBreadthCm": 30.3,
+          "medianDepthCm": 22.0,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 23,
+          "medianDepthRatio": 0.733129,
+          "p10DepthRatio": 0.686072,
+          "p90DepthRatio": 0.791112,
+          "medianBreadthCm": 31.2,
+          "medianDepthCm": 22.6,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 25,
+          "medianDepthRatio": 0.747604,
+          "p10DepthRatio": 0.707828,
+          "p90DepthRatio": 0.823155,
+          "medianBreadthCm": 31.3,
+          "medianDepthCm": 23.3,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 25,
+          "medianDepthRatio": 0.757576,
+          "p10DepthRatio": 0.703603,
+          "p90DepthRatio": 0.825696,
+          "medianBreadthCm": 30.7,
+          "medianDepthCm": 22.5,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 31.0,
+          "bmiMax": 33.0,
+          "sampleCount": 16,
+          "medianDepthRatio": 0.774904,
+          "p10DepthRatio": 0.696226,
+          "p90DepthRatio": 0.818975,
+          "medianBreadthCm": 31.05,
+          "medianDepthCm": 23.4,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 6,
+          "medianDepthRatio": 0.741801,
+          "p10DepthRatio": 0.718024,
+          "p90DepthRatio": 0.765508,
+          "medianBreadthCm": 32.15,
+          "medianDepthCm": 23.65,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 13,
+          "medianDepthRatio": 0.735043,
+          "p10DepthRatio": 0.680368,
+          "p90DepthRatio": 0.786319,
+          "medianBreadthCm": 31.3,
+          "medianDepthCm": 23.1,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 20,
+          "medianDepthRatio": 0.77111,
+          "p10DepthRatio": 0.716843,
+          "p90DepthRatio": 0.843767,
+          "medianBreadthCm": 32.75,
+          "medianDepthCm": 25.25,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 25,
+          "medianDepthRatio": 0.732143,
+          "p10DepthRatio": 0.693375,
+          "p90DepthRatio": 0.818323,
+          "medianBreadthCm": 32.3,
+          "medianDepthCm": 23.9,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 35,
+          "medianDepthRatio": 0.746795,
+          "p10DepthRatio": 0.680714,
+          "p90DepthRatio": 0.829802,
+          "medianBreadthCm": 31.5,
+          "medianDepthCm": 23.4,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 27,
+          "medianDepthRatio": 0.748408,
+          "p10DepthRatio": 0.676961,
+          "p90DepthRatio": 0.807647,
+          "medianBreadthCm": 32.5,
+          "medianDepthCm": 24.1,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 19,
+          "medianDepthRatio": 0.75766,
+          "p10DepthRatio": 0.664064,
+          "p90DepthRatio": 0.834701,
+          "medianBreadthCm": 31.5,
+          "medianDepthCm": 23.9,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 31.0,
+          "bmiMax": 33.0,
+          "sampleCount": 9,
+          "medianDepthRatio": 0.766764,
+          "p10DepthRatio": 0.741579,
+          "p90DepthRatio": 0.786581,
+          "medianBreadthCm": 33.4,
+          "medianDepthCm": 26.3,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 33.0,
+          "bmiMax": 35.0,
+          "sampleCount": 7,
+          "medianDepthRatio": 0.718182,
+          "p10DepthRatio": 0.706365,
+          "p90DepthRatio": 0.82151,
+          "medianBreadthCm": 33.0,
+          "medianDepthCm": 23.7,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.730932,
+          "p10DepthRatio": 0.690129,
+          "p90DepthRatio": 0.773427,
+          "medianBreadthCm": 33.15,
+          "medianDepthCm": 24.2,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 11,
+          "medianDepthRatio": 0.719403,
+          "p10DepthRatio": 0.678445,
+          "p90DepthRatio": 0.757962,
+          "medianBreadthCm": 31.4,
+          "medianDepthCm": 21.7,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 26,
+          "medianDepthRatio": 0.735653,
+          "p10DepthRatio": 0.688532,
+          "p90DepthRatio": 0.793802,
+          "medianBreadthCm": 30.95,
+          "medianDepthCm": 22.55,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 33,
+          "medianDepthRatio": 0.73125,
+          "p10DepthRatio": 0.68303,
+          "p90DepthRatio": 0.843339,
+          "medianBreadthCm": 32.0,
+          "medianDepthCm": 23.4,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 20,
+          "medianDepthRatio": 0.727211,
+          "p10DepthRatio": 0.69293,
+          "p90DepthRatio": 0.775537,
+          "medianBreadthCm": 32.3,
+          "medianDepthCm": 23.7,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 12,
+          "medianDepthRatio": 0.731521,
+          "p10DepthRatio": 0.677431,
+          "p90DepthRatio": 0.828737,
+          "medianBreadthCm": 31.95,
+          "medianDepthCm": 23.75,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 12,
+          "medianDepthRatio": 0.764237,
+          "p10DepthRatio": 0.706964,
+          "p90DepthRatio": 0.788281,
+          "medianBreadthCm": 33.15,
+          "medianDepthCm": 25.45,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 31.0,
+          "bmiMax": 33.0,
+          "sampleCount": 5,
+          "medianDepthRatio": 0.755627,
+          "p10DepthRatio": 0.67514,
+          "p90DepthRatio": 0.792375,
+          "medianBreadthCm": 31.8,
+          "medianDepthCm": 22.5,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.733136,
+          "p10DepthRatio": 0.676237,
+          "p90DepthRatio": 0.789327,
+          "medianBreadthCm": 31.55,
+          "medianDepthCm": 22.6,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 11,
+          "medianDepthRatio": 0.739521,
+          "p10DepthRatio": 0.684211,
+          "p90DepthRatio": 0.807339,
+          "medianBreadthCm": 33.4,
+          "medianDepthCm": 24.7,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 15,
+          "medianDepthRatio": 0.740947,
+          "p10DepthRatio": 0.647199,
+          "p90DepthRatio": 0.855082,
+          "medianBreadthCm": 32.5,
+          "medianDepthCm": 23.1,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 11,
+          "medianDepthRatio": 0.740113,
+          "p10DepthRatio": 0.660194,
+          "p90DepthRatio": 0.770588,
+          "medianBreadthCm": 30.9,
+          "medianDepthCm": 22.8,
+          "surveys": [
+            "CANADA74-stomach"
+          ]
+        }
+      ]
+    },
+    "hips": {
+      "label": "Hips",
+      "measurement": "Measured buttock depth / measured hip breadth",
+      "cohorts": [
+        {
+          "gender": "female",
+          "heightMinCm": 147.5,
+          "heightMaxCm": 152.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 28,
+          "medianDepthRatio": 0.584371,
+          "p10DepthRatio": 0.541438,
+          "p90DepthRatio": 0.629645,
+          "medianBreadthCm": 32.3,
+          "medianDepthCm": 18.7,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 147.5,
+          "heightMaxCm": 152.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 23,
+          "medianDepthRatio": 0.619883,
+          "p10DepthRatio": 0.583955,
+          "p90DepthRatio": 0.654382,
+          "medianBreadthCm": 33.3,
+          "medianDepthCm": 20.5,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 147.5,
+          "heightMaxCm": 152.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 20,
+          "medianDepthRatio": 0.604192,
+          "p10DepthRatio": 0.578201,
+          "p90DepthRatio": 0.632885,
+          "medianBreadthCm": 34.35,
+          "medianDepthCm": 20.7,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 147.5,
+          "heightMaxCm": 152.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.620472,
+          "p10DepthRatio": 0.588407,
+          "p90DepthRatio": 0.670976,
+          "medianBreadthCm": 35.35,
+          "medianDepthCm": 22.1,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 36,
+          "medianDepthRatio": 0.591706,
+          "p10DepthRatio": 0.528779,
+          "p90DepthRatio": 0.639282,
+          "medianBreadthCm": 31.7,
+          "medianDepthCm": 18.3,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 98,
+          "medianDepthRatio": 0.59545,
+          "p10DepthRatio": 0.554864,
+          "p90DepthRatio": 0.644469,
+          "medianBreadthCm": 32.6,
+          "medianDepthCm": 19.45,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 114,
+          "medianDepthRatio": 0.601123,
+          "p10DepthRatio": 0.567786,
+          "p90DepthRatio": 0.653514,
+          "medianBreadthCm": 34.0,
+          "medianDepthCm": 20.5,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 68,
+          "medianDepthRatio": 0.618911,
+          "p10DepthRatio": 0.581223,
+          "p90DepthRatio": 0.668234,
+          "medianBreadthCm": 35.35,
+          "medianDepthCm": 21.75,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 33,
+          "medianDepthRatio": 0.636364,
+          "p10DepthRatio": 0.579815,
+          "p90DepthRatio": 0.675028,
+          "medianBreadthCm": 36.0,
+          "medianDepthCm": 22.7,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 6,
+          "medianDepthRatio": 0.666344,
+          "p10DepthRatio": 0.596686,
+          "p90DepthRatio": 0.700562,
+          "medianBreadthCm": 38.5,
+          "medianDepthCm": 24.4,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 15.0,
+          "bmiMax": 17.0,
+          "sampleCount": 6,
+          "medianDepthRatio": 0.606639,
+          "p10DepthRatio": 0.569009,
+          "p90DepthRatio": 0.632658,
+          "medianBreadthCm": 31.45,
+          "medianDepthCm": 18.65,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 84,
+          "medianDepthRatio": 0.596005,
+          "p10DepthRatio": 0.557119,
+          "p90DepthRatio": 0.639421,
+          "medianBreadthCm": 32.15,
+          "medianDepthCm": 19.3,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 217,
+          "medianDepthRatio": 0.595166,
+          "p10DepthRatio": 0.559196,
+          "p90DepthRatio": 0.642128,
+          "medianBreadthCm": 33.3,
+          "medianDepthCm": 20.0,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 202,
+          "medianDepthRatio": 0.606018,
+          "p10DepthRatio": 0.566863,
+          "p90DepthRatio": 0.654847,
+          "medianBreadthCm": 34.85,
+          "medianDepthCm": 21.0,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 106,
+          "medianDepthRatio": 0.616595,
+          "p10DepthRatio": 0.561279,
+          "p90DepthRatio": 0.656513,
+          "medianBreadthCm": 36.0,
+          "medianDepthCm": 22.1,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 23,
+          "medianDepthRatio": 0.618919,
+          "p10DepthRatio": 0.576347,
+          "p90DepthRatio": 0.661909,
+          "medianBreadthCm": 37.0,
+          "medianDepthCm": 22.9,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 7,
+          "medianDepthRatio": 0.664062,
+          "p10DepthRatio": 0.606887,
+          "p90DepthRatio": 0.679195,
+          "medianBreadthCm": 39.0,
+          "medianDepthCm": 25.5,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 5,
+          "medianDepthRatio": 0.627551,
+          "p10DepthRatio": 0.600976,
+          "p90DepthRatio": 0.694463,
+          "medianBreadthCm": 39.2,
+          "medianDepthCm": 24.7,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 15.0,
+          "bmiMax": 17.0,
+          "sampleCount": 9,
+          "medianDepthRatio": 0.607843,
+          "p10DepthRatio": 0.541248,
+          "p90DepthRatio": 0.647005,
+          "medianBreadthCm": 31.5,
+          "medianDepthCm": 19.1,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 105,
+          "medianDepthRatio": 0.60423,
+          "p10DepthRatio": 0.554425,
+          "p90DepthRatio": 0.638178,
+          "medianBreadthCm": 32.5,
+          "medianDepthCm": 19.6,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 190,
+          "medianDepthRatio": 0.600578,
+          "p10DepthRatio": 0.559758,
+          "p90DepthRatio": 0.657346,
+          "medianBreadthCm": 33.65,
+          "medianDepthCm": 20.5,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 188,
+          "medianDepthRatio": 0.60274,
+          "p10DepthRatio": 0.560847,
+          "p90DepthRatio": 0.647333,
+          "medianBreadthCm": 35.4,
+          "medianDepthCm": 21.4,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 107,
+          "medianDepthRatio": 0.61236,
+          "p10DepthRatio": 0.577977,
+          "p90DepthRatio": 0.65119,
+          "medianBreadthCm": 36.7,
+          "medianDepthCm": 22.5,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 43,
+          "medianDepthRatio": 0.615584,
+          "p10DepthRatio": 0.579391,
+          "p90DepthRatio": 0.684232,
+          "medianBreadthCm": 38.0,
+          "medianDepthCm": 23.5,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.640513,
+          "p10DepthRatio": 0.617428,
+          "p90DepthRatio": 0.656022,
+          "medianBreadthCm": 39.3,
+          "medianDepthCm": 25.0,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 66,
+          "medianDepthRatio": 0.594707,
+          "p10DepthRatio": 0.554421,
+          "p90DepthRatio": 0.640909,
+          "medianBreadthCm": 33.3,
+          "medianDepthCm": 19.9,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 150,
+          "medianDepthRatio": 0.607791,
+          "p10DepthRatio": 0.5623,
+          "p90DepthRatio": 0.644718,
+          "medianBreadthCm": 34.15,
+          "medianDepthCm": 20.55,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 90,
+          "medianDepthRatio": 0.606907,
+          "p10DepthRatio": 0.558115,
+          "p90DepthRatio": 0.652443,
+          "medianBreadthCm": 36.1,
+          "medianDepthCm": 21.9,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 63,
+          "medianDepthRatio": 0.619946,
+          "p10DepthRatio": 0.572425,
+          "p90DepthRatio": 0.663317,
+          "medianBreadthCm": 37.1,
+          "medianDepthCm": 23.0,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 18,
+          "medianDepthRatio": 0.635096,
+          "p10DepthRatio": 0.587184,
+          "p90DepthRatio": 0.696251,
+          "medianBreadthCm": 37.25,
+          "medianDepthCm": 23.8,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.658903,
+          "p10DepthRatio": 0.59748,
+          "p90DepthRatio": 0.718868,
+          "medianBreadthCm": 39.95,
+          "medianDepthCm": 25.8,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 19,
+          "medianDepthRatio": 0.572727,
+          "p10DepthRatio": 0.546476,
+          "p90DepthRatio": 0.619152,
+          "medianBreadthCm": 34.5,
+          "medianDepthCm": 19.9,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 56,
+          "medianDepthRatio": 0.602301,
+          "p10DepthRatio": 0.560394,
+          "p90DepthRatio": 0.655672,
+          "medianBreadthCm": 34.8,
+          "medianDepthCm": 21.15,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 21,
+          "medianDepthRatio": 0.594444,
+          "p10DepthRatio": 0.557951,
+          "p90DepthRatio": 0.630372,
+          "medianBreadthCm": 36.7,
+          "medianDepthCm": 22.0,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 11,
+          "medianDepthRatio": 0.638814,
+          "p10DepthRatio": 0.585366,
+          "p90DepthRatio": 0.665714,
+          "medianBreadthCm": 37.1,
+          "medianDepthCm": 23.3,
+          "surveys": [
+            "AF68"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 7,
+          "medianDepthRatio": 0.601173,
+          "p10DepthRatio": 0.567537,
+          "p90DepthRatio": 0.654976,
+          "medianBreadthCm": 33.5,
+          "medianDepthCm": 20.5,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "female",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 5,
+          "medianDepthRatio": 0.585434,
+          "p10DepthRatio": 0.561433,
+          "p90DepthRatio": 0.609185,
+          "medianBreadthCm": 36.1,
+          "medianDepthCm": 20.9,
+          "surveys": [
+            "AF68",
+            "STEWA72"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 13,
+          "medianDepthRatio": 0.684524,
+          "p10DepthRatio": 0.656339,
+          "p90DepthRatio": 0.729784,
+          "medianBreadthCm": 32.5,
+          "medianDepthCm": 22.4,
+          "surveys": [
+            "AFFLY50",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 152.5,
+          "heightMaxCm": 157.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 12,
+          "medianDepthRatio": 0.717781,
+          "p10DepthRatio": 0.687052,
+          "p90DepthRatio": 0.743006,
+          "medianBreadthCm": 32.5,
+          "medianDepthCm": 23.1,
+          "surveys": [
+            "AFFLY50",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 9,
+          "medianDepthRatio": 0.651007,
+          "p10DepthRatio": 0.641717,
+          "p90DepthRatio": 0.68955,
+          "medianBreadthCm": 29.8,
+          "medianDepthCm": 20.0,
+          "surveys": [
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 54,
+          "medianDepthRatio": 0.65113,
+          "p10DepthRatio": 0.602748,
+          "p90DepthRatio": 0.700423,
+          "medianBreadthCm": 30.55,
+          "medianDepthCm": 20.0,
+          "surveys": [
+            "AFFLY50",
+            "GERMAN68",
+            "KOREAN64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 110,
+          "medianDepthRatio": 0.680681,
+          "p10DepthRatio": 0.637196,
+          "p90DepthRatio": 0.725316,
+          "medianBreadthCm": 31.3,
+          "medianDepthCm": 21.4,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 121,
+          "medianDepthRatio": 0.69697,
+          "p10DepthRatio": 0.651899,
+          "p90DepthRatio": 0.746032,
+          "medianBreadthCm": 32.3,
+          "medianDepthCm": 22.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 67,
+          "medianDepthRatio": 0.700617,
+          "p10DepthRatio": 0.666667,
+          "p90DepthRatio": 0.760405,
+          "medianBreadthCm": 33.4,
+          "medianDepthCm": 23.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 32,
+          "medianDepthRatio": 0.726749,
+          "p10DepthRatio": 0.695559,
+          "p90DepthRatio": 0.782483,
+          "medianBreadthCm": 33.85,
+          "medianDepthCm": 24.85,
+          "surveys": [
+            "AFFLY50",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 157.5,
+          "heightMaxCm": 162.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.757875,
+          "p10DepthRatio": 0.719181,
+          "p90DepthRatio": 0.786303,
+          "medianBreadthCm": 34.2,
+          "medianDepthCm": 26.15,
+          "surveys": [
+            "AFFLY50",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 21,
+          "medianDepthRatio": 0.643312,
+          "p10DepthRatio": 0.608833,
+          "p90DepthRatio": 0.704918,
+          "medianBreadthCm": 30.5,
+          "medianDepthCm": 19.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 176,
+          "medianDepthRatio": 0.65798,
+          "p10DepthRatio": 0.599401,
+          "p90DepthRatio": 0.707995,
+          "medianBreadthCm": 31.0,
+          "medianDepthCm": 20.4,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 418,
+          "medianDepthRatio": 0.675847,
+          "p10DepthRatio": 0.622836,
+          "p90DepthRatio": 0.724908,
+          "medianBreadthCm": 31.9,
+          "medianDepthCm": 21.6,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 367,
+          "medianDepthRatio": 0.687307,
+          "p10DepthRatio": 0.628931,
+          "p90DepthRatio": 0.744911,
+          "medianBreadthCm": 32.7,
+          "medianDepthCm": 22.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 212,
+          "medianDepthRatio": 0.701028,
+          "p10DepthRatio": 0.65416,
+          "p90DepthRatio": 0.757347,
+          "medianBreadthCm": 33.8,
+          "medianDepthCm": 23.7,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 88,
+          "medianDepthRatio": 0.725431,
+          "p10DepthRatio": 0.678256,
+          "p90DepthRatio": 0.772959,
+          "medianBreadthCm": 34.9,
+          "medianDepthCm": 25.15,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 27,
+          "medianDepthRatio": 0.744253,
+          "p10DepthRatio": 0.690037,
+          "p90DepthRatio": 0.773847,
+          "medianBreadthCm": 34.8,
+          "medianDepthCm": 25.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 162.5,
+          "heightMaxCm": 167.5,
+          "bmiMin": 31.0,
+          "bmiMax": 33.0,
+          "sampleCount": 5,
+          "medianDepthRatio": 0.754144,
+          "p10DepthRatio": 0.750975,
+          "p90DepthRatio": 0.775692,
+          "medianBreadthCm": 36.2,
+          "medianDepthCm": 27.3,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 36,
+          "medianDepthRatio": 0.642449,
+          "p10DepthRatio": 0.593695,
+          "p90DepthRatio": 0.684064,
+          "medianBreadthCm": 30.9,
+          "medianDepthCm": 19.85,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "KOREAN64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 295,
+          "medianDepthRatio": 0.648318,
+          "p10DepthRatio": 0.595638,
+          "p90DepthRatio": 0.705128,
+          "medianBreadthCm": 31.8,
+          "medianDepthCm": 20.6,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 696,
+          "medianDepthRatio": 0.662651,
+          "p10DepthRatio": 0.608423,
+          "p90DepthRatio": 0.716441,
+          "medianBreadthCm": 32.5,
+          "medianDepthCm": 21.6,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 771,
+          "medianDepthRatio": 0.680473,
+          "p10DepthRatio": 0.631728,
+          "p90DepthRatio": 0.736232,
+          "medianBreadthCm": 33.5,
+          "medianDepthCm": 22.9,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 520,
+          "medianDepthRatio": 0.697502,
+          "p10DepthRatio": 0.637822,
+          "p90DepthRatio": 0.752309,
+          "medianBreadthCm": 34.4,
+          "medianDepthCm": 24.0,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 216,
+          "medianDepthRatio": 0.72109,
+          "p10DepthRatio": 0.660324,
+          "p90DepthRatio": 0.77598,
+          "medianBreadthCm": 35.0,
+          "medianDepthCm": 25.05,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 55,
+          "medianDepthRatio": 0.724719,
+          "p10DepthRatio": 0.671176,
+          "p90DepthRatio": 0.773499,
+          "medianBreadthCm": 36.2,
+          "medianDepthCm": 26.2,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 167.5,
+          "heightMaxCm": 172.5,
+          "bmiMin": 31.0,
+          "bmiMax": 33.0,
+          "sampleCount": 16,
+          "medianDepthRatio": 0.750299,
+          "p10DepthRatio": 0.693629,
+          "p90DepthRatio": 0.801409,
+          "medianBreadthCm": 35.9,
+          "medianDepthCm": 27.05,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 47,
+          "medianDepthRatio": 0.621538,
+          "p10DepthRatio": 0.584729,
+          "p90DepthRatio": 0.666667,
+          "medianBreadthCm": 32.1,
+          "medianDepthCm": 20.0,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 382,
+          "medianDepthRatio": 0.634962,
+          "p10DepthRatio": 0.586031,
+          "p90DepthRatio": 0.688453,
+          "medianBreadthCm": 32.4,
+          "medianDepthCm": 20.7,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 829,
+          "medianDepthRatio": 0.657143,
+          "p10DepthRatio": 0.599415,
+          "p90DepthRatio": 0.707547,
+          "medianBreadthCm": 33.2,
+          "medianDepthCm": 21.7,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 971,
+          "medianDepthRatio": 0.674157,
+          "p10DepthRatio": 0.619444,
+          "p90DepthRatio": 0.730337,
+          "medianBreadthCm": 34.1,
+          "medianDepthCm": 23.0,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 614,
+          "medianDepthRatio": 0.690936,
+          "p10DepthRatio": 0.633272,
+          "p90DepthRatio": 0.75,
+          "medianBreadthCm": 35.1,
+          "medianDepthCm": 24.1,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 310,
+          "medianDepthRatio": 0.711925,
+          "p10DepthRatio": 0.650808,
+          "p90DepthRatio": 0.767078,
+          "medianBreadthCm": 35.65,
+          "medianDepthCm": 25.3,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 78,
+          "medianDepthRatio": 0.72288,
+          "p10DepthRatio": 0.663929,
+          "p90DepthRatio": 0.776782,
+          "medianBreadthCm": 36.6,
+          "medianDepthCm": 26.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 31.0,
+          "bmiMax": 33.0,
+          "sampleCount": 19,
+          "medianDepthRatio": 0.74813,
+          "p10DepthRatio": 0.69206,
+          "p90DepthRatio": 0.800438,
+          "medianBreadthCm": 37.0,
+          "medianDepthCm": 28.0,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 172.5,
+          "heightMaxCm": 177.5,
+          "bmiMin": 33.0,
+          "bmiMax": 35.0,
+          "sampleCount": 6,
+          "medianDepthRatio": 0.754332,
+          "p10DepthRatio": 0.718539,
+          "p90DepthRatio": 0.801724,
+          "medianBreadthCm": 37.65,
+          "medianDepthCm": 28.35,
+          "surveys": [
+            "AFFLY50",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 34,
+          "medianDepthRatio": 0.608025,
+          "p10DepthRatio": 0.565759,
+          "p90DepthRatio": 0.654697,
+          "medianBreadthCm": 33.0,
+          "medianDepthCm": 19.7,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 265,
+          "medianDepthRatio": 0.632836,
+          "p10DepthRatio": 0.578672,
+          "p90DepthRatio": 0.690691,
+          "medianBreadthCm": 33.0,
+          "medianDepthCm": 20.8,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 581,
+          "medianDepthRatio": 0.653495,
+          "p10DepthRatio": 0.595041,
+          "p90DepthRatio": 0.702941,
+          "medianBreadthCm": 33.7,
+          "medianDepthCm": 22.0,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 704,
+          "medianDepthRatio": 0.673352,
+          "p10DepthRatio": 0.611478,
+          "p90DepthRatio": 0.725424,
+          "medianBreadthCm": 34.9,
+          "medianDepthCm": 23.4,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 452,
+          "medianDepthRatio": 0.681055,
+          "p10DepthRatio": 0.618383,
+          "p90DepthRatio": 0.74071,
+          "medianBreadthCm": 35.8,
+          "medianDepthCm": 24.45,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 201,
+          "medianDepthRatio": 0.702918,
+          "p10DepthRatio": 0.652778,
+          "p90DepthRatio": 0.772334,
+          "medianBreadthCm": 36.4,
+          "medianDepthCm": 25.4,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 48,
+          "medianDepthRatio": 0.724444,
+          "p10DepthRatio": 0.687255,
+          "p90DepthRatio": 0.778854,
+          "medianBreadthCm": 36.8,
+          "medianDepthCm": 27.0,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 177.5,
+          "heightMaxCm": 182.5,
+          "bmiMin": 31.0,
+          "bmiMax": 33.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.738193,
+          "p10DepthRatio": 0.701061,
+          "p90DepthRatio": 0.771412,
+          "medianBreadthCm": 37.4,
+          "medianDepthCm": 27.25,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 18,
+          "medianDepthRatio": 0.621416,
+          "p10DepthRatio": 0.55869,
+          "p90DepthRatio": 0.675568,
+          "medianBreadthCm": 33.55,
+          "medianDepthCm": 20.15,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 101,
+          "medianDepthRatio": 0.626959,
+          "p10DepthRatio": 0.571839,
+          "p90DepthRatio": 0.679245,
+          "medianBreadthCm": 33.4,
+          "medianDepthCm": 21.0,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 256,
+          "medianDepthRatio": 0.642045,
+          "p10DepthRatio": 0.590537,
+          "p90DepthRatio": 0.702591,
+          "medianBreadthCm": 34.7,
+          "medianDepthCm": 22.25,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "KOREAN64",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 304,
+          "medianDepthRatio": 0.661439,
+          "p10DepthRatio": 0.604625,
+          "p90DepthRatio": 0.729733,
+          "medianBreadthCm": 35.5,
+          "medianDepthCm": 23.5,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 217,
+          "medianDepthRatio": 0.681319,
+          "p10DepthRatio": 0.622551,
+          "p90DepthRatio": 0.741531,
+          "medianBreadthCm": 36.4,
+          "medianDepthCm": 24.8,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 77,
+          "medianDepthRatio": 0.703125,
+          "p10DepthRatio": 0.634867,
+          "p90DepthRatio": 0.755246,
+          "medianBreadthCm": 37.5,
+          "medianDepthCm": 26.4,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 182.5,
+          "heightMaxCm": 187.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 27,
+          "medianDepthRatio": 0.704787,
+          "p10DepthRatio": 0.651618,
+          "p90DepthRatio": 0.757782,
+          "medianBreadthCm": 38.4,
+          "medianDepthCm": 27.3,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 17.0,
+          "bmiMax": 19.0,
+          "sampleCount": 8,
+          "medianDepthRatio": 0.632657,
+          "p10DepthRatio": 0.602311,
+          "p90DepthRatio": 0.650687,
+          "medianBreadthCm": 33.65,
+          "medianDepthCm": 20.9,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "MARFLY64"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 19.0,
+          "bmiMax": 21.0,
+          "sampleCount": 36,
+          "medianDepthRatio": 0.645701,
+          "p10DepthRatio": 0.589892,
+          "p90DepthRatio": 0.688602,
+          "medianBreadthCm": 34.3,
+          "medianDepthCm": 21.85,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 81,
+          "medianDepthRatio": 0.646552,
+          "p10DepthRatio": 0.596685,
+          "p90DepthRatio": 0.696629,
+          "medianBreadthCm": 35.2,
+          "medianDepthCm": 22.7,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 83,
+          "medianDepthRatio": 0.664756,
+          "p10DepthRatio": 0.593956,
+          "p90DepthRatio": 0.724222,
+          "medianBreadthCm": 36.2,
+          "medianDepthCm": 24.1,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 53,
+          "medianDepthRatio": 0.686684,
+          "p10DepthRatio": 0.619708,
+          "p90DepthRatio": 0.733171,
+          "medianBreadthCm": 36.9,
+          "medianDepthCm": 25.0,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 27.0,
+          "bmiMax": 29.0,
+          "sampleCount": 19,
+          "medianDepthRatio": 0.706667,
+          "p10DepthRatio": 0.653765,
+          "p90DepthRatio": 0.749502,
+          "medianBreadthCm": 38.1,
+          "medianDepthCm": 26.9,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64",
+            "NATO61"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 187.5,
+          "heightMaxCm": 192.5,
+          "bmiMin": 29.0,
+          "bmiMax": 31.0,
+          "sampleCount": 5,
+          "medianDepthRatio": 0.754522,
+          "p10DepthRatio": 0.735643,
+          "p90DepthRatio": 0.809137,
+          "medianBreadthCm": 38.1,
+          "medianDepthCm": 29.2,
+          "surveys": [
+            "AFFLY50",
+            "MARFLY64"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 192.5,
+          "heightMaxCm": 197.5,
+          "bmiMin": 21.0,
+          "bmiMax": 23.0,
+          "sampleCount": 7,
+          "medianDepthRatio": 0.63089,
+          "p10DepthRatio": 0.568889,
+          "p90DepthRatio": 0.673162,
+          "medianBreadthCm": 36.0,
+          "medianDepthCm": 23.1,
+          "surveys": [
+            "AFFLY50",
+            "GERMAN68",
+            "MARFLY64"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 192.5,
+          "heightMaxCm": 197.5,
+          "bmiMin": 23.0,
+          "bmiMax": 25.0,
+          "sampleCount": 9,
+          "medianDepthRatio": 0.649718,
+          "p10DepthRatio": 0.596465,
+          "p90DepthRatio": 0.692331,
+          "medianBreadthCm": 36.8,
+          "medianDepthCm": 23.2,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "GERMAN68",
+            "MARFLY64"
+          ]
+        },
+        {
+          "gender": "male",
+          "heightMinCm": 192.5,
+          "heightMaxCm": 197.5,
+          "bmiMin": 25.0,
+          "bmiMax": 27.0,
+          "sampleCount": 6,
+          "medianDepthRatio": 0.697508,
+          "p10DepthRatio": 0.642348,
+          "p90DepthRatio": 0.724169,
+          "medianBreadthCm": 37.65,
+          "medianDepthCm": 26.0,
+          "surveys": [
+            "AFFLY50",
+            "ATC61",
+            "MARFLY64"
+          ]
+        }
+      ]
+    }
+  }
+}

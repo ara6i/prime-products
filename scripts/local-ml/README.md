@@ -1,8 +1,8 @@
 # Local front-sizing ML
 
-This local-only experiment is built in two honest stages.
+This test-lab-only experiment is built in two honest stages.
 
-1. `wear-1d-row-prior-v1` is available now. It predicts only the vertical Y position of natural waist, an abdominal-extension proxy for trouser waist, and buttock/hip height. MediaPipe supplies temporary visible-mask endpoints. After those lines are placed, the sizing lab reuses the exact Manual Coordinate Apple/Depth scale, depth-slider, and ellipse-circumference pipeline. Those results are calculator output, not learned 3D depth.
+1. `wear-1d-row-prior-v1` is available now. It predicts the vertical Y position of natural waist, an abdominal-extension proxy for trouser waist, and buttock/hip height. MediaPipe supplies temporary visible-mask endpoints. `wear-1d-direct-depth-cohorts-v1` then supplies a direct median of measured WEAR depth divided by measured WEAR breadth for people in the same fixed gender, 5 cm height, and 2 BMI box. The sizing lab reuses the Manual Coordinate Apple/Depth front-width scale and ellipse-circumference calculator. This stage has no depth regression and never loads a named person's saved answer.
 2. `front-multitask-v1` is the future photo + 3D model. It will learn visual endpoints, front-to-back depth ratios, and confidence. Apple still owns the separate pixel-to-centimetre scale check.
 
 Neither stage changes Manual Coordinate saved presets.
@@ -21,6 +21,20 @@ python3 scripts/local-ml/train_wear_row_prior.py \
 The trainer excludes child/youth and duplicate derived survey folders, applies physical plausibility filters, and validates by held-out survey where the data supports it. The trouser proxy currently comes from one female survey, so male predictions are marked as extrapolation in the UI.
 
 Only the small aggregate coefficient checkpoint is committed for the protected test lab. It also contains anonymous height/BMI cohort medians (minimum five people per cohort) so the UI can translate old WEAR columns and show a nearby example without exposing a subject row. These examples are display-only and never calibrate a prediction. Raw licensed WEAR files, reports, virtual environments, and passwords remain under ignored `.local-ml/` paths and must never be committed.
+
+## Build the direct WEAR depth groups
+
+This is not model fitting. It groups real WEAR measurements into fixed, reusable boxes and stores the median and middle 80% of each group's measured depth-to-breadth ratios:
+
+```bash
+python3 scripts/local-ml/build_wear_depth_cohorts.py \
+  --wear-root .local-ml/wear-1d \
+  --output app/try-on-test/sizing-lab/models/wear-1d-direct-depth-cohorts-v1.json
+```
+
+Each group must contain at least five measured people. A person must match the exact gender, 5 cm height box, and 2 BMI box. If any body row has no safe group, Local ML blocks the circumference result; it does not fall back to a regression formula or a saved target answer. The trouser-waist row remains an abdomen/stomach proxy because WEAR does not contain the exact trouser waistband plane.
+
+Only anonymous aggregate counts, medians, P10/P90 ratios, and survey names are committed. Raw subject rows and identifiers remain local and ignored.
 
 ## Dataset rule
 

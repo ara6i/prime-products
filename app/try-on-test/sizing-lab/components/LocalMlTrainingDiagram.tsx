@@ -33,7 +33,7 @@ export function LocalMlTrainingDiagram({
     : fullCheckpointReady
       ? "Rows + depth checkpoint ready"
       : rowPriorReady
-        ? "1D rows ready · Manual calculator"
+        ? checkpointReady ? "1D rows + direct WEAR depth ready" : "1D rows ready · depth data missing"
         : "Waiting for training data";
 
   return (
@@ -42,7 +42,7 @@ export function LocalMlTrainingDiagram({
         <div>
           <h4 className="text-sm font-medium text-slate-950">Local ML · completely separate mode</h4>
           <p className="mt-1 max-w-3xl text-xs leading-5 text-slate-600">
-            Manual Coordinate remains the labeling and proof tool. The active WEAR stage predicts only vertical rows; it does not change saved manual coordinates.
+            Manual Coordinate remains the labeling and proof tool. The active WEAR stage predicts vertical rows and uses direct similar-person depth medians; it does not change or load saved manual answers.
           </p>
         </div>
         <span className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${checkpointReady ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
@@ -68,14 +68,15 @@ export function LocalMlTrainingDiagram({
           { icon: BrainCircuit, title: "WEAR picks row Y", detail: "The model places natural waist, trouser proxy and hip height" },
           { icon: ScanLine, title: "Mask draws endpoints", detail: "Temporary left and right edges come from the visible person mask" },
           { icon: Ruler, title: "Manual Apple/Depth scale", detail: "The exact Manual Coordinate pipeline converts each predicted red-line pixel span into centimetres" },
-          { icon: ShieldCheck, title: "Manual calculator result", detail: "The active depth slider and ellipse formula calculate circumference; this result is labelled as calculator output, not learned 3D depth" },
+          { icon: Database, title: "Direct WEAR middle", detail: "No regression: use the middle measured depth ratio from the matching gender, 5 cm height and 2 BMI box" },
+          { icon: ShieldCheck, title: "Ellipse result", detail: "Red width × direct WEAR ratio gives depth; the existing ellipse calculator produces circumference" },
         ]}
       />
 
       <div className="mt-4 grid gap-2 text-[11px] leading-4 sm:grid-cols-3">
         <Fact label="Current ML responsibility" value="Predict the three vertical anatomical rows" />
         <Fact label="Temporary endpoints" value="Visible MediaPipe mask edges at each predicted row" />
-        <Fact label="Measurement after the lines" value="Reuse the Manual Coordinate calculator without changing its saved red lines" />
+        <Fact label="Temporary body depth" value="Direct WEAR cohort median; no regression formula and no saved person answer" />
       </div>
 
       <p className="mt-3 rounded-lg bg-white px-3 py-2 text-[11px] leading-4 text-amber-800">

@@ -6,10 +6,13 @@ import { isTestLabAvailableForHost } from "@/app/try-on-test/lib/access";
 import {
   LOCAL_ML_CHECKPOINT_RELATIVE_PATH,
   LOCAL_ML_MODEL_VERSION,
+  WEAR_DIRECT_DEPTH_MODEL_VERSION,
+  WEAR_DIRECT_DEPTH_RELATIVE_PATH,
   WEAR_ROW_PRIOR_MODEL_VERSION,
   WEAR_ROW_PRIOR_RELATIVE_PATH,
   type LocalMlNormalizedRowPrediction,
   type LocalMlPredictionResponse,
+  type LocalMlWearDirectDepthCohort,
   type LocalMlWearReferenceCohort,
 } from "@/app/try-on-test/sizing-lab/lib/localMlSizing";
 
@@ -54,9 +57,28 @@ interface WearRowPriorModel {
   rows: Record<(typeof ROWS)[number], WearRowPriorDefinition>;
 }
 
+interface WearDirectDepthRowDefinition {
+  measurement: string;
+  cohorts: Array<Omit<LocalMlWearDirectDepthCohort, "measurement">>;
+}
+
+interface WearDirectDepthModel {
+  version: string;
+  method: string;
+  heightBinCm: number;
+  bmiBin: number;
+  minPeople: number;
+  rows: Record<(typeof ROWS)[number], WearDirectDepthRowDefinition>;
+}
+
 let cachedWearRowPrior: {
   modifiedMs: number;
   model: WearRowPriorModel;
+} | null = null;
+
+let cachedWearDirectDepth: {
+  modifiedMs: number;
+  model: WearDirectDepthModel;
 } | null = null;
 
 interface PredictBody {
@@ -116,6 +138,23 @@ async function loadWearRowPrior(modelPath: string): Promise<WearRowPriorModel> {
     throw new Error("The WEAR 1D row checkpoint is invalid or incompatible.");
   }
   cachedWearRowPrior = { modifiedMs: modelStat.mtimeMs, model };
+  return model;
+}
+
+async function loadWearDirectDepth(modelPath: string): Promise<WearDirectDepthModel> {
+  const modelStat = await stat(modelPath);
+  if (cachedWearDirectDepth?.modifiedMs === modelStat.mtimeMs) return cachedWearDirectDepth.model;
+  const model = JSON.parse(await readFile(modelPath, "utf8")) as WearDirectDepthModel;
+  if (
+    model.version !== WEAR_DIRECT_DEPTH_MODEL_VERSION
+    || model.heightBinCm !== 5
+    || model.bmiBin !== 2
+    || !model.rows
+    || ROWS.some((kind) => !model.rows[kind]?.cohorts?.length)
+  ) {
+    throw new Error("The direct WEAR depth cohort checkpoint is invalid or incompatible.");
+  }
+  cachedWearDirectDepth = { modifiedMs: modelStat.mtimeMs, model };
   return model;
 }
 
@@ -270,10 +309,28 @@ function closestWearReferenceCohort(
   };
 }
 
+function directWearDepthCohort(
+  body: PredictBody,
+  kind: (typeof ROWS)[number],
+  model: WearDirectDepthModel,
+): LocalMlWearDirectDepthCohort | undefined {
+  if (!finite(body.heightCm) || !finite(body.weightKg) || !body.gender) return undefined;
+  const bmi = body.weightKg / ((body.heightCm / 100) ** 2);
+  const heightCenter = Math.floor(body.heightCm / model.heightBinCm + 0.5) * model.heightBinCm;
+  const bmiCenter = Math.floor(bmi / model.bmiBin + 0.5) * model.bmiBin;
+  const selected = model.rows[kind].cohorts.find((cohort) => (
+    cohort.gender === body.gender
+    && Math.abs(((cohort.heightMinCm + cohort.heightMaxCm) / 2) - heightCenter) < 0.001
+    && Math.abs(((cohort.bmiMin + cohort.bmiMax) / 2) - bmiCenter) < 0.001
+  ));
+  return selected ? { ...selected, measurement: model.rows[kind].measurement } : undefined;
+}
+
 async function predictWearRowPrior(
   body: PredictBody,
   maskDataUrl: string,
   model: WearRowPriorModel,
+  depthModel: WearDirectDepthModel,
 ): Promise<LocalMlNormalizedRowPrediction[]> {
   const mask = await decodeMask(maskDataUrl);
   const hipLandmarks = [body.landmarks?.[23], body.landmarks?.[24]]
@@ -310,6 +367,7 @@ async function predictWearRowPrior(
       definition: row.definition,
       // Explanation-only evidence. It never changes bodyFraction or targetY.
       referenceCohort: closestWearReferenceCohort(body, row),
+      wearDepthCohort: directWearDepthCohort(body, kind, depthModel),
     };
   });
 }
@@ -326,9 +384,11 @@ export async function POST(request: Request) {
     }
     const checkpointPath = path.join(/* turbopackIgnore: true */ process.cwd(), LOCAL_ML_CHECKPOINT_RELATIVE_PATH);
     const wearRowPriorPath = path.join(/* turbopackIgnore: true */ process.cwd(), WEAR_ROW_PRIOR_RELATIVE_PATH);
-    const [checkpointStat, wearRowPriorStat] = await Promise.all([
+    const wearDirectDepthPath = path.join(/* turbopackIgnore: true */ process.cwd(), WEAR_DIRECT_DEPTH_RELATIVE_PATH);
+    const [checkpointStat, wearRowPriorStat, wearDirectDepthStat] = await Promise.all([
       optionalStat(checkpointPath),
       optionalStat(wearRowPriorPath),
+      optionalStat(wearDirectDepthPath),
     ]);
     if (!checkpointStat && !wearRowPriorStat) {
       return NextResponse.json({
@@ -339,15 +399,19 @@ export async function POST(request: Request) {
 
     const structuredData = structuredTensorData(body);
     if (!checkpointStat && wearRowPriorStat) {
-      const model = await loadWearRowPrior(wearRowPriorPath);
-      const rows = await predictWearRowPrior(body, body.maskDataUrl, model);
+      if (!wearDirectDepthStat) throw new Error("The direct WEAR depth cohort checkpoint is missing.");
+      const [model, depthModel] = await Promise.all([
+        loadWearRowPrior(wearRowPriorPath),
+        loadWearDirectDepth(wearDirectDepthPath),
+      ]);
+      const rows = await predictWearRowPrior(body, body.maskDataUrl, model, depthModel);
       const response: LocalMlPredictionResponse = {
         ok: true,
         modelVersion: model.version,
         modelStage: "wear-1d-row-prior",
         depthReady: false,
         endpointSource: "mediapipe-visible-mask",
-        checkpointFingerprint: `${wearRowPriorStat.size}-${Math.round(wearRowPriorStat.mtimeMs)}`,
+        checkpointFingerprint: `${wearRowPriorStat.size}-${Math.round(wearRowPriorStat.mtimeMs)}:${wearDirectDepthStat.size}-${Math.round(wearDirectDepthStat.mtimeMs)}`,
         elapsedMs: Math.round(performance.now() - startedAt),
         rows,
       };

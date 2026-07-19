@@ -2402,6 +2402,7 @@ function ScaleProofPanel({
             fusedBodyResult={activeFusedBodyResult}
             measurement={measurement}
             measurementUnavailableMessage={measurementUnavailableMessage}
+            wearRowPredictions={wearRowPredictions}
             bodyWidthMethod={bodyWidthMethod}
             onBodyWidthMethodChange={onBodyWidthMethodChange}
             targetNaturalWaistCm={targetNaturalWaistCm}
@@ -2411,6 +2412,7 @@ function ScaleProofPanel({
           <FullScreenDepthRatioControls
             measurement={measurement}
             measurementUnavailableMessage={measurementUnavailableMessage}
+            wearRowPredictions={wearRowPredictions}
             depthRatioOverrides={depthRatioOverrides}
             knownDepthRatioAnswers={knownDepthRatioAnswers}
             onDepthRatioOverrideChange={onDepthRatioOverrideChange}
@@ -2778,6 +2780,7 @@ function FullScreenEssentialMeasurementSummary({
   fusedBodyResult,
   measurement,
   measurementUnavailableMessage,
+  wearRowPredictions,
   bodyWidthMethod,
   onBodyWidthMethodChange,
   targetNaturalWaistCm,
@@ -2790,6 +2793,7 @@ function FullScreenEssentialMeasurementSummary({
   fusedBodyResult: AppleFusedBodyScaleApiResult | null;
   measurement: GeminiGuideMeasurement | null;
   measurementUnavailableMessage?: string;
+  wearRowPredictions?: LocalMlNormalizedRowPrediction[];
   bodyWidthMethod: BodyWidthMethod;
   onBodyWidthMethodChange: (method: BodyWidthMethod) => void;
   targetNaturalWaistCm?: number;
@@ -2797,6 +2801,8 @@ function FullScreenEssentialMeasurementSummary({
   targetHipsCm?: number;
 }) {
   const [openModelHelp, setOpenModelHelp] = useState<BodyWidthMethod | null>(null);
+  const localMlMode = Boolean(wearRowPredictions?.length);
+  const directWearDepthActive = Boolean(wearRowPredictions?.some((row) => row.wearDepthCohort));
   const bodyGate = evaluateBodyScaleGate(appleResult, fusedBodyResult);
   const bodyReady = bodyGate.evaluations.length === 3
     && bodyGate.evaluations.every((item) => Boolean(item.fusedRow?.valid));
@@ -2813,8 +2819,12 @@ function FullScreenEssentialMeasurementSummary({
           <h3 className="text-sm font-semibold">Circumference result vs dataset</h3>
           <p className="mt-1 text-[11px] leading-4 text-slate-600">
             {measurementUnavailableMessage
-              ? "Dataset values remain visible, but this model stage cannot produce circumference until 3D depth is trained."
-              : "Dataset is the real measurement. Our result is the circumference produced from the red line plus the depth-ratio formula."}
+              ? localMlMode
+                ? "Dataset values remain visible, but Local ML blocks circumference when any safe direct WEAR depth group is missing."
+                : "Dataset values remain visible, but this model stage cannot produce circumference until 3D depth is trained."
+              : directWearDepthActive
+                ? "Dataset is the real measurement. Our result uses the red-line front width, the direct WEAR group's middle depth ratio, and the ellipse calculator."
+                : "Dataset is the real measurement. Our result is the circumference produced from the red line plus the depth-ratio formula."}
           </p>
         </div>
         <label className="flex items-center gap-1.5 text-[10px] text-slate-600">
@@ -2905,7 +2915,9 @@ function FullScreenEssentialMeasurementSummary({
               It estimates how far the body surface is from the camera. Here we combine it with Apple&apos;s scale, the known height, the MediaPipe body mask and the red endpoints to find the front-body width.
             </p>
             <p className="mt-1 text-slate-600">
-              It does not know the real waist or hip circumference. The depth-ratio formula still finishes that calculation.
+              It does not know the real waist or hip circumference. {directWearDepthActive
+                ? "The direct WEAR group ratio or your manual slider still finishes that calculation."
+                : "The depth-ratio formula still finishes that calculation."}
             </p>
           </div>
         ) : null}
@@ -2972,29 +2984,35 @@ function FullScreenEssentialMeasurementSummary({
 function FullScreenDepthRatioControls({
   measurement,
   measurementUnavailableMessage,
+  wearRowPredictions,
   depthRatioOverrides,
   knownDepthRatioAnswers,
   onDepthRatioOverrideChange,
 }: {
   measurement: GeminiGuideMeasurement | null;
   measurementUnavailableMessage?: string;
+  wearRowPredictions?: LocalMlNormalizedRowPrediction[];
   depthRatioOverrides?: GeminiGuideDepthRatioOverrides;
   knownDepthRatioAnswers?: GeminiGuideDepthRatioOverrides;
   onDepthRatioOverrideChange?: (kind: GuideKind, ratio: number | null) => void;
 }) {
   const firstTable = measurement?.rows.find((row) => row.depthRatioTable)?.depthRatioTable?.table ?? null;
+  const directWearActive = Boolean(wearRowPredictions?.some((row) => row.wearDepthCohort));
   const holdoutChecks = measurement?.rows.flatMap((row) => {
     const formula = row.depthRatioTable?.table;
+    const cohort = wearRowPredictions?.find((prediction) => prediction.kind === row.kind)?.wearDepthCohort;
     const answer = knownDepthRatioAnswers?.[row.kind];
-    if (!formula || answer == null) return [];
-    return [{ pass: Math.abs(formula.depthRatio - answer) <= formula.validationP90AbsError }];
+    if (answer == null || (!formula && !cohort)) return [];
+    return [{ pass: cohort
+      ? answer >= cohort.p10DepthRatio && answer <= cohort.p90DepthRatio
+      : Math.abs(formula!.depthRatio - answer) <= formula!.validationP90AbsError }];
   }) ?? [];
   const holdoutPassCount = holdoutChecks.filter((check) => check.pass).length;
 
   if (!measurement && measurementUnavailableMessage) {
     return (
       <section data-testid="depth-ratio-controls" className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-950">
-        <h3 className="text-sm font-medium">Depth ratios · waiting for 3D</h3>
+        <h3 className="text-sm font-medium">{directWearActive ? "Direct WEAR depth ready · waiting for body scale" : "Depth ratios · waiting for 3D"}</h3>
         <p className="mt-1 text-[11px] leading-4">{measurementUnavailableMessage}</p>
       </section>
     );
@@ -3004,13 +3022,30 @@ function FullScreenDepthRatioControls({
     <section data-testid="depth-ratio-controls" className="mb-3 rounded-xl border border-slate-200 bg-white p-3 text-slate-900">
       <div>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-sm font-semibold">Depth ratio formula · WEAR 1D</h3>
+          <h3 className="text-sm font-semibold">{directWearActive ? "Body depth · direct WEAR people" : "Depth ratio formula · WEAR 1D"}</h3>
           <span className="rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-medium text-emerald-800">local experiment</span>
         </div>
         <p className="mt-1 text-[11px] leading-4 text-slate-600">
-          Simple meaning: front width × depth ratio = front-to-back depth.
+          {directWearActive
+            ? "No regression: use the middle real depth ÷ breadth ratio from measured people in the matching range."
+            : "Simple meaning: front width × depth ratio = front-to-back depth."}
         </p>
-        {firstTable ? (
+        {directWearActive ? (
+          <div className="mt-2 grid grid-cols-3 gap-1.5 text-center text-[9px] leading-3.5">
+            <div className="rounded-lg bg-blue-50 px-1.5 py-2 text-blue-900">
+              <span className="block text-[8px] text-blue-600">1 · PHOTO</span>
+              Apple or Depth Pro gives the red width
+            </div>
+            <div className="rounded-lg bg-violet-50 px-1.5 py-2 text-violet-900">
+              <span className="block text-[8px] text-violet-600">2 · WEAR PEOPLE</span>
+              Matching range gives the direct middle ratio
+            </div>
+            <div className="rounded-lg bg-emerald-50 px-1.5 py-2 text-emerald-900">
+              <span className="block text-[8px] text-emerald-600">3 · ANSWER</span>
+              Ellipse converts width and depth to circumference
+            </div>
+          </div>
+        ) : firstTable ? (
           <div className="mt-2 grid grid-cols-3 gap-1.5 text-center text-[9px] leading-3.5">
             <div className="rounded-lg bg-blue-50 px-1.5 py-2 text-blue-900">
               <span className="block text-[8px] text-blue-600">1 · PHOTO</span>
@@ -3027,16 +3062,18 @@ function FullScreenDepthRatioControls({
           </div>
         ) : null}
         <p className="mt-2 text-[9px] leading-3.5 text-slate-500">
-          No Gemini and no tape labels. The saved answer may load as your manual slider, but it never becomes the WEAR recommendation.
+          {directWearActive
+            ? "No formula and no saved-answer input. Saved answers are displayed only to score the untouched WEAR middle."
+            : "No Gemini and no tape labels. The saved answer may load as your manual slider, but it never becomes the WEAR recommendation."}
         </p>
         {holdoutChecks.length ? (
           <div className={`mt-2 rounded-lg border px-2.5 py-2 ${holdoutPassCount === holdoutChecks.length ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
             <div className="text-[9px] text-slate-600">Untuned holdout test</div>
             <div className="mt-0.5 font-mono text-sm font-medium text-slate-950">
-              {holdoutPassCount}/{holdoutChecks.length} rows inside the model&apos;s normal validation error
+              {holdoutPassCount}/{holdoutChecks.length} rows {directWearActive ? "inside the similar people’s middle 80%" : "inside the model’s normal validation error"}
             </div>
             <div className="mt-1 text-[8px] leading-3 text-slate-600">
-              Your manual slider can still drive the circumference. Press “Use WEAR recommendation” to replace it with WEAR&apos;s untouched value.
+              Your manual slider can still drive the circumference. Press “{directWearActive ? "Use WEAR middle" : "Use WEAR recommendation"}” to restore WEAR&apos;s untouched value.
             </div>
           </div>
         ) : null}
@@ -3052,22 +3089,27 @@ function FullScreenDepthRatioControls({
             const row = measurement.rows.find((candidate) => candidate.kind === kind) ?? null;
             if (!row) return null;
             const formula = row.depthRatioTable?.table ?? null;
+            const directCohort = wearRowPredictions?.find((prediction) => prediction.kind === kind)?.wearDepthCohort ?? null;
             const fallbackBounds = rowDepthRatioBounds(kind);
-            const minimum = formula?.supportedMin ?? fallbackBounds.min;
-            const maximum = formula?.supportedMax ?? fallbackBounds.max;
-            const wearRecommendedRatio = formula?.depthRatio ?? null;
+            const minimum = directCohort ? fallbackBounds.min : formula?.supportedMin ?? fallbackBounds.min;
+            const maximum = directCohort ? fallbackBounds.max : formula?.supportedMax ?? fallbackBounds.max;
+            const wearRecommendedRatio = directCohort?.medianDepthRatio ?? formula?.depthRatio ?? null;
             const override = depthRatioOverrides?.[kind] ?? row.depthRatioOverride ?? null;
             const selected = clamp(override ?? wearRecommendedRatio ?? row.depthRatio, minimum, maximum);
             const selectedSource = override != null
               ? "manual slider active"
+              : directCohort != null
+                ? "direct WEAR middle active"
               : wearRecommendedRatio != null
                 ? "WEAR active"
                 : "current formula active";
             const knownAnswer = knownDepthRatioAnswers?.[kind] ?? null;
-            const holdoutDelta = formula && knownAnswer != null ? formula.depthRatio - knownAnswer : null;
+            const holdoutDelta = wearRecommendedRatio != null && knownAnswer != null ? wearRecommendedRatio - knownAnswer : null;
             const holdoutDepthDeltaCm = holdoutDelta == null ? null : holdoutDelta * row.formulaWidthCm;
-            const holdoutInsideValidation = formula && holdoutDelta != null
-              ? Math.abs(holdoutDelta) <= formula.validationP90AbsError
+            const holdoutInsideValidation = holdoutDelta != null && knownAnswer != null
+              ? directCohort
+                ? knownAnswer >= directCohort.p10DepthRatio && knownAnswer <= directCohort.p90DepthRatio
+                : formula ? Math.abs(holdoutDelta) <= formula.validationP90AbsError : null
               : null;
             const selectedDepthCm = row.formulaWidthCm * selected;
             const updateRatio = (value: number) => {
@@ -3081,7 +3123,11 @@ function FullScreenDepthRatioControls({
                     <span className="text-[11px] font-semibold text-slate-800">{label === "trouser" ? "Trouser waist" : rowLabel(kind)}</span>
                     <span className="ml-1.5 text-[9px] text-slate-500">{selectedSource}</span>
                   </div>
-                  {formula ? (
+                  {directCohort ? (
+                    <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[8px] font-medium text-emerald-800">
+                      {directCohort.sampleCount.toLocaleString()} measured people
+                    </span>
+                  ) : formula ? (
                     <span className={`rounded px-1.5 py-0.5 text-[8px] font-medium ${formula.confidence === "study-supported"
                       ? "bg-emerald-100 text-emerald-800"
                       : formula.confidence === "limited-study"
@@ -3103,7 +3149,7 @@ function FullScreenDepthRatioControls({
                     <div className="mt-0.5 text-[8px] text-slate-500">{selectedSource}</div>
                   </div>
                   <div data-testid={`wear-recommended-depth-ratio-${kind}`} className="rounded border border-violet-200 bg-violet-50 p-1.5">
-                    <div className="text-[8px] text-violet-600">WEAR recommends</div>
+                    <div className="text-[8px] text-violet-600">{directCohort ? "Direct WEAR middle" : "WEAR recommends"}</div>
                     <div className="mt-0.5 font-mono text-[12px] text-violet-950">{wearRecommendedRatio == null ? "not available" : wearRecommendedRatio.toFixed(3)}</div>
                     <div className="mt-0.5 text-[8px] text-violet-600">does not move with your slider</div>
                   </div>
@@ -3113,18 +3159,18 @@ function FullScreenDepthRatioControls({
                   </div>
                 </div>
 
-                {formula && knownAnswer != null && holdoutDelta != null ? (
+                {(formula || directCohort) && knownAnswer != null && holdoutDelta != null ? (
                   <div data-testid={`wear-holdout-${kind}`} className={`mt-2 rounded-lg border p-2 ${holdoutInsideValidation ? "border-emerald-200 bg-emerald-50" : "border-rose-200 bg-rose-50"}`}>
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[9px] font-medium text-slate-700">Locked test answer · not a formula input</span>
+                      <span className="text-[9px] font-medium text-slate-700">Locked test answer · not a calculation input</span>
                       <span className={`text-[8px] font-medium ${holdoutInsideValidation ? "text-emerald-800" : "text-rose-700"}`}>
-                        {holdoutInsideValidation ? "inside normal model error" : "needs work"}
+                        {holdoutInsideValidation ? (directCohort ? "inside similar people range" : "inside normal model error") : "needs work"}
                       </span>
                     </div>
                     <div className="mt-1.5 grid grid-cols-3 gap-1.5 text-[9px]">
                       <div>
                         <span className="block text-slate-500">Predicted</span>
-                        <span className="font-mono text-[11px] text-slate-950">{formula.depthRatio.toFixed(3)}</span>
+                        <span className="font-mono text-[11px] text-slate-950">{wearRecommendedRatio!.toFixed(3)}</span>
                       </div>
                       <div>
                         <span className="block text-slate-500">Saved answer</span>
@@ -3138,12 +3184,28 @@ function FullScreenDepthRatioControls({
                       </div>
                     </div>
                     <p className="mt-1 text-[8px] leading-3 text-slate-600">
-                      At this red width, that is {holdoutDepthDeltaCm != null && holdoutDepthDeltaCm >= 0 ? "+" : ""}{holdoutDepthDeltaCm?.toFixed(2)} cm front-to-back depth. Normal validation P90 is ±{formula.validationP90AbsError.toFixed(3)} ratio.
+                      At this red width, that is {holdoutDepthDeltaCm != null && holdoutDepthDeltaCm >= 0 ? "+" : ""}{holdoutDepthDeltaCm?.toFixed(2)} cm front-to-back depth.
+                      {directCohort
+                        ? ` Similar people’s middle 80% is ${directCohort.p10DepthRatio.toFixed(3)}–${directCohort.p90DepthRatio.toFixed(3)}.`
+                        : ` Normal validation P90 is ±${formula!.validationP90AbsError.toFixed(3)} ratio.`}
                     </p>
                   </div>
                 ) : null}
 
-                {formula ? (
+                {directCohort ? (
+                  <details className="mt-2 rounded border border-slate-200 bg-white p-2">
+                    <summary className="cursor-pointer text-[9px] font-medium text-slate-700">Show exactly which people were used</summary>
+                    <div className="mt-2 space-y-1 text-[9px] leading-3.5 text-slate-600">
+                      <div>{directCohort.gender} · height {directCohort.heightMinCm.toFixed(1)}–{directCohort.heightMaxCm.toFixed(1)} cm · BMI {directCohort.bmiMin.toFixed(0)}–{directCohort.bmiMax.toFixed(0)}</div>
+                      <div>{directCohort.sampleCount.toLocaleString()} measured people · middle ratio {directCohort.medianDepthRatio.toFixed(3)}</div>
+                      <div>Middle measured breadth {directCohort.medianBreadthCm.toFixed(1)} cm · depth {directCohort.medianDepthCm.toFixed(1)} cm</div>
+                      <div>No regression formula was used.</div>
+                      {kind === "trouserWaist" ? (
+                        <div className="rounded bg-amber-50 px-1.5 py-1 text-[8px] text-amber-800">Stomach/abdomen proxy only; WEAR has no exact trouser-waist plane.</div>
+                      ) : null}
+                    </div>
+                  </details>
+                ) : formula ? (
                   <details className="mt-2 rounded border border-slate-200 bg-white p-2">
                     <summary className="cursor-pointer text-[9px] font-medium text-slate-700">Show the formula math</summary>
                     <div className="mt-2 space-y-1 text-[9px] leading-3.5 text-slate-600">
@@ -3178,7 +3240,7 @@ function FullScreenDepthRatioControls({
                       disabled={override == null || wearRecommendedRatio == null || !onDepthRatioOverrideChange}
                       className="text-violet-700 disabled:text-slate-400"
                     >
-                      Use WEAR recommendation
+                      {directCohort ? "Use WEAR middle" : "Use WEAR recommendation"}
                     </button>
                   </div>
                 <input
@@ -3207,7 +3269,7 @@ function FullScreenDepthRatioControls({
                     disabled={wearRecommendedRatio == null || !onDepthRatioOverrideChange}
                     className="rounded border border-violet-200 bg-violet-50 px-1.5 py-1 text-violet-700 hover:bg-violet-100 disabled:opacity-50"
                   >
-                    WEAR <span className="font-mono text-violet-950">{wearRecommendedRatio == null ? "n/a" : wearRecommendedRatio.toFixed(3)}</span>
+                    {directCohort ? "WEAR middle" : "WEAR"} <span className="font-mono text-violet-950">{wearRecommendedRatio == null ? "n/a" : wearRecommendedRatio.toFixed(3)}</span>
                   </button>
                   <button
                     type="button"
@@ -3219,7 +3281,7 @@ function FullScreenDepthRatioControls({
                   </button>
                 </div>
                 <div className="mt-2 flex items-center justify-between gap-2 text-[9px] text-slate-500">
-                  <span>WEAR support {minimum.toFixed(3)}–{maximum.toFixed(3)}</span>
+                  <span>{directCohort ? `Similar people middle 80% ${directCohort.p10DepthRatio.toFixed(3)}–${directCohort.p90DepthRatio.toFixed(3)}` : `WEAR support ${minimum.toFixed(3)}–${maximum.toFixed(3)}`}</span>
                   <button
                     type="button"
                     onClick={() => onDepthRatioOverrideChange?.(kind, null)}

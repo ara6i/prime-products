@@ -507,7 +507,7 @@ export interface GeminiGuideMeasurementRow {
   maskRightXNorm: number | null;
   maskYNorm: number | null;
   edgeTrust: GeminiGuideEdgeTrust;
-  depthSource: "side-mask-at-guide-row" | "side-guide-red-pixel" | "side-guide-json" | "side-guide-manual-coordinate" | "front-formula" | "manual-tape-front-formula" | "manual-depth-ratio" | "local-ml-depth-ratio" | "wear-depth-ratio-formula";
+  depthSource: "side-mask-at-guide-row" | "side-guide-red-pixel" | "side-guide-json" | "side-guide-manual-coordinate" | "front-formula" | "manual-tape-front-formula" | "manual-depth-ratio" | "local-ml-depth-ratio" | "wear-cohort-median" | "wear-depth-ratio-formula";
   sideDepthCandidateCm: number | null;
   sideDepthCandidateRatio: number | null;
   sideDepthRawCm: number | null;
@@ -1350,9 +1350,19 @@ export function computeGeminiGuideMeasurement(args: {
   rowCmPerPxOverrides?: Partial<Record<GeminiGuideRowKind, number>>;
   depthRatioOverrides?: GeminiGuideDepthRatioOverrides;
   localMlDepthRatios?: GeminiGuideDepthRatioOverrides;
+  localMlDepthSource?: "local-ml-depth-ratio" | "wear-cohort-median";
+  requireCompleteLocalMlDepthRatios?: boolean;
+  applyWearDepthFormula?: boolean;
 }): GeminiGuideMeasurement | null {
   const { guide, pose, waistTrace, hipsTrace } = args;
   if (!guide || !pose || !waistTrace) return null;
+  if (
+    args.requireCompleteLocalMlDepthRatios
+    && (["waist", "trouserWaist", "hips"] as const).some((kind) => {
+      const value = args.localMlDepthRatios?.[kind];
+      return typeof value !== "number" || !Number.isFinite(value);
+    })
+  ) return null;
   const usesRedPixelGuide = typeof args.guideSource === "string" && args.guideSource.startsWith("red-pixel-detector");
   const usesGeminiJsonGuide = typeof args.guideSource === "string" && args.guideSource.startsWith("gemini-json");
   const usesManualGuide = args.guideSource === "manual-coordinate";
@@ -1542,7 +1552,7 @@ export function computeGeminiGuideMeasurement(args: {
           hipBoneCm: activeHipBoneCm,
         })
       : waistTrace.naturalWaistDepthRatio),
-    depthSourceOverride: args.localMlDepthRatios?.waist != null ? "local-ml-depth-ratio" : undefined,
+    depthSourceOverride: args.localMlDepthRatios?.waist != null ? args.localMlDepthSource ?? "local-ml-depth-ratio" : undefined,
     depthRatioOverride: args.depthRatioOverrides?.waist,
     // The BMI table can legitimately expose waist ratios above 0.800 (for
     // example Shahnaz 2 reaches 0.827). Keep the formula's manual safety
@@ -1578,7 +1588,7 @@ export function computeGeminiGuideMeasurement(args: {
           fallbackRatio: waistTrace.depthRatio,
         })
       : waistTrace.depthRatio),
-    depthSourceOverride: args.localMlDepthRatios?.trouserWaist != null ? "local-ml-depth-ratio" : undefined,
+    depthSourceOverride: args.localMlDepthRatios?.trouserWaist != null ? args.localMlDepthSource ?? "local-ml-depth-ratio" : undefined,
     depthRatioOverride: args.depthRatioOverrides?.trouserWaist,
     depthRatioBounds: { min: 0.35, max: 1.1 },
     rawCm: waistTrace.finalTrouserWaistCm,
@@ -1614,7 +1624,7 @@ export function computeGeminiGuideMeasurement(args: {
             waistGuideWidthCm,
             fallbackRatio: hipDepthRatio || 0.5,
           })),
-        depthSourceOverride: args.localMlDepthRatios?.hips != null ? "local-ml-depth-ratio" : undefined,
+        depthSourceOverride: args.localMlDepthRatios?.hips != null ? args.localMlDepthSource ?? "local-ml-depth-ratio" : undefined,
         depthRatioOverride: args.depthRatioOverrides?.hips,
         sideDepthCm: sideGuideDepthSource
           ? (line) => measureSideGuideDepth("hips", line.formulaWidthCm)
@@ -1688,7 +1698,7 @@ export function computeGeminiGuideMeasurement(args: {
   // Local ML owns row placement only. After its rows are drawn, reuse the same
   // WEAR recommendation + manual-slider circumference calculator as Manual
   // Coordinate. This does not make the WEAR depth formula part of row training.
-  const tableWaist = applyDepthRatioTableComparison({
+  const tableWaist = args.applyWearDepthFormula === false ? modeledWaist : applyDepthRatioTableComparison({
     row: modeledWaist,
     gender: tableGender,
     bmi: tableBmi,
@@ -1701,7 +1711,7 @@ export function computeGeminiGuideMeasurement(args: {
     hipDepthCm: null,
     useBodyShapeCircumference: false,
   });
-  const tableTrouserWaist = applyDepthRatioTableComparison({
+  const tableTrouserWaist = args.applyWearDepthFormula === false ? modeledTrouserWaist : applyDepthRatioTableComparison({
     row: modeledTrouserWaist,
     gender: tableGender,
     bmi: tableBmi,
@@ -1714,7 +1724,7 @@ export function computeGeminiGuideMeasurement(args: {
     hipDepthCm: null,
     useBodyShapeCircumference: false,
   });
-  const tableHips = applyDepthRatioTableComparison({
+  const tableHips = args.applyWearDepthFormula === false ? modeledHips : applyDepthRatioTableComparison({
     row: modeledHips,
     gender: tableGender,
     bmi: tableBmi,
