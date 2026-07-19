@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { LocalMlNormalizedRowPrediction } from "../lib/localMlSizing";
 import { cmToIn } from "../lib/units";
 
 interface Point {
@@ -35,6 +36,7 @@ interface Props {
   freeExpectedCm: number;
   freeUnit: "cm" | "in";
   floorReferenceY: number | null;
+  wearRowPredictions?: LocalMlNormalizedRowPrediction[];
   freeFlatCm: number | null;
   freeFusedCm: number | null;
   flatCm: number | null;
@@ -58,7 +60,7 @@ interface Props {
   onPlaceFreeRulerBesideTape: () => void;
   onFloorTargetCmChange: (valueCm: number) => void;
   onFloorUnitChange: (unit: "cm" | "in") => void;
-  onPlaceFreeRulerFromFloor: () => void;
+  onPlaceFreeRulerFromFloor: (targetCm?: number) => void;
   applyAppleCorrection: boolean;
   onApplyAppleCorrectionChange: (checked: boolean) => void;
 }
@@ -81,6 +83,7 @@ export function FullScreenGreenRulerComparison({
   freeExpectedCm,
   freeUnit,
   floorReferenceY,
+  wearRowPredictions = [],
   freeFlatCm,
   freeFusedCm,
   flatCm,
@@ -120,6 +123,10 @@ export function FullScreenGreenRulerComparison({
   const floorAnchorDeltaPx = floorReferenceY == null ? null : freeEnd.y - floorReferenceY;
   const floorAnchorReady = freeRulerPurpose !== "floor-height"
     || (floorAnchorDeltaPx != null && Math.abs(floorAnchorDeltaPx) <= 2);
+  const wearFloorRows = (["hips", "trouserWaist", "waist"] as const).flatMap((kind) => {
+    const row = wearRowPredictions.find((candidate) => candidate.kind === kind);
+    return row?.heightFromFloorCm == null ? [] : [row];
+  });
 
   const spreads = useMemo(() => {
     if (samples.length < 2) return null;
@@ -271,7 +278,7 @@ export function FullScreenGreenRulerComparison({
           <div className="flex flex-wrap gap-1.5">
             <button
               type="button"
-              onClick={onPlaceFreeRulerFromFloor}
+              onClick={() => onPlaceFreeRulerFromFloor()}
               className="rounded-lg border border-cyan-300 bg-cyan-50 px-2.5 py-1.5 text-[10px] font-medium text-cyan-900 hover:bg-cyan-100"
             >
               Measure from floor
@@ -285,6 +292,45 @@ export function FullScreenGreenRulerComparison({
             </button>
           </div>
         </div>
+        {wearFloorRows.length ? (
+          <div data-testid="wear-floor-ruler-shortcuts" className="mt-2 rounded-lg border-2 border-cyan-300 bg-cyan-50 p-2.5">
+            <div className="text-[11px] font-semibold text-cyan-950">WEAR 1D · start at the feet and go up</div>
+            <div className="mt-1 text-[10px] leading-4 text-cyan-900">
+              Pick a body part. The blue ruler will start at the cyan floor and show the height WEAR expects.
+            </div>
+            <div className="mt-2 grid gap-1.5">
+              {wearFloorRows.map((row, index) => {
+                const heightFromFloorCm = row.heightFromFloorCm!;
+                const active = freeRulerPurpose === "floor-height" && Math.abs(freeExpectedCm - heightFromFloorCm) < 0.05;
+                const label = row.kind === "hips" ? "Hips" : row.kind === "trouserWaist" ? "Trouser waist" : "Natural waist";
+                return (
+                  <button
+                    key={row.kind}
+                    type="button"
+                    onClick={() => {
+                      onFloorTargetCmChange(heightFromFloorCm);
+                      onPlaceFreeRulerFromFloor(heightFromFloorCm);
+                    }}
+                    className={`grid grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border px-2.5 py-2 text-left ${active ? "border-cyan-600 bg-cyan-100" : "border-cyan-200 bg-white hover:bg-cyan-100"}`}
+                  >
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-700 text-[10px] font-semibold text-white">{index + 1}</span>
+                    <span>
+                      <span className="block text-[11px] font-medium text-slate-900">{label}</span>
+                      <span className="block text-[9px] text-slate-500">WEAR estimate · 90% about ±{row.validationP90At170Cm?.toFixed(1) ?? "n/a"} cm</span>
+                    </span>
+                    <span className="text-right font-mono">
+                      <span className="block text-base font-semibold text-slate-950">{heightFromFloorCm.toFixed(1)} cm</span>
+                      <span className="block text-[9px] text-slate-500">{cmToIn(heightFromFloorCm).toFixed(1)} in</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-2 text-[9px] leading-4 text-cyan-900">
+              Row height only—not the red-line width and not body circumference.
+            </p>
+          </div>
+        ) : null}
         {freeRulerPurpose === "floor-height" ? (
           <div className="mt-2 rounded-lg border border-cyan-200 bg-white p-2.5">
             <label className="flex items-center justify-between gap-3 text-[10px] text-slate-700">
@@ -319,7 +365,7 @@ export function FullScreenGreenRulerComparison({
             </label>
             <button
               type="button"
-              onClick={onPlaceFreeRulerFromFloor}
+              onClick={() => onPlaceFreeRulerFromFloor()}
               className="mt-2 w-full rounded-lg bg-cyan-700 px-3 py-2 text-[11px] font-medium text-white hover:bg-cyan-800"
             >
               Place blue ruler at {freeIntervalLabel} from floor

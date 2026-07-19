@@ -4,6 +4,7 @@ import type {
   LocalMlModelStage,
   LocalMlNormalizedRowPrediction,
 } from "../lib/localMlSizing";
+import { cmToIn } from "../lib/units";
 
 interface Props {
   rows: LocalMlNormalizedRowPrediction[];
@@ -21,6 +22,8 @@ const LABELS: Record<LocalMlNormalizedRowPrediction["kind"], string> = {
   hips: "Hips",
 };
 
+const FLOOR_ORDER: LocalMlNormalizedRowPrediction["kind"][] = ["hips", "trouserWaist", "waist"];
+
 export function LocalMlRowEvidencePanel({
   rows,
   modelStage,
@@ -32,6 +35,10 @@ export function LocalMlRowEvidencePanel({
 }: Props) {
   if (!rows.length || !modelStage) return null;
   const rowOnly = modelStage === "wear-1d-row-prior";
+  const floorRows = FLOOR_ORDER.flatMap((kind) => {
+    const row = rows.find((candidate) => candidate.kind === kind);
+    return row?.heightFromFloorCm == null ? [] : [row];
+  });
 
   return (
     <section data-testid="local-ml-row-evidence" className="rounded-xl border border-violet-200 bg-white p-4 text-slate-800">
@@ -46,6 +53,31 @@ export function LocalMlRowEvidencePanel({
           {depthReady ? "Rows + learned depth ready" : "Rows ready · Manual calculator"}
         </span>
       </div>
+
+      {floorRows.length ? (
+        <div data-testid="wear-floor-height-guide" className="mt-3 rounded-xl border-2 border-cyan-300 bg-cyan-50 p-3">
+          <h5 className="text-sm font-semibold text-cyan-950">Start at the floor. How far do I go up?</h5>
+          <p className="mt-1 text-[11px] leading-4 text-cyan-900">
+            Put the bottom of the blue ruler at the feet. Go upward by the number below. That is where WEAR 1D expects each red row.
+          </p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-3">
+            {floorRows.map((row, index) => (
+              <div key={row.kind} className="rounded-lg border border-cyan-200 bg-white p-3">
+                <div className="text-[10px] font-medium uppercase tracking-wide text-cyan-700">Step {index + 1}</div>
+                <div className="mt-1 text-xs font-medium text-slate-800">{LABELS[row.kind]}</div>
+                <div className="mt-1 font-mono text-2xl font-semibold text-slate-950">{row.heightFromFloorCm!.toFixed(1)} cm</div>
+                <div className="font-mono text-[11px] text-slate-500">{cmToIn(row.heightFromFloorCm!).toFixed(1)} in from the floor</div>
+                <div className="mt-2 text-[10px] leading-4 text-slate-500">
+                  WEAR 90% range: approximately ±{row.validationP90At170Cm?.toFixed(1) ?? "n/a"} cm
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-2 text-[10px] leading-4 text-cyan-900">
+            This chooses row height only. It does not measure circumference and it does not use the person&apos;s saved answer.
+          </p>
+        </div>
+      ) : null}
 
       <div className="mt-3 grid gap-2 text-[11px] leading-4 md:grid-cols-3">
         <div className="rounded-lg bg-violet-50 p-2.5">

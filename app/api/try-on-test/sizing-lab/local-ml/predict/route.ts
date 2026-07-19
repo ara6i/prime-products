@@ -273,6 +273,7 @@ async function predictWearRowPrior(
       yNorm: segment.y / (mask.height - 1),
       leftXNorm: segment.left / (mask.width - 1),
       rightXNorm: segment.right / (mask.width - 1),
+      heightFromFloorCm: (1 - bodyFraction) * body.heightCm!,
       depthRatio: null,
       confidence,
       trainingSamples: row.sampleCount,

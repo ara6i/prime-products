@@ -33,6 +33,8 @@ export interface LocalMlNormalizedRowPrediction {
   yNorm: number;
   leftXNorm: number;
   rightXNorm: number;
+  /** WEAR 1D anatomical landmark height measured upward from the floor. */
+  heightFromFloorCm?: number;
   depthRatio: number | null;
   confidence: number;
   trainingSamples?: number;

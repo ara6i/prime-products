@@ -2638,6 +2638,7 @@ export function SizingLabPage() {
                     heightCm={metrics.heightCm}
                     manualHeightScaleOverride={activeManualHeightScaleOverride}
                     onManualHeightScaleOverrideChange={usesLocalMl ? setLocalMlHeightScaleOverride : setManualHeightScaleOverride}
+                    wearRowPredictions={usesLocalMl ? localMlPredictionRows : undefined}
                     scaleProofPreset={!manualCameraCalibrationResultActive
                       ? selectedDatasetId === "shane-2"
                         ? SHANE_2_SCALE_PROOF_PRESET

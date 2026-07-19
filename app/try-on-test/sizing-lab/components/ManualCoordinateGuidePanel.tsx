@@ -17,6 +17,7 @@ import type {
 import type { AppleFusedBodyScaleApiResult } from "../lib/appleFusedBodyScale";
 import type { AppleVisionBodyScaleResult } from "../lib/appleVisionBodyScale";
 import type { GeminiBodyGuide, GeminiGuideDepthRatioOverrides, GeminiGuideLine, GeminiGuideMeasurement } from "../lib/geminiGuide";
+import type { LocalMlNormalizedRowPrediction } from "../lib/localMlSizing";
 import {
   buildTapeVisionHiddenIntervals,
   buildTapeVisionSnap,
@@ -166,6 +167,7 @@ interface Props {
   manualHeightScaleOverride?: ManualHeightScaleOverride | null;
   onManualHeightScaleOverrideChange?: (override: ManualHeightScaleOverride | null) => void;
   scaleProofPreset?: ManualScaleProofPreset | null;
+  wearRowPredictions?: LocalMlNormalizedRowPrediction[];
   targetNaturalWaistCm?: number;
   targetTrouserWaistCm?: number;
   targetHipsCm?: number;
@@ -243,6 +245,7 @@ export function ManualCoordinateGuidePanel({
   manualHeightScaleOverride,
   onManualHeightScaleOverrideChange,
   scaleProofPreset,
+  wearRowPredictions,
   targetNaturalWaistCm,
   targetTrouserWaistCm,
   targetHipsCm,
@@ -849,13 +852,18 @@ export function ManualCoordinateGuidePanel({
     });
   };
 
-  const placeFreeRulerFromFloor = () => {
+  const placeFreeRulerFromFloor = (requestedTargetCm?: number) => {
     const cmPerPx = scaleEvidence?.activeCmPerPx
       ?? measurement?.activeCmPerPx
       ?? heightScaleLine?.cmPerPx
       ?? null;
     if (!heightScaleLine || !cmPerPx || cmPerPx <= 0) return;
-    const targetSpanPx = freeRulerMode.floorTargetCm / cmPerPx;
+    const targetCm = clamp(
+      requestedTargetCm ?? freeRulerMode.floorTargetCm,
+      0.1,
+      Math.max(0.1, heightCm ?? 250),
+    );
+    const targetSpanPx = targetCm / cmPerPx;
     const floorY = clamp(heightScaleLine.bottomY, 0, imageHeight - 1);
     const x = clamp(
       heightScaleLine.centerX + Math.max(56, imageWidth * 0.045),
@@ -866,6 +874,7 @@ export function ManualCoordinateGuidePanel({
       ...freeRulerMode,
       sourceKey: scaleProofSourceKey,
       purpose: "floor-height",
+      floorTargetCm: targetCm,
     });
     setFreeRuler({
       sourceKey: scaleProofSourceKey,
@@ -1312,6 +1321,7 @@ export function ManualCoordinateGuidePanel({
             freeRulerPurpose={freeRulerMode.purpose}
             floorRulerTargetCm={freeRulerMode.floorTargetCm}
             floorRulerUnit={freeRulerMode.floorUnit}
+            wearRowPredictions={wearRowPredictions}
             redLineProofKind={redLineProofKind}
             redLineProofRuler={redLineProofRuler}
             intervalValue={scaleProofIntervalValue}
@@ -1423,6 +1433,7 @@ export function ManualCoordinateGuidePanel({
                       freeRulerPurpose={freeRulerMode.purpose}
                       floorRulerTargetCm={freeRulerMode.floorTargetCm}
                       floorRulerUnit={freeRulerMode.floorUnit}
+                      wearRowPredictions={wearRowPredictions}
                       redLineProofKind={redLineProofKind}
                       redLineProofRuler={redLineProofRuler}
                       intervalValue={scaleProofIntervalValue}
@@ -1708,6 +1719,7 @@ function ScaleProofPanel({
   freeRulerPurpose,
   floorRulerTargetCm,
   floorRulerUnit,
+  wearRowPredictions,
   redLineProofKind,
   redLineProofRuler,
   intervalValue,
@@ -1751,6 +1763,7 @@ function ScaleProofPanel({
   freeRulerPurpose: FreeRulerPurpose;
   floorRulerTargetCm: number;
   floorRulerUnit: ScaleProofUnit;
+  wearRowPredictions?: LocalMlNormalizedRowPrediction[];
   redLineProofKind: RedLineVerticalProofKind;
   redLineProofRuler: ScaleProofRuler;
   intervalValue: number;
@@ -1776,7 +1789,7 @@ function ScaleProofPanel({
   onPlaceFreeRulerBesideTape: () => void;
   onFloorRulerTargetCmChange: (valueCm: number) => void;
   onFloorRulerUnitChange: (unit: ScaleProofUnit) => void;
-  onPlaceFreeRulerFromFloor: () => void;
+  onPlaceFreeRulerFromFloor: (targetCm?: number) => void;
   onPlaceRedLineProofBesideTape: (kind?: RedLineVerticalProofKind) => void;
   bodyWidthMethod: BodyWidthMethod;
   onBodyWidthMethodChange: (method: BodyWidthMethod) => void;
@@ -2443,6 +2456,7 @@ function ScaleProofPanel({
             freeExpectedCm={freeRulerPurpose === "floor-height" ? floorRulerTargetCm : expectedCm}
             freeUnit={freeRulerPurpose === "floor-height" ? floorRulerUnit : unit}
             floorReferenceY={heightScaleLine?.bottomY ?? null}
+            wearRowPredictions={wearRowPredictions}
             freeFlatCm={freeMeasuredCm}
             freeFusedCm={fusedFreePrediction?.predictedCm ?? null}
             flatCm={flatComparisonCmPerPx ? pixelSpan * flatComparisonCmPerPx : measuredCm}
