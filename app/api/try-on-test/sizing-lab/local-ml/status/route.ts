@@ -36,7 +36,7 @@ export async function GET(request: Request) {
     message: fullCheckpointReady
       ? "Full local photo + 3D checkpoint found. Rows, endpoints, and depth can run locally."
       : rowPriorReady
-        ? "WEAR 1D row model is ready. It predicts vertical rows; MediaPipe supplies visible endpoints. Depth and circumference still wait for 3D training."
+        ? "WEAR 1D row model is ready. It predicts vertical rows and MediaPipe supplies visible endpoints. The sizing lab then reuses the Manual Coordinate calculator; its depth sliders and circumference are not learned 3D output."
         : "Training scaffold is ready, but no checkpoint exists yet. Add reviewed labels and future 3D-derived samples, then train locally.",
   };
   return NextResponse.json(response, { headers: { "cache-control": "no-store" } });
