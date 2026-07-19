@@ -33,18 +33,24 @@ const WEAR_COLUMN_TRANSLATIONS: Record<LocalMlNormalizedRowPrediction["kind"], s
   hips: "How high the buttock measuring level was above the floor. We use this only as a rough fullest-hip stand-in.",
 };
 
+const WEAR_COLUMN_TRANSLATIONS_FA: Record<LocalMlNormalizedRowPrediction["kind"], string> = {
+  waist: "ارتفاع کمر طبیعی: فاصله کف زمین تا سطحی که دور کمر طبیعی اندازه‌گیری می‌شود.",
+  trouserWaist: "ارتفاع برجسته‌ترین قسمت شکم: فاصله کف زمین تا سطحی که شکم بیشترین جلوآمدگی را دارد. این فقط یک جایگزین تقریبی برای خط کمر شلوار است.",
+  hips: "ارتفاع باسن: فاصله کف زمین تا سطح اندازه‌گیری باسن. این فقط یک جایگزین تقریبی برای خط پُرترین قسمت باسن است.",
+};
+
 const WEAR_COLUMN_GLOSSARY = [
-  ["STATURE", "Total standing height: floor to the top of the head."],
-  ["WAIST HEIGHT", "Floor to the natural-waist measuring level."],
-  ["ABDOMINAL EXT HGT", "Floor to the level where the abdomen projects forward most."],
-  ["TROCHANTERIC HGHT", "Floor to the bony point at the upper outside of the thigh/hip."],
-  ["BUTTOCK HEIGHT", "Floor to the buttock measuring level used as our hip-row stand-in."],
-  ["GLUTEAL FURROW HGT", "Floor to the crease directly underneath the buttock."],
-  ["CROTCH HEIGHT", "Floor to the crotch level while standing."],
-  ["HIP BREADTH", "Straight side-to-side hip width; this is not circumference."],
-  ["BUTTOCK DEPTH", "Front-to-back thickness at the buttock level."],
-  ["HIP C-7\" BLW WAIST", "Hip circumference measured seven inches below the waist."],
-  ["HIP C-9\" BLW WAIST", "Hip circumference measured nine inches below the waist."],
+  ["STATURE", "Total standing height: floor to the top of the head.", "قد ایستاده: فاصله کف زمین تا بالاترین نقطه سر."],
+  ["WAIST HEIGHT", "Floor to the natural-waist measuring level.", "ارتفاع کمر طبیعی: فاصله کف زمین تا سطح اندازه‌گیری کمر طبیعی."],
+  ["ABDOMINAL EXT HGT", "Floor to the level where the abdomen projects forward most.", "ارتفاع برجسته‌ترین قسمت شکم: فاصله کف زمین تا سطحی که شکم بیشترین جلوآمدگی را دارد."],
+  ["TROCHANTERIC HGHT", "Floor to the bony point at the upper outside of the thigh/hip.", "ارتفاع تروکانتر: فاصله کف زمین تا برجستگی استخوانی بخش بیرونی بالای ران یا لگن."],
+  ["BUTTOCK HEIGHT", "Floor to the buttock measuring level used as our hip-row stand-in.", "ارتفاع باسن: فاصله کف زمین تا سطح اندازه‌گیری باسن که فعلاً به‌عنوان جای تقریبی خط باسن استفاده می‌شود."],
+  ["GLUTEAL FURROW HGT", "Floor to the crease directly underneath the buttock.", "ارتفاع چین زیر باسن: فاصله کف زمین تا چین مستقیم زیر باسن."],
+  ["CROTCH HEIGHT", "Floor to the crotch level while standing.", "ارتفاع فاق: فاصله کف زمین تا سطح فاق در حالت ایستاده."],
+  ["HIP BREADTH", "Straight side-to-side hip width; this is not circumference.", "عرض باسن: فاصله مستقیم از چپ تا راست باسن؛ این عدد دور باسن نیست."],
+  ["BUTTOCK DEPTH", "Front-to-back thickness at the buttock level.", "عمق باسن: ضخامت بدن از جلو تا عقب در سطح باسن."],
+  ["HIP C-7\" BLW WAIST", "Hip circumference measured seven inches below the waist.", "دور باسن که ۷ اینچ پایین‌تر از کمر اندازه‌گیری شده است."],
+  ["HIP C-9\" BLW WAIST", "Hip circumference measured nine inches below the waist.", "دور باسن که ۹ اینچ پایین‌تر از کمر اندازه‌گیری شده است."],
 ] as const;
 
 export function LocalMlRowEvidencePanel({
@@ -129,6 +135,10 @@ export function LocalMlRowEvidencePanel({
 
                   <div className="mt-3 text-[10px] uppercase tracking-wide text-slate-500">Plain-English translation</div>
                   <p className="mt-1 text-xs leading-5 text-slate-800">{WEAR_COLUMN_TRANSLATIONS[row.kind]}</p>
+                  <div className="mt-3 text-[10px] uppercase tracking-wide text-slate-500">ترجمه فارسی</div>
+                  <p lang="fa" dir="rtl" className="mt-1 text-right text-xs leading-6 text-slate-800">
+                    {WEAR_COLUMN_TRANSLATIONS_FA[row.kind]}
+                  </p>
 
                   {cohort ? (
                     <>
@@ -171,10 +181,13 @@ export function LocalMlRowEvidencePanel({
           <details className="mt-3 rounded-lg border border-indigo-100 bg-white p-3">
             <summary className="cursor-pointer text-xs font-medium text-slate-900">Translate the other old WEAR column names</summary>
             <div className="mt-3 grid gap-x-5 gap-y-2 md:grid-cols-2">
-              {WEAR_COLUMN_GLOSSARY.map(([column, translation]) => (
+              {WEAR_COLUMN_GLOSSARY.map(([column, translation, persianTranslation]) => (
                 <div key={column} className="grid gap-1 border-b border-slate-100 pb-2 text-[11px] leading-4 sm:grid-cols-[145px_1fr]">
                   <code className="text-slate-900">{column}</code>
-                  <span className="text-slate-600">{translation}</span>
+                  <div>
+                    <div className="text-slate-600">{translation}</div>
+                    <div lang="fa" dir="rtl" className="mt-1 text-right leading-5 text-slate-800">{persianTranslation}</div>
+                  </div>
                 </div>
               ))}
             </div>
