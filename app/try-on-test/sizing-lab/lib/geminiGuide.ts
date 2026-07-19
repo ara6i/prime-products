@@ -452,6 +452,7 @@ export type GeminiGuideCircumferenceModel = "ellipse" | "body-shape-superellipse
 export type GeminiGuideDepthRatioTableRangeStatus = "inside" | "table-fallback-low" | "table-fallback-high";
 export type GeminiGuideEdgeTrust =
   | "manual-body-edge"
+  | "local-ml-predicted-edge"
   | "visible-mask-edge"
   | "model-red-edge"
   | "loose-clothing-untrusted"
@@ -486,7 +487,7 @@ export interface GeminiGuideDepthRatioTableComparison {
 export interface GeminiGuideMeasurementRow {
   kind: GeminiGuideRowKind;
   label: string;
-  rowSource: "red-pixel-detector" | "gemini-json" | "manual-coordinate" | "manual-adjusted-coordinate" | "pose-mask-fallback";
+  rowSource: "red-pixel-detector" | "gemini-json" | "manual-coordinate" | "manual-adjusted-coordinate" | "local-ml-v1" | "pose-mask-fallback";
   yPx: number;
   leftXPx: number;
   rightXPx: number;
@@ -497,14 +498,16 @@ export interface GeminiGuideMeasurementRow {
   confidence: number;
   geminiWidthCm: number;
   formulaWidthCm: number;
-  formulaWidthSource: "gemini-red-line" | "gemini-json-endpoints" | "manual-coordinates" | "fallback-line";
+  cmPerPx: number;
+  scaleSource: "global-height" | "apple-vision-body-depth";
+  formulaWidthSource: "gemini-red-line" | "gemini-json-endpoints" | "manual-coordinates" | "local-ml-v1" | "fallback-line";
   formulaLeftXNorm: number;
   formulaRightXNorm: number;
   maskLeftXNorm: number | null;
   maskRightXNorm: number | null;
   maskYNorm: number | null;
   edgeTrust: GeminiGuideEdgeTrust;
-  depthSource: "side-mask-at-guide-row" | "side-guide-red-pixel" | "side-guide-json" | "side-guide-manual-coordinate" | "front-formula" | "manual-tape-front-formula" | "manual-depth-ratio" | "depth-ratio-table";
+  depthSource: "side-mask-at-guide-row" | "side-guide-red-pixel" | "side-guide-json" | "side-guide-manual-coordinate" | "front-formula" | "manual-tape-front-formula" | "manual-depth-ratio" | "local-ml-depth-ratio" | "wear-depth-ratio-formula";
   sideDepthCandidateCm: number | null;
   sideDepthCandidateRatio: number | null;
   sideDepthRawCm: number | null;
@@ -538,6 +541,7 @@ interface SideDepthMeasurement {
 export interface GeminiGuideMeasurement {
   guide: GeminiBodyGuide;
   activeCmPerPx: number;
+  activeScaleSource: "global-height" | "apple-vision-body-depth";
   frontHeightCmPerPx: number | null;
   sideHeightCmPerPx: number | null;
   sideHeightScaleSource: "mask-height" | "pose-landmarks" | null;
@@ -861,6 +865,7 @@ function applyDepthRatioTableComparison(args: {
   row: GeminiGuideMeasurementRow | null;
   gender: WaistTrace["gender"];
   bmi: number;
+  heightCm: number;
   waistWidthCm: number | null;
   waistDepthCm: number | null;
   trouserWidthCm: number | null;
@@ -875,12 +880,14 @@ function applyDepthRatioTableComparison(args: {
     rowKind: row.kind,
     gender: args.gender,
     bmi: args.bmi,
+    heightCm: args.heightCm,
     waistWidthCm: args.waistWidthCm,
+    trouserWidthCm: args.trouserWidthCm,
     hipWidthCm: args.hipWidthCm,
   });
   if (!table) return row;
-  const rangeMin = table.depthRatioP10;
-  const rangeMax = table.depthRatioP90;
+  const rangeMin = table.supportedMin;
+  const rangeMax = table.supportedMax;
   const formulaDepthRatio = row.baseDepthRatio;
   const rangeStatus: GeminiGuideDepthRatioTableRangeStatus = formulaDepthRatio < rangeMin
     ? "table-fallback-low"
@@ -947,7 +954,7 @@ function applyDepthRatioTableComparison(args: {
 
   return {
     ...row,
-    depthSource: manualOverrideActive ? "manual-depth-ratio" : "depth-ratio-table",
+    depthSource: manualOverrideActive ? "manual-depth-ratio" : "wear-depth-ratio-formula",
     sideDepthAccepted: false,
     depthRatio: round(acceptedDepthRatio, 3),
     depthCm: round(acceptedDepthCm, 1),
@@ -1139,6 +1146,7 @@ function buildGuideRow(args: {
   imageWidth: number;
   imageHeight: number;
   cmPerPx: number;
+  scaleSource?: GeminiGuideMeasurementRow["scaleSource"];
   depthRatio: number | ((geminiWidthCm: number) => number);
   depthRatioBounds?: { min: number; max: number };
   sideDepthCm?: (line: {
@@ -1181,7 +1189,9 @@ function buildGuideRow(args: {
     args.maskMode,
   );
   const maskWidthCm = maskMeasurement?.widthCm ?? null;
+  const usesLocalMlEndpoints = rowSource === "local-ml-v1";
   const usesManualEndpoints = rowSource === "manual-coordinate" || rowSource === "manual-adjusted-coordinate";
+  const usesDirectEndpoints = usesManualEndpoints || usesLocalMlEndpoints;
   const maskLeftXNorm = maskMeasurement?.leftXNorm ?? null;
   const maskRightXNorm = maskMeasurement?.rightXNorm ?? null;
   const maskYNorm = maskMeasurement?.yNorm ?? null;
@@ -1206,13 +1216,17 @@ function buildGuideRow(args: {
   }));
   const formulaWidthSource: GeminiGuideMeasurementRow["formulaWidthSource"] = rowSource === "red-pixel-detector"
     ? "gemini-red-line"
+    : usesLocalMlEndpoints
+      ? "local-ml-v1"
     : rowSource === "manual-coordinate" || rowSource === "manual-adjusted-coordinate"
       ? "manual-coordinates"
     : rowSource === "pose-mask-fallback"
       ? "fallback-line"
       : "gemini-json-endpoints";
-  const edgeTrust: GeminiGuideEdgeTrust = args.looseClothing && !usesManualEndpoints
+  const edgeTrust: GeminiGuideEdgeTrust = args.looseClothing && !usesDirectEndpoints
     ? "loose-clothing-untrusted"
+    : usesLocalMlEndpoints
+      ? "local-ml-predicted-edge"
     : usesManualEndpoints
       ? "manual-body-edge"
       : rowSource === "pose-mask-fallback"
@@ -1281,6 +1295,8 @@ function buildGuideRow(args: {
     confidence: round(normalized.confidence, 2),
     geminiWidthCm: round(geminiWidthCm, 1),
     formulaWidthCm: round(selectedFormulaWidthCm, 1),
+    cmPerPx: round(args.cmPerPx, 6),
+    scaleSource: args.scaleSource ?? "global-height",
     formulaWidthSource,
     formulaLeftXNorm: round(formulaLeftXNorm, 4),
     formulaRightXNorm: round(formulaRightXNorm, 4),
@@ -1331,7 +1347,9 @@ export function computeGeminiGuideMeasurement(args: {
   waistTrace: WaistTrace | null;
   hipsTrace: HipsTrace | null;
   cmPerPxOverride?: number | null;
+  rowCmPerPxOverrides?: Partial<Record<GeminiGuideRowKind, number>>;
   depthRatioOverrides?: GeminiGuideDepthRatioOverrides;
+  localMlDepthRatios?: GeminiGuideDepthRatioOverrides;
 }): GeminiGuideMeasurement | null {
   const { guide, pose, waistTrace, hipsTrace } = args;
   if (!guide || !pose || !waistTrace) return null;
@@ -1339,7 +1357,9 @@ export function computeGeminiGuideMeasurement(args: {
   const usesGeminiJsonGuide = typeof args.guideSource === "string" && args.guideSource.startsWith("gemini-json");
   const usesManualGuide = args.guideSource === "manual-coordinate";
   const usesManualAdjustedGuide = args.guideSource === "manual-adjusted-coordinate";
-  const usesManualCoordinateGuide = usesManualGuide || usesManualAdjustedGuide;
+  const usesLocalMlGuide = args.guideSource === "local-ml-v1";
+  const usesManualCoordinateGuide = usesManualGuide || usesManualAdjustedGuide || usesLocalMlGuide;
+  const usesDirectCoordinateGuide = usesManualGuide || usesLocalMlGuide;
   const sideGuideDepthSource = getSideGuideDepthSource(args.sideGuideSource);
   const frontScale = computePoseScale(pose, args.imageWidth, args.imageHeight, waistTrace.heightCm);
   const rawSideScale = args.sidePose && args.sideImageWidth && args.sideImageHeight
@@ -1349,9 +1369,21 @@ export function computeGeminiGuideMeasurement(args: {
     ? computeMaskHeightScale(args.sidePose, args.sideImageWidth, args.sideImageHeight, waistTrace.heightCm)
     : null;
   const sideScale = applyMaskHeightScale(rawSideScale, sideMaskScale);
-  const activeCmPerPx = args.cmPerPxOverride && args.cmPerPxOverride > 0
-    ? args.cmPerPxOverride
-    : waistTrace.cmPerPx;
+  const rowScaleValues = Object.values(args.rowCmPerPxOverrides ?? {})
+    .filter((value): value is number => typeof value === "number" && Number.isFinite(value) && value > 0)
+    .sort((a, b) => a - b);
+  const rowScaleMedian = rowScaleValues.length
+    ? rowScaleValues[Math.floor(rowScaleValues.length / 2)]!
+    : null;
+  const activeCmPerPx = rowScaleMedian
+    ?? (args.cmPerPxOverride && args.cmPerPxOverride > 0 ? args.cmPerPxOverride : waistTrace.cmPerPx);
+  const activeScaleSource: GeminiGuideMeasurement["activeScaleSource"] = rowScaleMedian
+    ? "apple-vision-body-depth"
+    : "global-height";
+  const scaleForRow = (kind: GeminiGuideRowKind): number => {
+    const rowScale = args.rowCmPerPxOverrides?.[kind];
+    return typeof rowScale === "number" && Number.isFinite(rowScale) && rowScale > 0 ? rowScale : activeCmPerPx;
+  };
   const activeScaleRatio = waistTrace.cmPerPx > 0 ? activeCmPerPx / waistTrace.cmPerPx : 1;
   const scaledHipsTrace = hipsTrace && Number.isFinite(activeScaleRatio) && activeScaleRatio > 0
     ? {
@@ -1366,7 +1398,11 @@ export function computeGeminiGuideMeasurement(args: {
   let waistLine = guide.waist;
   let trouserWaistLine = guide.trouserWaist;
   let hipsLine = guide.hips;
-  const manualRowSource: GeminiGuideMeasurementRow["rowSource"] = usesManualAdjustedGuide ? "manual-adjusted-coordinate" : "manual-coordinate";
+  const manualRowSource: GeminiGuideMeasurementRow["rowSource"] = usesLocalMlGuide
+    ? "local-ml-v1"
+    : usesManualAdjustedGuide
+      ? "manual-adjusted-coordinate"
+      : "manual-coordinate";
   let waistRowSource: GeminiGuideMeasurementRow["rowSource"] = usesManualCoordinateGuide ? manualRowSource : usesRedPixelGuide ? "red-pixel-detector" : "gemini-json";
   let trouserWaistRowSource: GeminiGuideMeasurementRow["rowSource"] = usesManualCoordinateGuide ? manualRowSource : usesRedPixelGuide ? "red-pixel-detector" : "gemini-json";
   let hipsRowSource: GeminiGuideMeasurementRow["rowSource"] = usesManualCoordinateGuide ? manualRowSource : usesRedPixelGuide ? "red-pixel-detector" : "gemini-json";
@@ -1496,16 +1532,22 @@ export function computeGeminiGuideMeasurement(args: {
     pose,
     imageWidth: args.imageWidth,
     imageHeight: args.imageHeight,
-    cmPerPx: activeCmPerPx,
-    depthRatio: (waistGuideWidthCm) => scaledHipsTrace
+    cmPerPx: scaleForRow("waist"),
+    scaleSource: args.rowCmPerPxOverrides?.waist ? "apple-vision-body-depth" : activeScaleSource,
+    depthRatio: args.localMlDepthRatios?.waist ?? ((waistGuideWidthCm) => scaledHipsTrace
       ? guideWaistDepthRatio({
           gender: scaledHipsTrace.gender,
           bmi: scaledHipsTrace.bmi,
           waistGuideWidthCm,
           hipBoneCm: activeHipBoneCm,
         })
-      : waistTrace.naturalWaistDepthRatio,
+      : waistTrace.naturalWaistDepthRatio),
+    depthSourceOverride: args.localMlDepthRatios?.waist != null ? "local-ml-depth-ratio" : undefined,
     depthRatioOverride: args.depthRatioOverrides?.waist,
+    // The BMI table can legitimately expose waist ratios above 0.800 (for
+    // example Shahnaz 2 reaches 0.827). Keep the formula's manual safety
+    // bound wide enough for every value shown by the slider to take effect.
+    depthRatioBounds: { min: 0.35, max: 0.9 },
     rawCm: waistTrace.finalNaturalWaistCm,
     sideDepthCm: sideGuideDepthSource
       ? (line) => measureSideGuideDepth("waist", line.formulaWidthCm)
@@ -1525,8 +1567,9 @@ export function computeGeminiGuideMeasurement(args: {
     pose,
     imageWidth: args.imageWidth,
     imageHeight: args.imageHeight,
-    cmPerPx: activeCmPerPx,
-    depthRatio: (trouserGuideWidthCm) => scaledHipsTrace
+    cmPerPx: scaleForRow("trouserWaist"),
+    scaleSource: args.rowCmPerPxOverrides?.trouserWaist ? "apple-vision-body-depth" : activeScaleSource,
+    depthRatio: args.localMlDepthRatios?.trouserWaist ?? ((trouserGuideWidthCm) => scaledHipsTrace
       ? guideTrouserWaistDepthRatio({
           gender: scaledHipsTrace.gender,
           bmi: scaledHipsTrace.bmi,
@@ -1534,7 +1577,8 @@ export function computeGeminiGuideMeasurement(args: {
           hipBoneCm: activeHipBoneCm,
           fallbackRatio: waistTrace.depthRatio,
         })
-      : waistTrace.depthRatio,
+      : waistTrace.depthRatio),
+    depthSourceOverride: args.localMlDepthRatios?.trouserWaist != null ? "local-ml-depth-ratio" : undefined,
     depthRatioOverride: args.depthRatioOverrides?.trouserWaist,
     depthRatioBounds: { min: 0.35, max: 1.1 },
     rawCm: waistTrace.finalTrouserWaistCm,
@@ -1562,13 +1606,15 @@ export function computeGeminiGuideMeasurement(args: {
         pose,
         imageWidth: args.imageWidth,
         imageHeight: args.imageHeight,
-        cmPerPx: activeCmPerPx,
-        depthRatio: (hipGuideWidthCm) => guideHipDepthRatio({
+        cmPerPx: scaleForRow("hips"),
+        scaleSource: args.rowCmPerPxOverrides?.hips ? "apple-vision-body-depth" : activeScaleSource,
+        depthRatio: args.localMlDepthRatios?.hips ?? ((hipGuideWidthCm) => guideHipDepthRatio({
             hipsTrace: scaledHipsTrace,
             hipGuideWidthCm,
             waistGuideWidthCm,
             fallbackRatio: hipDepthRatio || 0.5,
-          }),
+          })),
+        depthSourceOverride: args.localMlDepthRatios?.hips != null ? "local-ml-depth-ratio" : undefined,
         depthRatioOverride: args.depthRatioOverrides?.hips,
         sideDepthCm: sideGuideDepthSource
           ? (line) => measureSideGuideDepth("hips", line.formulaWidthCm)
@@ -1587,7 +1633,7 @@ export function computeGeminiGuideMeasurement(args: {
   // front-only ratio provides depth. Keep that result as the plain ellipse.
   // The cross-row superellipse heuristic is not measured by either photo and
   // must not silently alter a manually placed span.
-  const modeledWaist = usesManualGuide
+  const modeledWaist = usesDirectCoordinateGuide
     ? waist
     : applyCircumferenceModel(
         waist,
@@ -1603,7 +1649,7 @@ export function computeGeminiGuideMeasurement(args: {
           hipDepthCm: hips?.depthCm ?? null,
         }),
       );
-  const modeledTrouserWaist = usesManualGuide
+  const modeledTrouserWaist = usesDirectCoordinateGuide
     ? trouserWaist
     : applyCircumferenceModel(
         trouserWaist,
@@ -1619,7 +1665,7 @@ export function computeGeminiGuideMeasurement(args: {
           hipDepthCm: hips?.depthCm ?? null,
         }),
       );
-  const modeledHips = usesManualGuide
+  const modeledHips = usesDirectCoordinateGuide
     ? hips
     : applyCircumferenceModel(
         hips,
@@ -1638,42 +1684,55 @@ export function computeGeminiGuideMeasurement(args: {
 
   const tableGender = scaledHipsTrace?.gender ?? waistTrace.gender;
   const tableBmi = scaledHipsTrace?.bmi ?? waistTrace.bmi;
-  const tableWaist = applyDepthRatioTableComparison({
-    row: modeledWaist,
-    gender: tableGender,
-    bmi: tableBmi,
-    waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
-    waistDepthCm: null,
-    trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
-    trouserDepthCm: null,
-    hipWidthCm: modeledHips?.formulaWidthCm ?? null,
-    hipDepthCm: null,
-    useBodyShapeCircumference: false,
-  });
-  const tableTrouserWaist = applyDepthRatioTableComparison({
-    row: modeledTrouserWaist,
-    gender: tableGender,
-    bmi: tableBmi,
-    waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
-    waistDepthCm: null,
-    trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
-    trouserDepthCm: null,
-    hipWidthCm: modeledHips?.formulaWidthCm ?? null,
-    hipDepthCm: null,
-    useBodyShapeCircumference: false,
-  });
-  const tableHips = applyDepthRatioTableComparison({
-    row: modeledHips,
-    gender: tableGender,
-    bmi: tableBmi,
-    waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
-    waistDepthCm: null,
-    trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
-    trouserDepthCm: null,
-    hipWidthCm: modeledHips?.formulaWidthCm ?? null,
-    hipDepthCm: null,
-    useBodyShapeCircumference: false,
-  });
+  const tableHeightCm = waistTrace.heightCm;
+  // Local ML owns its predicted depth ratios. The WEAR/BMI table remains a
+  // comparison tool for the other guide paths and must not silently replace a
+  // Local ML prediction before the existing circumference calculator runs.
+  const tableWaist = usesLocalMlGuide
+    ? modeledWaist
+    : applyDepthRatioTableComparison({
+        row: modeledWaist,
+        gender: tableGender,
+        bmi: tableBmi,
+        heightCm: tableHeightCm,
+        waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
+        waistDepthCm: null,
+        trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
+        trouserDepthCm: null,
+        hipWidthCm: modeledHips?.formulaWidthCm ?? null,
+        hipDepthCm: null,
+        useBodyShapeCircumference: false,
+      });
+  const tableTrouserWaist = usesLocalMlGuide
+    ? modeledTrouserWaist
+    : applyDepthRatioTableComparison({
+        row: modeledTrouserWaist,
+        gender: tableGender,
+        bmi: tableBmi,
+        heightCm: tableHeightCm,
+        waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
+        waistDepthCm: null,
+        trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
+        trouserDepthCm: null,
+        hipWidthCm: modeledHips?.formulaWidthCm ?? null,
+        hipDepthCm: null,
+        useBodyShapeCircumference: false,
+      });
+  const tableHips = usesLocalMlGuide
+    ? modeledHips
+    : applyDepthRatioTableComparison({
+        row: modeledHips,
+        gender: tableGender,
+        bmi: tableBmi,
+        heightCm: tableHeightCm,
+        waistWidthCm: modeledWaist?.formulaWidthCm ?? null,
+        waistDepthCm: null,
+        trouserWidthCm: modeledTrouserWaist?.formulaWidthCm ?? null,
+        trouserDepthCm: null,
+        hipWidthCm: modeledHips?.formulaWidthCm ?? null,
+        hipDepthCm: null,
+        useBodyShapeCircumference: false,
+      });
 
   const rows = [tableWaist, tableTrouserWaist, tableHips].filter((row): row is GeminiGuideMeasurementRow => Boolean(row));
   if (!rows.length) return null;
@@ -1681,6 +1740,7 @@ export function computeGeminiGuideMeasurement(args: {
   return {
     guide,
     activeCmPerPx: round(activeCmPerPx, 5),
+    activeScaleSource,
     frontHeightCmPerPx: frontScale ? round(frontScale.cmPerPx, 5) : null,
     sideHeightCmPerPx: sideScale ? round(sideScale.cmPerPx, 5) : null,
     sideHeightScaleSource: sideScale ? (sideMaskScale ? "mask-height" : "pose-landmarks") : null,
@@ -1690,12 +1750,12 @@ export function computeGeminiGuideMeasurement(args: {
     hips: tableHips,
     rows,
     debugRows: rows.map((row) => ({
-      id: `${row.rowSource === "pose-mask-fallback" ? "fallback-guide" : row.rowSource === "manual-adjusted-coordinate" ? "manual-adjusted-guide" : row.rowSource === "manual-coordinate" ? "manual-guide" : "gemini-guide"}-${row.kind}`,
+      id: `${row.rowSource === "pose-mask-fallback" ? "fallback-guide" : row.rowSource === "local-ml-v1" ? "local-ml-guide" : row.rowSource === "manual-adjusted-coordinate" ? "manual-adjusted-guide" : row.rowSource === "manual-coordinate" ? "manual-guide" : "gemini-guide"}-${row.kind}`,
       label: row.kind === "waist"
-        ? row.rowSource === "pose-mask-fallback" ? "fallback waist guide" : row.rowSource === "manual-adjusted-coordinate" ? "manual-adjusted waist guide" : row.rowSource === "manual-coordinate" ? "manual waist guide" : "Gemini waist guide"
+        ? row.rowSource === "pose-mask-fallback" ? "fallback waist guide" : row.rowSource === "local-ml-v1" ? "Local ML waist guide" : row.rowSource === "manual-adjusted-coordinate" ? "manual-adjusted waist guide" : row.rowSource === "manual-coordinate" ? "manual waist guide" : "Gemini waist guide"
         : row.kind === "trouserWaist"
-          ? row.rowSource === "pose-mask-fallback" ? "fallback trouser waist guide" : row.rowSource === "manual-adjusted-coordinate" ? "manual-adjusted trouser waist guide" : row.rowSource === "manual-coordinate" ? "manual trouser waist guide" : "Gemini trouser waist guide"
-          : row.rowSource === "pose-mask-fallback" ? "fallback hip guide" : row.rowSource === "manual-adjusted-coordinate" ? "manual-adjusted hip guide" : row.rowSource === "manual-coordinate" ? "manual hip guide" : "Gemini hip guide",
+          ? row.rowSource === "pose-mask-fallback" ? "fallback trouser waist guide" : row.rowSource === "local-ml-v1" ? "Local ML trouser waist guide" : row.rowSource === "manual-adjusted-coordinate" ? "manual-adjusted trouser waist guide" : row.rowSource === "manual-coordinate" ? "manual trouser waist guide" : "Gemini trouser waist guide"
+          : row.rowSource === "pose-mask-fallback" ? "fallback hip guide" : row.rowSource === "local-ml-v1" ? "Local ML hip guide" : row.rowSource === "manual-adjusted-coordinate" ? "manual-adjusted hip guide" : row.rowSource === "manual-coordinate" ? "manual hip guide" : "Gemini hip guide",
       yNorm: row.yNorm,
       leftXNorm: row.formulaLeftXNorm,
       rightXNorm: row.formulaRightXNorm,
@@ -1759,6 +1819,8 @@ export function computeGeminiGuideImageMeasurement(args: {
   if (!scale) return null;
   const rowSource: GeminiGuideMeasurementRow["rowSource"] = args.guideSource === "manual-coordinate"
     ? "manual-coordinate"
+    : args.guideSource === "local-ml-v1"
+      ? "local-ml-v1"
     : args.guideSource === "manual-adjusted-coordinate"
       ? "manual-adjusted-coordinate"
       : args.guideSource?.startsWith("red-pixel-detector")
@@ -1803,6 +1865,7 @@ export function computeGeminiGuideImageMeasurement(args: {
   return {
     guide: args.guide,
     activeCmPerPx: round(scale.cmPerPx, 5),
+    activeScaleSource: "global-height",
     frontHeightCmPerPx: round(scale.cmPerPx, 5),
     sideHeightCmPerPx: null,
     sideHeightScaleSource: null,
@@ -1889,7 +1952,9 @@ function buildImageGuideRow(args: {
     normalized.yNorm,
     centerXNorm,
   );
+  const usesLocalMlEndpoints = args.rowSource === "local-ml-v1";
   const usesManualEndpoints = args.rowSource === "manual-adjusted-coordinate" || args.rowSource === "manual-coordinate";
+  const usesDirectEndpoints = usesManualEndpoints || usesLocalMlEndpoints;
   const maskLeftXNorm = maskMeasurement?.leftXNorm ?? null;
   const maskRightXNorm = maskMeasurement?.rightXNorm ?? null;
   const maskYNorm = maskMeasurement?.yNorm ?? null;
@@ -1912,11 +1977,15 @@ function buildImageGuideRow(args: {
   const curveGeometry = computeCurveGeometry(normalized.points, normalized.leftXPx, normalized.yPx, normalized.rightXPx, normalized.yPx);
   const formulaWidthSource: GeminiGuideMeasurementRow["formulaWidthSource"] = args.rowSource === "red-pixel-detector"
       ? "gemini-red-line"
+      : usesLocalMlEndpoints
+        ? "local-ml-v1"
       : usesManualEndpoints
         ? "manual-coordinates"
         : "gemini-json-endpoints";
-  const edgeTrust: GeminiGuideEdgeTrust = usesManualEndpoints
-    ? "manual-body-edge"
+  const edgeTrust: GeminiGuideEdgeTrust = usesLocalMlEndpoints
+    ? "local-ml-predicted-edge"
+    : usesDirectEndpoints
+      ? "manual-body-edge"
     : "model-red-edge";
   return {
     kind: args.kind,
@@ -1932,6 +2001,8 @@ function buildImageGuideRow(args: {
     confidence: round(normalized.confidence, 2),
     geminiWidthCm: round(widthCm, 1),
     formulaWidthCm: round(selectedFormulaWidthCm, 1),
+    cmPerPx: round(args.cmPerPx, 6),
+    scaleSource: "global-height",
     formulaWidthSource,
     formulaLeftXNorm: round(formulaLeftXNorm, 4),
     formulaRightXNorm: round(formulaRightXNorm, 4),

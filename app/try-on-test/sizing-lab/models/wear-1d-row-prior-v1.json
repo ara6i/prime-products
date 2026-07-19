@@ -1,0 +1,119 @@
+{
+  "version": "wear-1d-row-prior-v1",
+  "generatedAt": "2026-07-19T12:51:34.350563+00:00",
+  "localOnly": true,
+  "source": "licensed WEAR 1D survey CSV files",
+  "task": "vertical anatomical row prior only",
+  "coordinateDefinition": "fraction from visible top of head to visible bottom of feet",
+  "featureNames": [
+    "intercept",
+    "height_z",
+    "bmi_z",
+    "is_male",
+    "height_z_x_bmi_z",
+    "is_male_x_bmi_z"
+  ],
+  "depthReady": false,
+  "endpointSource": "MediaPipe visible-mask central segment at predicted row",
+  "limitations": [
+    "WEAR 1D has no photos, so it cannot train visual endpoints.",
+    "WEAR 1D has no body surface, so it cannot train hidden front-to-back depth.",
+    "Trouser waist uses abdominal-extension height as an anatomical proxy, not a garment waistband definition.",
+    "The source surveys are historical and many are military; confidence must remain visible."
+  ],
+  "rows": {
+    "waist": {
+      "definition": "standing natural-waist height converted to top-to-bottom stature fraction",
+      "sampleCount": 12358,
+      "surveyCount": 12,
+      "genderCounts": {
+        "male": 2576,
+        "female": 9782
+      },
+      "sourceHeaders": {
+        "WAIST HEIGHT": 11029,
+        "WAIST HT NATURAL": 1329
+      },
+      "coefficients": [
+        0.3727840536908128,
+        -0.002630458486812618,
+        -0.0009869306816363648,
+        0.027024776446728665,
+        0.000561618133789058,
+        0.000382235815402902
+      ],
+      "normalization": {
+        "heightMean": 165.25405810001618,
+        "heightStd": 8.292281926720527,
+        "bmiMean": 23.133448455497962,
+        "bmiStd": 3.2394856470059246
+      },
+      "outputMin": 0.3425076452599388,
+      "outputMax": 0.4282021239051622,
+      "validationMode": "leave-one-survey-out",
+      "validationMaeAt170Cm": 2.4069455560973987,
+      "validationP90At170Cm": 4.838302601295307
+    },
+    "trouserWaist": {
+      "definition": "abdominal-extension height proxy converted to top-to-bottom stature fraction",
+      "sampleCount": 1903,
+      "surveyCount": 1,
+      "genderCounts": {
+        "female": 1903
+      },
+      "sourceHeaders": {
+        "ABDOMINAL EXT HGT": 1903
+      },
+      "coefficients": [
+        0.42546952336501537,
+        -0.0031321661361857125,
+        0.0015659994469174156,
+        0.0,
+        -0.00017671250367591997,
+        0.0
+      ],
+      "normalization": {
+        "heightMean": 162.10341565948505,
+        "heightStd": 6.006915256405931,
+        "bmiMean": 21.920461999916558,
+        "bmiStd": 2.3843998848548553
+      },
+      "outputMin": 0.395469447648642,
+      "outputMax": 0.4538010955659191,
+      "validationMode": "subject-hash-80-20",
+      "validationMaeAt170Cm": 1.6103966880936706,
+      "validationP90At170Cm": 3.3116504740203756
+    },
+    "hips": {
+      "definition": "standing buttock-height landmark converted to top-to-bottom stature fraction",
+      "sampleCount": 3824,
+      "surveyCount": 4,
+      "genderCounts": {
+        "male": 360,
+        "female": 3464
+      },
+      "sourceHeaders": {
+        "BUTTOCK HEIGHT": 3824
+      },
+      "coefficients": [
+        0.4891972089186121,
+        -0.003875148004427187,
+        -0.0008420577514786736,
+        0.007938948251187466,
+        0.00045328848528715555,
+        0.00038870066042197206
+      ],
+      "normalization": {
+        "heightMean": 164.53961820083683,
+        "heightStd": 7.823074773566133,
+        "bmiMean": 22.262553194703504,
+        "bmiStd": 2.5322650708760257
+      },
+      "outputMin": 0.4497792504786669,
+      "outputMax": 0.5225117234498342,
+      "validationMode": "leave-one-survey-out",
+      "validationMaeAt170Cm": 2.107828309976187,
+      "validationP90At170Cm": 4.378289986338095
+    }
+  }
+}

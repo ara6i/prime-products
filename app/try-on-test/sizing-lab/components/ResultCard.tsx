@@ -170,6 +170,7 @@ function formatGuideRowSource(source: GeminiGuideMeasurementRow["rowSource"]): s
 function formatGuideEndpointSource(row: GeminiGuideMeasurementRow): string {
   if (row.formulaWidthSource === "gemini-red-line") return "detected red pixels";
   if (row.formulaWidthSource === "manual-coordinates") return "manual endpoints";
+  if (row.formulaWidthSource === "local-ml-v1") return "Local ML endpoints";
   if (row.formulaWidthSource === "fallback-line") return "fallback line endpoints";
   return "model JSON curve";
 }
@@ -177,6 +178,7 @@ function formatGuideEndpointSource(row: GeminiGuideMeasurementRow): string {
 function formatRawGuideWidthLabel(row: GeminiGuideMeasurementRow): string {
   if (row.formulaWidthSource === "gemini-red-line") return "Detected red-line width";
   if (row.formulaWidthSource === "manual-coordinates") return "Manual endpoint width";
+  if (row.formulaWidthSource === "local-ml-v1") return "Local ML endpoint width";
   if (row.formulaWidthSource === "fallback-line") return "Fallback endpoint width";
   return "JSON curve width";
 }
@@ -188,7 +190,7 @@ function formatGuideDepthSource(source: GeminiGuideMeasurementRow["depthSource"]
   if (source === "side-guide-manual-coordinate") return "side guide manual coordinate";
   if (source === "manual-tape-front-formula") return "manual tape front formula";
   if (source === "manual-depth-ratio") return "manual depth ratio";
-  if (source === "depth-ratio-table") return "depth-ratio table";
+  if (source === "wear-depth-ratio-formula") return "WEAR depth-ratio formula";
   return "front formula";
 }
 

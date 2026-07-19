@@ -15,6 +15,7 @@ const useLocalSdkSource =
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1", "localhost", "192.168.6.123"],
+  serverExternalPackages: ["onnxruntime-node"],
   ...(useLocalSdkSource ? { transpilePackages: ["@primestyleai/tryon"] } : {}),
   ...(useLocalSdkSource
     ? {

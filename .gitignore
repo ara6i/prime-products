@@ -42,3 +42,14 @@ next-env.d.ts
 
 # local code index
 .codegraph/
+
+# local sizing ML data, virtual environment, and checkpoints
+.local-ml/
+
+# local Codex/editor/runtime artifacts
+/.codex/
+/.cursor/
+/.mcp.json
+/.codex-frontend-3000.log
+/outputs/
+__pycache__/

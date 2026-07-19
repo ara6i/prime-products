@@ -201,7 +201,7 @@ export function GeminiGuidePanel({
                   <th className="px-2 py-2 font-semibold">Depth ratio</th>
                   <th className="px-2 py-2 font-semibold">Depth cm</th>
                   <th className="px-2 py-2 font-semibold">Active result</th>
-                  <th className="px-2 py-2 font-semibold">Table source</th>
+                  <th className="px-2 py-2 font-semibold">WEAR formula</th>
                   <th className="px-2 py-2 font-semibold">Target winner</th>
                   <th className="px-2 py-2 font-semibold">Row source</th>
                   <th className="px-2 py-2 font-semibold">Curve source</th>
@@ -463,7 +463,7 @@ function closerLabel(formulaCm: number, tableCm: number | null, targetCm?: numbe
   if (!targetCm || targetCm <= 0 || tableCm == null) return "n/a";
   const formulaError = Math.abs(formulaCm - targetCm);
   const tableError = Math.abs(tableCm - targetCm);
-  if (tableError + 0.05 < formulaError) return "ANSUR table";
+  if (tableError + 0.05 < formulaError) return "WEAR formula";
   if (formulaError + 0.05 < tableError) return "formula";
   return "tie";
 }
@@ -563,6 +563,7 @@ function formatGuideRowSource(source: GeminiGuideMeasurement["rows"][number]["ro
 function formatGuideEndpointSource(row: GeminiGuideMeasurement["rows"][number]): string {
   if (row.formulaWidthSource === "gemini-red-line") return "red-pixel curve";
   if (row.formulaWidthSource === "manual-coordinates") return "manual endpoints";
+  if (row.formulaWidthSource === "local-ml-v1") return "Local ML endpoints";
   if (row.formulaWidthSource === "fallback-line") return "fallback endpoints";
   return "JSON curve";
 }

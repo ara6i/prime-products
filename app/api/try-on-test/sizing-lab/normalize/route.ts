@@ -11,6 +11,7 @@ import {
 import { NextResponse, type NextRequest } from "next/server";
 import { isSiteAuthEnabled, SITE_AUTH_COOKIE_NAME, verifySiteSessionToken } from "@/app/shared/auth/siteSession";
 import { isTestLabAvailableForHost } from "@/app/try-on-test/lib/access";
+import { DEFAULT_SIZING_LAB_GEMINI_CAMERA_CALIBRATION_PROMPT } from "@/app/try-on-test/sizing-lab/lib/geminiCameraCalibrationPrompt";
 import { DEFAULT_SIZING_LAB_GEMINI_PROMPT } from "@/app/try-on-test/sizing-lab/lib/geminiNormalizePrompt";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +24,7 @@ const GEMINI_IMAGE_MODELS = [
   "gemini-3-pro-image",
 ] as const;
 type GeminiImageModel = (typeof GEMINI_IMAGE_MODELS)[number];
+type GeminiImageMode = "normalize" | "camera-calibration";
 
 const DEFAULT_MODEL: GeminiImageModel = "gemini-3.1-flash-image";
 const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
@@ -34,7 +36,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "Sizing Lab is not available for this host." }, { status: 403 });
   }
 
-  let body: { imageDataUrl?: string; model?: string; prompt?: string } = {};
+  let body: { imageDataUrl?: string; model?: string; prompt?: string; mode?: string } = {};
   try {
     body = await request.json();
   } catch {
@@ -49,6 +51,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const mode = resolveImageMode(body.mode);
+  if (!mode) {
+    return NextResponse.json(
+      { ok: false, error: "Unsupported Gemini image mode. Use normalize or camera-calibration." },
+      { status: 400 },
+    );
+  }
+
   const parsed = parseDataUrl(body.imageDataUrl ?? "");
   if (!parsed) {
     return NextResponse.json({ ok: false, error: "imageDataUrl must be a base64 image data URL." }, { status: 400 });
@@ -56,7 +66,7 @@ export async function POST(request: NextRequest) {
   if (Buffer.byteLength(parsed.base64, "base64") > MAX_IMAGE_BYTES) {
     return NextResponse.json({ ok: false, error: "Image is too large for Sizing Lab normalization." }, { status: 413 });
   }
-  const prompt = resolvePrompt(body.prompt);
+  const prompt = resolvePrompt(body.prompt, mode);
   if (!prompt) {
     return NextResponse.json({ ok: false, error: `Gemini prompt must be ${MAX_PROMPT_CHARS} characters or less.` }, { status: 400 });
   }
@@ -74,12 +84,15 @@ export async function POST(request: NextRequest) {
     const ai = new GoogleGenAI({ apiKey });
     const response = await generateContentWithPersonGenerationFallback(ai, {
       model,
-      contents: buildContents(parsed.mimeType, parsed.base64, prompt),
+      contents: buildContents(parsed.mimeType, parsed.base64, prompt, mode),
       config: buildConfig(),
     });
     const image = extractImage(response);
     if (!image) {
-      return NextResponse.json({ ok: false, error: "Gemini did not return a normalized image." }, { status: 502 });
+      return NextResponse.json(
+        { ok: false, error: `Gemini did not return a ${mode === "camera-calibration" ? "camera-corrected" : "normalized"} image.` },
+        { status: 502 },
+      );
     }
 
     return NextResponse.json({
@@ -87,6 +100,7 @@ export async function POST(request: NextRequest) {
       imageDataUrl: `data:${image.mimeType};base64,${image.base64}`,
       mimeType: image.mimeType,
       model,
+      mode,
       prompt,
       geminiMs: Math.round(performance.now() - startedAt),
     });
@@ -108,10 +122,19 @@ function isGeminiImageModel(model: string): model is GeminiImageModel {
   return (GEMINI_IMAGE_MODELS as readonly string[]).includes(model);
 }
 
-function resolvePrompt(requestedPrompt?: string): string | null {
+function resolveImageMode(requestedMode?: string): GeminiImageMode | null {
+  if (requestedMode == null || requestedMode === "") return "normalize";
+  return requestedMode === "normalize" || requestedMode === "camera-calibration"
+    ? requestedMode
+    : null;
+}
+
+function resolvePrompt(requestedPrompt: string | undefined, mode: GeminiImageMode): string | null {
   const prompt = typeof requestedPrompt === "string" && requestedPrompt.trim()
     ? requestedPrompt.trim()
-    : DEFAULT_SIZING_LAB_GEMINI_PROMPT;
+    : mode === "camera-calibration"
+      ? DEFAULT_SIZING_LAB_GEMINI_CAMERA_CALIBRATION_PROMPT
+      : DEFAULT_SIZING_LAB_GEMINI_PROMPT;
   return prompt.length <= MAX_PROMPT_CHARS ? prompt : null;
 }
 
@@ -133,7 +156,14 @@ function parseDataUrl(value: string): { mimeType: string; base64: string } | nul
   };
 }
 
-function buildContents(mimeType: string, data: string, prompt: string): Part[] {
+function buildContents(mimeType: string, data: string, prompt: string, mode: GeminiImageMode): Part[] {
+  if (mode === "camera-calibration") {
+    return [
+      { text: prompt },
+      { text: "Image 1: original user photo whose camera geometry should be corrected." },
+      { inlineData: { mimeType, data } },
+    ];
+  }
   const poseReference = getAPoseReference();
   return [
     { text: prompt },

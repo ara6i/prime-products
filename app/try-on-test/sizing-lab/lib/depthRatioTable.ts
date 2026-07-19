@@ -8,25 +8,23 @@ export type DepthRatioBodyShape =
   | "athletic-inverted"
   | "straight-round";
 
-type DepthRatioTablePart = "waist" | "hips" | "chest";
+type DepthRatioTablePart = "waist" | "hips";
+export type WearFormulaFeature = "bmi" | "rowWidthToHeight" | "waistToHipWidth";
 
-interface RatioStats {
-  p10: number;
-  median: number;
-  p90: number;
-}
-
-interface BmiBand {
-  min: number;
-  max: number;
+export interface WearDepthRatioFormulaTerm {
+  feature: WearFormulaFeature;
   label: string;
-  waist: RatioStats;
-  hips: RatioStats;
-  chest: RatioStats;
+  input: number;
+  center: number;
+  coefficient: number;
+  contribution: number;
+  trainingP05: number;
+  trainingP95: number;
+  insideTrainingRange: boolean;
 }
 
 export interface DepthRatioTableEstimate {
-  source: "ANSUR-II empirical depth-ratio table v0";
+  source: "WEAR 1D measured depth-ratio regression v1";
   part: DepthRatioTablePart;
   rowKind: DepthRatioTableRowKind;
   gender: Gender;
@@ -37,37 +35,152 @@ export interface DepthRatioTableEstimate {
   depthRatioP10: number;
   depthRatioMedian: number;
   depthRatioP90: number;
-  depthRatioPolicy: "upper-safe-median-to-p90";
+  depthRatioPolicy: "wear-linear-regression";
   shapeOffset: number;
   depthRatio: number;
+  rawDepthRatio: number;
+  supportedMin: number;
+  supportedMax: number;
+  formulaIntercept: number;
+  formulaTerms: WearDepthRatioFormulaTerm[];
+  trainingSubjects: number;
+  trainingSurveys: string[];
+  validationMethod: "leave-one-survey-out" | "deterministic-five-fold";
+  validationMae: number;
+  validationP90AbsError: number;
+  confidence: "study-supported" | "limited-study" | "outside-study-range";
   notes: string[];
 }
 
-const FEMALE_BANDS: BmiBand[] = [
-  { min: 0, max: 20, label: "female BMI <20", waist: { p10: 0.618, median: 0.675, p90: 0.739 }, hips: { p10: 0.574, median: 0.617, p90: 0.683 }, chest: { p10: 0.757, median: 0.850, p90: 0.943 } },
-  { min: 20, max: 22, label: "female BMI 20-22", waist: { p10: 0.616, median: 0.674, p90: 0.756 }, hips: { p10: 0.587, median: 0.628, p90: 0.685 }, chest: { p10: 0.777, median: 0.863, p90: 0.950 } },
-  { min: 22, max: 24, label: "female BMI 22-24", waist: { p10: 0.634, median: 0.685, p90: 0.759 }, hips: { p10: 0.595, median: 0.642, p90: 0.695 }, chest: { p10: 0.813, median: 0.886, p90: 0.984 } },
-  { min: 24, max: 26, label: "female BMI 24-26", waist: { p10: 0.640, median: 0.698, p90: 0.767 }, hips: { p10: 0.603, median: 0.648, p90: 0.701 }, chest: { p10: 0.832, median: 0.909, p90: 0.992 } },
-  { min: 26, max: 28, label: "female BMI 26-28", waist: { p10: 0.655, median: 0.709, p90: 0.786 }, hips: { p10: 0.618, median: 0.667, p90: 0.716 }, chest: { p10: 0.850, median: 0.927, p90: 1.008 } },
-  { min: 28, max: 30, label: "female BMI 28-30", waist: { p10: 0.672, median: 0.728, p90: 0.800 }, hips: { p10: 0.626, median: 0.673, p90: 0.737 }, chest: { p10: 0.883, median: 0.964, p90: 1.051 } },
-  { min: 30, max: 35, label: "female BMI 30-35", waist: { p10: 0.701, median: 0.754, p90: 0.837 }, hips: { p10: 0.645, median: 0.702, p90: 0.757 }, chest: { p10: 0.915, median: 1.000, p90: 1.073 } },
-  { min: 35, max: Number.POSITIVE_INFINITY, label: "female BMI 35+", waist: { p10: 0.742, median: 0.781, p90: 0.824 }, hips: { p10: 0.650, median: 0.701, p90: 0.763 }, chest: { p10: 0.957, median: 1.056, p90: 1.118 } },
-];
+interface FormulaFeatureConfig {
+  center: number;
+  coefficient: number;
+  p05: number;
+  p95: number;
+}
 
-const MALE_BANDS: BmiBand[] = [
-  { min: 0, max: 20, label: "male BMI <20", waist: { p10: 0.622, median: 0.677, p90: 0.721 }, hips: { p10: 0.589, median: 0.633, p90: 0.688 }, chest: { p10: 0.708, median: 0.768, p90: 0.860 } },
-  { min: 20, max: 22, label: "male BMI 20-22", waist: { p10: 0.639, median: 0.694, p90: 0.747 }, hips: { p10: 0.606, median: 0.651, p90: 0.704 }, chest: { p10: 0.728, median: 0.788, p90: 0.870 } },
-  { min: 22, max: 24, label: "male BMI 22-24", waist: { p10: 0.649, median: 0.701, p90: 0.753 }, hips: { p10: 0.624, median: 0.674, p90: 0.731 }, chest: { p10: 0.749, median: 0.821, p90: 0.905 } },
-  { min: 24, max: 26, label: "male BMI 24-26", waist: { p10: 0.656, median: 0.705, p90: 0.767 }, hips: { p10: 0.641, median: 0.688, p90: 0.743 }, chest: { p10: 0.778, median: 0.845, p90: 0.928 } },
-  { min: 26, max: 28, label: "male BMI 26-28", waist: { p10: 0.663, median: 0.717, p90: 0.780 }, hips: { p10: 0.659, median: 0.709, p90: 0.758 }, chest: { p10: 0.801, median: 0.874, p90: 0.954 } },
-  { min: 28, max: 30, label: "male BMI 28-30", waist: { p10: 0.673, median: 0.729, p90: 0.798 }, hips: { p10: 0.675, median: 0.721, p90: 0.776 }, chest: { p10: 0.817, median: 0.890, p90: 0.974 } },
-  { min: 30, max: 35, label: "male BMI 30-35", waist: { p10: 0.692, median: 0.750, p90: 0.827 }, hips: { p10: 0.691, median: 0.741, p90: 0.794 }, chest: { p10: 0.843, median: 0.921, p90: 1.007 } },
-  { min: 35, max: Number.POSITIVE_INFINITY, label: "male BMI 35+", waist: { p10: 0.725, median: 0.774, p90: 0.865 }, hips: { p10: 0.720, median: 0.765, p90: 0.814 }, chest: { p10: 0.886, median: 0.957, p90: 1.045 } },
-];
+interface FormulaModel {
+  intercept: number;
+  features: Partial<Record<WearFormulaFeature, FormulaFeatureConfig>>;
+  supportedMin: number;
+  supportedMax: number;
+  trainingSubjects: number;
+  trainingSurveys: string[];
+  validationMethod: DepthRatioTableEstimate["validationMethod"];
+  validationMae: number;
+  validationP90AbsError: number;
+}
+
+type FormulaModels = Record<Gender, Record<DepthRatioTableRowKind, FormulaModel>>;
+
+// Generated from the purchased WEAR 1D archive by
+// scripts/fit_wear_depth_ratio_formula.py. Shane 2 and Nadia are not present
+// in that archive and were not used to choose or adjust any coefficient.
+//
+// Target: measured front-to-back depth / measured front breadth. This matches
+// the physical meaning of the UI slider. Circumference is still a separate
+// ellipse approximation made after this ratio is predicted.
+const WEAR_FORMULAS: FormulaModels = {
+  female: {
+    waist: {
+      intercept: 0.7043210755,
+      features: {
+        bmi: { center: 21.822353871, coefficient: 0.01340413, p05: 18.099150535, p95: 26.197595145 },
+        rowWidthToHeight: { center: 0.1500292961, coefficient: -1.730642283, p05: 0.129789225, p95: 0.17474561 },
+      },
+      supportedMin: 0.592051084,
+      supportedMax: 0.830298782,
+      trainingSubjects: 3573,
+      trainingSurveys: ["USAF Women 1968", "US Army Women 1977", "Airline Stewardesses 1972"],
+      validationMethod: "leave-one-survey-out",
+      validationMae: 0.03944869,
+      validationP90AbsError: 0.081346854,
+    },
+    trouserWaist: {
+      intercept: 0.732715849,
+      features: {
+        bmi: { center: 22.410065316, coefficient: 0.019753455, p05: 18.311137315, p95: 26.993957451 },
+        rowWidthToHeight: { center: 0.1845248491, coefficient: -3.096507876, p05: 0.159999084, p95: 0.212287688 },
+      },
+      supportedMin: 0.594146388,
+      supportedMax: 0.91244194,
+      trainingSubjects: 255,
+      trainingSurveys: ["US Army Women 1977 abdominal-extension row"],
+      validationMethod: "deterministic-five-fold",
+      validationMae: 0.041148215,
+      validationP90AbsError: 0.085601889,
+    },
+    hips: {
+      intercept: 0.6071179007,
+      features: {
+        bmi: { center: 21.459721014, coefficient: 0.014491822, p05: 18.01275326, p95: 25.725561964 },
+        rowWidthToHeight: { center: 0.2129389892, coefficient: -2.421396022, p05: 0.192065898, p95: 0.237283315 },
+      },
+      supportedMin: 0.5271651,
+      supportedMax: 0.703147743,
+      trainingSubjects: 2295,
+      trainingSurveys: ["USAF Women 1968", "Airline Stewardesses 1972"],
+      validationMethod: "leave-one-survey-out",
+      validationMae: 0.024123305,
+      validationP90AbsError: 0.049994287,
+    },
+  },
+  male: {
+    waist: {
+      intercept: 0.7312079315,
+      features: {
+        bmi: { center: 23.807611101, coefficient: 0.010710663, p05: 19.918507021, p95: 28.235947345 },
+        rowWidthToHeight: { center: 0.1633572663, coefficient: -1.384037468, p05: 0.139383645, p95: 0.187780292 },
+      },
+      supportedMin: 0.62010453,
+      supportedMax: 0.8515625,
+      trainingSubjects: 11251,
+      trainingSurveys: ["German Air Force 1968", "US Air Traffic Controllers 1961", "US Naval Aviators 1964", "US Flying Personnel 1950", "NATO 1960-61", "ROKAF 1960"],
+      validationMethod: "leave-one-survey-out",
+      validationMae: 0.037274419,
+      validationP90AbsError: 0.077024178,
+    },
+    trouserWaist: {
+      intercept: 0.7472053648,
+      features: {
+        bmi: { center: 26.145362269, coefficient: 0.000865845, p05: 18.747075316, p95: 34.430802327 },
+        rowWidthToHeight: { center: 0.1812614784, coefficient: 0.798355959, p05: 0.156527669, p95: 0.210755571 },
+      },
+      supportedMin: 0.633624712,
+      supportedMax: 0.905548439,
+      trainingSubjects: 563,
+      trainingSurveys: ["Canadian Forces 1974 stomach row"],
+      validationMethod: "deterministic-five-fold",
+      validationMae: 0.041864749,
+      validationP90AbsError: 0.081372584,
+    },
+    hips: {
+      intercept: 0.6742636433,
+      features: {
+        bmi: { center: 23.807611101, coefficient: 0.01033994, p05: 19.918507021, p95: 28.235947345 },
+        rowWidthToHeight: { center: 0.1949139446, coefficient: -1.697125957, p05: 0.179010546, p95: 0.212050333 },
+        waistToHipWidth: { center: 0.8376477415, coefficient: 0.405890165, p05: 0.742236025, p95: 0.92570544 },
+      },
+      supportedMin: 0.558500059,
+      supportedMax: 0.792284866,
+      trainingSubjects: 11251,
+      trainingSurveys: ["German Air Force 1968", "US Air Traffic Controllers 1961", "US Naval Aviators 1964", "US Flying Personnel 1950", "NATO 1960-61", "ROKAF 1960"],
+      validationMethod: "leave-one-survey-out",
+      validationMae: 0.028838725,
+      validationP90AbsError: 0.059603541,
+    },
+  },
+};
+
+const FEATURE_LABELS: Record<WearFormulaFeature, string> = {
+  bmi: "BMI",
+  rowWidthToHeight: "red width ÷ height",
+  waistToHipWidth: "waist width ÷ hip width",
+};
 
 const SHAPE_THRESHOLDS = {
-  female: { waistHipP25: 0.804, waistHipP75: 0.884, shoulderHipP25: 1.229, shoulderHipP75: 1.320 },
-  male: { waistHipP25: 0.904, waistHipP75: 0.982, shoulderHipP25: 1.430, shoulderHipP75: 1.525 },
+  female: { waistHipP25: 0.804, waistHipP75: 0.884, shoulderHipP25: 1.229, shoulderHipP75: 1.32 },
+  male: { waistHipP25: 0.904, waistHipP75: 0.982, shoulderHipP25: 1.43, shoulderHipP75: 1.525 },
 } satisfies Record<Gender, {
   waistHipP25: number;
   waistHipP75: number;
@@ -75,35 +188,13 @@ const SHAPE_THRESHOLDS = {
   shoulderHipP75: number;
 }>;
 
-const SHAPE_OFFSETS: Record<Gender, Record<DepthRatioBodyShape, Record<DepthRatioTablePart, number>>> = {
-  female: {
-    average: { waist: -0.001, hips: -0.001, chest: 0.000 },
-    "curvy-hourglass": { waist: 0.002, hips: -0.012, chest: -0.010 },
-    "pear-hip-dominant": { waist: -0.015, hips: -0.019, chest: 0.010 },
-    "athletic-inverted": { waist: 0.017, hips: 0.028, chest: -0.006 },
-    "straight-round": { waist: -0.010, hips: 0.006, chest: 0.010 },
-  },
-  male: {
-    average: { waist: -0.002, hips: -0.001, chest: -0.003 },
-    "curvy-hourglass": { waist: -0.001, hips: -0.016, chest: -0.001 },
-    "pear-hip-dominant": { waist: -0.012, hips: -0.016, chest: 0.014 },
-    "athletic-inverted": { waist: 0.011, hips: 0.022, chest: -0.005 },
-    "straight-round": { waist: 0.001, hips: 0.009, chest: 0.005 },
-  },
-};
-
 function clamp(n: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, n));
 }
 
-function round(n: number, d = 3): number {
-  const m = 10 ** d;
-  return Math.round(n * m) / m;
-}
-
-function findBand(gender: Gender, bmi: number): BmiBand {
-  const bands = gender === "female" ? FEMALE_BANDS : MALE_BANDS;
-  return bands.find((band) => bmi >= band.min && bmi < band.max) ?? bands[bands.length - 1]!;
+function round(n: number, digits = 3): number {
+  const multiplier = 10 ** digits;
+  return Math.round(n * multiplier) / multiplier;
 }
 
 function resolvePart(rowKind: DepthRatioTableRowKind): DepthRatioTablePart {
@@ -124,10 +215,7 @@ function classifyBodyShape(args: {
     : null;
   const thresholds = SHAPE_THRESHOLDS[args.gender];
 
-  if (waistHip == null) {
-    return { bodyShape: "average", bodyShapeSource: "average-fallback" };
-  }
-
+  if (waistHip == null) return { bodyShape: "average", bodyShapeSource: "average-fallback" };
   if (shoulderHip != null) {
     if (waistHip <= thresholds.waistHipP25 && shoulderHip < thresholds.shoulderHipP75) {
       return { bodyShape: "curvy-hourglass", bodyShapeSource: "waist-hip-shoulder-width-proxy" };
@@ -139,61 +227,108 @@ function classifyBodyShape(args: {
       return { bodyShape: "athletic-inverted", bodyShapeSource: "waist-hip-shoulder-width-proxy" };
     }
   }
-
-  if (waistHip >= thresholds.waistHipP75) {
-    return { bodyShape: "straight-round", bodyShapeSource: "waist-hip-width-proxy" };
-  }
-  if (waistHip <= thresholds.waistHipP25) {
-    return { bodyShape: "curvy-hourglass", bodyShapeSource: "waist-hip-width-proxy" };
-  }
+  if (waistHip >= thresholds.waistHipP75) return { bodyShape: "straight-round", bodyShapeSource: "waist-hip-width-proxy" };
+  if (waistHip <= thresholds.waistHipP25) return { bodyShape: "curvy-hourglass", bodyShapeSource: "waist-hip-width-proxy" };
   return { bodyShape: "average", bodyShapeSource: "waist-hip-width-proxy" };
+}
+
+function resolveRowWidth(args: {
+  rowKind: DepthRatioTableRowKind;
+  waistWidthCm?: number | null;
+  trouserWidthCm?: number | null;
+  hipWidthCm?: number | null;
+}): number | null {
+  if (args.rowKind === "waist") return args.waistWidthCm ?? null;
+  if (args.rowKind === "trouserWaist") return args.trouserWidthCm ?? null;
+  return args.hipWidthCm ?? null;
 }
 
 export function estimateDepthRatioFromTable(args: {
   rowKind: DepthRatioTableRowKind;
   gender: Gender;
   bmi: number;
+  heightCm?: number | null;
   waistWidthCm?: number | null;
+  trouserWidthCm?: number | null;
   hipWidthCm?: number | null;
   shoulderWidthCm?: number | null;
 }): DepthRatioTableEstimate | null {
-  if (!Number.isFinite(args.bmi) || args.bmi <= 0) return null;
-  const part = resolvePart(args.rowKind);
-  const band = findBand(args.gender, args.bmi);
-  const stats = band[part];
+  if (!Number.isFinite(args.bmi) || args.bmi <= 0 || !args.heightCm || args.heightCm <= 0) return null;
+  const rowWidthCm = resolveRowWidth(args);
+  if (!rowWidthCm || rowWidthCm <= 0) return null;
+
+  const model = WEAR_FORMULAS[args.gender][args.rowKind];
+  const inputs: Record<WearFormulaFeature, number> = {
+    bmi: args.bmi,
+    rowWidthToHeight: rowWidthCm / args.heightCm,
+    waistToHipWidth: args.waistWidthCm && args.hipWidthCm && args.hipWidthCm > 0
+      ? args.waistWidthCm / args.hipWidthCm
+      : 1,
+  };
+  const formulaTerms = (Object.entries(model.features) as Array<[WearFormulaFeature, FormulaFeatureConfig]>)
+    .map(([feature, config]) => {
+      const input = inputs[feature];
+      return {
+        feature,
+        label: FEATURE_LABELS[feature],
+        input: round(input, 5),
+        center: round(config.center, 5),
+        coefficient: round(config.coefficient, 5),
+        contribution: round(config.coefficient * (input - config.center), 5),
+        trainingP05: round(config.p05, 5),
+        trainingP95: round(config.p95, 5),
+        insideTrainingRange: input >= config.p05 && input <= config.p95,
+      };
+    });
+  const rawDepthRatio = model.intercept + formulaTerms.reduce((sum, term) => sum + term.contribution, 0);
+  const depthRatio = clamp(rawDepthRatio, model.supportedMin, model.supportedMax);
+  const outOfRange = formulaTerms.filter((term) => !term.insideTrainingRange);
+  const limitedStudy = model.trainingSurveys.length < 3;
+  const confidence: DepthRatioTableEstimate["confidence"] = outOfRange.length
+    ? "outside-study-range"
+    : limitedStudy
+      ? "limited-study"
+      : "study-supported";
   const shape = classifyBodyShape(args);
-  const shapeOffset = SHAPE_OFFSETS[args.gender][shape.bodyShape][part];
-  const p10 = round(stats.p10 + shapeOffset);
-  const median = round(stats.median + shapeOffset);
-  const p90 = round(stats.p90 + shapeOffset);
-  const upperSafeRatio = round(median + ((p90 - median) * 0.75));
-  const depthRatio = round(clamp(upperSafeRatio, p10, p90));
+  const predictionLow = clamp(depthRatio - model.validationP90AbsError, model.supportedMin, model.supportedMax);
+  const predictionHigh = clamp(depthRatio + model.validationP90AbsError, model.supportedMin, model.supportedMax);
   const notes = [
-    "ANSUR II empirical breadth-depth ratio; test-lab prior only.",
-    "Selected depthRatio is upper-safe: median + 75% of the median-to-P90 gap.",
+    "WEAR 1D regression target is measured front-to-back depth divided by measured front breadth.",
+    "Shane 2 and Nadia are holdout checks only; their saved ratios are not formula inputs.",
     args.rowKind === "trouserWaist"
-      ? "ANSUR has no separate trouser-waist plane; using waist/navel proxy."
+      ? "Trouser waist is the weakest row: WEAR uses an abdominal/stomach proxy, not an exact trouser-band plane."
       : "",
-    shape.bodyShapeSource === "waist-hip-width-proxy"
-      ? "Body-shape class is inferred from waist/hip widths only; shoulder width is unavailable here."
-      : "",
+    limitedStudy ? `Limited source diversity: ${model.trainingSurveys.length} survey${model.trainingSurveys.length === 1 ? "" : "s"}.` : "",
+    outOfRange.length ? `Outside the central WEAR range for: ${outOfRange.map((term) => term.label).join(", ")}.` : "",
+    rawDepthRatio !== depthRatio ? "Raw prediction was clamped to the observed WEAR support range." : "",
   ].filter(Boolean);
 
   return {
-    source: "ANSUR-II empirical depth-ratio table v0",
-    part,
+    source: "WEAR 1D measured depth-ratio regression v1",
+    part: resolvePart(args.rowKind),
     rowKind: args.rowKind,
     gender: args.gender,
     bmi: round(args.bmi, 1),
-    bmiBand: band.label,
+    bmiBand: confidence === "outside-study-range" ? "outside central WEAR range" : "inside central WEAR range",
     bodyShape: shape.bodyShape,
     bodyShapeSource: shape.bodyShapeSource,
-    depthRatioP10: p10,
-    depthRatioMedian: median,
-    depthRatioP90: p90,
-    depthRatioPolicy: "upper-safe-median-to-p90",
-    shapeOffset: round(shapeOffset),
-    depthRatio,
+    depthRatioP10: round(predictionLow),
+    depthRatioMedian: round(depthRatio),
+    depthRatioP90: round(predictionHigh),
+    depthRatioPolicy: "wear-linear-regression",
+    shapeOffset: 0,
+    depthRatio: round(depthRatio),
+    rawDepthRatio: round(rawDepthRatio, 5),
+    supportedMin: round(model.supportedMin),
+    supportedMax: round(model.supportedMax),
+    formulaIntercept: round(model.intercept, 5),
+    formulaTerms,
+    trainingSubjects: model.trainingSubjects,
+    trainingSurveys: model.trainingSurveys,
+    validationMethod: model.validationMethod,
+    validationMae: round(model.validationMae, 4),
+    validationP90AbsError: round(model.validationP90AbsError, 4),
+    confidence,
     notes,
   };
 }
