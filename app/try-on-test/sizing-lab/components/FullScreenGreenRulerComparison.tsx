@@ -316,7 +316,7 @@ export function FullScreenGreenRulerComparison({
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-700 text-[10px] font-semibold text-white">{index + 1}</span>
                     <span>
                       <span className="block text-[11px] font-medium text-slate-900">{label}</span>
-                      <span className="block text-[9px] text-slate-500">WEAR estimate · 90% about ±{row.validationP90At170Cm?.toFixed(1) ?? "n/a"} cm</span>
+                      <span className="block text-[9px] text-slate-500">ML guess · historical test: 90% within {row.validationP90At170Cm?.toFixed(1) ?? "n/a"} cm</span>
                     </span>
                     <span className="text-right font-mono">
                       <span className="block text-base font-semibold text-slate-950">{heightFromFloorCm.toFixed(1)} cm</span>

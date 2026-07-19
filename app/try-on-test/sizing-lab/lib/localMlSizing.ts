@@ -14,6 +14,16 @@ export type LocalMlModelStage = "wear-1d-row-prior" | "front-multitask-3d";
 
 export type LocalMlRunStatus = "idle" | "checking" | "waiting-for-checkpoint" | "predicting" | "ready" | "error";
 
+export interface LocalMlWearReferenceCohort {
+  gender: "male" | "female";
+  averageHeightCm: number;
+  averageBmi: number;
+  sampleCount: number;
+  measuredHeightFromFloorCm: number;
+  sourceColumn: string;
+  genderMatched: boolean;
+}
+
 export interface LocalMlModelStatusResponse {
   ok: boolean;
   localOnly: true;
@@ -44,6 +54,8 @@ export interface LocalMlNormalizedRowPrediction {
   validationMaeAt170Cm?: number;
   validationP90At170Cm?: number;
   definition?: string;
+  /** Anonymous aggregate shown for explanation only; never used to calculate the row. */
+  referenceCohort?: LocalMlWearReferenceCohort;
 }
 
 export interface LocalMlPredictionResponse {

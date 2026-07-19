@@ -1,6 +1,6 @@
 {
   "version": "wear-1d-row-prior-v1",
-  "generatedAt": "2026-07-19T12:51:34.350563+00:00",
+  "generatedAt": "2026-07-19T19:04:21.598013+00:00",
   "localOnly": true,
   "source": "licensed WEAR 1D survey CSV files",
   "task": "vertical anatomical row prior only",
@@ -21,11 +21,36 @@
     "Trouser waist uses abdominal-extension height as an anatomical proxy, not a garment waistband definition.",
     "The source surveys are historical and many are military; confidence must remain visible."
   ],
+  "scan": {
+    "csvFiles": 70,
+    "eligibleSurveyFiles": 13,
+    "skipped": {
+      "derived_or_overlapping_survey": 7,
+      "gender_not_explicit": 28,
+      "no_supported_row_height": 9,
+      "child_or_youth_survey": 3,
+      "missing_stature_or_weight": 10
+    }
+  },
   "rows": {
     "waist": {
       "definition": "standing natural-waist height converted to top-to-bottom stature fraction",
       "sampleCount": 12358,
       "surveyCount": 12,
+      "surveys": [
+        "Anthropometric Survey of Gurkhas 1976",
+        "Anthropometric Survey of Royal Transport Corpsmen 1976",
+        "Army Aviators 1970",
+        "Navy Females Survey 1988",
+        "SURVEY OF AIR FORCE WOMEN 1968",
+        "Survey of Army Aviators 1959",
+        "Survey of Army Female Separatees 1946",
+        "Survey of English Guardsmen 1975",
+        "Survey of U.S. Civilian Miners  Female 1981",
+        "Survey of U.S. Civilian Miners  Male 1981",
+        "Survey of US Army Women - File #2 1977",
+        "Survey of US Army Women - File #7 1977"
+      ],
       "genderCounts": {
         "male": 2576,
         "female": 9782
@@ -50,14 +75,951 @@
       },
       "outputMin": 0.3425076452599388,
       "outputMax": 0.4282021239051622,
+      "trainingMaeFraction": 0.011755531264349523,
       "validationMode": "leave-one-survey-out",
+      "validationCount": 12358,
+      "validationMaeFraction": 0.014158503271161168,
+      "validationP90Fraction": 0.028460603537031223,
       "validationMaeAt170Cm": 2.4069455560973987,
-      "validationP90At170Cm": 4.838302601295307
+      "validationP90At170Cm": 4.838302601295307,
+      "referenceCohorts": [
+        {
+          "gender": "female",
+          "averageHeightCm": 145.67777777777778,
+          "averageBmi": 25.96591985864009,
+          "sampleCount": 9,
+          "measuredHeightFromFloorCm": 90.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 145.96363636363637,
+          "averageBmi": 22.121860833813074,
+          "sampleCount": 11,
+          "measuredHeightFromFloorCm": 90.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 146.34285714285716,
+          "averageBmi": 20.557896661581257,
+          "sampleCount": 7,
+          "measuredHeightFromFloorCm": 90.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 146.5125,
+          "averageBmi": 23.88132244299512,
+          "sampleCount": 8,
+          "measuredHeightFromFloorCm": 90.05000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 150.49166666666667,
+          "averageBmi": 27.823022533135205,
+          "sampleCount": 36,
+          "measuredHeightFromFloorCm": 94.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 150.66190476190476,
+          "averageBmi": 18.604852427619246,
+          "sampleCount": 21,
+          "measuredHeightFromFloorCm": 93.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 150.72062499999998,
+          "averageBmi": 21.95522647389695,
+          "sampleCount": 160,
+          "measuredHeightFromFloorCm": 93.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 150.73333333333332,
+          "averageBmi": 29.662192976515726,
+          "sampleCount": 15,
+          "measuredHeightFromFloorCm": 93.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 150.818320610687,
+          "averageBmi": 23.895335674474044,
+          "sampleCount": 131,
+          "measuredHeightFromFloorCm": 93.70000000000002,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 150.8277027027027,
+          "averageBmi": 20.13427698757781,
+          "sampleCount": 148,
+          "measuredHeightFromFloorCm": 93.89999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 150.90714285714284,
+          "averageBmi": 25.938117856374124,
+          "sampleCount": 77,
+          "measuredHeightFromFloorCm": 94.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 151.61111111111111,
+          "averageBmi": 31.623286452315465,
+          "sampleCount": 9,
+          "measuredHeightFromFloorCm": 94.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.03333333333333,
+          "averageBmi": 31.902365690521766,
+          "sampleCount": 15,
+          "measuredHeightFromFloorCm": 98.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.0470588235294,
+          "averageBmi": 30.02153531496951,
+          "sampleCount": 51,
+          "measuredHeightFromFloorCm": 97.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.29438202247192,
+          "averageBmi": 27.978905609625937,
+          "sampleCount": 89,
+          "measuredHeightFromFloorCm": 97.50000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.29901685393259,
+          "averageBmi": 21.968500911338094,
+          "sampleCount": 356,
+          "measuredHeightFromFloorCm": 96.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.30866873065014,
+          "averageBmi": 20.06501177937088,
+          "sampleCount": 323,
+          "measuredHeightFromFloorCm": 96.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.31452513966477,
+          "averageBmi": 25.84318708735668,
+          "sampleCount": 179,
+          "measuredHeightFromFloorCm": 97.19999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.32628865979382,
+          "averageBmi": 23.984983966452475,
+          "sampleCount": 291,
+          "measuredHeightFromFloorCm": 96.8,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.34190476190477,
+          "averageBmi": 18.31490860036336,
+          "sampleCount": 105,
+          "measuredHeightFromFloorCm": 96.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.88333333333333,
+          "averageBmi": 15.897370383861146,
+          "sampleCount": 12,
+          "measuredHeightFromFloorCm": 99.0,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.00410094637226,
+          "averageBmi": 25.886033273241033,
+          "sampleCount": 317,
+          "measuredHeightFromFloorCm": 100.50000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.06875,
+          "averageBmi": 31.73288070969762,
+          "sampleCount": 48,
+          "measuredHeightFromFloorCm": 101.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.09465206185564,
+          "averageBmi": 21.98460987131491,
+          "sampleCount": 776,
+          "measuredHeightFromFloorCm": 100.10000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.09651162790698,
+          "averageBmi": 29.876714996663026,
+          "sampleCount": 86,
+          "measuredHeightFromFloorCm": 100.50000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.12562814070353,
+          "averageBmi": 23.92452516878598,
+          "sampleCount": 597,
+          "measuredHeightFromFloorCm": 100.49999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.13351648351647,
+          "averageBmi": 27.842483407544364,
+          "sampleCount": 182,
+          "measuredHeightFromFloorCm": 101.0,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.15305343511451,
+          "averageBmi": 20.050112624898,
+          "sampleCount": 655,
+          "measuredHeightFromFloorCm": 100.1,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.24756097560973,
+          "averageBmi": 18.240212965121753,
+          "sampleCount": 246,
+          "measuredHeightFromFloorCm": 100.25,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.39999999999998,
+          "averageBmi": 15.969398397084895,
+          "sampleCount": 31,
+          "measuredHeightFromFloorCm": 100.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.72727272727272,
+          "averageBmi": 16.149597609811416,
+          "sampleCount": 22,
+          "measuredHeightFromFloorCm": 103.55,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.74308943089426,
+          "averageBmi": 27.853496260968928,
+          "sampleCount": 123,
+          "measuredHeightFromFloorCm": 104.49999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.8146153846154,
+          "averageBmi": 29.879540879873602,
+          "sampleCount": 65,
+          "measuredHeightFromFloorCm": 104.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.83649999999997,
+          "averageBmi": 18.22450488840444,
+          "sampleCount": 200,
+          "measuredHeightFromFloorCm": 103.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.8518558951965,
+          "averageBmi": 23.937294279710038,
+          "sampleCount": 458,
+          "measuredHeightFromFloorCm": 103.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.93234200743495,
+          "averageBmi": 25.935415712264167,
+          "sampleCount": 269,
+          "measuredHeightFromFloorCm": 103.7,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.94335548172756,
+          "averageBmi": 21.98056878981605,
+          "sampleCount": 602,
+          "measuredHeightFromFloorCm": 103.1,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.97857142857146,
+          "averageBmi": 31.74366455182613,
+          "sampleCount": 28,
+          "measuredHeightFromFloorCm": 104.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.99199584199587,
+          "averageBmi": 20.077249288981186,
+          "sampleCount": 481,
+          "measuredHeightFromFloorCm": 103.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.44568965517243,
+          "averageBmi": 29.821041922612,
+          "sampleCount": 58,
+          "measuredHeightFromFloorCm": 108.0,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.49294117647057,
+          "averageBmi": 27.92792040791781,
+          "sampleCount": 85,
+          "measuredHeightFromFloorCm": 106.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.54137931034487,
+          "averageBmi": 16.155177248687433,
+          "sampleCount": 29,
+          "measuredHeightFromFloorCm": 107.49999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.57961876832846,
+          "averageBmi": 23.860615867450633,
+          "sampleCount": 341,
+          "measuredHeightFromFloorCm": 106.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.58340380549683,
+          "averageBmi": 22.000566328634086,
+          "sampleCount": 473,
+          "measuredHeightFromFloorCm": 106.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.59887005649716,
+          "averageBmi": 18.24731018933782,
+          "sampleCount": 177,
+          "measuredHeightFromFloorCm": 106.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.60293453724606,
+          "averageBmi": 20.04613737743643,
+          "sampleCount": 443,
+          "measuredHeightFromFloorCm": 106.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.64367088607594,
+          "averageBmi": 25.814196047424584,
+          "sampleCount": 158,
+          "measuredHeightFromFloorCm": 107.35,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.70833333333334,
+          "averageBmi": 32.02039670640924,
+          "sampleCount": 12,
+          "measuredHeightFromFloorCm": 108.0,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 173.79999999999998,
+          "averageBmi": 16.039736771283355,
+          "sampleCount": 7,
+          "measuredHeightFromFloorCm": 110.99999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.54042553191488,
+          "averageBmi": 25.943399383448305,
+          "sampleCount": 47,
+          "measuredHeightFromFloorCm": 110.49999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.5577464788732,
+          "averageBmi": 21.93069291810629,
+          "sampleCount": 142,
+          "measuredHeightFromFloorCm": 110.35000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.63302752293578,
+          "averageBmi": 23.852420429637952,
+          "sampleCount": 109,
+          "measuredHeightFromFloorCm": 110.3,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.6625,
+          "averageBmi": 32.02069551656928,
+          "sampleCount": 8,
+          "measuredHeightFromFloorCm": 112.50000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.71521739130435,
+          "averageBmi": 18.365905274882856,
+          "sampleCount": 46,
+          "measuredHeightFromFloorCm": 110.44999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.73333333333332,
+          "averageBmi": 28.039330538384103,
+          "sampleCount": 30,
+          "measuredHeightFromFloorCm": 109.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.75555555555556,
+          "averageBmi": 30.130794070153442,
+          "sampleCount": 9,
+          "measuredHeightFromFloorCm": 111.49999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.77272727272728,
+          "averageBmi": 20.149631041930064,
+          "sampleCount": 143,
+          "measuredHeightFromFloorCm": 110.00000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 179.08684210526317,
+          "averageBmi": 20.17156742174501,
+          "sampleCount": 38,
+          "measuredHeightFromFloorCm": 112.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 179.1795918367347,
+          "averageBmi": 21.71579343321714,
+          "sampleCount": 49,
+          "measuredHeightFromFloorCm": 113.0,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 179.36999999999998,
+          "averageBmi": 25.899934358377454,
+          "sampleCount": 20,
+          "measuredHeightFromFloorCm": 111.45,
+          "sourceColumn": "WAIST HT NATURAL"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 179.52499999999998,
+          "averageBmi": 18.28208026880724,
+          "sampleCount": 12,
+          "measuredHeightFromFloorCm": 113.05,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 179.79487179487185,
+          "averageBmi": 23.93895292915435,
+          "sampleCount": 39,
+          "measuredHeightFromFloorCm": 113.10000000000001,
+          "sourceColumn": "WAIST HT NATURAL"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 180.36666666666667,
+          "averageBmi": 27.827045498358153,
+          "sampleCount": 9,
+          "measuredHeightFromFloorCm": 109.39999999999999,
+          "sourceColumn": "WAIST HT NATURAL"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 183.95999999999998,
+          "averageBmi": 23.712649420961444,
+          "sampleCount": 5,
+          "measuredHeightFromFloorCm": 111.5,
+          "sourceColumn": "WAIST HT NATURAL"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 184.42222222222222,
+          "averageBmi": 20.15219768481451,
+          "sampleCount": 9,
+          "measuredHeightFromFloorCm": 116.0,
+          "sourceColumn": "WAIST HT NATURAL"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 155.23333333333332,
+          "averageBmi": 25.90747753984407,
+          "sampleCount": 6,
+          "measuredHeightFromFloorCm": 90.0,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 156.20000000000002,
+          "averageBmi": 23.88829471295719,
+          "sampleCount": 6,
+          "measuredHeightFromFloorCm": 91.25,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 160.01176470588234,
+          "averageBmi": 25.83166311322968,
+          "sampleCount": 17,
+          "measuredHeightFromFloorCm": 95.0,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 160.428,
+          "averageBmi": 22.24687378487603,
+          "sampleCount": 25,
+          "measuredHeightFromFloorCm": 94.80000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 160.44642857142858,
+          "averageBmi": 23.929898628597766,
+          "sampleCount": 28,
+          "measuredHeightFromFloorCm": 93.2,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 160.76875,
+          "averageBmi": 27.798470549047572,
+          "sampleCount": 16,
+          "measuredHeightFromFloorCm": 95.80000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 161.64999999999998,
+          "averageBmi": 20.374616029707827,
+          "sampleCount": 6,
+          "measuredHeightFromFloorCm": 96.75,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 165.1909090909091,
+          "averageBmi": 29.720137128815566,
+          "sampleCount": 22,
+          "measuredHeightFromFloorCm": 97.4,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 165.25483870967744,
+          "averageBmi": 22.07471636332587,
+          "sampleCount": 62,
+          "measuredHeightFromFloorCm": 98.15,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 165.26000000000002,
+          "averageBmi": 25.995608463845553,
+          "sampleCount": 60,
+          "measuredHeightFromFloorCm": 99.15,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 165.2685714285714,
+          "averageBmi": 27.871484778124554,
+          "sampleCount": 35,
+          "measuredHeightFromFloorCm": 98.6,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 165.28333333333333,
+          "averageBmi": 20.214143064003327,
+          "sampleCount": 12,
+          "measuredHeightFromFloorCm": 97.6,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 165.3016666666667,
+          "averageBmi": 23.85566468315807,
+          "sampleCount": 60,
+          "measuredHeightFromFloorCm": 98.75,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 165.38888888888889,
+          "averageBmi": 15.579981747752818,
+          "sampleCount": 9,
+          "measuredHeightFromFloorCm": 100.1,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 165.68,
+          "averageBmi": 32.04861067950463,
+          "sampleCount": 10,
+          "measuredHeightFromFloorCm": 96.45,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 169.89090909090908,
+          "averageBmi": 24.000705095883728,
+          "sampleCount": 143,
+          "measuredHeightFromFloorCm": 102.19999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 170.1,
+          "averageBmi": 29.897721905168147,
+          "sampleCount": 49,
+          "measuredHeightFromFloorCm": 101.6,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 170.15714285714284,
+          "averageBmi": 16.0357503106601,
+          "sampleCount": 7,
+          "measuredHeightFromFloorCm": 99.39999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 170.28349514563106,
+          "averageBmi": 22.150346341617894,
+          "sampleCount": 103,
+          "measuredHeightFromFloorCm": 102.00000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 170.30107526881721,
+          "averageBmi": 27.923324520085178,
+          "sampleCount": 93,
+          "measuredHeightFromFloorCm": 102.60000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 170.40604026845637,
+          "averageBmi": 26.046852894965838,
+          "sampleCount": 149,
+          "measuredHeightFromFloorCm": 102.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 170.45714285714286,
+          "averageBmi": 31.94550105504468,
+          "sampleCount": 14,
+          "measuredHeightFromFloorCm": 102.9,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 170.62727272727273,
+          "averageBmi": 20.095543080577198,
+          "sampleCount": 44,
+          "measuredHeightFromFloorCm": 103.39999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 174.58666666666667,
+          "averageBmi": 31.838250778790655,
+          "sampleCount": 15,
+          "measuredHeightFromFloorCm": 105.0,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 174.81512605042016,
+          "averageBmi": 22.1180556173721,
+          "sampleCount": 119,
+          "measuredHeightFromFloorCm": 105.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 174.8281690140845,
+          "averageBmi": 25.964751129167045,
+          "sampleCount": 142,
+          "measuredHeightFromFloorCm": 105.45,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 174.88644067796605,
+          "averageBmi": 27.87585493973145,
+          "sampleCount": 118,
+          "measuredHeightFromFloorCm": 106.19999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 174.97049180327863,
+          "averageBmi": 29.902444238287778,
+          "sampleCount": 61,
+          "measuredHeightFromFloorCm": 105.49999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 175.02470588235292,
+          "averageBmi": 23.99737596587871,
+          "sampleCount": 170,
+          "measuredHeightFromFloorCm": 106.10000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 175.05517241379312,
+          "averageBmi": 20.155368281587197,
+          "sampleCount": 58,
+          "measuredHeightFromFloorCm": 106.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 175.14615384615385,
+          "averageBmi": 18.301770051556225,
+          "sampleCount": 13,
+          "measuredHeightFromFloorCm": 105.7,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 175.8,
+          "averageBmi": 15.73645151562076,
+          "sampleCount": 11,
+          "measuredHeightFromFloorCm": 106.0,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 179.51041666666666,
+          "averageBmi": 27.901479234874074,
+          "sampleCount": 96,
+          "measuredHeightFromFloorCm": 108.80000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 179.63986486486485,
+          "averageBmi": 24.068324421236376,
+          "sampleCount": 148,
+          "measuredHeightFromFloorCm": 108.75,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 179.68014184397165,
+          "averageBmi": 25.9697975568579,
+          "sampleCount": 141,
+          "measuredHeightFromFloorCm": 109.10000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 179.775,
+          "averageBmi": 29.83843354772648,
+          "sampleCount": 32,
+          "measuredHeightFromFloorCm": 109.1,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 179.85,
+          "averageBmi": 18.05597652878484,
+          "sampleCount": 8,
+          "measuredHeightFromFloorCm": 110.8,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 179.91428571428565,
+          "averageBmi": 32.14981481329925,
+          "sampleCount": 14,
+          "measuredHeightFromFloorCm": 109.05,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 179.96635514018692,
+          "averageBmi": 22.107387380200457,
+          "sampleCount": 107,
+          "measuredHeightFromFloorCm": 109.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 180.07857142857142,
+          "averageBmi": 20.218780754894986,
+          "sampleCount": 42,
+          "measuredHeightFromFloorCm": 109.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 183.86315789473687,
+          "averageBmi": 29.800971905102198,
+          "sampleCount": 19,
+          "measuredHeightFromFloorCm": 114.20000000000002,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 184.18913043478258,
+          "averageBmi": 25.947412450227556,
+          "sampleCount": 46,
+          "measuredHeightFromFloorCm": 111.5,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 184.25079365079364,
+          "averageBmi": 23.950093694868514,
+          "sampleCount": 63,
+          "measuredHeightFromFloorCm": 112.10000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 184.41428571428568,
+          "averageBmi": 22.07385640408698,
+          "sampleCount": 28,
+          "measuredHeightFromFloorCm": 112.0,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 184.5142857142857,
+          "averageBmi": 20.185235671657512,
+          "sampleCount": 21,
+          "measuredHeightFromFloorCm": 112.10000000000001,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 184.735,
+          "averageBmi": 27.732906260347836,
+          "sampleCount": 20,
+          "measuredHeightFromFloorCm": 112.15,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 188.76666666666668,
+          "averageBmi": 20.486651114388376,
+          "sampleCount": 9,
+          "measuredHeightFromFloorCm": 115.69999999999999,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 189.38333333333333,
+          "averageBmi": 25.802751261987808,
+          "sampleCount": 12,
+          "measuredHeightFromFloorCm": 116.25,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 189.50000000000003,
+          "averageBmi": 24.13355481010061,
+          "sampleCount": 25,
+          "measuredHeightFromFloorCm": 116.3,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 189.83333333333334,
+          "averageBmi": 22.361770617120026,
+          "sampleCount": 12,
+          "measuredHeightFromFloorCm": 115.25,
+          "sourceColumn": "WAIST HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 195.58,
+          "averageBmi": 22.525822815073024,
+          "sampleCount": 5,
+          "measuredHeightFromFloorCm": 115.4,
+          "sourceColumn": "WAIST HEIGHT"
+        }
+      ]
     },
     "trouserWaist": {
       "definition": "abdominal-extension height proxy converted to top-to-bottom stature fraction",
       "sampleCount": 1903,
       "surveyCount": 1,
+      "surveys": [
+        "SURVEY OF AIR FORCE WOMEN 1968"
+      ],
       "genderCounts": {
         "female": 1903
       },
@@ -80,14 +1042,290 @@
       },
       "outputMin": 0.395469447648642,
       "outputMax": 0.4538010955659191,
+      "trainingMaeFraction": 0.009396773187300717,
       "validationMode": "subject-hash-80-20",
+      "validationCount": 368,
+      "validationMaeFraction": 0.009472921694668651,
+      "validationP90Fraction": 0.01948029690600221,
       "validationMaeAt170Cm": 1.6103966880936706,
-      "validationP90At170Cm": 3.3116504740203756
+      "validationP90At170Cm": 3.3116504740203756,
+      "referenceCohorts": [
+        {
+          "gender": "female",
+          "averageHeightCm": 150.70476190476188,
+          "averageBmi": 23.73042022372397,
+          "sampleCount": 21,
+          "measuredHeightFromFloorCm": 85.3,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 150.93103448275863,
+          "averageBmi": 21.906968894422295,
+          "sampleCount": 29,
+          "measuredHeightFromFloorCm": 86.0,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 151.05517241379312,
+          "averageBmi": 20.09416563140077,
+          "sampleCount": 29,
+          "measuredHeightFromFloorCm": 86.4,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 151.2111111111111,
+          "averageBmi": 25.66099756675084,
+          "sampleCount": 9,
+          "measuredHeightFromFloorCm": 85.4,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.33731343283583,
+          "averageBmi": 23.88909527936217,
+          "sampleCount": 67,
+          "measuredHeightFromFloorCm": 88.3,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.38796296296294,
+          "averageBmi": 21.97118917741919,
+          "sampleCount": 108,
+          "measuredHeightFromFloorCm": 88.94999999999999,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.41666666666666,
+          "averageBmi": 20.07758073709619,
+          "sampleCount": 96,
+          "measuredHeightFromFloorCm": 88.95,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.48125,
+          "averageBmi": 25.821975668585118,
+          "sampleCount": 32,
+          "measuredHeightFromFloorCm": 87.8,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.66250000000002,
+          "averageBmi": 18.320507938139485,
+          "sampleCount": 32,
+          "measuredHeightFromFloorCm": 89.0,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.94999999999996,
+          "averageBmi": 28.2757034492051,
+          "sampleCount": 6,
+          "measuredHeightFromFloorCm": 88.35000000000002,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 159.5,
+          "averageBmi": 27.941277290892288,
+          "sampleCount": 7,
+          "measuredHeightFromFloorCm": 89.1,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.01666666666668,
+          "averageBmi": 25.8317870739605,
+          "sampleCount": 24,
+          "measuredHeightFromFloorCm": 91.6,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.04519230769236,
+          "averageBmi": 21.957501909022294,
+          "sampleCount": 208,
+          "measuredHeightFromFloorCm": 91.80000000000001,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.13333333333333,
+          "averageBmi": 29.779749706909303,
+          "sampleCount": 6,
+          "measuredHeightFromFloorCm": 92.05,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.16315789473683,
+          "averageBmi": 23.848922912559505,
+          "sampleCount": 114,
+          "measuredHeightFromFloorCm": 91.7,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.22272727272727,
+          "averageBmi": 18.23464974961696,
+          "sampleCount": 44,
+          "measuredHeightFromFloorCm": 92.0,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.2535519125683,
+          "averageBmi": 20.09210197014723,
+          "sampleCount": 183,
+          "measuredHeightFromFloorCm": 92.1,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.73488372093027,
+          "averageBmi": 18.233335806633907,
+          "sampleCount": 43,
+          "measuredHeightFromFloorCm": 94.7,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.73571428571427,
+          "averageBmi": 25.781520673845677,
+          "sampleCount": 42,
+          "measuredHeightFromFloorCm": 94.6,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.75454545454545,
+          "averageBmi": 23.91397782001816,
+          "sampleCount": 99,
+          "measuredHeightFromFloorCm": 94.39999999999999,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.80666666666664,
+          "averageBmi": 21.960712623477118,
+          "sampleCount": 180,
+          "measuredHeightFromFloorCm": 95.0,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 165.10943396226415,
+          "averageBmi": 20.144534799099038,
+          "sampleCount": 106,
+          "measuredHeightFromFloorCm": 95.2,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 165.275,
+          "averageBmi": 27.76811573471359,
+          "sampleCount": 8,
+          "measuredHeightFromFloorCm": 94.6,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.39642857142857,
+          "averageBmi": 18.307945755464917,
+          "sampleCount": 28,
+          "measuredHeightFromFloorCm": 97.3,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.42359550561798,
+          "averageBmi": 22.10941703831642,
+          "sampleCount": 89,
+          "measuredHeightFromFloorCm": 98.00000000000001,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.4523076923077,
+          "averageBmi": 23.81982785021715,
+          "sampleCount": 65,
+          "measuredHeightFromFloorCm": 97.99999999999999,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.5372093023256,
+          "averageBmi": 20.084624823580835,
+          "sampleCount": 86,
+          "measuredHeightFromFloorCm": 98.35,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.70526315789473,
+          "averageBmi": 25.689403627754487,
+          "sampleCount": 19,
+          "measuredHeightFromFloorCm": 96.89999999999999,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.9,
+          "averageBmi": 28.18379861710529,
+          "sampleCount": 8,
+          "measuredHeightFromFloorCm": 94.4,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 173.84444444444443,
+          "averageBmi": 24.043866530998983,
+          "sampleCount": 9,
+          "measuredHeightFromFloorCm": 101.60000000000001,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.23157894736843,
+          "averageBmi": 21.856158500317132,
+          "sampleCount": 19,
+          "measuredHeightFromFloorCm": 100.9,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.44615384615383,
+          "averageBmi": 20.38447091858162,
+          "sampleCount": 26,
+          "measuredHeightFromFloorCm": 101.75,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 175.05714285714288,
+          "averageBmi": 17.996004760366734,
+          "sampleCount": 7,
+          "measuredHeightFromFloorCm": 101.9,
+          "sourceColumn": "ABDOMINAL EXT HGT"
+        }
+      ]
     },
     "hips": {
       "definition": "standing buttock-height landmark converted to top-to-bottom stature fraction",
       "sampleCount": 3824,
       "surveyCount": 4,
+      "surveys": [
+        "Israeli Aircrewmen Survey 1981",
+        "SURVEY OF AIR FORCE WOMEN 1968",
+        "Survey of US Army Women - File #2 1977",
+        "Survey of US Army Women - File #7 1977"
+      ],
       "genderCounts": {
         "male": 360,
         "female": 3464
@@ -111,9 +1349,543 @@
       },
       "outputMin": 0.4497792504786669,
       "outputMax": 0.5225117234498342,
+      "trainingMaeFraction": 0.011563922953178247,
       "validationMode": "leave-one-survey-out",
+      "validationCount": 3824,
+      "validationMaeFraction": 0.012398990058683453,
+      "validationP90Fraction": 0.025754646978459386,
       "validationMaeAt170Cm": 2.107828309976187,
-      "validationP90At170Cm": 4.378289986338095
+      "validationP90At170Cm": 4.378289986338095,
+      "referenceCohorts": [
+        {
+          "gender": "female",
+          "averageHeightCm": 149.34,
+          "averageBmi": 27.569252709013064,
+          "sampleCount": 5,
+          "measuredHeightFromFloorCm": 76.60000000000001,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 150.64857142857142,
+          "averageBmi": 23.926213994520918,
+          "sampleCount": 35,
+          "measuredHeightFromFloorCm": 75.5,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 150.725,
+          "averageBmi": 21.88673948419561,
+          "sampleCount": 40,
+          "measuredHeightFromFloorCm": 75.6,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 150.77551020408163,
+          "averageBmi": 20.135468794980177,
+          "sampleCount": 49,
+          "measuredHeightFromFloorCm": 76.10000000000001,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 151.14166666666668,
+          "averageBmi": 25.588927546729646,
+          "sampleCount": 12,
+          "measuredHeightFromFloorCm": 75.85,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 151.20000000000002,
+          "averageBmi": 18.744812263253085,
+          "sampleCount": 7,
+          "measuredHeightFromFloorCm": 76.4,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.31666666666666,
+          "averageBmi": 27.97134847493091,
+          "sampleCount": 12,
+          "measuredHeightFromFloorCm": 78.6,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.36810344827583,
+          "averageBmi": 23.952282276222938,
+          "sampleCount": 116,
+          "measuredHeightFromFloorCm": 79.0,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.37437500000001,
+          "averageBmi": 21.992077940181495,
+          "sampleCount": 160,
+          "measuredHeightFromFloorCm": 78.1,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.41164383561642,
+          "averageBmi": 20.08724434027205,
+          "sampleCount": 146,
+          "measuredHeightFromFloorCm": 78.5,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.41875000000002,
+          "averageBmi": 18.254255828778817,
+          "sampleCount": 48,
+          "measuredHeightFromFloorCm": 78.80000000000001,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 155.4333333333333,
+          "averageBmi": 25.820362885784323,
+          "sampleCount": 51,
+          "measuredHeightFromFloorCm": 78.99999999999999,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 159.6,
+          "averageBmi": 27.89320069151608,
+          "sampleCount": 19,
+          "measuredHeightFromFloorCm": 82.0,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 159.74000000000004,
+          "averageBmi": 25.75796264171221,
+          "sampleCount": 70,
+          "measuredHeightFromFloorCm": 81.4,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.09272151898733,
+          "averageBmi": 22.00321329304268,
+          "sampleCount": 316,
+          "measuredHeightFromFloorCm": 81.0,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.09504504504503,
+          "averageBmi": 23.861582829422883,
+          "sampleCount": 222,
+          "measuredHeightFromFloorCm": 81.5,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.20491803278688,
+          "averageBmi": 20.105693564265458,
+          "sampleCount": 244,
+          "measuredHeightFromFloorCm": 81.3,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.2166666666667,
+          "averageBmi": 18.28811192328017,
+          "sampleCount": 78,
+          "measuredHeightFromFloorCm": 80.5,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 160.44545454545457,
+          "averageBmi": 29.88632055221061,
+          "sampleCount": 11,
+          "measuredHeightFromFloorCm": 84.3,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 161.1833333333333,
+          "averageBmi": 16.18686594914836,
+          "sampleCount": 6,
+          "measuredHeightFromFloorCm": 81.65,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.5,
+          "averageBmi": 31.457900456515187,
+          "sampleCount": 7,
+          "measuredHeightFromFloorCm": 83.4,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.6169014084507,
+          "averageBmi": 18.213239083265883,
+          "sampleCount": 71,
+          "measuredHeightFromFloorCm": 83.9,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.64285714285714,
+          "averageBmi": 16.372099575121595,
+          "sampleCount": 7,
+          "measuredHeightFromFloorCm": 85.0,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.7625,
+          "averageBmi": 27.699571971146916,
+          "sampleCount": 16,
+          "measuredHeightFromFloorCm": 82.95,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.8043243243243,
+          "averageBmi": 23.93473698782563,
+          "sampleCount": 185,
+          "measuredHeightFromFloorCm": 84.5,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.83563218390802,
+          "averageBmi": 25.759840806830766,
+          "sampleCount": 87,
+          "measuredHeightFromFloorCm": 84.60000000000001,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 164.87595818815328,
+          "averageBmi": 22.00583397076638,
+          "sampleCount": 287,
+          "measuredHeightFromFloorCm": 84.1,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 165.03333333333333,
+          "averageBmi": 29.93351221633881,
+          "sampleCount": 6,
+          "measuredHeightFromFloorCm": 83.1,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 165.06443298969072,
+          "averageBmi": 20.13600924532599,
+          "sampleCount": 194,
+          "measuredHeightFromFloorCm": 84.05,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.49615384615385,
+          "averageBmi": 18.259579834965567,
+          "sampleCount": 52,
+          "measuredHeightFromFloorCm": 86.9,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.52543352601154,
+          "averageBmi": 22.056657851372904,
+          "sampleCount": 173,
+          "measuredHeightFromFloorCm": 86.59999999999998,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.60000000000002,
+          "averageBmi": 30.092990487949603,
+          "sampleCount": 6,
+          "measuredHeightFromFloorCm": 86.29999999999998,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.62426470588235,
+          "averageBmi": 23.794134317099587,
+          "sampleCount": 136,
+          "measuredHeightFromFloorCm": 87.25,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.67034482758623,
+          "averageBmi": 20.085148946127937,
+          "sampleCount": 145,
+          "measuredHeightFromFloorCm": 86.89999999999999,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 169.9586956521739,
+          "averageBmi": 25.72351988065184,
+          "sampleCount": 46,
+          "measuredHeightFromFloorCm": 87.95000000000002,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 170.14090909090913,
+          "averageBmi": 28.095678461433057,
+          "sampleCount": 22,
+          "measuredHeightFromFloorCm": 86.75,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.31428571428572,
+          "averageBmi": 25.746270086121815,
+          "sampleCount": 14,
+          "measuredHeightFromFloorCm": 90.89999999999999,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.60769230769228,
+          "averageBmi": 27.985957115276044,
+          "sampleCount": 13,
+          "measuredHeightFromFloorCm": 89.4,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.60980392156867,
+          "averageBmi": 23.887498868673134,
+          "sampleCount": 51,
+          "measuredHeightFromFloorCm": 90.7,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.62258064516126,
+          "averageBmi": 21.976165102267103,
+          "sampleCount": 62,
+          "measuredHeightFromFloorCm": 89.5,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 174.7765625,
+          "averageBmi": 20.26349147892299,
+          "sampleCount": 64,
+          "measuredHeightFromFloorCm": 90.0,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 175.07777777777775,
+          "averageBmi": 18.314507356780396,
+          "sampleCount": 18,
+          "measuredHeightFromFloorCm": 89.79999999999998,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 179.31428571428575,
+          "averageBmi": 20.267264551587466,
+          "sampleCount": 21,
+          "measuredHeightFromFloorCm": 93.39999999999999,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 179.46666666666667,
+          "averageBmi": 18.322098323393146,
+          "sampleCount": 6,
+          "measuredHeightFromFloorCm": 95.55000000000001,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 179.62727272727273,
+          "averageBmi": 21.753585975235882,
+          "sampleCount": 22,
+          "measuredHeightFromFloorCm": 94.35,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 179.825,
+          "averageBmi": 23.89660753692446,
+          "sampleCount": 20,
+          "measuredHeightFromFloorCm": 91.94999999999999,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 179.9,
+          "averageBmi": 25.893820291991048,
+          "sampleCount": 11,
+          "measuredHeightFromFloorCm": 93.10000000000001,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 180.54999999999998,
+          "averageBmi": 27.693688699103287,
+          "sampleCount": 6,
+          "measuredHeightFromFloorCm": 93.54999999999998,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "female",
+          "averageHeightCm": 184.63333333333335,
+          "averageBmi": 20.114054526755194,
+          "sampleCount": 6,
+          "measuredHeightFromFloorCm": 96.9,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 165.28000000000003,
+          "averageBmi": 20.391007648662544,
+          "sampleCount": 10,
+          "measuredHeightFromFloorCm": 83.7,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 166.05714285714285,
+          "averageBmi": 22.395948614484336,
+          "sampleCount": 7,
+          "measuredHeightFromFloorCm": 84.20000000000002,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 166.61111111111111,
+          "averageBmi": 23.834458210503833,
+          "sampleCount": 9,
+          "measuredHeightFromFloorCm": 84.90000000000002,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 169.81333333333336,
+          "averageBmi": 23.950303257568503,
+          "sampleCount": 30,
+          "measuredHeightFromFloorCm": 84.8,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 170.53636363636363,
+          "averageBmi": 25.688443161595398,
+          "sampleCount": 11,
+          "measuredHeightFromFloorCm": 87.10000000000001,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 170.70000000000002,
+          "averageBmi": 20.001299989164163,
+          "sampleCount": 9,
+          "measuredHeightFromFloorCm": 86.00000000000001,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 170.90454545454543,
+          "averageBmi": 22.002259379706903,
+          "sampleCount": 22,
+          "measuredHeightFromFloorCm": 86.14999999999999,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 175.09166666666667,
+          "averageBmi": 20.326153323950233,
+          "sampleCount": 24,
+          "measuredHeightFromFloorCm": 89.19999999999999,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 175.14,
+          "averageBmi": 23.670271950453678,
+          "sampleCount": 30,
+          "measuredHeightFromFloorCm": 88.95000000000002,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 175.31600000000003,
+          "averageBmi": 21.988825179179738,
+          "sampleCount": 50,
+          "measuredHeightFromFloorCm": 88.85,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 179.565625,
+          "averageBmi": 22.05442232051709,
+          "sampleCount": 32,
+          "measuredHeightFromFloorCm": 92.0,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 179.58260869565217,
+          "averageBmi": 24.071144474576805,
+          "sampleCount": 23,
+          "measuredHeightFromFloorCm": 91.7,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 179.6380952380952,
+          "averageBmi": 20.270181121472337,
+          "sampleCount": 21,
+          "measuredHeightFromFloorCm": 91.50000000000001,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 180.0,
+          "averageBmi": 25.54971657607536,
+          "sampleCount": 9,
+          "measuredHeightFromFloorCm": 93.19999999999999,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 184.19230769230768,
+          "averageBmi": 22.05388633175597,
+          "sampleCount": 13,
+          "measuredHeightFromFloorCm": 95.2,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 184.75555555555556,
+          "averageBmi": 23.665751863321,
+          "sampleCount": 9,
+          "measuredHeightFromFloorCm": 95.19999999999999,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        },
+        {
+          "gender": "male",
+          "averageHeightCm": 184.85,
+          "averageBmi": 20.15244604016284,
+          "sampleCount": 6,
+          "measuredHeightFromFloorCm": 94.85,
+          "sourceColumn": "BUTTOCK HEIGHT"
+        }
+      ]
     }
   }
 }

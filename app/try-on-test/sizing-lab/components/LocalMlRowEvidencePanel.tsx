@@ -14,6 +14,9 @@ interface Props {
   imageWidth: number;
   imageHeight: number;
   gender: "male" | "female";
+  heightCm: number;
+  weightKg: number;
+  profileLabel: string;
 }
 
 const LABELS: Record<LocalMlNormalizedRowPrediction["kind"], string> = {
@@ -24,6 +27,26 @@ const LABELS: Record<LocalMlNormalizedRowPrediction["kind"], string> = {
 
 const FLOOR_ORDER: LocalMlNormalizedRowPrediction["kind"][] = ["hips", "trouserWaist", "waist"];
 
+const WEAR_COLUMN_TRANSLATIONS: Record<LocalMlNormalizedRowPrediction["kind"], string> = {
+  waist: "How high the person’s natural-waist measuring level was above the floor.",
+  trouserWaist: "How high the most forward part of the abdomen was above the floor. We use this only as a rough trouser-waist stand-in.",
+  hips: "How high the buttock measuring level was above the floor. We use this only as a rough fullest-hip stand-in.",
+};
+
+const WEAR_COLUMN_GLOSSARY = [
+  ["STATURE", "Total standing height: floor to the top of the head."],
+  ["WAIST HEIGHT", "Floor to the natural-waist measuring level."],
+  ["ABDOMINAL EXT HGT", "Floor to the level where the abdomen projects forward most."],
+  ["TROCHANTERIC HGHT", "Floor to the bony point at the upper outside of the thigh/hip."],
+  ["BUTTOCK HEIGHT", "Floor to the buttock measuring level used as our hip-row stand-in."],
+  ["GLUTEAL FURROW HGT", "Floor to the crease directly underneath the buttock."],
+  ["CROTCH HEIGHT", "Floor to the crotch level while standing."],
+  ["HIP BREADTH", "Straight side-to-side hip width; this is not circumference."],
+  ["BUTTOCK DEPTH", "Front-to-back thickness at the buttock level."],
+  ["HIP C-7\" BLW WAIST", "Hip circumference measured seven inches below the waist."],
+  ["HIP C-9\" BLW WAIST", "Hip circumference measured nine inches below the waist."],
+] as const;
+
 export function LocalMlRowEvidencePanel({
   rows,
   modelStage,
@@ -32,6 +55,9 @@ export function LocalMlRowEvidencePanel({
   imageWidth,
   imageHeight,
   gender,
+  heightCm,
+  weightKg,
+  profileLabel,
 }: Props) {
   if (!rows.length || !modelStage) return null;
   const rowOnly = modelStage === "wear-1d-row-prior";
@@ -39,6 +65,7 @@ export function LocalMlRowEvidencePanel({
     const row = rows.find((candidate) => candidate.kind === kind);
     return row?.heightFromFloorCm == null ? [] : [row];
   });
+  const bmi = heightCm > 0 && weightKg > 0 ? weightKg / ((heightCm / 100) ** 2) : null;
 
   return (
     <section data-testid="local-ml-row-evidence" className="rounded-xl border border-violet-200 bg-white p-4 text-slate-800">
@@ -68,7 +95,7 @@ export function LocalMlRowEvidencePanel({
                 <div className="mt-1 font-mono text-2xl font-semibold text-slate-950">{row.heightFromFloorCm!.toFixed(1)} cm</div>
                 <div className="font-mono text-[11px] text-slate-500">{cmToIn(row.heightFromFloorCm!).toFixed(1)} in from the floor</div>
                 <div className="mt-2 text-[10px] leading-4 text-slate-500">
-                  WEAR 90% range: approximately ±{row.validationP90At170Cm?.toFixed(1) ?? "n/a"} cm
+                  Historical test: 90% were within {row.validationP90At170Cm?.toFixed(1) ?? "n/a"} cm
                 </div>
               </div>
             ))}
@@ -77,6 +104,82 @@ export function LocalMlRowEvidencePanel({
             This chooses row height only. It does not measure circumference and it does not use the person&apos;s saved answer.
           </p>
         </div>
+      ) : null}
+
+      {floorRows.length ? (
+        <details data-testid="wear-column-translation" className="mt-3 rounded-xl border border-indigo-200 bg-indigo-50/60 p-3" open>
+          <summary className="cursor-pointer list-none text-sm font-medium text-indigo-950">
+            Real WEAR columns, translated into simple English
+            <span className="mt-1 block text-[11px] font-normal leading-4 text-indigo-800">
+              {profileLabel}: {gender} · {heightCm.toFixed(1)} cm · {weightKg.toFixed(1)} kg{bmi != null ? ` · BMI ${bmi.toFixed(1)}` : ""}
+            </span>
+          </summary>
+
+          <div className="mt-3 grid gap-3 lg:grid-cols-3">
+            {floorRows.map((row) => {
+              const cohort = row.referenceCohort;
+              return (
+                <article key={row.kind} className="rounded-xl border border-indigo-100 bg-white p-3 text-[11px] leading-4 text-slate-700">
+                  <h5 className="text-sm font-medium text-slate-950">{LABELS[row.kind]}</h5>
+
+                  <div className="mt-3 text-[10px] uppercase tracking-wide text-slate-500">Original WEAR column</div>
+                  <div className="mt-1 rounded-md bg-slate-100 px-2 py-1.5 font-mono text-xs text-slate-900">
+                    {cohort?.sourceColumn ?? "Column unavailable"}
+                  </div>
+
+                  <div className="mt-3 text-[10px] uppercase tracking-wide text-slate-500">Plain-English translation</div>
+                  <p className="mt-1 text-xs leading-5 text-slate-800">{WEAR_COLUMN_TRANSLATIONS[row.kind]}</p>
+
+                  {cohort ? (
+                    <>
+                      <div className="mt-3 text-[10px] uppercase tracking-wide text-slate-500">Closest anonymous WEAR group</div>
+                      <p className="mt-1">
+                        {cohort.gender} · average height {cohort.averageHeightCm.toFixed(1)} cm · BMI {cohort.averageBmi.toFixed(1)} · {cohort.sampleCount} people
+                      </p>
+                      {!cohort.genderMatched ? (
+                        <p className="mt-2 rounded-md bg-amber-50 px-2 py-1.5 text-amber-900">
+                          No {gender} group exists for this column. This closest example is {cohort.gender}.
+                        </p>
+                      ) : null}
+                      <div className="mt-3 grid grid-cols-2 gap-2">
+                        <div className="rounded-lg bg-slate-50 p-2">
+                          <div className="text-[10px] text-slate-500">Group’s real median</div>
+                          <div className="mt-1 font-mono text-base text-slate-950">{cohort.measuredHeightFromFloorCm.toFixed(1)} cm</div>
+                          <div className="text-[10px] text-slate-500">above the floor</div>
+                        </div>
+                        <div className="rounded-lg bg-cyan-50 p-2">
+                          <div className="text-[10px] text-cyan-800">ML guess for {profileLabel}</div>
+                          <div className="mt-1 font-mono text-base text-slate-950">{row.heightFromFloorCm!.toFixed(1)} cm</div>
+                          <div className="text-[10px] text-cyan-800">above the floor</div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="mt-3 rounded-md bg-amber-50 px-2 py-1.5 text-amber-900">
+                      No safe anonymous comparison group is available for this column.
+                    </p>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+
+          <p className="mt-3 text-[10px] leading-4 text-indigo-900">
+            The closest group is explanation evidence only. It never changes or calibrates the ML prediction for {profileLabel}.
+          </p>
+
+          <details className="mt-3 rounded-lg border border-indigo-100 bg-white p-3">
+            <summary className="cursor-pointer text-xs font-medium text-slate-900">Translate the other old WEAR column names</summary>
+            <div className="mt-3 grid gap-x-5 gap-y-2 md:grid-cols-2">
+              {WEAR_COLUMN_GLOSSARY.map(([column, translation]) => (
+                <div key={column} className="grid gap-1 border-b border-slate-100 pb-2 text-[11px] leading-4 sm:grid-cols-[145px_1fr]">
+                  <code className="text-slate-900">{column}</code>
+                  <span className="text-slate-600">{translation}</span>
+                </div>
+              ))}
+            </div>
+          </details>
+        </details>
       ) : null}
 
       <div className="mt-3 grid gap-2 text-[11px] leading-4 md:grid-cols-3">
@@ -115,7 +218,7 @@ export function LocalMlRowEvidencePanel({
                 <span>
                   {row.trainingSamples?.toLocaleString() ?? "n/a"} people · {row.trainingSurveys ?? "n/a"} {row.trainingSurveys === 1 ? "survey file" : "survey files"}
                 </span>
-                <span>validation average ±{row.validationMaeAt170Cm?.toFixed(1) ?? "n/a"}cm · 90% ±{row.validationP90At170Cm?.toFixed(1) ?? "n/a"}cm</span>
+                <span>average test error {row.validationMaeAt170Cm?.toFixed(1) ?? "n/a"}cm · 90% within {row.validationP90At170Cm?.toFixed(1) ?? "n/a"}cm</span>
               </div>
               {genderWarning ? (
                 <div className="mt-2 rounded bg-amber-50 px-2 py-1 text-[10px] leading-4 text-amber-900">

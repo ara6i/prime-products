@@ -20,7 +20,7 @@ python3 scripts/local-ml/train_wear_row_prior.py \
 
 The trainer excludes child/youth and duplicate derived survey folders, applies physical plausibility filters, and validates by held-out survey where the data supports it. The trouser proxy currently comes from one female survey, so male predictions are marked as extrapolation in the UI.
 
-Only the small aggregate coefficient checkpoint is committed for the protected test lab. Raw licensed WEAR files, reports, virtual environments, and passwords remain under ignored `.local-ml/` paths and must never be committed.
+Only the small aggregate coefficient checkpoint is committed for the protected test lab. It also contains anonymous height/BMI cohort medians (minimum five people per cohort) so the UI can translate old WEAR columns and show a nearby example without exposing a subject row. These examples are display-only and never calibrate a prediction. Raw licensed WEAR files, reports, virtual environments, and passwords remain under ignored `.local-ml/` paths and must never be committed.
 
 ## Dataset rule
 

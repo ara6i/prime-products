@@ -10,6 +10,7 @@ import {
   WEAR_ROW_PRIOR_RELATIVE_PATH,
   type LocalMlNormalizedRowPrediction,
   type LocalMlPredictionResponse,
+  type LocalMlWearReferenceCohort,
 } from "@/app/try-on-test/sizing-lab/lib/localMlSizing";
 
 export const runtime = "nodejs";
@@ -42,6 +43,7 @@ interface WearRowPriorDefinition {
   outputMax: number;
   validationMaeAt170Cm: number;
   validationP90At170Cm: number;
+  referenceCohorts?: Array<Omit<LocalMlWearReferenceCohort, "genderMatched">>;
 }
 
 interface WearRowPriorModel {
@@ -245,6 +247,29 @@ function wearFeatureVector(body: PredictBody, row: WearRowPriorDefinition): numb
   return [1, heightZ, bmiZ, isMale, heightZ * bmiZ, isMale * bmiZ];
 }
 
+function closestWearReferenceCohort(
+  body: PredictBody,
+  row: WearRowPriorDefinition,
+): LocalMlWearReferenceCohort | undefined {
+  if (!finite(body.heightCm) || !finite(body.weightKg) || !body.gender || !row.referenceCohorts?.length) {
+    return undefined;
+  }
+  const bodyBmi = body.weightKg / ((body.heightCm / 100) ** 2);
+  const sameGender = row.referenceCohorts.filter((cohort) => cohort.gender === body.gender);
+  const candidates = sameGender.length ? sameGender : row.referenceCohorts;
+  const selected = candidates.reduce((best, cohort) => {
+    const distance = ((cohort.averageHeightCm - body.heightCm!) / 5) ** 2
+      + ((cohort.averageBmi - bodyBmi) / 2) ** 2;
+    const bestDistance = ((best.averageHeightCm - body.heightCm!) / 5) ** 2
+      + ((best.averageBmi - bodyBmi) / 2) ** 2;
+    return distance < bestDistance ? cohort : best;
+  });
+  return {
+    ...selected,
+    genderMatched: selected.gender === body.gender,
+  };
+}
+
 async function predictWearRowPrior(
   body: PredictBody,
   maskDataUrl: string,
@@ -283,6 +308,8 @@ async function predictWearRowPrior(
       validationMaeAt170Cm: row.validationMaeAt170Cm,
       validationP90At170Cm: row.validationP90At170Cm,
       definition: row.definition,
+      // Explanation-only evidence. It never changes bodyFraction or targetY.
+      referenceCohort: closestWearReferenceCohort(body, row),
     };
   });
 }

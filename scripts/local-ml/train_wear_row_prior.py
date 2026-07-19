@@ -72,6 +72,10 @@ ROW_DEFINITIONS = {
     "hips": "standing buttock-height landmark converted to top-to-bottom stature fraction",
 }
 
+REFERENCE_HEIGHT_BIN_CM = 5.0
+REFERENCE_BMI_BIN = 2.0
+REFERENCE_MIN_SAMPLE_COUNT = 5
+
 FEMALE_TERMS = re.compile(r"\b(female|females|women|woman|stewardess|stewardesses)\b", re.I)
 MALE_TERMS = re.compile(r"\b(male|males|men|aircrewmen|guardsmen|corpsmen|aviators|gurkhas)\b", re.I)
 EXCLUDED_SURVEY_TERMS = re.compile(r"\b(children|youth|youths)\b", re.I)
@@ -306,6 +310,51 @@ def percentile(values: list[float], value: float) -> float:
     return float(np.percentile(np.asarray(values, dtype=np.float64), value)) if values else math.nan
 
 
+def reference_cohorts(records: list[Record]) -> list[dict[str, object]]:
+    """Create small anonymous groups for UI explanation only.
+
+    These cohorts are never model inputs. Grouping prevents the committed
+    checkpoint from exposing raw subject rows while still letting the lab show
+    what an old WEAR column means for people near the active height and BMI.
+    """
+    buckets: dict[tuple[str, int, int], list[Record]] = defaultdict(list)
+    for record in records:
+        height_bin = round(record.height_cm / REFERENCE_HEIGHT_BIN_CM)
+        bmi_bin = round(record.bmi / REFERENCE_BMI_BIN)
+        buckets[(record.gender, height_bin, bmi_bin)].append(record)
+
+    cohorts: list[dict[str, object]] = []
+    for (gender, _height_bin, _bmi_bin), values in buckets.items():
+        if len(values) < REFERENCE_MIN_SAMPLE_COUNT:
+            continue
+        heights = np.asarray([record.height_cm for record in values], dtype=np.float64)
+        bmis = np.asarray([record.bmi for record in values], dtype=np.float64)
+        floor_heights = np.asarray([
+            (1.0 - record.target) * record.height_cm
+            for record in values
+        ], dtype=np.float64)
+        source_header = Counter(
+            normalize_header(record.source_header)
+            for record in values
+        ).most_common(1)[0][0]
+        cohorts.append({
+            "gender": gender,
+            "averageHeightCm": float(np.mean(heights)),
+            "averageBmi": float(np.mean(bmis)),
+            "sampleCount": len(values),
+            "measuredHeightFromFloorCm": float(np.median(floor_heights)),
+            "sourceColumn": source_header,
+        })
+    return sorted(
+        cohorts,
+        key=lambda cohort: (
+            str(cohort["gender"]),
+            float(cohort["averageHeightCm"]),
+            float(cohort["averageBmi"]),
+        ),
+    )
+
+
 def train_row(kind: str, raw_records: list[Record]) -> dict[str, object]:
     records = robust_records(raw_records)
     if len(records) < 50:
@@ -337,6 +386,7 @@ def train_row(kind: str, raw_records: list[Record]) -> dict[str, object]:
         "validationP90Fraction": percentile(validation_basis, 90),
         "validationMaeAt170Cm": float(np.mean(validation_basis)) * 170.0,
         "validationP90At170Cm": percentile(validation_basis, 90) * 170.0,
+        "referenceCohorts": reference_cohorts(records),
     }
 
 
@@ -387,7 +437,7 @@ def main() -> None:
                         "validationMaeAt170Cm",
                         "validationP90At170Cm",
                     )
-                }
+                } | {"referenceCohortCount": len(row["referenceCohorts"])}
                 for kind, row in rows.items()
             },
             "limitations": model["limitations"],
@@ -404,6 +454,7 @@ def main() -> None:
                 "maeAt170Cm": round(float(row["validationMaeAt170Cm"]), 2),
                 "p90At170Cm": round(float(row["validationP90At170Cm"]), 2),
                 "genders": row["genderCounts"],
+                "referenceCohorts": len(row["referenceCohorts"]),
             }
             for kind, row in rows.items()
         },

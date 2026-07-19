@@ -2613,6 +2613,9 @@ export function SizingLabPage() {
                       imageWidth={activeImageState.width}
                       imageHeight={activeImageState.height}
                       gender={metrics.gender}
+                      heightCm={metrics.heightCm}
+                      weightKg={metrics.weightKg}
+                      profileLabel={selectedDataset?.label.split(" · ")[0] ?? "Current upload"}
                     />
                   ) : null}
                   {manualCameraCalibrationResultActive ? (
