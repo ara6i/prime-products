@@ -33,6 +33,7 @@ type WindowDragEvent = PointerEvent | MouseEvent;
 type MeasurementMode = "circumference" | "side-depth";
 type ScaleProofHandle = "start" | "end";
 type FreeRulerDragTarget = ScaleProofHandle | "line";
+type FreeRulerPurpose = "free" | "floor-height";
 type HeightScaleHandle = "top" | "bottom";
 type ScaleProofUnit = "cm" | "in";
 type BodyWidthMethod = "apple-vision" | "depth-pro";
@@ -302,6 +303,25 @@ export function ManualCoordinateGuidePanel({
   const freeRuler = freeRulerState.sourceKey === scaleProofSourceKey
     ? freeRulerState
     : buildInitialFreeRuler(imageWidth, imageHeight, scaleProofSourceKey, scaleProofRuler);
+  const [freeRulerModeState, setFreeRulerModeState] = useState<{
+    sourceKey: string;
+    purpose: FreeRulerPurpose;
+    floorTargetCm: number;
+    floorUnit: ScaleProofUnit;
+  }>(() => ({
+    sourceKey: scaleProofSourceKey,
+    purpose: "free",
+    floorTargetCm: 70,
+    floorUnit: "cm",
+  }));
+  const freeRulerMode = freeRulerModeState.sourceKey === scaleProofSourceKey
+    ? freeRulerModeState
+    : {
+        sourceKey: scaleProofSourceKey,
+        purpose: "free" as FreeRulerPurpose,
+        floorTargetCm: 70,
+        floorUnit: "cm" as ScaleProofUnit,
+      };
   const scaleProofPresetKey = scaleProofPreset
     ? JSON.stringify({
         sourceImageWidth: scaleProofPreset.sourceImageWidth,
@@ -804,7 +824,56 @@ export function ManualCoordinateGuidePanel({
   };
 
   const placeFreeRulerBesideTape = () => {
+    setFreeRulerModeState({
+      ...freeRulerMode,
+      sourceKey: scaleProofSourceKey,
+      purpose: "free",
+    });
     setFreeRuler(buildInitialFreeRuler(imageWidth, imageHeight, scaleProofSourceKey, scaleProofRuler));
+  };
+
+  const setFloorRulerTargetCm = (floorTargetCm: number) => {
+    if (!Number.isFinite(floorTargetCm)) return;
+    setFreeRulerModeState({
+      ...freeRulerMode,
+      sourceKey: scaleProofSourceKey,
+      floorTargetCm: clamp(floorTargetCm, 0.1, Math.max(0.1, heightCm ?? 250)),
+    });
+  };
+
+  const setFloorRulerUnit = (floorUnit: ScaleProofUnit) => {
+    setFreeRulerModeState({
+      ...freeRulerMode,
+      sourceKey: scaleProofSourceKey,
+      floorUnit,
+    });
+  };
+
+  const placeFreeRulerFromFloor = () => {
+    const cmPerPx = scaleEvidence?.activeCmPerPx
+      ?? measurement?.activeCmPerPx
+      ?? heightScaleLine?.cmPerPx
+      ?? null;
+    if (!heightScaleLine || !cmPerPx || cmPerPx <= 0) return;
+    const targetSpanPx = freeRulerMode.floorTargetCm / cmPerPx;
+    const floorY = clamp(heightScaleLine.bottomY, 0, imageHeight - 1);
+    const x = clamp(
+      heightScaleLine.centerX + Math.max(56, imageWidth * 0.045),
+      0,
+      imageWidth - 1,
+    );
+    setFreeRulerModeState({
+      ...freeRulerMode,
+      sourceKey: scaleProofSourceKey,
+      purpose: "floor-height",
+    });
+    setFreeRuler({
+      sourceKey: scaleProofSourceKey,
+      start: { x, y: clamp(floorY - targetSpanPx, 0, imageHeight - 1) },
+      end: { x, y: floorY },
+      touchedStart: true,
+      touchedEnd: true,
+    });
   };
 
   const placeRedLineProofBesideTape = (kind: RedLineVerticalProofKind = redLineProofKind) => {
@@ -1018,6 +1087,20 @@ export function ManualCoordinateGuidePanel({
             label={scaleEvidence?.source === "mask-height" ? "active mask height" : "inactive mask reference"}
             onHandleDragStart={onManualHeightScaleOverrideChange ? startHeightScaleHandleDrag : undefined}
           />
+          {isFullscreen ? (
+            <FloorReferenceSvg
+              line={heightScaleLine}
+              ruler={freeRulerMode.purpose === "floor-height" ? freeRuler : null}
+              floorTargetCm={freeRulerMode.floorTargetCm}
+              unit={freeRulerMode.floorUnit}
+              imageWidth={imageWidth}
+              imageHeight={imageHeight}
+              zoom={zoom}
+              onFloorDragStart={onManualHeightScaleOverrideChange
+                ? (event) => startHeightScaleHandleDrag("bottom", event)
+                : undefined}
+            />
+          ) : null}
           {normalizedGuide ? (
             <ManualGuideSvg
               guide={normalizedGuide}
@@ -1050,6 +1133,9 @@ export function ManualCoordinateGuidePanel({
                 imageWidth={imageWidth}
                 imageHeight={imageHeight}
                 zoom={zoom}
+                customLabel={freeRulerMode.purpose === "floor-height"
+                  ? `floor ruler · target ${freeRulerMode.floorUnit === "in" ? `${cmToIn(freeRulerMode.floorTargetCm).toFixed(2)} in` : `${freeRulerMode.floorTargetCm.toFixed(1)} cm`}`
+                  : undefined}
                 onHandleDragStart={startFreeRulerDrag}
                 onLineDragStart={(event) => startFreeRulerDrag("line", event)}
               />
@@ -1223,6 +1309,9 @@ export function ManualCoordinateGuidePanel({
             bodyMaskSupport={bodyMaskSupport}
             ruler={scaleProofRuler}
             freeRuler={freeRuler}
+            freeRulerPurpose={freeRulerMode.purpose}
+            floorRulerTargetCm={freeRulerMode.floorTargetCm}
+            floorRulerUnit={freeRulerMode.floorUnit}
             redLineProofKind={redLineProofKind}
             redLineProofRuler={redLineProofRuler}
             intervalValue={scaleProofIntervalValue}
@@ -1246,6 +1335,9 @@ export function ManualCoordinateGuidePanel({
             onRulerChange={(nextRuler) => setScaleProofRuler(nextRuler)}
             onReset={resetScaleProofRuler}
             onPlaceFreeRulerBesideTape={placeFreeRulerBesideTape}
+            onFloorRulerTargetCmChange={setFloorRulerTargetCm}
+            onFloorRulerUnitChange={setFloorRulerUnit}
+            onPlaceFreeRulerFromFloor={placeFreeRulerFromFloor}
             onPlaceRedLineProofBesideTape={placeRedLineProofBesideTape}
             bodyWidthMethod={bodyWidthMethod}
             onBodyWidthMethodChange={setBodyWidthMethod}
@@ -1328,6 +1420,9 @@ export function ManualCoordinateGuidePanel({
                       bodyMaskSupport={bodyMaskSupport}
                       ruler={scaleProofRuler}
                       freeRuler={freeRuler}
+                      freeRulerPurpose={freeRulerMode.purpose}
+                      floorRulerTargetCm={freeRulerMode.floorTargetCm}
+                      floorRulerUnit={freeRulerMode.floorUnit}
                       redLineProofKind={redLineProofKind}
                       redLineProofRuler={redLineProofRuler}
                       intervalValue={scaleProofIntervalValue}
@@ -1351,6 +1446,9 @@ export function ManualCoordinateGuidePanel({
                       onRulerChange={(nextRuler) => setScaleProofRuler(nextRuler)}
                       onReset={resetScaleProofRuler}
                       onPlaceFreeRulerBesideTape={placeFreeRulerBesideTape}
+                      onFloorRulerTargetCmChange={setFloorRulerTargetCm}
+                      onFloorRulerUnitChange={setFloorRulerUnit}
+                      onPlaceFreeRulerFromFloor={placeFreeRulerFromFloor}
                       onPlaceRedLineProofBesideTape={placeRedLineProofBesideTape}
                       bodyWidthMethod={bodyWidthMethod}
                       onBodyWidthMethodChange={setBodyWidthMethod}
@@ -1607,6 +1705,9 @@ function ScaleProofPanel({
   bodyMaskSupport,
   ruler,
   freeRuler,
+  freeRulerPurpose,
+  floorRulerTargetCm,
+  floorRulerUnit,
   redLineProofKind,
   redLineProofRuler,
   intervalValue,
@@ -1630,6 +1731,9 @@ function ScaleProofPanel({
   onRulerChange,
   onReset,
   onPlaceFreeRulerBesideTape,
+  onFloorRulerTargetCmChange,
+  onFloorRulerUnitChange,
+  onPlaceFreeRulerFromFloor,
   onPlaceRedLineProofBesideTape,
   bodyWidthMethod,
   onBodyWidthMethodChange,
@@ -1644,6 +1748,9 @@ function ScaleProofPanel({
   bodyMaskSupport: BodyMaskSupportRow[];
   ruler: ScaleProofRuler;
   freeRuler: ScaleProofRuler;
+  freeRulerPurpose: FreeRulerPurpose;
+  floorRulerTargetCm: number;
+  floorRulerUnit: ScaleProofUnit;
   redLineProofKind: RedLineVerticalProofKind;
   redLineProofRuler: ScaleProofRuler;
   intervalValue: number;
@@ -1667,6 +1774,9 @@ function ScaleProofPanel({
   onRulerChange: (ruler: ScaleProofRuler) => void;
   onReset: () => void;
   onPlaceFreeRulerBesideTape: () => void;
+  onFloorRulerTargetCmChange: (valueCm: number) => void;
+  onFloorRulerUnitChange: (unit: ScaleProofUnit) => void;
+  onPlaceFreeRulerFromFloor: () => void;
   onPlaceRedLineProofBesideTape: (kind?: RedLineVerticalProofKind) => void;
   bodyWidthMethod: BodyWidthMethod;
   onBodyWidthMethodChange: (method: BodyWidthMethod) => void;
@@ -2329,6 +2439,10 @@ function ScaleProofPanel({
             freeStart={freeRuler.start}
             freeEnd={freeRuler.end}
             freePixelSpan={freePixelSpan}
+            freeRulerPurpose={freeRulerPurpose}
+            freeExpectedCm={freeRulerPurpose === "floor-height" ? floorRulerTargetCm : expectedCm}
+            freeUnit={freeRulerPurpose === "floor-height" ? floorRulerUnit : unit}
+            floorReferenceY={heightScaleLine?.bottomY ?? null}
             freeFlatCm={freeMeasuredCm}
             freeFusedCm={fusedFreePrediction?.predictedCm ?? null}
             flatCm={flatComparisonCmPerPx ? pixelSpan * flatComparisonCmPerPx : measuredCm}
@@ -2350,6 +2464,9 @@ function ScaleProofPanel({
             onRetryTapeVision={() => void runTapeVision()}
             onRetryFused={retryFusedTape}
             onPlaceFreeRulerBesideTape={onPlaceFreeRulerBesideTape}
+            onFloorTargetCmChange={onFloorRulerTargetCmChange}
+            onFloorUnitChange={onFloorRulerUnitChange}
+            onPlaceFreeRulerFromFloor={onPlaceFreeRulerFromFloor}
             applyAppleCorrection={applyAppleTapeCorrection}
             onApplyAppleCorrectionChange={setApplyAppleTapeCorrection}
           />
@@ -4622,6 +4739,131 @@ function formatScaleSource(source?: ManualScaleEvidenceData["source"]): string {
   if (source === "mask-height") return "mask height";
   if (source === "pose-landmarks") return "pose landmarks";
   return "an unknown scale source";
+}
+
+function FloorReferenceSvg({
+  line,
+  ruler,
+  floorTargetCm,
+  unit,
+  imageWidth,
+  imageHeight,
+  zoom,
+  onFloorDragStart,
+}: {
+  line: HeightScaleLine | null;
+  ruler: ScaleProofRuler | null;
+  floorTargetCm: number;
+  unit: ScaleProofUnit;
+  imageWidth: number;
+  imageHeight: number;
+  zoom: number;
+  onFloorDragStart?: (event: SvgHandleDragEvent) => void;
+}) {
+  if (!line || imageWidth <= 0 || imageHeight <= 0) return null;
+  const viewScale = Math.max(zoom, 1);
+  const strokeWidth = Math.max(3, imageWidth * 0.0024) / viewScale;
+  const hitWidth = Math.max(24, imageWidth * 0.014) / viewScale;
+  const fontSize = Math.max(17, imageWidth * 0.012) / viewScale;
+  const floorY = clamp(line.bottomY, 0, imageHeight - 1);
+  const targetY = ruler ? clamp(ruler.start.y, 0, imageHeight - 1) : null;
+  const displayTarget = unit === "in"
+    ? `${cmToIn(floorTargetCm).toFixed(2)} in`
+    : `${floorTargetCm.toFixed(1)} cm`;
+  const floorLabel = `FLOOR / SOLE CONTACT · y ${Math.round(floorY)}${onFloorDragStart ? " · drag this line" : ""}`;
+  const targetLabel = `CHECK ${displayTarget} FROM FLOOR · top C y ${Math.round(targetY ?? 0)}`;
+  const floorTextWidth = floorLabel.length * fontSize * 0.56;
+  const targetTextWidth = targetLabel.length * fontSize * 0.56;
+  const labelX = 12 / viewScale;
+  const floorTextY = clamp(floorY - (10 / viewScale), fontSize + (4 / viewScale), imageHeight - (8 / viewScale));
+  const targetTextY = targetY == null
+    ? null
+    : clamp(targetY - (10 / viewScale), fontSize + (4 / viewScale), imageHeight - (8 / viewScale));
+
+  return (
+    <g data-testid="floor-height-reference-overlay">
+      {onFloorDragStart ? (
+        <line
+          data-testid="floor-reference-drag-line"
+          aria-label="Floor reference line"
+          x1={0}
+          y1={floorY}
+          x2={imageWidth}
+          y2={floorY}
+          stroke="transparent"
+          strokeWidth={hitWidth}
+          pointerEvents="stroke"
+          onPointerDown={onFloorDragStart}
+          onMouseDown={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+          style={{ cursor: "ns-resize", touchAction: "none" }}
+        />
+      ) : null}
+      <line
+        x1={0}
+        y1={floorY}
+        x2={imageWidth}
+        y2={floorY}
+        stroke="#22d3ee"
+        strokeWidth={strokeWidth}
+        pointerEvents="none"
+      />
+      <rect
+        x={labelX - (4 / viewScale)}
+        y={floorTextY - fontSize}
+        width={floorTextWidth + (8 / viewScale)}
+        height={fontSize + (7 / viewScale)}
+        fill="rgba(8,47,73,0.88)"
+        rx={2 / viewScale}
+        pointerEvents="none"
+      />
+      <text
+        x={labelX}
+        y={floorTextY}
+        fill="#cffafe"
+        fontSize={fontSize}
+        fontFamily="monospace"
+        pointerEvents="none"
+      >
+        {floorLabel}
+      </text>
+      {targetY != null && targetTextY != null ? (
+        <>
+          <line
+            x1={0}
+            y1={targetY}
+            x2={imageWidth}
+            y2={targetY}
+            stroke="#38bdf8"
+            strokeWidth={strokeWidth}
+            strokeDasharray={`${12 / viewScale} ${8 / viewScale}`}
+            pointerEvents="none"
+          />
+          <rect
+            x={labelX - (4 / viewScale)}
+            y={targetTextY - fontSize}
+            width={targetTextWidth + (8 / viewScale)}
+            height={fontSize + (7 / viewScale)}
+            fill="rgba(7,89,133,0.88)"
+            rx={2 / viewScale}
+            pointerEvents="none"
+          />
+          <text
+            x={labelX}
+            y={targetTextY}
+            fill="#e0f2fe"
+            fontSize={fontSize}
+            fontFamily="monospace"
+            pointerEvents="none"
+          >
+            {targetLabel}
+          </text>
+        </>
+      ) : null}
+    </g>
+  );
 }
 
 function HeightScaleLineSvg({

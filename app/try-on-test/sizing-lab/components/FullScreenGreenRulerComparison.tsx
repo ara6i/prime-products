@@ -31,6 +31,10 @@ interface Props {
   freeStart: Point;
   freeEnd: Point;
   freePixelSpan: number;
+  freeRulerPurpose: "free" | "floor-height";
+  freeExpectedCm: number;
+  freeUnit: "cm" | "in";
+  floorReferenceY: number | null;
   freeFlatCm: number | null;
   freeFusedCm: number | null;
   flatCm: number | null;
@@ -52,6 +56,9 @@ interface Props {
   onRetryTapeVision: () => void;
   onRetryFused: () => void;
   onPlaceFreeRulerBesideTape: () => void;
+  onFloorTargetCmChange: (valueCm: number) => void;
+  onFloorUnitChange: (unit: "cm" | "in") => void;
+  onPlaceFreeRulerFromFloor: () => void;
   applyAppleCorrection: boolean;
   onApplyAppleCorrectionChange: (checked: boolean) => void;
 }
@@ -70,6 +77,10 @@ export function FullScreenGreenRulerComparison({
   freeStart,
   freeEnd,
   freePixelSpan,
+  freeRulerPurpose,
+  freeExpectedCm,
+  freeUnit,
+  floorReferenceY,
   freeFlatCm,
   freeFusedCm,
   flatCm,
@@ -91,6 +102,9 @@ export function FullScreenGreenRulerComparison({
   onRetryTapeVision,
   onRetryFused,
   onPlaceFreeRulerBesideTape,
+  onFloorTargetCmChange,
+  onFloorUnitChange,
+  onPlaceFreeRulerFromFloor,
   applyAppleCorrection,
   onApplyAppleCorrectionChange,
 }: Props) {
@@ -102,6 +116,10 @@ export function FullScreenGreenRulerComparison({
     && flatCm != null
     && (!applyAppleCorrection || fusedCm != null);
   const intervalLabel = `${formatInputValue(Math.abs(intervalValue))} ${unit}`;
+  const freeIntervalLabel = `${formatInputValue(toDisplayUnit(freeExpectedCm, freeUnit))} ${freeUnit}`;
+  const floorAnchorDeltaPx = floorReferenceY == null ? null : freeEnd.y - floorReferenceY;
+  const floorAnchorReady = freeRulerPurpose !== "floor-height"
+    || (floorAnchorDeltaPx != null && Math.abs(floorAnchorDeltaPx) <= 2);
 
   const spreads = useMemo(() => {
     if (samples.length < 2) return null;
@@ -241,42 +259,109 @@ export function FullScreenGreenRulerComparison({
       <section data-testid="free-ruler-result" className="mt-3 rounded-lg border border-sky-200 bg-sky-50/60 p-3">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <h4 className="text-[11px] font-medium text-slate-800">Free ruler · blue C–D line</h4>
+            <h4 className="text-[11px] font-medium text-slate-800">
+              {freeRulerPurpose === "floor-height" ? "Height from floor · blue C–D ruler" : "Free ruler · blue C–D line"}
+            </h4>
             <p className="mt-1 text-[10px] leading-4 text-slate-600">
-              It never reads tape labels. Put it beside the tape on the same physical plane and see whether it measures the {intervalLabel} target.
+              {freeRulerPurpose === "floor-height"
+                ? "D is the floor/sole-contact point. C is the height point. This uses the exact same without-Apple and with-Apple calculations as the normal blue free ruler."
+                : `It never reads tape labels. Put it beside the tape on the same physical plane and see whether it measures the ${intervalLabel} target.`}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onPlaceFreeRulerBesideTape}
-            className="rounded-lg border border-sky-300 bg-white px-2.5 py-1.5 text-[10px] font-medium text-sky-800 hover:bg-sky-100"
-          >
-            Place beside tape
-          </button>
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={onPlaceFreeRulerFromFloor}
+              className="rounded-lg border border-cyan-300 bg-cyan-50 px-2.5 py-1.5 text-[10px] font-medium text-cyan-900 hover:bg-cyan-100"
+            >
+              Measure from floor
+            </button>
+            <button
+              type="button"
+              onClick={onPlaceFreeRulerBesideTape}
+              className="rounded-lg border border-sky-300 bg-white px-2.5 py-1.5 text-[10px] font-medium text-sky-800 hover:bg-sky-100"
+            >
+              Place beside tape
+            </button>
+          </div>
         </div>
+        {freeRulerPurpose === "floor-height" ? (
+          <div className="mt-2 rounded-lg border border-cyan-200 bg-white p-2.5">
+            <label className="flex items-center justify-between gap-3 text-[10px] text-slate-700">
+              <span>Target height from floor</span>
+              <span className="flex items-center gap-1.5">
+                <input
+                  type="number"
+                  min={freeUnit === "in" ? 0.04 : 0.1}
+                  step={freeUnit === "in" ? 0.1 : 0.5}
+                  value={toDisplayUnit(freeExpectedCm, freeUnit).toFixed(freeUnit === "in" ? 2 : 1)}
+                  onChange={(event) => {
+                    const next = Number(event.currentTarget.value);
+                    if (!Number.isFinite(next) || next <= 0) return;
+                    onFloorTargetCmChange(freeUnit === "in" ? next * 2.54 : next);
+                  }}
+                  aria-label={`Height from floor target (${freeUnit})`}
+                  className="h-8 w-24 rounded-md border border-cyan-200 bg-white px-2 font-mono text-sm text-slate-900"
+                />
+                <span className="flex overflow-hidden rounded-md border border-cyan-200 bg-cyan-50">
+                  {(["cm", "in"] as const).map((candidate) => (
+                    <button
+                      key={candidate}
+                      type="button"
+                      onClick={() => onFloorUnitChange(candidate)}
+                      className={`px-2 py-1.5 font-mono text-[10px] ${freeUnit === candidate ? "bg-cyan-700 text-white" : "text-cyan-900 hover:bg-cyan-100"}`}
+                    >
+                      {candidate}
+                    </button>
+                  ))}
+                </span>
+              </span>
+            </label>
+            <button
+              type="button"
+              onClick={onPlaceFreeRulerFromFloor}
+              className="mt-2 w-full rounded-lg bg-cyan-700 px-3 py-2 text-[11px] font-medium text-white hover:bg-cyan-800"
+            >
+              Place blue ruler at {freeIntervalLabel} from floor
+            </button>
+            <p className="mt-2 rounded-md bg-sky-50 px-2 py-1.5 text-[10px] leading-4 text-sky-900">
+              This button gives a starting position from the flat height scale. Keep D on the floor and drag only C until the result you trust—without Apple or with Apple—reads {freeIntervalLabel}.
+            </p>
+            <div className={`mt-2 text-[10px] leading-4 ${floorAnchorReady ? "text-emerald-700" : "text-rose-700"}`}>
+              Floor is the cyan line at y {floorReferenceY == null ? "not available" : Math.round(floorReferenceY)}. Blue D is y {Math.round(freeEnd.y)}.
+              {floorAnchorReady ? " Floor anchor matches." : " Put D on the cyan floor line before judging the result."}
+            </div>
+          </div>
+        ) : (
+          <p className="mt-2 rounded-lg border border-cyan-200 bg-cyan-50 px-2.5 py-2 text-[10px] leading-4 text-cyan-900">
+            Need a body height such as 70 cm from the floor? Press “Measure from floor.”
+          </p>
+        )}
         <div className="mt-2 text-[10px] text-slate-500">
           C ({Math.round(freeStart.x)}, {Math.round(freeStart.y)}) → D ({Math.round(freeEnd.x)}, {Math.round(freeEnd.y)}) · {freePixelSpan.toFixed(2)} px
         </div>
         <div className={`mt-2 grid gap-2 ${applyAppleCorrection ? "sm:grid-cols-2" : "grid-cols-1"}`}>
           <RulerModelResultCard
-            title="Free ruler · without Apple"
+            title={freeRulerPurpose === "floor-height" ? "Floor ruler · without Apple" : "Free ruler · without Apple"}
             description="One flat scale from the person’s height"
             valueCm={freeFlatCm}
-            expectedCm={expectedCm}
-            unit={unit}
-            judgeReady
+            expectedCm={freeExpectedCm}
+            unit={freeUnit}
+            judgeReady={floorAnchorReady}
+            notReadyMessage={freeRulerPurpose === "floor-height" ? "Place D on the cyan floor line before scoring." : undefined}
           />
           {applyAppleCorrection ? (
             <RulerModelResultCard
-              title="Free ruler · with Apple"
+              title={freeRulerPurpose === "floor-height" ? "Floor ruler · with Apple" : "Free ruler · with Apple"}
               description="Known height + Apple 3D + Depth Pro; printed tape values excluded"
               valueCm={freeFusedCm}
-              expectedCm={expectedCm}
-              unit={unit}
-              judgeReady
+              expectedCm={freeExpectedCm}
+              unit={freeUnit}
+              judgeReady={floorAnchorReady}
               status={fusedStatus}
               error={fusedError}
               elapsedMs={fusedElapsedMs}
+              notReadyMessage={freeRulerPurpose === "floor-height" ? "Place D on the cyan floor line before scoring." : undefined}
             />
           ) : null}
         </div>
@@ -416,6 +501,7 @@ export function RulerModelResultCard({
   error,
   elapsedMs = 0,
   onRetry,
+  notReadyMessage,
 }: {
   title: string;
   description: string;
@@ -427,6 +513,7 @@ export function RulerModelResultCard({
   error?: string | null;
   elapsedMs?: number;
   onRetry?: () => void;
+  notReadyMessage?: string;
 }) {
   if (status === "loading") {
     return (
@@ -473,7 +560,7 @@ export function RulerModelResultCard({
           Error {formatDistanceError(valueCm, expectedCm, unit)} <span className="text-slate-500">({formatPct(errorPct)})</span>
         </div>
       ) : valueCm != null ? (
-        <div className="mt-1 text-[10px] text-slate-500">Snap to exact marks before scoring.</div>
+        <div className="mt-1 text-[10px] text-slate-500">{notReadyMessage ?? "Snap to exact marks before scoring."}</div>
       ) : null}
     </div>
   );
