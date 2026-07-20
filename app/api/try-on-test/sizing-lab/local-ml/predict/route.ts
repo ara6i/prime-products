@@ -365,6 +365,17 @@ async function predictWearRowPrior(
       validationMaeAt170Cm: row.validationMaeAt170Cm,
       validationP90At170Cm: row.validationP90At170Cm,
       definition: row.definition,
+      rowFormula: {
+        featureNames: model.featureNames,
+        featureValues: features,
+        coefficients: row.coefficients,
+        rawBodyFraction: rawFraction,
+        activeBodyFraction: bodyFraction,
+        outputMin: row.outputMin,
+        outputMax: row.outputMax,
+        maskTopNorm: mask.top / Math.max(1, mask.height - 1),
+        maskBottomNorm: mask.bottom / Math.max(1, mask.height - 1),
+      },
       // Explanation-only evidence. It never changes bodyFraction or targetY.
       referenceCohort: closestWearReferenceCohort(body, row),
       wearDepthCohort: directWearDepthCohort(body, kind, depthModel),

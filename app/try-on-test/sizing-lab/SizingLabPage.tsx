@@ -17,6 +17,7 @@ import { ThirdPartyProviderPanel, type ThirdPartyScanResult } from "./components
 import { ShahnazPhotoPairPanel } from "./components/ShahnazPhotoPairPanel";
 import { LocalMlTrainingDiagram } from "./components/LocalMlTrainingDiagram";
 import { LocalMlRowEvidencePanel } from "./components/LocalMlRowEvidencePanel";
+import { SimpleSizingFormulaGuide } from "./components/SimpleSizingFormulaGuide";
 import {
   ManualCoordinateGuidePanel,
   type ManualHeightScaleOverride,
@@ -2616,6 +2617,15 @@ export function SizingLabPage() {
             <>
               {usesCoordinateWorkbench ? (
                 <div className="space-y-4">
+                  <SimpleSizingFormulaGuide
+                    mode={usesLocalMl ? "local-ml" : "manual"}
+                    measurement={geminiGuideMeasurement}
+                    wearRowPredictions={usesLocalMl ? localMlPredictionRows : undefined}
+                    heightCm={metrics.heightCm}
+                    weightKg={metrics.weightKg}
+                    gender={metrics.gender}
+                    scaleEvidence={activeManualScaleEvidence}
+                  />
                   {usesLocalMl ? (
                     <LocalMlRowEvidencePanel
                       rows={localMlPredictionRows}

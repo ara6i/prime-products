@@ -42,6 +42,18 @@ export interface LocalMlWearDirectDepthCohort {
   measurement: string;
 }
 
+export interface LocalMlWearRowFormulaEvidence {
+  featureNames: string[];
+  featureValues: number[];
+  coefficients: number[];
+  rawBodyFraction: number;
+  activeBodyFraction: number;
+  outputMin: number;
+  outputMax: number;
+  maskTopNorm: number;
+  maskBottomNorm: number;
+}
+
 export interface LocalMlModelStatusResponse {
   ok: boolean;
   localOnly: true;
@@ -78,6 +90,8 @@ export interface LocalMlNormalizedRowPrediction {
   referenceCohort?: LocalMlWearReferenceCohort;
   /** Direct measured WEAR cohort used as the temporary Local ML body-depth ratio. No regression. */
   wearDepthCohort?: LocalMlWearDirectDepthCohort;
+  /** Exact WEAR row-regression inputs and coefficients used to choose Y. */
+  rowFormula?: LocalMlWearRowFormulaEvidence;
 }
 
 export interface LocalMlPredictionResponse {
