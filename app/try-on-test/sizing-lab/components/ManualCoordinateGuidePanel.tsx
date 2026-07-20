@@ -19,6 +19,11 @@ import type { AppleVisionBodyScaleResult } from "../lib/appleVisionBodyScale";
 import type { GeminiBodyGuide, GeminiGuideDepthRatioOverrides, GeminiGuideLine, GeminiGuideMeasurement } from "../lib/geminiGuide";
 import type { LocalMlNormalizedRowPrediction } from "../lib/localMlSizing";
 import {
+  CIRCUMFERENCE_METHOD_OPTIONS,
+  calculateCircumferenceCm,
+  type CircumferenceMethod,
+} from "../lib/circumferenceMethods";
+import {
   buildTapeVisionHiddenIntervals,
   buildTapeVisionSnap,
   measureTapeVisionCm,
@@ -2801,6 +2806,8 @@ function FullScreenEssentialMeasurementSummary({
   targetHipsCm?: number;
 }) {
   const [openModelHelp, setOpenModelHelp] = useState<BodyWidthMethod | null>(null);
+  const [circumferenceMethod, setCircumferenceMethod] = useState<CircumferenceMethod>("ramanujan-1");
+  const [superellipseExponent, setSuperellipseExponent] = useState(2.5);
   const localMlMode = Boolean(wearRowPredictions?.length);
   const directWearDepthActive = Boolean(wearRowPredictions?.some((row) => row.wearDepthCohort));
   const bodyGate = evaluateBodyScaleGate(appleResult, fusedBodyResult);
@@ -2811,6 +2818,8 @@ function FullScreenEssentialMeasurementSummary({
     { kind: "trouserWaist", label: "Trouser waist", targetCm: targetTrouserWaistCm },
     { kind: "hips", label: "Hips", targetCm: targetHipsCm },
   ];
+  const selectedCircumferenceOption = CIRCUMFERENCE_METHOD_OPTIONS.find((option) => option.value === circumferenceMethod)
+    ?? CIRCUMFERENCE_METHOD_OPTIONS[0]!;
 
   return (
     <section data-testid="essential-measurement-summary" className="mb-3 rounded-xl border border-slate-200 bg-white p-3 text-slate-900">
@@ -2823,8 +2832,8 @@ function FullScreenEssentialMeasurementSummary({
                 ? "Dataset values remain visible, but Local ML blocks circumference when any safe direct WEAR depth group is missing."
                 : "Dataset values remain visible, but this model stage cannot produce circumference until 3D depth is trained."
               : directWearDepthActive
-                ? "Dataset is the real measurement. Our result uses the red-line front width, the direct WEAR group's middle depth ratio, and the ellipse calculator."
-                : "Dataset is the real measurement. Our result is the circumference produced from the red line plus the depth-ratio formula."}
+                ? "Dataset is the real measurement. Our result uses the red-line front width, the direct WEAR group's middle depth ratio, and your selected shape formula below."
+                : "Dataset is the real measurement. Our result uses the red line, the selected depth ratio, and your selected shape formula below."}
           </p>
         </div>
         <label className="flex items-center gap-1.5 text-[10px] text-slate-600">
@@ -2926,10 +2935,100 @@ function FullScreenEssentialMeasurementSummary({
         </div>
       </div>
 
+      <div data-testid="circumference-method-selector" className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5">
+        <div className="text-[11px] font-medium text-emerald-950">Shape formula around the body</div>
+        <p className="mt-1 text-[10px] leading-4 text-emerald-900">
+          This changes only the final shape calculation below. The red width, camera correction and selected depth stay exactly the same.
+        </p>
+        <label className="mt-2 block text-[9px] font-medium text-slate-600" htmlFor="circumference-method-select">
+          Choose a formula
+        </label>
+        <select
+          id="circumference-method-select"
+          value={circumferenceMethod}
+          onChange={(event) => setCircumferenceMethod(event.currentTarget.value as CircumferenceMethod)}
+          className="mt-1 w-full rounded-lg border border-emerald-300 bg-white px-2.5 py-2 text-xs font-medium text-slate-900"
+        >
+          {CIRCUMFERENCE_METHOD_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value} disabled={!option.available}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        {circumferenceMethod === "superellipse" ? (
+          <div className="mt-2 rounded-lg border border-emerald-200 bg-white p-2">
+            <div className="flex items-center justify-between gap-2 text-[10px] text-slate-700">
+              <span>Shape exponent n</span>
+              <span className="font-mono font-semibold text-slate-950">{superellipseExponent.toFixed(1)}</span>
+            </div>
+            <input
+              type="range"
+              min="1.2"
+              max="4"
+              step="0.1"
+              value={superellipseExponent}
+              onChange={(event) => setSuperellipseExponent(Number(event.currentTarget.value))}
+              aria-label="Superellipse shape exponent"
+              className="mt-1 w-full accent-emerald-600"
+            />
+            <div className="flex justify-between text-[8px] text-slate-500">
+              <span>1.2 pinched</span>
+              <span>2.0 ellipse</span>
+              <span>4.0 boxier</span>
+            </div>
+            <div className="mt-2 grid grid-cols-4 gap-1">
+              {[
+                { value: 1.5, label: "Pinched" },
+                { value: 2, label: "Oval" },
+                { value: 2.5, label: "Rounded" },
+                { value: 3.5, label: "Boxier" },
+              ].map((preset) => (
+                <button
+                  key={preset.value}
+                  type="button"
+                  aria-pressed={Math.abs(superellipseExponent - preset.value) < 0.01}
+                  onClick={() => setSuperellipseExponent(preset.value)}
+                  className={`rounded border px-1 py-1 text-[8px] font-medium ${Math.abs(superellipseExponent - preset.value) < 0.01
+                    ? "border-emerald-500 bg-emerald-100 text-emerald-950"
+                    : "border-slate-200 bg-slate-50 text-slate-600 hover:border-emerald-300"}`}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+        <div className="mt-2 rounded-lg bg-white/80 px-2 py-2 text-[9px] leading-3.5 text-slate-700">
+          <div>{selectedCircumferenceOption.simpleDescription}</div>
+          <div className="mt-1 break-words font-mono text-[9px] text-emerald-950">{selectedCircumferenceOption.formula}</div>
+        </div>
+        <p className="mt-1.5 text-[9px] leading-3.5 text-slate-600">
+          “Real 3D contour” is shown but disabled because this photo does not contain a measured 3D body cross-section.
+        </p>
+      </div>
+
       <div className="mt-3 grid gap-2">
         {targets.map(({ kind, label, targetCm }) => {
           const candidate = measurement?.rows.find((row) => row.kind === kind) ?? null;
-          const errorCm = candidate && targetCm != null ? candidate.guidedCm - targetCm : null;
+          const shownInputRamanujanCm = candidate
+            ? calculateCircumferenceCm(candidate.formulaWidthCm, candidate.depthCm, "ramanujan-1")
+            : null;
+          const shownInputSelectedCm = candidate
+            ? calculateCircumferenceCm(
+                candidate.formulaWidthCm,
+                candidate.depthCm,
+                circumferenceMethod,
+                superellipseExponent,
+              )
+            : null;
+          // The measurement row exposes width/depth rounded to 0.1 cm, while
+          // guidedCm was calculated from higher-precision values. Preserve the
+          // active Ramanujan result, then apply only the selected method's delta
+          // so the comparison does not manufacture a rounding difference.
+          const selectedCircumferenceCm = candidate && shownInputRamanujanCm != null && shownInputSelectedCm != null
+            ? candidate.guidedCm + (shownInputSelectedCm - shownInputRamanujanCm)
+            : null;
+          const errorCm = selectedCircumferenceCm != null && targetCm != null ? selectedCircumferenceCm - targetCm : null;
           const errorPct = errorCm != null && targetCm && targetCm > 0 ? (errorCm / targetCm) * 100 : null;
           const withinTwoPct = errorPct != null && Math.abs(errorPct) <= 2;
           return (
@@ -2949,10 +3048,10 @@ function FullScreenEssentialMeasurementSummary({
                 </div>
                 <div>
                   <div className="text-[9px] text-slate-500">Our result</div>
-                  <div className="font-mono text-base text-slate-950">{candidate ? formatCircumferenceValue(candidate.guidedCm, unit) : measurementUnavailableMessage ? "Waiting for 3D" : "Calculating"}</div>
+                  <div className="font-mono text-base text-slate-950">{selectedCircumferenceCm != null ? formatCircumferenceValue(selectedCircumferenceCm, unit) : measurementUnavailableMessage ? "Waiting for 3D" : "Calculating"}</div>
                   <div className="mt-0.5 text-[9px] text-slate-500">
-                    {candidate
-                      ? `using ${bodyWidthMethod === "apple-vision" ? "Apple Vision" : "Depth Pro"}`
+                    {selectedCircumferenceCm != null
+                      ? `${bodyWidthMethod === "apple-vision" ? "Apple Vision" : "Depth Pro"} · ${selectedCircumferenceOption.label}`
                       : measurementUnavailableMessage ? "depth model not trained" : "calculating"}
                   </div>
                 </div>
@@ -3042,7 +3141,7 @@ function FullScreenDepthRatioControls({
             </div>
             <div className="rounded-lg bg-emerald-50 px-1.5 py-2 text-emerald-900">
               <span className="block text-[8px] text-emerald-600">3 · ANSWER</span>
-              Ellipse converts width and depth to circumference
+              Your selected shape formula converts width and depth to circumference
             </div>
           </div>
         ) : firstTable ? (
