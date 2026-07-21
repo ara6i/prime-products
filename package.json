@@ -11,7 +11,7 @@
     "process-images": "tsx scripts/process-platform-images.ts"
   },
   "dependencies": {
-    "@primestyleai/tryon": "5.10.239",
+    "@primestyleai/tryon": "5.10.240",
     "@react-oauth/google": "^0.13.4",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
