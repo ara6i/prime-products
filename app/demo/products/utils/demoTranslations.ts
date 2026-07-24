@@ -37,7 +37,12 @@ type DemoTranslationKey =
   | "itemCount"
   | "clearBag"
   | "suggestedSize"
+  | "priceUnavailable"
   | "material"
+  | "stretch"
+  | "structure"
+  | "inseam"
+  | "modelReference"
   | "color"
   | "analyzedByProfile"
   | "analyzing"
@@ -124,7 +129,12 @@ const ENGLISH_STRINGS: Record<DemoTranslationKey, string> = {
   itemCount: "{count} item{plural}",
   clearBag: "Clear bag",
   suggestedSize: "Suggested size",
+  priceUnavailable: "Price unavailable",
   material: "Material",
+  stretch: "Stretch",
+  structure: "Structure",
+  inseam: "Inseam",
+  modelReference: "Model reference",
   color: "Color",
   analyzedByProfile: "Analyzed by your profile",
   analyzing: "Analyzing",

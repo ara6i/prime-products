@@ -245,10 +245,10 @@ export function MobileProductDetail({ product }: Props) {
     productDescription: product.description,
     productPrice: positivePrice(product.price),
     productCompareAtPrice: positivePrice(product.originalPrice),
-    productCurrency: "USD",
+    productCurrency: product.currency,
     sizeGuideData: product.sizeGuideData,
     apiUrl: sdkApiUrl,
-  }), [product.id, product.name, product.primaryImage, product.category, product.subcategory, product.description, product.price, product.originalPrice, product.sizeGuideData, sdkApiUrl]);
+  }), [product.id, product.name, product.primaryImage, product.category, product.subcategory, product.description, product.price, product.originalPrice, product.currency, product.sizeGuideData, sdkApiUrl]);
   const autoSize = usePrimeStyleSize(autoSizeInput);
   const hasProfileSizeResult = Boolean(autoSize.recommendedSize || autoSize.sections);
   const hasAuthenticatedProfile = Boolean(autoSize.authenticatedProfile);
@@ -431,6 +431,14 @@ export function MobileProductDetail({ product }: Props) {
     setJacketLength("");
   };
 
+  const productFacts = [
+    { label: translateDemo("material"), value: product.material },
+    { label: translateDemo("stretch"), value: product.fitDetails.stretch },
+    { label: translateDemo("structure"), value: product.fitDetails.structure },
+    { label: translateDemo("inseam"), value: product.fitDetails.inseam },
+    { label: translateDemo("modelReference"), value: product.fitDetails.modelReference },
+  ].filter((fact): fact is { label: string; value: string } => Boolean(fact.value));
+
   const [touchStart, setTouchStart] = useState(0);
   const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientX);
   const handleTouchEnd = (e: React.TouchEvent) => {
@@ -526,13 +534,15 @@ export function MobileProductDetail({ product }: Props) {
           <div className="space-y-1.5">
             <p className="text-[10px] text-brand-blue font-semibold tracking-[0.16em] uppercase leading-none">{product.brand}</p>
             <h1 className="text-[20px] font-semibold tracking-[-0.01em] leading-[1.22] text-text-primary">{product.name}</h1>
-            {product.price !== null && product.price > 0 && (
+            {product.price !== null ? (
               <div className="flex items-baseline gap-2">
-                <span className="text-[16px] font-semibold text-text-primary">{formatProductPrice(product.price)}</span>
+                <span className="text-[16px] font-semibold text-text-primary">{formatProductPrice(product.price, product.currency)}</span>
                 {product.originalPrice !== null && product.originalPrice > 0 && product.originalPrice > product.price && (
-                  <span className="text-[12px] text-text-disabled line-through">{formatProductPrice(product.originalPrice)}</span>
+                  <span className="text-[12px] text-text-disabled line-through">{formatProductPrice(product.originalPrice, product.currency)}</span>
                 )}
               </div>
+            ) : (
+              <p className="text-[12px] text-text-caption">{translateDemo("priceUnavailable")}</p>
             )}
           </div>
 
@@ -720,7 +730,7 @@ export function MobileProductDetail({ product }: Props) {
             productImage={images[currentImage] ?? product.primaryImage}
             productPrice={positivePrice(product.price)}
             productCompareAtPrice={positivePrice(product.originalPrice)}
-            productCurrency="USD"
+            productCurrency={product.currency}
             productImages={images}
             productCarouselItems={sdkCarouselItems}
             locale={sdkLocale}
@@ -752,13 +762,13 @@ export function MobileProductDetail({ product }: Props) {
             </div>
           )}
 
-          {product.material && (
-            <div className="flex items-center gap-2 text-[11px] pb-4">
-              <span className="text-text-caption">{translateDemo("material")}</span>
+          {productFacts.map((fact) => (
+            <div key={fact.label} className="flex items-center gap-2 text-[11px] pb-4">
+              <span className="text-text-caption">{fact.label}</span>
               <span className="h-px flex-1 bg-border-light" />
-              <span className="text-text-hint">{product.material}</span>
+              <span className="max-w-[65%] text-right text-text-hint">{fact.value}</span>
             </div>
-          )}
+          ))}
 
           {product.completeLook.length > 0 && (
             <CompleteLookRow products={product.completeLook} />
@@ -802,7 +812,7 @@ function CompleteLookRow({ products }: { products: DemoProductView["completeLook
             </div>
             <p className="mt-2 line-clamp-2 text-xs font-medium leading-tight text-text-body">{item.name}</p>
             {item.price !== null && item.price > 0 && (
-              <p className="mt-1 text-[11px] text-text-disabled">{formatLookPrice(item.price)}</p>
+              <p className="mt-1 text-[11px] text-text-disabled">{formatProductPrice(item.price, item.currency)}</p>
             )}
           </Link>
         ))}
@@ -811,14 +821,10 @@ function CompleteLookRow({ products }: { products: DemoProductView["completeLook
   );
 }
 
-function formatLookPrice(price: number): string {
-  return formatProductPrice(price);
-}
-
-function formatProductPrice(price: number): string {
-  const fractionDigits = Number.isInteger(price) ? 0 : 2;
-  return `$${price.toLocaleString("en-US", {
-    minimumFractionDigits: fractionDigits,
-    maximumFractionDigits: fractionDigits,
-  })}`;
+function formatProductPrice(price: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency || "USD",
+    maximumFractionDigits: Number.isInteger(price) ? 0 : 2,
+  }).format(price);
 }

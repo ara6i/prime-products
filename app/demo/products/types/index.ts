@@ -36,6 +36,12 @@ export interface DemoProductApi {
   selected_color?: { id?: string; name?: string; hex?: string; available?: boolean };
   size_guide?: unknown;
   related_products?: DemoRelatedProductApi[];
+  metadata?: {
+    inseam?: string;
+    model?: string;
+    sourceTags?: string[];
+    [key: string]: unknown;
+  } | null;
   /** Gemini-generated model-free cover image URL (for listing card only) */
   generated_cover?: string;
 }
@@ -126,6 +132,12 @@ export interface DemoProductView {
   currency: string;
   description: string;
   material: string;
+  fitDetails: {
+    stretch?: string;
+    structure?: string;
+    inseam?: string;
+    modelReference?: string;
+  };
   images: string[];
   primaryImage: string;
   sizes: DemoSizeOption[];

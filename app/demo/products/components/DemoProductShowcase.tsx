@@ -452,7 +452,7 @@ function ProductTile({
             </div>
           </div>
           <div className="text-right text-sm font-semibold text-[#101828]">
-            {product.price !== null ? formatProductPrice(product.price, product.currency) : translateDemo("demoFallback")}
+            {product.price !== null ? formatProductPrice(product.price, product.currency) : translateDemo("priceUnavailable")}
           </div>
         </div>
       </Link>
