@@ -20,6 +20,8 @@ function positivePrice(value: unknown): number | null {
 const DEMO_USD_PRICE_OVERRIDES: Record<string, { price: number; originalPrice?: number }> = {
   "womens-stretch-flare-jeans-layover": { price: 248 },
   "flat-leather-criss-cross-sandals": { price: 29.95, originalPrice: 59.9 },
+  "floral-linen-blend-shirt": { price: 9.98, originalPrice: 49.9 },
+  "floral-print-linen-blend-trousers": { price: 11.98, originalPrice: 59.9 },
 };
 
 function resolveDemoPricing(p: Pick<DemoProductApi, "product_id" | "_id" | "price" | "original_price" | "currency">) {
@@ -171,14 +173,21 @@ export function mapProductDetail(p: DemoProductApi): DemoProductView {
 
 function buildCompleteLook(p: DemoProductApi): DemoCompleteLookProduct[] {
   return (p.related_products ?? [])
-    .map((item) => ({
-      id: item.id ?? "",
-      name: cleanProductName(item.brand ?? "", item.name ?? "Untitled"),
-      brand: item.brand || DEMO_BRAND,
-      price: positivePrice(item.price),
-      currency: item.currency ?? p.currency ?? "USD",
-      image: proxyImage(item.image ?? ""),
-    }))
+    .map((item) => {
+      const pricing = resolveDemoPricing({
+        product_id: item.id,
+        price: item.price,
+        currency: item.currency ?? p.currency,
+      });
+      return {
+        id: item.id ?? "",
+        name: cleanProductName(item.brand ?? "", item.name ?? "Untitled"),
+        brand: item.brand || DEMO_BRAND,
+        price: pricing.price,
+        currency: pricing.currency,
+        image: proxyImage(item.image ?? ""),
+      };
+    })
     .filter((item) => item.id && item.image);
 }
 
