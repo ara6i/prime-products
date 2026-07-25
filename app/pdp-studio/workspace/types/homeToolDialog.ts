@@ -1,10 +1,13 @@
-import type { PdpStudioToolId, PdpStudioUiIconName } from "./index";
+import type {
+  PdpStudioToolId,
+  PdpStudioToolMode,
+  PdpStudioUiIconName,
+} from "./index";
 
-export type PdpStudioHomeAiToolId =
-  | "product-staging"
-  | "ghost-mannequin"
-  | "product-beautifier"
-  | "flat-lay";
+export type PdpStudioHomeAiToolId = Exclude<
+  PdpStudioToolId,
+  "ai-fashion-models" | "background-remover"
+>;
 
 export type PdpStudioImageLibrarySource =
   | "start-photo"
@@ -44,8 +47,13 @@ export interface PdpStudioHomeToolDialogDefinition {
   label: string;
   description: string;
   icon: PdpStudioUiIconName;
+  mode: PdpStudioToolMode;
   defaultSize: PdpStudioGenerationSize;
   illustrationImage: string;
+  uploadLabel?: string;
+  secondaryUploadLabel?: string;
+  promptLabel?: string;
+  outputCount: 1 | 2;
 }
 
 export interface PdpStudioToolSwitcherItem {

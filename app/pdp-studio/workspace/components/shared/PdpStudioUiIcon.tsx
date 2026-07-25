@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   Aperture,
   Archive,
@@ -39,7 +40,6 @@ import {
   Sparkle,
   SquaresFour,
   Stack,
-  Storefront,
   Swatches,
   TextT,
   Trademark,
@@ -86,7 +86,7 @@ const ICONS: Record<PdpStudioUiIconName, Icon> = {
   resize: Resize,
   search: MagnifyingGlass,
   settings: Gear,
-  shopify: Storefront,
+  shopify: Package,
   sparkles: Sparkle,
   template: SquaresFour,
   text: TextT,
@@ -134,6 +134,19 @@ export function PdpStudioUiIcon({
   className,
   weight = "regular",
 }: PdpStudioUiIconProps) {
+  if (name === "shopify") {
+    return (
+      <Image
+        src="/images/pdp-studio/brand/shopify-glyph.svg"
+        alt=""
+        width={size}
+        height={size}
+        className={className}
+        aria-hidden
+      />
+    );
+  }
+
   const IconComponent = ICONS[name];
   return (
     <IconComponent

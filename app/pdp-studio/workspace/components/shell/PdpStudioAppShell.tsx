@@ -18,6 +18,7 @@ import { PdpStudioNavigation } from "./PdpStudioNavigation";
 import { PdpStudioCommandPalette } from "./PdpStudioCommandPalette";
 import { PdpStudioOverlayHost } from "../overlays/PdpStudioOverlayHost";
 import { PdpStudioWorkspaceAuthGate } from "../overlays/PdpStudioWorkspaceAuthGate";
+import { PdpStudioButton } from "../shared/PdpStudioButton";
 import { PdpStudioUiIcon } from "../shared/PdpStudioUiIcon";
 
 interface PdpStudioAppShellProps {
@@ -95,6 +96,18 @@ export function PdpStudioAppShell({
         onClose={ui.closeOverlay}
         onOpenOverlay={ui.openOverlay}
       />
+      {!needsAuth ? (
+        <PdpStudioButton
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Help"
+          onClick={() => ui.openOverlay("help")}
+          className="fixed bottom-4 right-4 z-[var(--z-pdp-sticky)] size-9 min-h-0 rounded-full border border-[var(--color-pdp-rule)] bg-white p-0 text-[var(--color-pdp-ink-soft)] shadow-sm hover:bg-[var(--color-pdp-surface-soft)] max-[599px]:hidden"
+        >
+          <PdpStudioUiIcon name="help" size={17} />
+        </PdpStudioButton>
+      ) : null}
       {needsAuth ? <PdpStudioWorkspaceAuthGate /> : null}
 
       <section
@@ -116,13 +129,15 @@ export function PdpStudioAppShell({
             to use PDP Studio.
           </p>
         </div>
-        <button
+        <PdpStudioButton
           type="button"
+          variant="ghost"
+          size="icon"
           aria-label="Help"
-          className="absolute bottom-5 right-5 grid size-9 place-items-center rounded-full border border-[var(--color-pdp-rule)] bg-white text-[var(--color-pdp-ink-soft)] shadow-sm"
+          className="absolute bottom-5 right-5 grid size-9 min-h-0 place-items-center rounded-full border border-[var(--color-pdp-rule)] bg-white p-0 text-[var(--color-pdp-ink-soft)] shadow-sm"
         >
           <PdpStudioUiIcon name="help" size={17} />
-        </button>
+        </PdpStudioButton>
       </section>
     </main>
   );

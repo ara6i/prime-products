@@ -7,6 +7,7 @@ import type {
   PdpStudioHomeAiToolId,
   PdpStudioImageLibrarySource,
 } from "../../types/homeToolDialog";
+import { isPdpStudioHomeAiToolId } from "../../data/pdpStudioInlineTools";
 import { PdpStudioButton } from "../shared/PdpStudioButton";
 import { PdpStudioUiIcon } from "../shared/PdpStudioUiIcon";
 
@@ -15,13 +16,6 @@ interface HomeToolGridProps {
   onOpenImageLibrary: (source: PdpStudioImageLibrarySource) => void;
   onOpenAiTool: (toolId: PdpStudioHomeAiToolId) => void;
 }
-
-const HOME_DIALOG_TOOL_IDS = [
-  "product-staging",
-  "ghost-mannequin",
-  "product-beautifier",
-  "flat-lay",
-] satisfies PdpStudioHomeAiToolId[];
 
 interface HomeLauncherContentProps {
   label: string;
@@ -100,7 +94,7 @@ export function HomeToolGrid({
     }),
     {
       id: "all-tools",
-      label: "See all tools...",
+      label: "See all tools…",
       href: "/pdp-studio/ai-tools",
       icon: "template" as const,
       featured: false,
@@ -150,9 +144,11 @@ export function HomeToolGrid({
               variant="ghost"
               className={launcherClassName(tool.featured)}
               onClick={() => {
+                const toolId = tool.id as PdpStudioToolId;
+
                 if (tool.action === "image-library") {
                   onOpenImageLibrary(
-                    tool.id === "background-remover"
+                    toolId === "background-remover"
                       ? "background-remover"
                       : "start-photo",
                   );
@@ -161,11 +157,9 @@ export function HomeToolGrid({
 
                 if (
                   tool.action === "ai-tool" &&
-                  HOME_DIALOG_TOOL_IDS.includes(
-                    tool.id as PdpStudioHomeAiToolId,
-                  )
+                  isPdpStudioHomeAiToolId(toolId)
                 ) {
-                  onOpenAiTool(tool.id as PdpStudioHomeAiToolId);
+                  onOpenAiTool(toolId);
                 }
               }}
             >

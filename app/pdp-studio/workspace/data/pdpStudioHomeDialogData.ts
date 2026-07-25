@@ -5,49 +5,45 @@ import type {
   PdpStudioHomeToolDialogDefinition,
   PdpStudioImageLibraryTab,
 } from "../types/homeToolDialog";
+import { PDP_STUDIO_AUDIT_CATALOG } from "./pdpStudioAuditData";
+import { isPdpStudioHomeAiToolId } from "./pdpStudioInlineTools";
+import { PDP_STUDIO_TOOL_ASSETS } from "./pdpStudioToolAssets";
 
-export const PDP_STUDIO_HOME_TOOL_DIALOGS: Record<
-  PdpStudioHomeAiToolId,
-  PdpStudioHomeToolDialogDefinition
-> = {
-  "product-staging": {
-    id: "product-staging",
-    label: "Product Staging",
-    description:
-      "Create stunning lifestyle images that tell a story and show your product in action",
-    icon: "product-staging",
-    defaultSize: "landscape-3-2",
-    illustrationImage:
-      "/images/pdp-studio/tool-dialogs/product-staging.png",
-  },
-  "ghost-mannequin": {
-    id: "ghost-mannequin",
-    label: "Ghost Mannequin",
-    description:
-      "Display your garment on a 3D ghost mannequin with professional styling",
-    icon: "ghost-mannequin",
-    defaultSize: "square",
-    illustrationImage:
-      "/images/pdp-studio/tool-dialogs/ghost-mannequin.png",
-  },
-  "product-beautifier": {
-    id: "product-beautifier",
-    label: "Product Beautifier",
-    description: "Get a polished, professional image of your product",
-    icon: "product-beautifier",
-    defaultSize: "square",
-    illustrationImage:
-      "/images/pdp-studio/tool-dialogs/product-beautifier.png",
-  },
-  "flat-lay": {
-    id: "flat-lay",
-    label: "Flat Lay",
-    description: "Visualize your product laid flat on a neutral surface",
-    icon: "flat-lay",
-    defaultSize: "square",
-    illustrationImage: "/images/pdp-studio/tool-dialogs/flat-lay.png",
-  },
-};
+const DEFAULT_TOOL_ASSET = "/images/pdp-studio/presets/clean-white.png";
+
+function mapDefaultSize(size?: string): PdpStudioGenerationSize {
+  const normalizedSize = size?.toLowerCase();
+  if (normalizedSize === "original") return "original";
+  if (normalizedSize?.includes("9:16")) return "portrait-9-16";
+  if (normalizedSize?.includes("3:4")) return "portrait-3-4";
+  if (normalizedSize?.includes("2:3")) return "portrait-2-3";
+  if (normalizedSize?.includes("3:2")) return "landscape-3-2";
+  if (normalizedSize?.includes("4:3")) return "landscape-4-3";
+  if (normalizedSize?.includes("16:9")) return "landscape-16-9";
+  return "square";
+}
+
+export const PDP_STUDIO_HOME_TOOL_DIALOGS = Object.fromEntries(
+  PDP_STUDIO_AUDIT_CATALOG.tools
+    .filter((tool) => isPdpStudioHomeAiToolId(tool.id))
+    .map((tool) => [
+      tool.id,
+      {
+        id: tool.id,
+        label: tool.label,
+        description: tool.description,
+        icon: tool.icon,
+        mode: tool.mode,
+        defaultSize: mapDefaultSize(tool.defaultSize),
+        illustrationImage:
+          PDP_STUDIO_TOOL_ASSETS[tool.id] ?? DEFAULT_TOOL_ASSET,
+        uploadLabel: tool.uploadLabel,
+        secondaryUploadLabel: tool.secondaryUploadLabel,
+        promptLabel: tool.promptLabel,
+        outputCount: tool.outputCount ?? 1,
+      },
+    ]),
+) as Record<PdpStudioHomeAiToolId, PdpStudioHomeToolDialogDefinition>;
 
 export const PDP_STUDIO_IMAGE_LIBRARY_TABS: {
   id: PdpStudioImageLibraryTab;

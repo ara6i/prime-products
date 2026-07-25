@@ -96,7 +96,12 @@ export function usePdpStudioHomeDialogs() {
   };
 
   const generatePreview = () => {
-    if (!selectedImage) return;
+    if (!activeToolId) return;
+    const activeTool = PDP_STUDIO_HOME_TOOL_DIALOGS[activeToolId];
+    const requiresImage =
+      activeTool.mode !== "text-generator" && activeTool.mode !== "chooser";
+    if (requiresImage && !selectedImage) return;
+    if (!requiresImage && !prompt.trim()) return;
     setPreviewMessage(
       "UI preview ready. AI generation is intentionally not connected in this local UI build.",
     );
@@ -132,3 +137,6 @@ export function usePdpStudioHomeDialogs() {
   };
 }
 
+export type PdpStudioHomeDialogsController = ReturnType<
+  typeof usePdpStudioHomeDialogs
+>;

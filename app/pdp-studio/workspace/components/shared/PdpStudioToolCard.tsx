@@ -1,56 +1,72 @@
+import Image from "next/image";
 import Link from "next/link";
+import { PDP_STUDIO_TOOL_ASSETS } from "../../data/pdpStudioToolAssets";
 import type { PdpStudioToolDefinition } from "../../types";
+import { PdpStudioButton } from "./PdpStudioButton";
 import { PdpStudioUiIcon } from "./PdpStudioUiIcon";
 
 interface PdpStudioToolCardProps {
   tool: PdpStudioToolDefinition;
-  compact?: boolean;
+  onActivate?: () => void;
 }
 
 export function PdpStudioToolCard({
   tool,
-  compact = false,
+  onActivate,
 }: PdpStudioToolCardProps) {
-  return (
-    <Link
-      href={tool.href}
-      className={[
-        "group relative flex min-w-0 flex-col border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] text-[var(--color-pdp-ink)] outline-none",
-        "transition-[background-color,transform] duration-[var(--dur-pdp-short)] ease-[var(--ease-pdp-out)]",
-        "hover:-translate-y-px hover:bg-[var(--color-pdp-surface-soft)]",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-pdp-focus)]",
-        compact
-          ? "min-h-[4.25rem] rounded-[var(--radius-pdp-md)] p-2.5"
-          : "min-h-[10rem] rounded-[var(--radius-pdp-lg)] p-[var(--space-pdp-lg)]",
-      ].join(" ")}
-    >
-      <div className="flex items-start justify-between gap-[var(--space-pdp-sm)]">
-        <span className="grid size-[2.5rem] place-items-center rounded-[var(--radius-pdp-sm)] bg-[var(--color-pdp-accent-soft)] text-[var(--color-pdp-accent)]">
-          <PdpStudioUiIcon name={tool.icon} />
-        </span>
+  const image = PDP_STUDIO_TOOL_ASSETS[tool.id];
+  const className =
+    "group relative flex h-20 w-full min-w-0 items-center justify-start gap-3 overflow-hidden rounded-[var(--radius-pdp-sm)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-2 text-left text-[var(--color-pdp-ink)] outline-none transition-[border-color,background-color] duration-[var(--dur-pdp-short)] ease-[var(--ease-pdp-out)] hover:border-[var(--color-pdp-rule-strong)] hover:bg-[var(--color-pdp-surface-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-pdp-focus)]";
+
+  const content = (
+    <>
+      <div className="min-w-0 flex-1 px-2">
+        <h3 className="truncate text-[0.875rem] font-normal leading-tight">
+          {tool.label}
+        </h3>
         {tool.badge ? (
-          <span className="rounded-[var(--radius-pdp-pill)] bg-[var(--color-pdp-ink)] px-[var(--space-pdp-xs)] py-[var(--space-pdp-3xs)] text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-surface)]">
+          <span className="mt-1 inline-flex rounded border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] px-1 py-px text-[0.5625rem] font-medium text-[var(--color-pdp-accent)]">
             {tool.badge}
           </span>
         ) : null}
       </div>
-      <h3 className={compact ? "mt-2 text-sm font-bold leading-tight" : "mt-[var(--space-pdp-md)] text-[var(--text-pdp-md)] font-bold leading-tight"}>
-        {tool.label}
-      </h3>
-      {!compact ? (
-        <p className="mt-[var(--space-pdp-xs)] line-clamp-2 text-[var(--text-pdp-sm)] leading-relaxed text-[var(--color-pdp-muted)]">
-          {tool.description}
-        </p>
-      ) : null}
-      {!compact ? (
-        <span className="mt-auto flex items-center gap-[var(--space-pdp-xs)] pt-[var(--space-pdp-md)] text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-accent)]">
-          Open
-          <PdpStudioUiIcon
-            name="arrow"
-            className="transition-transform duration-[var(--dur-pdp-micro)] ease-[var(--ease-pdp-out)] group-hover:translate-x-0.5"
+
+      <div className="relative grid size-16 shrink-0 place-items-center overflow-hidden rounded-[0.5rem] bg-[var(--color-pdp-surface-soft)]">
+        {image ? (
+          <Image
+            src={image}
+            alt=""
+            fill
+            sizes="64px"
+            className="object-cover transition-transform duration-[var(--dur-pdp-short)] ease-[var(--ease-pdp-out)] group-hover:scale-[1.03]"
           />
-        </span>
-      ) : null}
+        ) : (
+          <PdpStudioUiIcon
+            name={tool.icon}
+            size={23}
+            className="text-[var(--color-pdp-ink-soft)]"
+          />
+        )}
+      </div>
+    </>
+  );
+
+  if (onActivate) {
+    return (
+      <PdpStudioButton
+        type="button"
+        variant="ghost"
+        onClick={onActivate}
+        className={className}
+      >
+        {content}
+      </PdpStudioButton>
+    );
+  }
+
+  return (
+    <Link href={tool.href} className={className}>
+      {content}
     </Link>
   );
 }

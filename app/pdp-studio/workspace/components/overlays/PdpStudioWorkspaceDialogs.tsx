@@ -22,23 +22,31 @@ function ApiDialogContent() {
   return (
     <>
       <DialogHeader>
-        <DialogTitle className="text-[var(--text-pdp-lg)]">Visual Agents & API</DialogTitle>
+        <DialogTitle className="text-[var(--text-pdp-lg)]">
+          Chat about Enterprise integrations
+        </DialogTitle>
         <DialogDescription className="text-[var(--text-pdp-sm)] text-[var(--color-pdp-muted)]">
-          Connect one API to image-editing workflows and automate catalog production.
+          Connect to one powerful API and automate high-quality image editing
+          across your product workflows.
         </DialogDescription>
       </DialogHeader>
       <div className="grid gap-[var(--space-pdp-sm)]">
-        {["Integrate PDP Studio into your product", "Automate an internal editing workflow", "Read API documentation", "Talk to Sales"].map((item) => (
+        {[
+          "Integrate PrimeStyleAI into your product",
+          "Add the API to your internal image-editing process",
+          "API Documentation",
+          "Talk to Sales",
+        ].map((item) => (
           <div key={item} className="flex items-center gap-[var(--space-pdp-sm)] rounded-[var(--radius-pdp-md)] border border-[var(--color-pdp-rule)] p-[var(--space-pdp-md)]">
             <span className="grid size-[2.5rem] shrink-0 place-items-center rounded-[var(--radius-pdp-sm)] bg-[var(--color-pdp-accent-soft)] text-[var(--color-pdp-accent)]">
               <PdpStudioUiIcon name="api" />
             </span>
-            <span className="text-[var(--text-pdp-sm)] font-semibold">{item}</span>
+            <span className="text-[var(--text-pdp-sm)] font-medium">{item}</span>
           </div>
         ))}
       </div>
       <PdpStudioButton type="button" disabled className="w-full">
-        Generate API key · unavailable in UI preview
+        Generate my API key
       </PdpStudioButton>
     </>
   );

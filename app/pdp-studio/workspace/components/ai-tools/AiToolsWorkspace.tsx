@@ -1,33 +1,57 @@
 "use client";
 
-import { Input } from "@/app/shared/components/ui/input";
-import type { PdpStudioAuditCatalog } from "../../types";
+import type { ReactNode } from "react";
+import type {
+  PdpStudioAuditCatalog,
+  PdpStudioToolId,
+} from "../../types";
+import {
+  isPdpStudioHomeAiToolId,
+  isPdpStudioInlineToolId,
+} from "../../data/pdpStudioInlineTools";
 import { useAiToolsCatalogUi } from "../../hooks/useAiToolsCatalogUi";
+import { usePdpStudioHomeDialogs } from "../../hooks/usePdpStudioHomeDialogs";
 import { PdpStudioButton } from "../shared/PdpStudioButton";
-import { PdpStudioPageHeader } from "../shared/PdpStudioPageHeader";
+import { PdpStudioInlineToolDialogs } from "../shared/PdpStudioInlineToolDialogs";
 import { PdpStudioToolCard } from "../shared/PdpStudioToolCard";
-import { PdpStudioUiIcon } from "../shared/PdpStudioUiIcon";
+import { AiToolsChooserDialog } from "./AiToolsChooserDialog";
 
 interface AiToolsWorkspaceProps {
   catalog: PdpStudioAuditCatalog;
 }
 
+interface ToolSectionProps {
+  title: string;
+  tools: PdpStudioAuditCatalog["tools"];
+  action?: ReactNode;
+  onActivateTool: (toolId: PdpStudioToolId) => void;
+}
+
 function ToolSection({
   title,
   tools,
-}: {
-  title: string;
-  tools: PdpStudioAuditCatalog["tools"];
-}) {
+  action,
+  onActivateTool,
+}: ToolSectionProps) {
   return (
-    <section>
-      <div className="flex items-center justify-between gap-[var(--space-pdp-sm)]">
-        <h2 className="text-[var(--text-pdp-lg)] font-bold">{title}</h2>
-        <span className="text-[var(--text-pdp-xs)] text-[var(--color-pdp-muted)]">{tools.length} tools</span>
+    <section className="min-w-0">
+      <div className="flex min-h-8 items-center justify-between gap-4">
+        <h2 className="text-[1rem] font-semibold text-[var(--color-pdp-ink)]">
+          {title}
+        </h2>
+        {action}
       </div>
-      <div className="mt-[var(--space-pdp-md)] grid gap-[var(--space-pdp-sm)] sm:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {tools.map((tool) => (
-          <PdpStudioToolCard key={tool.id} tool={tool} />
+          <PdpStudioToolCard
+            key={tool.id}
+            tool={tool}
+            onActivate={
+              isPdpStudioInlineToolId(tool.id)
+                ? () => onActivateTool(tool.id)
+                : undefined
+            }
+          />
         ))}
       </div>
     </section>
@@ -35,62 +59,69 @@ function ToolSection({
 }
 
 export function AiToolsWorkspace({ catalog }: AiToolsWorkspaceProps) {
-  const ui = useAiToolsCatalogUi(catalog.tools);
-  const recentlyUsed = catalog.tools.filter((tool) =>
-    ["ai-fashion-models", "product-staging", "background-remover"].includes(tool.id),
-  );
+  const ui = useAiToolsCatalogUi();
+  const dialogs = usePdpStudioHomeDialogs();
+  const byId = new Map(catalog.tools.map((tool) => [tool.id, tool]));
+  const recentlyUsed = [
+    "product-fixer",
+    "ai-images",
+    "ai-fashion-models",
+    "ghost-mannequin",
+  ].flatMap((id) => {
+    const tool = byId.get(id as PdpStudioAuditCatalog["tools"][number]["id"]);
+    return tool ? [tool] : [];
+  });
   const createTools = catalog.tools.filter((tool) => tool.group === "create");
   const allTools = catalog.tools.filter((tool) => tool.group === "all");
+  const activateInlineTool = (toolId: PdpStudioToolId) => {
+    if (toolId === "background-remover") {
+      dialogs.openImageLibrary("background-remover");
+      return;
+    }
+
+    if (isPdpStudioHomeAiToolId(toolId)) {
+      dialogs.openAiTool(toolId);
+    }
+  };
 
   return (
-    <div className="grid gap-[var(--space-pdp-xl)]">
-      <PdpStudioPageHeader
-        title="AI Tools"
-        description="Choose one focused product-imagery workflow. Every audited entry point is represented; generation remains disconnected except for the existing clothing photoshoot."
-      />
-
-      <ToolSection title="Recently used" tools={recentlyUsed} />
-      <ToolSection title="Create images with AI" tools={createTools} />
-      <ToolSection title="All tools" tools={allTools} />
-
-      <section className="rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-[var(--space-pdp-lg)]">
-        <div className="flex flex-col gap-[var(--space-pdp-md)] lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h2 className="text-[var(--text-pdp-lg)] font-bold">What do you need?</h2>
-            <p className="mt-[var(--space-pdp-xs)] text-[var(--text-pdp-sm)] text-[var(--color-pdp-muted)]">
-              Filter all audited creation and editing workflows.
-            </p>
-          </div>
-          <div className="relative w-full lg:max-w-[24rem]">
-            <PdpStudioUiIcon name="search" className="absolute left-[var(--space-pdp-sm)] top-1/2 -translate-y-1/2 text-[var(--color-pdp-muted)]" />
-            <Input
-              value={ui.query}
-              onChange={(event) => ui.setQuery(event.target.value)}
-              placeholder="Search AI tools"
-              className="h-[var(--size-pdp-control)] border-[var(--color-pdp-rule)] bg-[var(--color-pdp-paper)] pl-[2.75rem] text-[var(--text-pdp-sm)]"
-            />
-          </div>
-        </div>
-        <div className="mt-[var(--space-pdp-md)] flex flex-wrap gap-[var(--space-pdp-xs)]">
-          {(["all", "create", "editing"] as const).map((group) => (
+    <>
+      <div className="grid gap-12 pb-16">
+        <ToolSection
+          title="Recently used"
+          tools={recentlyUsed}
+          onActivateTool={activateInlineTool}
+        />
+        <ToolSection
+          title="Create images with AI"
+          tools={createTools}
+          onActivateTool={activateInlineTool}
+          action={
             <PdpStudioButton
-              key={group}
               type="button"
               variant="ghost"
-              data-active={ui.group === group}
-              onClick={() => ui.setGroup(group)}
-              className="min-h-[2.25rem] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] capitalize text-[var(--color-pdp-ink-soft)] data-[active=true]:border-[var(--color-pdp-accent)] data-[active=true]:bg-[var(--color-pdp-accent-soft)] data-[active=true]:text-[var(--color-pdp-accent)]"
+              onClick={ui.openChooser}
+              className="min-h-8 rounded-[0.5rem] bg-[var(--color-pdp-accent-soft)] px-3 text-[0.8125rem] font-medium text-[var(--color-pdp-accent-strong)] hover:bg-[var(--color-pdp-accent-soft)]"
             >
-              {group}
+              See all
             </PdpStudioButton>
-          ))}
-        </div>
-        <div className="mt-[var(--space-pdp-md)] grid gap-[var(--space-pdp-sm)] sm:grid-cols-2 xl:grid-cols-4">
-          {ui.filteredTools.map((tool) => (
-            <PdpStudioToolCard key={tool.id} tool={tool} compact />
-          ))}
-        </div>
-      </section>
-    </div>
+          }
+        />
+        <ToolSection
+          title="All tools"
+          tools={allTools}
+          onActivateTool={activateInlineTool}
+        />
+      </div>
+
+      <AiToolsChooserDialog
+        open={ui.chooserOpen}
+        tools={createTools}
+        onOpenChange={ui.setChooserOpen}
+        onActivateTool={activateInlineTool}
+      />
+
+      <PdpStudioInlineToolDialogs dialogs={dialogs} tools={catalog.tools} />
+    </>
   );
 }

@@ -434,7 +434,6 @@ export const PDP_STUDIO_AUDIT_CATALOG: PdpStudioAuditCatalog = {
       routes: [
         { id: "home", label: "Home", icon: icon("home"), href: "/pdp-studio" },
         { id: "ai-tools", label: "AI Tools", icon: icon("ai"), href: "/pdp-studio/ai-tools" },
-        { id: "photoshoot", label: "Photoshoot", icon: icon("camera"), href: "/pdp-studio/clothing-photoshoot" },
         { id: "batch", label: "Batch", icon: icon("batch"), href: "/pdp-studio/batch" },
       ],
       actions: [{ id: "activity", label: "Activity", icon: icon("activity") }],
@@ -454,8 +453,6 @@ export const PDP_STUDIO_AUDIT_CATALOG: PdpStudioAuditCatalog = {
       actions: [
         { id: "usage", label: "Usage", icon: icon("usage") },
         { id: "api", label: "Visual Agents & API", icon: icon("api") },
-        { id: "upgrade", label: "Upgrade Space", icon: icon("sparkles") },
-        { id: "help", label: "Help", icon: icon("help") },
       ],
     },
   ],

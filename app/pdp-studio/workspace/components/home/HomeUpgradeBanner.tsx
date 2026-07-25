@@ -1,25 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import { PdpStudioButton } from "../shared/PdpStudioButton";
 import { PdpStudioUiIcon } from "../shared/PdpStudioUiIcon";
 
 interface HomeUpgradeBannerProps {
   onDismiss: () => void;
 }
-
-const bannerProducts = [
-  {
-    src: "/images/pdp-studio/presets/clean-white.png",
-    crop: "scale-[1.45]",
-  },
-  {
-    src: "/images/pdp-studio/presets/warm-plinth.png",
-    crop: "scale-[1.55]",
-  },
-  {
-    src: "/images/pdp-studio/presets/cobalt-sweep.png",
-    crop: "scale-[1.4]",
-  },
-];
 
 export function HomeUpgradeBanner({ onDismiss }: HomeUpgradeBannerProps) {
   return (
@@ -34,42 +20,33 @@ export function HomeUpgradeBanner({ onDismiss }: HomeUpgradeBannerProps) {
       </div>
 
       <div
-        className="pointer-events-none absolute inset-y-0 right-[12.75rem] hidden items-center -space-x-1.5 xl:flex"
+        className="pointer-events-none absolute inset-y-0 right-[12.5rem] hidden w-[27rem] xl:block"
         aria-hidden
       >
-        {bannerProducts.map((product, index) => (
-          <span
-            key={product.src}
-            className="relative block size-16 overflow-hidden rounded-full border-[3px] border-white bg-white shadow-[0_4px_14px_rgba(15,23,42,0.13)]"
-            style={{ zIndex: bannerProducts.length - index }}
-          >
-            <Image
-              src={product.src}
-              alt=""
-              fill
-              priority
-              unoptimized
-              className={`object-cover ${product.crop}`}
-            />
-          </span>
-        ))}
+        <Image
+          src="/images/pdp-studio/brand/upgrade-banner.webp"
+          alt=""
+          fill
+          priority
+          sizes="432px"
+          className="object-contain object-right"
+        />
       </div>
       <div className="absolute inset-y-0 right-12 z-20 hidden items-center sm:flex">
-        <Link
-          href="/pdp-studio/preferences"
-          className="rounded-[var(--radius-pdp-sm)] bg-white px-5 py-3 text-[0.875rem] font-medium text-[var(--color-pdp-ink)] shadow-sm outline-none transition hover:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-pdp-focus)]"
-        >
-          Upgrade my Space
-        </Link>
+        <PdpStudioButton asChild variant="secondary" className="bg-white px-5 text-[var(--color-pdp-ink)] shadow-sm hover:bg-white/90">
+          <Link href="/pdp-studio/preferences">Upgrade my Space</Link>
+        </PdpStudioButton>
       </div>
-      <button
+      <PdpStudioButton
         type="button"
+        variant="icon"
+        size="icon-sm"
         onClick={onDismiss}
         aria-label="Dismiss upgrade banner"
-        className="absolute right-2 top-2 z-30 grid size-6 place-items-center rounded-full bg-[var(--color-pdp-ink)]/10 text-[var(--color-pdp-muted)] transition hover:bg-white hover:text-[var(--color-pdp-ink)]"
+        className="absolute right-2 top-2 z-30 size-6 min-h-0 bg-[var(--color-pdp-ink)]/10 p-0 text-[var(--color-pdp-muted)] hover:bg-white hover:text-[var(--color-pdp-ink)]"
       >
         <PdpStudioUiIcon name="close" size={14} />
-      </button>
+      </PdpStudioButton>
     </section>
   );
 }

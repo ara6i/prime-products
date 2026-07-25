@@ -8,8 +8,7 @@ import { HomeWorkflowCards } from "./HomeWorkflowCards";
 import { HomeToolGrid } from "./HomeToolGrid";
 import { HomePresetLibrary } from "./HomePresetLibrary";
 import { PdpStudioCustomSizeDialog } from "./PdpStudioCustomSizeDialog";
-import { PdpStudioAiToolDialog } from "./dialogs/PdpStudioAiToolDialog";
-import { PdpStudioImageLibraryDialog } from "./dialogs/PdpStudioImageLibraryDialog";
+import { PdpStudioInlineToolDialogs } from "../shared/PdpStudioInlineToolDialogs";
 
 interface HomeWorkspaceProps {
   catalog: PdpStudioAuditCatalog;
@@ -62,41 +61,9 @@ export function HomeWorkspace({ catalog }: HomeWorkspaceProps) {
         onHeightChange={ui.setCustomHeight}
       />
 
-      <PdpStudioImageLibraryDialog
-        source={dialogs.imageLibrarySource}
-        activeTab={dialogs.imageLibraryTab}
-        selectedImage={dialogs.selectedImage}
-        onOpenChange={(open) => {
-          if (!open) dialogs.closeImageLibrary();
-        }}
-        onTabChange={dialogs.setImageLibraryTab}
-        onSelectFile={dialogs.selectImageFile}
-      />
-
-      <PdpStudioAiToolDialog
-        activeToolId={dialogs.activeToolId}
-        activePanel={dialogs.activePanel}
-        quality={dialogs.quality}
-        size={dialogs.size}
-        brandEnabled={dialogs.brandEnabled}
-        brandDescription={dialogs.brandDescription}
-        prompt={dialogs.prompt}
-        selectedImage={dialogs.selectedImage}
-        previewMessage={dialogs.previewMessage}
+      <PdpStudioInlineToolDialogs
+        dialogs={dialogs}
         tools={catalog.tools}
-        onOpenChange={(open) => {
-          if (!open) dialogs.closeAiTool();
-        }}
-        onSwitchTool={dialogs.switchAiTool}
-        onTogglePanel={dialogs.togglePanel}
-        onClosePanel={() => dialogs.setActivePanel(null)}
-        onQualityChange={dialogs.setQuality}
-        onSizeChange={dialogs.setSize}
-        onBrandEnabledChange={dialogs.setBrandEnabled}
-        onBrandDescriptionChange={dialogs.setBrandDescription}
-        onPromptChange={dialogs.setPrompt}
-        onSelectFile={dialogs.selectImageFile}
-        onGenerate={dialogs.generatePreview}
       />
     </div>
   );

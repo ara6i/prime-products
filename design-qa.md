@@ -32,8 +32,8 @@
 - The upgrade banner no longer crops the wide workflow-card images into tiny circles. It now uses dedicated `1254 x 1254` product photographs at high rendering quality.
 - The generic Classics, Studio, and Essentials swatches were replaced with 12 outcome-led presets across Sell-ready, Studio scenes, and Lifestyle scenes.
 - All 12 preset thumbnails were generated through the user's signed-in ChatGPT image session and visually inspected together for subject consistency, scene relevance, sharpness, malformed geometry, text, logos, and watermarks.
-- Product Staging, Ghost Mannequin, Product Beautifier, and Flat Lay now use four dedicated `1536 x 1024` before/after illustrations generated through the user's signed-in ChatGPT session.
-- Each tool illustration keeps the same product between before and after states, uses a restrained cobalt accent, and contains no people, text, logos, or watermarks.
+- Product Staging, Product Beautifier, and Flat Lay use dedicated before/after illustrations generated through the user's signed-in ChatGPT session.
+- Ghost Mannequin now uses a separate `1200 x 800` hanger-to-invisible-mannequin comparison with the same ivory blazer, neutral styling, and no people, text, logos, or watermarks.
 
 ## Interaction and responsiveness
 
@@ -62,5 +62,84 @@
 - Image library, Shopify tab, tool switcher, quality, size, and brand-style interaction checks: passed
 - Generated tool asset inspection: passed
 - Footer removal check: passed
+
+## AI Tools and See all QA
+
+### Evidence
+
+- Source page: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-studio-ai-tools-qa-2026-07-25/photoroom-ai-tools-1102x773-final.png`
+- Local page: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-studio-ai-tools-qa-2026-07-25/local-ai-tools-1102x773-final.png`
+- Same-input page comparison: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-studio-ai-tools-qa-2026-07-25/ai-tools-compact-side-by-side-final.png`
+- Source chooser: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-studio-ai-tools-qa-2026-07-25/photoroom-see-all-1102x773-final.png`
+- Local chooser: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-studio-ai-tools-qa-2026-07-25/local-see-all-1102x773-final.png`
+- Same-input chooser comparison: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-studio-ai-tools-qa-2026-07-25/see-all-compact-side-by-side-final.png`
+- Corrected Ghost Mannequin dialog: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-studio-ai-tools-qa-2026-07-25/local-ghost-mannequin-dialog-final-v2.png`
+- Viewport: `1102 x 773`
+- State: signed-in PhotoRoom AI Tools reference versus local signed-in PDP Studio.
+
+### Comparison result
+
+- Sidebar width, navigation grouping, title position, three-column 80px tool cards, section spacing, and card typography match the reference geometry.
+- PrimeStyleAI's white/cobalt palette replaces the source dark palette without changing the layout.
+- Shopify Products uses the recognizable Shopify bag glyph instead of the generic storefront icon.
+- AI Fashion Models and Ghost Mannequin use distinct, relevant assets generated through the signed-in ChatGPT browser session.
+- See all opens the same full-width, four-column chooser interaction and Home See all tools navigates to AI Tools.
+- No browser console errors were found.
+- `/pdp-studio/clothing-photoshoot` was not modified.
+
+### Fix history
+
+- Replaced the oversized descriptive cards and filter panel with compact source-matched tool cards.
+- Removed the duplicate AI Tools heading and route-inappropriate template search.
+- Fixed the chooser's initial narrow-dialog breakpoint and sidebar z-index overlap.
+- Replaced the cached two-ghost illustration with a new filename and verified the corrected hanger-to-ghost image in the rendered dialog.
+- Removed unrelated blue AI artwork from tool cards and kept icon fallbacks where no relevant product image exists.
+
+## AI Tools launcher parity correction
+
+### Evidence
+
+- Source visual truth: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-studio-ai-tools-qa-2026-07-25/home-ghost-dialog-parity-target.png`
+- Implementation screenshot: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-studio-ai-tools-qa-2026-07-25/ai-tools-ghost-dialog-parity-implementation.png`
+- Same-input comparison: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-studio-ai-tools-qa-2026-07-25/home-vs-ai-tools-ghost-dialog-parity.png`
+- Viewport and screenshot dimensions: `1269 x 714` CSS pixels and `1269 x 714` image pixels at density `1`.
+- State: Ghost Mannequin opened from Home versus Ghost Mannequin opened from AI Tools.
+- Focused comparison was not needed because the dominant dialog, controls, copy, asset, and surrounding overlay are all readable in the same-input comparison.
+
+### Findings and history
+
+- Earlier P1: overlapping AI Tools entries navigated to older generic tool routes instead of opening the current Home dialogs.
+- Fix: added one shared inline-tool launcher definition, one shared dialog host, and button activation support for direct cards and the See all chooser.
+- Post-fix evidence: Home and AI Tools render the same Ghost Mannequin dialog with matching typography, spacing, colors, image quality, controls, copy, and overlay.
+- Direct interaction checks passed for Ghost Mannequin, Product Staging, Product Beautifier, Flat Lay, and Background Remover.
+- See all chooser to Ghost Mannequin passed without changing the AI Tools route.
+- Home launch behavior still passed after the shared-component refactor.
+- Browser console errors: none.
+- TypeScript and scoped ESLint: passed.
+- No actionable P0, P1, or P2 differences remain.
+
+## AI Tools full-catalog and sidebar refresh
+
+### Current evidence
+
+- Live PhotoRoom AI Tools source: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/tmp/pdp-studio-qa-2026-07-25/source-ai-tools-top-desktop.png`
+- Live PhotoRoom tool dialog: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/tmp/pdp-studio-qa-2026-07-25/source-video-generator-state.png`
+- Live PhotoRoom tool switcher: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/tmp/pdp-studio-qa-2026-07-25/source-switch-ai-tool-dialog.png`
+- Generated source sheets: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/tmp/pdp-studio-qa-2026-07-25/generated-tool-sheet-1.png`, `generated-tool-sheet-2.png`, and `generated-tool-sheet-3.png`
+- Final 27-asset inspection sheet: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/tmp/pdp-studio-qa-2026-07-25/final-ai-tool-assets-contact-sheet.png`
+- Current local layout and asset capture: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/tmp/pdp-studio-qa-2026-07-25/local-ai-tools-auth-blocked.png`
+- Upgrade banner source: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/tmp/pdp-studio-qa-2026-07-25/generated-upgrade-banner.png`
+
+### Result
+
+- All 26 catalog tools have a dedicated high-resolution WebP thumbnail; Batch has a separate matching asset.
+- The three generated source sheets and the final cropped contact sheet were visually checked for relevance, edge quality, malformed product geometry, readable accidental text, logos, watermarks, and inconsistent styling.
+- The AI Tools page retains the PhotoRoom information architecture: recently used, Create images with AI, All tools, compact three-column cards, image thumbnails on the right, and a source-matched See all chooser.
+- Every tool except AI Fashion Models opens the shared current tool surface. AI Fashion Models remains the only direct link to `/pdp-studio/clothing-photoshoot`.
+- Sidebar grouping and behavior match the captured source: Home, AI Tools, Batch, Activity, collapsible Content, Shopify Products, Designs, Brand Kit, Templates, then Usage, Visual Agents & API, Preferences, Upgrade, and floating Help.
+- The upgrade banner now uses a dedicated `2167 x 725` product still life generated through the signed-in ChatGPT browser session, replacing the small circular crops.
+- Current authenticated interaction recapture was blocked by the expired local PDP Studio session. The current signed-out capture still verifies the complete layout and final assets behind the auth gate; the prior signed-in interaction captures above cover the same shared chooser, tool-dialog, sidebar, and overlay components.
+- TypeScript, scoped ESLint, production build, and `git diff --check` passed.
+- Catalog contract check passed: `26` tools, `0` missing assets, `0` incorrect inline launchers, and AI Fashion Models still points to the untouched clothing-photoshoot route.
 
 final result: passed

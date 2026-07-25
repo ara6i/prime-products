@@ -14,9 +14,12 @@ export function PdpStudioTopbar({
   onOpenMobileNav,
 }: PdpStudioTopbarProps) {
   const pathname = usePathname();
+  const showTemplateSearch = pathname === "/pdp-studio";
   const title =
     pathname === "/pdp-studio"
       ? "Home"
+      : pathname === "/pdp-studio/ai-tools"
+        ? "AI Tools"
       : pathname.includes("/tools/")
         ? "AI Tools"
         : pathname
@@ -43,17 +46,19 @@ export function PdpStudioTopbar({
         {title}
       </h1>
 
-      <PdpStudioButton
-        type="button"
-        variant="ghost"
-        onClick={onOpenSearch}
-        className="min-w-0 justify-start gap-2 border-0 bg-[var(--color-pdp-surface-soft)] text-left text-[var(--color-pdp-muted)] hover:bg-[var(--color-pdp-surface-soft)] sm:w-[min(38vw,30rem)]"
-      >
-        <PdpStudioUiIcon name="search" />
-        <span className="hidden truncate text-[0.875rem] font-normal sm:block">
-          Search a template
-        </span>
-      </PdpStudioButton>
+      {showTemplateSearch ? (
+        <PdpStudioButton
+          type="button"
+          variant="ghost"
+          onClick={onOpenSearch}
+          className="min-w-0 justify-start gap-2 border-0 bg-[var(--color-pdp-surface-soft)] text-left text-[var(--color-pdp-muted)] hover:bg-[var(--color-pdp-surface-soft)] sm:w-[min(38vw,30rem)]"
+        >
+          <PdpStudioUiIcon name="search" />
+          <span className="hidden truncate text-[0.875rem] font-normal sm:block">
+            Search a template
+          </span>
+        </PdpStudioButton>
+      ) : null}
     </header>
   );
 }

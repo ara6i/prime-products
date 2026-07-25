@@ -2,7 +2,6 @@
 
 import type { ChangeEvent } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +15,11 @@ import {
   PDP_STUDIO_QUALITY_OPTIONS,
   PDP_STUDIO_SIZE_OPTIONS,
 } from "../../../data/pdpStudioHomeDialogData";
-import type { PdpStudioToolDefinition } from "../../../types";
+import { isPdpStudioHomeAiToolId } from "../../../data/pdpStudioInlineTools";
+import type {
+  PdpStudioToolDefinition,
+  PdpStudioToolId,
+} from "../../../types";
 import type {
   PdpStudioGenerationQuality,
   PdpStudioGenerationSize,
@@ -25,6 +28,7 @@ import type {
   PdpStudioToolDialogPanel,
 } from "../../../types/homeToolDialog";
 import { PdpStudioButton } from "../../shared/PdpStudioButton";
+import { PdpStudioToolCard } from "../../shared/PdpStudioToolCard";
 import { PdpStudioUiIcon } from "../../shared/PdpStudioUiIcon";
 
 interface PdpStudioAiToolDialogProps {
@@ -53,13 +57,6 @@ interface PdpStudioAiToolDialogProps {
   onGenerate: () => void;
 }
 
-const SUPPORTED_TOOL_IDS = new Set<PdpStudioHomeAiToolId>([
-  "product-staging",
-  "ghost-mannequin",
-  "product-beautifier",
-  "flat-lay",
-]);
-
 function ToolSettingButton({
   label,
   value,
@@ -74,13 +71,14 @@ function ToolSettingButton({
   onClick: () => void;
 }) {
   return (
-    <button
+    <PdpStudioButton
       type="button"
+      variant="ghost"
       aria-label={`${label} ${value}`}
       aria-expanded={active}
       onClick={onClick}
       className={[
-        "flex min-h-[3.25rem] w-full items-center gap-3 rounded-[0.625rem] border px-3 text-left outline-none transition",
+        "flex min-h-[3.25rem] w-full items-center justify-start gap-3 rounded-[0.625rem] border px-3 text-left outline-none transition",
         active
           ? "border-[var(--color-pdp-accent)] bg-[var(--color-pdp-accent-soft)]"
           : "border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface-soft)] hover:border-[var(--color-pdp-rule-strong)]",
@@ -97,7 +95,7 @@ function ToolSettingButton({
           {badge}
         </span>
       ) : null}
-    </button>
+    </PdpStudioButton>
   );
 }
 
@@ -108,70 +106,46 @@ function ToolSwitcherPanel({
   tools: PdpStudioToolDefinition[];
   onSwitchTool: (toolId: PdpStudioHomeAiToolId) => void;
 }) {
-  const recent = (
-    [
-      "product-staging",
-      "flat-lay",
-      "product-beautifier",
-      "ghost-mannequin",
-    ] satisfies PdpStudioHomeAiToolId[]
-  ).map((id) => PDP_STUDIO_HOME_TOOL_DIALOGS[id]);
+  const recentIds = ["video-generator", "ai-fashion-models"];
+  const recent = recentIds.flatMap((id) => {
+    const tool = tools.find((candidate) => candidate.id === id);
+    return tool ? [tool] : [];
+  });
+  const getToolActivation = (toolId: PdpStudioToolId) => {
+    if (!isPdpStudioHomeAiToolId(toolId)) return undefined;
+    return () => onSwitchTool(toolId);
+  };
 
   return (
     <div
       role="dialog"
       aria-label="Choose AI tool"
-      className="absolute left-4 top-[3.75rem] z-30 w-[min(45rem,calc(100vw-5rem))] overflow-hidden rounded-[0.875rem] border border-[var(--color-pdp-rule)] bg-white p-4 shadow-[0_22px_65px_rgba(17,24,39,0.18)]"
+      className="absolute left-4 top-[3.75rem] z-30 w-[min(35rem,calc(100vw-5rem))] overflow-hidden rounded-[0.875rem] border border-[var(--color-pdp-rule)] bg-white p-4 shadow-[0_22px_65px_rgba(17,24,39,0.18)]"
     >
       <h3 className="text-[0.75rem] font-semibold text-[var(--color-pdp-muted)]">
         Recently used
       </h3>
-      <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="mt-2 grid grid-cols-2 gap-2">
         {recent.map((tool) => (
-          <button
+          <PdpStudioToolCard
             key={tool.id}
-            type="button"
-            onClick={() => onSwitchTool(tool.id)}
-            className="flex min-h-[4.5rem] flex-col items-start justify-between rounded-[0.625rem] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface-soft)] p-3 text-left transition hover:border-[var(--color-pdp-accent)]"
-          >
-            <PdpStudioUiIcon
-              name={tool.icon}
-              size={18}
-              className="text-[var(--color-pdp-accent)]"
-            />
-            <span className="text-[0.75rem] font-medium">{tool.label}</span>
-          </button>
+            tool={tool}
+            onActivate={getToolActivation(tool.id)}
+          />
         ))}
       </div>
 
       <h3 className="mt-5 text-[0.75rem] font-semibold text-[var(--color-pdp-muted)]">
         All tools
       </h3>
-      <div className="mt-2 grid max-h-[17rem] grid-cols-2 gap-1.5 overflow-y-auto pr-1 sm:grid-cols-3">
-        {tools.map((tool) =>
-          SUPPORTED_TOOL_IDS.has(tool.id as PdpStudioHomeAiToolId) ? (
-            <button
-              key={tool.id}
-              type="button"
-              onClick={() =>
-                onSwitchTool(tool.id as PdpStudioHomeAiToolId)
-              }
-              className="flex min-h-11 items-center gap-2 rounded-[0.5rem] px-2.5 text-left text-[0.75rem] font-medium hover:bg-[var(--color-pdp-surface-soft)]"
-            >
-              <PdpStudioUiIcon name={tool.icon} size={17} />
-              <span className="truncate">{tool.label}</span>
-            </button>
-          ) : (
-            <Link
-              key={tool.id}
-              href={tool.href}
-              className="flex min-h-11 items-center gap-2 rounded-[0.5rem] px-2.5 text-left text-[0.75rem] font-medium hover:bg-[var(--color-pdp-surface-soft)]"
-            >
-              <PdpStudioUiIcon name={tool.icon} size={17} />
-              <span className="truncate">{tool.label}</span>
-            </Link>
-          ),
-        )}
+      <div className="mt-2 grid max-h-[20rem] grid-cols-2 gap-2 overflow-y-auto pr-1">
+        {tools.map((tool) => (
+          <PdpStudioToolCard
+            key={tool.id}
+            tool={tool}
+            onActivate={getToolActivation(tool.id)}
+          />
+        ))}
       </div>
     </div>
   );
@@ -192,12 +166,13 @@ function QualityPanel({
     >
       <div className="grid gap-2 sm:grid-cols-3">
         {PDP_STUDIO_QUALITY_OPTIONS.map((option) => (
-          <button
+          <PdpStudioButton
             key={option.id}
             type="button"
+            variant="ghost"
             onClick={() => onChange(option.id)}
             className={[
-              "rounded-[0.7rem] border p-3 text-left transition",
+              "h-auto min-h-0 items-stretch rounded-[0.7rem] border p-3 text-left transition",
               quality === option.id
                 ? "border-[var(--color-pdp-accent)] bg-[var(--color-pdp-accent-soft)]"
                 : "border-[var(--color-pdp-rule)] hover:border-[var(--color-pdp-rule-strong)]",
@@ -219,7 +194,7 @@ function QualityPanel({
                 <li key={feature}>{feature}</li>
               ))}
             </ul>
-          </button>
+          </PdpStudioButton>
         ))}
       </div>
     </div>
@@ -241,9 +216,10 @@ function SizePanel({
     >
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {PDP_STUDIO_SIZE_OPTIONS.map((option) => (
-          <button
+          <PdpStudioButton
             key={option.id}
             type="button"
+            variant="ghost"
             onClick={() => onChange(option.id)}
             className={[
               "grid min-h-[5.75rem] place-items-center rounded-[0.625rem] border p-2 text-center transition",
@@ -260,7 +236,7 @@ function SizePanel({
                   : `${option.label} (${option.ratio})`}
               </span>
             </span>
-          </button>
+          </PdpStudioButton>
         ))}
       </div>
     </div>
@@ -285,13 +261,14 @@ function BrandPanel({
       className="absolute left-[18rem] top-[18.5rem] z-30 w-[min(30rem,calc(100vw-21rem))] rounded-[0.875rem] border border-[var(--color-pdp-rule)] bg-white p-4 shadow-[0_22px_65px_rgba(17,24,39,0.18)]"
     >
       <label className="flex items-center gap-3 text-[0.8125rem] font-semibold">
-        <button
+        <PdpStudioButton
           type="button"
+          variant="ghost"
           role="switch"
           aria-checked={enabled}
           onClick={() => onEnabledChange(!enabled)}
           className={[
-            "relative h-6 w-11 rounded-full transition",
+            "relative h-6 min-h-0 w-11 rounded-full p-0 transition",
             enabled
               ? "bg-[var(--color-pdp-accent)]"
               : "bg-[var(--color-pdp-rule-strong)]",
@@ -303,7 +280,7 @@ function BrandPanel({
               enabled ? "left-[1.375rem]" : "left-0.5",
             ].join(" ")}
           />
-        </button>
+        </PdpStudioButton>
         Apply brand style
       </label>
       <textarea
@@ -394,6 +371,11 @@ export function PdpStudioAiToolDialog({
   const tool = activeToolId
     ? PDP_STUDIO_HOME_TOOL_DIALOGS[activeToolId]
     : null;
+  const requiresImage =
+    tool?.mode !== "text-generator" && tool?.mode !== "chooser";
+  const canGenerate = requiresImage
+    ? Boolean(selectedImage)
+    : Boolean(prompt.trim());
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     onSelectFile(event.target.files?.[0] ?? null);
@@ -416,12 +398,13 @@ export function PdpStudioAiToolDialog({
         </DialogDescription>
 
         <aside className="relative z-20 border-r border-[var(--color-pdp-rule)] bg-white p-4">
-          <button
+          <PdpStudioButton
             type="button"
+            variant="ghost"
             aria-label="Switch AI tool"
             aria-expanded={activePanel === "tool"}
             onClick={() => onTogglePanel("tool")}
-            className="flex min-h-11 w-full items-center gap-2 rounded-[0.625rem] px-1 text-left text-[1rem] font-semibold outline-none hover:text-[var(--color-pdp-accent)]"
+            className="flex min-h-11 w-full items-center justify-start gap-2 rounded-[0.625rem] bg-transparent px-1 text-left text-[1rem] font-semibold text-[var(--color-pdp-ink)] outline-none hover:bg-transparent hover:text-[var(--color-pdp-accent)]"
           >
             <PdpStudioUiIcon
               name={tool.icon}
@@ -430,24 +413,49 @@ export function PdpStudioAiToolDialog({
             />
             <span className="truncate">{tool.label}</span>
             <PdpStudioUiIcon name="chevron" size={14} className="ml-auto" />
-          </button>
+          </PdpStudioButton>
 
-          <label className="mt-6 grid min-h-[5rem] cursor-pointer place-items-center rounded-[0.625rem] border border-dashed border-[var(--color-pdp-rule-strong)] bg-[var(--color-pdp-surface-soft)] px-4 text-center transition hover:border-[var(--color-pdp-accent)] hover:bg-[var(--color-pdp-accent-soft)]">
-            <span className="text-[0.75rem] font-medium text-[var(--color-pdp-muted)]">
-              <PdpStudioUiIcon
-                name="upload"
-                size={17}
-                className="mr-2 inline text-[var(--color-pdp-accent)]"
-              />
-              {selectedImage ? selectedImage.name : "Drop a file or select an image"}
-            </span>
-            <input
-              type="file"
-              accept="image/*"
-              className="sr-only"
-              onChange={handleFileChange}
-            />
-          </label>
+          {requiresImage ? (
+            <div className="mt-6 grid gap-2">
+              <label className="grid min-h-[5rem] cursor-pointer place-items-center rounded-[0.625rem] border border-dashed border-[var(--color-pdp-rule-strong)] bg-[var(--color-pdp-surface-soft)] px-4 text-center transition hover:border-[var(--color-pdp-accent)] hover:bg-[var(--color-pdp-accent-soft)]">
+                <span className="text-[0.75rem] font-medium text-[var(--color-pdp-muted)]">
+                  <PdpStudioUiIcon
+                    name="upload"
+                    size={17}
+                    className="mr-2 inline text-[var(--color-pdp-accent)]"
+                  />
+                  {selectedImage
+                    ? selectedImage.name
+                    : tool.uploadLabel ?? "Drop a file or select an image"}
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={handleFileChange}
+                />
+              </label>
+              {tool.secondaryUploadLabel ? (
+                <label className="grid min-h-[4rem] cursor-pointer place-items-center rounded-[0.625rem] border border-dashed border-[var(--color-pdp-rule)] bg-white px-4 text-center transition hover:border-[var(--color-pdp-accent)]">
+                  <span className="text-[0.75rem] font-medium text-[var(--color-pdp-muted)]">
+                    <PdpStudioUiIcon
+                      name="plus"
+                      size={16}
+                      className="mr-2 inline text-[var(--color-pdp-accent)]"
+                    />
+                    {tool.secondaryUploadLabel}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="sr-only"
+                    onChange={handleFileChange}
+                  />
+                </label>
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="mt-5 grid gap-2">
             <ToolSettingButton
@@ -474,17 +482,17 @@ export function PdpStudioAiToolDialog({
           <textarea
             value={prompt}
             onChange={(event) => onPromptChange(event.target.value)}
-            placeholder="Describe the image you want (optional)"
+            placeholder={tool.promptLabel ?? "Describe the image you want"}
             className="mt-5 min-h-[8.5rem] w-full resize-none rounded-[0.625rem] border border-[var(--color-pdp-rule)] bg-white p-3 text-[0.75rem] leading-5 outline-none placeholder:text-[var(--color-pdp-muted)] focus:border-[var(--color-pdp-accent)]"
           />
 
           <PdpStudioButton
             type="button"
-            disabled={!selectedImage}
+            disabled={!canGenerate}
             onClick={onGenerate}
             className="mt-5 w-full"
           >
-            Generate 1 image
+            Generate {tool.outputCount} {tool.outputCount === 1 ? "image" : "images"}
           </PdpStudioButton>
         </aside>
 
@@ -496,14 +504,16 @@ export function PdpStudioAiToolDialog({
           />
         </main>
 
-        <button
+        <PdpStudioButton
           type="button"
+          variant="ghost"
+          size="icon"
           aria-label="Close dialog"
           onClick={() => onOpenChange(false)}
-          className="absolute right-4 top-4 z-40 grid size-9 place-items-center rounded-full border border-[var(--color-pdp-rule)] bg-white text-[var(--color-pdp-ink)] shadow-sm transition hover:bg-[var(--color-pdp-surface-soft)]"
+          className="absolute right-4 top-4 z-40 grid size-9 min-h-0 place-items-center rounded-full border border-[var(--color-pdp-rule)] bg-white p-0 text-[var(--color-pdp-ink)] shadow-sm transition hover:bg-[var(--color-pdp-surface-soft)]"
         >
           <PdpStudioUiIcon name="close" size={17} />
-        </button>
+        </PdpStudioButton>
 
         {activePanel === "tool" ? (
           <ToolSwitcherPanel tools={tools} onSwitchTool={onSwitchTool} />
