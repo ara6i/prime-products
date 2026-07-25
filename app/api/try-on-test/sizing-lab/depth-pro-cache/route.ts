@@ -8,6 +8,7 @@ import { promisify } from "node:util";
 import { NextResponse, type NextRequest } from "next/server";
 import { isSiteAuthEnabled, SITE_AUTH_COOKIE_NAME, verifySiteSessionToken } from "@/app/shared/auth/siteSession";
 import { isTestLabAvailableForHost } from "@/app/try-on-test/lib/access";
+import { runCachedLocalInference } from "../_lib/localInferenceScheduler";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -48,30 +49,43 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "Depth Pro cache expired; resend the image." }, { status: 409 });
   }
 
-  const tempDirectory = await mkdtemp(path.join(tmpdir(), "primestyle-depth-pro-cache-only-"));
-  const imagePath = image ? path.join(tempDirectory, `input.${parsed!.extension}`) : cachePath;
   try {
-    if (image) await writeFile(imagePath, image);
-    const python = process.env.DEPTH_PRO_PYTHON ?? "/Users/arashsn/.codex/runtime/geocalib-venv/bin/python";
-    const runtimeDirectory = process.env.DEPTH_PRO_RUNTIME ?? "/Users/arashsn/.codex/runtime/ml-depth-pro";
-    const script = path.resolve(/* turbopackIgnore: true */ process.cwd(), "scripts/depth_pro_cache.py");
-    const { stdout } = await execFileAsync(python, [
-      script,
-      imagePath,
-      "--cache-path", cachePath,
-    ], { cwd: runtimeDirectory, timeout: 120_000, maxBuffer: 2 * 1024 * 1024 });
+    const inference = await runCachedLocalInference<Record<string, unknown>>({
+      key: `depth-pro-cache:v2:${imageHash}`,
+      label: "Depth Pro cache",
+      cacheGroup: "depth-pro-cache-results",
+      cacheTtlMs: 10 * 60_000,
+      cacheMaxEntries: 8,
+      task: async () => {
+        const tempDirectory = await mkdtemp(path.join(tmpdir(), "primestyle-depth-pro-cache-only-"));
+        const imagePath = image ? path.join(tempDirectory, `input.${parsed!.extension}`) : cachePath;
+        try {
+          if (image) await writeFile(imagePath, image);
+          const python = process.env.DEPTH_PRO_PYTHON ?? "/Users/arashsn/.codex/runtime/geocalib-venv/bin/python";
+          const runtimeDirectory = process.env.DEPTH_PRO_RUNTIME ?? "/Users/arashsn/.codex/runtime/ml-depth-pro";
+          const script = path.resolve(/* turbopackIgnore: true */ process.cwd(), "scripts/depth_pro_cache.py");
+          const { stdout } = await execFileAsync(python, [
+            script,
+            imagePath,
+            "--cache-path", cachePath,
+          ], { cwd: runtimeDirectory, timeout: 120_000, maxBuffer: 2 * 1024 * 1024 });
+          return JSON.parse(stdout.trim()) as Record<string, unknown>;
+        } finally {
+          await rm(tempDirectory, { recursive: true, force: true });
+        }
+      },
+    });
     return NextResponse.json({
       ok: true,
       result: {
-        ...JSON.parse(stdout.trim()),
+        ...inference.value,
         cacheKey: imageHash,
+        cacheHit: inference.cacheHit || inference.value.cacheHit === true,
       },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "OCR-free Depth Pro cache failed.";
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
-  } finally {
-    await rm(tempDirectory, { recursive: true, force: true });
   }
 }
 

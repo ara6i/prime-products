@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Maximize2, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
 import { FullScreenGreenRulerComparison } from "./FullScreenGreenRulerComparison";
 import {
@@ -8,6 +9,7 @@ import {
   type RedLineVerticalProofKind,
 } from "./FullScreenRedLineVerticalProof";
 import { ManualMeasurementStepper } from "./ManualMeasurementStepper";
+import { MetaBodyMesh3D, type MetaMeshFormulaRow } from "./MetaBodyMesh3D";
 import { ModelLayerInspector } from "./ModelLayerInspector";
 import type {
   AppleFusedTapeApiResult,
@@ -17,12 +19,33 @@ import type {
 import type { AppleFusedBodyScaleApiResult } from "../lib/appleFusedBodyScale";
 import type { AppleVisionBodyScaleResult } from "../lib/appleVisionBodyScale";
 import type { GeminiBodyGuide, GeminiGuideDepthRatioOverrides, GeminiGuideLine, GeminiGuideMeasurement } from "../lib/geminiGuide";
-import type { LocalMlNormalizedRowPrediction } from "../lib/localMlSizing";
+import {
+  predictWearShapeExponent,
+  type LocalMlDepthMethod,
+  type LocalMlNormalizedRowPrediction,
+} from "../lib/localMlSizing";
+import { predictFusedShapeExponent } from "../lib/fusedShapeExponent";
+import { predictDepthProfileShapeExponent } from "../lib/depthProfileShapeExponent";
+import {
+  analyzePhotoSilhouette,
+  predictPhotoBodyShapeExponent,
+  type PhotoBodyType,
+  type PhotoCrossSectionHint,
+} from "../lib/photoBodyShapeExponent";
+import {
+  meshShapeProviderLabel,
+  type MeshShapePredictionResponse,
+  type MeshShapeProviderId,
+  type MeshShapeProviderStatus,
+  type MeshShapeStatusResponse,
+} from "../lib/meshShapeProviders";
 import {
   CIRCUMFERENCE_METHOD_OPTIONS,
+  calculateScaledBodyContourCircumferenceCm,
   calculateCircumferenceCm,
   type CircumferenceMethod,
 } from "../lib/circumferenceMethods";
+import { encodeLocalMlMaskDataUrl } from "../lib/localMlClient";
 import {
   buildTapeVisionHiddenIntervals,
   buildTapeVisionSnap,
@@ -43,6 +66,19 @@ type FreeRulerPurpose = "free" | "floor-height";
 type HeightScaleHandle = "top" | "bottom";
 type ScaleProofUnit = "cm" | "in";
 type BodyWidthMethod = "apple-vision" | "depth-pro";
+type ShapeExponentSource = "manual" | "wear-1d" | "fused-meta-wear" | "photo-body-shape" | MeshShapeProviderId;
+type MeshShapeRunStatus = "idle" | "loading" | "ready" | "error";
+
+interface MeshShapeRunState {
+  status: MeshShapeRunStatus;
+  error: string | null;
+}
+
+interface FormulaGeometryOverride {
+  sourceKey: string;
+  breadthCm?: number;
+  depthCm?: number;
+}
 
 interface ScaleProofPoint {
   x: number;
@@ -169,10 +205,14 @@ interface Props {
   labelSuffix?: string;
   measurementMode?: MeasurementMode;
   heightCm?: number;
+  weightKg?: number;
+  gender?: "male" | "female";
   manualHeightScaleOverride?: ManualHeightScaleOverride | null;
   onManualHeightScaleOverrideChange?: (override: ManualHeightScaleOverride | null) => void;
   scaleProofPreset?: ManualScaleProofPreset | null;
   wearRowPredictions?: LocalMlNormalizedRowPrediction[];
+  localMlDepthMethod?: LocalMlDepthMethod;
+  onLocalMlDepthMethodChange?: (method: LocalMlDepthMethod) => void;
   targetNaturalWaistCm?: number;
   targetTrouserWaistCm?: number;
   targetHipsCm?: number;
@@ -191,22 +231,57 @@ const GUIDE_ROWS: Array<{ kind: GuideKind; label: string }> = [
   { kind: "trouserWaist", label: "trouser" },
   { kind: "hips", label: "hips" },
 ];
+
+const DEFAULT_CIRCUMFERENCE_METHODS: Record<GuideKind, CircumferenceMethod> = {
+  waist: "ramanujan-1",
+  trouserWaist: "ramanujan-1",
+  hips: "ramanujan-1",
+};
+
+const DEFAULT_SUPERELLIPSE_EXPONENTS: Record<GuideKind, number> = {
+  waist: 2,
+  trouserWaist: 2,
+  hips: 2.5,
+};
+const PHOTO_BODY_TYPE_LABELS: Record<Exclude<PhotoBodyType, "auto">, string> = {
+  hourglass: "hourglass",
+  rectangle: "rectangle",
+  pear: "pear",
+  apple: "apple",
+  curvy: "curvy · pear/hourglass unclear",
+};
 const DEFAULT_ZOOM = 0.5;
 const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.25;
+const IMAGE_DATA_URL_CACHE = new Map<string, Promise<string>>();
 
 async function urlToDataUrl(url: string): Promise<string> {
   if (url.startsWith("data:")) return url;
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Could not read image (${response.status}).`);
-  const blob = await response.blob();
-  return await new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("Could not encode image."));
-    reader.onerror = () => reject(reader.error ?? new Error("Could not encode image."));
-    reader.readAsDataURL(blob);
-  });
+  const cached = IMAGE_DATA_URL_CACHE.get(url);
+  if (cached) return cached;
+  const pending = (async () => {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Could not read image (${response.status}).`);
+    const blob = await response.blob();
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("Could not encode image."));
+      reader.onerror = () => reject(reader.error ?? new Error("Could not encode image."));
+      reader.readAsDataURL(blob);
+    });
+  })();
+  IMAGE_DATA_URL_CACHE.set(url, pending);
+  while (IMAGE_DATA_URL_CACHE.size > 3) {
+    const oldest = IMAGE_DATA_URL_CACHE.keys().next().value;
+    if (typeof oldest === "string") IMAGE_DATA_URL_CACHE.delete(oldest);
+  }
+  try {
+    return await pending;
+  } catch (error) {
+    if (IMAGE_DATA_URL_CACHE.get(url) === pending) IMAGE_DATA_URL_CACHE.delete(url);
+    throw error;
+  }
 }
 
 async function fetchWithTimeout(
@@ -247,16 +322,19 @@ export function ManualCoordinateGuidePanel({
   labelSuffix = "manual coordinate",
   measurementMode = "circumference",
   heightCm,
+  weightKg,
+  gender,
   manualHeightScaleOverride,
   onManualHeightScaleOverrideChange,
   scaleProofPreset,
   wearRowPredictions,
+  localMlDepthMethod,
+  onLocalMlDepthMethodChange,
   targetNaturalWaistCm,
   targetTrouserWaistCm,
   targetHipsCm,
   linkedEditor,
   depthRatioOverrides,
-  knownDepthRatioAnswers,
   onDepthRatioOverrideChange,
   onAppleVisionBodyScaleChange,
   fullScreenPhotoComparison,
@@ -286,7 +364,9 @@ export function ManualCoordinateGuidePanel({
   const [linkedHoverLabel, setLinkedHoverLabel] = useState<string | null>(null);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [bodyWidthMethod, setBodyWidthMethod] = useState<BodyWidthMethod>("depth-pro");
+  // Apple Vision is the primary body-width path in this lab. Depth Pro stays
+  // selectable as experimental comparison evidence only.
+  const [bodyWidthMethod, setBodyWidthMethod] = useState<BodyWidthMethod>("apple-vision");
   const scaleProofSourceKey = `${imageUrl ?? ""}:${imageWidth}x${imageHeight}`;
   const activeManualHeightScaleOverride = manualHeightScaleOverride?.sourceKey === scaleProofSourceKey
     ? manualHeightScaleOverride
@@ -455,6 +535,7 @@ export function ManualCoordinateGuidePanel({
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       if (document.querySelector('[data-testid="model-layer-fullscreen-dialog"]')) return;
+      if (document.querySelector('[data-testid="meta-mesh-fullscreen-dialog"]')) return;
       setIsFullscreen(false);
     };
     window.addEventListener("keydown", closeOnEscape);
@@ -1319,6 +1400,7 @@ export function ManualCoordinateGuidePanel({
             imageUrl={imageUrl}
             imageWidth={imageWidth}
             imageHeight={imageHeight}
+            pose={pose}
             bodyRows={bodyScaleRows}
             bodyMaskSupport={bodyMaskSupport}
             ruler={scaleProofRuler}
@@ -1327,6 +1409,8 @@ export function ManualCoordinateGuidePanel({
             floorRulerTargetCm={freeRulerMode.floorTargetCm}
             floorRulerUnit={freeRulerMode.floorUnit}
             wearRowPredictions={wearRowPredictions}
+            localMlDepthMethod={localMlDepthMethod}
+            onLocalMlDepthMethodChange={onLocalMlDepthMethodChange}
             redLineProofKind={redLineProofKind}
             redLineProofRuler={redLineProofRuler}
             intervalValue={scaleProofIntervalValue}
@@ -1337,9 +1421,10 @@ export function ManualCoordinateGuidePanel({
             measurement={measurement}
             measurementUnavailableMessage={measurementUnavailableMessage}
             depthRatioOverrides={depthRatioOverrides}
-            knownDepthRatioAnswers={knownDepthRatioAnswers}
             onDepthRatioOverrideChange={onDepthRatioOverrideChange}
             heightCm={heightCm}
+            weightKg={weightKg}
+            gender={gender}
             heightScaleLine={heightScaleLine}
             targetNaturalWaistCm={targetNaturalWaistCm}
             targetTrouserWaistCm={targetTrouserWaistCm}
@@ -1431,6 +1516,7 @@ export function ManualCoordinateGuidePanel({
                       imageUrl={imageUrl}
                       imageWidth={imageWidth}
                       imageHeight={imageHeight}
+                      pose={pose}
                       bodyRows={bodyScaleRows}
                       bodyMaskSupport={bodyMaskSupport}
                       ruler={scaleProofRuler}
@@ -1439,6 +1525,8 @@ export function ManualCoordinateGuidePanel({
                       floorRulerTargetCm={freeRulerMode.floorTargetCm}
                       floorRulerUnit={freeRulerMode.floorUnit}
                       wearRowPredictions={wearRowPredictions}
+                      localMlDepthMethod={localMlDepthMethod}
+                      onLocalMlDepthMethodChange={onLocalMlDepthMethodChange}
                       redLineProofKind={redLineProofKind}
                       redLineProofRuler={redLineProofRuler}
                       intervalValue={scaleProofIntervalValue}
@@ -1449,9 +1537,10 @@ export function ManualCoordinateGuidePanel({
                       measurement={measurement}
                       measurementUnavailableMessage={measurementUnavailableMessage}
                       depthRatioOverrides={depthRatioOverrides}
-                      knownDepthRatioAnswers={knownDepthRatioAnswers}
                       onDepthRatioOverrideChange={onDepthRatioOverrideChange}
                       heightCm={heightCm}
+                      weightKg={weightKg}
+                      gender={gender}
                       heightScaleLine={heightScaleLine}
                       targetNaturalWaistCm={targetNaturalWaistCm}
                       targetTrouserWaistCm={targetTrouserWaistCm}
@@ -1717,6 +1806,7 @@ function ScaleProofPanel({
   imageUrl,
   imageWidth,
   imageHeight,
+  pose,
   bodyRows,
   bodyMaskSupport,
   ruler,
@@ -1725,6 +1815,8 @@ function ScaleProofPanel({
   floorRulerTargetCm,
   floorRulerUnit,
   wearRowPredictions,
+  localMlDepthMethod,
+  onLocalMlDepthMethodChange,
   redLineProofKind,
   redLineProofRuler,
   intervalValue,
@@ -1735,9 +1827,10 @@ function ScaleProofPanel({
   measurement,
   measurementUnavailableMessage,
   depthRatioOverrides,
-  knownDepthRatioAnswers,
   onDepthRatioOverrideChange,
   heightCm,
+  weightKg,
+  gender,
   heightScaleLine,
   targetNaturalWaistCm,
   targetTrouserWaistCm,
@@ -1761,6 +1854,7 @@ function ScaleProofPanel({
   imageUrl?: string | null;
   imageWidth: number;
   imageHeight: number;
+  pose?: PoseResult | null;
   bodyRows: BodyScaleRowInput[];
   bodyMaskSupport: BodyMaskSupportRow[];
   ruler: ScaleProofRuler;
@@ -1769,6 +1863,8 @@ function ScaleProofPanel({
   floorRulerTargetCm: number;
   floorRulerUnit: ScaleProofUnit;
   wearRowPredictions?: LocalMlNormalizedRowPrediction[];
+  localMlDepthMethod?: LocalMlDepthMethod;
+  onLocalMlDepthMethodChange?: (method: LocalMlDepthMethod) => void;
   redLineProofKind: RedLineVerticalProofKind;
   redLineProofRuler: ScaleProofRuler;
   intervalValue: number;
@@ -1779,9 +1875,10 @@ function ScaleProofPanel({
   measurement: GeminiGuideMeasurement | null;
   measurementUnavailableMessage?: string;
   depthRatioOverrides?: GeminiGuideDepthRatioOverrides;
-  knownDepthRatioAnswers?: GeminiGuideDepthRatioOverrides;
   onDepthRatioOverrideChange?: (kind: GuideKind, ratio: number | null) => void;
   heightCm?: number;
+  weightKg?: number;
+  gender?: "male" | "female";
   heightScaleLine?: HeightScaleLine | null;
   targetNaturalWaistCm?: number;
   targetTrouserWaistCm?: number;
@@ -2401,26 +2498,29 @@ function ScaleProofPanel({
       {compact ? (
         <>
           <FullScreenEssentialMeasurementSummary
+            imageUrl={imageUrl}
+            imageWidth={imageWidth}
+            imageHeight={imageHeight}
+            pose={pose}
+            bodyRows={bodyRows}
             unit={resultUnit}
             onUnitChange={onResultUnitChange}
             appleResult={activeAppleVisionResult}
-            fusedBodyResult={activeFusedBodyResult}
             measurement={measurement}
             measurementUnavailableMessage={measurementUnavailableMessage}
             wearRowPredictions={wearRowPredictions}
+            localMlDepthMethod={localMlDepthMethod}
+            onLocalMlDepthMethodChange={onLocalMlDepthMethodChange}
+            depthRatioOverrides={depthRatioOverrides}
+            onDepthRatioOverrideChange={onDepthRatioOverrideChange}
+            heightCm={heightCm}
+            weightKg={weightKg}
+            gender={gender}
             bodyWidthMethod={bodyWidthMethod}
             onBodyWidthMethodChange={onBodyWidthMethodChange}
             targetNaturalWaistCm={targetNaturalWaistCm}
             targetTrouserWaistCm={targetTrouserWaistCm}
             targetHipsCm={targetHipsCm}
-          />
-          <FullScreenDepthRatioControls
-            measurement={measurement}
-            measurementUnavailableMessage={measurementUnavailableMessage}
-            wearRowPredictions={wearRowPredictions}
-            depthRatioOverrides={depthRatioOverrides}
-            knownDepthRatioAnswers={knownDepthRatioAnswers}
-            onDepthRatioOverrideChange={onDepthRatioOverrideChange}
           />
           <FullScreenRedLineVerticalProof
             selectedKind={redLineProofKind}
@@ -2779,26 +2879,48 @@ function ScaleProofPanel({
 }
 
 function FullScreenEssentialMeasurementSummary({
+  imageUrl,
+  imageWidth,
+  imageHeight,
+  pose,
+  bodyRows,
   unit,
   onUnitChange,
   appleResult,
-  fusedBodyResult,
   measurement,
   measurementUnavailableMessage,
   wearRowPredictions,
+  localMlDepthMethod,
+  onLocalMlDepthMethodChange,
+  depthRatioOverrides,
+  onDepthRatioOverrideChange,
+  heightCm,
+  weightKg,
+  gender,
   bodyWidthMethod,
   onBodyWidthMethodChange,
   targetNaturalWaistCm,
   targetTrouserWaistCm,
   targetHipsCm,
 }: {
+  imageUrl?: string | null;
+  imageWidth: number;
+  imageHeight: number;
+  pose?: PoseResult | null;
+  bodyRows: BodyScaleRowInput[];
   unit: ScaleProofUnit;
   onUnitChange: (value: ScaleProofUnit) => void;
   appleResult: AppleVisionBodyScaleResult | null;
-  fusedBodyResult: AppleFusedBodyScaleApiResult | null;
   measurement: GeminiGuideMeasurement | null;
   measurementUnavailableMessage?: string;
   wearRowPredictions?: LocalMlNormalizedRowPrediction[];
+  localMlDepthMethod?: LocalMlDepthMethod;
+  onLocalMlDepthMethodChange?: (method: LocalMlDepthMethod) => void;
+  depthRatioOverrides?: GeminiGuideDepthRatioOverrides;
+  onDepthRatioOverrideChange?: (kind: GuideKind, ratio: number | null) => void;
+  heightCm?: number;
+  weightKg?: number;
+  gender?: "male" | "female";
   bodyWidthMethod: BodyWidthMethod;
   onBodyWidthMethodChange: (method: BodyWidthMethod) => void;
   targetNaturalWaistCm?: number;
@@ -2806,38 +2928,400 @@ function FullScreenEssentialMeasurementSummary({
   targetHipsCm?: number;
 }) {
   const [openModelHelp, setOpenModelHelp] = useState<BodyWidthMethod | null>(null);
-  const [circumferenceMethod, setCircumferenceMethod] = useState<CircumferenceMethod>("ramanujan-1");
-  const [superellipseExponent, setSuperellipseExponent] = useState(2.5);
+  const [circumferenceMethods, setCircumferenceMethods] = useState<Record<GuideKind, CircumferenceMethod>>(
+    DEFAULT_CIRCUMFERENCE_METHODS,
+  );
+  const [superellipseExponents, setSuperellipseExponents] = useState<Record<GuideKind, number>>(
+    DEFAULT_SUPERELLIPSE_EXPONENTS,
+  );
+  const [shapeExponentSources, setShapeExponentSources] = useState<Record<GuideKind, ShapeExponentSource>>({
+    waist: "manual",
+    trouserWaist: "manual",
+    hips: "manual",
+  });
+  const [photoBodyType, setPhotoBodyType] = useState<PhotoBodyType>("auto");
+  const [photoCrossSectionHints, setPhotoCrossSectionHints] = useState<Record<GuideKind, PhotoCrossSectionHint>>({
+    waist: "auto",
+    trouserWaist: "auto",
+    hips: "auto",
+  });
+  const geometrySourceKey = `${imageUrl ?? ""}:${imageWidth}x${imageHeight}`;
+  const [formulaGeometryOverrides, setFormulaGeometryOverrides] = useState<Partial<Record<GuideKind, FormulaGeometryOverride>>>({});
+  const [meshWorkspaceOpen, setMeshWorkspaceOpen] = useState(false);
+  const [meshControlKind, setMeshControlKind] = useState<GuideKind>("waist");
+  const [openMeshWorkspaceAfterRun, setOpenMeshWorkspaceAfterRun] = useState(false);
   const localMlMode = Boolean(wearRowPredictions?.length);
+  useEffect(() => {
+    if (localMlMode) return;
+    setShapeExponentSources((current) => {
+      let changed = false;
+      const next = { ...current };
+      for (const kind of GUIDE_ROWS.map((row) => row.kind)) {
+        if (next[kind] === "wear-1d" || next[kind] === "fused-meta-wear") {
+          next[kind] = "manual";
+          changed = true;
+        }
+      }
+      return changed ? next : current;
+    });
+  }, [localMlMode]);
+  const supportsMetaMeshWorkspace = Boolean(
+    imageUrl
+    && heightCm
+    && heightCm > 0
+    && imageWidth > 0
+    && imageHeight > 0
+    && bodyRows.length === 3,
+  );
+  const showShapeSourceChooser = localMlMode || supportsMetaMeshWorkspace;
+  const [meshShapeProviders, setMeshShapeProviders] = useState<MeshShapeProviderStatus[]>([]);
+  const [meshShapeStatusError, setMeshShapeStatusError] = useState<string | null>(null);
+  const [meshShapePredictions, setMeshShapePredictions] = useState<Partial<Record<MeshShapeProviderId, MeshShapePredictionResponse>>>({});
+  const [meshShapeRunStates, setMeshShapeRunStates] = useState<Record<MeshShapeProviderId, MeshShapeRunState>>({
+    "sam-3d-body": { status: "idle", error: null },
+    shapy: { status: "idle", error: null },
+  });
+  const meshShapeGeometryKey = useMemo(() => JSON.stringify({
+    imageUrl,
+    imageWidth,
+    imageHeight,
+    heightCm,
+    // With a person mask, Meta's base body depends on the photo/mask/camera
+    // and the red-row heights. Left/right endpoint edits belong to the live
+    // width formula and must not invalidate or regenerate the base mesh.
+    bodyRows: bodyRows.map((row) => ({
+      name: row.name,
+      y: row.y,
+      ...(!pose?.mask ? { leftX: row.leftX, rightX: row.rightX } : {}),
+    })),
+    rowHeights: wearRowPredictions?.map((row) => ({
+      kind: row.kind,
+      heightFromFloorCm: row.heightFromFloorCm,
+    })) ?? [],
+    mask: pose?.mask ? `${pose.maskWidth}x${pose.maskHeight}:${pose.maskSource ?? "mediapipe"}` : null,
+    camera: appleResult && appleResult.geometryQuality !== "reject"
+      ? {
+          focalXPx: appleResult.estimatedFocalXPx,
+          focalYPx: appleResult.estimatedFocalYPx,
+          principalPointXPx: appleResult.principalPointXPx,
+          principalPointYPx: appleResult.principalPointYPx,
+        }
+      : null,
+  }), [imageUrl, imageWidth, imageHeight, heightCm, bodyRows, wearRowPredictions, pose, appleResult]);
+  const photoSilhouetteEvidence = useMemo(() => analyzePhotoSilhouette({
+    pose,
+    imageWidth,
+    imageHeight,
+    rows: bodyRows.map((row) => ({
+      kind: row.name,
+      y: row.y,
+      leftX: row.leftX,
+      rightX: row.rightX,
+    })),
+  }), [pose, imageWidth, imageHeight, bodyRows]);
+  const meshShapeProviderById = useMemo(() => Object.fromEntries(
+    meshShapeProviders.map((provider) => [provider.id, provider]),
+  ) as Partial<Record<MeshShapeProviderId, MeshShapeProviderStatus>>, [meshShapeProviders]);
+  useEffect(() => {
+    if (!supportsMetaMeshWorkspace) return;
+    const controller = new AbortController();
+    setMeshShapeStatusError(null);
+    void fetch("/api/try-on-test/sizing-lab/shape-models/status", {
+      cache: "no-store",
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        const data = await response.json() as MeshShapeStatusResponse & { error?: string };
+        if (!response.ok || !data.ok) throw new Error(data.error || "Could not read local shape-model status.");
+        setMeshShapeProviders(data.providers);
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) return;
+        setMeshShapeStatusError(error instanceof Error ? error.message : "Could not read local shape-model status.");
+      });
+    return () => controller.abort();
+  }, [supportsMetaMeshWorkspace]);
+
+  const runMeshShapeProvider = async (provider: MeshShapeProviderId) => {
+    const providerStatus = meshShapeProviderById[provider];
+    if (!providerStatus?.available) {
+      setMeshShapeRunStates((current) => ({
+        ...current,
+        [provider]: { status: "error", error: providerStatus?.reason ?? "Provider status is not ready yet." },
+      }));
+      return;
+    }
+    if (!imageUrl || !heightCm || heightCm <= 0 || imageWidth <= 0 || imageHeight <= 0 || bodyRows.length !== 3) {
+      setMeshShapeRunStates((current) => ({
+        ...current,
+        [provider]: { status: "error", error: "The source photo, known height, and all three saved red rows are required." },
+      }));
+      return;
+    }
+    setMeshShapeRunStates((current) => ({
+      ...current,
+      [provider]: { status: "loading", error: null },
+    }));
+    try {
+      const imageDataUrl = await urlToDataUrl(imageUrl);
+      const maskDataUrl = pose ? encodeLocalMlMaskDataUrl(pose) : null;
+      const cameraIntrinsics = appleResult && appleResult.geometryQuality !== "reject"
+        ? {
+            focalXPx: appleResult.estimatedFocalXPx,
+            focalYPx: appleResult.estimatedFocalYPx,
+            principalPointXPx: appleResult.principalPointXPx,
+            principalPointYPx: appleResult.principalPointYPx,
+          }
+        : null;
+      const response = await fetch("/api/try-on-test/sizing-lab/shape-models/predict", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          provider,
+          imageDataUrl,
+          maskDataUrl,
+          imageWidth,
+          imageHeight,
+          heightCm,
+          cameraIntrinsics,
+          sourceImageKey: imageUrl,
+          geometryKey: meshShapeGeometryKey,
+          rows: bodyRows.map((row) => ({
+            kind: row.name,
+            yNorm: row.y / imageHeight,
+            leftXNorm: Math.min(row.leftX, row.rightX) / imageWidth,
+            rightXNorm: Math.max(row.leftX, row.rightX) / imageWidth,
+            heightFromFloorCm: wearRowPredictions?.find((prediction) => prediction.kind === row.name)?.heightFromFloorCm ?? null,
+          })),
+        }),
+      });
+      const data = await response.json() as MeshShapePredictionResponse & { error?: string };
+      if (!response.ok || !data.ok) throw new Error(data.error || `${meshShapeProviderLabel(provider)} failed.`);
+      setMeshShapePredictions((current) => ({ ...current, [provider]: data }));
+      setMeshShapeRunStates((current) => ({
+        ...current,
+        [provider]: { status: "ready", error: null },
+      }));
+    } catch (error) {
+      setMeshShapeRunStates((current) => ({
+        ...current,
+        [provider]: {
+          status: "error",
+          error: error instanceof Error ? error.message : `${meshShapeProviderLabel(provider)} failed.`,
+        },
+      }));
+    }
+  };
   const directWearDepthActive = Boolean(wearRowPredictions?.some((row) => row.wearDepthCohort));
-  const bodyGate = evaluateBodyScaleGate(appleResult, fusedBodyResult);
-  const bodyReady = bodyGate.evaluations.length === 3
-    && bodyGate.evaluations.every((item) => Boolean(item.fusedRow?.valid));
+  const absoluteDepthAvailable = Boolean(wearRowPredictions?.length && wearRowPredictions.every((row) => row.wearAbsoluteDepthModel));
+  const measuredSideDepthActive = Boolean(measurement?.rows.some((row) =>
+    row.sideDepthAccepted && row.depthSource === "side-guide-manual-coordinate"));
+  const absoluteDepthModelSelected = absoluteDepthAvailable && localMlDepthMethod === "wear-absolute-depth";
+  const absoluteDepthActive = !measuredSideDepthActive && absoluteDepthModelSelected;
+  const photoWidthWearRatioActive = directWearDepthActive && !absoluteDepthActive && !measuredSideDepthActive;
+  const wearShapeInputsReady = absoluteDepthAvailable && (absoluteDepthModelSelected || measuredSideDepthActive);
   const targets: Array<{ kind: GuideKind; label: string; targetCm?: number }> = [
     { kind: "waist", label: "Natural waist", targetCm: targetNaturalWaistCm },
     { kind: "trouserWaist", label: "Trouser waist", targetCm: targetTrouserWaistCm },
     { kind: "hips", label: "Hips", targetCm: targetHipsCm },
   ];
-  const selectedCircumferenceOption = CIRCUMFERENCE_METHOD_OPTIONS.find((option) => option.value === circumferenceMethod)
-    ?? CIRCUMFERENCE_METHOD_OPTIONS[0]!;
-
+  const activeSam3dMeshPrediction = meshShapePredictions["sam-3d-body"]?.geometryKey === meshShapeGeometryKey
+    ? meshShapePredictions["sam-3d-body"] ?? null
+    : null;
+  const liveMeshFormulaRows: MetaMeshFormulaRow[] = targets.flatMap<MetaMeshFormulaRow>(({ kind }) => {
+    const circumferenceMethod = circumferenceMethods[kind];
+    if (circumferenceMethod !== "superellipse" && circumferenceMethod !== "meta-3d-contour") return [];
+    const candidate = measurement?.rows.find((row) => row.kind === kind) ?? null;
+    const defaultBreadthCm = candidate?.calculationWidthExactCm ?? candidate?.calculationWidthCm ?? candidate?.formulaWidthCm ?? 0;
+    const defaultDepthCm = candidate?.calculationDepthExactCm ?? candidate?.depthCm ?? 0;
+    const geometryOverride = formulaGeometryOverrides[kind]?.sourceKey === geometrySourceKey
+      ? formulaGeometryOverrides[kind]
+      : null;
+    const breadthCm = geometryOverride?.breadthCm ?? defaultBreadthCm;
+    const usesMeasuredSideDepth = Boolean(
+      candidate?.sideDepthAccepted && candidate.depthSource === "side-guide-manual-coordinate",
+    );
+    const depthCm = usesMeasuredSideDepth ? defaultDepthCm : geometryOverride?.depthCm ?? defaultDepthCm;
+    if (!candidate || breadthCm <= 0 || depthCm <= 0) return [];
+    if (circumferenceMethod === "meta-3d-contour") {
+      const meshRow = activeSam3dMeshPrediction?.rows.find((row) => row.kind === kind) ?? null;
+      if (!meshRow) return [];
+      return [{
+        kind,
+        breadthCm,
+        depthCm,
+        superellipseExponent: meshRow.superellipseExponent,
+        sourceLabel: "Meta contour",
+        shapeMode: "meta-contour" as const,
+      }];
+    }
+    const shapeSource = shapeExponentSources[kind];
+    let exponent: number | null = null;
+    let sourceLabel = "manual n";
+    if (shapeSource === "manual") {
+      exponent = superellipseExponents[kind];
+    } else if (
+      shapeSource === "wear-1d"
+      || shapeSource === "fused-meta-wear"
+      || shapeSource === "photo-body-shape"
+    ) {
+      const wearRow = wearRowPredictions?.find((row) => row.kind === kind) ?? null;
+      const wearModel = wearRow?.wearShapeExponentModel ?? null;
+      const wearPrediction = wearShapeInputsReady && wearModel && heightCm && weightKg && gender
+        ? predictWearShapeExponent(wearModel, {
+          breadthCm,
+          depthCm,
+          heightCm,
+          weightKg,
+          gender,
+        })
+        : null;
+      const meshRow = activeSam3dMeshPrediction?.rows.find((row) => row.kind === kind) ?? null;
+      if (shapeSource === "fused-meta-wear") {
+        if (wearPrediction && wearModel && gender) {
+          const depthProfilePrediction = predictDepthProfileShapeExponent(
+            meshRow?.depthProfileEvidence,
+            depthCm,
+          );
+          const fused = predictFusedShapeExponent({
+            meshRow,
+            wearPrediction,
+            wearModel,
+            depthProfilePrediction,
+            breadthCm,
+            depthCm,
+            gender,
+            appleCameraAligned: activeSam3dMeshPrediction?.cameraIntrinsicsSource === "apple-vision",
+          });
+          exponent = fused?.exponent ?? null;
+          if (fused) sourceLabel = "Apple-aligned automatic n";
+        }
+      } else if (shapeSource === "photo-body-shape") {
+        const photoPrediction = predictPhotoBodyShapeExponent({
+          kind,
+          silhouette: photoSilhouetteEvidence,
+          meshRow,
+          wearPrediction,
+          wearModel,
+          selectedBodyType: photoBodyType,
+          crossSectionHint: photoCrossSectionHints[kind],
+        });
+        exponent = photoPrediction?.accepted ? photoPrediction.exponent : null;
+        if (photoPrediction?.accepted) sourceLabel = "photo + body-shape n";
+      } else {
+        exponent = wearPrediction?.exponent ?? null;
+        if (wearPrediction) sourceLabel = "WEAR n";
+      }
+    } else {
+      const prediction = meshShapePredictions[shapeSource]?.geometryKey === meshShapeGeometryKey
+        ? meshShapePredictions[shapeSource]
+        : null;
+      exponent = prediction?.rows.find((row) => row.kind === kind)?.superellipseExponent ?? null;
+      sourceLabel = `${meshShapeProviderLabel(shapeSource)} n`;
+    }
+    if (exponent == null || !Number.isFinite(exponent)) return [];
+    return [{
+      kind,
+      breadthCm,
+      depthCm,
+      superellipseExponent: exponent,
+      sourceLabel,
+      shapeMode: "superellipse" as const,
+    }];
+  });
+  useEffect(() => {
+    if (!meshWorkspaceOpen) return undefined;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMeshWorkspaceOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [meshWorkspaceOpen]);
+  useEffect(() => {
+    if (!activeSam3dMeshPrediction) setMeshWorkspaceOpen(false);
+  }, [activeSam3dMeshPrediction]);
+  useEffect(() => {
+    if (!openMeshWorkspaceAfterRun || !activeSam3dMeshPrediction) return;
+    setOpenMeshWorkspaceAfterRun(false);
+    setMeshWorkspaceOpen(true);
+  }, [activeSam3dMeshPrediction, openMeshWorkspaceAfterRun]);
+  useEffect(() => {
+    if (meshShapeRunStates["sam-3d-body"].status === "error") setOpenMeshWorkspaceAfterRun(false);
+  }, [meshShapeRunStates]);
+  const openOrBuildMetaMeshWorkspace = () => {
+    if (activeSam3dMeshPrediction) {
+      setMeshWorkspaceOpen(true);
+      return;
+    }
+    setOpenMeshWorkspaceAfterRun(true);
+    void runMeshShapeProvider("sam-3d-body");
+  };
+  const metaMeshProviderStatus = meshShapeProviderById["sam-3d-body"] ?? null;
+  const metaMeshRunState = meshShapeRunStates["sam-3d-body"];
   return (
-    <section data-testid="essential-measurement-summary" className="mb-3 rounded-xl border border-slate-200 bg-white p-3 text-slate-900">
+    <section
+      data-testid="essential-measurement-summary"
+      className={meshWorkspaceOpen
+        ? "fixed inset-y-0 right-0 z-[130] w-full max-w-[420px] overflow-y-auto border-l border-slate-200 bg-white p-3 text-slate-900 shadow-2xl"
+        : "mb-3 rounded-xl border border-slate-200 bg-white p-3 text-slate-900"}
+    >
+      {supportsMetaMeshWorkspace && !meshWorkspaceOpen ? (
+        <div
+          data-testid="meta-mesh-workspace-launcher"
+          className="sticky top-0 z-30 mb-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-cyan-300 bg-cyan-950 px-3 py-2 text-white shadow-lg"
+        >
+          <div>
+            <div className="text-[11px] font-semibold">Meta 3D mesh</div>
+            <div className="text-[9px] leading-3 text-cyan-100">
+              Opens large on the left. Your width, depth and shape controls stay on the right.
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={openOrBuildMetaMeshWorkspace}
+            disabled={!metaMeshProviderStatus?.available || metaMeshRunState.status === "loading"}
+            className="rounded-md border border-cyan-200 bg-cyan-300 px-3 py-1.5 text-[10px] font-semibold text-cyan-950 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {metaMeshRunState.status === "loading"
+              ? "Building Meta 3D…"
+              : activeSam3dMeshPrediction
+                ? "Open Meta 3D"
+                : "Build + open Meta 3D"}
+          </button>
+          {!metaMeshProviderStatus?.available && metaMeshProviderStatus?.reason ? (
+            <div className="w-full text-[8px] leading-3 text-amber-200">{metaMeshProviderStatus.reason}</div>
+          ) : null}
+          {metaMeshRunState.status === "error" && metaMeshRunState.error ? (
+            <div className="w-full rounded border border-rose-300/60 bg-rose-950/50 px-2 py-1.5 text-[9px] leading-4 text-rose-100">
+              {formatMeshShapeRunError(metaMeshRunState.error)}
+              {isSplitThighHipSliceError(metaMeshRunState.error) ? (
+                <span className="mt-1 block font-medium text-rose-50">
+                  Manual fix: move the hips red row upward until it crosses one connected butt/hip slice, then run Meta again.
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h3 className="text-sm font-semibold">Circumference result vs dataset</h3>
-          <p className="mt-1 text-[11px] leading-4 text-slate-600">
+          <h3 className="text-sm font-semibold">{meshWorkspaceOpen ? "3D body controls" : "Circumference result vs dataset"}</h3>
+          {!meshWorkspaceOpen ? <p className="mt-1 text-[11px] leading-4 text-slate-600">
             {measurementUnavailableMessage
               ? localMlMode
                 ? "Dataset values remain visible, but Local ML blocks circumference when any safe direct WEAR depth group is missing."
                 : "Dataset values remain visible, but this model stage cannot produce circumference until 3D depth is trained."
-              : directWearDepthActive
+              : measuredSideDepthActive
+                ? "Dataset is the real circumference. Our result uses front red lines for side-to-side width and side-photo red lines for front-to-back depth. The selected shape formula goes around those two measured dimensions."
+              : absoluteDepthActive
+                ? "Dataset is the real circumference. Our result uses the photo red-line width plus a separate WEAR-only formula that predicts front-to-back depth directly in centimetres."
+              : photoWidthWearRatioActive
                 ? "Dataset is the real measurement. Our result uses the red-line front width, the direct WEAR group's middle depth ratio, and your selected shape formula below."
                 : "Dataset is the real measurement. Our result uses the red line, the selected depth ratio, and your selected shape formula below."}
-          </p>
+          </p> : null}
         </div>
         <label className="flex items-center gap-1.5 text-[10px] text-slate-600">
-          Result unit
+          {meshWorkspaceOpen ? "Unit" : "Result unit"}
           <select
             value={unit}
             onChange={(event) => onUnitChange(event.currentTarget.value as ScaleProofUnit)}
@@ -2850,12 +3334,55 @@ function FullScreenEssentialMeasurementSummary({
         </label>
       </div>
 
+      {measuredSideDepthActive ? (
+        <div className="mt-3 flex items-center justify-between gap-3 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 text-[11px] text-emerald-950">
+          <span>
+            <span className="block font-medium">Depth source</span>
+            <span className="block text-[9px] leading-3 text-emerald-800">Move the side-photo red endpoints to change depth.</span>
+          </span>
+          <span className="rounded-md border border-emerald-300 bg-white px-2 py-1.5 text-[10px] font-medium">
+            Side photo red lines
+          </span>
+        </div>
+      ) : localMlMode ? (
+        <label className="mt-3 flex items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] text-emerald-950">
+          <span>
+            <span className="block font-medium">{meshWorkspaceOpen ? "Depth source" : "How Local ML gets body depth"}</span>
+            {!meshWorkspaceOpen ? <span className="block text-[9px] leading-3 text-emerald-800">The photo red line owns width in both methods.</span> : null}
+          </span>
+          <select
+            value={localMlDepthMethod ?? "wear-ratio"}
+            onChange={(event) => onLocalMlDepthMethodChange?.(event.currentTarget.value as LocalMlDepthMethod)}
+            disabled={!onLocalMlDepthMethodChange}
+            aria-label="Local ML body depth method"
+            className="rounded border border-emerald-300 bg-white px-2 py-1.5 text-[10px] font-medium text-slate-900"
+          >
+            <option value="wear-ratio">Photo red width + WEAR ratio</option>
+            <option value="wear-absolute-depth" disabled={!absoluteDepthAvailable}>Photo red width + WEAR depth cm</option>
+          </select>
+        </label>
+      ) : null}
+
       {!measurement && measurementUnavailableMessage ? (
         <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] leading-4 text-amber-900">
           {measurementUnavailableMessage}
         </div>
       ) : null}
 
+      {meshWorkspaceOpen ? (
+        <label data-testid="body-width-method-selector" className="mt-2 flex items-center justify-between gap-3 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-[11px] text-blue-950">
+          <span className="font-medium">Width source</span>
+          <select
+            value={bodyWidthMethod}
+            onChange={(event) => onBodyWidthMethodChange(event.currentTarget.value as BodyWidthMethod)}
+            aria-label="Body width source"
+            className="rounded border border-blue-300 bg-white px-2 py-1.5 text-[10px] font-medium text-slate-900"
+          >
+            <option value="apple-vision">Apple Vision</option>
+            <option value="depth-pro">Depth Pro · experimental</option>
+          </select>
+        </label>
+      ) : (
       <div data-testid="body-width-method-selector" className="mt-3 rounded-lg border border-blue-200 bg-blue-50 p-2.5">
         <div className="text-[11px] font-medium text-blue-950">Circumference model only</div>
         <div className="mt-2 grid grid-cols-2 gap-2">
@@ -2891,8 +3418,8 @@ function FullScreenEssentialMeasurementSummary({
               onClick={() => onBodyWidthMethodChange("depth-pro")}
               className="block h-full w-full rounded-lg px-2 py-2 pr-9 text-left"
             >
-              <span className="block text-xs font-semibold text-slate-950">Depth Pro</span>
-              <span className="mt-0.5 block text-[9px] leading-3 text-slate-600">Depth map + Apple scale + body mask</span>
+              <span className="block text-xs font-semibold text-slate-950">Depth Pro · experimental</span>
+              <span className="mt-0.5 block text-[9px] leading-3 text-slate-600">Optional comparison, not the default</span>
             </button>
             <button
               type="button"
@@ -2924,9 +3451,13 @@ function FullScreenEssentialMeasurementSummary({
               It estimates how far the body surface is from the camera. Here we combine it with Apple&apos;s scale, the known height, the MediaPipe body mask and the red endpoints to find the front-body width.
             </p>
             <p className="mt-1 text-slate-600">
-              It does not know the real waist or hip circumference. {directWearDepthActive
-                ? "The direct WEAR group ratio or your manual slider still finishes that calculation."
-                : "The depth-ratio formula still finishes that calculation."}
+              It does not know the real waist or hip circumference. {measuredSideDepthActive
+                ? "The side-photo red line supplies the front-to-back depth."
+                : absoluteDepthActive
+                ? "The WEAR absolute-depth formula still supplies the hidden front-to-back depth."
+                : photoWidthWearRatioActive
+                  ? "The direct WEAR group ratio or your manual slider still finishes that calculation."
+                  : "The depth-ratio formula still finishes that calculation."}
             </p>
           </div>
         ) : null}
@@ -2934,105 +3465,284 @@ function FullScreenEssentialMeasurementSummary({
           This choice does not affect the red-line tape result below. It changes only the separate body-model calculation.
         </div>
       </div>
+      )}
 
-      <div data-testid="circumference-method-selector" className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5">
-        <div className="text-[11px] font-medium text-emerald-950">Shape formula around the body</div>
-        <p className="mt-1 text-[10px] leading-4 text-emerald-900">
-          This changes only the final shape calculation below. The red width, camera correction and selected depth stay exactly the same.
-        </p>
-        <label className="mt-2 block text-[9px] font-medium text-slate-600" htmlFor="circumference-method-select">
-          Choose a formula
-        </label>
-        <select
-          id="circumference-method-select"
-          value={circumferenceMethod}
-          onChange={(event) => setCircumferenceMethod(event.currentTarget.value as CircumferenceMethod)}
-          className="mt-1 w-full rounded-lg border border-emerald-300 bg-white px-2.5 py-2 text-xs font-medium text-slate-900"
-        >
-          {CIRCUMFERENCE_METHOD_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value} disabled={!option.available}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        {circumferenceMethod === "superellipse" ? (
-          <div className="mt-2 rounded-lg border border-emerald-200 bg-white p-2">
-            <div className="flex items-center justify-between gap-2 text-[10px] text-slate-700">
-              <span>Shape exponent n</span>
-              <span className="font-mono font-semibold text-slate-950">{superellipseExponent.toFixed(1)}</span>
-            </div>
-            <input
-              type="range"
-              min="1.2"
-              max="4"
-              step="0.1"
-              value={superellipseExponent}
-              onChange={(event) => setSuperellipseExponent(Number(event.currentTarget.value))}
-              aria-label="Superellipse shape exponent"
-              className="mt-1 w-full accent-emerald-600"
-            />
-            <div className="flex justify-between text-[8px] text-slate-500">
-              <span>1.2 pinched</span>
-              <span>2.0 ellipse</span>
-              <span>4.0 boxier</span>
-            </div>
-            <div className="mt-2 grid grid-cols-4 gap-1">
-              {[
-                { value: 1.5, label: "Pinched" },
-                { value: 2, label: "Oval" },
-                { value: 2.5, label: "Rounded" },
-                { value: 3.5, label: "Boxier" },
-              ].map((preset) => (
-                <button
-                  key={preset.value}
-                  type="button"
-                  aria-pressed={Math.abs(superellipseExponent - preset.value) < 0.01}
-                  onClick={() => setSuperellipseExponent(preset.value)}
-                  className={`rounded border px-1 py-1 text-[8px] font-medium ${Math.abs(superellipseExponent - preset.value) < 0.01
-                    ? "border-emerald-500 bg-emerald-100 text-emerald-950"
-                    : "border-slate-200 bg-slate-50 text-slate-600 hover:border-emerald-300"}`}
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
+      {!meshWorkspaceOpen ? <p className="mt-3 text-[10px] leading-4 text-slate-600">
+        {measuredSideDepthActive
+          ? "Each body part is separate: front red line = width, side red line = depth, and the selected shape formula calculates around both."
+          : absoluteDepthActive
+          ? "Each body part is separate: the red line supplies front width, WEAR predicts depth in centimetres, then the selected shape formula produces circumference. Saved ratio sliders are not used."
+          : "Each body part is separate: check the result, choose its shape, then adjust its depth ratio."}
+      </p> : null}
+
+      {meshWorkspaceOpen ? (
+        <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2" data-testid="mesh-body-part-selector">
+          <div className="mb-1.5 text-[9px] font-medium text-slate-600">Body part</div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {targets.map(({ kind, label }) => (
+              <button
+                key={kind}
+                type="button"
+                aria-pressed={meshControlKind === kind}
+                onClick={() => setMeshControlKind(kind)}
+                className={`rounded-md border px-1.5 py-2 text-[10px] font-semibold transition ${meshControlKind === kind
+                  ? "border-cyan-500 bg-cyan-100 text-cyan-950"
+                  : "border-slate-200 bg-white text-slate-600 hover:border-cyan-300"}`}
+              >
+                {label === "Natural waist" ? "Waist" : label === "Trouser waist" ? "Trouser" : "Hips"}
+              </button>
+            ))}
           </div>
-        ) : null}
-        <div className="mt-2 rounded-lg bg-white/80 px-2 py-2 text-[9px] leading-3.5 text-slate-700">
-          <div>{selectedCircumferenceOption.simpleDescription}</div>
-          <div className="mt-1 break-words font-mono text-[9px] text-emerald-950">{selectedCircumferenceOption.formula}</div>
         </div>
-        <p className="mt-1.5 text-[9px] leading-3.5 text-slate-600">
-          “Real 3D contour” is shown but disabled because this photo does not contain a measured 3D body cross-section.
-        </p>
-      </div>
+      ) : null}
 
-      <div className="mt-3 grid gap-2">
-        {targets.map(({ kind, label, targetCm }) => {
+      <div data-testid="circumference-method-selector" className="mt-2 grid gap-2">
+        {targets.filter(({ kind }) => !meshWorkspaceOpen || kind === meshControlKind).map(({ kind, label, targetCm }) => {
           const candidate = measurement?.rows.find((row) => row.kind === kind) ?? null;
+          const rowUsesMeasuredSideDepth = Boolean(
+            candidate?.sideDepthAccepted && candidate.depthSource === "side-guide-manual-coordinate",
+          );
+          const circumferenceMethod = circumferenceMethods[kind];
+          const superellipseExponent = superellipseExponents[kind];
+          const shapeExponentSource = shapeExponentSources[kind];
+          const selectedCircumferenceOption = CIRCUMFERENCE_METHOD_OPTIONS.find((option) => option.value === circumferenceMethod)
+            ?? CIRCUMFERENCE_METHOD_OPTIONS[0]!;
+          const depthFormula = candidate?.depthRatioTable?.table ?? null;
+          const wearRowPrediction = wearRowPredictions?.find((prediction) => prediction.kind === kind) ?? null;
+          const directCohort = wearRowPrediction?.wearDepthCohort ?? null;
+          const wearShapeExponentModel = wearRowPrediction?.wearShapeExponentModel ?? null;
+          const fallbackBounds = rowDepthRatioBounds(kind);
+          const sideDepthRatio = rowUsesMeasuredSideDepth && candidate?.depthRatio != null
+            ? candidate.depthRatio
+            : null;
+          const baseMinimumDepthRatio = directCohort ? fallbackBounds.min : depthFormula?.supportedMin ?? fallbackBounds.min;
+          const baseMaximumDepthRatio = directCohort ? fallbackBounds.max : depthFormula?.supportedMax ?? fallbackBounds.max;
+          const minimumDepthRatio = sideDepthRatio == null ? baseMinimumDepthRatio : Math.min(baseMinimumDepthRatio, sideDepthRatio);
+          const maximumDepthRatio = sideDepthRatio == null ? baseMaximumDepthRatio : Math.max(baseMaximumDepthRatio, sideDepthRatio);
+          const wearRecommendedRatio = directCohort?.medianDepthRatio ?? depthFormula?.depthRatio ?? null;
+          const depthOverride = depthRatioOverrides?.[kind] ?? candidate?.depthRatioOverride ?? null;
+          const selectedDepthRatio = candidate
+            ? rowUsesMeasuredSideDepth
+              ? candidate.depthRatio
+              : clamp(depthOverride ?? wearRecommendedRatio ?? candidate.depthRatio, minimumDepthRatio, maximumDepthRatio)
+            : null;
+          const updateDepthRatio = (value: number) => {
+            if (!Number.isFinite(value) || rowUsesMeasuredSideDepth) return;
+            if (absoluteDepthActive) onLocalMlDepthMethodChange?.("wear-ratio");
+            onDepthRatioOverrideChange?.(kind, clamp(value, minimumDepthRatio, maximumDepthRatio));
+          };
+          const redLineBreadthCm = candidate?.calculationWidthExactCm
+            ?? candidate?.calculationWidthCm
+            ?? candidate?.formulaWidthCm
+            ?? 0;
+          const wearDepthCm = candidate?.calculationDepthExactCm ?? candidate?.depthCm ?? 0;
+          const geometryOverride = formulaGeometryOverrides[kind]?.sourceKey === geometrySourceKey
+            ? formulaGeometryOverrides[kind]
+            : null;
+          const activeCircumferenceWidthCm = geometryOverride?.breadthCm ?? redLineBreadthCm;
+          const activeDepthOverrideCm = rowUsesMeasuredSideDepth ? undefined : geometryOverride?.depthCm;
+          const activeCircumferenceDepthCm = activeDepthOverrideCm ?? wearDepthCm;
+          const updateGeometryDimension = (dimension: "breadthCm" | "depthCm", displayedValue: string) => {
+            if (dimension === "depthCm" && rowUsesMeasuredSideDepth) return;
+            const numericValue = Number(displayedValue);
+            if (!Number.isFinite(numericValue) || numericValue <= 0) return;
+            const valueCm = unit === "in" ? inToCm(numericValue) : numericValue;
+            setFormulaGeometryOverrides((current) => ({
+              ...current,
+              [kind]: {
+                ...(current[kind]?.sourceKey === geometrySourceKey ? current[kind] : {}),
+                sourceKey: geometrySourceKey,
+                [dimension]: valueCm,
+              },
+            }));
+          };
+          const resetGeometryDimensions = () => {
+            setFormulaGeometryOverrides((current) => {
+              const next = { ...current };
+              delete next[kind];
+              return next;
+            });
+          };
+          const canUseWearShapeExponent = Boolean(
+            localMlMode
+            && wearShapeInputsReady
+            && wearShapeExponentModel
+            && candidate
+            && activeCircumferenceWidthCm > 0
+            && activeCircumferenceDepthCm > 0
+            && heightCm
+            && heightCm > 0
+            && weightKg
+            && weightKg > 0
+            && gender,
+          );
+          // Calculate every available candidate even when it is not selected.
+          // The chooser can then show the user the exact n each source would use
+          // without silently changing the active circumference result.
+          const wearShapeExponent = canUseWearShapeExponent
+            ? predictWearShapeExponent(wearShapeExponentModel ?? undefined, {
+                breadthCm: activeCircumferenceWidthCm,
+                depthCm: activeCircumferenceDepthCm,
+                heightCm: heightCm!,
+                weightKg: weightKg!,
+                gender: gender!,
+              })
+            : null;
+          const availableSamPrediction = activeSam3dMeshPrediction;
+          const availableSamPredictionRow = availableSamPrediction?.rows.find((row) => row.kind === kind) ?? null;
+          const meshProviderId: MeshShapeProviderId | null = circumferenceMethod === "meta-3d-contour"
+            ? "sam-3d-body"
+            : shapeExponentSource === "fused-meta-wear" || shapeExponentSource === "photo-body-shape"
+              ? "sam-3d-body"
+            : shapeExponentSource === "sam-3d-body" || shapeExponentSource === "shapy"
+              ? shapeExponentSource
+              : null;
+          const meshProviderStatus = meshProviderId ? meshShapeProviderById[meshProviderId] ?? null : null;
+          const meshPrediction = meshProviderId && meshShapePredictions[meshProviderId]?.geometryKey === meshShapeGeometryKey
+            ? meshShapePredictions[meshProviderId] ?? null
+            : null;
+          const meshPredictionRow = meshPrediction?.rows.find((row) => row.kind === kind) ?? null;
+          const depthProfileShapeExponent = meshPredictionRow
+            ? predictDepthProfileShapeExponent(meshPredictionRow.depthProfileEvidence, activeCircumferenceDepthCm)
+            : null;
+          const fusedShapeExponent = predictFusedShapeExponent({
+                meshRow: availableSamPredictionRow,
+                wearPrediction: wearShapeExponent,
+                wearModel: wearShapeExponentModel,
+                depthProfilePrediction: availableSamPredictionRow
+                  ? predictDepthProfileShapeExponent(
+                      availableSamPredictionRow.depthProfileEvidence,
+                      activeCircumferenceDepthCm,
+                    )
+                  : null,
+                breadthCm: activeCircumferenceWidthCm,
+                depthCm: activeCircumferenceDepthCm,
+                gender: gender!,
+                appleCameraAligned: availableSamPrediction?.cameraIntrinsicsSource === "apple-vision",
+              });
+          const photoBodyShapeExponent = predictPhotoBodyShapeExponent({
+            kind,
+            silhouette: photoSilhouetteEvidence,
+            meshRow: availableSamPredictionRow,
+            wearPrediction: wearShapeExponent,
+            wearModel: wearShapeExponentModel,
+            selectedBodyType: photoBodyType,
+            crossSectionHint: photoCrossSectionHints[kind],
+          });
+          const directMeshErrorCm = meshPredictionRow && targetCm != null
+            ? meshPredictionRow.meshPerimeterCm - targetCm
+            : null;
+          const directMeshErrorPct = directMeshErrorCm != null && targetCm && targetCm > 0
+            ? (directMeshErrorCm / targetCm) * 100
+            : null;
+          const shapeNumberReady = circumferenceMethod === "meta-3d-contour"
+            ? Boolean(meshPredictionRow)
+            : shapeExponentSource === "manual"
+            || (shapeExponentSource === "wear-1d" && Boolean(wearShapeExponent))
+            || (shapeExponentSource === "fused-meta-wear" && Boolean(fusedShapeExponent))
+            || (shapeExponentSource === "photo-body-shape" && Boolean(photoBodyShapeExponent?.accepted))
+            || ((shapeExponentSource === "sam-3d-body" || shapeExponentSource === "shapy") && Boolean(meshPredictionRow));
+          const activeSuperellipseExponent = shapeExponentSource === "manual"
+            ? superellipseExponent
+            : shapeExponentSource === "wear-1d"
+              ? wearShapeExponent?.exponent ?? superellipseExponent
+              : shapeExponentSource === "fused-meta-wear"
+                ? fusedShapeExponent?.exponent ?? superellipseExponent
+                : shapeExponentSource === "photo-body-shape"
+                  ? photoBodyShapeExponent?.exponent ?? superellipseExponent
+                : meshPredictionRow?.superellipseExponent ?? superellipseExponent;
+          const activeShapeSourceLabel = shapeExponentSource === "manual"
+            ? "manual"
+            : shapeExponentSource === "wear-1d"
+              ? "from WEAR 1D"
+              : shapeExponentSource === "fused-meta-wear"
+                ? "from Apple-aligned Meta + WEAR"
+                : shapeExponentSource === "photo-body-shape"
+                  ? "from photo + body shape"
+                : `from ${meshShapeProviderLabel(shapeExponentSource)}`;
+          const sameGenderShapeMaeCm = gender === "female"
+            ? wearShapeExponentModel?.validationFemaleMaeCm
+            : wearShapeExponentModel?.validationMaleMaeCm;
+          const sameGenderShapeP90Cm = gender === "female"
+            ? wearShapeExponentModel?.validationFemaleP90AbsErrorCm
+            : wearShapeExponentModel?.validationMaleP90AbsErrorCm;
+          const minimumAllowedShapeCm = candidate
+            ? calculateCircumferenceCm(activeCircumferenceWidthCm, activeCircumferenceDepthCm, "superellipse", 1.2)
+            : null;
+          const maximumAllowedShapeCm = candidate
+            ? calculateCircumferenceCm(activeCircumferenceWidthCm, activeCircumferenceDepthCm, "superellipse", 4)
+            : null;
+          const targetOutsideAllowedShape = targetCm != null
+            && minimumAllowedShapeCm != null
+            && maximumAllowedShapeCm != null
+            && (targetCm < minimumAllowedShapeCm || targetCm > maximumAllowedShapeCm);
           const shownInputRamanujanCm = candidate
-            ? calculateCircumferenceCm(candidate.formulaWidthCm, candidate.depthCm, "ramanujan-1")
+            ? calculateCircumferenceCm(activeCircumferenceWidthCm, activeCircumferenceDepthCm, "ramanujan-1")
             : null;
-          const shownInputSelectedCm = candidate
-            ? calculateCircumferenceCm(
-                candidate.formulaWidthCm,
-                candidate.depthCm,
-                circumferenceMethod,
-                superellipseExponent,
-              )
-            : null;
+          const shownInputSelectedCm = candidate && shapeNumberReady
+            ? circumferenceMethod === "meta-3d-contour"
+              ? calculateScaledBodyContourCircumferenceCm(
+                  meshPredictionRow?.sliceLoopM ?? [],
+                  activeCircumferenceWidthCm,
+                  activeCircumferenceDepthCm,
+                )
+              : calculateCircumferenceCm(
+                  activeCircumferenceWidthCm,
+                  activeCircumferenceDepthCm,
+                  circumferenceMethod,
+                  activeSuperellipseExponent,
+                )
+            : circumferenceMethod === "superellipse" || circumferenceMethod === "meta-3d-contour"
+              ? null
+              : candidate
+                ? calculateCircumferenceCm(
+                    activeCircumferenceWidthCm,
+                    activeCircumferenceDepthCm,
+                    circumferenceMethod,
+                    activeSuperellipseExponent,
+                  )
+                : null;
           // The measurement row exposes width/depth rounded to 0.1 cm, while
           // guidedCm was calculated from higher-precision values. Preserve the
           // active Ramanujan result, then apply only the selected method's delta
           // so the comparison does not manufacture a rounding difference.
-          const selectedCircumferenceCm = candidate && shownInputRamanujanCm != null && shownInputSelectedCm != null
-            ? candidate.guidedCm + (shownInputSelectedCm - shownInputRamanujanCm)
+          const selectedCircumferenceCm = candidate && shownInputSelectedCm != null
+            ? geometryOverride || circumferenceMethod === "superellipse" || circumferenceMethod === "meta-3d-contour"
+              ? shownInputSelectedCm
+              : shownInputRamanujanCm != null
+                ? candidate.guidedCm + (shownInputSelectedCm - shownInputRamanujanCm)
+                : shownInputSelectedCm
             : null;
+          const unavailableResultLabel = shapeExponentSource === "fused-meta-wear" && !fusedShapeExponent
+            ? meshShapeRunStates["sam-3d-body"].status === "loading"
+              ? "Running Meta"
+              : !meshPredictionRow
+                ? "Run Meta"
+                : !wearShapeExponent
+                  ? "WEAR shape unavailable"
+                  : "Fused shape unavailable"
+            : shapeExponentSource === "photo-body-shape" && !photoBodyShapeExponent?.accepted
+              ? meshShapeRunStates["sam-3d-body"].status === "loading"
+                ? "Running Meta"
+                : !availableSamPredictionRow
+                  ? "Run Meta"
+                  : "Needs shape check"
+            : meshProviderId
+            ? meshShapeRunStates[meshProviderId].status === "loading"
+              ? "Running 3D model"
+              : meshProviderStatus?.available
+                ? "Run shape model"
+                : "Setup needed"
+            : shapeExponentSource === "wear-1d" && !wearShapeExponent
+              ? "WEAR shape unavailable"
+              : measurementUnavailableMessage
+                ? "Waiting for 3D"
+                : "Calculating";
           const errorCm = selectedCircumferenceCm != null && targetCm != null ? selectedCircumferenceCm - targetCm : null;
           const errorPct = errorCm != null && targetCm && targetCm > 0 ? (errorCm / targetCm) * 100 : null;
           const withinTwoPct = errorPct != null && Math.abs(errorPct) <= 2;
           return (
-            <div key={kind} className="rounded-lg border border-slate-200 bg-slate-50 p-2.5">
+            <div key={kind} data-testid={`circumference-method-${kind}`} className="rounded-lg border border-slate-200 bg-slate-50 p-2.5">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[11px] font-semibold text-slate-800">{label}</span>
                 {errorPct == null ? null : (
@@ -3041,361 +3751,586 @@ function FullScreenEssentialMeasurementSummary({
                   </span>
                 )}
               </div>
-              <div className="mt-2 grid grid-cols-2 gap-2">
+              <div className="mt-2 grid grid-cols-3 gap-2">
                 <div>
                   <div className="text-[9px] text-slate-500">Dataset</div>
                   <div className="font-mono text-base text-slate-950">{targetCm == null ? "Not available" : formatCircumferenceValue(targetCm, unit)}</div>
                 </div>
                 <div>
                   <div className="text-[9px] text-slate-500">Our result</div>
-                  <div className="font-mono text-base text-slate-950">{selectedCircumferenceCm != null ? formatCircumferenceValue(selectedCircumferenceCm, unit) : measurementUnavailableMessage ? "Waiting for 3D" : "Calculating"}</div>
-                  <div className="mt-0.5 text-[9px] text-slate-500">
+                  <div className="font-mono text-base text-slate-950">{selectedCircumferenceCm != null ? formatCircumferenceValue(selectedCircumferenceCm, unit) : unavailableResultLabel}</div>
+                  {!meshWorkspaceOpen ? <div className="mt-0.5 text-[9px] text-slate-500">
                     {selectedCircumferenceCm != null
-                      ? `${bodyWidthMethod === "apple-vision" ? "Apple Vision" : "Depth Pro"} · ${selectedCircumferenceOption.label}`
-                      : measurementUnavailableMessage ? "depth model not trained" : "calculating"}
+                      ? `${bodyWidthMethod === "apple-vision" ? "Apple Vision" : "Depth Pro"} · ${geometryOverride?.depthCm != null ? "manual depth cm" : rowUsesMeasuredSideDepth ? "side photo depth" : absoluteDepthActive ? "WEAR depth cm" : "WEAR ratio"} · ${selectedCircumferenceOption.label}${circumferenceMethod === "superellipse" ? ` · n ${activeSuperellipseExponent.toFixed(2)} ${activeShapeSourceLabel}` : circumferenceMethod === "meta-3d-contour" ? " · normalized to locked breadth/depth" : ""}`
+                      : meshProviderId
+                        ? "This result is not using a fallback shape number."
+                        : measurementUnavailableMessage ? "depth model not trained" : "shape number unavailable"}
+                  </div> : null}
+                </div>
+                <div className={withinTwoPct ? "text-emerald-700" : errorPct == null ? "text-slate-500" : "text-rose-700"}>
+                  <div className="text-[9px] text-slate-500">Difference</div>
+                  <div className="font-mono text-base font-medium">
+                    {errorCm == null ? "not available" : formatSignedCircumferenceValue(errorCm, unit)}
                   </div>
+                  {errorPct == null ? null : (
+                    <div className="font-mono text-[10px]">
+                      {errorPct >= 0 ? "+" : ""}{errorPct.toFixed(2)}%
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className={`mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1 ${withinTwoPct ? "text-emerald-700" : errorPct == null ? "text-slate-500" : "text-rose-700"}`}>
-                <span className="text-[10px] text-slate-500">Difference</span>
-                <span className="font-mono text-sm font-medium">
-                  {errorCm == null ? "not available" : formatSignedCircumferenceValue(errorCm, unit)}
+
+              {!meshWorkspaceOpen ? <div
+                data-testid={`red-line-width-${kind}`}
+                className="mt-2 flex items-center justify-between gap-2 rounded-md border border-sky-200 bg-sky-50 px-2 py-1.5"
+              >
+                <span className="text-[9px] text-sky-800">Red line (front width)</span>
+                <span className="font-mono text-sm font-medium text-sky-950">
+                  {candidate && redLineBreadthCm > 0
+                    ? formatCircumferenceValue(redLineBreadthCm, unit)
+                    : "not available"}
                 </span>
-                {errorPct == null ? null : (
-                  <span className="font-mono text-xs font-medium">
-                    {errorPct >= 0 ? "+" : ""}{errorPct.toFixed(2)}%
-                  </span>
-                )}
+              </div> : null}
+
+              <div data-testid={`locked-geometry-${kind}`} className="mt-2 rounded-md border border-indigo-200 bg-indigo-50/70 px-2 py-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <div className="text-[10px] font-medium text-indigo-950">{meshWorkspaceOpen ? "Size" : "Exact geometry used by the formula"}</div>
+                    {!meshWorkspaceOpen ? <div className="text-[8px] leading-3 text-indigo-700">
+                      {rowUsesMeasuredSideDepth
+                        ? "Front red line supplies breadth. Side red line supplies measured depth."
+                        : "Defaults to red-line breadth + WEAR depth. Edit either number when you have a better measured value."}
+                    </div> : null}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={resetGeometryDimensions}
+                    disabled={!geometryOverride?.breadthCm && !(geometryOverride?.depthCm != null && !rowUsesMeasuredSideDepth)}
+                    className="shrink-0 rounded border border-indigo-200 bg-white px-2 py-1 text-[8px] text-indigo-800 disabled:opacity-40"
+                  >
+                    Reset
+                  </button>
+                </div>
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  <label className="rounded border border-sky-200 bg-white px-2 py-1.5">
+                    <span className="block text-[8px] text-sky-700">{meshWorkspaceOpen ? `Width (${unit})` : `Breadth · side to side (${unit})`}</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max={unit === "in" ? 40 : 100}
+                      step="0.01"
+                      value={(unit === "in" ? cmToIn(activeCircumferenceWidthCm) : activeCircumferenceWidthCm).toFixed(2)}
+                      onChange={(event) => updateGeometryDimension("breadthCm", event.currentTarget.value)}
+                      aria-label={`${label} exact breadth ${unit}`}
+                      className="mt-1 w-full rounded border border-sky-200 px-2 py-1 font-mono text-sm text-slate-950"
+                    />
+                    {!meshWorkspaceOpen ? <span className="mt-0.5 block text-[8px] text-slate-500">
+                      {geometryOverride?.breadthCm != null ? "Manual exact override" : "From red endpoints"}
+                    </span> : null}
+                  </label>
+                  <label className="rounded border border-emerald-200 bg-white px-2 py-1.5">
+                    <span className="block text-[8px] text-emerald-700">{meshWorkspaceOpen ? `Depth (${unit})` : `Depth · front to back (${unit})`}</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max={unit === "in" ? 40 : 100}
+                      step="0.01"
+                      value={(unit === "in" ? cmToIn(activeCircumferenceDepthCm) : activeCircumferenceDepthCm).toFixed(2)}
+                      onChange={(event) => updateGeometryDimension("depthCm", event.currentTarget.value)}
+                      readOnly={rowUsesMeasuredSideDepth}
+                      aria-label={`${label} exact depth ${unit}`}
+                      className={`mt-1 w-full rounded border border-emerald-200 px-2 py-1 font-mono text-sm text-slate-950 ${rowUsesMeasuredSideDepth ? "bg-emerald-50" : ""}`}
+                    />
+                    {!meshWorkspaceOpen ? <span className="mt-0.5 block text-[8px] text-slate-500">
+                      {geometryOverride?.depthCm != null
+                        ? "Manual exact override"
+                        : rowUsesMeasuredSideDepth
+                          ? "From side red endpoints"
+                          : absoluteDepthActive
+                            ? "From WEAR depth prediction"
+                            : "From selected depth method"}
+                    </span> : null}
+                  </label>
+                </div>
+                {!meshWorkspaceOpen ? <div className="mt-1.5 text-[8px] leading-3 text-indigo-800">
+                  Every formula below uses these two numbers. Meta 3D keeps its predicted outline but is resized to this exact breadth and depth.
+                </div> : null}
+              </div>
+
+              <div className="mt-2 border-t border-slate-200 pt-2">
+                <div className="flex items-center gap-2">
+                  <label htmlFor={`circumference-method-select-${kind}`} className="shrink-0 text-[9px] text-slate-500">
+                    {meshWorkspaceOpen ? "Shape" : "Shape formula"}
+                  </label>
+                  <select
+                    id={`circumference-method-select-${kind}`}
+                    value={circumferenceMethod}
+                    onChange={(event) => {
+                      const nextMethod = event.currentTarget.value as CircumferenceMethod;
+                      setCircumferenceMethods((current) => ({
+                        ...current,
+                        [kind]: nextMethod,
+                      }));
+                    }}
+                    className="min-w-0 flex-1 rounded border border-slate-300 bg-white px-2 py-1 text-[10px] text-slate-800"
+                  >
+                    {CIRCUMFERENCE_METHOD_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value} disabled={!option.available}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {circumferenceMethod === "superellipse" ? (
+                  <div className="mt-2 rounded border border-emerald-200 bg-emerald-50/60 px-2 py-1.5">
+                    {showShapeSourceChooser ? (
+                      <div className="mb-2 rounded border border-emerald-300 bg-white px-2 py-2">
+                        <div className="flex items-center gap-2">
+                        <label htmlFor={`shape-exponent-source-${kind}`} className="shrink-0 text-[10px] font-medium text-slate-800">
+                          Who chooses n?
+                        </label>
+                        <select
+                          id={`shape-exponent-source-${kind}`}
+                          data-testid={`shape-exponent-source-${kind}`}
+                          value={shapeExponentSource}
+                          onChange={(event) => {
+                            const nextSource = event.currentTarget.value as ShapeExponentSource;
+                            setShapeExponentSources((current) => ({ ...current, [kind]: nextSource }));
+                          }}
+                          className="min-w-0 flex-1 rounded border border-emerald-300 bg-white px-2 py-1.5 text-[10px] text-slate-900"
+                        >
+                          <option value="manual">You · manual slider · n {superellipseExponent.toFixed(2)}</option>
+                          <option value="wear-1d" disabled={!localMlMode}>WEAR 1D{wearShapeExponent ? ` · n ${wearShapeExponent.exponent.toFixed(2)}` : localMlMode ? " · unavailable" : " · Local ML only"}</option>
+                          <option value="fused-meta-wear" disabled={!localMlMode}>
+                            Best automatic · Meta + WEAR{fusedShapeExponent ? ` · n ${fusedShapeExponent.exponent.toFixed(2)}` : " · unavailable"}
+                          </option>
+                          <option value="photo-body-shape" disabled={!supportsMetaMeshWorkspace}>
+                            Photo + body shape{photoBodyShapeExponent ? ` · n ${photoBodyShapeExponent.exponent.toFixed(2)}${photoBodyShapeExponent.accepted ? "" : " · check"}` : " · run Meta"}
+                          </option>
+                          <option value="sam-3d-body">
+                            Meta SAM 3D Body{availableSamPredictionRow ? ` · n ${availableSamPredictionRow.superellipseExponent.toFixed(2)}` : meshShapeProviderById["sam-3d-body"]?.available ? " · run first" : " · setup needed"}
+                          </option>
+                          <option value="shapy">
+                            SHAPY{meshShapeProviderById.shapy?.available ? "" : " · license/setup needed"}
+                          </option>
+                        </select>
+                        </div>
+                        <div className="mt-1.5 flex items-center justify-between gap-2 border-t border-emerald-100 pt-1.5 text-[9px] text-slate-600">
+                          <span>Active source</span>
+                          <span className="font-mono text-[11px] font-medium text-emerald-950">
+                            {shapeExponentSource === "manual"
+                              ? `You · n ${superellipseExponent.toFixed(2)}`
+                              : shapeExponentSource === "wear-1d"
+                                ? wearShapeExponent ? `WEAR 1D · n ${wearShapeExponent.exponent.toFixed(2)}` : "WEAR 1D · unavailable"
+                                : shapeExponentSource === "fused-meta-wear"
+                                  ? fusedShapeExponent ? `Best automatic · n ${fusedShapeExponent.exponent.toFixed(2)}` : "Best automatic · unavailable"
+                                  : shapeExponentSource === "photo-body-shape"
+                                    ? photoBodyShapeExponent
+                                      ? `Photo + shape · n ${photoBodyShapeExponent.exponent.toFixed(2)}${photoBodyShapeExponent.accepted ? "" : " · not applied"}`
+                                      : "Photo + shape · run Meta"
+                                  : shapeExponentSource === "sam-3d-body"
+                                    ? availableSamPredictionRow ? `Meta 3D · n ${availableSamPredictionRow.superellipseExponent.toFixed(2)}` : "Meta 3D · not run"
+                                    : meshPredictionRow ? `SHAPY · n ${meshPredictionRow.superellipseExponent.toFixed(2)}` : "SHAPY · unavailable"}
+                          </span>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {shapeExponentSource === "photo-body-shape" ? (
+                      <div data-testid={`photo-body-shape-exponent-${kind}`} className="rounded border border-fuchsia-300 bg-white px-2 py-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[9px] font-medium text-fuchsia-900">Photo + body shape</span>
+                          <span className="font-mono text-sm font-medium text-fuchsia-950">
+                            {photoBodyShapeExponent ? `n ${photoBodyShapeExponent.exponent.toFixed(2)}` : "waiting"}
+                          </span>
+                        </div>
+                        <div className={`mt-1 rounded px-1.5 py-1 text-[8px] ${photoBodyShapeExponent?.accepted
+                          ? photoBodyShapeExponent.confidenceLabel === "high"
+                            ? "bg-emerald-50 text-emerald-800"
+                            : "bg-amber-50 text-amber-800"
+                          : "bg-rose-50 text-rose-800"}`}>
+                          {photoBodyShapeExponent?.accepted
+                            ? `${photoBodyShapeExponent.confidenceLabel === "high" ? "Usable evidence" : "Check evidence"} · ${(photoBodyShapeExponent.evidenceConfidence * 100).toFixed(0)}% evidence stability · not accuracy`
+                            : "Not applied · the evidence needs help"}
+                        </div>
+
+                        <div className="mt-2 grid grid-cols-2 gap-2">
+                          <label className="text-[8px] text-slate-600">
+                            Body type
+                            <select
+                              value={photoBodyType}
+                              onChange={(event) => setPhotoBodyType(event.currentTarget.value as PhotoBodyType)}
+                              aria-label="Photo body type"
+                              className="mt-1 w-full rounded border border-fuchsia-200 bg-white px-1.5 py-1 text-[9px] text-slate-900"
+                            >
+                              <option value="auto">Auto from photo</option>
+                              <option value="hourglass">Hourglass</option>
+                              <option value="rectangle">Rectangle</option>
+                              <option value="pear">Pear</option>
+                              <option value="apple">Apple</option>
+                              <option value="curvy">Curvy · pear/hourglass unclear</option>
+                            </select>
+                          </label>
+                          <label className="text-[8px] text-slate-600">
+                            This row looks
+                            <select
+                              value={photoCrossSectionHints[kind]}
+                              onChange={(event) => {
+                                const nextHint = event.currentTarget.value as PhotoCrossSectionHint;
+                                setPhotoCrossSectionHints((current) => ({
+                                  ...current,
+                                  [kind]: nextHint,
+                                }));
+                              }}
+                              aria-label={`${label} visible row shape hint`}
+                              className="mt-1 w-full rounded border border-fuchsia-200 bg-white px-1.5 py-1 text-[9px] text-slate-900"
+                            >
+                              <option value="auto">Let models decide</option>
+                              <option value="oval">Oval · near n 2.0</option>
+                              <option value="between">Between · near n 2.6</option>
+                              <option value="boxy">Boxy · near n 3.2</option>
+                            </select>
+                          </label>
+                        </div>
+
+                        <div className="mt-2 rounded bg-fuchsia-50 px-1.5 py-1 text-[8px] leading-3 text-fuchsia-900">
+                          Photo sees {photoSilhouetteEvidence ? PHOTO_BODY_TYPE_LABELS[photoSilhouetteEvidence.detectedBodyType] : "no clean body type"}. Meta guesses the hidden 3D slice. WEAR is only a smaller population guide.
+                        </div>
+                        {photoBodyShapeExponent ? (
+                          <div className="mt-1 text-[8px] leading-3 text-slate-600">{photoBodyShapeExponent.reason}</div>
+                        ) : (
+                          <div className="mt-1 text-[8px] leading-3 text-rose-700">
+                            A clean person mask and a completed Meta body are required.
+                          </div>
+                        )}
+                        {!availableSamPredictionRow ? (
+                          <button
+                            type="button"
+                            onClick={() => void runMeshShapeProvider("sam-3d-body")}
+                            disabled={!meshShapeProviderById["sam-3d-body"]?.available || meshShapeRunStates["sam-3d-body"].status === "loading"}
+                            className="mt-2 rounded border border-fuchsia-300 bg-white px-2 py-1 text-[9px] text-fuchsia-900 disabled:cursor-not-allowed disabled:opacity-45"
+                          >
+                            {meshShapeRunStates["sam-3d-body"].status === "loading" ? "Building Meta body…" : "Run Meta on this photo"}
+                          </button>
+                        ) : null}
+                        {photoBodyShapeExponent || photoSilhouetteEvidence ? (
+                          <details className="mt-2 rounded border border-slate-200 bg-slate-50 px-1.5 py-1 text-[8px] text-slate-600">
+                            <summary className="cursor-pointer">Show evidence</summary>
+                            <div className="mt-1 grid grid-cols-2 gap-x-2">
+                              <span>Visible mask quality</span>
+                              <span className="font-mono text-right">{photoSilhouetteEvidence ? `${(photoSilhouetteEvidence.maskQuality * 100).toFixed(0)}%` : "n/a"}</span>
+                              <span>Meta image guess</span>
+                              <span className="font-mono text-right">{photoBodyShapeExponent ? `n ${photoBodyShapeExponent.metaExponent.toFixed(2)} · ${(photoBodyShapeExponent.metaWeight * 100).toFixed(0)}%` : "n/a"}</span>
+                              <span>WEAR population guide</span>
+                              <span className="font-mono text-right">{photoBodyShapeExponent?.wearExponent == null ? "unavailable" : `n ${photoBodyShapeExponent.wearExponent.toFixed(2)} · ${(photoBodyShapeExponent.wearWeight * 100).toFixed(0)}%`}</span>
+                              <span>Your row-shape hint</span>
+                              <span className="font-mono text-right">{photoBodyShapeExponent?.hintExponent == null ? "not used" : `n ${photoBodyShapeExponent.hintExponent.toFixed(2)} · ${(photoBodyShapeExponent.hintWeight * 100).toFixed(0)}%`}</span>
+                            </div>
+                            <div className="mt-1 border-t border-slate-200 pt-1">
+                              Body type checks whether the mask description makes sense; it never secretly converts hourglass/pear/apple into an exact n. Dataset circumference is not an input.
+                            </div>
+                            {photoSilhouetteEvidence?.warnings.map((warning) => (
+                              <div key={warning} className="mt-1 text-amber-800">{warning}</div>
+                            ))}
+                          </details>
+                        ) : null}
+                      </div>
+                    ) : shapeExponentSource === "fused-meta-wear" && fusedShapeExponent ? (
+                      <div data-testid={`fused-shape-exponent-${kind}`} className="rounded border border-cyan-300 bg-white px-2 py-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[9px] font-medium text-cyan-900">Best automatic shape number</span>
+                          <span className="font-mono text-sm font-medium text-cyan-950">n {fusedShapeExponent.exponent.toFixed(2)}</span>
+                        </div>
+                        <div className={`mt-1 rounded px-1.5 py-1 text-[8px] ${meshPrediction?.cameraIntrinsicsSource === "apple-vision"
+                          ? "bg-blue-50 text-blue-800"
+                          : "bg-amber-50 text-amber-800"}`}>
+                          {meshPrediction?.cameraIntrinsicsSource === "apple-vision"
+                            ? "Apple camera alignment active"
+                            : "Apple camera alignment unavailable · Meta is down-weighted"}
+                        </div>
+                        <div className={`mt-1 rounded px-1.5 py-1 text-[8px] font-medium ${fusedShapeExponent.confidenceLabel === "high"
+                          ? "bg-emerald-50 text-emerald-800"
+                          : fusedShapeExponent.confidenceLabel === "check"
+                            ? "bg-amber-50 text-amber-800"
+                            : "bg-rose-50 text-rose-800"}`}>
+                          {fusedShapeExponent.confidenceLabel === "high" ? "Stable evidence" : fusedShapeExponent.confidenceLabel === "check" ? "Check evidence" : "Low-confidence evidence"}
+                          {` · ${(fusedShapeExponent.evidenceConfidence * 100).toFixed(0)}% evidence stability · not measurement accuracy`}
+                        </div>
+                        {!meshWorkspaceOpen ? (
+                          <>
+                            <div className="mt-2 grid grid-cols-2 gap-x-2 text-[9px] text-slate-600">
+                              <span>Neutral Meta slices</span>
+                              <span className="font-mono text-right">n {fusedShapeExponent.metaExponent.toFixed(2)} · {(fusedShapeExponent.metaWeight * 100).toFixed(0)}%</span>
+                              <span>WEAR body prior</span>
+                              <span className="font-mono text-right">n {fusedShapeExponent.wearExponent.toFixed(2)} · {(fusedShapeExponent.wearWeight * 100).toFixed(0)}%</span>
+                              {fusedShapeExponent.depthProExponent == null ? null : (
+                                <>
+                                  <span>Optional Depth Pro check</span>
+                                  <span className="font-mono text-right">n {fusedShapeExponent.depthProExponent.toFixed(2)} · {fusedShapeExponent.depthProUsed ? `${(fusedShapeExponent.depthProWeight * 100).toFixed(0)}%` : "rejected"}</span>
+                                </>
+                              )}
+                              <span>Meta nearby spread</span>
+                              <span className="font-mono text-right">±{(meshPredictionRow?.shapeEvidence?.exponentSpread ?? 0).toFixed(2)} n</span>
+                            </div>
+                            <div className="mt-1 text-[8px] leading-3 text-slate-500">
+                              Width and depth stay locked. The dataset circumference is not an input.
+                              {depthProfileShapeExponent
+                                ? fusedShapeExponent.depthProUsed
+                                  ? ` Optional Depth Pro fit error ${formatCircumferenceValue(depthProfileShapeExponent.fitMaeCm, unit)}; its small weight is capped at 15%.`
+                                  : " Depth Pro was rejected and has zero effect on this shape number."
+                                : " Depth Pro is not required and is not used in this result."}
+                            </div>
+                          </>
+                        ) : null}
+                      </div>
+                    ) : shapeExponentSource === "fused-meta-wear" ? (
+                      <div className="rounded border border-amber-200 bg-amber-50 px-2 py-2 text-[9px] leading-4 text-amber-900">
+                        <div className="font-medium">Best automatic shape is not ready</div>
+                        {!meshPredictionRow ? <div className="mt-1">Run Meta to build the neutral nearby slices.</div> : null}
+                        {!wearShapeExponent ? <div className="mt-1">This row needs a safe WEAR shape prior and WEAR depth cm.</div> : null}
+                        <button
+                          type="button"
+                          onClick={() => void runMeshShapeProvider("sam-3d-body")}
+                          disabled={!meshShapeProviderById["sam-3d-body"]?.available || meshShapeRunStates["sam-3d-body"].status === "loading"}
+                          className="mt-2 rounded border border-cyan-300 bg-white px-2 py-1 text-[9px] text-cyan-900 disabled:cursor-not-allowed disabled:opacity-45"
+                        >
+                          {meshShapeRunStates["sam-3d-body"].status === "loading" ? "Building neutral Meta…" : meshPredictionRow ? "Run Meta again" : "Run Meta"}
+                        </button>
+                      </div>
+                    ) : shapeExponentSource === "wear-1d" && wearShapeExponent ? (
+                      <div data-testid={`wear-shape-exponent-${kind}`} className="rounded border border-emerald-300 bg-white px-2 py-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[9px] text-emerald-800">{meshWorkspaceOpen ? "Shape number" : "WEAR 1D predicted shape"}</span>
+                          <span className="font-mono text-sm font-medium text-emerald-950">n {wearShapeExponent.exponent.toFixed(2)}</span>
+                        </div>
+                        {!meshWorkspaceOpen ? <>
+                        <div className="mt-1 text-[9px] leading-4 text-slate-600">
+                          Locked breadth stays {formatCircumferenceValue(activeCircumferenceWidthCm, unit)}. Locked depth stays {formatCircumferenceValue(activeCircumferenceDepthCm, unit)}. Only the final outline shape changes.
+                        </div>
+                        <div className="mt-1 border-t border-emerald-100 pt-1 text-[9px] leading-4 text-emerald-900">
+                          {sameGenderShapeMaeCm != null && sameGenderShapeP90Cm != null
+                            ? `${gender === "female" ? "Female" : "Male"} holdout: average circumference error ${formatCircumferenceValue(sameGenderShapeMaeCm, unit)} · 90% within ${formatCircumferenceValue(sameGenderShapeP90Cm, unit)}.`
+                            : `All-person holdout: average error ${formatCircumferenceValue(wearShapeExponentModel!.validationMaeCm, unit)} · 90% within ${formatCircumferenceValue(wearShapeExponentModel!.validationP90AbsErrorCm, unit)}.`}
+                        </div>
+                        <div className="mt-1 text-[8px] leading-3 text-slate-500">
+                          Covers {wearShapeExponentModel!.coveragePct.toFixed(1)}% of same-level WEAR shapes. Dataset answer is not an input.
+                          {wearShapeExponent.outsideTypicalFeatures.length ? " This person is outside the usual WEAR feature range, so treat it as low confidence." : ""}
+                        </div>
+                        </> : null}
+                      </div>
+                    ) : shapeExponentSource === "wear-1d" ? (
+                      <div className="rounded border border-amber-200 bg-amber-50 px-2 py-2 text-[9px] leading-4 text-amber-900">
+                        <div className="font-medium">WEAR shape unavailable</div>
+                        {!meshWorkspaceOpen ? <>
+                        <div className="mt-1">
+                          {!wearShapeExponentModel
+                            ? "WEAR has no safe same-level breadth, depth, and circumference training group for this body row."
+                            : !wearShapeInputsReady
+                              ? "Choose WEAR depth cm or turn on the measured side photo first."
+                              : "Height, weight, sex, red width, and WEAR depth must all be ready."}
+                        </div>
+                        <div className="mt-1 text-amber-800">No manual shape number is being substituted.</div>
+                        </> : null}
+                      </div>
+                    ) : meshProviderId ? (
+                      <div
+                        data-testid={`mesh-shape-provider-${meshProviderId}-${kind}`}
+                        className={`rounded border px-2 py-2 text-[9px] leading-4 ${meshPredictionRow ? "border-cyan-300 bg-cyan-50" : "border-amber-200 bg-amber-50"}`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-medium text-slate-900">{meshShapeProviderLabel(meshProviderId)}</span>
+                          {meshPredictionRow ? (
+                            <span className="font-mono text-sm font-medium text-cyan-950">n {meshPredictionRow.superellipseExponent.toFixed(2)}</span>
+                          ) : (
+                            <span className="text-[8px] text-amber-800">{meshProviderStatus?.available ? "Ready to run" : "Setup needed"}</span>
+                          )}
+                        </div>
+                        {meshPredictionRow && !meshWorkspaceOpen ? (
+                          <>
+                            <div className="mt-1 text-slate-700">
+                              The model built a mesh and fitted this exact red-row level. Only n {meshPredictionRow.superellipseExponent.toFixed(2)} enters the superellipse; locked breadth {formatCircumferenceValue(activeCircumferenceWidthCm, unit)} and depth {formatCircumferenceValue(activeCircumferenceDepthCm, unit)} stay unchanged.
+                            </div>
+                            <div className="mt-1 grid grid-cols-2 gap-x-2 text-slate-600">
+                              <span>Mesh slice breadth</span>
+                              <span className="font-mono text-right">{formatCircumferenceValue(meshPredictionRow.meshBreadthCm, unit)}</span>
+                              <span>Mesh slice depth</span>
+                              <span className="font-mono text-right">{formatCircumferenceValue(meshPredictionRow.meshDepthCm, unit)}</span>
+                              <span>Direct mesh perimeter</span>
+                              <span className="font-mono text-right">{formatCircumferenceValue(meshPredictionRow.meshPerimeterCm, unit)}</span>
+                              {directMeshErrorCm == null ? null : (
+                                <>
+                                  <span>Direct mesh vs dataset</span>
+                                  <span className={`font-mono text-right ${directMeshErrorPct != null && Math.abs(directMeshErrorPct) <= 2 ? "text-emerald-700" : "text-rose-700"}`}>
+                                    {formatSignedCircumferenceValue(directMeshErrorCm, unit)}{directMeshErrorPct == null ? "" : ` · ${directMeshErrorPct >= 0 ? "+" : ""}${directMeshErrorPct.toFixed(2)}%`}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                            <div className="mt-1 text-[8px] text-slate-500">
+                              {meshPredictionRow.slicePointCount} slice points · completed in {(meshPrediction!.elapsedMs / 1000).toFixed(1)} s
+                              {meshProviderStatus?.runtimeDevice === "mps" ? " · Apple GPU + CPU mesh decoder" : ""}. The direct mesh perimeter is comparison evidence, not the active result.
+                            </div>
+                            {meshPrediction?.warning ? <div className="mt-1 text-[8px] text-amber-800">{meshPrediction.warning}</div> : null}
+                          </>
+                        ) : !meshPredictionRow && !meshWorkspaceOpen ? (
+                          <>
+                            <div className="mt-1 text-slate-700">
+                              {meshProviderStatus?.reason ?? meshShapeStatusError ?? "Checking local model, checkpoint, runtime, and license…"}
+                            </div>
+                            <div className="mt-1 text-amber-800">Until this model really runs, this row has no result and does not fall back to the manual slider.</div>
+                            {meshShapeRunStates[meshProviderId].error ? (
+                              <div className="mt-1 rounded border border-rose-200 bg-white px-1.5 py-1 text-rose-700">
+                                {formatMeshShapeRunError(meshShapeRunStates[meshProviderId].error)}
+                                {isSplitThighHipSliceError(meshShapeRunStates[meshProviderId].error) ? (
+                                  <span className="mt-1 block font-medium">
+                                    Move the Manual hips red row upward, then run Meta again.
+                                  </span>
+                                ) : null}
+                              </div>
+                            ) : null}
+                          </>
+                        ) : null}
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => void runMeshShapeProvider(meshProviderId)}
+                            disabled={!meshProviderStatus?.available || meshShapeRunStates[meshProviderId].status === "loading"}
+                            className="rounded border border-cyan-300 bg-white px-2 py-1 text-[9px] text-cyan-900 disabled:cursor-not-allowed disabled:opacity-45"
+                          >
+                            {meshShapeRunStates[meshProviderId].status === "loading"
+                              ? "Building 3D mesh…"
+                              : meshPredictionRow ? "Run again" : `Run ${meshShapeProviderLabel(meshProviderId)}`}
+                          </button>
+                          {meshProviderStatus && !meshWorkspaceOpen ? (
+                            <>
+                              <a href={meshProviderStatus.setupUrl} target="_blank" rel="noreferrer" className="text-[8px] text-blue-700 underline">official setup</a>
+                              <a href={meshProviderStatus.licenseUrl} target="_blank" rel="noreferrer" className="text-[8px] text-blue-700 underline">license</a>
+                            </>
+                          ) : null}
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between text-[9px] text-slate-600">
+                          <span>Shape roundness · formula only</span>
+                          <span className="font-mono text-slate-900">{superellipseExponent.toFixed(1)}</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="1.2"
+                          max="4"
+                          step="0.1"
+                          value={superellipseExponent}
+                          onChange={(event) => {
+                            const nextExponent = Number(event.currentTarget.value);
+                            setSuperellipseExponents((current) => ({
+                              ...current,
+                              [kind]: nextExponent,
+                            }));
+                          }}
+                          aria-label={`${label} superellipse shape exponent`}
+                          className="mt-1 h-1.5 w-full accent-emerald-600"
+                        />
+                        <div className="flex justify-between text-[8px] text-slate-500">
+                          <span>rounder</span>
+                          <span>boxier</span>
+                        </div>
+                        {!meshWorkspaceOpen ? <div className="mt-1 border-t border-emerald-200 pt-1 text-[8px] leading-3 text-emerald-800">
+                          You choose n by hand. No computer-vision model is used for the outline shape.
+                        </div> : null}
+                      </>
+                    )}
+                    {shapeNumberReady && targetOutsideAllowedShape && !meshWorkspaceOpen ? (
+                      <div data-testid={`shape-feasibility-${kind}`} className="mt-2 rounded border border-rose-200 bg-rose-50 px-2 py-1.5 text-[9px] leading-4 text-rose-800">
+                        Shape cannot fix these frozen inputs. Any n from 1.2–4 gives {formatCircumferenceValue(minimumAllowedShapeCm!, unit)}–{formatCircumferenceValue(maximumAllowedShapeCm!, unit)}, but the dataset is {formatCircumferenceValue(targetCm!, unit)}. Recheck the red width, depth, or body row.
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                <div className="mt-2 rounded border border-violet-200 bg-violet-50/70 px-2 py-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[9px] text-violet-700">
+                      {rowUsesMeasuredSideDepth
+                        ? "Side-photo depth ratio · adjust the side red line"
+                        : absoluteDepthActive
+                          ? "Depth ratio · move slider to use it"
+                          : "Your selected depth ratio"}
+                    </span>
+                    <span data-testid={`selected-depth-ratio-${kind}`} className="font-mono text-sm font-medium text-violet-950">
+                      {selectedDepthRatio == null ? "waiting" : selectedDepthRatio.toFixed(3)}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={minimumDepthRatio}
+                    max={maximumDepthRatio}
+                    step={0.001}
+                    value={selectedDepthRatio ?? minimumDepthRatio}
+                    onChange={(event) => updateDepthRatio(Number(event.currentTarget.value))}
+                    disabled={!candidate || !onDepthRatioOverrideChange || rowUsesMeasuredSideDepth}
+                    aria-label={`${label} depth ratio`}
+                    className="mt-1.5 h-2 w-full accent-violet-600 disabled:opacity-40"
+                  />
+                  <div className="mt-1 flex items-center justify-between text-[8px] text-slate-500">
+                    <span>Min {minimumDepthRatio.toFixed(3)}</span>
+                    <span>Max {maximumDepthRatio.toFixed(3)}</span>
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap items-center justify-between gap-1.5 border-t border-violet-200 pt-1.5 text-[9px]">
+                    <span data-testid={`wear-recommended-depth-ratio-${kind}`} className="text-violet-800">
+                      {rowUsesMeasuredSideDepth
+                        ? "Side photo owns depth"
+                        : `WEAR recommends ${wearRecommendedRatio == null ? "not available" : wearRecommendedRatio.toFixed(3)}`}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (absoluteDepthActive) onLocalMlDepthMethodChange?.("wear-ratio");
+                        onDepthRatioOverrideChange?.(kind, null);
+                      }}
+                      disabled={rowUsesMeasuredSideDepth || wearRecommendedRatio == null || depthOverride == null || !onDepthRatioOverrideChange}
+                      className="rounded border border-violet-300 bg-white px-2 py-1 text-[9px] text-violet-800 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Use WEAR recommendation
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           );
         })}
       </div>
-      {!bodyGate.confirmed ? (
-        <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-[10px] leading-4 text-amber-900">
-          These results are shown for dataset comparison, but they are not approved yet because the body front-width scale check is {bodyReady ? `${bodyGate.acceptedCount}/3` : "still calculating"}. Front-width details are in the dropdown below.
-        </div>
+      {activeSam3dMeshPrediction?.meshPreview ? (
+        <>
+          {!meshWorkspaceOpen ? (
+            <MetaBodyMesh3D
+              prediction={activeSam3dMeshPrediction}
+              formulaRows={liveMeshFormulaRows}
+              activeKind={meshControlKind}
+              onOpenWorkspace={() => setMeshWorkspaceOpen(true)}
+            />
+          ) : null}
+          {meshWorkspaceOpen ? createPortal(
+            <div
+              data-testid="meta-mesh-fullscreen-dialog"
+              className="fixed inset-y-0 left-0 right-0 z-[120] bg-slate-950 p-3 lg:right-[420px]"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Live 3D body formula workspace"
+            >
+              <MetaBodyMesh3D
+                prediction={activeSam3dMeshPrediction}
+                formulaRows={liveMeshFormulaRows}
+                activeKind={meshControlKind}
+                workspace
+                onCloseWorkspace={() => setMeshWorkspaceOpen(false)}
+              />
+            </div>,
+            document.body,
+          ) : null}
+        </>
       ) : null}
-    </section>
-  );
-}
-
-function FullScreenDepthRatioControls({
-  measurement,
-  measurementUnavailableMessage,
-  wearRowPredictions,
-  depthRatioOverrides,
-  knownDepthRatioAnswers,
-  onDepthRatioOverrideChange,
-}: {
-  measurement: GeminiGuideMeasurement | null;
-  measurementUnavailableMessage?: string;
-  wearRowPredictions?: LocalMlNormalizedRowPrediction[];
-  depthRatioOverrides?: GeminiGuideDepthRatioOverrides;
-  knownDepthRatioAnswers?: GeminiGuideDepthRatioOverrides;
-  onDepthRatioOverrideChange?: (kind: GuideKind, ratio: number | null) => void;
-}) {
-  const firstTable = measurement?.rows.find((row) => row.depthRatioTable)?.depthRatioTable?.table ?? null;
-  const directWearActive = Boolean(wearRowPredictions?.some((row) => row.wearDepthCohort));
-  const holdoutChecks = measurement?.rows.flatMap((row) => {
-    const formula = row.depthRatioTable?.table;
-    const cohort = wearRowPredictions?.find((prediction) => prediction.kind === row.kind)?.wearDepthCohort;
-    const answer = knownDepthRatioAnswers?.[row.kind];
-    if (answer == null || (!formula && !cohort)) return [];
-    return [{ pass: cohort
-      ? answer >= cohort.p10DepthRatio && answer <= cohort.p90DepthRatio
-      : Math.abs(formula!.depthRatio - answer) <= formula!.validationP90AbsError }];
-  }) ?? [];
-  const holdoutPassCount = holdoutChecks.filter((check) => check.pass).length;
-
-  if (!measurement && measurementUnavailableMessage) {
-    return (
-      <section data-testid="depth-ratio-controls" className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-amber-950">
-        <h3 className="text-sm font-medium">{directWearActive ? "Direct WEAR depth ready · waiting for body scale" : "Depth ratios · waiting for 3D"}</h3>
-        <p className="mt-1 text-[11px] leading-4">{measurementUnavailableMessage}</p>
-      </section>
-    );
-  }
-
-  return (
-    <section data-testid="depth-ratio-controls" className="mb-3 rounded-xl border border-slate-200 bg-white p-3 text-slate-900">
-      <div>
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-sm font-semibold">{directWearActive ? "Body depth · direct WEAR people" : "Depth ratio formula · WEAR 1D"}</h3>
-          <span className="rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-medium text-emerald-800">local experiment</span>
-        </div>
-        <p className="mt-1 text-[11px] leading-4 text-slate-600">
-          {directWearActive
-            ? "No regression: use the middle real depth ÷ breadth ratio from measured people in the matching range."
-            : "Simple meaning: front width × depth ratio = front-to-back depth."}
-        </p>
-        {directWearActive ? (
-          <div className="mt-2 grid grid-cols-3 gap-1.5 text-center text-[9px] leading-3.5">
-            <div className="rounded-lg bg-blue-50 px-1.5 py-2 text-blue-900">
-              <span className="block text-[8px] text-blue-600">1 · PHOTO</span>
-              Apple or Depth Pro gives the red width
-            </div>
-            <div className="rounded-lg bg-violet-50 px-1.5 py-2 text-violet-900">
-              <span className="block text-[8px] text-violet-600">2 · WEAR PEOPLE</span>
-              Matching range gives the direct middle ratio
-            </div>
-            <div className="rounded-lg bg-emerald-50 px-1.5 py-2 text-emerald-900">
-              <span className="block text-[8px] text-emerald-600">3 · ANSWER</span>
-              Your selected shape formula converts width and depth to circumference
-            </div>
-          </div>
-        ) : firstTable ? (
-          <div className="mt-2 grid grid-cols-3 gap-1.5 text-center text-[9px] leading-3.5">
-            <div className="rounded-lg bg-blue-50 px-1.5 py-2 text-blue-900">
-              <span className="block text-[8px] text-blue-600">1 · PHOTO</span>
-              Apple or Depth Pro gives the red width
-            </div>
-            <div className="rounded-lg bg-violet-50 px-1.5 py-2 text-violet-900">
-              <span className="block text-[8px] text-violet-600">2 · WEAR</span>
-              BMI and body width enter the formula
-            </div>
-            <div className="rounded-lg bg-emerald-50 px-1.5 py-2 text-emerald-900">
-              <span className="block text-[8px] text-emerald-600">3 · ANSWER</span>
-              Formula predicts front-to-back depth
-            </div>
-          </div>
-        ) : null}
-        <p className="mt-2 text-[9px] leading-3.5 text-slate-500">
-          {directWearActive
-            ? "No formula and no saved-answer input. Saved answers are displayed only to score the untouched WEAR middle."
-            : "No Gemini and no tape labels. The saved answer may load as your manual slider, but it never becomes the WEAR recommendation."}
-        </p>
-        {holdoutChecks.length ? (
-          <div className={`mt-2 rounded-lg border px-2.5 py-2 ${holdoutPassCount === holdoutChecks.length ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
-            <div className="text-[9px] text-slate-600">Untuned holdout test</div>
-            <div className="mt-0.5 font-mono text-sm font-medium text-slate-950">
-              {holdoutPassCount}/{holdoutChecks.length} rows {directWearActive ? "inside the similar people’s middle 80%" : "inside the model’s normal validation error"}
-            </div>
-            <div className="mt-1 text-[8px] leading-3 text-slate-600">
-              Your manual slider can still drive the circumference. Press “{directWearActive ? "Use WEAR middle" : "Use WEAR recommendation"}” to restore WEAR&apos;s untouched value.
-            </div>
-          </div>
-        ) : null}
-      </div>
-
-      {!measurement ? (
-        <div className="mt-3 rounded-lg bg-slate-50 px-3 py-3 text-center text-[11px] text-slate-600">
-          {measurementUnavailableMessage ?? "Calculating depth ratios…"}
-        </div>
-      ) : (
-        <div className="mt-3 grid gap-3">
-          {GUIDE_ROWS.map(({ kind, label }) => {
-            const row = measurement.rows.find((candidate) => candidate.kind === kind) ?? null;
-            if (!row) return null;
-            const formula = row.depthRatioTable?.table ?? null;
-            const directCohort = wearRowPredictions?.find((prediction) => prediction.kind === kind)?.wearDepthCohort ?? null;
-            const fallbackBounds = rowDepthRatioBounds(kind);
-            const minimum = directCohort ? fallbackBounds.min : formula?.supportedMin ?? fallbackBounds.min;
-            const maximum = directCohort ? fallbackBounds.max : formula?.supportedMax ?? fallbackBounds.max;
-            const wearRecommendedRatio = directCohort?.medianDepthRatio ?? formula?.depthRatio ?? null;
-            const override = depthRatioOverrides?.[kind] ?? row.depthRatioOverride ?? null;
-            const selected = clamp(override ?? wearRecommendedRatio ?? row.depthRatio, minimum, maximum);
-            const selectedSource = override != null
-              ? "manual slider active"
-              : directCohort != null
-                ? "direct WEAR middle active"
-              : wearRecommendedRatio != null
-                ? "WEAR active"
-                : "current formula active";
-            const knownAnswer = knownDepthRatioAnswers?.[kind] ?? null;
-            const holdoutDelta = wearRecommendedRatio != null && knownAnswer != null ? wearRecommendedRatio - knownAnswer : null;
-            const holdoutDepthDeltaCm = holdoutDelta == null ? null : holdoutDelta * row.formulaWidthCm;
-            const holdoutInsideValidation = holdoutDelta != null && knownAnswer != null
-              ? directCohort
-                ? knownAnswer >= directCohort.p10DepthRatio && knownAnswer <= directCohort.p90DepthRatio
-                : formula ? Math.abs(holdoutDelta) <= formula.validationP90AbsError : null
-              : null;
-            const selectedDepthCm = row.formulaWidthCm * selected;
-            const updateRatio = (value: number) => {
-              if (!Number.isFinite(value)) return;
-              onDepthRatioOverrideChange?.(kind, clamp(value, minimum, maximum));
-            };
-            return (
-              <div key={kind} className="rounded-lg border border-slate-200 bg-slate-50 p-2.5">
-                <div className="flex items-baseline justify-between gap-2">
-                  <div>
-                    <span className="text-[11px] font-semibold text-slate-800">{label === "trouser" ? "Trouser waist" : rowLabel(kind)}</span>
-                    <span className="ml-1.5 text-[9px] text-slate-500">{selectedSource}</span>
-                  </div>
-                  {directCohort ? (
-                    <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[8px] font-medium text-emerald-800">
-                      {directCohort.sampleCount.toLocaleString()} measured people
-                    </span>
-                  ) : formula ? (
-                    <span className={`rounded px-1.5 py-0.5 text-[8px] font-medium ${formula.confidence === "study-supported"
-                      ? "bg-emerald-100 text-emerald-800"
-                      : formula.confidence === "limited-study"
-                        ? "bg-amber-100 text-amber-800"
-                        : "bg-rose-100 text-rose-700"}`}>
-                      {formula.confidence === "study-supported" ? "inside study" : formula.confidence === "limited-study" ? "limited study" : "outside study range"}
-                    </span>
-                  ) : null}
-                </div>
-
-                <div className="mt-2 grid grid-cols-2 gap-1.5">
-                  <div className="rounded border border-slate-200 bg-white p-1.5">
-                    <div className="text-[8px] text-slate-500">Red front width</div>
-                    <div className="mt-0.5 font-mono text-[12px] text-slate-950">{row.formulaWidthCm.toFixed(2)} cm</div>
-                  </div>
-                  <div data-testid={`selected-depth-ratio-${kind}`} className={`rounded border p-1.5 ${override != null ? "border-amber-200 bg-amber-50" : "border-emerald-200 bg-emerald-50"}`}>
-                    <div className={`text-[8px] ${override != null ? "text-amber-700" : "text-emerald-700"}`}>Your selected ratio</div>
-                    <div className="mt-0.5 font-mono text-[12px] text-slate-950">{selected.toFixed(3)}</div>
-                    <div className="mt-0.5 text-[8px] text-slate-500">{selectedSource}</div>
-                  </div>
-                  <div data-testid={`wear-recommended-depth-ratio-${kind}`} className="rounded border border-violet-200 bg-violet-50 p-1.5">
-                    <div className="text-[8px] text-violet-600">{directCohort ? "Direct WEAR middle" : "WEAR recommends"}</div>
-                    <div className="mt-0.5 font-mono text-[12px] text-violet-950">{wearRecommendedRatio == null ? "not available" : wearRecommendedRatio.toFixed(3)}</div>
-                    <div className="mt-0.5 text-[8px] text-violet-600">does not move with your slider</div>
-                  </div>
-                  <div className="rounded border border-slate-200 bg-white p-1.5">
-                    <div className="text-[8px] text-slate-500">Depth from your selection</div>
-                    <div className="mt-0.5 font-mono text-[12px] text-slate-950">{selectedDepthCm.toFixed(2)} cm</div>
-                  </div>
-                </div>
-
-                {(formula || directCohort) && knownAnswer != null && holdoutDelta != null ? (
-                  <div data-testid={`wear-holdout-${kind}`} className={`mt-2 rounded-lg border p-2 ${holdoutInsideValidation ? "border-emerald-200 bg-emerald-50" : "border-rose-200 bg-rose-50"}`}>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-[9px] font-medium text-slate-700">Locked test answer · not a calculation input</span>
-                      <span className={`text-[8px] font-medium ${holdoutInsideValidation ? "text-emerald-800" : "text-rose-700"}`}>
-                        {holdoutInsideValidation ? (directCohort ? "inside similar people range" : "inside normal model error") : "needs work"}
-                      </span>
-                    </div>
-                    <div className="mt-1.5 grid grid-cols-3 gap-1.5 text-[9px]">
-                      <div>
-                        <span className="block text-slate-500">Predicted</span>
-                        <span className="font-mono text-[11px] text-slate-950">{wearRecommendedRatio!.toFixed(3)}</span>
-                      </div>
-                      <div>
-                        <span className="block text-slate-500">Saved answer</span>
-                        <span className="font-mono text-[11px] text-slate-950">{knownAnswer.toFixed(3)}</span>
-                      </div>
-                      <div>
-                        <span className="block text-slate-500">Difference</span>
-                        <span className={`font-mono text-[11px] ${holdoutInsideValidation ? "text-emerald-800" : "text-rose-700"}`}>
-                          {holdoutDelta >= 0 ? "+" : ""}{holdoutDelta.toFixed(3)}
-                        </span>
-                      </div>
-                    </div>
-                    <p className="mt-1 text-[8px] leading-3 text-slate-600">
-                      At this red width, that is {holdoutDepthDeltaCm != null && holdoutDepthDeltaCm >= 0 ? "+" : ""}{holdoutDepthDeltaCm?.toFixed(2)} cm front-to-back depth.
-                      {directCohort
-                        ? ` Similar people’s middle 80% is ${directCohort.p10DepthRatio.toFixed(3)}–${directCohort.p90DepthRatio.toFixed(3)}.`
-                        : ` Normal validation P90 is ±${formula!.validationP90AbsError.toFixed(3)} ratio.`}
-                    </p>
-                  </div>
-                ) : null}
-
-                {directCohort ? (
-                  <details className="mt-2 rounded border border-slate-200 bg-white p-2">
-                    <summary className="cursor-pointer text-[9px] font-medium text-slate-700">Show exactly which people were used</summary>
-                    <div className="mt-2 space-y-1 text-[9px] leading-3.5 text-slate-600">
-                      <div>{directCohort.gender} · height {directCohort.heightMinCm.toFixed(1)}–{directCohort.heightMaxCm.toFixed(1)} cm · BMI {directCohort.bmiMin.toFixed(0)}–{directCohort.bmiMax.toFixed(0)}</div>
-                      <div>{directCohort.sampleCount.toLocaleString()} measured people · middle ratio {directCohort.medianDepthRatio.toFixed(3)}</div>
-                      <div>Middle measured breadth {directCohort.medianBreadthCm.toFixed(1)} cm · depth {directCohort.medianDepthCm.toFixed(1)} cm</div>
-                      <div>No regression formula was used.</div>
-                      {kind === "trouserWaist" ? (
-                        <div className="rounded bg-amber-50 px-1.5 py-1 text-[8px] text-amber-800">Stomach/abdomen proxy only; WEAR has no exact trouser-waist plane.</div>
-                      ) : null}
-                    </div>
-                  </details>
-                ) : formula ? (
-                  <details className="mt-2 rounded border border-slate-200 bg-white p-2">
-                    <summary className="cursor-pointer text-[9px] font-medium text-slate-700">Show the formula math</summary>
-                    <div className="mt-2 space-y-1 text-[9px] leading-3.5 text-slate-600">
-                      <div className="font-mono text-slate-800">start at {formula.formulaIntercept.toFixed(3)}</div>
-                      {formula.formulaTerms.map((term) => (
-                        <div key={term.feature} className={term.insideTrainingRange ? "" : "text-rose-700"}>
-                          {term.label}: {term.coefficient.toFixed(3)} × ({term.input.toFixed(3)} − {term.center.toFixed(3)}) = {term.contribution >= 0 ? "+" : ""}{term.contribution.toFixed(3)}
-                          {!term.insideTrainingRange ? " · outside common WEAR range" : ""}
-                        </div>
-                      ))}
-                      <div className="border-t border-slate-100 pt-1 font-mono text-slate-900">
-                        answer = {formula.rawDepthRatio.toFixed(3)}{formula.rawDepthRatio !== formula.depthRatio ? ` → clamped ${formula.depthRatio.toFixed(3)}` : ""}
-                      </div>
-                      <div className="pt-1 text-[8px] text-slate-500">
-                        Learned from {formula.trainingSubjects.toLocaleString()} WEAR people · validation MAE {formula.validationMae.toFixed(3)} · {formula.validationMethod === "leave-one-survey-out" ? "whole-survey holdout" : "five-fold holdout"}.
-                      </div>
-                      {kind === "trouserWaist" ? (
-                        <div className="rounded bg-amber-50 px-1.5 py-1 text-[8px] text-amber-800">
-                          Weakest row: WEAR provides an abdomen/stomach proxy, not the exact trouser waistband plane.
-                        </div>
-                      ) : null}
-                    </div>
-                  </details>
-                ) : null}
-
-                <div className="mt-2 border-t border-slate-200 pt-2">
-                  <div className="flex items-center justify-between text-[9px] text-slate-500">
-                    <span>Try a different ratio</span>
-                    <button
-                      type="button"
-                      onClick={() => onDepthRatioOverrideChange?.(kind, null)}
-                      disabled={override == null || wearRecommendedRatio == null || !onDepthRatioOverrideChange}
-                      className="text-violet-700 disabled:text-slate-400"
-                    >
-                      {directCohort ? "Use WEAR middle" : "Use WEAR recommendation"}
-                    </button>
-                  </div>
-                <input
-                  type="range"
-                  min={minimum}
-                  max={maximum}
-                  step={0.001}
-                  value={selected}
-                  onChange={(event) => updateRatio(Number(event.currentTarget.value))}
-                  disabled={!onDepthRatioOverrideChange}
-                  aria-label={`${rowLabel(kind)} depth ratio`}
-                  className="mt-2 h-2 w-full accent-violet-600 disabled:opacity-50"
-                />
-                <div className="mt-2 grid grid-cols-3 gap-1.5 text-[9px]">
-                  <button
-                    type="button"
-                    onClick={() => updateRatio(minimum)}
-                    disabled={!onDepthRatioOverrideChange}
-                    className="rounded border border-slate-200 bg-white px-1.5 py-1 text-slate-600 hover:bg-slate-100 disabled:opacity-50"
-                  >
-                    Min <span className="font-mono text-slate-900">{minimum.toFixed(3)}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onDepthRatioOverrideChange?.(kind, null)}
-                    disabled={wearRecommendedRatio == null || !onDepthRatioOverrideChange}
-                    className="rounded border border-violet-200 bg-violet-50 px-1.5 py-1 text-violet-700 hover:bg-violet-100 disabled:opacity-50"
-                  >
-                    {directCohort ? "WEAR middle" : "WEAR"} <span className="font-mono text-violet-950">{wearRecommendedRatio == null ? "n/a" : wearRecommendedRatio.toFixed(3)}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => updateRatio(maximum)}
-                    disabled={!onDepthRatioOverrideChange}
-                    className="rounded border border-slate-200 bg-white px-1.5 py-1 text-slate-600 hover:bg-slate-100 disabled:opacity-50"
-                  >
-                    Max <span className="font-mono text-slate-900">{maximum.toFixed(3)}</span>
-                  </button>
-                </div>
-                <div className="mt-2 flex items-center justify-between gap-2 text-[9px] text-slate-500">
-                  <span>{directCohort ? `Similar people middle 80% ${directCohort.p10DepthRatio.toFixed(3)}–${directCohort.p90DepthRatio.toFixed(3)}` : `WEAR support ${minimum.toFixed(3)}–${maximum.toFixed(3)}`}</span>
-                  <button
-                    type="button"
-                    onClick={() => onDepthRatioOverrideChange?.(kind, null)}
-                    disabled={override == null || !onDepthRatioOverrideChange}
-                    className="text-violet-700 disabled:text-slate-400"
-                  >
-                    Reset
-                  </button>
-                </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
     </section>
   );
 }
@@ -3548,6 +4483,16 @@ function formatProcessingTime(elapsedMs: number): string {
   const minutes = Math.floor(safeMs / 60_000);
   const seconds = ((safeMs % 60_000) / 1000).toFixed(1).padStart(4, "0");
   return `${minutes}:${seconds}`;
+}
+
+function isSplitThighHipSliceError(message: string): boolean {
+  return /two separate thighs|not one connected hip slice|widest connected butt\/hip/i.test(message);
+}
+
+function formatMeshShapeRunError(message: string): string {
+  return isSplitThighHipSliceError(message)
+    ? "Meta rejected this hips row because the row is too low: the 3D cut hits two separate thighs, not one connected hip/butt slice."
+    : message;
 }
 
 function formatDistanceCompact(valueCm: number, unit: ScaleProofUnit): string {
@@ -4171,7 +5116,8 @@ function ManualRealtimeRow({
   const sliderValue = clamp(overrideValue ?? row.depthRatio, bounds.min, bounds.max);
   const changeDepthRatio = onDepthRatioOverrideChange;
   const usesTableDepthSource = row.depthSource === "wear-depth-ratio-formula";
-  const canOverrideRatio = measurementMode === "circumference" && Boolean(changeDepthRatio);
+  const usesWearAbsoluteDepth = row.depthSource === "wear-absolute-depth";
+  const canOverrideRatio = measurementMode === "circumference" && !usesWearAbsoluteDepth && Boolean(changeDepthRatio);
   const displayCm = measurementMode === "side-depth" ? row.formulaWidthCm : row.guidedCm;
   const targetAccuracyPct = targetCm && targetCm > 0
     ? clamp(100 - (Math.abs(displayCm - targetCm) / targetCm) * 100, 0, 100)
@@ -4186,7 +5132,9 @@ function ManualRealtimeRow({
       : Math.abs(formulaErrorCm) + 0.05 < Math.abs(tableErrorCm)
         ? "current formula closer"
         : "tie";
-  const ratioDecision = row.depthSource === "wear-depth-ratio-formula"
+  const ratioDecision = usesWearAbsoluteDepth
+    ? "inactive · WEAR absolute depth cm"
+    : row.depthSource === "wear-depth-ratio-formula"
     ? `WEAR ${row.depthRatio.toFixed(3)} active`
     : row.depthSource === "manual-depth-ratio"
       ? `manual ${row.depthRatio.toFixed(3)} active`
@@ -4219,7 +5167,7 @@ function ManualRealtimeRow({
             {targetAccuracyPct == null ? null : <MiniStat label="Accuracy" value={`${targetAccuracyPct.toFixed(1)}%`} />}
           </>
         ) : null}
-        <MiniStat label={measurementMode === "side-depth" ? "Side width" : "Active width"} value={`${row.formulaWidthCm.toFixed(1)} cm`} />
+        <MiniStat label={measurementMode === "side-depth" ? "Side width" : "Active formula breadth"} value={`${row.calculationWidthCm.toFixed(1)} cm`} />
         <MiniStat label="Row scale" value={`${row.cmPerPx.toFixed(6)} cm/px · ${row.scaleSource === "apple-vision-body-depth" ? "Apple body depth" : "global height"}`} />
         <MiniStat label="Guide width" value={`${row.geminiWidthCm.toFixed(1)} cm`} />
         <MiniStat label="Width source" value={formatWidthSource(row.formulaWidthSource)} />
@@ -4314,8 +5262,14 @@ function ManualRealtimeRow({
       ) : null}
       {measurementMode === "circumference" ? (
         <div className={`${compact ? "mt-2 p-1.5 text-[10px] leading-snug" : "mt-3 p-2 text-[11px] leading-relaxed"} rounded-md bg-slate-50 font-mono text-text-primary`}>
-          D = W x ratio = {row.formulaWidthCm.toFixed(1)} x {row.depthRatio.toFixed(3)} = {row.depthCm.toFixed(1)} cm<br />
-          C = {row.circumferenceModel !== "ellipse" ? `superellipse(n ${row.shapeExponent?.toFixed(3) ?? "n/a"})` : "ellipse"}(W {row.formulaWidthCm.toFixed(1)}, D {row.depthCm.toFixed(1)}) = {row.guidedCm.toFixed(1)} cm
+          {usesWearAbsoluteDepth ? (
+            <>
+              Photo red breadth = {row.calculationWidthCm.toFixed(1)} cm · WEAR predicted depth = {row.depthCm.toFixed(1)} cm<br />
+            </>
+          ) : (
+            <>D = W x ratio = {row.calculationWidthCm.toFixed(1)} x {row.depthRatio.toFixed(3)} = {row.depthCm.toFixed(1)} cm<br /></>
+          )}
+          C = {row.circumferenceModel !== "ellipse" ? `superellipse(n ${row.shapeExponent?.toFixed(3) ?? "n/a"})` : "ellipse"}(W {row.calculationWidthCm.toFixed(1)}, D {row.depthCm.toFixed(1)}) = {row.guidedCm.toFixed(1)} cm
         </div>
       ) : (
         <div className={`${compact ? "mt-2 p-1.5 text-[10px] leading-snug" : "mt-3 p-2 text-[11px] leading-relaxed"} rounded-md bg-slate-50 font-mono text-text-primary`}>

@@ -2,9 +2,16 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const outputDir = path.resolve("data-extracts/shopify-import");
-const rawPath = path.join(outputDir, "demo-products-raw.json");
-const outputPath = path.join(outputDir, "prime-products-shopify-import.csv");
-const inventoryQty = 100;
+const rawPath = process.env.SHOPIFY_RAW_PATH
+  ? path.resolve(process.env.SHOPIFY_RAW_PATH)
+  : path.join(outputDir, "demo-products-raw.json");
+const outputPath = process.env.SHOPIFY_OUTPUT_PATH
+  ? path.resolve(process.env.SHOPIFY_OUTPUT_PATH)
+  : path.join(outputDir, "prime-products-shopify-import.csv");
+const configuredInventoryQty = Number.parseInt(process.env.SHOPIFY_INVENTORY_QTY || "100", 10);
+const inventoryQty = Number.isFinite(configuredInventoryQty) && configuredInventoryQty >= 0
+  ? configuredInventoryQty
+  : 100;
 
 const headers = [
   "Handle",
@@ -229,7 +236,7 @@ function variantRows(product, handle, skuCounts) {
       "Variant SKU": uniqueSku(source?.sku, color, size, index),
       "Variant Grams": grams,
       "Variant Inventory Tracker": "shopify",
-      "Variant Inventory Qty": inventoryQty,
+      "Variant Inventory Qty": inventoryQtyFromSource(product, source),
       "Variant Inventory Policy": "deny",
       "Variant Fulfillment Service": "manual",
       "Variant Price": price.toFixed(2),
@@ -274,6 +281,23 @@ function gramsFromSource(source) {
   if (unit === "lb" || unit === "lbs") return Math.round(rawWeight * 453.59237);
   if (unit === "oz") return Math.round(rawWeight * 28.3495);
   return Math.round(rawWeight);
+}
+
+function inventoryQtyFromSource(product, source) {
+  const explicitQty = Number(source?.inventory ?? source?.inventoryQuantity ?? source?.quantity);
+  if (Number.isFinite(explicitQty) && explicitQty >= 0) return Math.round(explicitQty);
+
+  const availability = clean(source?.availability ?? source?.available ?? product?.stock_status).toLowerCase();
+  if (
+    availability === "false"
+    || availability.includes("out")
+    || availability.includes("unavailable")
+    || availability.includes("sold out")
+  ) {
+    return 0;
+  }
+
+  return inventoryQty;
 }
 
 function googleCategory(product) {

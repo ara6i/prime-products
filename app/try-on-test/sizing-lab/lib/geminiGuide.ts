@@ -448,6 +448,7 @@ export interface GeminiGuideLine {
 
 export type GeminiGuideRowKind = "waist" | "trouserWaist" | "hips";
 export type GeminiGuideDepthRatioOverrides = Partial<Record<GeminiGuideRowKind, number>>;
+export type GeminiGuideAbsoluteDepthPredictors = Partial<Record<GeminiGuideRowKind, (frontWidthCm: number) => number | null>>;
 export type GeminiGuideCircumferenceModel = "ellipse" | "body-shape-superellipse" | "hip-flare-superellipse";
 export type GeminiGuideDepthRatioTableRangeStatus = "inside" | "table-fallback-low" | "table-fallback-high";
 export type GeminiGuideEdgeTrust =
@@ -498,6 +499,10 @@ export interface GeminiGuideMeasurementRow {
   confidence: number;
   geminiWidthCm: number;
   formulaWidthCm: number;
+  calculationWidthCm: number;
+  /** Unrounded red-endpoint breadth used by the calculation. */
+  calculationWidthExactCm: number;
+  calculationWidthSource: "red-line";
   cmPerPx: number;
   scaleSource: "global-height" | "apple-vision-body-depth";
   formulaWidthSource: "gemini-red-line" | "gemini-json-endpoints" | "manual-coordinates" | "local-ml-v1" | "fallback-line";
@@ -507,7 +512,7 @@ export interface GeminiGuideMeasurementRow {
   maskRightXNorm: number | null;
   maskYNorm: number | null;
   edgeTrust: GeminiGuideEdgeTrust;
-  depthSource: "side-mask-at-guide-row" | "side-guide-red-pixel" | "side-guide-json" | "side-guide-manual-coordinate" | "front-formula" | "manual-tape-front-formula" | "manual-depth-ratio" | "local-ml-depth-ratio" | "wear-cohort-median" | "wear-depth-ratio-formula";
+  depthSource: "side-mask-at-guide-row" | "side-guide-red-pixel" | "side-guide-json" | "side-guide-manual-coordinate" | "front-formula" | "manual-tape-front-formula" | "manual-depth-ratio" | "local-ml-depth-ratio" | "wear-cohort-median" | "wear-absolute-depth" | "wear-depth-ratio-formula";
   sideDepthCandidateCm: number | null;
   sideDepthCandidateRatio: number | null;
   sideDepthRawCm: number | null;
@@ -518,6 +523,8 @@ export interface GeminiGuideMeasurementRow {
   depthRatioOverride: number | null;
   depthRatio: number;
   depthCm: number;
+  /** Unrounded selected/predicted front-to-back depth used by the calculation. */
+  calculationDepthExactCm: number;
   depthRatioTable: GeminiGuideDepthRatioTableComparison | null;
   maskWidthCm: number | null;
   curveHorizontalCm: number;
@@ -932,6 +939,16 @@ function applyDepthRatioTableComparison(args: {
     shapeFlareRatio: tableCircumference.shapeFlareRatio == null ? null : round(tableCircumference.shapeFlareRatio, 3),
   };
 
+  if (row.sideDepthAccepted) {
+    return {
+      ...row,
+      depthRatioTable: {
+        ...tableComparison,
+        acceptedDepthRatio: round(row.depthRatio, 3),
+      },
+    };
+  }
+
   const acceptedDepthCm = row.formulaWidthCm * acceptedDepthRatio;
   const acceptedCircumference = shouldUseBodyShapeCircumference
     ? bodyShapeCircumference({
@@ -1148,6 +1165,9 @@ function buildGuideRow(args: {
   cmPerPx: number;
   scaleSource?: GeminiGuideMeasurementRow["scaleSource"];
   depthRatio: number | ((geminiWidthCm: number) => number);
+  absoluteDepthCm?: number | ((formulaWidthCm: number) => number | null);
+  absoluteDepthSource?: GeminiGuideMeasurementRow["depthSource"];
+  requireAbsoluteDepth?: boolean;
   depthRatioBounds?: { min: number; max: number };
   sideDepthCm?: (line: {
     yNorm: number;
@@ -1239,6 +1259,12 @@ function buildGuideRow(args: {
   const manualDepthRatioOverride = typeof args.depthRatioOverride === "number" && Number.isFinite(args.depthRatioOverride)
     ? clamp(args.depthRatioOverride, depthRatioBounds.min, depthRatioBounds.max)
     : null;
+  const absoluteDepthCm = typeof args.absoluteDepthCm === "function"
+    ? args.absoluteDepthCm(selectedFormulaWidthCm)
+    : args.absoluteDepthCm ?? null;
+  const absoluteDepthRatio = absoluteDepthCm && selectedFormulaWidthCm > 0
+    ? absoluteDepthCm / selectedFormulaWidthCm
+    : 0;
   const sideDepthEvidence = args.sideDepthCm?.({
     yNorm: normalized.yNorm,
     leftXNorm: formulaLeftXNorm,
@@ -1259,21 +1285,37 @@ function buildGuideRow(args: {
   const sideDepthRawRatio = sideDepthRawCm && selectedFormulaWidthCm > 0
     ? sideDepthRawCm / selectedFormulaWidthCm
     : null;
-  const useSideDepth = sideDepthCm != null &&
+  const useSideDepth = !args.requireAbsoluteDepth &&
+    sideDepthCm != null &&
     sideDepthCm > 0 &&
     manualDepthRatioOverride == null &&
     (args.allowSideDepthOutsideBounds ||
       (sideDepthRatio >= depthRatioBounds.min && sideDepthRatio <= depthRatioBounds.max));
+  const useAbsoluteDepth = !useSideDepth &&
+    absoluteDepthCm != null &&
+    Number.isFinite(absoluteDepthCm) &&
+    absoluteDepthCm > 0 &&
+    manualDepthRatioOverride == null &&
+    absoluteDepthRatio >= depthRatioBounds.min &&
+    absoluteDepthRatio <= depthRatioBounds.max;
+  if (args.requireAbsoluteDepth && !useAbsoluteDepth) return null;
+  const calculationWidthCm = selectedFormulaWidthCm;
   const baseDepthRatio = useSideDepth
     ? sideDepthRatio
-    : clamp(depthRatio, depthRatioBounds.min, depthRatioBounds.max);
+    : useAbsoluteDepth
+      ? absoluteDepthRatio
+      : clamp(depthRatio, depthRatioBounds.min, depthRatioBounds.max);
   const boundedDepthRatio = manualDepthRatioOverride ?? baseDepthRatio;
-  const depthCm = useSideDepth ? sideDepthCm : selectedFormulaWidthCm * boundedDepthRatio;
+  const depthCm = useSideDepth
+    ? sideDepthCm
+    : useAbsoluteDepth
+      ? absoluteDepthCm
+      : selectedFormulaWidthCm * boundedDepthRatio;
   const circumference = args.circumferenceModel?.({
-    formulaWidthCm: selectedFormulaWidthCm,
+    formulaWidthCm: calculationWidthCm,
     depthCm,
   }) ?? {
-    guidedCm: ellipseCircumferenceCm(selectedFormulaWidthCm, depthCm),
+    guidedCm: ellipseCircumferenceCm(calculationWidthCm, depthCm),
     model: "ellipse" as const,
     shapeExponent: null,
     shapeFlareRatio: null,
@@ -1295,6 +1337,9 @@ function buildGuideRow(args: {
     confidence: round(normalized.confidence, 2),
     geminiWidthCm: round(geminiWidthCm, 1),
     formulaWidthCm: round(selectedFormulaWidthCm, 1),
+    calculationWidthCm: round(calculationWidthCm, 1),
+    calculationWidthExactCm: calculationWidthCm,
+    calculationWidthSource: "red-line",
     cmPerPx: round(args.cmPerPx, 6),
     scaleSource: args.scaleSource ?? "global-height",
     formulaWidthSource,
@@ -1306,7 +1351,11 @@ function buildGuideRow(args: {
     edgeTrust,
     depthSource: manualDepthRatioOverride != null
       ? "manual-depth-ratio"
-      : useSideDepth ? args.sideDepthSource ?? "side-mask-at-guide-row" : args.depthSourceOverride ?? "front-formula",
+      : useSideDepth
+        ? args.sideDepthSource ?? "side-mask-at-guide-row"
+        : useAbsoluteDepth
+          ? args.absoluteDepthSource ?? "wear-absolute-depth"
+          : args.depthSourceOverride ?? "front-formula",
     sideDepthCandidateCm: sideDepthCm == null ? null : round(sideDepthCm, 1),
     sideDepthCandidateRatio: sideDepthCm == null || selectedFormulaWidthCm <= 0 ? null : round(sideDepthRatio, 3),
     sideDepthRawCm: sideDepthRawCm == null ? null : round(sideDepthRawCm, 1),
@@ -1317,6 +1366,7 @@ function buildGuideRow(args: {
     depthRatioOverride: manualDepthRatioOverride == null ? null : round(manualDepthRatioOverride, 3),
     depthRatio: round(boundedDepthRatio, 3),
     depthCm: round(depthCm, 1),
+    calculationDepthExactCm: depthCm,
     depthRatioTable: null,
     maskWidthCm: maskWidthCm == null ? null : round(maskWidthCm, 1),
     curveHorizontalCm: round(selectedFormulaWidthCm, 1),
@@ -1350,8 +1400,10 @@ export function computeGeminiGuideMeasurement(args: {
   rowCmPerPxOverrides?: Partial<Record<GeminiGuideRowKind, number>>;
   depthRatioOverrides?: GeminiGuideDepthRatioOverrides;
   localMlDepthRatios?: GeminiGuideDepthRatioOverrides;
+  localMlAbsoluteDepthCm?: GeminiGuideAbsoluteDepthPredictors;
   localMlDepthSource?: "local-ml-depth-ratio" | "wear-cohort-median";
   requireCompleteLocalMlDepthRatios?: boolean;
+  requireCompleteLocalMlAbsoluteDepth?: boolean;
   applyWearDepthFormula?: boolean;
 }): GeminiGuideMeasurement | null {
   const { guide, pose, waistTrace, hipsTrace } = args;
@@ -1362,6 +1414,10 @@ export function computeGeminiGuideMeasurement(args: {
       const value = args.localMlDepthRatios?.[kind];
       return typeof value !== "number" || !Number.isFinite(value);
     })
+  ) return null;
+  if (
+    args.requireCompleteLocalMlAbsoluteDepth
+    && (["waist", "trouserWaist", "hips"] as const).some((kind) => typeof args.localMlAbsoluteDepthCm?.[kind] !== "function")
   ) return null;
   const usesRedPixelGuide = typeof args.guideSource === "string" && args.guideSource.startsWith("red-pixel-detector");
   const usesGeminiJsonGuide = typeof args.guideSource === "string" && args.guideSource.startsWith("gemini-json");
@@ -1527,6 +1583,13 @@ export function computeGeminiGuideMeasurement(args: {
     });
     const rawDepthCm = sideFormulaSpan.widthCm > 0 ? sideFormulaSpan.widthCm : endpointWidthCm;
     if (rawDepthCm <= 0) return null;
+    if (sideGuideDepthSource === "side-guide-manual-coordinate") {
+      return {
+        depthCm: rawDepthCm,
+        rawCm: rawDepthCm,
+        projectionLeakRatio: 0,
+      };
+    }
     const leakRatio = guideProjectionLeakRatio(kind);
     return {
       depthCm: projectionCorrectedSideDepth(rawDepthCm, frontWidthCm, leakRatio),
@@ -1553,6 +1616,9 @@ export function computeGeminiGuideMeasurement(args: {
         })
       : waistTrace.naturalWaistDepthRatio),
     depthSourceOverride: args.localMlDepthRatios?.waist != null ? args.localMlDepthSource ?? "local-ml-depth-ratio" : undefined,
+    absoluteDepthCm: args.localMlAbsoluteDepthCm?.waist,
+    absoluteDepthSource: args.localMlAbsoluteDepthCm?.waist ? "wear-absolute-depth" : undefined,
+    requireAbsoluteDepth: args.requireCompleteLocalMlAbsoluteDepth,
     depthRatioOverride: args.depthRatioOverrides?.waist,
     // The BMI table can legitimately expose waist ratios above 0.800 (for
     // example Shahnaz 2 reaches 0.827). Keep the formula's manual safety
@@ -1589,6 +1655,9 @@ export function computeGeminiGuideMeasurement(args: {
         })
       : waistTrace.depthRatio),
     depthSourceOverride: args.localMlDepthRatios?.trouserWaist != null ? args.localMlDepthSource ?? "local-ml-depth-ratio" : undefined,
+    absoluteDepthCm: args.localMlAbsoluteDepthCm?.trouserWaist,
+    absoluteDepthSource: args.localMlAbsoluteDepthCm?.trouserWaist ? "wear-absolute-depth" : undefined,
+    requireAbsoluteDepth: args.requireCompleteLocalMlAbsoluteDepth,
     depthRatioOverride: args.depthRatioOverrides?.trouserWaist,
     depthRatioBounds: { min: 0.35, max: 1.1 },
     rawCm: waistTrace.finalTrouserWaistCm,
@@ -1625,6 +1694,9 @@ export function computeGeminiGuideMeasurement(args: {
             fallbackRatio: hipDepthRatio || 0.5,
           })),
         depthSourceOverride: args.localMlDepthRatios?.hips != null ? args.localMlDepthSource ?? "local-ml-depth-ratio" : undefined,
+        absoluteDepthCm: args.localMlAbsoluteDepthCm?.hips,
+        absoluteDepthSource: args.localMlAbsoluteDepthCm?.hips ? "wear-absolute-depth" : undefined,
+        requireAbsoluteDepth: args.requireCompleteLocalMlAbsoluteDepth,
         depthRatioOverride: args.depthRatioOverrides?.hips,
         sideDepthCm: sideGuideDepthSource
           ? (line) => measureSideGuideDepth("hips", line.formulaWidthCm)
@@ -2005,6 +2077,9 @@ function buildImageGuideRow(args: {
     confidence: round(normalized.confidence, 2),
     geminiWidthCm: round(widthCm, 1),
     formulaWidthCm: round(selectedFormulaWidthCm, 1),
+    calculationWidthCm: round(selectedFormulaWidthCm, 1),
+    calculationWidthExactCm: selectedFormulaWidthCm,
+    calculationWidthSource: "red-line",
     cmPerPx: round(args.cmPerPx, 6),
     scaleSource: "global-height",
     formulaWidthSource,
@@ -2025,6 +2100,7 @@ function buildImageGuideRow(args: {
     depthRatioOverride: null,
     depthRatio: 0,
     depthCm: 0,
+    calculationDepthExactCm: 0,
     depthRatioTable: null,
     maskWidthCm: maskMeasurement?.widthCm == null ? null : round(maskMeasurement.widthCm, 1),
     curveHorizontalCm: round(selectedFormulaWidthCm, 1),

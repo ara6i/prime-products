@@ -1,16 +1,19 @@
-import { PdpStudioDashboard } from "./components/PdpStudioDashboard";
-import { mapPdpStudioDashboardView } from "./mappers/pdpStudioDashboardMapper";
-import { getPdpStudioMe } from "./shared/pdpStudioAuthService";
+import { HomeWorkspace } from "./workspace/components/home/HomeWorkspace";
+import { PdpStudioAppShell } from "./workspace/components/shell/PdpStudioAppShell";
+import { loadPdpStudioPageContext } from "./workspace/services/loadPdpStudioPageContext";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "PDP Studio - PrimeStyleAI",
+  title: "PDP Studio · PrimeStyleAI",
 };
 
-export default async function PdpStudioDashboardPage() {
-  const user = await getPdpStudioMe();
-  const view = mapPdpStudioDashboardView();
+export default async function PdpStudioHomePage() {
+  const { user, view } = await loadPdpStudioPageContext();
 
-  return <PdpStudioDashboard user={user} view={view} />;
+  return (
+    <PdpStudioAppShell user={user} view={view}>
+      <HomeWorkspace catalog={view.catalog} />
+    </PdpStudioAppShell>
+  );
 }

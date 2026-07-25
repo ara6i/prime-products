@@ -3,18 +3,26 @@ import path from "node:path";
 import { NextResponse } from "next/server";
 import sharp from "sharp";
 import { isTestLabAvailableForHost } from "@/app/try-on-test/lib/access";
+import { measureMaskWidthAtY } from "@/app/try-on-test/sizing-lab/lib/bodyMaskGeometry";
 import {
   LOCAL_ML_CHECKPOINT_RELATIVE_PATH,
   LOCAL_ML_MODEL_VERSION,
+  WEAR_ABSOLUTE_DEPTH_MODEL_VERSION,
+  WEAR_ABSOLUTE_DEPTH_RELATIVE_PATH,
   WEAR_DIRECT_DEPTH_MODEL_VERSION,
   WEAR_DIRECT_DEPTH_RELATIVE_PATH,
   WEAR_ROW_PRIOR_MODEL_VERSION,
   WEAR_ROW_PRIOR_RELATIVE_PATH,
+  WEAR_SHAPE_EXPONENT_MODEL_VERSION,
+  WEAR_SHAPE_EXPONENT_RELATIVE_PATH,
   type LocalMlNormalizedRowPrediction,
   type LocalMlPredictionResponse,
+  type LocalMlWearAbsoluteDepthModel,
   type LocalMlWearDirectDepthCohort,
   type LocalMlWearReferenceCohort,
+  type LocalMlWearShapeExponentModel,
 } from "@/app/try-on-test/sizing-lab/lib/localMlSizing";
+import type { PoseResult } from "@/app/try-on-test/sizing-lab/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -71,6 +79,21 @@ interface WearDirectDepthModel {
   rows: Record<(typeof ROWS)[number], WearDirectDepthRowDefinition>;
 }
 
+interface WearAbsoluteDepthArtifact {
+  version: string;
+  method: string;
+  formula: string;
+  rows: Record<(typeof ROWS)[number], LocalMlWearAbsoluteDepthModel>;
+}
+
+interface WearShapeExponentArtifact {
+  version: string;
+  method: string;
+  formula: string;
+  rows: Partial<Record<(typeof ROWS)[number], LocalMlWearShapeExponentModel>>;
+  unavailableRows?: Partial<Record<(typeof ROWS)[number], { label: string; reason: string }>>;
+}
+
 let cachedWearRowPrior: {
   modifiedMs: number;
   model: WearRowPriorModel;
@@ -79,6 +102,16 @@ let cachedWearRowPrior: {
 let cachedWearDirectDepth: {
   modifiedMs: number;
   model: WearDirectDepthModel;
+} | null = null;
+
+let cachedWearAbsoluteDepth: {
+  modifiedMs: number;
+  model: WearAbsoluteDepthArtifact;
+} | null = null;
+
+let cachedWearShapeExponent: {
+  modifiedMs: number;
+  model: WearShapeExponentArtifact;
 } | null = null;
 
 interface PredictBody {
@@ -158,6 +191,57 @@ async function loadWearDirectDepth(modelPath: string): Promise<WearDirectDepthMo
   return model;
 }
 
+async function loadWearAbsoluteDepth(modelPath: string): Promise<WearAbsoluteDepthArtifact> {
+  const modelStat = await stat(modelPath);
+  if (cachedWearAbsoluteDepth?.modifiedMs === modelStat.mtimeMs) return cachedWearAbsoluteDepth.model;
+  const model = JSON.parse(await readFile(modelPath, "utf8")) as WearAbsoluteDepthArtifact;
+  if (
+    model.version !== WEAR_ABSOLUTE_DEPTH_MODEL_VERSION
+    || !model.rows
+    || ROWS.some((kind) => {
+      const row = model.rows[kind];
+      return !row
+        || !row.featureNames?.length
+        || !finite(row.interceptCm)
+        || !finite(row.validationMaeCm)
+        || row.featureNames.some((feature) => !finite(row.featureCenters[feature]) || !finite(row.coefficients[feature]));
+    })
+  ) {
+    throw new Error("The WEAR absolute-depth checkpoint is invalid or incompatible.");
+  }
+  cachedWearAbsoluteDepth = { modifiedMs: modelStat.mtimeMs, model };
+  return model;
+}
+
+async function loadWearShapeExponent(modelPath: string): Promise<WearShapeExponentArtifact> {
+  const modelStat = await stat(modelPath);
+  if (cachedWearShapeExponent?.modifiedMs === modelStat.mtimeMs) return cachedWearShapeExponent.model;
+  const model = JSON.parse(await readFile(modelPath, "utf8")) as WearShapeExponentArtifact;
+  if (
+    model.version !== WEAR_SHAPE_EXPONENT_MODEL_VERSION
+    || !model.rows?.waist
+    || !model.rows?.hips
+    || ([model.rows.waist, model.rows.hips] as LocalMlWearShapeExponentModel[]).some((row) => (
+      !row.featureNames?.length
+      || !finite(row.interceptPosition)
+      || !finite(row.minimumExponent)
+      || !finite(row.maximumExponent)
+      || row.minimumExponent >= row.maximumExponent
+      || !finite(row.validationMaeCm)
+      || row.featureNames.some((feature) => (
+        !finite(row.featureCenters[feature])
+        || !finite(row.featureScales[feature])
+        || row.featureScales[feature]! <= 0
+        || !finite(row.coefficients[feature])
+      ))
+    ))
+  ) {
+    throw new Error("The WEAR shape-exponent checkpoint is invalid or incompatible.");
+  }
+  cachedWearShapeExponent = { modifiedMs: modelStat.mtimeMs, model };
+  return model;
+}
+
 async function imageTensorData(imageDataUrl: string, maskDataUrl: string): Promise<Float32Array> {
   const image = await sharp(dataUrlBuffer(imageDataUrl, "imageDataUrl"))
     .resize(INPUT_SIZE, INPUT_SIZE, { fit: "fill" })
@@ -212,6 +296,14 @@ interface MaskPlane {
   bottom: number;
 }
 
+interface ArmCapsule {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+  radius: number;
+}
+
 async function decodeMask(maskDataUrl: string): Promise<MaskPlane> {
   const mask = await sharp(dataUrlBuffer(maskDataUrl, "maskDataUrl"))
     .resize(INPUT_SIZE, INPUT_SIZE, { fit: "fill", kernel: "nearest" })
@@ -237,41 +329,128 @@ async function decodeMask(maskDataUrl: string): Promise<MaskPlane> {
   return { data: mask.data, width: mask.info.width, height: mask.info.height, top, bottom };
 }
 
-function visibleRuns(mask: MaskPlane, y: number): Array<{ left: number; right: number }> {
-  const runs: Array<{ left: number; right: number }> = [];
-  let start = -1;
-  for (let x = 0; x < mask.width; x += 1) {
-    const active = mask.data[y * mask.width + x]! >= 96;
-    if (active && start < 0) start = x;
-    if ((!active || x === mask.width - 1) && start >= 0) {
-      const right = active && x === mask.width - 1 ? x : x - 1;
-      if (right - start >= 3) runs.push({ left: start, right });
-      start = -1;
-    }
-  }
-  return runs;
+function buildArmCapsules(body: PredictBody, mask: MaskPlane): ArmCapsule[] {
+  if (!Array.isArray(body.landmarks) || body.landmarks.length !== 33) return [];
+  const capsules: ArmCapsule[] = [];
+  const add = (
+    fromIndex: number,
+    toIndex: number,
+    radiusScale: number,
+    minimumRadius: number,
+    maximumRadius: number,
+  ) => {
+    const from = body.landmarks![fromIndex];
+    const to = body.landmarks![toIndex];
+    if (!from || !to || !finite(from.x) || !finite(from.y) || !finite(to.x) || !finite(to.y)) return;
+    const x0 = from.x * mask.width;
+    const y0 = from.y * mask.height;
+    const x1 = to.x * mask.width;
+    const y1 = to.y * mask.height;
+    const length = Math.hypot(x1 - x0, y1 - y0);
+    capsules.push({
+      x0,
+      y0,
+      x1,
+      y1,
+      radius: clamp(length * radiusScale, minimumRadius, maximumRadius),
+    });
+  };
+  add(11, 13, 0.10, 6, 22);
+  add(13, 15, 0.12, 7, 24);
+  add(15, 17, 0.18, 7, 28);
+  add(15, 19, 0.18, 7, 28);
+  add(15, 21, 0.18, 7, 28);
+  add(12, 14, 0.10, 6, 22);
+  add(14, 16, 0.12, 7, 24);
+  add(16, 18, 0.18, 7, 28);
+  add(16, 20, 0.18, 7, 28);
+  add(16, 22, 0.18, 7, 28);
+  return capsules;
 }
 
-function centralMaskSegment(mask: MaskPlane, targetY: number, centerX: number) {
-  const candidates: Array<{ left: number; right: number; y: number }> = [];
-  for (let offset = -3; offset <= 3; offset += 1) {
-    const y = Math.round(clamp(targetY + offset, 0, mask.height - 1));
-    const runs = visibleRuns(mask, y);
-    if (!runs.length) continue;
-    const selected = runs.reduce((best, run) => {
-      const distance = centerX < run.left ? run.left - centerX : centerX > run.right ? centerX - run.right : 0;
-      const bestDistance = centerX < best.left ? best.left - centerX : centerX > best.right ? centerX - best.right : 0;
-      return distance < bestDistance ? run : best;
-    });
-    candidates.push({ ...selected, y });
+function armCrossSectionAtY(capsule: ArmCapsule, y: number) {
+  const deltaY = capsule.y1 - capsule.y0;
+  const t = Math.abs(deltaY) > 0.001
+    ? clamp((y - capsule.y0) / deltaY, 0, 1)
+    : 0.5;
+  const centerX = capsule.x0 + (capsule.x1 - capsule.x0) * t;
+  const centerY = capsule.y0 + deltaY * t;
+  const verticalDistance = Math.abs(y - centerY);
+  if (verticalDistance > capsule.radius) return null;
+  const halfWidth = Math.sqrt(Math.max(0, capsule.radius ** 2 - verticalDistance ** 2));
+  return { centerX, left: centerX - halfWidth, right: centerX + halfWidth };
+}
+
+function trimArmPixelsFromTorsoSegment(
+  body: PredictBody,
+  mask: MaskPlane,
+  targetY: number,
+  centerX: number,
+  segment: { left: number; right: number },
+) {
+  let left = segment.left;
+  let right = segment.right;
+  for (const capsule of buildArmCapsules(body, mask)) {
+    const crossSection = armCrossSectionAtY(capsule, targetY);
+    if (!crossSection) continue;
+    if (crossSection.right < left - 2 || crossSection.left > right + 2) continue;
+    if (crossSection.centerX > centerX + 4) {
+      right = Math.min(right, crossSection.left - 1);
+    } else if (crossSection.centerX < centerX - 4) {
+      left = Math.max(left, crossSection.right + 1);
+    }
   }
-  if (!candidates.length) return null;
-  const orderedLeft = candidates.map((candidate) => candidate.left).sort((a, b) => a - b);
-  const orderedRight = candidates.map((candidate) => candidate.right).sort((a, b) => a - b);
-  const middle = Math.floor(candidates.length / 2);
+  return right - left >= 8 ? { left, right } : segment;
+}
+
+function centralTorsoMaskSegment(
+  body: PredictBody,
+  mask: MaskPlane,
+  targetY: number,
+  centerXNorm: number,
+) {
+  if (!Array.isArray(body.landmarks) || body.landmarks.length !== 33) return null;
+  const pose: PoseResult = {
+    landmarks: body.landmarks.map((landmark) => ({
+      x: finite(landmark.x) ? landmark.x : 0,
+      y: finite(landmark.y) ? landmark.y : 0,
+      z: 0,
+      visibility: finite(landmark.visibility) ? landmark.visibility : 0,
+    })),
+    mask: Uint8ClampedArray.from(mask.data),
+    maskWidth: mask.width,
+    maskHeight: mask.height,
+    maskSource: "pose",
+  };
+  const measured = measureMaskWidthAtY(
+    pose,
+    mask.width,
+    mask.height,
+    1,
+    clamp(targetY / mask.height, 0, 1),
+    clamp(centerXNorm, 0, 1),
+    3,
+    {
+      excludeLimbs: true,
+      segmentMode: "center-walk",
+      exclusionMode: "limb-capsules",
+    },
+  );
+  if (!measured) return null;
+  const measuredSegment = {
+    left: measured.leftXNorm * mask.width,
+    right: measured.rightXNorm * mask.width,
+  };
+  const cleanedSegment = trimArmPixelsFromTorsoSegment(
+    body,
+    mask,
+    targetY,
+    clamp(centerXNorm, 0, 1) * mask.width,
+    measuredSegment,
+  );
   return {
-    left: orderedLeft[middle]!,
-    right: orderedRight[middle]!,
+    left: cleanedSegment.left,
+    right: cleanedSegment.right,
     y: Math.round(targetY),
   };
 }
@@ -331,6 +510,8 @@ async function predictWearRowPrior(
   maskDataUrl: string,
   model: WearRowPriorModel,
   depthModel: WearDirectDepthModel,
+  absoluteDepthModel?: WearAbsoluteDepthArtifact,
+  shapeExponentModel?: WearShapeExponentArtifact,
 ): Promise<LocalMlNormalizedRowPrediction[]> {
   const mask = await decodeMask(maskDataUrl);
   const hipLandmarks = [body.landmarks?.[23], body.landmarks?.[24]]
@@ -338,7 +519,6 @@ async function predictWearRowPrior(
   const centerXNorm = hipLandmarks.length
     ? hipLandmarks.reduce((sum, landmark) => sum + (landmark.x ?? 0.5), 0) / hipLandmarks.length
     : 0.5;
-  const centerX = clamp(centerXNorm, 0, 1) * (mask.width - 1);
 
   return ROWS.map((kind) => {
     const row = model.rows[kind];
@@ -346,7 +526,7 @@ async function predictWearRowPrior(
     const rawFraction = row.coefficients.reduce((sum, coefficient, index) => sum + coefficient * features[index]!, 0);
     const bodyFraction = clamp(rawFraction, row.outputMin, row.outputMax);
     const targetY = mask.top + bodyFraction * (mask.bottom - mask.top);
-    const segment = centralMaskSegment(mask, targetY, centerX);
+    const segment = centralTorsoMaskSegment(body, mask, targetY, centerXNorm);
     if (!segment || segment.right <= segment.left) throw new Error(`MediaPipe mask has no usable ${kind} body segment.`);
     const genderIsRepresented = (row.genderCounts[body.gender!] ?? 0) > 0;
     const confidence = clamp((1 - row.validationP90At170Cm / 12) * (genderIsRepresented ? 1 : 0.55), 0.25, 0.9);
@@ -379,6 +559,8 @@ async function predictWearRowPrior(
       // Explanation-only evidence. It never changes bodyFraction or targetY.
       referenceCohort: closestWearReferenceCohort(body, row),
       wearDepthCohort: directWearDepthCohort(body, kind, depthModel),
+      wearAbsoluteDepthModel: absoluteDepthModel?.rows[kind],
+      wearShapeExponentModel: shapeExponentModel?.rows[kind],
     };
   });
 }
@@ -396,10 +578,14 @@ export async function POST(request: Request) {
     const checkpointPath = path.join(/* turbopackIgnore: true */ process.cwd(), LOCAL_ML_CHECKPOINT_RELATIVE_PATH);
     const wearRowPriorPath = path.join(/* turbopackIgnore: true */ process.cwd(), WEAR_ROW_PRIOR_RELATIVE_PATH);
     const wearDirectDepthPath = path.join(/* turbopackIgnore: true */ process.cwd(), WEAR_DIRECT_DEPTH_RELATIVE_PATH);
-    const [checkpointStat, wearRowPriorStat, wearDirectDepthStat] = await Promise.all([
+    const wearAbsoluteDepthPath = path.join(/* turbopackIgnore: true */ process.cwd(), WEAR_ABSOLUTE_DEPTH_RELATIVE_PATH);
+    const wearShapeExponentPath = path.join(/* turbopackIgnore: true */ process.cwd(), WEAR_SHAPE_EXPONENT_RELATIVE_PATH);
+    const [checkpointStat, wearRowPriorStat, wearDirectDepthStat, wearAbsoluteDepthStat, wearShapeExponentStat] = await Promise.all([
       optionalStat(checkpointPath),
       optionalStat(wearRowPriorPath),
       optionalStat(wearDirectDepthPath),
+      optionalStat(wearAbsoluteDepthPath),
+      optionalStat(wearShapeExponentPath),
     ]);
     if (!checkpointStat && !wearRowPriorStat) {
       return NextResponse.json({
@@ -411,18 +597,27 @@ export async function POST(request: Request) {
     const structuredData = structuredTensorData(body);
     if (!checkpointStat && wearRowPriorStat) {
       if (!wearDirectDepthStat) throw new Error("The direct WEAR depth cohort checkpoint is missing.");
-      const [model, depthModel] = await Promise.all([
+      const [model, depthModel, absoluteDepthModel, shapeExponentModel] = await Promise.all([
         loadWearRowPrior(wearRowPriorPath),
         loadWearDirectDepth(wearDirectDepthPath),
+        wearAbsoluteDepthStat ? loadWearAbsoluteDepth(wearAbsoluteDepthPath) : Promise.resolve(undefined),
+        wearShapeExponentStat ? loadWearShapeExponent(wearShapeExponentPath) : Promise.resolve(undefined),
       ]);
-      const rows = await predictWearRowPrior(body, body.maskDataUrl, model, depthModel);
+      const rows = await predictWearRowPrior(
+        body,
+        body.maskDataUrl,
+        model,
+        depthModel,
+        absoluteDepthModel,
+        shapeExponentModel,
+      );
       const response: LocalMlPredictionResponse = {
         ok: true,
         modelVersion: model.version,
         modelStage: "wear-1d-row-prior",
         depthReady: false,
-        endpointSource: "mediapipe-visible-mask",
-        checkpointFingerprint: `${wearRowPriorStat.size}-${Math.round(wearRowPriorStat.mtimeMs)}:${wearDirectDepthStat.size}-${Math.round(wearDirectDepthStat.mtimeMs)}`,
+        endpointSource: "mediapipe-central-torso-mask",
+        checkpointFingerprint: `${wearRowPriorStat.size}-${Math.round(wearRowPriorStat.mtimeMs)}:${wearDirectDepthStat.size}-${Math.round(wearDirectDepthStat.mtimeMs)}:${wearAbsoluteDepthStat ? `${wearAbsoluteDepthStat.size}-${Math.round(wearAbsoluteDepthStat.mtimeMs)}` : "no-absolute-depth"}:${wearShapeExponentStat ? `${wearShapeExponentStat.size}-${Math.round(wearShapeExponentStat.mtimeMs)}` : "no-shape-exponent"}`,
         elapsedMs: Math.round(performance.now() - startedAt),
         rows,
       };

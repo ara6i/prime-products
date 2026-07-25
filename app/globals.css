@@ -1,3 +1,4 @@
+@import "../tokens.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -673,6 +674,7 @@
 }
 
 html {
+  overflow-x: clip;
   overflow-y: scroll; /* always reserve scrollbar gutter — prevents vw shift on scroll start */
   scroll-behavior: smooth;
 }
@@ -682,6 +684,7 @@ html {
 }
 
 body {
+  overflow-x: clip;
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 

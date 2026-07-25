@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { GeminiBodyGuide, GeminiGuideLine } from "../lib/geminiGuide";
 
 type PhotoKey = "tape" | "second";
@@ -17,6 +18,13 @@ interface Props {
   switchStatus: "idle" | "loading" | "ready" | "error";
   switchError: string | null;
   onSelectPhoto: (photo: PhotoKey) => void;
+  sideImageUrl?: string | null;
+  sideImageWidth?: number;
+  sideImageHeight?: number;
+  sideGuide?: GeminiBodyGuide | null;
+  sideEnabled?: boolean;
+  onSideEnabledChange?: (enabled: boolean) => void;
+  mode?: "manual" | "local-ml";
   large?: boolean;
 }
 
@@ -43,9 +51,24 @@ export function ShahnazPhotoPairPanel({
   switchStatus,
   switchError,
   onSelectPhoto,
+  sideImageUrl,
+  sideImageWidth = 0,
+  sideImageHeight = 0,
+  sideGuide,
+  sideEnabled = false,
+  onSideEnabledChange,
+  mode = "manual",
   large = false,
 }: Props) {
   const isSwitching = switchStatus === "loading";
+  const usesLocalMl = mode === "local-ml";
+  const [showTapeReference, setShowTapeReference] = useState(true);
+  const canUseSide = usesLocalMl && Boolean(sideImageUrl && onSideEnabledChange);
+
+  const toggleTapeReference = (visible: boolean) => {
+    setShowTapeReference(visible);
+    if (!visible && activePhoto === "tape") onSelectPhoto("second");
+  };
 
   return (
     <section data-testid="shahnaz-photo-pair" className="rounded-xl border border-indigo-200 bg-indigo-50 p-3 text-slate-900">
@@ -54,25 +77,51 @@ export function ShahnazPhotoPairPanel({
         <div>
           <h4 className="text-sm font-semibold text-indigo-950">Choose the photo that does the calculation</h4>
           <p className="mt-1 text-[11px] leading-4 text-indigo-900">
-            Both photos keep matching red body rows. Click one photo: only that photo sends pixels to Apple Vision, Depth Pro and the circumference calculation.
+            {usesLocalMl
+              ? "Local ML analyzes both photos separately. Click one photo: only that photo sends its pixels and Local ML red lines to Apple Vision, Depth Pro and the circumference calculation."
+              : "Both photos keep matching red body rows. Click one photo: only that photo sends pixels to Apple Vision, Depth Pro and the circumference calculation."}
           </p>
         </div>
       </div>
 
+      <div className="mt-3 flex flex-wrap gap-2 rounded-lg border border-indigo-200 bg-white p-2 text-[10px] text-slate-700">
+        <label className="inline-flex items-center gap-2 rounded-md border border-slate-200 px-2 py-1.5">
+          <input
+            type="checkbox"
+            checked={showTapeReference}
+            disabled={isSwitching}
+            onChange={(event) => toggleTapeReference(event.currentTarget.checked)}
+          />
+          Show tape reference
+        </label>
+        {canUseSide ? (
+          <label className="inline-flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1.5 text-emerald-950">
+            <input
+              type="checkbox"
+              checked={sideEnabled}
+              onChange={(event) => onSideEnabledChange?.(event.currentTarget.checked)}
+            />
+            Use side photo for measured depth
+          </label>
+        ) : null}
+      </div>
+
       <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
-        <PhotoChoice
-          photoKey="tape"
-          title="Photo 1 · tape reference"
-          detail="Saved Shahnaz 2 photo"
-          imageUrl={tapeImageUrl}
-          imageWidth={tapeImageWidth}
-          imageHeight={tapeImageHeight}
-          guide={tapeGuide}
-          active={activePhoto === "tape"}
-          disabled={isSwitching}
-          large={large}
-          onSelect={onSelectPhoto}
-        />
+        {showTapeReference ? (
+          <PhotoChoice
+            photoKey="tape"
+            title="Photo 1 · tape reference"
+            detail="Saved Shahnaz 2 photo"
+            imageUrl={tapeImageUrl}
+            imageWidth={tapeImageWidth}
+            imageHeight={tapeImageHeight}
+            guide={tapeGuide}
+            active={activePhoto === "tape"}
+            disabled={isSwitching}
+            large={large}
+            onSelect={onSelectPhoto}
+          />
+        ) : null}
         <PhotoChoice
           photoKey="second"
           title="Photo 2 · IMG_8444 · no tape"
@@ -86,24 +135,35 @@ export function ShahnazPhotoPairPanel({
           large={large}
           onSelect={onSelectPhoto}
         />
+        {sideEnabled && sideImageUrl ? (
+          <SidePhotoDepth
+            imageUrl={sideImageUrl}
+            imageWidth={sideImageWidth}
+            imageHeight={sideImageHeight}
+            guide={sideGuide ?? null}
+            large={large}
+          />
+        ) : null}
       </div>
 
       <div className="mt-3 grid grid-cols-1 gap-2 text-[10px] sm:grid-cols-3">
-        <SimpleStep number="1" text="Pick a photo above." />
-        <SimpleStep number="2" text="The red rows belong to that photo." />
-        <SimpleStep number="3" text="Read that photo's result below." />
+        <SimpleStep number="1" text="Front red line = body width." />
+        <SimpleStep number="2" text={sideEnabled ? "Side red line = real depth." : "WEAR estimates hidden depth."} />
+        <SimpleStep number="3" text="Shape formula goes around both." />
       </div>
 
       <div className="mt-2 rounded-lg border border-indigo-200 bg-white px-2.5 py-2 text-[10px] leading-4 text-indigo-900">
-        The second rows were transferred by matching the two photos, then placed on the same waist, trouser-waist and hip locations. We did not reuse one flat pixel span.
+        {usesLocalMl
+          ? "Local ML produced a separate waist, trouser-waist and hip row for each photo. It did not load or copy the saved Manual Coordinate lines."
+          : "The second rows were transferred by matching the two photos, then placed on the same waist, trouser-waist and hip locations. We did not reuse one flat pixel span."}
       </div>
       <div className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-2 text-[10px] leading-4 text-emerald-900">
-        IMG_8444 has no tape. Click it to make this tape-free photo own the calculation on the right.
+        IMG_8444 has no tape. Click it to own the front-width calculation. IMG_8439 is depth only; its red lines never replace the front-width lines.
       </div>
 
       {isSwitching ? (
         <div className="mt-2 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-2 text-[11px] font-medium text-blue-900" aria-live="polite">
-          Switching active photo and detecting Shahnaz…
+          {usesLocalMl ? "Preparing both photos with MediaPipe and Local ML…" : "Switching active photo and detecting Shahnaz…"}
         </div>
       ) : null}
       {switchStatus === "error" ? (
@@ -184,6 +244,63 @@ function PhotoChoice({
         </div>
       </div>
     </button>
+  );
+}
+
+function SidePhotoDepth({
+  imageUrl,
+  imageWidth,
+  imageHeight,
+  guide,
+  large,
+}: {
+  imageUrl: string;
+  imageWidth: number;
+  imageHeight: number;
+  guide: GeminiBodyGuide | null;
+  large: boolean;
+}) {
+  return (
+    <div className="overflow-hidden rounded-xl border-2 border-emerald-500 bg-white text-left ring-2 ring-emerald-100">
+      <div className="flex items-center justify-between gap-2 px-3 py-2">
+        <div>
+          <div className="text-xs font-semibold text-slate-950">Photo 3 · IMG_8439 · side</div>
+          <div className="text-[9px] text-slate-500">Adjust these lines in the large side editor below</div>
+        </div>
+        <span className="shrink-0 rounded-full bg-emerald-600 px-2 py-1 text-[9px] font-semibold text-white">
+          DEPTH ONLY
+        </span>
+      </div>
+      <div className="bg-black">
+        <div className={large ? "relative mx-auto w-fit" : "relative"}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt="Shahnaz side photo for measured depth"
+            className={large ? "block max-h-[62vh] max-w-full object-contain" : "block h-auto w-full"}
+            draggable={false}
+          />
+          {guide && imageWidth > 0 && imageHeight > 0 ? (
+            <svg
+              viewBox={`0 0 ${imageWidth} ${imageHeight}`}
+              preserveAspectRatio="none"
+              className="pointer-events-none absolute inset-0 h-full w-full"
+              aria-hidden="true"
+            >
+              {ROWS.map((row) => (
+                <GuideLine
+                  key={row.kind}
+                  line={guide[row.kind]}
+                  label={`${row.label} depth`}
+                  color={row.color}
+                  imageWidth={imageWidth}
+                />
+              ))}
+            </svg>
+          ) : null}
+        </div>
+      </div>
+    </div>
   );
 }
 

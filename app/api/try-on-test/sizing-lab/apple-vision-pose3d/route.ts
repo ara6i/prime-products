@@ -8,6 +8,7 @@ import { promisify } from "node:util";
 import { NextResponse, type NextRequest } from "next/server";
 import { isSiteAuthEnabled, SITE_AUTH_COOKIE_NAME, verifySiteSessionToken } from "@/app/shared/auth/siteSession";
 import { isTestLabAvailableForHost } from "@/app/try-on-test/lib/access";
+import { runCachedLocalInference } from "../_lib/localInferenceScheduler";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -94,15 +95,32 @@ export async function POST(request: NextRequest) {
       if (!image || !parsed) throw new Error("Apple Vision image cache is unavailable.");
       const imagePath = path.join(tempDirectory, `input.${parsed.extension}`);
       await writeFile(imagePath, image);
-      await ensureVisionBinary();
-      const { stdout } = await execFileAsync(BINARY_PATH, [imagePath], {
-        timeout: 30_000,
-        maxBuffer: 2 * 1024 * 1024,
+      const inference = await runCachedLocalInference<{ vision: VisionOutput; reusedDiskCache: boolean }>({
+        key: `apple-vision-pose:v2:${imageHash}`,
+        label: "Apple Vision 3D",
+        cacheGroup: "apple-vision-pose-results",
+        cacheTtlMs: 15 * 60_000,
+        cacheMaxEntries: 8,
+        task: async () => {
+          if (existsSync(cachePath)) {
+            return {
+              vision: JSON.parse(await readFile(cachePath, "utf8")) as VisionOutput,
+              reusedDiskCache: true,
+            };
+          }
+          await ensureVisionBinary();
+          const { stdout } = await execFileAsync(BINARY_PATH, [imagePath], {
+            timeout: 30_000,
+            maxBuffer: 2 * 1024 * 1024,
+          });
+          const generatedVision = JSON.parse(stdout.trim()) as VisionOutput;
+          await mkdir(CACHE_DIRECTORY, { recursive: true });
+          await writeFile(cachePath, JSON.stringify(generatedVision));
+          return { vision: generatedVision, reusedDiskCache: false };
+        },
       });
-      vision = JSON.parse(stdout.trim()) as VisionOutput;
-      await mkdir(CACHE_DIRECTORY, { recursive: true });
-      await writeFile(cachePath, JSON.stringify(vision));
-      cacheHit = false;
+      vision = inference.value.vision;
+      cacheHit = inference.cacheHit || inference.value.reusedDiskCache;
     }
 
     const result = buildBodyScaleResult(

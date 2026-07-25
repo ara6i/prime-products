@@ -1,0 +1,1126 @@
+{
+  "brand": [
+    {
+      "on": true,
+      "name": "PrimeStyleAI Pants General",
+      "vendor": "PrimeStyleAI",
+      "units": "cm",
+      "sizes": [
+        {
+          "label": "XS",
+          "ranges": {
+            "waist": {
+              "lowerRange": 68.0,
+              "upperRange": 69.0
+            },
+            "hips": {
+              "lowerRange": 90.0,
+              "upperRange": 91.0
+            }
+          }
+        },
+        {
+          "label": "S",
+          "ranges": {
+            "waist": {
+              "lowerRange": 72.0,
+              "upperRange": 73.0
+            },
+            "hips": {
+              "lowerRange": 93.0,
+              "upperRange": 94.0
+            }
+          }
+        },
+        {
+          "label": "M",
+          "ranges": {
+            "waist": {
+              "lowerRange": 75.0,
+              "upperRange": 76.0
+            },
+            "hips": {
+              "lowerRange": 98.0,
+              "upperRange": 99.0
+            }
+          }
+        },
+        {
+          "label": "L",
+          "ranges": {
+            "waist": {
+              "lowerRange": 77.0,
+              "upperRange": 78.0
+            },
+            "hips": {
+              "lowerRange": 101.0,
+              "upperRange": 102.0
+            }
+          }
+        },
+        {
+          "label": "XL",
+          "ranges": {
+            "waist": {
+              "lowerRange": 80.0,
+              "upperRange": 81.0
+            },
+            "hips": {
+              "lowerRange": 106.0,
+              "upperRange": 107.0
+            }
+          }
+        },
+        {
+          "label": "0",
+          "ranges": {
+            "waist": {
+              "lowerRange": 61.0,
+              "upperRange": 63.0
+            },
+            "hips": {
+              "lowerRange": 89.0,
+              "upperRange": 90.0
+            }
+          }
+        },
+        {
+          "label": "1",
+          "ranges": {
+            "waist": {
+              "lowerRange": 64.0,
+              "upperRange": 65.0
+            },
+            "hips": {
+              "lowerRange": 91.0,
+              "upperRange": 93.0
+            }
+          }
+        },
+        {
+          "label": "3",
+          "ranges": {
+            "waist": {
+              "lowerRange": 66.0,
+              "upperRange": 68.0
+            },
+            "hips": {
+              "lowerRange": 94.0,
+              "upperRange": 96.0
+            }
+          }
+        },
+        {
+          "label": "5",
+          "ranges": {
+            "waist": {
+              "lowerRange": 69.0,
+              "upperRange": 70.0
+            },
+            "hips": {
+              "lowerRange": 97.0,
+              "upperRange": 98.0
+            }
+          }
+        },
+        {
+          "label": "7",
+          "ranges": {
+            "waist": {
+              "lowerRange": 71.0,
+              "upperRange": 72.0
+            },
+            "hips": {
+              "lowerRange": 99.0,
+              "upperRange": 101.0
+            }
+          }
+        },
+        {
+          "label": "9",
+          "ranges": {
+            "waist": {
+              "lowerRange": 74.0,
+              "upperRange": 75.0
+            },
+            "hips": {
+              "lowerRange": 102.0,
+              "upperRange": 103.0
+            }
+          }
+        },
+        {
+          "label": "11",
+          "ranges": {
+            "waist": {
+              "lowerRange": 78.0,
+              "upperRange": 79.0
+            },
+            "hips": {
+              "lowerRange": 105.0,
+              "upperRange": 106.0
+            }
+          }
+        },
+        {
+          "label": "13",
+          "ranges": {
+            "waist": {
+              "lowerRange": 81.0,
+              "upperRange": 83.0
+            },
+            "hips": {
+              "lowerRange": 109.0,
+              "upperRange": 111.0
+            }
+          }
+        },
+        {
+          "label": "15",
+          "ranges": {
+            "waist": {
+              "lowerRange": 85.0,
+              "upperRange": 86.0
+            },
+            "hips": {
+              "lowerRange": 113.0,
+              "upperRange": 114.0
+            }
+          }
+        },
+        {
+          "label": "23",
+          "ranges": {
+            "waist": {
+              "lowerRange": 57.0,
+              "upperRange": 60.0
+            },
+            "hips": {
+              "lowerRange": 83.0,
+              "upperRange": 85.0
+            }
+          }
+        },
+        {
+          "label": "24",
+          "ranges": {
+            "waist": {
+              "lowerRange": 60.0,
+              "upperRange": 61.0
+            },
+            "hips": {
+              "lowerRange": 85.0,
+              "upperRange": 88.0
+            }
+          }
+        },
+        {
+          "label": "25",
+          "ranges": {
+            "waist": {
+              "lowerRange": 63.0,
+              "upperRange": 64.0
+            },
+            "hips": {
+              "lowerRange": 88.0,
+              "upperRange": 89.0
+            }
+          }
+        },
+        {
+          "label": "26",
+          "ranges": {
+            "waist": {
+              "lowerRange": 65.0,
+              "upperRange": 66.0
+            },
+            "hips": {
+              "lowerRange": 91.0,
+              "upperRange": 91.0
+            }
+          }
+        },
+        {
+          "label": "27",
+          "ranges": {
+            "waist": {
+              "lowerRange": 69.0,
+              "upperRange": 69.0
+            },
+            "hips": {
+              "lowerRange": 94.0,
+              "upperRange": 94.0
+            }
+          }
+        },
+        {
+          "label": "28",
+          "ranges": {
+            "waist": {
+              "lowerRange": 70.0,
+              "upperRange": 71.0
+            },
+            "hips": {
+              "lowerRange": 96.0,
+              "upperRange": 97.0
+            }
+          }
+        },
+        {
+          "label": "29",
+          "ranges": {
+            "waist": {
+              "lowerRange": 73.0,
+              "upperRange": 74.0
+            },
+            "hips": {
+              "lowerRange": 99.0,
+              "upperRange": 99.0
+            }
+          }
+        },
+        {
+          "label": "30",
+          "ranges": {
+            "waist": {
+              "lowerRange": 76.0,
+              "upperRange": 77.0
+            },
+            "hips": {
+              "lowerRange": 102.0,
+              "upperRange": 102.0
+            }
+          }
+        },
+        {
+          "label": "31",
+          "ranges": {
+            "waist": {
+              "lowerRange": 79.0,
+              "upperRange": 80.0
+            },
+            "hips": {
+              "lowerRange": 103.0,
+              "upperRange": 105.0
+            }
+          }
+        },
+        {
+          "label": "32",
+          "ranges": {
+            "waist": {
+              "lowerRange": 81.0,
+              "upperRange": 81.0
+            },
+            "hips": {
+              "lowerRange": 107.0,
+              "upperRange": 108.0
+            }
+          }
+        },
+        {
+          "label": "33",
+          "ranges": {
+            "waist": {
+              "lowerRange": 83.0,
+              "upperRange": 85.0
+            },
+            "hips": {
+              "lowerRange": 108.0,
+              "upperRange": 109.0
+            }
+          }
+        },
+        {
+          "label": "34",
+          "ranges": {
+            "waist": {
+              "lowerRange": 86.0,
+              "upperRange": 87.0
+            },
+            "hips": {
+              "lowerRange": 111.0,
+              "upperRange": 113.0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "on": true,
+      "name": "Manière De Voir Pants General",
+      "vendor": "Manière De Voir",
+      "units": "cm",
+      "sizes": [
+        {
+          "label": "28",
+          "ranges": {
+            "waist": {
+              "lowerRange": 70.0,
+              "upperRange": 73.0
+            },
+            "hips": {
+              "lowerRange": 90.0,
+              "upperRange": 93.0
+            }
+          }
+        },
+        {
+          "label": "29",
+          "ranges": {
+            "waist": {
+              "lowerRange": 73.0,
+              "upperRange": 75.0
+            },
+            "hips": {
+              "lowerRange": 93.0,
+              "upperRange": 96.0
+            }
+          }
+        },
+        {
+          "label": "30",
+          "ranges": {
+            "waist": {
+              "lowerRange": 75.0,
+              "upperRange": 78.0
+            },
+            "hips": {
+              "lowerRange": 96.0,
+              "upperRange": 98.0
+            }
+          }
+        },
+        {
+          "label": "31",
+          "ranges": {
+            "waist": {
+              "lowerRange": 78.0,
+              "upperRange": 80.0
+            },
+            "hips": {
+              "lowerRange": 98.0,
+              "upperRange": 101.0
+            }
+          }
+        },
+        {
+          "label": "32",
+          "ranges": {
+            "waist": {
+              "lowerRange": 80.0,
+              "upperRange": 83.0
+            },
+            "hips": {
+              "lowerRange": 101.0,
+              "upperRange": 103.0
+            }
+          }
+        },
+        {
+          "label": "33",
+          "ranges": {
+            "waist": {
+              "lowerRange": 83.0,
+              "upperRange": 85.0
+            },
+            "hips": {
+              "lowerRange": 103.0,
+              "upperRange": 106.0
+            }
+          }
+        },
+        {
+          "label": "34",
+          "ranges": {
+            "waist": {
+              "lowerRange": 85.0,
+              "upperRange": 89.0
+            },
+            "hips": {
+              "lowerRange": 106.0,
+              "upperRange": 110.0
+            }
+          }
+        },
+        {
+          "label": "36",
+          "ranges": {
+            "waist": {
+              "lowerRange": 89.0,
+              "upperRange": 94.0
+            },
+            "hips": {
+              "lowerRange": 110.0,
+              "upperRange": 115.0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "on": true,
+      "name": "DB Studio Wedding Dress General",
+      "vendor": "DB Studio",
+      "units": "cm",
+      "sizes": [
+        {
+          "label": "0",
+          "ranges": {
+            "bust": {
+              "lowerRange": 80.0,
+              "upperRange": 83.0
+            },
+            "waist": {
+              "lowerRange": 64.0,
+              "upperRange": 66.0
+            },
+            "hips": {
+              "lowerRange": 89.0,
+              "upperRange": 92.0
+            }
+          }
+        },
+        {
+          "label": "2",
+          "ranges": {
+            "bust": {
+              "lowerRange": 83.0,
+              "upperRange": 85.0
+            },
+            "waist": {
+              "lowerRange": 66.0,
+              "upperRange": 69.0
+            },
+            "hips": {
+              "lowerRange": 92.0,
+              "upperRange": 94.0
+            }
+          }
+        },
+        {
+          "label": "4",
+          "ranges": {
+            "bust": {
+              "lowerRange": 85.0,
+              "upperRange": 88.0
+            },
+            "waist": {
+              "lowerRange": 69.0,
+              "upperRange": 71.0
+            },
+            "hips": {
+              "lowerRange": 94.0,
+              "upperRange": 97.0
+            }
+          }
+        },
+        {
+          "label": "6",
+          "ranges": {
+            "bust": {
+              "lowerRange": 88.0,
+              "upperRange": 90.0
+            },
+            "waist": {
+              "lowerRange": 71.0,
+              "upperRange": 74.0
+            },
+            "hips": {
+              "lowerRange": 97.0,
+              "upperRange": 99.0
+            }
+          }
+        },
+        {
+          "label": "8",
+          "ranges": {
+            "bust": {
+              "lowerRange": 90.0,
+              "upperRange": 93.0
+            },
+            "waist": {
+              "lowerRange": 74.0,
+              "upperRange": 77.0
+            },
+            "hips": {
+              "lowerRange": 99.0,
+              "upperRange": 102.0
+            }
+          }
+        },
+        {
+          "label": "10",
+          "ranges": {
+            "bust": {
+              "lowerRange": 93.0,
+              "upperRange": 97.0
+            },
+            "waist": {
+              "lowerRange": 77.0,
+              "upperRange": 81.0
+            },
+            "hips": {
+              "lowerRange": 102.0,
+              "upperRange": 106.0
+            }
+          }
+        },
+        {
+          "label": "12",
+          "ranges": {
+            "bust": {
+              "lowerRange": 97.0,
+              "upperRange": 102.0
+            },
+            "waist": {
+              "lowerRange": 81.0,
+              "upperRange": 86.0
+            },
+            "hips": {
+              "lowerRange": 106.0,
+              "upperRange": 111.0
+            }
+          }
+        },
+        {
+          "label": "14",
+          "ranges": {
+            "bust": {
+              "lowerRange": 102.0,
+              "upperRange": 107.0
+            },
+            "waist": {
+              "lowerRange": 86.0,
+              "upperRange": 91.0
+            },
+            "hips": {
+              "lowerRange": 111.0,
+              "upperRange": 116.0
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "bottoms": [
+    {
+      "on": true,
+      "name": "Mens Trousers",
+      "vendor": "Manière De Voir",
+      "subcategory": "jeans",
+      "units": "cm",
+      "designAttributes": {
+        "waistFit": "mid",
+        "hipsFit": "fitted",
+        "waistband": "normal"
+      },
+      "elasticity": {
+        "waist": 3.0,
+        "hips": 3.0
+      },
+      "sizes": [
+        {
+          "label": "28",
+          "measurements": {
+            "waist": 71.0,
+            "hips": 91.0,
+            "length": 76.0
+          }
+        },
+        {
+          "label": "29",
+          "measurements": {
+            "waist": 74.0,
+            "hips": 94.0,
+            "length": 76.0
+          }
+        },
+        {
+          "label": "30",
+          "measurements": {
+            "waist": 76.0,
+            "hips": 97.0,
+            "length": 76.0
+          }
+        },
+        {
+          "label": "31",
+          "measurements": {
+            "waist": 79.0,
+            "hips": 99.0,
+            "length": 81.0
+          }
+        },
+        {
+          "label": "32",
+          "measurements": {
+            "waist": 81.0,
+            "hips": 102.0,
+            "length": 81.0
+          }
+        },
+        {
+          "label": "33",
+          "measurements": {
+            "waist": 84.0,
+            "hips": 104.0,
+            "length": 81.0
+          }
+        },
+        {
+          "label": "34",
+          "measurements": {
+            "waist": 86.0,
+            "hips": 107.0,
+            "length": 81.0
+          }
+        },
+        {
+          "label": "36",
+          "measurements": {
+            "waist": 91.0,
+            "hips": 112.0,
+            "length": 81.0
+          }
+        }
+      ]
+    },
+    {
+      "on": true,
+      "name": "Floral Print Linen Blend Trousers",
+      "vendor": "PrimeStyleAI",
+      "subcategory": "jeans",
+      "units": "cm",
+      "designAttributes": {
+        "waistFit": "mid",
+        "hipsFit": "loose",
+        "waistband": "normal"
+      },
+      "elasticity": {
+        "waist": 1.0,
+        "hips": 1.0
+      },
+      "sizes": [
+        {
+          "label": "XS",
+          "measurements": {
+            "waist": 69.0,
+            "hips": 90.0,
+            "length": 108.0
+          }
+        },
+        {
+          "label": "S",
+          "measurements": {
+            "waist": 72.0,
+            "hips": 94.0,
+            "length": 109.0
+          }
+        },
+        {
+          "label": "M",
+          "measurements": {
+            "waist": 75.0,
+            "hips": 98.0,
+            "length": 109.0
+          }
+        },
+        {
+          "label": "L",
+          "measurements": {
+            "waist": 78.0,
+            "hips": 102.0,
+            "length": 110.0
+          }
+        },
+        {
+          "label": "XL",
+          "measurements": {
+            "waist": 81.0,
+            "hips": 106.0,
+            "length": 110.0
+          }
+        }
+      ]
+    },
+    {
+      "on": true,
+      "name": "Women's Stretch Flare Jeans",
+      "vendor": "PrimeStyleAI",
+      "subcategory": "jeans",
+      "units": "cm",
+      "designAttributes": {
+        "waistFit": "mid",
+        "hipsFit": "fitted",
+        "waistband": "normal"
+      },
+      "elasticity": {
+        "waist": 8.0,
+        "hips": 8.0
+      },
+      "sizes": [
+        {
+          "label": "23",
+          "measurements": {
+            "waist": 58.0,
+            "hips": 84.0
+          }
+        },
+        {
+          "label": "24",
+          "measurements": {
+            "waist": 61.0,
+            "hips": 86.0
+          }
+        },
+        {
+          "label": "25",
+          "measurements": {
+            "waist": 64.0,
+            "hips": 89.0
+          }
+        },
+        {
+          "label": "26",
+          "measurements": {
+            "waist": 66.0,
+            "hips": 91.0
+          }
+        },
+        {
+          "label": "27",
+          "measurements": {
+            "waist": 69.0,
+            "hips": 94.0
+          }
+        },
+        {
+          "label": "28",
+          "measurements": {
+            "waist": 71.0,
+            "hips": 97.0
+          }
+        },
+        {
+          "label": "29",
+          "measurements": {
+            "waist": 74.0,
+            "hips": 99.0
+          }
+        },
+        {
+          "label": "30",
+          "measurements": {
+            "waist": 76.0,
+            "hips": 102.0
+          }
+        },
+        {
+          "label": "31",
+          "measurements": {
+            "waist": 79.0,
+            "hips": 104.0
+          }
+        },
+        {
+          "label": "32",
+          "measurements": {
+            "waist": 81.0,
+            "hips": 107.0
+          }
+        },
+        {
+          "label": "33",
+          "measurements": {
+            "waist": 84.0,
+            "hips": 109.0
+          }
+        },
+        {
+          "label": "34",
+          "measurements": {
+            "waist": 86.0,
+            "hips": 112.0
+          }
+        }
+      ]
+    },
+    {
+      "on": true,
+      "name": "Mid Rise Floral Zip Ankle Jeans",
+      "vendor": "PrimeStyleAI",
+      "subcategory": "jeans",
+      "units": "cm",
+      "designAttributes": {
+        "waistFit": "mid",
+        "hipsFit": "fitted",
+        "waistband": "normal"
+      },
+      "elasticity": {
+        "waist": 0,
+        "hips": 0
+      },
+      "sizes": [
+        {
+          "label": "23",
+          "measurements": {
+            "waist": 58.0,
+            "hips": 84.0
+          }
+        },
+        {
+          "label": "24",
+          "measurements": {
+            "waist": 61.0,
+            "hips": 86.0
+          }
+        },
+        {
+          "label": "25",
+          "measurements": {
+            "waist": 64.0,
+            "hips": 89.0
+          }
+        },
+        {
+          "label": "26",
+          "measurements": {
+            "waist": 66.0,
+            "hips": 91.0
+          }
+        },
+        {
+          "label": "27",
+          "measurements": {
+            "waist": 69.0,
+            "hips": 94.0
+          }
+        },
+        {
+          "label": "28",
+          "measurements": {
+            "waist": 71.0,
+            "hips": 97.0
+          }
+        },
+        {
+          "label": "29",
+          "measurements": {
+            "waist": 74.0,
+            "hips": 99.0
+          }
+        },
+        {
+          "label": "30",
+          "measurements": {
+            "waist": 76.0,
+            "hips": 102.0
+          }
+        },
+        {
+          "label": "31",
+          "measurements": {
+            "waist": 79.0,
+            "hips": 104.0
+          }
+        },
+        {
+          "label": "32",
+          "measurements": {
+            "waist": 81.0,
+            "hips": 107.0
+          }
+        },
+        {
+          "label": "33",
+          "measurements": {
+            "waist": 84.0,
+            "hips": 109.0
+          }
+        },
+        {
+          "label": "34",
+          "measurements": {
+            "waist": 86.0,
+            "hips": 112.0
+          }
+        }
+      ]
+    },
+    {
+      "on": true,
+      "name": "Low Rise Pintuck Capri Jeans",
+      "vendor": "PrimeStyleAI",
+      "subcategory": "jeans",
+      "units": "cm",
+      "designAttributes": {
+        "waistFit": "low",
+        "hipsFit": "fitted",
+        "waistband": "normal"
+      },
+      "elasticity": {
+        "waist": 8.0,
+        "hips": 8.0
+      },
+      "sizes": [
+        {
+          "label": "0",
+          "measurements": {
+            "waist": 61.0,
+            "hips": 89.0
+          }
+        },
+        {
+          "label": "1",
+          "measurements": {
+            "waist": 64.0,
+            "hips": 91.0
+          }
+        },
+        {
+          "label": "3",
+          "measurements": {
+            "waist": 66.0,
+            "hips": 94.0
+          }
+        },
+        {
+          "label": "5",
+          "measurements": {
+            "waist": 69.0,
+            "hips": 97.0
+          }
+        },
+        {
+          "label": "7",
+          "measurements": {
+            "waist": 71.0,
+            "hips": 99.0
+          }
+        },
+        {
+          "label": "9",
+          "measurements": {
+            "waist": 74.0,
+            "hips": 102.0
+          }
+        },
+        {
+          "label": "11",
+          "measurements": {
+            "waist": 78.0,
+            "hips": 105.0
+          }
+        },
+        {
+          "label": "13",
+          "measurements": {
+            "waist": 81.0,
+            "hips": 109.0
+          }
+        },
+        {
+          "label": "15",
+          "measurements": {
+            "waist": 85.0,
+            "hips": 113.0
+          }
+        }
+      ]
+    }
+  ],
+  "dress": [
+    {
+      "on": true,
+      "name": "Wedding Dress",
+      "vendor": "DB Studio",
+      "units": "cm",
+      "designAttributes": {
+        "bustFit": "fitted",
+        "waistFit": "fitted",
+        "hipsFit": "fitted",
+        "sleevesFit": "sleeves"
+      },
+      "elasticity": {
+        "bust": 0,
+        "waist": 0,
+        "hips": 0
+      },
+      "sizes": [
+        {
+          "label": "0",
+          "measurements": {
+            "bust": 81.0,
+            "waist": 65.0,
+            "hips": 90.0,
+            "length": 155.0
+          }
+        },
+        {
+          "label": "2",
+          "measurements": {
+            "bust": 84.0,
+            "waist": 67.0,
+            "hips": 93.0,
+            "length": 155.0
+          }
+        },
+        {
+          "label": "4",
+          "measurements": {
+            "bust": 86.0,
+            "waist": 70.0,
+            "hips": 95.0,
+            "length": 155.0
+          }
+        },
+        {
+          "label": "6",
+          "measurements": {
+            "bust": 89.0,
+            "waist": 72.0,
+            "hips": 98.0,
+            "length": 155.0
+          }
+        },
+        {
+          "label": "8",
+          "measurements": {
+            "bust": 91.0,
+            "waist": 75.0,
+            "hips": 100.0,
+            "length": 155.0
+          }
+        },
+        {
+          "label": "10",
+          "measurements": {
+            "bust": 95.0,
+            "waist": 79.0,
+            "hips": 104.0,
+            "length": 155.0
+          }
+        },
+        {
+          "label": "12",
+          "measurements": {
+            "bust": 99.0,
+            "waist": 83.0,
+            "hips": 108.0,
+            "length": 155.0
+          }
+        },
+        {
+          "label": "14",
+          "measurements": {
+            "bust": 104.0,
+            "waist": 88.0,
+            "hips": 113.0,
+            "length": 155.0
+          }
+        }
+      ]
+    }
+  ]
+}

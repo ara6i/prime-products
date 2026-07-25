@@ -5,6 +5,7 @@ export type CircumferenceMethod =
   | "rms-ellipse"
   | "capsule"
   | "superellipse"
+  | "meta-3d-contour"
   | "real-3d-contour";
 
 export interface CircumferenceMethodOption {
@@ -56,6 +57,13 @@ export const CIRCUMFERENCE_METHOD_OPTIONS: CircumferenceMethodOption[] = [
     label: "Superellipse · adjustable",
     simpleDescription: "Lets you make the slice more pinched, oval, or boxy with the n control.",
     formula: "x=a·cos^(2/n)θ; y=b·sin^(2/n)θ; walk around the curve",
+    available: true,
+  },
+  {
+    value: "meta-3d-contour",
+    label: "Meta 3D contour · no ellipse",
+    simpleDescription: "Keeps Meta's predicted cross-section outline, resizes it to the chosen breadth and depth, then walks around it.",
+    formula: "Scale Meta slice X to breadth and Z to depth; C = sum of distances around the scaled slice",
     available: true,
   },
   {
@@ -129,6 +137,48 @@ function superellipse(widthCm: number, depthCm: number, exponent: number): numbe
   return quarterLength * 4;
 }
 
+export type BodyContourPoint = readonly [number, number, number];
+
+/**
+ * Walk around a predicted horizontal 3D slice after independently locking its
+ * image-horizontal span to breadthCm and its camera-depth span to depthCm.
+ * The slice shape stays Meta-owned; no ellipse or superellipse is introduced.
+ */
+export function calculateScaledBodyContourCircumferenceCm(
+  points: readonly BodyContourPoint[],
+  breadthCm: number,
+  depthCm: number,
+): number | null {
+  if (!validDiameters(breadthCm, depthCm) || points.length < 8) return null;
+  let minX = Number.POSITIVE_INFINITY;
+  let maxX = Number.NEGATIVE_INFINITY;
+  let minZ = Number.POSITIVE_INFINITY;
+  let maxZ = Number.NEGATIVE_INFINITY;
+  for (const point of points) {
+    if (!point || point.length !== 3 || point.some((value) => !Number.isFinite(value))) return null;
+    minX = Math.min(minX, point[0]);
+    maxX = Math.max(maxX, point[0]);
+    minZ = Math.min(minZ, point[2]);
+    maxZ = Math.max(maxZ, point[2]);
+  }
+  const sourceBreadthM = maxX - minX;
+  const sourceDepthM = maxZ - minZ;
+  if (sourceBreadthM <= 1e-6 || sourceDepthM <= 1e-6) return null;
+  const breadthScale = (breadthCm / 100) / sourceBreadthM;
+  const depthScale = (depthCm / 100) / sourceDepthM;
+  let perimeterM = 0;
+  for (let index = 0; index < points.length; index += 1) {
+    const current = points[index]!;
+    const next = points[(index + 1) % points.length]!;
+    perimeterM += Math.hypot(
+      (next[0] - current[0]) * breadthScale,
+      (next[2] - current[2]) * depthScale,
+    );
+  }
+  const perimeterCm = perimeterM * 100;
+  return Number.isFinite(perimeterCm) && perimeterCm > 0 ? perimeterCm : null;
+}
+
 export function calculateCircumferenceCm(
   widthCm: number,
   depthCm: number,
@@ -149,6 +199,8 @@ export function calculateCircumferenceCm(
       return capsule(widthCm, depthCm);
     case "superellipse":
       return superellipse(widthCm, depthCm, superellipseExponent);
+    case "meta-3d-contour":
+      return null;
     case "real-3d-contour":
       return null;
   }

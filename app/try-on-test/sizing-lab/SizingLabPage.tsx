@@ -26,6 +26,8 @@ import {
 import type { AppleVisionBodyScaleResult } from "./lib/appleVisionBodyScale";
 import {
   buildLocalMlGuidePrediction,
+  predictWearAbsoluteDepthCm,
+  type LocalMlDepthMethod,
   type LocalMlModelStage,
   type LocalMlModelStatusResponse,
   type LocalMlNormalizedRowPrediction,
@@ -34,7 +36,12 @@ import {
 } from "./lib/localMlSizing";
 import { encodeLocalMlMaskDataUrl } from "./lib/localMlClient";
 import { computeHips, type HipsTrace } from "./lib/hipsFormula";
-import { computePoseScale, measureMaskWidthAtY } from "./lib/bodyMaskGeometry";
+import {
+  applyMaskHeightScaleToPoseScale,
+  computeMaskHeightScale,
+  computePoseScale,
+  measureMaskWidthAtY,
+} from "./lib/bodyMaskGeometry";
 import { detectSegmenterMeasurementMask, removeBackgroundWithSegmenter } from "./lib/imageSegmenter";
 import { detectPoseAndMask } from "./lib/poseDetector";
 import { calibrateGeminiMaskMeasurements } from "./lib/geminiMaskCalibration";
@@ -56,6 +63,7 @@ import {
   SIZING_LAB_GEMINI_GUIDE_PROMPT_VERSION,
   SIZING_LAB_GEMINI_SIDE_GUIDE_PROMPT_VERSION,
   type GeminiBodyGuide,
+  type GeminiGuideAbsoluteDepthPredictors,
   type GeminiGuideDepthRatioOverrides,
   type GeminiGuideLine,
 } from "./lib/geminiGuide";
@@ -117,6 +125,19 @@ const DEFAULT_METRICS: MetricsInput = {
 type AnalysisPath = "raw" | "landmark" | "mask-guide" | "manual-guide" | "local-ml" | "segmenter" | "backend-sdk" | "gemini" | "gemini-calibrated" | "gemini-guide" | "gemini-guide-side" | "third-party";
 type PoseSource = "original-raw" | "original-segmenter" | "gemini" | "gemini-calibrated" | "gemini-guide" | "gemini-guide-side" | "manual-guide" | "local-ml";
 type ShahnazPhotoKey = "tape" | "second";
+type ManualGuideRowKind = "waist" | "trouserWaist" | "hips";
+interface LocalMlPhotoPrediction {
+  guide: GeminiBodyGuide;
+  predictedDepthRatios: GeminiGuideDepthRatioOverrides;
+  predictionStage: LocalMlModelStage;
+  predictionRows: LocalMlNormalizedRowPrediction[];
+  depthReady: boolean;
+  directWearDepthReady: boolean;
+  absoluteWearDepthReady: boolean;
+  endpointSource: LocalMlPredictionResponse["endpointSource"];
+  elapsedMs: number;
+  message: string;
+}
 interface GuideInputImageDebug {
   originalKb: number;
   compressedKb: number;
@@ -302,7 +323,7 @@ const ANALYSIS_PATHS: Array<{
   {
     value: "local-ml",
     label: "Local ML",
-    description: "Completely separate mode. WEAR 1D draws the rows, MediaPipe supplies temporary endpoints, and direct measured WEAR groups supply body-depth ratios without regression or saved-answer calibration.",
+    description: "Completely separate mode. WEAR 1D draws the rows and MediaPipe supplies temporary endpoints. Both methods keep photo red-line breadth; choose a WEAR ratio or WEAR-predicted depth in cm. Saved answers choose neither result.",
   },
   {
     value: "segmenter",
@@ -420,6 +441,8 @@ const SHAHNAZ_2_SECOND_MANUAL_ROW_PRESET = {
   hips: { yPx: 879, leftXPx: 437, rightXPx: 765 },
 };
 
+const SHAHNAZ_2_GUIDE_ROWS: ManualGuideRowKind[] = ["waist", "trouserWaist", "hips"];
+
 const SHAHNAZ_2_MANUAL_HEIGHT_PRESET = {
   sourceImageHeight: 5712,
   sourceImageWidth: 4284,
@@ -464,10 +487,11 @@ const NADIA_TAPE_ROW_PRESET = {
 const NADIA_MANUAL_ROW_PRESET = {
   sourceImageHeight: 4080,
   sourceImageWidth: 3072,
-  waist: { yPx: 1733, leftXPx: 1406, rightXPx: 1901 },
-  trouserWaist: { yPx: 1959, leftXPx: 1333, rightXPx: 1989 },
-  hips: { yPx: 2185, leftXPx: 1311, rightXPx: 2001 },
+  waist: { yPx: 1699, leftXPx: 1412, rightXPx: 1901 },
+  trouserWaist: { yPx: 1864, leftXPx: 1356, rightXPx: 1968 },
+  hips: { yPx: 2067, leftXPx: 1323, rightXPx: 1991 },
 };
+const NADIA_MANUAL_ROW_PRESET_REVISION = "nadia-manual-2026-07-22-1699-1864-2067";
 
 function buildSavedManualHeightScaleOverride(
   setId: string,
@@ -564,6 +588,7 @@ export function SizingLabPage() {
   const [geminiGuideResponseDebug, setGeminiGuideResponseDebug] = useState<GeminiGuideResponseDebug | null>(null);
   const [sideGeminiGuideResponseDebug, setSideGeminiGuideResponseDebug] = useState<GeminiGuideResponseDebug | null>(null);
   const [manualGuide, setManualGuide] = useState<GeminiBodyGuide | null>(null);
+  const nadiaManualPresetRevisionRef = useRef<string | null>(null);
   const [shahnazActivePhoto, setShahnazActivePhoto] = useState<ShahnazPhotoKey>("tape");
   const [shahnazTapeGuide, setShahnazTapeGuide] = useState<GeminiBodyGuide | null>(null);
   const [shahnazSecondGuide, setShahnazSecondGuide] = useState<GeminiBodyGuide | null>(null);
@@ -575,8 +600,10 @@ export function SizingLabPage() {
   const [manualHeightScaleOverride, setManualHeightScaleOverride] = useState<ManualHeightScaleOverride | null>(null);
   const [appleVisionBodyScale, setAppleVisionBodyScale] = useState<AppleVisionBodyScaleResult | null>(null);
   const [localMlGuide, setLocalMlGuide] = useState<GeminiBodyGuide | null>(null);
+  const [localMlSideGuide, setLocalMlSideGuide] = useState<GeminiBodyGuide | null>(null);
   const [localMlPredictedDepthRatios, setLocalMlPredictedDepthRatios] = useState<GeminiGuideDepthRatioOverrides>({});
   const [localMlDepthRatioOverrides, setLocalMlDepthRatioOverrides] = useState<GeminiGuideDepthRatioOverrides>({});
+  const [localMlDepthMethod, setLocalMlDepthMethod] = useState<LocalMlDepthMethod>("wear-ratio");
   const [localMlHeightScaleOverride, setLocalMlHeightScaleOverride] = useState<ManualHeightScaleOverride | null>(null);
   const [localMlAppleVisionBodyScale, setLocalMlAppleVisionBodyScale] = useState<AppleVisionBodyScaleResult | null>(null);
   const [localMlRunStatus, setLocalMlRunStatus] = useState<LocalMlRunStatus>("idle");
@@ -588,6 +615,7 @@ export function SizingLabPage() {
   const [localMlEndpointSource, setLocalMlEndpointSource] = useState<LocalMlPredictionResponse["endpointSource"] | null>(null);
   const [localMlMessage, setLocalMlMessage] = useState<string | null>(null);
   const [localMlElapsedMs, setLocalMlElapsedMs] = useState<number | null>(null);
+  const [shahnazLocalMlPredictions, setShahnazLocalMlPredictions] = useState<Partial<Record<ShahnazPhotoKey, LocalMlPhotoPrediction>>>({});
   const [guideDepthRatioOverrides, setGuideDepthRatioOverrides] = useState<GeminiGuideDepthRatioOverrides>({});
   const [geminiCorrectionStatus, setGeminiCorrectionStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [geminiCorrectionError, setGeminiCorrectionError] = useState<string | null>(null);
@@ -659,7 +687,7 @@ export function SizingLabPage() {
   const usesManualCameraCalibration = usesManualGuide && manualCameraCalibrationEnabled;
   const usesModelCoordinateGuide = usesGeminiGuide || usesGeminiGuideWithSide;
   const usesCoordinateGuide = usesModelCoordinateGuide || usesCoordinateWorkbench;
-  const activeUseSidePhoto = (useSidePhoto || usesGeminiGuideWithSide || usesThirdParty) && !usesBackendSdk && !usesLocalMl;
+  const activeUseSidePhoto = (useSidePhoto || usesGeminiGuideWithSide || usesThirdParty) && !usesBackendSdk;
   const usesMaskGuide = analysisPath === "mask-guide";
   const usesGemini = analysisPath === "gemini" || usesGeminiCalibration;
   const usesSegmenter = analysisPath === "segmenter";
@@ -686,10 +714,41 @@ export function SizingLabPage() {
       : pose.pose
     : null;
   const manualCameraCalibrationResultActive = usesManualCameraCalibration && Boolean(normalizedImage.state.previewUrl);
-  const usesShahnazPhotoPair = hasShahnazPhotoPair && usesManualGuide && !manualCameraCalibrationResultActive;
+  const usesShahnazPhotoPair = hasShahnazPhotoPair && usesCoordinateWorkbench && !manualCameraCalibrationResultActive;
   const activeImageState = (usesGemini || manualCameraCalibrationResultActive) && normalizedImage.state.previewUrl
     ? normalizedImage.state
     : image.state;
+
+  // Fast Refresh preserves the old dragged guide in React state. When Nadia's
+  // saved preset is revised, replace that stale in-memory copy once. Later
+  // manual dragging remains untouched until another preset revision is made.
+  useEffect(() => {
+    if (
+      selectedDatasetId !== "nadia"
+      || !usesManualGuide
+      || manualCameraCalibrationResultActive
+      || !activeImageState.previewUrl
+      || activeImageState.width <= 0
+      || activeImageState.height <= 0
+      || nadiaManualPresetRevisionRef.current === NADIA_MANUAL_ROW_PRESET_REVISION
+    ) return;
+    setManualGuide(buildManualGuideFromPreset(
+      NADIA_MANUAL_ROW_PRESET,
+      activeImageState.width,
+      activeImageState.height,
+      "Manual coordinate guide seeded from Nadia saved rows and endpoints.",
+    ));
+    setAppleVisionBodyScale(null);
+    nadiaManualPresetRevisionRef.current = NADIA_MANUAL_ROW_PRESET_REVISION;
+  }, [
+    selectedDatasetId,
+    usesManualGuide,
+    manualCameraCalibrationResultActive,
+    activeImageState.previewUrl,
+    activeImageState.width,
+    activeImageState.height,
+  ]);
+
   const selectedPathLabel = ANALYSIS_PATHS.find((path) => path.value === analysisPath)?.label ?? "Selected path";
   const selectedGeminiModel = GEMINI_IMAGE_MODELS.find((model) => model.value === geminiModel) ?? GEMINI_IMAGE_MODELS[0]!;
   const selectedGeminiGuideModel = GEMINI_GUIDE_MODELS.find((model) => model.value === geminiGuideModel) ?? GEMINI_GUIDE_MODELS[0]!;
@@ -774,7 +833,10 @@ export function SizingLabPage() {
     setBackendSdkError(null);
   };
 
-  const clearLocalMlPrediction = (savedHeightScaleOverride: ManualHeightScaleOverride | null = null) => {
+  const clearLocalMlPrediction = (
+    savedHeightScaleOverride: ManualHeightScaleOverride | null = null,
+    clearShahnazPair = true,
+  ) => {
     setLocalMlGuide(null);
     setLocalMlPredictedDepthRatios({});
     setLocalMlDepthRatioOverrides({});
@@ -788,6 +850,10 @@ export function SizingLabPage() {
     setLocalMlRunStatus("idle");
     setLocalMlMessage(null);
     setLocalMlElapsedMs(null);
+    if (clearShahnazPair) {
+      setShahnazLocalMlPredictions({});
+      setLocalMlSideGuide(null);
+    }
   };
 
   const selectShahnazCalculationPhoto = async (nextPhoto: ShahnazPhotoKey) => {
@@ -806,7 +872,7 @@ export function SizingLabPage() {
       nextPhoto === "tape" ? "shahnaz-2" : "shahnaz-2-second",
       nextUrl,
     );
-    clearLocalMlPrediction(savedHeightScaleOverride);
+    clearLocalMlPrediction(savedHeightScaleOverride, false);
     setManualHeightScaleOverride(savedHeightScaleOverride);
     clearGeminiGuide();
     clearGeminiCorrection();
@@ -821,10 +887,26 @@ export function SizingLabPage() {
 
     try {
       await image.selectUrl(nextUrl);
-      if (usesManualGuide) {
+      if (usesCoordinateWorkbench) {
         const result = await pose.analyze(nextUrl, undefined, { includeMask: true });
         if (!result) throw new Error("MediaPipe could not detect Shahnaz in this photo.");
-        setPoseSource("manual-guide");
+        if (usesLocalMl) {
+          setPoseSource("local-ml");
+          const cachedPrediction = shahnazLocalMlPredictions[nextPhoto];
+          if (cachedPrediction) {
+            applyLocalMlPhotoPrediction(cachedPrediction);
+          } else {
+            const imageWidth = nextPhoto === "tape"
+              ? SHAHNAZ_2_MANUAL_ROW_PRESET.sourceImageWidth
+              : SHAHNAZ_2_SECOND_MANUAL_ROW_PRESET.sourceImageWidth;
+            const imageHeight = nextPhoto === "tape"
+              ? SHAHNAZ_2_MANUAL_ROW_PRESET.sourceImageHeight
+              : SHAHNAZ_2_SECOND_MANUAL_ROW_PRESET.sourceImageHeight;
+            await requestLocalMlPrediction(nextUrl, result, imageWidth, imageHeight, nextPhoto);
+          }
+        } else {
+          setPoseSource("manual-guide");
+        }
         setManualAutoScrollToken((value) => value + 1);
       }
       const elapsed = Math.round(nowMs() - startedAt);
@@ -934,6 +1016,7 @@ export function SizingLabPage() {
     setShahnazPhotoSwitchStatus("idle");
     setShahnazPhotoSwitchError(null);
     setManualSideGuide(null);
+    setLocalMlSideGuide(null);
     setAppleVisionBodyScale(null);
     setManualHeightScaleOverride(savedHeightScaleOverride);
     clearGeminiCorrection();
@@ -960,16 +1043,20 @@ export function SizingLabPage() {
     }
   };
 
-  const toggleSidePhoto = (enabled: boolean) => {
+  const toggleSidePhoto = async (enabled: boolean) => {
     setUseSidePhoto(enabled);
     sidePose.reset();
     if (!enabled) {
       sideImage.clear();
       setManualSideGuide(null);
+      setLocalMlSideGuide(null);
       return;
     }
     if (selectedDataset?.sideImageUrl) {
-      void sideImage.selectUrl(selectedDataset.sideImageUrl);
+      await sideImage.selectUrl(selectedDataset.sideImageUrl);
+      if (usesCoordinateWorkbench) {
+        await sidePose.analyze(selectedDataset.sideImageUrl, undefined, { includeMask: true });
+      }
     }
   };
 
@@ -1020,6 +1107,7 @@ export function SizingLabPage() {
         : null,
     );
     setManualSideGuide(null);
+    setLocalMlSideGuide(null);
     setAppleVisionBodyScale(null);
     clearGeminiCorrection();
     clearBackendSdkTrace();
@@ -1029,7 +1117,7 @@ export function SizingLabPage() {
       pose.reset();
       setPoseSource(null);
     }
-    if (nextUsesGeminiGuideWithSide || nextPath === "third-party") {
+    if (nextUsesGeminiGuideWithSide || nextPath === "third-party" || (nextUsesLocalMl && useSidePhoto)) {
       setUseSidePhoto(true);
       if (selectedDataset?.sideImageUrl && !sideImage.state.previewUrl) {
         void sideImage.selectUrl(selectedDataset.sideImageUrl);
@@ -1066,6 +1154,7 @@ export function SizingLabPage() {
     setShahnazPhotoSwitchStatus("idle");
     setShahnazPhotoSwitchError(null);
     setManualSideGuide(null);
+    setLocalMlSideGuide(null);
     setAppleVisionBodyScale(null);
     clearGeminiCorrection();
     clearBackendSdkTrace();
@@ -1101,13 +1190,133 @@ export function SizingLabPage() {
     setManualGuide(null);
     clearLocalMlPrediction();
     setManualSideGuide(null);
+    setLocalMlSideGuide(null);
     clearBackendSdkTrace();
     setAnalysisTotalMs(null);
     setRunningStartedAt(null);
     setRunningElapsedMs(0);
   };
 
-  const requestLocalMlPrediction = async (frontUrl: string, frontPose: PoseResult) => {
+  async function predictLocalMlPhoto(
+    frontUrl: string,
+    frontPose: PoseResult,
+    imageWidth: number,
+    imageHeight: number,
+  ): Promise<LocalMlPhotoPrediction> {
+    const maskDataUrl = encodeLocalMlMaskDataUrl(frontPose);
+    if (!maskDataUrl) throw new Error("MediaPipe did not produce the person mask required by Local ML.");
+    const imageDataUrl = await imageUrlToDataUrl(frontUrl);
+    const response = await fetch("/api/try-on-test/sizing-lab/local-ml/predict", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        imageDataUrl,
+        maskDataUrl,
+        imageWidth,
+        imageHeight,
+        heightCm: metrics.heightCm,
+        weightKg: metrics.weightKg,
+        gender: metrics.gender,
+        landmarks: frontPose.landmarks.map((landmark) => ({
+          x: landmark.x,
+          y: landmark.y,
+          visibility: landmark.visibility ?? 0,
+        })),
+      }),
+    });
+    const data = await response.json() as LocalMlPredictionResponse;
+    if (!response.ok || !data.ok) throw new Error(data.error ?? "Local ML prediction failed.");
+    const prediction = buildLocalMlGuidePrediction(data.rows, imageWidth, imageHeight);
+    if (!prediction) throw new Error("Local ML returned unsafe or invalid red-line geometry.");
+    const message = data.modelStage === "wear-1d-row-prior"
+      ? prediction.directWearDepthReady
+        ? prediction.absoluteWearDepthReady
+          ? `WEAR 1D placed all three vertical rows in ${(data.elapsedMs / 1000).toFixed(1)} s. MediaPipe supplied temporary visible endpoints. Compare photo red-line width + cohort ratio with photo red-line width + WEAR absolute depth. Saved answers choose neither result.`
+          : `WEAR 1D placed all three vertical rows in ${(data.elapsedMs / 1000).toFixed(1)} s. The absolute-depth formula is unavailable, so only the direct measured-group ratio can run.`
+        : `WEAR 1D placed the red rows, but at least one matching depth group has fewer than five people. Circumference is intentionally blocked; no formula or saved-answer fallback is used.`
+      : `Local ${data.modelVersion} predicted rows, endpoints and depth in ${(data.elapsedMs / 1000).toFixed(1)} s. Minimum confidence ${(prediction.minimumConfidence * 100).toFixed(0)}%. Apple scaling runs next.`;
+    return {
+      guide: prediction.guide,
+      predictedDepthRatios: data.depthReady ? prediction.depthRatios : prediction.directWearDepthRatios,
+      predictionStage: data.modelStage,
+      predictionRows: data.rows,
+      depthReady: data.depthReady,
+      directWearDepthReady: prediction.directWearDepthReady,
+      absoluteWearDepthReady: prediction.absoluteWearDepthReady,
+      endpointSource: data.endpointSource,
+      elapsedMs: data.elapsedMs,
+      message,
+    };
+  }
+
+  function applySavedNadiaReviewLines(
+    prediction: LocalMlPhotoPrediction,
+    imageWidth: number,
+    imageHeight: number,
+  ): LocalMlPhotoPrediction {
+    const guide = buildManualGuideFromPreset(
+      NADIA_MANUAL_ROW_PRESET,
+      imageWidth,
+      imageHeight,
+      "Nadia saved reviewed rows and endpoints are active for this Local ML shape/depth experiment. The original Local ML coordinates remain comparison evidence only.",
+    );
+    const predictionRows = prediction.predictionRows.map((row) => {
+      const line = guide[row.kind];
+      const yPx = line?.y_px;
+      const leftXPx = line?.left_x_px;
+      const rightXPx = line?.right_x_px;
+      if (
+        typeof yPx !== "number"
+        || typeof leftXPx !== "number"
+        || typeof rightXPx !== "number"
+      ) return row;
+      return {
+        ...row,
+        yNorm: yPx / Math.max(1, imageHeight),
+        leftXNorm: leftXPx / Math.max(1, imageWidth),
+        rightXNorm: rightXPx / Math.max(1, imageWidth),
+        reviewedCoordinateOverride: {
+          source: "saved-review" as const,
+          label: "Nadia saved reviewed line",
+          modelYPx: Math.round(row.yNorm * imageHeight),
+          modelLeftXPx: Math.round(row.leftXNorm * imageWidth),
+          modelRightXPx: Math.round(row.rightXNorm * imageWidth),
+        },
+      };
+    });
+    return {
+      ...prediction,
+      guide,
+      predictionRows,
+      message: `${prediction.message} Nadia's saved reviewed red rows and endpoints are active for the current calculation. They are a manual review override, not a Local ML row prediction.`,
+    };
+  }
+
+  function applyLocalMlPhotoPrediction(prediction: LocalMlPhotoPrediction) {
+    setLocalMlGuide(prediction.guide);
+    setLocalMlPredictedDepthRatios(prediction.predictedDepthRatios);
+    // Local ML never loads a named dataset's saved depth answer. The current
+    // row-only stage starts from a direct measured WEAR cohort median; a
+    // future 3D checkpoint starts from its own learned depth prediction.
+    setLocalMlDepthRatioOverrides({});
+    setLocalMlAppleVisionBodyScale(null);
+    setLocalMlPredictionStage(prediction.predictionStage);
+    setLocalMlPredictionRows(prediction.predictionRows);
+    setLocalMlDepthReady(prediction.depthReady);
+    setLocalMlDirectWearDepthReady(prediction.directWearDepthReady);
+    setLocalMlEndpointSource(prediction.endpointSource);
+    setLocalMlElapsedMs(prediction.elapsedMs);
+    setLocalMlRunStatus("ready");
+    setLocalMlMessage(prediction.message);
+  }
+
+  async function requestLocalMlPrediction(
+    frontUrl: string,
+    frontPose: PoseResult,
+    imageWidth = image.state.width,
+    imageHeight = image.state.height,
+    shahnazPhoto?: ShahnazPhotoKey,
+  ): Promise<LocalMlPhotoPrediction> {
     setLocalMlRunStatus("predicting");
     setLocalMlMessage(localMlModelStatus?.activeStage === "wear-1d-row-prior"
       ? "MediaPipe is ready. Running the WEAR 1D vertical-row model…"
@@ -1121,50 +1330,16 @@ export function SizingLabPage() {
     setLocalMlDepthReady(false);
     setLocalMlDirectWearDepthReady(false);
     setLocalMlEndpointSource(null);
-    const maskDataUrl = encodeLocalMlMaskDataUrl(frontPose);
-    if (!maskDataUrl) throw new Error("MediaPipe did not produce the person mask required by Local ML.");
-    const imageDataUrl = await imageUrlToDataUrl(frontUrl);
-    const response = await fetch("/api/try-on-test/sizing-lab/local-ml/predict", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        imageDataUrl,
-        maskDataUrl,
-        imageWidth: image.state.width,
-        imageHeight: image.state.height,
-        heightCm: metrics.heightCm,
-        weightKg: metrics.weightKg,
-        gender: metrics.gender,
-        landmarks: frontPose.landmarks.map((landmark) => ({
-          x: landmark.x,
-          y: landmark.y,
-          visibility: landmark.visibility ?? 0,
-        })),
-      }),
-    });
-    const data = await response.json() as LocalMlPredictionResponse;
-    if (!response.ok || !data.ok) throw new Error(data.error ?? "Local ML prediction failed.");
-    const prediction = buildLocalMlGuidePrediction(data.rows, image.state.width, image.state.height);
-    if (!prediction) throw new Error("Local ML returned unsafe or invalid red-line geometry.");
-    setLocalMlGuide(prediction.guide);
-    setLocalMlPredictedDepthRatios(data.depthReady ? prediction.depthRatios : prediction.directWearDepthRatios);
-    // Local ML never loads a named dataset's saved depth answer. The current
-    // row-only stage starts from a direct measured WEAR cohort median; a
-    // future 3D checkpoint starts from its own learned depth prediction.
-    setLocalMlDepthRatioOverrides({});
-    setLocalMlPredictionStage(data.modelStage);
-    setLocalMlPredictionRows(data.rows);
-    setLocalMlDepthReady(data.depthReady);
-    setLocalMlDirectWearDepthReady(prediction.directWearDepthReady);
-    setLocalMlEndpointSource(data.endpointSource);
-    setLocalMlElapsedMs(data.elapsedMs);
-    setLocalMlRunStatus("ready");
-    setLocalMlMessage(data.modelStage === "wear-1d-row-prior"
-      ? prediction.directWearDepthReady
-        ? `WEAR 1D placed all three vertical rows in ${(data.elapsedMs / 1000).toFixed(1)} s. MediaPipe supplied temporary visible endpoints. Body depth uses the direct middle ratio from real people in the matching gender, height, and BMI box—no regression formula and no saved answer.`
-        : `WEAR 1D placed the red rows, but at least one matching depth group has fewer than five people. Circumference is intentionally blocked; no formula or saved-answer fallback is used.`
-      : `Local ${data.modelVersion} predicted rows, endpoints and depth in ${(data.elapsedMs / 1000).toFixed(1)} s. Minimum confidence ${(prediction.minimumConfidence * 100).toFixed(0)}%. Apple scaling runs next.`);
-  };
+    const rawPrediction = await predictLocalMlPhoto(frontUrl, frontPose, imageWidth, imageHeight);
+    const prediction = selectedDatasetId === "nadia"
+      ? applySavedNadiaReviewLines(rawPrediction, imageWidth, imageHeight)
+      : rawPrediction;
+    applyLocalMlPhotoPrediction(prediction);
+    if (shahnazPhoto) {
+      setShahnazLocalMlPredictions((current) => ({ ...current, [shahnazPhoto]: prediction }));
+    }
+    return prediction;
+  }
 
   const runAnalysis = async () => {
     if (!image.state.previewUrl) return;
@@ -1227,8 +1402,14 @@ export function SizingLabPage() {
       setLocalMlMessage("Running MediaPipe before local model inference…");
       setLocalMlElapsedMs(null);
       setLocalMlGuide(null);
+      setLocalMlSideGuide(null);
       setLocalMlPredictedDepthRatios({});
       setLocalMlAppleVisionBodyScale(null);
+      if (hasShahnazPhotoPair) {
+        setShahnazLocalMlPredictions({});
+        setShahnazPhotoSwitchStatus("loading");
+        setShahnazPhotoSwitchError(null);
+      }
     }
     setOriginalCalibrationPose(null);
     setCalibrationStatus(usesGeminiCalibration ? "loading" : "idle");
@@ -1424,19 +1605,73 @@ export function SizingLabPage() {
         currentLocalMlStatus = null;
       }
       if (!frontPoseResult) {
+        const message = "MediaPipe could not detect a usable person, so Local ML did not run.";
         setLocalMlRunStatus("error");
-        setLocalMlMessage("MediaPipe could not detect a usable person, so Local ML did not run.");
+        setLocalMlMessage(message);
+        if (hasShahnazPhotoPair) {
+          setShahnazPhotoSwitchStatus("error");
+          setShahnazPhotoSwitchError(message);
+        }
       } else if (!currentLocalMlStatus?.checkpointReady) {
+        const message = currentLocalMlStatus?.message ?? "No trained local checkpoint exists yet.";
         setLocalMlRunStatus("waiting-for-checkpoint");
-        setLocalMlMessage(currentLocalMlStatus?.message ?? "No trained local checkpoint exists yet.");
+        setLocalMlMessage(message);
+        if (hasShahnazPhotoPair) {
+          setShahnazPhotoSwitchStatus("error");
+          setShahnazPhotoSwitchError(message);
+        }
       } else {
         try {
-          await requestLocalMlPrediction(frontUrl, frontPoseResult);
+          const activePrediction = await requestLocalMlPrediction(
+            frontUrl,
+            frontPoseResult,
+            image.state.width,
+            image.state.height,
+            hasShahnazPhotoPair ? shahnazActivePhoto : undefined,
+          );
+          if (hasShahnazPhotoPair && shahnazTapeImageUrl && shahnazSecondImageUrl) {
+            const comparisonPhoto: ShahnazPhotoKey = shahnazActivePhoto === "tape" ? "second" : "tape";
+            const comparisonUrl = comparisonPhoto === "tape" ? shahnazTapeImageUrl : shahnazSecondImageUrl;
+            const comparisonWidth = comparisonPhoto === "tape"
+              ? SHAHNAZ_2_MANUAL_ROW_PRESET.sourceImageWidth
+              : SHAHNAZ_2_SECOND_MANUAL_ROW_PRESET.sourceImageWidth;
+            const comparisonHeight = comparisonPhoto === "tape"
+              ? SHAHNAZ_2_MANUAL_ROW_PRESET.sourceImageHeight
+              : SHAHNAZ_2_SECOND_MANUAL_ROW_PRESET.sourceImageHeight;
+            try {
+              const comparisonPose = await detectPoseAndMask(comparisonUrl, { includeMask: true });
+              if (!comparisonPose) throw new Error("MediaPipe could not detect Shahnaz in the other photo.");
+              const comparisonPrediction = await predictLocalMlPhoto(
+                comparisonUrl,
+                comparisonPose,
+                comparisonWidth,
+                comparisonHeight,
+              );
+              setShahnazLocalMlPredictions((current) => ({
+                ...current,
+                [comparisonPhoto]: comparisonPrediction,
+              }));
+              setShahnazPhotoSwitchStatus("ready");
+              setShahnazPhotoSwitchError(null);
+              setLocalMlMessage(`${activePrediction.message} Both Shahnaz photos now have separate Local ML red lines.`);
+            } catch (comparisonError) {
+              setShahnazPhotoSwitchStatus("error");
+              setShahnazPhotoSwitchError(comparisonError instanceof Error
+                ? comparisonError.message
+                : "Local ML could not prepare the other Shahnaz photo.");
+              setLocalMlMessage(`${activePrediction.message} The other Shahnaz photo could not be prepared yet.`);
+            }
+          }
         } catch (error) {
+          const message = error instanceof Error ? error.message : "Local ML prediction failed.";
           setLocalMlRunStatus(error instanceof Error && error.message.includes("No local ML checkpoint")
             ? "waiting-for-checkpoint"
             : "error");
-          setLocalMlMessage(error instanceof Error ? error.message : "Local ML prediction failed.");
+          setLocalMlMessage(message);
+          if (hasShahnazPhotoPair) {
+            setShahnazPhotoSwitchStatus("error");
+            setShahnazPhotoSwitchError(message);
+          }
         }
       }
     }
@@ -1631,20 +1866,24 @@ export function SizingLabPage() {
     })
     : null;
   const shahnazTapeGuideForDisplay = usesShahnazPhotoPair
-    ? shahnazTapeGuide ?? buildManualGuideFromPreset(
-        SHAHNAZ_2_MANUAL_ROW_PRESET,
-        SHAHNAZ_2_MANUAL_ROW_PRESET.sourceImageWidth,
-        SHAHNAZ_2_MANUAL_ROW_PRESET.sourceImageHeight,
-        "Shahnaz 2 tape-photo rows saved by the user.",
-      )
+    ? usesLocalMl
+      ? shahnazLocalMlPredictions.tape?.guide ?? null
+      : shahnazTapeGuide ?? buildManualGuideFromPreset(
+          SHAHNAZ_2_MANUAL_ROW_PRESET,
+          SHAHNAZ_2_MANUAL_ROW_PRESET.sourceImageWidth,
+          SHAHNAZ_2_MANUAL_ROW_PRESET.sourceImageHeight,
+          "Shahnaz 2 tape-photo rows saved by the user.",
+        )
     : null;
   const shahnazSecondGuideForDisplay = usesShahnazPhotoPair
-    ? shahnazSecondGuide ?? buildManualGuideFromPreset(
-        SHAHNAZ_2_SECOND_MANUAL_ROW_PRESET,
-        SHAHNAZ_2_SECOND_MANUAL_ROW_PRESET.sourceImageWidth,
-        SHAHNAZ_2_SECOND_MANUAL_ROW_PRESET.sourceImageHeight,
-        "IMG_8444 tape-free rows registered from the same anatomical locations in the tape photo.",
-      )
+    ? usesLocalMl
+      ? shahnazLocalMlPredictions.second?.guide ?? null
+      : shahnazSecondGuide ?? buildManualGuideFromPreset(
+          SHAHNAZ_2_SECOND_MANUAL_ROW_PRESET,
+          SHAHNAZ_2_SECOND_MANUAL_ROW_PRESET.sourceImageWidth,
+          SHAHNAZ_2_SECOND_MANUAL_ROW_PRESET.sourceImageHeight,
+          "IMG_8444 tape-free rows registered from the same anatomical locations in the tape photo.",
+        )
     : null;
   const activeShahnazGuide = shahnazActivePhoto === "tape"
     ? shahnazTapeGuideForDisplay
@@ -1668,8 +1907,20 @@ export function SizingLabPage() {
       setManualGuide(nextGuide);
       return;
     }
-    if (shahnazActivePhoto === "tape") setShahnazTapeGuide(nextGuide);
-    else setShahnazSecondGuide(nextGuide);
+    const linkedGuide = buildLinkedShahnazGuideFromActiveGuide(nextGuide, shahnazActivePhoto);
+    if (shahnazActivePhoto === "tape") {
+      setShahnazTapeGuide({
+        ...nextGuide,
+        notes: "Shahnaz 2 tape-photo rows manually adjusted. The paired tape-free front photo was synced from this edit.",
+      });
+      setShahnazSecondGuide(linkedGuide);
+    } else {
+      setShahnazSecondGuide({
+        ...nextGuide,
+        notes: "Shahnaz 2 tape-free rows manually adjusted. The paired tape reference photo was synced from this edit.",
+      });
+      setShahnazTapeGuide(linkedGuide);
+    }
   };
   const resetActiveManualGuide = () => {
     setAppleVisionBodyScale(null);
@@ -1685,21 +1936,11 @@ export function SizingLabPage() {
       ));
       return;
     }
-    if (shahnazActivePhoto === "tape") setShahnazTapeGuide(null);
-    else setShahnazSecondGuide(null);
+    if (usesManualGuide) {
+      if (shahnazActivePhoto === "tape") setShahnazTapeGuide(null);
+      else setShahnazSecondGuide(null);
+    }
   };
-  const effectiveManualSideGuide = usesManualGuide && activeUseSidePhoto
-    ? manualSideGuide ?? buildManualSideGuideFromPose(
-        activeUseSidePhoto ? sidePose.pose : null,
-        activeUseSidePhoto ? sideImage.state.width : 0,
-        activeUseSidePhoto ? sideImage.state.height : 0,
-        metrics.heightCm,
-        effectiveManualGuide,
-        poseMatchesPath ? pose.pose : null,
-        activeImageState.width,
-        activeImageState.height,
-      )
-    : null;
   const effectiveCoordinateGuide = usesManualGuide
     ? effectiveManualGuide
     : usesLocalMl
@@ -1707,11 +1948,42 @@ export function SizingLabPage() {
     : usesModelCoordinateGuide
       ? manualAdjustedGeminiGuide ?? geminiGuide
       : null;
+  const effectiveManualSideGuide = usesManualGuide && activeUseSidePhoto
+    ? manualSideGuide ?? buildManualSideGuideFromPose(
+        sidePose.pose,
+        sideImage.state.width,
+        sideImage.state.height,
+        metrics.heightCm,
+        effectiveManualGuide,
+        poseMatchesPath ? pose.pose : null,
+        activeImageState.width,
+        activeImageState.height,
+      )
+    : null;
+  const effectiveLocalMlSideGuide = usesLocalMl && activeUseSidePhoto && effectiveCoordinateGuide
+    ? localMlSideGuide ?? buildManualSideGuideFromPose(
+        sidePose.pose,
+        sideImage.state.width,
+        sideImage.state.height,
+        metrics.heightCm,
+        effectiveCoordinateGuide,
+        poseMatchesPath ? pose.pose : null,
+        activeImageState.width,
+        activeImageState.height,
+      )
+    : null;
   const effectiveSideCoordinateGuide = usesManualGuide
     ? effectiveManualSideGuide
+    : usesLocalMl
+      ? effectiveLocalMlSideGuide
     : usesGeminiGuideWithSide
       ? manualAdjustedSideGeminiGuide ?? sideGeminiGuide
     : null;
+  const effectiveSideCoordinateGuideSource = usesManualGuide || usesLocalMl
+    ? "manual-coordinate"
+    : manualAdjustedSideGeminiGuide
+      ? "manual-adjusted-coordinate"
+      : sideGeminiGuideResponseDebug?.guideSource ?? null;
   const effectiveCoordinateGuideSource = usesManualGuide
     ? "manual-coordinate"
     : usesLocalMl
@@ -1753,8 +2025,8 @@ export function SizingLabPage() {
       return;
     }
     setLocalMlAppleVisionBodyScale(null);
-    setLocalMlGuide({ ...nextGuide, notes: "Local ML prediction manually adjusted in the isolated Local ML mode." });
-    setLocalMlPredictionRows((current) => current.map((row) => {
+    const adjustedGuide = { ...nextGuide, notes: "Local ML prediction manually adjusted in the isolated Local ML mode." };
+    const adjustedRows = localMlPredictionRows.map((row) => {
       const line = nextGuide[row.kind];
       const yPx = line?.y_px;
       const leftXPx = line?.left_x_px;
@@ -1765,8 +2037,34 @@ export function SizingLabPage() {
         yNorm: (yPx as number) / Math.max(1, activeImageState.height),
         leftXNorm: (leftXPx as number) / Math.max(1, activeImageState.width),
         rightXNorm: (rightXPx as number) / Math.max(1, activeImageState.width),
+        reviewedCoordinateOverride: {
+          source: "manual-adjustment" as const,
+          label: "Local ML line manually adjusted for review",
+          modelYPx: row.reviewedCoordinateOverride?.modelYPx
+            ?? Math.round(row.yNorm * activeImageState.height),
+          modelLeftXPx: row.reviewedCoordinateOverride?.modelLeftXPx
+            ?? Math.round(row.leftXNorm * activeImageState.width),
+          modelRightXPx: row.reviewedCoordinateOverride?.modelRightXPx
+            ?? Math.round(row.rightXNorm * activeImageState.width),
+        },
       };
-    }));
+    });
+    setLocalMlGuide(adjustedGuide);
+    setLocalMlPredictionRows(adjustedRows);
+    if (usesShahnazPhotoPair) {
+      setShahnazLocalMlPredictions((current) => {
+        const activePrediction = current[shahnazActivePhoto];
+        if (!activePrediction) return current;
+        return {
+          ...current,
+          [shahnazActivePhoto]: {
+            ...activePrediction,
+            guide: adjustedGuide,
+            predictionRows: adjustedRows,
+          },
+        };
+      });
+    }
     setLocalMlMessage("Local ML red lines were manually adjusted. Saved Manual Coordinate lines remain unchanged.");
   };
   const resetDisplayedCoordinateGuide = () => {
@@ -1785,6 +2083,31 @@ export function SizingLabPage() {
     setLocalMlEndpointSource(null);
     setLocalMlRunStatus(localMlModelStatus?.checkpointReady ? "idle" : "waiting-for-checkpoint");
     setLocalMlMessage(localMlModelStatus?.message ?? "Run Analyze Local ML after a checkpoint is trained.");
+    if (usesShahnazPhotoPair) {
+      setShahnazLocalMlPredictions((current) => {
+        const next = { ...current };
+        delete next[shahnazActivePhoto];
+        return next;
+      });
+    }
+  };
+  const updateDisplayedSideCoordinateGuide = (nextGuide: GeminiBodyGuide) => {
+    if (usesLocalMl) setLocalMlSideGuide(nextGuide);
+    else setManualSideGuide(nextGuide);
+  };
+  const resetDisplayedSideCoordinateGuide = () => {
+    const nextGuide = buildManualSideGuideFromPose(
+      sidePose.pose,
+      sideImage.state.width,
+      sideImage.state.height,
+      metrics.heightCm,
+      effectiveCoordinateGuide,
+      poseMatchesPath ? pose.pose : null,
+      activeImageState.width,
+      activeImageState.height,
+    );
+    if (usesLocalMl) setLocalMlSideGuide(nextGuide);
+    else setManualSideGuide(nextGuide);
   };
   const activeGuideDepthRatioOverrides = usesLocalMl ? localMlDepthRatioOverrides : guideDepthRatioOverrides;
   const updateActiveDepthRatioOverride = usesLocalMl
@@ -1806,13 +2129,39 @@ export function SizingLabPage() {
     && activeAppleVisionBodyScale.geometryQuality !== "reject"
     ? Object.fromEntries(activeAppleVisionBodyScale.rows.map((row) => [row.name, row.cmPerPx]))
     : undefined;
+  const localMlAbsoluteDepthReady = localMlPredictionRows.length === 3
+    && localMlPredictionRows.every((row) => row.wearAbsoluteDepthModel != null);
+  const localMlReviewedCoordinatesActive = usesLocalMl
+    && localMlPredictionRows.some((row) => row.reviewedCoordinateOverride != null);
+  const localMlUsesAbsoluteDepth = usesLocalMl
+    && localMlPredictionStage === "wear-1d-row-prior"
+    && localMlDepthMethod === "wear-absolute-depth"
+    && localMlAbsoluteDepthReady;
+  const localMlUsesMeasuredSideDepth = usesLocalMl
+    && activeUseSidePhoto
+    && Boolean(effectiveLocalMlSideGuide && sidePose.pose);
+  const coordinateWorkbenchUsesMeasuredSideDepth = usesCoordinateWorkbench
+    && activeUseSidePhoto
+    && Boolean(effectiveSideCoordinateGuide && sidePose.pose);
+  const displayedLocalMlMessage = localMlUsesMeasuredSideDepth && localMlRunStatus !== "error"
+    ? "WEAR 1D placed the front rows. The side-photo red lines now own body depth, so a missing WEAR depth group does not block this side-photo experiment."
+    : localMlMessage;
+  const localMlAbsoluteDepthPredictors = localMlUsesAbsoluteDepth
+    ? Object.fromEntries(localMlPredictionRows.map((row) => [
+        row.kind,
+        (frontWidthCm: number) => predictWearAbsoluteDepthCm(row.wearAbsoluteDepthModel, {
+          breadthCm: frontWidthCm,
+          heightCm: metrics.heightCm,
+          weightKg: metrics.weightKg,
+          gender: metrics.gender,
+        })?.depthCm ?? null,
+      ])) as GeminiGuideAbsoluteDepthPredictors
+    : undefined;
   const computedGeminiGuideMeasurement = computeGeminiGuideMeasurement({
     guide: effectiveCoordinateGuide,
     guideSource: effectiveCoordinateGuideSource,
     sideGuide: effectiveSideCoordinateGuide,
-    sideGuideSource: usesManualGuide
-      ? "manual-coordinate"
-      : manualAdjustedSideGeminiGuide ? "manual-adjusted-coordinate" : sideGeminiGuideResponseDebug?.guideSource ?? null,
+    sideGuideSource: effectiveSideCoordinateGuideSource,
     pose: poseMatchesPath ? pose.pose : null,
     imageWidth: activeImageState.width,
     imageHeight: activeImageState.height,
@@ -1824,10 +2173,14 @@ export function SizingLabPage() {
     hipsTrace,
     cmPerPxOverride: activeFrontScaleOverrideCmPerPx,
     rowCmPerPxOverrides: appleVisionRowCmPerPxOverrides,
-    depthRatioOverrides: activeGuideDepthRatioOverrides,
-    localMlDepthRatios: usesLocalMl ? localMlPredictedDepthRatios : undefined,
+    depthRatioOverrides: localMlUsesAbsoluteDepth || coordinateWorkbenchUsesMeasuredSideDepth ? undefined : activeGuideDepthRatioOverrides,
+    localMlDepthRatios: usesLocalMl && !localMlUsesAbsoluteDepth && !coordinateWorkbenchUsesMeasuredSideDepth
+      ? localMlPredictedDepthRatios
+      : undefined,
+    localMlAbsoluteDepthCm: coordinateWorkbenchUsesMeasuredSideDepth ? undefined : localMlAbsoluteDepthPredictors,
     localMlDepthSource: usesLocalMl && !localMlDepthReady ? "wear-cohort-median" : "local-ml-depth-ratio",
-    requireCompleteLocalMlDepthRatios: usesLocalMl,
+    requireCompleteLocalMlDepthRatios: usesLocalMl && !localMlUsesAbsoluteDepth && !coordinateWorkbenchUsesMeasuredSideDepth,
+    requireCompleteLocalMlAbsoluteDepth: localMlUsesAbsoluteDepth && !coordinateWorkbenchUsesMeasuredSideDepth,
     applyWearDepthFormula: !usesLocalMl,
   });
   const localMlUsesDirectWearDepth = usesLocalMl
@@ -1843,9 +2196,7 @@ export function SizingLabPage() {
     : computedGeminiGuideMeasurement;
   const sideGeminiGuideMeasurement = computeGeminiGuideImageMeasurement({
     guide: effectiveSideCoordinateGuide,
-    guideSource: usesManualGuide
-      ? "manual-coordinate"
-      : manualAdjustedSideGeminiGuide ? "manual-adjusted-coordinate" : sideGeminiGuideResponseDebug?.guideSource ?? null,
+    guideSource: effectiveSideCoordinateGuideSource,
     pose: activeUseSidePhoto ? sidePose.pose : null,
     imageWidth: activeUseSidePhoto ? sideImage.state.width : 0,
     imageHeight: activeUseSidePhoto ? sideImage.state.height : 0,
@@ -1866,7 +2217,7 @@ export function SizingLabPage() {
       labelPrefix: "side Gemini",
       color: "#ef4444",
     })
-    : usesManualGuide && effectiveManualSideGuide
+    : usesCoordinateWorkbench && effectiveSideCoordinateGuide
       ? sideGeminiGuideMeasurement?.debugRows ?? []
       : usesMaskGuide ? buildSideMaskGuideDebugRows(hipsTrace) : [];
   const displayHipDebugRows = usesCoordinateGuide
@@ -2008,9 +2359,13 @@ export function SizingLabPage() {
                   type="checkbox"
                   checked={activeUseSidePhoto}
                   disabled={usesGeminiGuideWithSide}
-                  onChange={(event) => toggleSidePhoto(event.target.checked)}
+                  onChange={(event) => void toggleSidePhoto(event.target.checked)}
                 />
-                {usesGeminiGuideWithSide ? "Side photo required" : "Use side photo"}
+                {usesGeminiGuideWithSide
+                  ? "Side photo required"
+                  : usesLocalMl
+                    ? "Use side photo for measured depth"
+                    : "Use side photo"}
               </label>
             ) : null}
             <select
@@ -2037,7 +2392,7 @@ export function SizingLabPage() {
             <DatasetStat label="Natural waist tape mark" value={formatDatasetTapeMark(selectedDataset.waistTapeMarkCm, selectedDataset.waistTapeMarkIn)} />
             <DatasetStat label="Lower waist" value={selectedDatasetTrouserWaistCm ? `${selectedDatasetTrouserWaistCm} cm` : "—"} />
             <DatasetStat label="Lower waist tape mark" value={formatDatasetTapeMark(selectedDataset.trouserWaistTapeMarkCm, selectedDataset.trouserWaistTapeMarkIn)} />
-            <DatasetStat label="Hips" value={`${selectedDataset.hipsCm} cm`} />
+            <DatasetStat label="Hips" value={selectedDataset.hipsCm > 0 ? `${selectedDataset.hipsCm} cm` : "—"} />
             <DatasetStat label="Hip tape mark" value={formatDatasetTapeMark(selectedDataset.hipsTapeMarkCm, selectedDataset.hipsTapeMarkIn)} />
             <DatasetStat label="Side waist" value={selectedDataset.waistSideDepthCm ? `${selectedDataset.waistSideDepthCm} cm` : "—"} />
             <DatasetStat label="Side lower waist" value={selectedDataset.trouserWaistSideDepthCm ? `${selectedDataset.trouserWaistSideDepthCm} cm` : "—"} />
@@ -2070,12 +2425,14 @@ export function SizingLabPage() {
             onSelect={async (file) => {
               sidePose.reset();
               setManualSideGuide(null);
+              setLocalMlSideGuide(null);
               await sideImage.selectFile(file);
             }}
             onClear={() => {
               sideImage.clear();
               sidePose.reset();
               setManualSideGuide(null);
+              setLocalMlSideGuide(null);
             }}
             width={sideImage.state.width}
             height={sideImage.state.height}
@@ -2089,7 +2446,7 @@ export function SizingLabPage() {
           <div className="max-w-2xl">
             <h3 className="text-sm font-semibold text-text-primary">Measurement path</h3>
             <p className="mt-1 text-xs text-text-secondary">
-              Manual Coordinate and Local ML are shown below. Choose every other experimental method from the dropdown.
+              Manual Coordinate is the normal hand-adjusted mode. Local ML is a separate experiment. Choose every other method from the dropdown.
             </p>
           </div>
           <select
@@ -2129,7 +2486,7 @@ export function SizingLabPage() {
             rowPriorReady={Boolean(localMlModelStatus?.rowPriorReady)}
             fullCheckpointReady={Boolean(localMlModelStatus?.fullCheckpointReady)}
             activeStage={localMlModelStatus?.activeStage ?? null}
-            message={localMlMessage}
+            message={displayedLocalMlMessage}
           />
         ) : null}
         {usesGemini ? (
@@ -2580,10 +2937,10 @@ export function SizingLabPage() {
           <span className="text-xs text-red-600">Gemini correction error: {geminiCorrectionError ?? "Gemini correction failed"}</span>
         )}
         {usesLocalMl && localMlRunStatus === "waiting-for-checkpoint" ? (
-          <span className="text-xs text-amber-700">Local ML: {localMlMessage ?? "Waiting for a trained checkpoint."}</span>
+          <span className="text-xs text-amber-700">Local ML: {displayedLocalMlMessage ?? "Waiting for a trained checkpoint."}</span>
         ) : null}
         {usesLocalMl && localMlRunStatus === "error" ? (
-          <span className="text-xs text-red-600">Local ML error: {localMlMessage ?? "Prediction failed."}</span>
+          <span className="text-xs text-red-600">Local ML error: {displayedLocalMlMessage ?? "Prediction failed."}</span>
         ) : null}
       </section>
 
@@ -2639,6 +2996,9 @@ export function SizingLabPage() {
                       weightKg={metrics.weightKg}
                       profileLabel={selectedDataset?.label.split(" · ")[0] ?? "Current upload"}
                       knownDepthRatioAnswers={selectedDataset?.depthRatioOverrides}
+                      measurement={geminiGuideMeasurement}
+                      depthMethod={localMlDepthMethod}
+                      onDepthMethodChange={setLocalMlDepthMethod}
                     />
                   ) : null}
                   {manualCameraCalibrationResultActive ? (
@@ -2662,9 +3022,13 @@ export function SizingLabPage() {
                     scaleEvidence={activeManualScaleEvidence}
                     comparisonScaleEvidence={manualTapeScaleEvidence}
                     heightCm={metrics.heightCm}
+                    weightKg={metrics.weightKg}
+                    gender={metrics.gender}
                     manualHeightScaleOverride={activeManualHeightScaleOverride}
                     onManualHeightScaleOverrideChange={usesLocalMl ? setLocalMlHeightScaleOverride : setManualHeightScaleOverride}
                     wearRowPredictions={usesLocalMl ? localMlPredictionRows : undefined}
+                    localMlDepthMethod={usesLocalMl ? localMlDepthMethod : undefined}
+                    onLocalMlDepthMethodChange={usesLocalMl ? setLocalMlDepthMethod : undefined}
                     scaleProofPreset={!manualCameraCalibrationResultActive
                       ? selectedDatasetId === "shane-2"
                         ? SHANE_2_SCALE_PROOF_PRESET
@@ -2677,21 +3041,22 @@ export function SizingLabPage() {
                     targetNaturalWaistCm={selectedDatasetNaturalWaistCm}
                     targetTrouserWaistCm={selectedDatasetTrouserWaistCm}
                     targetHipsCm={selectedDataset?.hipsCm}
-                    linkedEditor={usesManualGuide && activeUseSidePhoto && sideImage.state.previewUrl ? {
+                    linkedEditor={usesCoordinateWorkbench && activeUseSidePhoto && sideImage.state.previewUrl ? {
                       imageUrl: sideImage.state.previewUrl,
                       imageWidth: sideImage.state.width,
                       imageHeight: sideImage.state.height,
-                      guide: effectiveManualSideGuide,
+                      guide: effectiveSideCoordinateGuide,
                       measurement: sideGeminiGuideMeasurement,
+                      pose: sidePose.pose,
                       scaleEvidence: activeSideScaleEvidence,
-                      title: "Side photo",
-                      labelSuffix: "side manual coordinate",
+                      title: usesLocalMl ? "Side photo · measured depth" : "Side photo",
+                      labelSuffix: usesLocalMl ? "side depth" : "side manual coordinate",
                       measurementMode: "side-depth",
                       targetNaturalWaistCm: selectedDataset?.waistSideDepthCm,
                       targetTrouserWaistCm: selectedDataset?.trouserWaistSideDepthCm,
                       targetHipsCm: selectedDataset?.hipsSideDepthCm,
-                      onChange: setManualSideGuide,
-                      onReset: () => setManualSideGuide(buildManualSideGuideFromPose(sidePose.pose, sideImage.state.width, sideImage.state.height, metrics.heightCm)),
+                      onChange: updateDisplayedSideCoordinateGuide,
+                      onReset: resetDisplayedSideCoordinateGuide,
                     } : null}
                     depthRatioOverrides={activeGuideDepthRatioOverrides}
                     knownDepthRatioAnswers={selectedDataset?.depthRatioOverrides}
@@ -2711,17 +3076,36 @@ export function SizingLabPage() {
                         switchStatus={shahnazPhotoSwitchStatus}
                         switchError={shahnazPhotoSwitchError}
                         onSelectPhoto={(photo) => void selectShahnazCalculationPhoto(photo)}
+                        mode={usesLocalMl ? "local-ml" : "manual"}
+                        sideImageUrl={selectedDataset?.sideImageUrl || null}
+                        sideImageWidth={sideImage.state.width || 1200}
+                        sideImageHeight={sideImage.state.height || 1600}
+                        sideGuide={effectiveSideCoordinateGuide}
+                        sideEnabled={activeUseSidePhoto}
+                        onSideEnabledChange={(enabled) => void toggleSidePhoto(enabled)}
                         large
                       />
                     ) : undefined}
-                    title={usesLocalMl
-                      ? "Local ML coordinate prediction"
-                      : usesShahnazPhotoPair
-                        ? `Active calculation · ${shahnazActivePhoto === "tape" ? "tape photo" : "IMG_8444 tape-free photo"}`
+                    title={usesShahnazPhotoPair
+                      ? `${usesLocalMl ? "Local ML · " : ""}Active calculation · ${shahnazActivePhoto === "tape" ? "tape photo" : "IMG_8444 tape-free photo"}`
+                      : usesLocalMl
+                        ? localMlReviewedCoordinatesActive
+                          ? "Local ML calculation · saved reviewed red lines"
+                          : "Local ML coordinate prediction"
                         : undefined}
-                    labelSuffix={usesLocalMl ? "local ML prediction" : undefined}
+                    labelSuffix={usesLocalMl
+                      ? localMlReviewedCoordinatesActive ? "saved review override" : "local ML prediction"
+                      : undefined}
                     description={usesLocalMl
-                      ? localMlUsesDirectWearDepth
+                      ? localMlReviewedCoordinatesActive
+                        ? "The active red rows and endpoints are Nadia's saved reviewed coordinates. Local ML still supplies the separate WEAR depth and shape evidence. The original ML row is comparison only, so this does not count as automatic line accuracy."
+                      : localMlUsesMeasuredSideDepth
+                        ? "Local ML draws the front rows. Front red lines supply side-to-side width; the independently adjustable side red lines supply front-to-back depth at the same physical heights. The shape formula then produces circumference. WEAR depth and saved ratio sliders are not used while side depth is active."
+                      : usesShahnazPhotoPair
+                        ? "Open Full screen to compare both large photos. Local ML analyzed each photo separately; the selected card alone feeds its photo, Local ML red lines, Apple/Depth scale and circumference results. Manual saved coordinates remain untouched."
+                        : localMlUsesAbsoluteDepth
+                        ? "Local ML draws the row positions and MediaPipe supplies temporary visible endpoints. Apple/Depth converts each red width to centimetres. A WEAR-only formula predicts front-to-back depth directly in centimetres from that width, BMI, height and sex. Saved ratios are untouched and inactive."
+                        : localMlUsesDirectWearDepth
                         ? "Local ML draws the row positions and MediaPipe supplies temporary visible endpoints. Apple/Depth converts each red width to centimetres. Body depth is the direct middle ratio measured among WEAR people in the matching gender, height, and BMI box—no regression and no saved answer. The ellipse calculator then produces circumference."
                         : localMlUsesRowPrior
                           ? "Local ML drew the rows, but the direct WEAR group is too small for at least one body part. The result is blocked instead of falling back to a formula or the saved person answer."
@@ -2730,10 +3114,12 @@ export function SizingLabPage() {
                         ? "Open Full screen to compare both photos. The selected card alone feeds pixels to Apple Vision, Depth Pro and the circumference results."
                         : undefined}
                     resetLabel={usesLocalMl
-                      ? "Clear Local ML prediction"
+                      ? localMlReviewedCoordinatesActive ? "Clear reviewed Local ML run" : "Clear Local ML prediction"
                       : usesShahnazPhotoPair
                         ? "Reset this photo's red lines"
-                        : undefined}
+                        : selectedDatasetId === "nadia"
+                          ? "Reset to Nadia saved lines"
+                          : undefined}
                     onChange={updateDisplayedCoordinateGuide}
                     onReset={resetDisplayedCoordinateGuide}
                   />
@@ -3227,10 +3613,16 @@ function buildManualSideGuideFromPose(
   frontImageHeight = 0,
 ): GeminiBodyGuide | null {
   if (!pose || imageWidth <= 0 || imageHeight <= 0) return null;
-  const scale = computePoseScale(pose, imageWidth, imageHeight, heightCm);
+  const scale = applyMaskHeightScaleToPoseScale(
+    computePoseScale(pose, imageWidth, imageHeight, heightCm),
+    computeMaskHeightScale(pose, imageWidth, imageHeight, heightCm),
+  );
   if (!scale) return null;
   const frontScale = frontPose && frontImageWidth > 0 && frontImageHeight > 0
-    ? computePoseScale(frontPose, frontImageWidth, frontImageHeight, heightCm)
+    ? applyMaskHeightScaleToPoseScale(
+        computePoseScale(frontPose, frontImageWidth, frontImageHeight, heightCm),
+        computeMaskHeightScale(frontPose, frontImageWidth, frontImageHeight, heightCm),
+      )
     : null;
   const torsoSpan = Math.max(0.04, scale.hipYNorm - scale.shoulderYNorm);
   const legSpan = Math.max(0.08, scale.bottomYNorm - scale.hipYNorm);
@@ -3247,7 +3639,13 @@ function buildManualSideGuideFromPose(
         : frontGuide?.hips;
     const frontYNorm = guideLineYNormForImage(frontLine, frontImageHeight);
     if (frontYNorm != null && frontScale) {
-      return mapFrontYNormToSideYNorm(frontYNorm, frontScale, scale);
+      return mapFrontYNormToSideYNorm(
+        frontYNorm,
+        frontScale,
+        frontImageHeight,
+        scale,
+        imageHeight,
+      );
     }
     return fallbackY[kind];
   };
@@ -3282,7 +3680,7 @@ function buildManualSideGuideFromPose(
       maskMode: "raw",
       fallbackWidthNorm: 0.11,
     }),
-    notes: "Manual side coordinate guide seeded from side photo mask at the active front row heights. Dataset side widths are comparison only.",
+    notes: "Side coordinate guide seeded from the side mask at the same centimetres above the floor as the active front rows. Dataset circumferences are comparison only.",
   };
   return guide.waist || guide.trouserWaist || guide.hips ? guide : null;
 }
@@ -3301,15 +3699,16 @@ function guideLineYNormForImage(line: GeminiGuideLine | undefined, imageHeight: 
 function mapFrontYNormToSideYNorm(
   frontYNorm: number,
   frontScale: NonNullable<ReturnType<typeof computePoseScale>>,
+  frontImageHeight: number,
   sideScale: NonNullable<ReturnType<typeof computePoseScale>>,
+  sideImageHeight: number,
 ): number {
-  const sideYNorm = frontYNorm <= frontScale.hipYNorm
-    ? sideScale.shoulderYNorm +
-      ((frontYNorm - frontScale.shoulderYNorm) / Math.max(0.01, frontScale.hipYNorm - frontScale.shoulderYNorm)) *
-        (sideScale.hipYNorm - sideScale.shoulderYNorm)
-    : sideScale.hipYNorm +
-      ((frontYNorm - frontScale.hipYNorm) / Math.max(0.01, frontScale.bottomYNorm - frontScale.hipYNorm)) *
-        (sideScale.bottomYNorm - sideScale.hipYNorm);
+  const heightFromFloorCm = Math.max(
+    0,
+    (frontScale.bottomYNorm - frontYNorm) * frontImageHeight * frontScale.cmPerPx,
+  );
+  const sideYNorm = sideScale.bottomYNorm -
+    heightFromFloorCm / Math.max(1e-6, sideImageHeight * sideScale.cmPerPx);
   return clampManualGuideCoord(sideYNorm, 0.02, 0.98);
 }
 
@@ -3556,6 +3955,138 @@ function buildManualGuideLine(
     confidence: 1,
     points,
   };
+}
+
+function buildLinkedShahnazGuideFromActiveGuide(
+  activeGuide: GeminiBodyGuide,
+  activePhoto: ShahnazPhotoKey,
+): GeminiBodyGuide {
+  const sourcePreset = activePhoto === "tape"
+    ? SHAHNAZ_2_MANUAL_ROW_PRESET
+    : SHAHNAZ_2_SECOND_MANUAL_ROW_PRESET;
+  const targetPreset = activePhoto === "tape"
+    ? SHAHNAZ_2_SECOND_MANUAL_ROW_PRESET
+    : SHAHNAZ_2_MANUAL_ROW_PRESET;
+  const sourceBaseGuide = buildManualGuideFromPreset(
+    sourcePreset,
+    sourcePreset.sourceImageWidth,
+    sourcePreset.sourceImageHeight,
+    "Shahnaz 2 source baseline for linked row transfer.",
+  );
+  const targetBaseGuide = buildManualGuideFromPreset(
+    targetPreset,
+    targetPreset.sourceImageWidth,
+    targetPreset.sourceImageHeight,
+    activePhoto === "tape"
+      ? "Auto-synced from Shahnaz 2 tape-photo Manual Coordinate edits."
+      : "Auto-synced from Shahnaz 2 tape-free Manual Coordinate edits.",
+  );
+
+  const linkedGuide: GeminiBodyGuide = {
+    ...targetBaseGuide,
+    notes: activePhoto === "tape"
+      ? "Auto-synced from Shahnaz 2 tape-photo Manual Coordinate edits. Same row shift and proportional span change; not copied raw pixels."
+      : "Auto-synced from Shahnaz 2 tape-free Manual Coordinate edits. Same row shift and proportional span change; not copied raw pixels.",
+  };
+
+  for (const kind of SHAHNAZ_2_GUIDE_ROWS) {
+    const activeLine = activeGuide[kind];
+    const sourceBaseLine = sourceBaseGuide[kind];
+    const targetBaseLine = targetBaseGuide[kind];
+    if (!activeLine || !sourceBaseLine || !targetBaseLine) continue;
+    linkedGuide[kind] = transferShahnazGuideLine({
+      activeLine,
+      sourceBaseLine,
+      targetBaseLine,
+      sourceWidth: sourcePreset.sourceImageWidth,
+      sourceHeight: sourcePreset.sourceImageHeight,
+      targetWidth: targetPreset.sourceImageWidth,
+      targetHeight: targetPreset.sourceImageHeight,
+    });
+  }
+
+  return linkedGuide;
+}
+
+function transferShahnazGuideLine({
+  activeLine,
+  sourceBaseLine,
+  targetBaseLine,
+  sourceWidth,
+  sourceHeight,
+  targetWidth,
+  targetHeight,
+}: {
+  activeLine: GeminiGuideLine;
+  sourceBaseLine: GeminiGuideLine;
+  targetBaseLine: GeminiGuideLine;
+  sourceWidth: number;
+  sourceHeight: number;
+  targetWidth: number;
+  targetHeight: number;
+}): GeminiGuideLine {
+  const activeY = finiteOrFallback(activeLine.y_px, sourceBaseLine.y_px, 0);
+  const activeLeft = finiteOrFallback(activeLine.left_x_px, sourceBaseLine.left_x_px, 0);
+  const activeRight = finiteOrFallback(activeLine.right_x_px, sourceBaseLine.right_x_px, activeLeft + 1);
+  const sourceBaseY = finiteOrFallback(sourceBaseLine.y_px, activeY, 0);
+  const sourceBaseLeft = finiteOrFallback(sourceBaseLine.left_x_px, activeLeft, 0);
+  const sourceBaseRight = finiteOrFallback(sourceBaseLine.right_x_px, activeRight, sourceBaseLeft + 1);
+  const targetBaseY = finiteOrFallback(targetBaseLine.y_px, 0, 0);
+  const targetBaseLeft = finiteOrFallback(targetBaseLine.left_x_px, 0, 0);
+  const targetBaseRight = finiteOrFallback(targetBaseLine.right_x_px, targetBaseLeft + 1, targetBaseLeft + 1);
+  const safeSourceWidth = Math.max(1, sourceWidth);
+  const safeSourceHeight = Math.max(1, sourceHeight);
+  const safeTargetWidth = Math.max(1, targetWidth);
+  const safeTargetHeight = Math.max(1, targetHeight);
+  const sourceBaseCenterNorm = ((sourceBaseLeft + sourceBaseRight) / 2) / safeSourceWidth;
+  const activeCenterNorm = ((activeLeft + activeRight) / 2) / safeSourceWidth;
+  const centerDeltaNorm = activeCenterNorm - sourceBaseCenterNorm;
+  const targetBaseCenterNorm = ((targetBaseLeft + targetBaseRight) / 2) / safeTargetWidth;
+
+  const sourceBaseYNorm = sourceBaseY / safeSourceHeight;
+  const activeYNorm = activeY / safeSourceHeight;
+  const yDeltaNorm = activeYNorm - sourceBaseYNorm;
+  const targetBaseYNorm = targetBaseY / safeTargetHeight;
+  const yNorm = clampManualGuideCoord(targetBaseYNorm + yDeltaNorm, 0.02, 0.98);
+
+  const sourceBaseSpanNorm = Math.abs(sourceBaseRight - sourceBaseLeft) / safeSourceWidth;
+  const activeSpanNorm = Math.abs(activeRight - activeLeft) / safeSourceWidth;
+  const targetBaseSpanNorm = Math.abs(targetBaseRight - targetBaseLeft) / safeTargetWidth;
+  const spanScale = sourceBaseSpanNorm > 0
+    ? clampManualGuideCoord(activeSpanNorm / sourceBaseSpanNorm, 0.35, 2.5)
+    : 1;
+  const spanNorm = clampManualGuideCoord(targetBaseSpanNorm * spanScale, 0.015, 0.92);
+  const centerNorm = clampManualGuideCoord(
+    targetBaseCenterNorm + centerDeltaNorm,
+    spanNorm / 2,
+    1 - spanNorm / 2,
+  );
+  const yPx = Math.round(yNorm * safeTargetHeight);
+  const leftXPx = Math.round((centerNorm - spanNorm / 2) * safeTargetWidth);
+  const rightXPx = Math.round((centerNorm + spanNorm / 2) * safeTargetWidth);
+
+  return {
+    y_px: clampManualGuideCoord(yPx, 0, safeTargetHeight - 1),
+    left_x_px: clampManualGuideCoord(leftXPx, 0, safeTargetWidth - 1),
+    right_x_px: clampManualGuideCoord(rightXPx, 0, safeTargetWidth - 1),
+    confidence: activeLine.confidence,
+    points: [
+      {
+        x_px: clampManualGuideCoord(leftXPx, 0, safeTargetWidth - 1),
+        y_px: clampManualGuideCoord(yPx, 0, safeTargetHeight - 1),
+      },
+      {
+        x_px: clampManualGuideCoord(rightXPx, 0, safeTargetWidth - 1),
+        y_px: clampManualGuideCoord(yPx, 0, safeTargetHeight - 1),
+      },
+    ],
+  };
+}
+
+function finiteOrFallback(value: number | undefined, fallback: number | undefined, finalFallback: number): number {
+  if (Number.isFinite(value)) return value as number;
+  if (Number.isFinite(fallback)) return fallback as number;
+  return finalFallback;
 }
 
 function clampManualGuideCoord(value: number, min: number, max: number): number {

@@ -1,0 +1,148 @@
+{
+  "version": "wear-1d-absolute-depth-v1",
+  "method": "Linear absolute-depth prediction from measured WEAR breadth, BMI, height, and sex features. Named sizing-lab people and target circumferences are excluded.",
+  "formula": "depthCm = interceptCm + sum(coefficient[feature] * (featureValue - featureCenter))",
+  "rows": {
+    "waist": {
+      "label": "Natural waist",
+      "measurement": "Measured waist depth in centimetres",
+      "validationMethod": "leave-one-survey-out",
+      "trainingSubjects": 14824,
+      "trainingSurveyCount": 9,
+      "genderCounts": {
+        "female": 3573,
+        "male": 11251
+      },
+      "featureNames": [
+        "breadthCm",
+        "bmi",
+        "heightCm",
+        "isMale"
+      ],
+      "featureCenters": {
+        "breadthCm": 27.480316,
+        "bmi": 23.329108,
+        "heightCm": 171.575742,
+        "isMale": 0.758972
+      },
+      "interceptCm": 19.92473,
+      "coefficients": {
+        "breadthCm": 0.446341,
+        "bmi": 0.344887,
+        "heightCm": -0.000213,
+        "isMale": 1.112276
+      },
+      "supportedDepthMinCm": 14.2,
+      "supportedDepthMaxCm": 26.6,
+      "featureP05": {
+        "breadthCm": 22.5,
+        "bmi": 19.143,
+        "heightCm": 157.4,
+        "isMale": 0.0
+      },
+      "featureP95": {
+        "breadthCm": 32.4,
+        "bmi": 27.994,
+        "heightCm": 184.7,
+        "isMale": 1.0
+      },
+      "validationMaeCm": 0.984,
+      "validationP90AbsErrorCm": 2.054,
+      "validationP95AbsErrorCm": 2.479
+    },
+    "trouserWaist": {
+      "label": "Stomach proxy for trouser waist",
+      "measurement": "Measured abdomen or stomach depth in centimetres; not an exact trouser waistband plane",
+      "validationMethod": "deterministic-five-fold-within-surveys",
+      "trainingSubjects": 818,
+      "trainingSurveyCount": 2,
+      "genderCounts": {
+        "female": 255,
+        "male": 563
+      },
+      "featureNames": [
+        "breadthCm",
+        "bmi",
+        "heightCm",
+        "isMale",
+        "breadthMale",
+        "bmiMale"
+      ],
+      "featureCenters": {
+        "breadthCm": 31.174939,
+        "bmi": 24.980936,
+        "heightCm": 171.130685,
+        "isMale": 0.688264,
+        "breadthMale": 21.828729,
+        "bmiMale": 17.994913
+      },
+      "interceptCm": 23.15868,
+      "coefficients": {
+        "breadthCm": 0.291693,
+        "bmi": 0.539069,
+        "heightCm": -0.03464,
+        "isMale": -5.283213,
+        "breadthMale": 0.584264,
+        "bmiMale": -0.516862
+      },
+      "supportedDepthMinCm": 17.9,
+      "supportedDepthMaxCm": 31.683,
+      "featureP05": {
+        "breadthCm": 26.685,
+        "bmi": 18.563,
+        "heightCm": 155.985,
+        "isMale": 0.0,
+        "breadthMale": 0.0,
+        "bmiMale": 0.0
+      },
+      "featureP95": {
+        "breadthCm": 36.415,
+        "bmi": 32.822,
+        "heightCm": 184.1,
+        "isMale": 1.0,
+        "breadthMale": 36.015,
+        "bmiMale": 32.755
+      },
+      "validationMaeCm": 1.308,
+      "validationP90AbsErrorCm": 2.583,
+      "validationP95AbsErrorCm": 3.381
+    },
+    "hips": {
+      "label": "Hips",
+      "measurement": "Measured buttock depth in centimetres",
+      "validationMethod": "leave-one-survey-out",
+      "trainingSubjects": 13546,
+      "trainingSurveyCount": 8,
+      "genderCounts": {
+        "female": 2295,
+        "male": 11251
+      },
+      "featureNames": [
+        "breadthCm",
+        "bmi"
+      ],
+      "featureCenters": {
+        "breadthCm": 34.083368,
+        "bmi": 23.409825
+      },
+      "interceptCm": 22.581153,
+      "coefficients": {
+        "breadthCm": 0.166758,
+        "bmi": 0.554851
+      },
+      "supportedDepthMinCm": 18.1,
+      "supportedDepthMaxCm": 27.955,
+      "featureP05": {
+        "breadthCm": 30.9,
+        "bmi": 19.23
+      },
+      "featureP95": {
+        "breadthCm": 37.5,
+        "bmi": 28.057
+      },
+      "validationMaeCm": 1.189,
+      "validationP90AbsErrorCm": 2.388,
+      "validationP95AbsErrorCm": 2.818
+    }
+  }
+}

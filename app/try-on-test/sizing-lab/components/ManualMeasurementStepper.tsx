@@ -217,14 +217,21 @@ export function ManualMeasurementStepper({
             measurement ? (
               <div>
                 <div className="grid gap-2 md:grid-cols-3">
-                  {measurement.rows.map((row) => (
-                    <div key={row.kind} className="rounded-lg border border-amber-200 bg-white p-3">
-                      <div className="text-[10px] font-semibold uppercase tracking-wider text-amber-800">{rowName(row.kind)}</div>
-                      <div className="mt-1 font-mono text-2xl font-semibold">{row.depthRatio.toFixed(3)}</div>
-                      <div className="mt-1 font-mono text-[10px] text-text-secondary">{row.formulaWidthCm.toFixed(1)} cm width → {row.depthCm.toFixed(1)} cm estimated depth</div>
-                      <div className="mt-1 text-[10px] text-text-secondary">source: {row.depthSource}</div>
-                    </div>
-                  ))}
+                  {measurement.rows.map((row) => {
+                    const usesWearAbsoluteDepth = row.depthSource === "wear-absolute-depth";
+                    return (
+                      <div key={row.kind} className="rounded-lg border border-amber-200 bg-white p-3">
+                        <div className="text-[10px] font-semibold uppercase tracking-wider text-amber-800">{rowName(row.kind)}</div>
+                        <div className="mt-1 font-mono text-2xl font-semibold">{usesWearAbsoluteDepth ? `${row.depthCm.toFixed(1)} cm` : row.depthRatio.toFixed(3)}</div>
+                        <div className="mt-1 font-mono text-[10px] text-text-secondary">
+                          {usesWearAbsoluteDepth
+                            ? `${row.formulaWidthCm.toFixed(1)} cm photo width + ${row.depthCm.toFixed(1)} cm WEAR-predicted depth`
+                            : `${row.calculationWidthCm.toFixed(1)} cm photo width → ${row.depthCm.toFixed(1)} cm estimated depth`}
+                        </div>
+                        <div className="mt-1 text-[10px] text-text-secondary">source: {row.depthSource}</div>
+                      </div>
+                    );
+                  })}
                 </div>
                 <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-950">This is the uncertain step. A front photo cannot see body thickness or the back surface.</div>
               </div>
@@ -241,7 +248,7 @@ export function ManualMeasurementStepper({
                     <div key={row.kind} className="rounded-lg border border-emerald-200 bg-white p-3">
                       <div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-800">{rowName(row.kind)}</div>
                       <div className="mt-1 font-mono text-3xl font-semibold">{row.guidedCm.toFixed(1)} cm</div>
-                      <div className="mt-1 text-xs text-text-secondary">ellipse(width {row.formulaWidthCm.toFixed(1)}, estimated depth {row.depthCm.toFixed(1)})</div>
+                      <div className="mt-1 text-xs text-text-secondary">ellipse(width {row.calculationWidthCm.toFixed(1)}, depth {row.depthCm.toFixed(1)})</div>
                       {target == null ? null : (
                         <div className="mt-2 rounded bg-slate-50 px-2 py-1 font-mono text-xs">known {target.toFixed(2)} cm · diff {formatSigned(difference!)}</div>
                       )}

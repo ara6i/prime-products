@@ -45,6 +45,7 @@ function fixed(value: number | null | undefined, digits = 3): string {
 function sourceLabel(source: GeminiGuideMeasurementRow["depthSource"]): string {
   if (source === "manual-depth-ratio") return "your slider";
   if (source === "wear-cohort-median") return "direct WEAR people";
+  if (source === "wear-absolute-depth") return "WEAR absolute depth in cm";
   if (source === "local-ml-depth-ratio") return "future trained 3D model";
   if (source.startsWith("side-")) return "side-photo depth";
   if (source === "wear-depth-ratio-formula") return "WEAR regression";
@@ -105,12 +106,14 @@ function WearRegressionEquation({ row }: { row: GeminiGuideMeasurementRow }) {
   );
 }
 
-function LocalMlRowEquation({ prediction, heightCm }: {
+function LocalMlRowEquation({ prediction, heightCm, activeYPx }: {
   prediction?: LocalMlNormalizedRowPrediction;
   heightCm: number;
+  activeYPx: number;
 }) {
   const formula = prediction?.rowFormula;
   if (!prediction || !formula) return null;
+  const coordinateOverride = prediction.reviewedCoordinateOverride;
   const terms = formula.featureNames.map((name, index) => ({
     name,
     value: formula.featureValues[index] ?? 0,
@@ -120,7 +123,14 @@ function LocalMlRowEquation({ prediction, heightCm }: {
     + formula.activeBodyFraction * (formula.maskBottomNorm - formula.maskTopNorm);
   return (
     <div className="mt-2 rounded-lg border border-blue-200 bg-blue-50 p-2 text-[10px] leading-4 text-blue-950">
-      <div className="font-semibold">Local ML row-height equation</div>
+      <div className="font-semibold">
+        Local ML row-height equation{coordinateOverride ? " · comparison only" : ""}
+      </div>
+      {coordinateOverride ? (
+        <div className="mt-1 rounded border border-amber-300 bg-amber-50 px-2 py-1 text-amber-900">
+          Active red row: Y {activeYPx}px from {coordinateOverride.label}. Local ML originally predicted Y {coordinateOverride.modelYPx}px.
+        </div>
+      ) : null}
       <div className="mt-1 font-mono text-[10px] break-words">
         body fraction = {terms.map((term, index) => (
           <span key={`${term.name}-${index}`}>{index ? (term.coefficient >= 0 ? " + " : " − ") : ""}{Math.abs(term.coefficient).toFixed(6)} × {FEATURE_LABELS[term.name] ?? term.name} ({term.value.toFixed(4)})</span>
@@ -145,16 +155,32 @@ function LiveRowMath({
   row,
   prediction,
   heightCm,
+  weightKg,
+  gender,
 }: {
   mode: FormulaMode;
   label: string;
   row: GeminiGuideMeasurementRow;
   prediction?: LocalMlNormalizedRowPrediction;
   heightCm: number;
+  weightKg: number;
+  gender: "male" | "female";
 }) {
   const pixelSpan = Math.abs(row.rightXPx - row.leftXPx);
   const cohort = prediction?.wearDepthCohort;
-  const a = row.formulaWidthCm / 2;
+  const absoluteDepthModel = prediction?.wearAbsoluteDepthModel;
+  const bmi = weightKg / ((heightCm / 100) ** 2);
+  const isMale = gender === "male" ? 1 : 0;
+  const absoluteFeatureValues: Record<string, number> = {
+    breadthCm: row.formulaWidthCm,
+    bmi,
+    heightCm,
+    isMale,
+    breadthMale: row.formulaWidthCm * isMale,
+    bmiMale: bmi * isMale,
+  };
+  const activeWidthCm = row.calculationWidthCm;
+  const a = activeWidthCm / 2;
   const b = row.depthCm / 2;
   const usesSideDepth = row.sideDepthAccepted && row.sideDepthRawCm != null;
   const sideComponent = row.sideDepthProjectionLeakRatio == null
@@ -169,7 +195,7 @@ function LiveRowMath({
       </div>
 
       {mode === "local-ml" ? (
-        <LocalMlRowEquation prediction={prediction} heightCm={heightCm} />
+        <LocalMlRowEquation prediction={prediction} heightCm={heightCm} activeYPx={row.yPx} />
       ) : (
         <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-[10px] leading-4 text-amber-950">
           <span className="font-semibold">Row position:</span> no formula. You placed this red line at Y {row.yPx}px.
@@ -180,21 +206,45 @@ function LiveRowMath({
         <div className="rounded-lg bg-slate-50 p-2">
           <div className="font-semibold text-slate-800">A · Red pixels</div>
           <div className="mt-1 font-mono text-[10px] text-slate-700">|right − left| = |{row.rightXPx} − {row.leftXPx}| = {pixelSpan}px</div>
-          <div className="mt-1 text-slate-600">{mode === "local-ml" ? "MediaPipe supplied these temporary visible edges." : "Your red endpoints supplied these edges."}</div>
+          <div className="mt-1 text-slate-600">
+            {mode === "local-ml"
+              ? prediction?.reviewedCoordinateOverride
+                ? `${prediction.reviewedCoordinateOverride.label} supplied the active endpoints. Local ML/MediaPipe originally proposed X ${prediction.reviewedCoordinateOverride.modelLeftXPx}–${prediction.reviewedCoordinateOverride.modelRightXPx}.`
+                : "MediaPipe supplied these temporary visible edges."
+              : "Your red endpoints supplied these edges."}
+          </div>
         </div>
         <div className="rounded-lg bg-blue-50 p-2 text-blue-950">
-          <div className="font-semibold">B · Front width</div>
+          <div className="font-semibold">B · Photo red-line breadth</div>
           <div className="mt-1 font-mono text-[10px]">{pixelSpan}px × {row.cmPerPx.toFixed(6)} cm/px = {row.formulaWidthCm.toFixed(2)} cm</div>
-          <div className="mt-1 text-blue-800">The red line is a straight front width, not circumference.</div>
+          <div className="mt-1 text-blue-800">The red line is a straight front breadth, not circumference. It remains active in both Local ML methods.</div>
         </div>
         <div className="rounded-lg bg-violet-50 p-2 text-violet-950">
           <div className="font-semibold">C · Front-to-back depth</div>
           {usesSideDepth ? (
             <>
               <div className="mt-1 font-mono text-[10px]">
-                ({row.sideDepthRawCm!.toFixed(2)} − {row.formulaWidthCm.toFixed(2)} × {fixed(row.sideDepthProjectionLeakRatio, 3)}) ÷ {fixed(sideComponent, 3)} = {row.depthCm.toFixed(2)} cm
+                {row.sideDepthProjectionLeakRatio && row.sideDepthProjectionLeakRatio > 0
+                  ? <>({row.sideDepthRawCm!.toFixed(2)} − {row.formulaWidthCm.toFixed(2)} × {fixed(row.sideDepthProjectionLeakRatio, 3)}) ÷ {fixed(sideComponent, 3)} = {row.depthCm.toFixed(2)} cm</>
+                  : <>{row.sideDepthRawCm!.toFixed(2)} cm = {row.depthCm.toFixed(2)} cm</>}
               </div>
-              <div className="mt-1 text-violet-800">Side-photo span corrected for camera projection.</div>
+              <div className="mt-1 text-violet-800">
+                {row.sideDepthProjectionLeakRatio && row.sideDepthProjectionLeakRatio > 0
+                  ? "Side-photo span corrected for camera projection."
+                  : "Side-photo red line directly supplies the front-to-back depth."}
+              </div>
+            </>
+          ) : row.depthSource === "wear-absolute-depth" && absoluteDepthModel ? (
+            <>
+              <div className="mt-1 font-mono text-[10px] break-words">
+                depth = {absoluteDepthModel.interceptCm.toFixed(3)}{absoluteDepthModel.featureNames.map((feature) => {
+                  const coefficient = absoluteDepthModel.coefficients[feature] ?? 0;
+                  const value = absoluteFeatureValues[feature] ?? 0;
+                  const center = absoluteDepthModel.featureCenters[feature] ?? 0;
+                  return <span key={feature}> {coefficient >= 0 ? "+" : "−"} {Math.abs(coefficient).toFixed(3)} × ({value.toFixed(2)} − {center.toFixed(2)})</span>;
+                })} = {row.depthCm.toFixed(2)} cm
+              </div>
+              <div className="mt-1 text-violet-800">WEAR predicts centimetres directly. The shown ratio {row.depthRatio.toFixed(3)} is only depth ÷ photo width after prediction.</div>
             </>
           ) : (
             <>
@@ -202,7 +252,7 @@ function LiveRowMath({
               <div className="mt-1 text-violet-800">Ratio source: {sourceLabel(row.depthSource)}.</div>
             </>
           )}
-          {cohort ? (
+          {cohort && row.depthSource !== "wear-absolute-depth" ? (
             <div className="mt-1 rounded bg-white/70 p-1.5 text-[10px]">
               Ratio = median of each person&apos;s measured depth ÷ breadth = {cohort.medianDepthRatio.toFixed(3)} from {cohort.sampleCount.toLocaleString()} people in the {cohort.gender}, {cohort.heightMinCm.toFixed(1)}–{cohort.heightMaxCm.toFixed(1)} cm, BMI {cohort.bmiMin.toFixed(0)}–{cohort.bmiMax.toFixed(0)} box. This is a group middle, not a regression formula.
             </div>
@@ -210,9 +260,9 @@ function LiveRowMath({
         </div>
         <div className="rounded-lg bg-emerald-50 p-2 text-emerald-950">
           <div className="font-semibold">D · Circumference</div>
-          <div className="mt-1 font-mono text-[10px]">a = {row.formulaWidthCm.toFixed(2)} ÷ 2 = {a.toFixed(2)} · b = {row.depthCm.toFixed(2)} ÷ 2 = {b.toFixed(2)}</div>
+          <div className="mt-1 font-mono text-[10px]">a = {activeWidthCm.toFixed(2)} ÷ 2 = {a.toFixed(2)} · b = {row.depthCm.toFixed(2)} ÷ 2 = {b.toFixed(2)}</div>
           <div className="mt-1 font-mono text-[10px] break-words">C = π[3(a+b) − √((3a+b)(a+3b))] = {row.guidedCm.toFixed(2)} cm</div>
-          <div className="mt-1 text-emerald-800">This is Ramanujan&apos;s ellipse approximation.</div>
+          <div className="mt-1 text-emerald-800">This is Ramanujan&apos;s ellipse approximation. Breadth source: photo red line.</div>
         </div>
       </div>
 
@@ -236,6 +286,10 @@ export function SimpleSizingFormulaGuide({
     ? heightCm / scaleEvidence.activeCmPerPx
     : null;
   const scaleLabel = scaleSourceLabel(measurement, scaleEvidence);
+  const usesAbsoluteDepth = Boolean(measurement?.rows.some((row) => row.depthSource === "wear-absolute-depth"));
+  const usesMeasuredSideDepth = Boolean(measurement?.rows.some(
+    (row) => row.sideDepthAccepted && row.depthSource === "side-guide-manual-coordinate",
+  ));
   const firstAnchor = scaleEvidence?.anchors[0];
   const lastAnchor = scaleEvidence?.anchors[scaleEvidence.anchors.length - 1];
 
@@ -274,8 +328,12 @@ export function SimpleSizingFormulaGuide({
           )}
         </StepCard>
         <StepCard number={4} title="Estimate body depth" tone="violet">
-          {mode === "local-ml"
-            ? "Direct WEAR mode uses the middle measured depth ÷ breadth ratio from matching people. A slider can override it."
+          {usesMeasuredSideDepth
+            ? "The side-photo red endpoints measure front-to-back depth at the same physical height as each front row. Move the side endpoints to correct it. WEAR depth and saved ratio sliders are inactive."
+            : mode === "local-ml"
+            ? usesAbsoluteDepth
+              ? "WEAR uses the photo red-line width, BMI, height and sex to predict front-to-back depth directly in centimetres. Saved ratio sliders are not used."
+              : "Direct WEAR mode uses the middle measured depth ÷ breadth ratio from matching people. A slider can override it."
             : "Manual mode uses your slider, accepted side-photo depth, or the visible WEAR regression shown below."}
         </StepCard>
         <StepCard number={5} title="Calculate around the body" tone="emerald">
@@ -305,6 +363,8 @@ export function SimpleSizingFormulaGuide({
                   row={row}
                   prediction={wearRowPredictions?.find((candidate) => candidate.kind === kind)}
                   heightCm={heightCm}
+                  weightKg={weightKg}
+                  gender={gender}
                 />
               );
             })}

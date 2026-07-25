@@ -33,7 +33,7 @@ export function LocalMlTrainingDiagram({
     : fullCheckpointReady
       ? "Rows + depth checkpoint ready"
       : rowPriorReady
-        ? checkpointReady ? "1D rows + direct WEAR depth ready" : "1D rows ready · depth data missing"
+        ? checkpointReady ? "1D rows + WEAR depth experiments ready" : "1D rows ready · depth data missing"
         : "Waiting for training data";
 
   return (
@@ -42,7 +42,7 @@ export function LocalMlTrainingDiagram({
         <div>
           <h4 className="text-sm font-medium text-slate-950">Local ML · completely separate mode</h4>
           <p className="mt-1 max-w-3xl text-xs leading-5 text-slate-600">
-            Manual Coordinate remains the labeling and proof tool. The active WEAR stage predicts vertical rows and uses direct similar-person depth medians; it does not change or load saved manual answers.
+            Manual Coordinate remains the labeling and proof tool. The active WEAR stage predicts vertical rows, then lets you keep photo red-line breadth and choose either a measured-group ratio or a WEAR-only absolute-depth formula. It does not change or load saved manual answers.
           </p>
         </div>
         <span className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${checkpointReady ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
@@ -68,15 +68,15 @@ export function LocalMlTrainingDiagram({
           { icon: BrainCircuit, title: "WEAR picks row Y", detail: "The model places natural waist, trouser proxy and hip height" },
           { icon: ScanLine, title: "Mask draws endpoints", detail: "Temporary left and right edges come from the visible person mask" },
           { icon: Ruler, title: "Manual Apple/Depth scale", detail: "The exact Manual Coordinate pipeline converts each predicted red-line pixel span into centimetres" },
-          { icon: Database, title: "Direct WEAR middle", detail: "No regression: use the middle measured depth ratio from the matching gender, 5 cm height and 2 BMI box" },
-          { icon: ShieldCheck, title: "Ellipse result", detail: "Red width × direct WEAR ratio gives depth; the existing ellipse calculator produces circumference" },
+          { icon: Database, title: "Choose depth method", detail: "One mode multiplies photo breadth by a group ratio. The other predicts depth directly in cm from photo breadth, BMI, height and sex." },
+          { icon: ShieldCheck, title: "Ellipse result", detail: "Photo red-line breadth and the selected depth enter the existing circumference calculator." },
         ]}
       />
 
       <div className="mt-4 grid gap-2 text-[11px] leading-4 sm:grid-cols-3">
         <Fact label="Current ML responsibility" value="Predict the three vertical anatomical rows" />
         <Fact label="Temporary endpoints" value="Visible MediaPipe mask edges at each predicted row" />
-        <Fact label="Temporary body depth" value="Direct WEAR cohort median; no regression formula and no saved person answer" />
+        <Fact label="Selectable depth method" value="Photo breadth + WEAR ratio, or photo breadth + WEAR absolute depth cm" />
       </div>
 
       <p className="mt-3 rounded-lg bg-white px-3 py-2 text-[11px] leading-4 text-amber-800">

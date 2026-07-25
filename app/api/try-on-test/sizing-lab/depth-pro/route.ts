@@ -8,6 +8,7 @@ import { promisify } from "node:util";
 import { NextResponse, type NextRequest } from "next/server";
 import { isSiteAuthEnabled, SITE_AUTH_COOKIE_NAME, verifySiteSessionToken } from "@/app/shared/auth/siteSession";
 import { isTestLabAvailableForHost } from "@/app/try-on-test/lib/access";
+import { runCachedLocalInference } from "../_lib/localInferenceScheduler";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -48,33 +49,65 @@ export async function POST(request: NextRequest) {
   if (!image && !existsSync(cachePath)) {
     return NextResponse.json({ ok: false, error: "Depth cache expired; resend the image." }, { status: 409 });
   }
-  const tempDirectory = await mkdtemp(path.join(tmpdir(), "primestyle-depth-pro-"));
-  const imagePath = image ? path.join(tempDirectory, `input.${parsed!.extension}`) : cachePath;
   try {
-    if (image) await writeFile(imagePath, image);
-    const python = process.env.DEPTH_PRO_PYTHON ?? "/Users/arashsn/.codex/runtime/geocalib-venv/bin/python";
-    const runtimeDirectory = process.env.DEPTH_PRO_RUNTIME ?? "/Users/arashsn/.codex/runtime/ml-depth-pro";
-    const script = path.resolve(/* turbopackIgnore: true */ process.cwd(), "scripts/depth_pro_scale_test.py");
-    const rowArgs = (body.rows ?? []).flatMap((row) => [
-      "--row", row.name, String(row.y), String(row.leftX), String(row.rightX),
-    ]);
-    const { stdout } = await execFileAsync(python, [
-      script, imagePath,
-      "--height-cm", String(body.heightCm),
-      "--top", String(body.top!.x), String(body.top!.y),
-      "--bottom", String(body.bottom!.x), String(body.bottom!.y),
-      "--proof-start", String(body.proofStart!.x), String(body.proofStart!.y),
-      "--proof-end", String(body.proofEnd!.x), String(body.proofEnd!.y),
-      "--proof-cm", String(body.proofCm),
-      "--cache-path", cachePath,
-      ...rowArgs,
-    ], { cwd: runtimeDirectory, timeout: 120_000, maxBuffer: 2 * 1024 * 1024 });
-    return NextResponse.json({ ok: true, result: { ...JSON.parse(stdout.trim()), cacheKey: imageHash } });
+    const inferenceKey = createHash("sha256")
+      .update("depth-pro-scale-v2")
+      .update(imageHash)
+      .update(JSON.stringify({
+        heightCm: body.heightCm,
+        top: body.top,
+        bottom: body.bottom,
+        proofStart: body.proofStart,
+        proofEnd: body.proofEnd,
+        proofCm: body.proofCm,
+        rows: body.rows ?? [],
+      }))
+      .digest("hex");
+    const inference = await runCachedLocalInference<Record<string, unknown>>({
+      key: `depth-pro:${inferenceKey}`,
+      label: "Depth Pro",
+      cacheGroup: "depth-pro-results",
+      cacheTtlMs: 10 * 60_000,
+      cacheMaxEntries: 8,
+      task: async () => {
+        const tempDirectory = await mkdtemp(path.join(tmpdir(), "primestyle-depth-pro-"));
+        const imagePath = image ? path.join(tempDirectory, `input.${parsed!.extension}`) : cachePath;
+        try {
+          if (image) await writeFile(imagePath, image);
+          const python = process.env.DEPTH_PRO_PYTHON ?? "/Users/arashsn/.codex/runtime/geocalib-venv/bin/python";
+          const runtimeDirectory = process.env.DEPTH_PRO_RUNTIME ?? "/Users/arashsn/.codex/runtime/ml-depth-pro";
+          const script = path.resolve(/* turbopackIgnore: true */ process.cwd(), "scripts/depth_pro_scale_test.py");
+          const rowArgs = (body.rows ?? []).flatMap((row) => [
+            "--row", row.name, String(row.y), String(row.leftX), String(row.rightX),
+          ]);
+          const { stdout } = await execFileAsync(python, [
+            script, imagePath,
+            "--height-cm", String(body.heightCm),
+            "--top", String(body.top!.x), String(body.top!.y),
+            "--bottom", String(body.bottom!.x), String(body.bottom!.y),
+            "--proof-start", String(body.proofStart!.x), String(body.proofStart!.y),
+            "--proof-end", String(body.proofEnd!.x), String(body.proofEnd!.y),
+            "--proof-cm", String(body.proofCm),
+            "--cache-path", cachePath,
+            ...rowArgs,
+          ], { cwd: runtimeDirectory, timeout: 120_000, maxBuffer: 2 * 1024 * 1024 });
+          return JSON.parse(stdout.trim()) as Record<string, unknown>;
+        } finally {
+          await rm(tempDirectory, { recursive: true, force: true });
+        }
+      },
+    });
+    return NextResponse.json({
+      ok: true,
+      result: {
+        ...inference.value,
+        cacheKey: imageHash,
+        cacheHit: inference.cacheHit || inference.value.cacheHit === true,
+      },
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Depth Pro failed.";
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
-  } finally {
-    await rm(tempDirectory, { recursive: true, force: true });
   }
 }
 
