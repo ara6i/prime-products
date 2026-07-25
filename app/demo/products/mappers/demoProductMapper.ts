@@ -13,6 +13,34 @@ import { inferSdkProductFitTypeFromSource } from "../utils/sdkProductFitType";
 
 const DEMO_BRAND = "PrimeStyleAI";
 
+function positivePrice(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : null;
+}
+
+const DEMO_USD_PRICE_OVERRIDES: Record<string, { price: number; originalPrice?: number }> = {
+  "womens-stretch-flare-jeans-layover": { price: 248 },
+  "flat-leather-criss-cross-sandals": { price: 29.95, originalPrice: 59.9 },
+  "floral-linen-blend-shirt": { price: 9.98, originalPrice: 49.9 },
+  "floral-print-linen-blend-trousers": { price: 11.98, originalPrice: 59.9 },
+};
+
+function resolveDemoPricing(p: Pick<DemoProductApi, "product_id" | "_id" | "price" | "original_price" | "currency">) {
+  const id = p.product_id ?? p._id ?? "";
+  const override = DEMO_USD_PRICE_OVERRIDES[id];
+  if (override) {
+    return {
+      price: override.price,
+      originalPrice: override.originalPrice ?? null,
+      currency: "USD",
+    };
+  }
+  return {
+    price: positivePrice(p.price),
+    originalPrice: positivePrice(p.original_price),
+    currency: p.currency ?? "USD",
+  };
+}
+
 /**
  * Proxy slow third-party image CDNs through our nginx cache.
  * Farfetch CDN (cdn-images.farfetch-contents.com) returns in ~10s from our droplet,
@@ -63,6 +91,7 @@ function toCard(p: DemoProductApi): DemoProductCard {
   const rawName  = p.name ?? "Untitled";
   const gc = p.generated_cover;
   const modelImage = shouldUseModelImage(p);
+  const pricing = resolveDemoPricing(p);
   return {
     id: p.product_id ?? p._id ?? "",
     name: cleanProductName(rawBrand, rawName),
@@ -77,9 +106,9 @@ function toCard(p: DemoProductApi): DemoProductCard {
       name: rawName,
       tags: p.tags,
     }) ?? "apparel",
-    price: typeof p.price === "number" ? p.price : null,
-    originalPrice: typeof p.original_price === "number" ? p.original_price : null,
-    currency: p.currency ?? "USD",
+    price: pricing.price,
+    originalPrice: pricing.originalPrice,
+    currency: pricing.currency,
     image: proxyImage(p.image_urls?.[0] ?? p.gallery?.[0] ?? p.variant_image_urls?.[0] ?? ""),
     hoverImage: proxyImage(p.image_urls?.[1] ?? p.gallery?.[1] ?? p.variant_image_urls?.[1] ?? p.image_urls?.[0] ?? p.gallery?.[0] ?? p.variant_image_urls?.[0] ?? ""),
     colorVariants: buildColorVariants(p).map((variant) => ({
@@ -113,6 +142,7 @@ export function mapProductDetail(p: DemoProductApi): DemoProductView {
   const sizes = buildSizes(p);
   const rawBrand = p.brand ?? "";
   const rawName  = p.name ?? "Untitled";
+  const pricing = resolveDemoPricing(p);
 
   return {
     id: p.product_id ?? p._id ?? "",
@@ -121,11 +151,12 @@ export function mapProductDetail(p: DemoProductApi): DemoProductView {
     category: p.category ?? "",
     subcategory: p.subcategory ?? "",
     gender: p.gender ?? "",
-    price: typeof p.price === "number" ? p.price : null,
-    originalPrice: typeof p.original_price === "number" ? p.original_price : null,
-    currency: p.currency ?? "USD",
+    price: pricing.price,
+    originalPrice: pricing.originalPrice,
+    currency: pricing.currency,
     description: p.short_description || p.description || "",
-    material: p.material ?? "",
+    material: buildMaterial(p),
+    fitDetails: buildFitDetails(p),
     images,
     primaryImage: images[0] ?? "",
     sizes,
@@ -142,15 +173,74 @@ export function mapProductDetail(p: DemoProductApi): DemoProductView {
 
 function buildCompleteLook(p: DemoProductApi): DemoCompleteLookProduct[] {
   return (p.related_products ?? [])
-    .map((item) => ({
-      id: item.id ?? "",
-      name: cleanProductName(item.brand ?? "", item.name ?? "Untitled"),
-      brand: item.brand || DEMO_BRAND,
-      price: typeof item.price === "number" ? item.price : null,
-      currency: item.currency ?? p.currency ?? "USD",
-      image: proxyImage(item.image ?? ""),
-    }))
+    .map((item) => {
+      const pricing = resolveDemoPricing({
+        product_id: item.id,
+        price: item.price,
+        currency: item.currency ?? p.currency,
+      });
+      return {
+        id: item.id ?? "",
+        name: cleanProductName(item.brand ?? "", item.name ?? "Untitled"),
+        brand: item.brand || DEMO_BRAND,
+        price: pricing.price,
+        currency: pricing.currency,
+        image: proxyImage(item.image ?? ""),
+      };
+    })
     .filter((item) => item.id && item.image);
+}
+
+function buildMaterial(p: DemoProductApi): string {
+  const material = p.material?.trim();
+  if (material) return material;
+  return /\bleather\b/i.test(p.name ?? "") ? "Leather" : "";
+}
+
+function buildFitDetails(p: DemoProductApi): DemoProductView["fitDetails"] {
+  const metadata = p.metadata ?? {};
+  const tags = [...(p.tags ?? []), ...(metadata.sourceTags ?? [])];
+  const text = `${p.name ?? ""} ${p.description ?? ""} ${p.short_description ?? ""} ${p.material ?? ""}`;
+  const isGarment = /\b(dress|gown|jeans|denim|pants|trousers|skirt|top|shirt|blouse|jacket|coat|suit|apparel)\b/i.test(
+    `${p.category ?? ""} ${p.subcategory ?? ""} ${text}`,
+  );
+
+  const stretchTag = tags.find((tag) => /\bvery stretchy\b/i.test(tag))
+    ?? tags.find((tag) => /^stretch2:/i.test(tag))
+    ?? tags.find((tag) => /\bstretch(?:y)?\b/i.test(tag));
+  let stretch: string | undefined;
+  if (stretchTag) {
+    const cleaned = stretchTag.replace(/^stretch2:\s*(?:\d+\s*-\s*)?/i, "").trim();
+    stretch = cleaned
+      ? cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase()
+      : "Stretch fabric";
+  } else if (/\bstretch denim\b/i.test(text)) {
+    stretch = "Stretch denim";
+  } else if (/\b(elastane|spandex)\b/i.test(text)) {
+    stretch = "Contains stretch fiber";
+  } else if (isGarment) {
+    stretch = "Not specified";
+  }
+
+  const structureParts = [
+    /\bfully lined\b/i.test(text) ? "Fully lined" : "",
+    /\bbasque waist\b/i.test(text) ? "Basque waist" : "",
+    /\bback zipper\b/i.test(text) ? "Back zipper" : "",
+  ].filter(Boolean);
+
+  const descriptionInseam = text.match(/\b(\d+(?:\.\d+)?)\s*[- ]?inch inseam\b/i);
+  const inseam = typeof metadata.inseam === "string"
+    ? metadata.inseam
+    : descriptionInseam
+      ? `${descriptionInseam[1]} in`
+      : undefined;
+
+  return {
+    stretch,
+    structure: structureParts.length > 0 ? structureParts.join(" · ") : undefined,
+    inseam,
+    modelReference: typeof metadata.model === "string" ? metadata.model : undefined,
+  };
 }
 
 function buildImages(p: DemoProductApi): string[] {

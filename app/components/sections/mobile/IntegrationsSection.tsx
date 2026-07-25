@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Tabs as TabsPrimitive } from "radix-ui";
-import { Package, Zap, LayoutGrid, ShoppingBag, Clock3 } from "lucide-react";
+import { Package, LayoutGrid, ShoppingBag, Clock3 } from "lucide-react";
 import { Reveal } from "../../shared/Reveal";
 import { Eyebrow } from "../../shared/Eyebrow";
 import { LandingButton } from "../../shared/LandingButton";
@@ -83,20 +83,6 @@ const TABS: IntegrationTab[] = [
     },
   },
   {
-    value: "api",
-    label: "API",
-    icon: <Zap className="h-3.5 w-3.5 shrink-0" />,
-    content: {
-      status: "available",
-      title: "REST API",
-      description:
-        "Direct endpoints for photo sizing, smart sizing, virtual try-on, and catalog sync. Webhook events keep long-running jobs in your own queue, and a typed OpenAPI spec means clients in any language. Build the experience you want — we just return the answer.",
-      primaryHref: "#pilot",
-      primaryLabel: "Apply for free pilot",
-      visual: { kind: "code" },
-    },
-  },
-  {
     value: "widget",
     label: "Widget",
     icon: <LayoutGrid className="h-3.5 w-3.5 shrink-0" />,
@@ -131,10 +117,10 @@ export function IntegrationsSection() {
       <Reveal variant="fade" className="mb-6 flex flex-col items-center gap-3 text-center">
         <Eyebrow>{translate("Ship it your way")}</Eyebrow>
         <h2 className="text-[26px] font-medium leading-[1.1] tracking-[-0.02em] text-text-primary">
-          {translate("Four ways to integrate.")}
+          {translate("Three ways to integrate.")}
         </h2>
         <p className="text-[15px] leading-[1.55] text-text-body">
-          {translate("SDK, Shopify app, and REST API are live today. Widget is next up.")}
+          {translate("SDK and Shopify app are live today. Widget is next up.")}
         </p>
       </Reveal>
 

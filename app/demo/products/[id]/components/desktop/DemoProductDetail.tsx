@@ -242,10 +242,10 @@ export function DesktopProductDetail({ product }: Props) {
     productDescription: product.description,
     productPrice: positivePrice(product.price),
     productCompareAtPrice: positivePrice(product.originalPrice),
-    productCurrency: "USD",
+    productCurrency: product.currency,
     sizeGuideData: product.sizeGuideData,
     apiUrl: sdkApiUrl,
-  }), [product.id, product.name, product.primaryImage, product.category, product.subcategory, product.description, product.price, product.originalPrice, product.sizeGuideData, sdkApiUrl]);
+  }), [product.id, product.name, product.primaryImage, product.category, product.subcategory, product.description, product.price, product.originalPrice, product.currency, product.sizeGuideData, sdkApiUrl]);
   const autoSize = usePrimeStyleSize(autoSizeInput);
   const hasProfileSizeResult = Boolean(autoSize.recommendedSize || autoSize.sections);
   const hasAuthenticatedProfile = Boolean(autoSize.authenticatedProfile);
@@ -404,6 +404,14 @@ export function DesktopProductDetail({ product }: Props) {
     setJacketLength("");
   };
 
+  const productFacts = [
+    { label: translateDemo("material"), value: product.material },
+    { label: translateDemo("stretch"), value: product.fitDetails.stretch },
+    { label: translateDemo("structure"), value: product.fitDetails.structure },
+    { label: translateDemo("inseam"), value: product.fitDetails.inseam },
+    { label: translateDemo("modelReference"), value: product.fitDetails.modelReference },
+  ].filter((fact): fact is { label: string; value: string } => Boolean(fact.value));
+
 
   return (
     <div className="min-h-screen bg-white text-text-primary">
@@ -443,13 +451,15 @@ export function DesktopProductDetail({ product }: Props) {
           <div className="px-[2.5vw] py-[3vw]">
             <p style={{ fontSize: '0.72vw' }} className="text-text-hint uppercase tracking-[0.18em] mb-[0.6vw]">{product.brand}</p>
             <h1 style={{ fontSize: '2.0vw', lineHeight: 1.1 }} className="font-semibold tracking-[-0.025em] text-text-primary mb-[1.2vw]">{product.name}</h1>
-            {product.price !== null && product.price > 0 && (
+            {product.price !== null ? (
               <div className="mb-[1.1vw] flex items-baseline gap-[0.6vw]">
-                <span style={{ fontSize: '1.05vw' }} className="font-semibold text-text-primary">{formatProductPrice(product.price)}</span>
+                <span style={{ fontSize: '1.05vw' }} className="font-semibold text-text-primary">{formatProductPrice(product.price, product.currency)}</span>
                 {product.originalPrice !== null && product.originalPrice > 0 && product.originalPrice > product.price && (
-                  <span style={{ fontSize: '0.78vw' }} className="text-text-disabled line-through">{formatProductPrice(product.originalPrice)}</span>
+                  <span style={{ fontSize: '0.78vw' }} className="text-text-disabled line-through">{formatProductPrice(product.originalPrice, product.currency)}</span>
                 )}
               </div>
+            ) : (
+              <p style={{ fontSize: '0.8vw' }} className="mb-[1.1vw] text-text-caption">{translateDemo("priceUnavailable")}</p>
             )}
 
             {product.description && (
@@ -460,13 +470,13 @@ export function DesktopProductDetail({ product }: Props) {
               />
             )}
 
-            {product.material && (
-              <div style={{ fontSize: '0.75vw' }} className="flex items-center gap-[0.5vw] text-text-caption mt-[1vw]">
-                <span className="whitespace-nowrap">{translateDemo("material")}</span>
+            {productFacts.map((fact) => (
+              <div key={fact.label} style={{ fontSize: '0.75vw' }} className="flex items-center gap-[0.5vw] text-text-caption mt-[1vw]">
+                <span className="whitespace-nowrap">{fact.label}</span>
                 <span className="flex-1 h-px bg-border-light" />
-                <span className="text-text-body text-right">{product.material}</span>
+                <span className="text-text-body text-right">{fact.value}</span>
               </div>
-            )}
+            ))}
           </div>
         </div>
 
@@ -631,7 +641,7 @@ export function DesktopProductDetail({ product }: Props) {
               productImage={images[0] ?? product.primaryImage}
               productPrice={positivePrice(product.price)}
               productCompareAtPrice={positivePrice(product.originalPrice)}
-              productCurrency="USD"
+              productCurrency={product.currency}
               productImages={images}
               productCarouselItems={sdkCarouselItems}
               locale={sdkLocale}
@@ -721,7 +731,7 @@ function CompleteLookRow({ products }: { products: DemoProductView["completeLook
             </div>
             <p style={{ fontSize: '0.62vw' }} className="mt-[0.35vw] text-text-body font-medium leading-tight line-clamp-2 group-hover:text-brand-blue transition-colors">{item.name}</p>
             {item.price !== null && item.price > 0 && (
-              <p style={{ fontSize: '0.58vw' }} className="mt-[0.15vw] text-text-disabled">{formatLookPrice(item.price)}</p>
+              <p style={{ fontSize: '0.58vw' }} className="mt-[0.15vw] text-text-disabled">{formatProductPrice(item.price, item.currency)}</p>
             )}
           </Link>
         ))}
@@ -730,14 +740,10 @@ function CompleteLookRow({ products }: { products: DemoProductView["completeLook
   );
 }
 
-function formatLookPrice(price: number): string {
-  return formatProductPrice(price);
-}
-
-function formatProductPrice(price: number): string {
-  const fractionDigits = Number.isInteger(price) ? 0 : 2;
-  return `$${price.toLocaleString("en-US", {
-    minimumFractionDigits: fractionDigits,
-    maximumFractionDigits: fractionDigits,
-  })}`;
+function formatProductPrice(price: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency || "USD",
+    maximumFractionDigits: Number.isInteger(price) ? 0 : 2,
+  }).format(price);
 }

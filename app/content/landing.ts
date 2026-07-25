@@ -25,7 +25,7 @@ export const DEMO_HREF = "/demo/products";
 export const SHOPIFY_APP_HREF = "https://apps.shopify.com/primestyleai";
 
 export const HERO: HeroContent = {
-  eyebrow: "SDK · Widget · API · Shopify",
+  eyebrow: "SDK · Widget · Shopify",
   headline: "The",
   headlineEm: "Decision Engine",
   subhead: "Photo-based sizing · Virtual try-on · Trained on your size\u00A0guide",
@@ -209,8 +209,8 @@ export const GARMENTS: GarmentsContent = {
 
 export const INTEGRATIONS: IntegrationContent = {
   eyebrow: "Ship it your way",
-  title: "Four ways to integrate.",
-  subtitle: "SDK, Shopify app, and REST API are live today. Widget is next up — get on the list and we'll ping you the day it ships.",
+  title: "Three ways to integrate.",
+  subtitle: "SDK and Shopify app are live today. Widget is next up — get on the list and we'll ping you the day it ships.",
   methods: [
     {
       id: "sdk",
@@ -226,14 +226,6 @@ export const INTEGRATIONS: IntegrationContent = {
       title: "Shopify App",
       body: "One-click install. Trained on your size chart, themed to your store, live on every product page in minutes.",
       docsHref: SHOPIFY_APP_HREF,
-      badge: "Available",
-    },
-    {
-      id: "api",
-      label: "API",
-      title: "REST API",
-      body: "Full-control endpoints for sizing, try-on, and catalog sync. Bring your own frontend, ours stays out of the way.",
-      docsHref: `${DOCS_HREF}#api`,
       badge: "Available",
     },
     {
@@ -329,12 +321,12 @@ export const TRY_ON_PACKAGE_TIERS = [
 
 export const CTA: CtaBannerContent = {
   title: "Match every shopper to the right size.",
-  body: "Grab an API key and ship sizing + try-on in an afternoon.",
+  body: "Install the SDK and ship sizing + try-on in an afternoon.",
   primaryLabel: "Apply for free pilot",
   primaryHref: GET_API_KEY_HREF,
   secondaryLabel: "See it in action",
   secondaryHref: DEMO_HREF,
-  footer: "Free tier · SDK, Widget, API, Shopify · No credit card required",
+  footer: "Free tier · SDK, Widget, Shopify · No credit card required",
 };
 
 export const ASK_AI: AskAiContent = {

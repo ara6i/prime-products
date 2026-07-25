@@ -36,7 +36,11 @@ export function DemoProductShowcase({ products }: DemoProductShowcaseProps) {
 
   useEffect(() => {
     if (reduceMotion) {
-      return;
+      const id = window.setTimeout(() => {
+        setIntroProgress(100);
+        setIntroComplete(true);
+      }, 0);
+      return () => window.clearTimeout(id);
     }
 
     let frame = 0;
@@ -136,14 +140,14 @@ export function DemoProductShowcase({ products }: DemoProductShowcaseProps) {
         <div className="absolute inset-x-0 top-0 h-px bg-[#2154EF]/20" />
         <EditorialTicker reduceMotion={!!reduceMotion} />
 
-        <div className="mx-auto grid min-h-[calc(100svh-72px)] w-full max-w-[1440px] grid-cols-1 gap-8 px-5 pb-10 pt-8 md:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(340px,0.62fr)] lg:items-end lg:px-10 lg:pb-12">
-          <div className="relative z-10 flex min-h-[58svh] flex-col justify-center gap-8 lg:min-h-[68vh]">
+        <div className="mx-auto grid min-h-[calc(100svh-72px)] w-full max-w-[1440px] grid-cols-1 gap-8 px-5 pb-10 pt-6 md:px-8 md:pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(340px,0.62fr)] lg:items-end lg:px-10 lg:pb-12">
+          <div className="relative z-10 flex min-h-[44svh] flex-col justify-center gap-6 md:min-h-[52svh] md:gap-8 lg:min-h-[68vh]">
             <div className="flex items-center justify-between gap-4 text-xs uppercase tracking-[0.18em] text-[#2154EF]/65 lg:absolute lg:left-0 lg:right-0 lg:top-0">
               <span>{translateDemo("primeStyleDemo")}</span>
               <span>{translateDemo("productsCount", { count: String(products.length).padStart(3, "0") })}</span>
             </div>
 
-            <div className="flex -translate-y-4 flex-col justify-center gap-8 pt-8 lg:-translate-y-16 lg:pt-24">
+            <div className="flex -translate-y-1 flex-col justify-center gap-6 pt-4 md:-translate-y-4 md:gap-8 md:pt-8 lg:-translate-y-16 lg:pt-24">
               <div>
                 <motion.p
                   key={`${activeGroup}-kicker`}
@@ -163,7 +167,7 @@ export function DemoProductShowcase({ products }: DemoProductShowcaseProps) {
                     exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -18, clipPath: "inset(18% 0 0 0)" }}
                     transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <h1 className="max-w-[980px] text-5xl font-semibold leading-[0.95] tracking-normal md:text-7xl lg:text-8xl">
+                    <h1 className="max-w-[980px] text-[clamp(2.65rem,12vw,4.1rem)] font-semibold leading-[0.95] tracking-normal md:text-7xl lg:text-8xl">
                       {activeCopy.title}
                     </h1>
                     <p className="mt-6 max-w-[620px] text-base leading-7 text-[#475467] md:text-lg">
@@ -448,7 +452,7 @@ function ProductTile({
             </div>
           </div>
           <div className="text-right text-sm font-semibold text-[#101828]">
-            {product.price !== null ? formatProductPrice(product.price, product.currency) : translateDemo("demoFallback")}
+            {product.price !== null ? formatProductPrice(product.price, product.currency) : translateDemo("priceUnavailable")}
           </div>
         </div>
       </Link>
