@@ -18,7 +18,7 @@ export function ToolControlPanel({ tool, ui }: ToolControlPanelProps) {
   const showPrimaryUpload = !["text-generator", "chooser"].includes(tool.mode);
 
   return (
-    <aside className="grid content-start gap-[var(--space-pdp-lg)] rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-[var(--space-pdp-lg)]">
+    <aside className="grid min-w-0 content-start gap-[var(--space-pdp-lg)] overflow-hidden rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-[var(--space-pdp-lg)]">
       <div>
         <span className="inline-flex rounded-[var(--radius-pdp-pill)] bg-[var(--color-pdp-accent-soft)] px-[var(--space-pdp-sm)] py-[var(--space-pdp-2xs)] text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-accent)]">
           Private processing

@@ -204,4 +204,28 @@
 - Scoped ESLint, TypeScript, production build, and `git diff --check`: passed.
 - Full same-state modal comparison remains blocked by the mandatory authentication gate in the controlled local browser session.
 
-final result: blocked
+## Quality control overflow correction
+
+### Evidence
+
+- Source visual truth: `/Users/arashsn/Downloads/Screenshot - 2026-07-26T202244.590.png`
+- Browser-rendered implementation: `/Users/arashsn/Projects/PrimeStyleAI/.codex-worktrees/pdp-studio-frontend/outputs/pdp-studio-functional-audit/12-quality-controls-fixed.png`
+- Focused same-input comparison: `/Users/arashsn/Projects/PrimeStyleAI/.codex-worktrees/pdp-studio-frontend/outputs/pdp-studio-functional-audit/13-quality-controls-comparison.png`
+- Source image: `998 x 330` pixels.
+- Implementation viewport and screenshot: `1269 x 714` CSS pixels and `1269 x 714` image pixels at density `1`.
+- State: authenticated Product Staging workspace with quality and output-size controls visible.
+
+### Findings and comparison history
+
+- Earlier P1: the quality selector opened a `560px`-wide floating card menu from a narrow control rail. Its Premium, Advanced, and Standard labels collided and the menu covered the before/after canvas.
+- Fix: the functional tool workspace keeps quality choices inline inside the control panel. The panel, fieldsets, and option rows now explicitly use `min-width: 0`; option buttons wrap text within their available width; and the panel clips accidental horizontal overflow.
+- Post-fix evidence: Standard, Advanced, and Premium remain fully readable inside the panel with no floating layer over the preview. Advanced and Portrait 9:16 selection states were clicked and verified through their pressed states.
+- Fonts and typography: option text retains the existing PDP Studio font, compact weight, and line height; long labels wrap instead of colliding.
+- Spacing and layout rhythm: control gaps and panel padding remain aligned with the existing white/blue system; the preview canvas keeps its full width.
+- Colors and tokens: selected and unselected controls continue using the existing cobalt, soft-blue, white, and rule tokens.
+- Image quality: the project-owned Product Staging before/after asset remains uncropped and unobscured.
+- Copy and content: the quality labels remain `Standard · 1K`, `Advanced · 2K`, and `Premium · 4K+`.
+- No additional focused crop was required beyond the recorded same-input comparison because the complete failing and corrected control regions are readable there.
+- Browser-rendered page, quality selection, output-size selection, and authenticated route passed. No new browser console error was observed.
+
+final result: passed
