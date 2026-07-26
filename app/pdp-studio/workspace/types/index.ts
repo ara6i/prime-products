@@ -9,17 +9,16 @@ export type PdpStudioWorkspacePageId =
   | "preferences";
 
 export type PdpStudioOverlayId =
-  | "activity"
   | "usage"
   | "api"
   | "upgrade"
   | "help"
+  | "preferences"
   | "space"
   | "mobile-login";
 
 export type PdpStudioUiIconName =
   | PdpStudioToolId
-  | "activity"
   | "ai"
   | "api"
   | "archive"
@@ -154,17 +153,6 @@ export interface PdpStudioPresetCollection {
   items: PdpStudioOption[];
 }
 
-export interface PdpStudioPlan {
-  id: "pro" | "max" | "ultra";
-  label: string;
-  tagline: string;
-  monthlyPrice: string;
-  yearlyPrice: string;
-  yearlyMonthlyEquivalent: string;
-  features: string[];
-  recommended?: boolean;
-}
-
 export interface PdpStudioPreferenceSection {
   id: string;
   label: string;
@@ -175,10 +163,6 @@ export interface PdpStudioAuditCatalog {
   navigation: PdpStudioNavGroup[];
   tools: PdpStudioToolDefinition[];
   backgrounds: PdpStudioPresetCollection[];
-  marketplacePresets: PdpStudioOption[];
-  socialPresets: PdpStudioOption[];
-  blankCanvases: PdpStudioOption[];
-  plans: PdpStudioPlan[];
   preferenceSections: PdpStudioPreferenceSection[];
 }
 
@@ -201,4 +185,5 @@ export interface PdpStudioLocalFile {
   id: string;
   name: string;
   previewUrl: string;
+  file?: File;
 }

@@ -20,6 +20,10 @@ export function PdpStudioTopbar({
       ? "Home"
       : pathname === "/pdp-studio/ai-tools"
         ? "AI Tools"
+      : pathname === "/pdp-studio/preferences"
+        ? "Profile"
+      : pathname === "/pdp-studio/products"
+        ? "Shopify Products"
       : pathname.includes("/tools/")
         ? "AI Tools"
         : pathname

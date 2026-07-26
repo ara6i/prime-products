@@ -1,6 +1,6 @@
 import type { PdpStudioToolId } from "../types";
 
-const asset = (name: string) => `/images/pdp-studio/ai-tools/${name}.webp`;
+const asset = (name: string) => `/images/pdp-studio/ai-tools-v2/${name}.webp`;
 
 export const PDP_STUDIO_TOOL_ASSETS: Record<PdpStudioToolId, string> = {
   "video-generator": asset("video-generator"),

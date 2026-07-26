@@ -36,7 +36,7 @@ export function PdpStudioUploadZone({
         </span>
         <span className="text-[var(--text-pdp-sm)] font-semibold text-[var(--color-pdp-ink)]">{label}</span>
         <span className="text-[var(--text-pdp-xs)] text-[var(--color-pdp-muted)]">
-          PNG, JPG, or WebP · local preview only
+          PNG, JPG, or WebP · stored privately
         </span>
         <input
           id={id}

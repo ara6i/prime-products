@@ -142,4 +142,66 @@
 - TypeScript, scoped ESLint, production build, and `git diff --check` passed.
 - Catalog contract check passed: `26` tools, `0` missing assets, `0` incorrect inline launchers, and AI Fashion Models still points to the untouched clothing-photoshoot route.
 
-final result: passed
+## Full sidebar destination parity follow-up
+
+### Current evidence
+
+- Live PhotoRoom Batch: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/tmp/pdp-studio-shell-qa-2026-07-25/source-batch-current.png`
+- Live PhotoRoom destination captures: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/tmp/pdp-studio-shell-qa-2026-07-25/source-activity.png`, `source-usage.png`, `source-visual-agents-api.png`, `source-preferences.png`, `source-upgrade.png`, `source-shopify-products-loaded.png`, `source-designs.png`, `source-brand-kit.png`, and `source-templates.png`
+- Generated Batch illustration: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/public/images/pdp-studio/batch-upload.webp`
+- Local auth-blocked render: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/tmp/pdp-studio-shell-qa-2026-07-25/local-batch-auth-blocked-final.jpg`
+
+### Implemented
+
+- Workspace switcher now uses the source-style anchored menu with the current Space, Create a Space, Manage Space, mobile login, Profile, and Sign out entries.
+- Batch now matches the source structure: upgrade banner, large dashed import surface, dedicated three-angle product asset, working local image selection, and horizontal Essentials and Studio preset rows.
+- Activity, Usage, Visual Agents and API, Preferences, Upgrade, and Help now reproduce the captured source content and overlay geometry in PrimeStyleAI's white/cobalt theme.
+- Shopify Products, Designs, Templates, and Brand Kit now reproduce the source information architecture and empty states.
+- Preferences is an overlay action from the sidebar, matching the source behavior, while the existing direct route remains available.
+- `/pdp-studio/clothing-photoshoot` was not modified.
+- No backend code or environment file was changed.
+- No Google or Omni video generation was used because the captured PhotoRoom Batch and sidebar destinations contain no video.
+
+### Verification
+
+- Scoped ESLint: passed
+- TypeScript: passed
+- Production build: passed
+- Generated Batch asset inspection: passed
+- Current authenticated interaction and same-state screenshot comparison: blocked by the expired local PDP Studio session and mandatory auth gate
+
+## Activity and Preferences parity correction
+
+- Activity was removed from the sidebar, navigation catalog, overlay types, icon map, and workspace sheets per the latest direction.
+- Preferences now uses the captured near-full-window modal geometry with a `17.5rem` settings rail and independently scrolling content.
+- The shared dialog's responsive `sm:max-w-[26.667vw]` constraint is explicitly overridden, and the Preferences content/overlay use z-indexes `601`/`600` so the modal cannot render beneath the PDP Studio header.
+- Preferences Settings now reproduces the vertical export-format radio group, file-name toggle, Editing section, automatic-regeneration toggle, Content control section, and large circular close control.
+- PrimeStyleAI's white/cobalt theme is retained while the PhotoRoom information architecture and spacing are matched.
+- Scoped ESLint, TypeScript, production build, and `git diff --check`: passed after the latest correction.
+- Current same-state local screenshot comparison remains blocked by the mandatory signed-out auth gate.
+
+## AI tool modal source/result asset correction
+
+- User-provided failing modal capture: `/Users/arashsn/Downloads/Screenshot - 2026-07-26T004215.665.png`
+- ChatGPT-browser generated source sets: `/Users/arashsn/Downloads/ChatGPT Image Jul 26, 2026, 12_32_42 AM.png`, `/Users/arashsn/Downloads/ChatGPT Image Jul 26, 2026, 12_35_22 AM.png`, and `/Users/arashsn/Downloads/ChatGPT Image Jul 26, 2026, 12_45_40 AM.png`
+- Final 27-asset inspection sheet: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/tmp/pdp-ai-tools-contact-sheet-after-2026-07-26.jpg`
+- The shared tool-card and tool-dialog asset registry now points to the cache-safe `/images/pdp-studio/ai-tools-v2/` set, so cards and modal examples use the same corrected visuals.
+- Every tool asset now depicts its actual operation. Transform tools use before/after or source/result compositions; generation tools use source-to-output or consistent multi-angle compositions.
+- Corrected examples include Ghost Mannequin, Background Remover, Recolor, Ironing, Product Fixer, Image Enhancer, AI Backgrounds, AI Expand, AI Shadows, AI Fashion Models, Product Staging, Product Beautifier, Edit with AI, Create any image, Flat Lay, Product Photography, Product Packaging, Studio Shot, Video Generator, AI Images, AI Shot List, Resize, Retouch, Instagram Story, Logo, Text, and Batch.
+- Asset relevance, product continuity, varied color usage, crop, sharpness, accidental text, and obvious generation artifacts were visually reviewed in the combined inspection sheet.
+- Scoped ESLint, TypeScript, production build, and `git diff --check`: passed.
+- Same-state modal recapture remains blocked because the controlled localhost browser session is signed out and shows the mandatory authentication gate.
+
+## AI tool modal scale and quality correction
+
+- User-provided failing scale capture: `/Users/arashsn/Downloads/Screenshot - 2026-07-26T004915.384.png`
+- Browser-served 1024px asset proof: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/tmp/product-fixer-1024-browser-proof.png`
+- The shared empty-state preview changed from a `35rem` 3:2 frame with a square image constrained by `object-contain` to a square frame sized up to `34rem`/`64vh`, eliminating the large internal side margins.
+- The shared canvas padding changed from `3rem` to `2rem`, and the description gap changed from `2rem` to `1.25rem`, giving the visual more usable area.
+- All 27 browser-generated assets were re-encoded at `1024 x 1024`, quality `96`, sharp YUV, and maximum WebP encoding effort.
+- Next Image recompression is disabled for the shared modal examples, so the high-quality project-owned WebP is served directly.
+- The selected-upload preview uses the same enlarged shared frame.
+- Scoped ESLint, TypeScript, production build, and `git diff --check`: passed.
+- Full same-state modal comparison remains blocked by the mandatory authentication gate in the controlled local browser session.
+
+final result: blocked

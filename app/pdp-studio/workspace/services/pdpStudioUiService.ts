@@ -11,20 +11,3 @@ export async function getPdpStudioToolDefinition(
   const catalog = await getPdpStudioAuditCatalog();
   return catalog.tools.find((tool) => tool.id === (toolId as PdpStudioToolId)) ?? null;
 }
-
-export interface PdpStudioPreviewResult {
-  id: string;
-  createdAt: string;
-  mode: "ui-preview";
-}
-
-export async function previewPdpStudioToolConfiguration(): Promise<PdpStudioPreviewResult> {
-  await new Promise<void>((resolve) => {
-    window.setTimeout(resolve, 450);
-  });
-  return {
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    mode: "ui-preview",
-  };
-}

@@ -49,15 +49,16 @@ export function BrandInfoPanel({ ui }: BrandInfoPanelProps) {
         </label>
       </div>
       <div className="mt-[var(--space-pdp-lg)] flex items-center gap-[var(--space-pdp-sm)]">
-        <PdpStudioButton type="button" onClick={ui.savePreview}>
-          Save preview
+        <PdpStudioButton type="button" disabled={ui.saving || ui.loading} onClick={() => void ui.save()}>
+          {ui.saving ? "Saving…" : "Save Brand Kit"}
         </PdpStudioButton>
         {ui.saved ? (
           <span role="status" className="flex items-center gap-[var(--space-pdp-xs)] text-[var(--text-pdp-sm)] font-semibold text-[var(--color-pdp-success)]">
             <PdpStudioUiIcon name="check" />
-            Saved in this tab
+            Saved
           </span>
         ) : null}
+        {ui.error ? <span role="alert" className="text-sm text-red-700">{ui.error}</span> : null}
       </div>
     </section>
   );

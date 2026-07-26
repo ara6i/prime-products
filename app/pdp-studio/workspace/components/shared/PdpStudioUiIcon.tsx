@@ -33,7 +33,6 @@ import {
   PersonSimple,
   Play,
   Plus,
-  Pulse,
   Question,
   Resize,
   Scissors,
@@ -55,7 +54,6 @@ import {
 import type { PdpStudioUiIconName } from "../../types";
 
 const ICONS: Record<PdpStudioUiIconName, Icon> = {
-  activity: Pulse,
   ai: Sparkle,
   api: Code,
   archive: Archive,

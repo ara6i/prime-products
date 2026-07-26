@@ -4,9 +4,7 @@ export function getPrimaryPdpStudioNavigation(
   groups: PdpStudioNavGroup[],
 ): PdpStudioNavGroup[] {
   const routes = groups.flatMap((group) => group.routes ?? []);
-  const actions = groups.flatMap((group) => group.actions ?? []);
   const route = (id: string) => routes.find((item) => item.id === id);
-  const action = (id: string) => actions.find((item) => item.id === id);
 
   return [
     {
@@ -14,14 +12,10 @@ export function getPrimaryPdpStudioNavigation(
         const item = route(id);
         return item ? [item] : [];
       }),
-      actions: ["activity"].flatMap((id) => {
-        const item = action(id);
-        return item ? [item] : [];
-      }),
     },
     {
       label: "Content",
-      routes: ["products", "designs", "brand-kit", "templates"].flatMap((id) => {
+      routes: ["products", "brand-kit"].flatMap((id) => {
         const item = route(id);
         return item ? [item] : [];
       }),
@@ -30,10 +24,6 @@ export function getPrimaryPdpStudioNavigation(
       label: "Workspace",
       routes: ["preferences"].flatMap((id) => {
         const item = route(id);
-        return item ? [item] : [];
-      }),
-      actions: ["usage", "api"].flatMap((id) => {
-        const item = action(id);
         return item ? [item] : [];
       }),
     },

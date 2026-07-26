@@ -5,7 +5,7 @@ import { loadPdpStudioPageContext } from "../workspace/services/loadPdpStudioPag
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Preferences · PDP Studio",
+  title: "Profile · PDP Studio",
 };
 
 export default async function PdpStudioPreferencesPage() {

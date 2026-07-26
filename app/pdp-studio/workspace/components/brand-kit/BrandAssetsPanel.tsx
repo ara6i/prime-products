@@ -1,70 +1,87 @@
 "use client";
 
+import Image from "next/image";
+import { useState } from "react";
+import type { useBrandKitUi } from "../../hooks/useBrandKitUi";
 import { PdpStudioButton } from "../shared/PdpStudioButton";
 import { PdpStudioUiIcon } from "../shared/PdpStudioUiIcon";
 
 interface BrandAssetsPanelProps {
-  notice: string;
-  onNotice: (notice: string) => void;
+  ui: ReturnType<typeof useBrandKitUi>;
 }
 
-const ASSET_GROUPS = [
-  ["Logos", "Add logo files or create a logo with AI.", "brand"],
-  ["Colors", "Define reusable brand colors.", "palette"],
-  ["Fonts", "Define reusable brand fonts.", "text"],
-  ["Models", "Save custom models that represent the brand.", "model"],
-  ["Cutouts", "Reuse product cutouts across the workspace.", "image"],
-  ["Text layers", "Save text content and styling.", "text"],
-  ["Backgrounds", "Save reusable background images.", "image"],
-  ["AI Backgrounds", "Save prompts that adapt to each product.", "sparkles"],
-] as const;
-
-export function BrandAssetsPanel({ notice, onNotice }: BrandAssetsPanelProps) {
+export function BrandAssetsPanel({ ui }: BrandAssetsPanelProps) {
+  const [color, setColor] = useState("#2154ef");
+  const [font, setFont] = useState("");
   return (
-    <div className="grid gap-[var(--space-pdp-xl)]">
-      <section>
-        <h2 className="text-[var(--text-pdp-lg)] font-bold">Quick start</h2>
-        <div className="mt-[var(--space-pdp-md)] grid gap-[var(--space-pdp-sm)] md:grid-cols-[1.2fr_0.9fr_0.8fr]">
-          {[
-            ["Import from website", "Gather a logo, colors, and fonts from a URL.", "brand"],
-            ["Create logo with AI", "Open the Logo creation workflow.", "sparkles"],
-            ["Add a custom font", "Preview a reusable brand font.", "text"],
-          ].map(([title, description, icon]) => (
-            <PdpStudioButton
-              key={title}
-              type="button"
-              variant="ghost"
-              onClick={() => onNotice(`${title} is not connected in UI preview mode.`)}
-              className="h-auto min-h-[8rem] flex-col items-start justify-end gap-[var(--space-pdp-xs)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-[var(--space-pdp-lg)] text-left text-[var(--color-pdp-ink)] hover:bg-[var(--color-pdp-surface-soft)]"
-            >
-              <PdpStudioUiIcon name={icon as "brand" | "sparkles" | "text"} className="text-[var(--color-pdp-accent)]" />
-              <span className="text-[var(--text-pdp-md)] font-bold">{title}</span>
-              <span className="whitespace-normal text-[var(--text-pdp-xs)] font-normal leading-relaxed text-[var(--color-pdp-muted)]">{description}</span>
-            </PdpStudioButton>
-          ))}
+    <div className="grid max-w-[60rem] gap-8">
+      <section className="rounded-2xl border border-[var(--color-pdp-rule)] bg-white p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-base font-semibold">Logos</h2>
+            <p className="mt-1 text-sm text-[var(--color-pdp-muted)]">Private logo assets available to eligible generators.</p>
+          </div>
+          <label className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border border-[var(--color-pdp-rule)] px-3 text-sm font-medium hover:bg-[var(--color-pdp-surface-soft)]">
+            <PdpStudioUiIcon name="plus" size={16} />
+            Add logo
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/svg+xml"
+              className="sr-only"
+              onChange={(event) => {
+                const file = event.currentTarget.files?.[0];
+                if (file) void ui.addLogo(file);
+                event.currentTarget.value = "";
+              }}
+            />
+          </label>
         </div>
-        {notice ? (
+        {ui.logos.length ? (
+          <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5">
+            {ui.logos.map((asset) => (
+              <div key={asset.id} className="relative aspect-square overflow-hidden rounded-xl border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface-soft)]">
+                <Image src={asset.url} alt="" fill unoptimized sizes="140px" className="object-contain p-3" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-4 rounded-xl border border-dashed border-[var(--color-pdp-rule-strong)] p-8 text-center text-sm text-[var(--color-pdp-muted)]">
+            No logos saved yet.
+          </p>
+        )}
+        {ui.assetNotice ? (
           <p role="status" className="mt-[var(--space-pdp-sm)] rounded-[var(--radius-pdp-sm)] bg-[var(--color-pdp-warning-soft)] p-[var(--space-pdp-sm)] text-[var(--text-pdp-sm)] text-[var(--color-pdp-warning)]">
-            {notice}
+            {ui.assetNotice}
           </p>
         ) : null}
       </section>
 
-      <section>
-        <h2 className="text-[var(--text-pdp-lg)] font-bold">Reusable assets</h2>
-        <div className="mt-[var(--space-pdp-md)] grid gap-[var(--space-pdp-sm)] sm:grid-cols-2 xl:grid-cols-4">
-          {ASSET_GROUPS.map(([title, description, icon]) => (
-            <article key={title} className="flex min-h-[11rem] flex-col rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-[var(--space-pdp-md)]">
-              <span className="grid size-[2.5rem] place-items-center rounded-[var(--radius-pdp-sm)] bg-[var(--color-pdp-accent-soft)] text-[var(--color-pdp-accent)]">
-                <PdpStudioUiIcon name={icon} />
-              </span>
-              <h3 className="mt-[var(--space-pdp-md)] text-[var(--text-pdp-md)] font-bold">{title}</h3>
-              <p className="mt-[var(--space-pdp-xs)] text-[var(--text-pdp-xs)] leading-relaxed text-[var(--color-pdp-muted)]">{description}</p>
-              <PdpStudioButton type="button" variant="ghost" onClick={() => onNotice(`${title} editing is local-only in this preview.`)} className="mt-auto w-fit bg-transparent px-0 text-[var(--color-pdp-accent)]">
-                Add preview
-              </PdpStudioButton>
-            </article>
-          ))}
+      <section className="grid gap-5 rounded-2xl border border-[var(--color-pdp-rule)] bg-white p-5 md:grid-cols-2">
+        <div>
+          <h2 className="text-base font-semibold">Colors</h2>
+          <div className="mt-3 flex gap-2">
+            <input type="color" value={color} onChange={(event) => setColor(event.target.value)} className="size-10 rounded border border-[var(--color-pdp-rule)]" />
+            <PdpStudioButton type="button" variant="outline" onClick={() => ui.addColor(color)}>Add color</PdpStudioButton>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {ui.colors.map((value) => <span key={value} title={value} className="size-9 rounded-full border border-[var(--color-pdp-rule)]" style={{ backgroundColor: value }} />)}
+          </div>
+        </div>
+        <div>
+          <h2 className="text-base font-semibold">Fonts</h2>
+          <div className="mt-3 flex gap-2">
+            <input value={font} onChange={(event) => setFont(event.target.value)} placeholder="Font family" className="h-10 min-w-0 flex-1 rounded-lg border border-[var(--color-pdp-rule)] px-3 text-sm" />
+            <PdpStudioButton type="button" variant="outline" onClick={() => { ui.addFont(font); setFont(""); }}>Add font</PdpStudioButton>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {ui.fonts.map((value) => <span key={value} className="rounded-full bg-[var(--color-pdp-surface-soft)] px-3 py-1.5 text-sm">{value}</span>)}
+          </div>
+        </div>
+        <div className="md:col-span-2">
+          <PdpStudioButton type="button" disabled={ui.saving} onClick={() => void ui.save()}>
+            {ui.saving ? "Saving…" : "Save assets"}
+          </PdpStudioButton>
+          {ui.error ? <p role="alert" className="mt-3 text-sm text-red-700">{ui.error}</p> : null}
         </div>
       </section>
     </div>

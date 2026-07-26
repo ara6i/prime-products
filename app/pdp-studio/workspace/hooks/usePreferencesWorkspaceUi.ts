@@ -1,59 +1,83 @@
 "use client";
 
-import { useState } from "react";
-
-export interface PreferenceToggleState {
-  autoRegenerate: boolean;
-  privateDesigns: boolean;
-  spaceTemplatesOnly: boolean;
-  blockExports: boolean;
-  keepFilename: boolean;
-}
+import { useEffect, useState } from "react";
+import { uploadPdpStudioAsset } from "../../platform/services/pdpStudioAssetService";
+import {
+  getPdpStudioProfile,
+  updatePdpStudioProfile,
+} from "../../platform/services/pdpStudioProfileService";
+import type { PdpStudioAsset } from "../../platform/types/pdpStudioPlatform";
 
 export function usePreferencesWorkspaceUi() {
   const [activeSection, setActiveSection] = useState("account-profile");
-  const [displayName, setDisplayName] = useState("PrimeStyleAI");
-  const [language, setLanguage] = useState("English");
-  const [appearance, setAppearance] = useState("System");
-  const [spaceName, setSpaceName] = useState("Primestyleai’s Space");
-  const [spaceDescription, setSpaceDescription] = useState("Private product imagery workspace.");
-  const [exportFormat, setExportFormat] = useState("Best for image");
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [spaceName, setSpaceName] = useState("");
+  const [photo, setPhoto] = useState<PdpStudioAsset | null>(null);
   const [savedSection, setSavedSection] = useState("");
-  const [toggles, setToggles] = useState<PreferenceToggleState>({
-    autoRegenerate: false,
-    privateDesigns: false,
-    spaceTemplatesOnly: false,
-    blockExports: false,
-    keepFilename: true,
-  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function toggle(key: keyof PreferenceToggleState): void {
-    setToggles((current) => ({ ...current, [key]: !current[key] }));
-    setSavedSection("");
+  useEffect(() => {
+    void getPdpStudioProfile()
+      .then((profile) => {
+        setDisplayName(profile.name);
+        setEmail(profile.email);
+        setSpaceName(profile.workspace.name);
+        setPhoto(profile.photo);
+      })
+      .catch((caught) =>
+        setError(caught instanceof Error ? caught.message : "Unable to load your profile."),
+      );
+  }, []);
+
+  async function save(section: string): Promise<void> {
+    setSaving(true);
+    setError(null);
+    try {
+      const profile = await updatePdpStudioProfile({
+        ...(section === "account-profile" ? { name: displayName } : {}),
+        ...(section === "space-details" ? { workspaceName: spaceName } : {}),
+      });
+      setDisplayName(profile.name);
+      setSpaceName(profile.workspace.name);
+      setPhoto(profile.photo);
+      setSavedSection(section);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Unable to save your profile.");
+    } finally {
+      setSaving(false);
+    }
   }
 
-  function save(section: string): void {
-    setSavedSection(section);
+  async function uploadPhoto(file: File): Promise<void> {
+    setSaving(true);
+    setError(null);
+    try {
+      const asset = await uploadPdpStudioAsset(file, "profile");
+      const profile = await updatePdpStudioProfile({ profilePhotoAssetId: asset.id });
+      setPhoto(profile.photo);
+      setSavedSection("account-profile");
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Unable to update your profile photo.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return {
     activeSection,
     displayName,
-    language,
-    appearance,
+    email,
     spaceName,
-    spaceDescription,
-    exportFormat,
+    photo,
     savedSection,
-    toggles,
+    saving,
+    error,
     setActiveSection,
     setDisplayName,
-    setLanguage,
-    setAppearance,
     setSpaceName,
-    setSpaceDescription,
-    setExportFormat,
-    toggle,
     save,
+    uploadPhoto,
   };
 }

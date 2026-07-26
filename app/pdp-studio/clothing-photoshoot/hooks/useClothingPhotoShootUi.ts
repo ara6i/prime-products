@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { PdpStudioClothingPhotoShootGenerateResult, PdpStudioPhotoShootView } from "../../types";
-import { mapClothingPhotoShootGeneratePayload } from "../mappers/clothingPhotoShootGenerationMapper";
 import { requestClothingPhotoShootGeneration } from "../services/clothingPhotoShootGenerationService";
 import { fileToImageDataUri } from "../utils/imageDataUri";
 
@@ -19,6 +18,7 @@ export function useClothingPhotoShootUi(view: PdpStudioPhotoShootView) {
   const [prompt, setPrompt] = useState("");
   const [garmentImageDataUri, setGarmentImageDataUri] = useState("");
   const [garmentFileName, setGarmentFileName] = useState("");
+  const [garmentFile, setGarmentFile] = useState<File | null>(null);
   const [generatedResults, setGeneratedResults] = useState<PdpStudioClothingPhotoShootGenerateResult[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStartedAt, setGenerationStartedAt] = useState<number | null>(null);
@@ -62,7 +62,7 @@ export function useClothingPhotoShootUi(view: PdpStudioPhotoShootView) {
   }, [generationStartedAt]);
 
   const canGenerate = Boolean(
-    garmentImageDataUri &&
+    garmentFile &&
       selectedModel &&
       selectedBackground &&
       selectedPose &&
@@ -79,6 +79,7 @@ export function useClothingPhotoShootUi(view: PdpStudioPhotoShootView) {
       setGenerationError("");
       setGarmentImageDataUri(await fileToImageDataUri(file));
       setGarmentFileName(file.name);
+      setGarmentFile(file);
     } catch (error) {
       setGenerationError(error instanceof Error ? error.message : "Could not load clothing image.");
     }
@@ -96,8 +97,11 @@ export function useClothingPhotoShootUi(view: PdpStudioPhotoShootView) {
     setGenerationError("");
 
     try {
-      const payload = await mapClothingPhotoShootGeneratePayload({
-        garmentImageDataUri,
+      if (!garmentFile) {
+        throw new Error("Upload a clothing image before generating.");
+      }
+      const result = await requestClothingPhotoShootGeneration({
+        garmentFile,
         model: selectedModel,
         pose: selectedPose,
         background: selectedBackground,
@@ -106,7 +110,6 @@ export function useClothingPhotoShootUi(view: PdpStudioPhotoShootView) {
         brandStyle: selectedBrandStyle,
         prompt,
       });
-      const result = await requestClothingPhotoShootGeneration(payload);
       setGeneratedResults((current) => [result, ...current]);
       setActivePicker(null);
     } catch (error) {

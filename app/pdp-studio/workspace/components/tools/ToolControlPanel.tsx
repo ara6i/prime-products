@@ -16,16 +16,15 @@ interface ToolControlPanelProps {
 
 export function ToolControlPanel({ tool, ui }: ToolControlPanelProps) {
   const showPrimaryUpload = !["text-generator", "chooser"].includes(tool.mode);
-  const unverifiedPostUpload = tool.mode === "upload";
 
   return (
     <aside className="grid content-start gap-[var(--space-pdp-lg)] rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-[var(--space-pdp-lg)]">
       <div>
-        <span className="inline-flex rounded-[var(--radius-pdp-pill)] bg-[var(--color-pdp-warning-soft)] px-[var(--space-pdp-sm)] py-[var(--space-pdp-2xs)] text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-warning)]">
-          UI preview
+        <span className="inline-flex rounded-[var(--radius-pdp-pill)] bg-[var(--color-pdp-accent-soft)] px-[var(--space-pdp-sm)] py-[var(--space-pdp-2xs)] text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-accent)]">
+          Private processing
         </span>
         <p className="mt-[var(--space-pdp-sm)] text-[var(--text-pdp-xs)] leading-relaxed text-[var(--color-pdp-muted)]">
-          Files stay in this browser tab. No generation or upload request is sent.
+          Inputs and results are stored as authenticated assets in your Space.
         </p>
       </div>
 
@@ -71,25 +70,36 @@ export function ToolControlPanel({ tool, ui }: ToolControlPanelProps) {
         </label>
       ) : null}
 
-      {unverifiedPostUpload && ui.primaryFiles.length ? (
-        <p className="rounded-[var(--radius-pdp-sm)] bg-[var(--color-pdp-warning-soft)] p-[var(--space-pdp-sm)] text-[var(--text-pdp-xs)] leading-relaxed text-[var(--color-pdp-warning)]">
-          The audit could not verify this tool’s post-upload controls. This screen stops at the truthful upload state.
+      {ui.error ? (
+        <p role="alert" className="rounded-[var(--radius-pdp-sm)] bg-red-50 p-[var(--space-pdp-sm)] text-[var(--text-pdp-xs)] leading-relaxed text-red-700">
+          {ui.error}
         </p>
       ) : null}
 
       <PdpStudioButton
         type="button"
-        disabled={!ui.canPreview || unverifiedPostUpload}
+        disabled={!ui.canPreview}
         onClick={() => void ui.runPreview()}
         className="w-full gap-[var(--space-pdp-xs)]"
       >
-        <PdpStudioUiIcon name={ui.previewState === "working" ? "more" : "sparkles"} />
-        {ui.previewState === "working"
-          ? "Preparing preview…"
-          : unverifiedPostUpload
-            ? "Post-upload controls not audited"
-            : `Preview ${tool.outputCount ?? 1} ${tool.outputCount === 2 ? "images" : "image"}`}
+        <PdpStudioUiIcon name={ui.previewState === "working" || ui.previewState === "uploading" ? "more" : "sparkles"} />
+        {ui.previewState === "uploading"
+          ? "Uploading securely…"
+          : ui.previewState === "working"
+            ? "Processing…"
+            : `Generate ${tool.outputCount ?? 1} ${tool.outputCount === 2 ? "images" : tool.id === "video-generator" ? "video" : "image"}`}
       </PdpStudioButton>
+
+      {ui.job && (ui.job.status === "queued" || ui.job.status === "running") ? (
+        <PdpStudioButton type="button" variant="outline" onClick={() => void ui.cancel()}>
+          Cancel
+        </PdpStudioButton>
+      ) : null}
+      {ui.job && (ui.job.status === "failed" || ui.job.status === "cancelled") ? (
+        <PdpStudioButton type="button" variant="outline" onClick={() => void ui.retry()}>
+          Retry
+        </PdpStudioButton>
+      ) : null}
     </aside>
   );
 }
