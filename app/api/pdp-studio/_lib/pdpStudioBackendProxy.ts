@@ -19,7 +19,9 @@ export async function proxyPdpStudioRequest(
 ): Promise<Response> {
   const cookieStore = await cookies();
   const session = cookieStore.get(PDP_STUDIO_SESSION_COOKIE_NAME)?.value;
-  if (!session) {
+  const authBypassEnabled =
+    process.env.PDP_STUDIO_AUTH_BYPASS?.toLowerCase() === "true";
+  if (!session && !authBypassEnabled) {
     return NextResponse.json(
       { ok: false, error: "PDP Studio login is required." },
       { status: 401 },
@@ -30,10 +32,12 @@ export async function proxyPdpStudioRequest(
   const headers = new Headers();
   const contentType = request.headers.get("content-type");
   if (contentType) headers.set("Content-Type", contentType);
-  headers.set(
-    "Cookie",
-    `${PDP_STUDIO_SESSION_COOKIE_NAME}=${encodeURIComponent(session)}`,
-  );
+  if (session) {
+    headers.set(
+      "Cookie",
+      `${PDP_STUDIO_SESSION_COOKIE_NAME}=${encodeURIComponent(session)}`,
+    );
+  }
 
   const hasBody = !["GET", "HEAD"].includes(request.method);
   const body = hasBody ? await request.arrayBuffer() : undefined;

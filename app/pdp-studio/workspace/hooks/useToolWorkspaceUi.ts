@@ -42,11 +42,30 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
         (tool.options ?? []).map((option) => [option.label, option.values[0]?.id ?? ""]),
       ),
   );
-  const [previewState, setPreviewState] = useState<PreviewState>("idle");
+  const [localPreviewState, setPreviewState] = useState<PreviewState>("idle");
   const [previewId, setPreviewId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const objectUrls = useRef<string[]>([]);
-  const progress = usePdpStudioJobProgress();
+  const {
+    job,
+    setJob,
+    watch,
+    stop,
+  } = usePdpStudioJobProgress();
+  const previewState: PreviewState = job
+    ? job.status === "succeeded"
+      ? "ready"
+      : job.status === "failed"
+        ? "failed"
+        : job.status === "cancelled"
+          ? "cancelled"
+          : "working"
+    : localPreviewState;
+  const effectiveError =
+    error ??
+    (job?.status === "failed"
+      ? job.error?.message ?? "PDP Studio generation failed."
+      : null);
 
   useEffect(() => {
     const jobId = new URL(window.location.href).searchParams.get("job");
@@ -56,7 +75,7 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
       .then((job) => {
         if (!active || job.toolId !== tool.id) return;
         setPreviewId(job.id);
-        progress.watch(job);
+        watch(job);
       })
       .catch((caught) => {
         if (!active) return;
@@ -69,7 +88,7 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
     return () => {
       active = false;
     };
-  }, [progress.watch, tool.id, tool.mode]);
+  }, [tool.id, tool.mode, watch]);
 
   useEffect(
     () => () => {
@@ -83,14 +102,15 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
     if (previewState === "uploading" || previewState === "working") return false;
     if (requiresPrimaryUpload && primaryFiles.length === 0) return false;
     if (tool.mode === "dual-upload" && secondaryFiles.length === 0) return false;
-    if (tool.mode === "text-generator" && !prompt.trim()) return false;
     return true;
-  }, [previewState, primaryFiles.length, prompt, requiresPrimaryUpload, secondaryFiles.length, tool.mode]);
+  }, [previewState, primaryFiles.length, requiresPrimaryUpload, secondaryFiles.length, tool.mode]);
 
   function addPrimaryFiles(files: File[]): void {
     const localFiles = toLocalFiles(tool.acceptsMultiple ? files.slice(0, 4) : files.slice(0, 1));
     objectUrls.current.push(...localFiles.map((file) => file.previewUrl));
     setPrimaryFiles(localFiles);
+    stop();
+    setJob(null);
     setPreviewState("idle");
     setError(null);
   }
@@ -99,18 +119,24 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
     const localFiles = toLocalFiles(files.slice(0, 4));
     objectUrls.current.push(...localFiles.map((file) => file.previewUrl));
     setSecondaryFiles(localFiles);
+    stop();
+    setJob(null);
     setPreviewState("idle");
     setError(null);
   }
 
   function selectOption(group: string, optionId: string): void {
     setSelectedOptions((current) => ({ ...current, [group]: optionId }));
+    stop();
+    setJob(null);
     setPreviewState("idle");
     setError(null);
   }
 
   async function runPreview(): Promise<void> {
     if (!canPreview || tool.id === "ai-images") return;
+    stop();
+    setJob(null);
     setError(null);
     setPreviewState("uploading");
     try {
@@ -138,7 +164,7 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
       });
       setPreviewId(job.id);
       rememberPdpStudioJobId(job.id);
-      progress.watch(job);
+      watch(job);
     } catch (caught) {
       setError(
         caught instanceof Error ? caught.message : "PDP Studio generation failed.",
@@ -148,10 +174,10 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
   }
 
   async function cancel(): Promise<void> {
-    if (!progress.job) return;
+    if (!job) return;
     try {
-      const job = await cancelPdpStudioJob(progress.job.id);
-      progress.setJob(job);
+      const cancelledJob = await cancelPdpStudioJob(job.id);
+      setJob(cancelledJob);
       setPreviewState("cancelled");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Unable to cancel this job.");
@@ -159,29 +185,19 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
   }
 
   async function retry(): Promise<void> {
-    if (!progress.job) return;
+    if (!job) return;
     setError(null);
     setPreviewState("working");
     try {
-      const job = await retryPdpStudioJob(progress.job.id);
-      setPreviewId(job.id);
-      rememberPdpStudioJobId(job.id);
-      progress.watch(job);
+      const retriedJob = await retryPdpStudioJob(job.id);
+      setPreviewId(retriedJob.id);
+      rememberPdpStudioJobId(retriedJob.id);
+      watch(retriedJob);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Unable to retry this job.");
       setPreviewState("failed");
     }
   }
-
-  useEffect(() => {
-    if (!progress.job) return;
-    if (progress.job.status === "succeeded") setPreviewState("ready");
-    else if (progress.job.status === "failed") {
-      setPreviewState("failed");
-      setError(progress.job.error?.message ?? "PDP Studio generation failed.");
-    } else if (progress.job.status === "cancelled") setPreviewState("cancelled");
-    else setPreviewState("working");
-  }, [progress.job]);
 
   return {
     primaryFiles,
@@ -190,8 +206,8 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
     selectedOptions,
     previewState,
     previewId,
-    job: progress.job,
-    error,
+    job,
+    error: effectiveError,
     canPreview,
     setPrompt,
     addPrimaryFiles,

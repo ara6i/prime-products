@@ -59,19 +59,25 @@ export function ToolControlPanel({ tool, ui }: ToolControlPanelProps) {
       {tool.promptLabel ? (
         <label className="grid gap-[var(--space-pdp-xs)]">
           <span className="text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-ink-soft)]">
-            {tool.promptLabel}
+            {tool.promptLabel}{" "}
+            <span className="font-normal text-[var(--color-pdp-muted)]">
+              (optional)
+            </span>
           </span>
           <textarea
             value={ui.prompt}
             onChange={(event) => ui.setPrompt(event.target.value)}
-            placeholder={tool.promptLabel}
+            placeholder="Leave blank to use the recommended default"
             className="min-h-[7rem] resize-y rounded-[var(--radius-pdp-sm)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-paper)] p-[var(--space-pdp-sm)] text-[var(--text-pdp-sm)] text-[var(--color-pdp-ink)] outline outline-2 outline-transparent placeholder:text-[var(--color-pdp-muted)] focus-visible:outline-[var(--color-pdp-focus)]"
           />
         </label>
       ) : null}
 
       {ui.error ? (
-        <p role="alert" className="rounded-[var(--radius-pdp-sm)] bg-red-50 p-[var(--space-pdp-sm)] text-[var(--text-pdp-xs)] leading-relaxed text-red-700">
+        <p
+          role="alert"
+          className="rounded-[var(--radius-pdp-sm)] bg-red-50 p-[var(--space-pdp-sm)] text-[var(--text-pdp-xs)] leading-relaxed text-red-700"
+        >
           {ui.error}
         </p>
       ) : null}
@@ -82,21 +88,43 @@ export function ToolControlPanel({ tool, ui }: ToolControlPanelProps) {
         onClick={() => void ui.runPreview()}
         className="w-full gap-[var(--space-pdp-xs)]"
       >
-        <PdpStudioUiIcon name={ui.previewState === "working" || ui.previewState === "uploading" ? "more" : "sparkles"} />
+        <PdpStudioUiIcon
+          name={
+            ui.previewState === "working" || ui.previewState === "uploading"
+              ? "more"
+              : "sparkles"
+          }
+        />
         {ui.previewState === "uploading"
           ? "Uploading securely…"
           : ui.previewState === "working"
             ? "Processing…"
-            : `Generate ${tool.outputCount ?? 1} ${tool.outputCount === 2 ? "images" : tool.id === "video-generator" ? "video" : "image"}`}
+            : `Generate ${tool.outputCount ?? 1} ${
+                tool.outputCount === 2
+                  ? "images"
+                  : tool.id === "video-generator"
+                    ? "video"
+                    : "image"
+              }`}
       </PdpStudioButton>
 
-      {ui.job && (ui.job.status === "queued" || ui.job.status === "running") ? (
-        <PdpStudioButton type="button" variant="outline" onClick={() => void ui.cancel()}>
+      {ui.job &&
+      (ui.job.status === "queued" || ui.job.status === "running") ? (
+        <PdpStudioButton
+          type="button"
+          variant="outline"
+          onClick={() => void ui.cancel()}
+        >
           Cancel
         </PdpStudioButton>
       ) : null}
-      {ui.job && (ui.job.status === "failed" || ui.job.status === "cancelled") ? (
-        <PdpStudioButton type="button" variant="outline" onClick={() => void ui.retry()}>
+      {ui.job &&
+      (ui.job.status === "failed" || ui.job.status === "cancelled") ? (
+        <PdpStudioButton
+          type="button"
+          variant="outline"
+          onClick={() => void ui.retry()}
+        >
           Retry
         </PdpStudioButton>
       ) : null}

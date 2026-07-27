@@ -332,7 +332,7 @@ const ALL_TOOLS: PdpStudioToolDefinition[] = [
     acceptsMultiple: true,
     uploadLabel: "Add images",
     options: [
-      { label: "Image source", values: options(["All", "Uploads", "Shopify products", "Generated images"]) },
+      { label: "Image source", values: options(["All", "Uploads", "Shopify products", "AI images", "Designs"]) },
     ],
   }),
 ];
@@ -418,6 +418,14 @@ const BACKGROUNDS = [
   },
 ];
 
+const MARKETPLACE_PRESETS = options([
+  "Facebook Marketplace", "eBay", "Poshmark", "Depop", "Mercari", "Mercado Libre", "Shopee", "Lazada", "Etsy Square", "Etsy Landscape", "Vinted", "Amazon", "Shopify Square", "Shopify Landscape", "Shopify Portrait", "Naver Banner", "Naver Product", "Karrot", "G Market", "SSG", "Idus", "auction", "11st", "Kakao Talk Store", "Mercari JP", "Creema", "Rakuten", "Qoo10", "BUYMA", "Otto Market", "Zalando", "Kaufland", "Mercado Livre", "Nuvemshop", "WhatsApp Business", "OLX", "Line Shop", "Shopline Product", "Shopline Banner", "MOMO",
+]);
+
+const SOCIAL_PRESETS = options([
+  "Instagram Story", "Instagram Post", "Instagram Reel", "TikTok Post", "TikTok Thumbnail", "YouTube Cover", "YouTube Channel Art", "Facebook Cover", "Facebook Post", "LinkedIn Banner", "LinkedIn Profile Picture", "WhatsApp Sticker", "Pinterest", "Line",
+]);
+
 const icon = (name: PdpStudioUiIconName): PdpStudioUiIconName => name;
 
 export const PDP_STUDIO_AUDIT_CATALOG: PdpStudioAuditCatalog = {
@@ -438,13 +446,52 @@ export const PDP_STUDIO_AUDIT_CATALOG: PdpStudioAuditCatalog = {
     },
     {
       label: "Workspace",
-      routes: [{ id: "preferences", label: "Profile", icon: icon("profile"), href: "/pdp-studio/preferences" }],
+      routes: [{ id: "preferences", label: "Preferences", icon: icon("settings"), href: "/pdp-studio/preferences" }],
     },
   ],
   tools: [...CREATE_TOOLS, ...ALL_TOOLS],
   backgrounds: BACKGROUNDS,
+  marketplacePresets: MARKETPLACE_PRESETS,
+  socialPresets: SOCIAL_PRESETS,
+  blankCanvases: options(["Custom size", "Landscape", "Portrait", "Square"]),
+  plans: [
+    {
+      id: "pro",
+      label: "Pro",
+      tagline: "Create polished listings and sell more.",
+      monthlyPrice: "$7.99",
+      yearlyPrice: "$49.99",
+      yearlyMonthlyEquivalent: "$4.17/mo",
+      features: ["Batch edit up to 50 images", "High AI export limit", "1,000+ Pro templates", "HD export", "Brand Kit", "Marketplace resizing"],
+    },
+    {
+      id: "max",
+      label: "Max",
+      tagline: "Make high-quality product visuals to boost sales.",
+      monthlyPrice: "$26.99",
+      yearlyPrice: "$124.99",
+      yearlyMonthlyEquivalent: "$10.42/mo",
+      features: ["Everything in Pro", "Publish visuals to Shopify", "Batch up to 250 images", "3× faster Batch", "Best AI models", "Priority support"],
+      recommended: true,
+    },
+    {
+      id: "ultra",
+      label: "Ultra",
+      tagline: "Automate image creation across large catalogs.",
+      monthlyPrice: "$99",
+      yearlyPrice: "$990",
+      yearlyMonthlyEquivalent: "$82.50/mo",
+      features: ["Everything in Max", "4K+ quality", "Advanced AI workflows", "Fastest processing", "5,000 Batch exports", "Volume variants up to Ultra 10x"],
+    },
+  ],
   preferenceSections: [
     { id: "account-profile", label: "Profile", group: "account" },
+    { id: "account-billing", label: "Billing", group: "account" },
+    { id: "account-usage", label: "Usage", group: "account" },
     { id: "space-details", label: "Space details", group: "space" },
+    { id: "space-members", label: "Members", group: "space" },
+    { id: "space-billing", label: "Billing", group: "space" },
+    { id: "space-usage", label: "Usage", group: "space" },
+    { id: "space-settings", label: "Settings", group: "space" },
   ],
 };

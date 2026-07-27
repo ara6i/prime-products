@@ -15,22 +15,21 @@ export function ToolOptionGroups({
   onSelect,
 }: ToolOptionGroupsProps) {
   return (
-    <div className="grid min-w-0 gap-[var(--space-pdp-md)]">
+    <div className="grid gap-[var(--space-pdp-md)]">
       {options.map((group) => (
-        <fieldset key={group.label} className="min-w-0">
+        <fieldset key={group.label}>
           <legend className="text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-ink-soft)]">
             {group.label}
           </legend>
-          <div className="mt-[var(--space-pdp-xs)] flex min-w-0 flex-wrap gap-[var(--space-pdp-xs)]">
+          <div className="mt-[var(--space-pdp-xs)] flex flex-wrap gap-[var(--space-pdp-xs)]">
             {group.values.map((option) => (
               <PdpStudioButton
                 key={option.id}
                 type="button"
                 variant="ghost"
                 data-active={selectedOptions[group.label] === option.id}
-                aria-pressed={selectedOptions[group.label] === option.id}
                 onClick={() => onSelect(group.label, option.id)}
-                className="min-h-[2.25rem] max-w-full whitespace-normal break-words border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] px-[var(--space-pdp-sm)] text-center text-[var(--text-pdp-xs)] leading-tight text-[var(--color-pdp-ink-soft)] data-[active=true]:border-[var(--color-pdp-accent)] data-[active=true]:bg-[var(--color-pdp-accent-soft)] data-[active=true]:text-[var(--color-pdp-accent)]"
+                className="min-h-[2.25rem] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] px-[var(--space-pdp-sm)] text-[var(--text-pdp-xs)] text-[var(--color-pdp-ink-soft)] data-[active=true]:border-[var(--color-pdp-accent)] data-[active=true]:bg-[var(--color-pdp-accent-soft)] data-[active=true]:text-[var(--color-pdp-accent)]"
               >
                 {option.swatch ? (
                   <span className="size-[1rem] rounded-[var(--radius-pdp-pill)] border border-[var(--color-pdp-rule)]" style={{ backgroundColor: option.swatch }} />

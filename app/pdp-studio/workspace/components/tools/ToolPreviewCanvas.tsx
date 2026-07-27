@@ -13,9 +13,10 @@ interface ToolPreviewCanvasProps {
 
 export function ToolPreviewCanvas({ tool, ui }: ToolPreviewCanvasProps) {
   const output = ui.job?.outputs[0] ?? null;
-  const previewImage = output?.resourceType === "image"
-    ? output.url
-    : ui.primaryFiles[0]?.previewUrl ?? PDP_STUDIO_TOOL_ASSETS[tool.id];
+  const previewImage =
+    output?.resourceType === "image"
+      ? output.url
+      : ui.primaryFiles[0]?.previewUrl ?? PDP_STUDIO_TOOL_ASSETS[tool.id];
 
   return (
     <section className="relative min-h-[34rem] overflow-hidden rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface-soft)]">
@@ -77,7 +78,8 @@ export function ToolPreviewCanvas({ tool, ui }: ToolPreviewCanvasProps) {
                     Generation complete
                   </p>
                   <p className="mt-[var(--space-pdp-2xs)] text-[var(--text-pdp-xs)] text-[var(--color-pdp-muted)]">
-                    Job {ui.previewId.slice(0, 8)} · {ui.job?.model ?? ui.job?.provider}
+                    Job {ui.previewId.slice(0, 8)} ·{" "}
+                    {ui.job?.model ?? ui.job?.provider}
                   </p>
                   <a
                     href={output.url}

@@ -3,11 +3,18 @@ import type {
   PdpStudioToolDefinition,
   PdpStudioToolId,
 } from "../../types";
+import type {
+  PdpStudioHomeAiToolId,
+  PdpStudioImageLibrarySource,
+} from "../../types/homeToolDialog";
+import { isPdpStudioHomeAiToolId } from "../../data/pdpStudioInlineTools";
 import { PdpStudioButton } from "../shared/PdpStudioButton";
 import { PdpStudioUiIcon } from "../shared/PdpStudioUiIcon";
 
 interface HomeToolGridProps {
   tools: PdpStudioToolDefinition[];
+  onOpenImageLibrary: (source: PdpStudioImageLibrarySource) => void;
+  onOpenAiTool: (toolId: PdpStudioHomeAiToolId) => void;
 }
 
 interface HomeLauncherContentProps {
@@ -47,6 +54,8 @@ function HomeLauncherContent({
 
 export function HomeToolGrid({
   tools,
+  onOpenImageLibrary,
+  onOpenAiTool,
 }: HomeToolGridProps) {
   const byId = new Map(tools.map((tool) => [tool.id, tool]));
   const launchers = [
@@ -55,7 +64,7 @@ export function HomeToolGrid({
       label: "Start from a photo",
       icon: "upload" as const,
       featured: true,
-      href: "/pdp-studio/ai-tools",
+      action: "image-library" as const,
     },
     ...([
       "background-remover",
@@ -74,6 +83,12 @@ export function HomeToolGrid({
             icon: tool.icon,
             featured: false,
             badge: tool.badge,
+            action:
+              id === "background-remover"
+                ? ("image-library" as const)
+                : id === "ai-fashion-models"
+                  ? ("link" as const)
+                  : ("ai-tool" as const),
           }]
         : [];
     }),
@@ -109,14 +124,46 @@ export function HomeToolGrid({
             />
           );
 
+          if (tool.action === "link" && "href" in tool) {
+            return (
+              <PdpStudioButton
+                key={tool.id}
+                asChild
+                variant="ghost"
+                className={launcherClassName(tool.featured)}
+              >
+                <Link href={tool.href}>{content}</Link>
+              </PdpStudioButton>
+            );
+          }
+
           return (
             <PdpStudioButton
               key={tool.id}
-              asChild
+              type="button"
               variant="ghost"
               className={launcherClassName(tool.featured)}
+              onClick={() => {
+                const toolId = tool.id as PdpStudioToolId;
+
+                if (tool.action === "image-library") {
+                  onOpenImageLibrary(
+                    toolId === "background-remover"
+                      ? "background-remover"
+                      : "start-photo",
+                  );
+                  return;
+                }
+
+                if (
+                  tool.action === "ai-tool" &&
+                  isPdpStudioHomeAiToolId(toolId)
+                ) {
+                  onOpenAiTool(toolId);
+                }
+              }}
             >
-              <Link href={tool.href}>{content}</Link>
+              {content}
             </PdpStudioButton>
           );
         })}

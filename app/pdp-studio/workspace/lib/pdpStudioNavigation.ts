@@ -22,10 +22,11 @@ export function getPrimaryPdpStudioNavigation(
     },
     {
       label: "Workspace",
-      routes: ["preferences"].flatMap((id) => {
-        const item = route(id);
-        return item ? [item] : [];
-      }),
+      actions: [{
+        id: "preferences" as const,
+        label: "Preferences",
+        icon: "settings" as const,
+      }],
     },
   ];
 }

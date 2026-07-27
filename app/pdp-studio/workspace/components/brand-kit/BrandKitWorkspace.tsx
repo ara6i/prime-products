@@ -24,7 +24,7 @@ export function BrandKitWorkspace() {
         </TabsList>
       </Tabs>
       {ui.activeTab === "assets" ? (
-        <BrandAssetsPanel ui={ui} />
+        <BrandAssetsPanel notice={ui.assetNotice} onNotice={ui.setAssetNotice} />
       ) : (
         <BrandInfoPanel ui={ui} />
       )}
