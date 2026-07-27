@@ -127,11 +127,14 @@ export async function getPdpStudioMe(): Promise<PdpStudioUser | null> {
   const apiBaseUrl = getPdpStudioApiBaseUrl();
   const cookieStore = await cookies();
   const session = cookieStore.get(PDP_STUDIO_SESSION_COOKIE_NAME)?.value;
-  if (!session) return null;
+  const authBypassEnabled = process.env.PDP_STUDIO_AUTH_BYPASS === "true";
+  if (!session && !authBypassEnabled) return null;
 
   try {
     const response = await fetch(`${apiBaseUrl}/api/pdp-studio/auth/me`, {
-      headers: { Cookie: `${PDP_STUDIO_SESSION_COOKIE_NAME}=${session}` },
+      headers: session
+        ? { Cookie: `${PDP_STUDIO_SESSION_COOKIE_NAME}=${session}` }
+        : undefined,
       cache: "no-store",
     });
     if (!response.ok) return null;
