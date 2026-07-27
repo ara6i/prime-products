@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
-    "@primestyleai/tryon": "5.10.240",
+    "@primestyleai/tryon": "5.10.241",
     "@react-oauth/google": "^0.13.4",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
