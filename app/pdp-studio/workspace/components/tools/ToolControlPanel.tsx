@@ -16,6 +16,16 @@ interface ToolControlPanelProps {
 
 export function ToolControlPanel({ tool, ui }: ToolControlPanelProps) {
   const showPrimaryUpload = !["text-generator", "chooser"].includes(tool.mode);
+  const missingRequiredInput =
+    showPrimaryUpload && ui.primaryFiles.length === 0
+      ? "Add the image you want to process."
+      : tool.mode === "dual-upload" &&
+          !tool.referenceUploadsOptional &&
+          ui.secondaryFiles.length === 0
+        ? "Add at least one real product photo to enable generation."
+        : null;
+  const isBusy =
+    ui.previewState === "working" || ui.previewState === "uploading";
 
   return (
     <aside className="grid min-w-0 content-start gap-[var(--space-pdp-lg)] overflow-hidden rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-[var(--space-pdp-lg)]">
@@ -41,7 +51,9 @@ export function ToolControlPanel({ tool, ui }: ToolControlPanelProps) {
       {tool.mode === "dual-upload" ? (
         <PdpStudioUploadZone
           id={`${tool.id}-secondary-upload`}
-          label={tool.secondaryUploadLabel ?? "Add reference images"}
+          label={`${tool.secondaryUploadLabel ?? "Add reference images"} ${
+            tool.referenceUploadsOptional ? "(optional)" : "(required)"
+          }`}
           files={ui.secondaryFiles}
           multiple
           onFiles={ui.addSecondaryFiles}
@@ -107,6 +119,14 @@ export function ToolControlPanel({ tool, ui }: ToolControlPanelProps) {
                     : "image"
               }`}
       </PdpStudioButton>
+      {missingRequiredInput && !isBusy ? (
+        <p
+          role="status"
+          className="text-[var(--text-pdp-xs)] font-medium leading-relaxed text-[var(--color-pdp-ink-soft)]"
+        >
+          {missingRequiredInput}
+        </p>
+      ) : null}
 
       {ui.job &&
       (ui.job.status === "queued" || ui.job.status === "running") ? (

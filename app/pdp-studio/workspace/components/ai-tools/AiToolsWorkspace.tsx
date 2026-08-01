@@ -74,6 +74,11 @@ export function AiToolsWorkspace({ catalog }: AiToolsWorkspaceProps) {
   const createTools = catalog.tools.filter((tool) => tool.group === "create");
   const allTools = catalog.tools.filter((tool) => tool.group === "all");
   const activateInlineTool = (toolId: PdpStudioToolId) => {
+    if (toolId === "ai-images") {
+      ui.openChooser();
+      return;
+    }
+
     if (toolId === "background-remover") {
       dialogs.openImageLibrary("background-remover");
       return;

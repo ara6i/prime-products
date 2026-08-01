@@ -204,28 +204,100 @@
 - Scoped ESLint, TypeScript, production build, and `git diff --check`: passed.
 - Full same-state modal comparison remains blocked by the mandatory authentication gate in the controlled local browser session.
 
-## Quality control overflow correction
+final result: blocked
+
+## Global AI tool quality-selector correction
+
+- User-provided failing state: `/Users/arashsn/Downloads/Screenshot - 2026-07-26T223007.412.png`
+- Corrected implementation capture: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-studio-global-quality/corrected-quality-selector.png`
+- Same-input before/after comparison: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-studio-global-quality/before-after-quality-selector.png`
+- Verified state: Product Staging opened from Home with the shared Quality selector expanded at `1269 x 714`.
+- Root cause: the shared quality-option buttons inherited a horizontal flex direction, forcing the title, tier, resolution, and feature list into one overlapping row.
+- Global fix: the single shared `QualityPanel` now stacks each option vertically, constrains child widths, wraps feature copy, preserves tier badges, and exposes the selected option through `aria-pressed`.
+- Scope: every PDP Studio AI tool using `PdpStudioAiToolDialog` inherits this correction; no per-tool layout override was added.
+- Visual result: all three quality cards are readable with no overlap, clipping, or unintended horizontal overflow.
+- Scoped ESLint, TypeScript, and `git diff --check`: passed.
+
+final result: passed
+
+## AI Backgrounds dedicated editor
 
 ### Evidence
 
-- Source visual truth: `/Users/arashsn/Downloads/Screenshot - 2026-07-26T202244.590.png`
-- Browser-rendered implementation: `/Users/arashsn/Projects/PrimeStyleAI/.codex-worktrees/pdp-studio-frontend/outputs/pdp-studio-functional-audit/12-quality-controls-fixed.png`
-- Focused same-input comparison: `/Users/arashsn/Projects/PrimeStyleAI/.codex-worktrees/pdp-studio-frontend/outputs/pdp-studio-functional-audit/13-quality-controls-comparison.png`
-- Source image: `998 x 330` pixels.
-- Implementation viewport and screenshot: `1269 x 714` CSS pixels and `1269 x 714` image pixels at density `1`.
-- State: authenticated Product Staging workspace with quality and output-size controls visible.
+- PhotoRoom editor reference: `/tmp/photoroom-ai-backgrounds-audit-2026-07-28/01-ai-backgrounds-editor.png`
+- PrimeStyleAI implementation: `/tmp/pdp-ai-backgrounds-implementation-final.png`
+- Side-by-side comparison: `/tmp/pdp-ai-backgrounds-comparison-desktop.png`
+- Reference capture: `910 x 769`; implementation capture: `1269 x 720`
+- Comparison normalizes both captures into equal `910 x 769` panels. A true identical-viewport source recapture was not available in the current browser session.
 
-### Findings and comparison history
+### Findings and fixes
 
-- Earlier P1: the quality selector opened a `560px`-wide floating card menu from a narrow control rail. Its Premium, Advanced, and Standard labels collided and the menu covered the before/after canvas.
-- Fix: the functional tool workspace keeps quality choices inline inside the control panel. The panel, fieldsets, and option rows now explicitly use `min-width: 0`; option buttons wrap text within their available width; and the panel clips accidental horizontal overflow.
-- Post-fix evidence: Standard, Advanced, and Premium remain fully readable inside the panel with no floating layer over the preview. Advanced and Portrait 9:16 selection states were clicked and verified through their pressed states.
-- Fonts and typography: option text retains the existing PDP Studio font, compact weight, and line height; long labels wrap instead of colliding.
-- Spacing and layout rhythm: control gaps and panel padding remain aligned with the existing white/blue system; the preview canvas keeps its full width.
-- Colors and tokens: selected and unselected controls continue using the existing cobalt, soft-blue, white, and rule tokens.
-- Image quality: the project-owned Product Staging before/after asset remains uncropped and unobscured.
-- Copy and content: the quality labels remain `Standard · 1K`, `Advanced · 2K`, and `Premium · 4K+`.
-- No additional focused crop was required beyond the recorded same-input comparison because the complete failing and corrected control regions are readable there.
-- Browser-rendered page, quality selection, output-size selection, and authenticated route passed. No new browser console error was observed.
+- P0: none found.
+- P1 fixed: the canvas width and `max-height` previously fought the selected aspect ratio, producing a wide frame with internal white gutters. The canvas now derives its width from both available container width and height, preserving every supported aspect ratio.
+- P1 fixed: refreshing a completed job briefly opened the source picker. Job recovery now starts behind a dedicated “Restoring your editor…” state and opens the persisted result when the authenticated request completes.
+- P2 fixed: “drop it here” was visible copy without a drop handler. PNG, JPEG, and WebP drag-and-drop now select the file through the same typed source path as the file input.
+- P2 verified: the model selector and three-tier quality popover remain anchored inside the viewport with no overlap or clipped copy.
+- P2 verified: Insert adds a real library image layer, Add text creates an editable text layer, Resize preserves product proportions, Download exported the full `1800 x 1800` composed canvas, and Share invoked the browser share path.
+- Structural parity: top editing toolbar, centered product canvas, bottom edit prompt, right AI Backgrounds rail, model menu, create CTA, search, two-column visual preset catalog, custom modes, loading state, and real job states match the captured PhotoRoom information architecture in PrimeStyleAI's white/cobalt tokens.
+
+### Functional verification
+
+- Real jobs passed: preset, reference image, assisted, manual, and follow-up edit.
+- Refresh/resume passed for the persisted `job` query.
+- Provider cancellation is wired and issued successfully; the tested local job had already entered final result saving, so best-effort cancellation did not prevent its completed output.
+- Frontend focused tests: `13` passed.
+- Frontend TypeScript: passed.
+- Backend focused contract/prompt tests: `33` passed.
+- Backend build: passed.
+- Starter preset catalog: `43` unique high-quality WebP assets generated in the signed-in ChatGPT browser, optimized to `1024 x 1024`, and visually inspected.
+- The complete future catalog remains registered as `160` slots / `152` unique prompts, but the UI exposes only integrated thumbnails. New assets can be added later without changing the editor flow.
+- The full asset pass was intentionally stopped at the user's request. No alternate image provider was used.
+- Partial asset validation passed for all `43` integrated files; strict full-catalog validation remains available for the later expansion pass.
+
+final result: passed for the current UI and functionality scope; full preset-asset expansion is intentionally deferred
+
+## Retouch and Background Removal UI-only editors
+
+### Evidence and normalization
+
+- Retouch source truth: `/tmp/photoroom-retouch-audit-2026-07-28/01-retouch-start.png`
+- Background Removal source truth: `/tmp/photoroom-background-removal-audit-2026-07-28/01-editor-remove-background-on.png`
+- Edit Cutout source truth: `/tmp/photoroom-cutout-reference-current-1269.png`
+- Retouch implementation: `/tmp/pdp-photo-editor-retouch-implementation-final.png`
+- Background Removal implementation: `/tmp/pdp-photo-editor-background-main-final-05.png`
+- Edit Cutout implementation: `/tmp/pdp-photo-editor-cutout-implementation-final-02.png`
+- Full-view comparisons: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-photo-editor-qa-2026-07-28/retouch-side-by-side.png`, `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-photo-editor-qa-2026-07-28/background-removal-shell-side-by-side.png`, and `/Users/arashsn/Projects/PrimeStyleAI/prime-products/outputs/pdp-photo-editor-qa-2026-07-28/cutout-side-by-side.png`
+- Source and implementation captures are `910 x 769` at a `910 x 769` CSS viewport and device scale factor `1`.
+- The in-app browser repeated the top surface below its live `714px` viewport in the CDP implementation captures. Both sides were therefore normalized to the same top `910 x 714` content region for the combined comparisons. A normal `1269 x 714` implementation capture was also inspected before the matched pass.
+- States compared: Magic Retouch open; Background Removal editor with Remove Background on; Edit Cutout with Manual and Restore selected.
+- The full-view comparisons keep all typography and controls readable, so no additional focused crop was needed. The Cutout comparison itself is the focused control-region proof.
+
+### Comparison history and fixes
+
+- P1 fixed: Retouch and Edit Cutout initially constrained the product canvas to `80%`, making both reference images visibly smaller than PhotoRoom. Retouch now uses the source-equivalent `88%` width and Cutout fills its `501px` canvas track.
+- P1 fixed: the initial Cutout modal was `878 x 736`, while the source was approximately `864 x 720`. The final modal uses the matched `54rem x 45rem` geometry and `58% / 42%` split.
+- P2 fixed: clicked Erase/Restore controls displayed a rectangular focus ring. Focus visibility now stays on the circular mode target with the matching semantic color.
+- P2 fixed: the Background Removal shell lacked the source editor prompt, grouped effect controls, toggles, layer actions, and selected-object frame. These are now represented in the UI-only editor.
+- P2 fixed: the selection rotation affordance was clipped by the image frame. The frame now allows editor controls to remain visible outside the canvas edge.
+- Post-fix evidence: all three final side-by-side comparisons listed above.
+
+### Required fidelity surfaces
+
+- Fonts and typography: Inter/system typography, regular small-control weights, source-like title scale, line height, and hierarchy are preserved. No bold-heavy PDP Studio typography leaked into the editor.
+- Spacing and layout rhythm: toolbar height, `360px` inspector rail, canvas placement, modal proportions, tabs, brush slider, suggestion cards, and action buttons match the captured source structure. Residual vertical differences are under `10px`.
+- Colors and tokens: the requested PrimeStyleAI white/cobalt theme is used for the main editor. The dark Retouch and Cutout surfaces retain the source contrast and use cobalt only for selected/generation actions; erase and restore remain red and green.
+- Image quality and asset fidelity: the existing project-owned `1024 x 1024` WebP tool assets are used without recompression. No PhotoRoom imagery was copied, hotlinked, or regenerated.
+- Copy and content: all captured tool names and helper controls are present. `PDP Studio` replaces PhotoRoom branding, and the Restore helper correctly says “restore pixels” instead of reproducing the source's inconsistent “erase pixels” copy.
+
+### Verification
+
+- Primary interactions tested in the browser: open Retouch, open Edit Cutout, Guided/Manual, Erase/Restore, suggestion selection, Remove Background toggle, Confirm, Cancel, and the local brush surface.
+- Console errors: `0` on Retouch, Edit Cutout, and the Background Removal shell.
+- Focused component tests: `3` passed.
+- Scoped ESLint: passed.
+- TypeScript: passed.
+- `git diff --check`: passed.
+- Network contract: the focused tests prove these UI-only editors make no `fetch` request.
+- No backend, worker, AI provider, generated asset, push, or deployment was included.
 
 final result: passed

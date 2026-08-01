@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Structured chart test PDP</title>
+    <style>
+      body { font-family: Arial, sans-serif; padding: 3rem; }
+      dialog { width: 42rem; border: 1px solid #555; }
+      td, th { border: 1px solid #777; padding: .4rem; text-align: left; }
+      table { border-collapse: collapse; width: 100%; }
+    </style>
+  </head>
+  <body>
+    <h1>Example Linen Dress</h1>
+    <button type="button" onclick="document.querySelector('dialog').showModal()">Size Guide</button>
+    <dialog aria-label="Size Guide">
+      <p>This product uses the following product measurements.</p>
+      <table>
+        <thead><tr><th>Size</th><th>Bust (in)</th><th>Waist (in)</th><th>Hips (in)</th></tr></thead>
+        <tbody>
+          <tr><td>S</td><td>34</td><td>26</td><td>36</td></tr>
+          <tr><td>M</td><td>36</td><td>28</td><td>38</td></tr>
+        </tbody>
+      </table>
+    </dialog>
+  </body>
+</html>

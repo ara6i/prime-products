@@ -13,16 +13,29 @@ const TERMINAL = new Set<PdpStudioJob["status"]>([
   "cancelled",
 ]);
 
-export function isPdpStudioTerminalJobStatus(
-  status: PdpStudioJob["status"],
-): boolean {
+function isTerminal(status: PdpStudioJob["status"]): boolean {
   return TERMINAL.has(status);
 }
 
+export function isPdpStudioTerminalJobStatus(
+  status: PdpStudioJob["status"],
+): boolean {
+  return isTerminal(status);
+}
+
 export function usePdpStudioJobProgress() {
-  const [job, setJob] = useState<PdpStudioJob | null>(null);
+  const [job, setJobState] = useState<PdpStudioJob | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const cleanupRef = useRef<(() => void) | null>(null);
   const pollingRef = useRef<number | null>(null);
+  const jobCreatedAt = job?.createdAt ?? null;
+  const jobCompletedAt = job?.completedAt ?? null;
+  const jobStatus = job?.status ?? null;
+
+  const setJob = useCallback((nextJob: PdpStudioJob | null) => {
+    setJobState(nextJob);
+    if (!nextJob) setElapsedSeconds(0);
+  }, []);
 
   const stop = useCallback(() => {
     cleanupRef.current?.();
@@ -33,15 +46,43 @@ export function usePdpStudioJobProgress() {
 
   useEffect(() => stop, [stop]);
 
+  useEffect(() => {
+    if (!jobCreatedAt || !jobStatus) return;
+
+    const startedAt = Date.parse(jobCreatedAt);
+    if (!Number.isFinite(startedAt)) return;
+
+    const updateElapsedSeconds = () => {
+      const completedAt = jobCompletedAt
+        ? Date.parse(jobCompletedAt)
+        : Date.now();
+      const endTime = Number.isFinite(completedAt) ? completedAt : Date.now();
+      setElapsedSeconds(
+        Math.max(0, Math.floor((endTime - startedAt) / 1_000)),
+      );
+    };
+
+    const initialUpdate = window.setTimeout(updateElapsedSeconds, 0);
+    if (isTerminal(jobStatus)) {
+      return () => window.clearTimeout(initialUpdate);
+    }
+
+    const interval = window.setInterval(updateElapsedSeconds, 1_000);
+    return () => {
+      window.clearTimeout(initialUpdate);
+      window.clearInterval(interval);
+    };
+  }, [jobCompletedAt, jobCreatedAt, jobStatus]);
+
   const watch = useCallback(
     (initialJob: PdpStudioJob) => {
       stop();
       setJob(initialJob);
-      if (isPdpStudioTerminalJobStatus(initialJob.status)) return;
+      if (isTerminal(initialJob.status)) return;
 
       const accept = (next: PdpStudioJob) => {
         setJob(next);
-        if (isPdpStudioTerminalJobStatus(next.status)) stop();
+        if (isTerminal(next.status)) stop();
       };
       const beginPolling = () => {
         if (pollingRef.current) return;
@@ -59,8 +100,8 @@ export function usePdpStudioJobProgress() {
         beginPolling,
       );
     },
-    [stop],
+    [setJob, stop],
   );
 
-  return { job, setJob, watch, stop };
+  return { job, elapsedSeconds, setJob, watch, stop };
 }

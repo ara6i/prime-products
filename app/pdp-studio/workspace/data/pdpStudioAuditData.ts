@@ -270,12 +270,15 @@ const ALL_TOOLS: PdpStudioToolDefinition[] = [
   generatorTool({
     id: "product-fixer",
     label: "Product Fixer",
-    description: "Compare a generated image with real product references.",
+    description:
+      "Repair visible product-image defects with an optional written instruction or real product references.",
     icon: "wand",
     group: "all",
     mode: "dual-upload",
     uploadLabel: "Add the image that needs fixing",
     secondaryUploadLabel: "Add real product photos",
+    referenceUploadsOptional: true,
+    promptLabel: "Describe what needs fixing",
     acceptsMultiple: true,
     outputCount: 1,
   }),

@@ -6,7 +6,7 @@ import type {
 
 export type PdpStudioHomeAiToolId = Exclude<
   PdpStudioToolId,
-  "ai-fashion-models" | "background-remover"
+  "ai-fashion-models" | "background-remover" | "ai-backgrounds" | "ai-images"
 >;
 
 export type PdpStudioImageLibrarySource =
@@ -52,6 +52,7 @@ export interface PdpStudioHomeToolDialogDefinition {
   illustrationImage: string;
   uploadLabel?: string;
   secondaryUploadLabel?: string;
+  referenceUploadsOptional?: boolean;
   promptLabel?: string;
   outputCount: 1 | 2;
 }

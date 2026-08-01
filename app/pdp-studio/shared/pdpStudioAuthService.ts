@@ -123,6 +123,41 @@ export async function getPdpStudioGoogleAuthUrl(): Promise<{ ok: boolean; url?: 
   }
 }
 
+export async function exchangePdpStudioShopifyInstallToken(
+  token: string,
+): Promise<PdpStudioAuthResult> {
+  const apiBaseUrl = getPdpStudioApiBaseUrl();
+
+  try {
+    const response = await fetch(
+      `${apiBaseUrl}/api/pdp-studio/shopify/install/exchange`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+        cache: "no-store",
+      },
+    );
+    const data = (await response
+      .json()
+      .catch(() => ({}))) as PdpStudioAuthPayload;
+    if (!response.ok || !data.ok) {
+      return {
+        ok: false,
+        error:
+          data.error ??
+          `Shopify sign-in failed (${response.status}).`,
+      };
+    }
+    return setPdpStudioSessionFromPayload(data);
+  } catch {
+    return {
+      ok: false,
+      error: "Unable to reach the PDP Studio Shopify sign-in server.",
+    };
+  }
+}
+
 export async function getPdpStudioMe(): Promise<PdpStudioUser | null> {
   const apiBaseUrl = getPdpStudioApiBaseUrl();
   const cookieStore = await cookies();

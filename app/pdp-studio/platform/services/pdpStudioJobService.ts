@@ -1,3 +1,4 @@
+import type { PdpStudioToolId } from "../../workspace/types";
 import { mapPdpStudioJob } from "../mappers/pdpStudioPlatformMapper";
 import type {
   CreatePdpStudioJobInput,
@@ -7,9 +8,36 @@ import {
   pdpStudioApiRequest,
   pdpStudioPlatformUrl,
 } from "./pdpStudioApiClient";
-import type { PdpStudioToolId } from "../../workspace/types";
 
 type ActionableToolId = Exclude<PdpStudioToolId, "ai-images">;
+
+export interface ListPdpStudioJobsInput {
+  status?: PdpStudioJob["status"];
+  toolId?: ActionableToolId;
+  limit?: number;
+  before?: string;
+}
+
+export function listPdpStudioJobs(limit: number): Promise<PdpStudioJob[]>;
+export function listPdpStudioJobs(
+  input?: ListPdpStudioJobsInput,
+): Promise<PdpStudioJob[]>;
+export async function listPdpStudioJobs(
+  input: ListPdpStudioJobsInput | number = {},
+): Promise<PdpStudioJob[]> {
+  const normalizedInput = typeof input === "number" ? { limit: input } : input;
+  const search = new URLSearchParams();
+  if (normalizedInput.status) search.set("status", normalizedInput.status);
+  if (normalizedInput.toolId) search.set("toolId", normalizedInput.toolId);
+  if (normalizedInput.limit) search.set("limit", String(normalizedInput.limit));
+  if (normalizedInput.before) search.set("before", normalizedInput.before);
+  const suffix = search.size ? `?${search.toString()}` : "";
+  const response = await pdpStudioApiRequest<{
+    ok: true;
+    jobs: PdpStudioJob[];
+  }>(`/jobs${suffix}`);
+  return response.jobs.map(mapPdpStudioJob);
+}
 
 export async function createPdpStudioToolJob(
   toolId: ActionableToolId,
@@ -29,15 +57,9 @@ export async function getPdpStudioJob(jobId: string): Promise<PdpStudioJob> {
   return mapPdpStudioJob(response.job);
 }
 
-export async function listPdpStudioJobs(limit = 20): Promise<PdpStudioJob[]> {
-  const response = await pdpStudioApiRequest<{
-    ok: true;
-    jobs: PdpStudioJob[];
-  }>(`/jobs?limit=${encodeURIComponent(String(limit))}`);
-  return response.jobs.map(mapPdpStudioJob);
-}
-
-export async function cancelPdpStudioJob(jobId: string): Promise<PdpStudioJob> {
+export async function cancelPdpStudioJob(
+  jobId: string,
+): Promise<PdpStudioJob> {
   const response = await pdpStudioApiRequest<{ ok: true; job: PdpStudioJob }>(
     `/jobs/${encodeURIComponent(jobId)}/cancel`,
     { method: "POST", body: JSON.stringify({}) },

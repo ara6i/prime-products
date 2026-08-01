@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { useToolWorkspaceUi } from "../../hooks/useToolWorkspaceUi";
 import type { PdpStudioToolDefinition } from "../../types";
 import { PDP_STUDIO_TOOL_ASSETS } from "../../data/pdpStudioToolAssets";
+import { PdpStudioGenerationProgressCard } from "../shared/PdpStudioGenerationProgress";
 import { PdpStudioUiIcon } from "../shared/PdpStudioUiIcon";
 
 type ToolUi = ReturnType<typeof useToolWorkspaceUi>;
@@ -34,24 +35,27 @@ export function ToolPreviewCanvas({ tool, ui }: ToolPreviewCanvasProps) {
 
       <div className="absolute inset-0 grid place-items-center px-[var(--space-pdp-xl)] pb-[var(--space-pdp-xl)] pt-[5rem]">
         {ui.previewState === "working" || ui.previewState === "uploading" ? (
-          <div className="text-center" aria-live="polite">
-            <span className="mx-auto grid size-[3.5rem] animate-pulse place-items-center rounded-[var(--radius-pdp-pill)] bg-[var(--color-pdp-accent-soft)] text-[var(--color-pdp-accent)]">
-              <PdpStudioUiIcon name="sparkles" />
-            </span>
-            <p className="mt-[var(--space-pdp-md)] text-[var(--text-pdp-sm)] font-semibold">
-              {ui.previewState === "uploading"
+          <PdpStudioGenerationProgressCard
+            imageUrl={previewImage}
+            imageAlt={`${tool.label} processing preview`}
+            className="max-w-[30rem]"
+            stage={
+              ui.previewState === "uploading"
                 ? "Uploading private assets"
-                : ui.job?.progress.stage ?? "Preparing generation"}
-            </p>
-            {ui.job ? (
-              <div className="mx-auto mt-3 h-1.5 w-56 overflow-hidden rounded-full bg-[var(--color-pdp-rule)]">
-                <span
-                  className="block h-full rounded-full bg-[var(--color-pdp-accent)] transition-[width]"
-                  style={{ width: `${ui.job.progress.percent}%` }}
-                />
-              </div>
-            ) : null}
-          </div>
+                : ui.job?.progress.stage ?? "Preparing generation"
+            }
+            percent={
+              ui.previewState === "uploading"
+                ? 8
+                : ui.job?.progress.percent ?? 0
+            }
+            elapsedSeconds={ui.elapsedSeconds}
+            status={
+              ui.previewState === "uploading"
+                ? "uploading"
+                : ui.job?.status ?? "running"
+            }
+          />
         ) : (
           <figure className="w-full max-w-[30rem]">
             <div className="relative aspect-square overflow-hidden rounded-[var(--radius-pdp-md)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)]">

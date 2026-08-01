@@ -39,6 +39,7 @@ export const PDP_STUDIO_HOME_TOOL_DIALOGS = Object.fromEntries(
           PDP_STUDIO_TOOL_ASSETS[tool.id] ?? DEFAULT_TOOL_ASSET,
         uploadLabel: tool.uploadLabel,
         secondaryUploadLabel: tool.secondaryUploadLabel,
+        referenceUploadsOptional: tool.referenceUploadsOptional,
         promptLabel: tool.promptLabel,
         outputCount: tool.outputCount ?? 1,
       },

@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 const PDP_STUDIO_SESSION_COOKIE_NAME = "pdp_studio_session";
 const TEST_BACKEND_URL = "https://test-be-9a7k.primestyleai.com";
 
-export function getPdpStudioApiBaseUrl(): string {
+function getPdpStudioApiBaseUrl(): string {
   return (
     process.env.PRIMESTYLE_PDP_STUDIO_API_INTERNAL_URL ||
     process.env.PRIMESTYLE_API_INTERNAL_URL ||

@@ -137,6 +137,7 @@ export interface PdpStudioToolDefinition {
   badge?: string;
   acceptsMultiple?: boolean;
   secondaryUploadLabel?: string;
+  referenceUploadsOptional?: boolean;
   uploadLabel?: string;
   promptLabel?: string;
   outputCount?: 1 | 2;

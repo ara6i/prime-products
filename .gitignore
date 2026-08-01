@@ -52,4 +52,9 @@ next-env.d.ts
 /.mcp.json
 /.codex-frontend-3000.log
 /outputs/
+/artifacts/
+/reports/
+/tmp/
+/.agents/
+/skills-lock.json
 __pycache__/

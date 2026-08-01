@@ -32,6 +32,7 @@ import type {
   PdpStudioToolDialogPanel,
 } from "../../../types/homeToolDialog";
 import { PdpStudioButton } from "../../shared/PdpStudioButton";
+import { PdpStudioGenerationProgressCard } from "../../shared/PdpStudioGenerationProgress";
 import { PdpStudioToolCard } from "../../shared/PdpStudioToolCard";
 import { PdpStudioUiIcon } from "../../shared/PdpStudioUiIcon";
 
@@ -55,6 +56,7 @@ interface PdpStudioAiToolDialogProps {
     | "cancelled";
   generationError: string | null;
   job: PdpStudioJob | null;
+  elapsedSeconds: number;
   tools: PdpStudioToolDefinition[];
   onOpenChange: (open: boolean) => void;
   onSwitchTool: (toolId: PdpStudioHomeAiToolId) => void;
@@ -323,12 +325,44 @@ function ToolExample({
   selectedImage,
   outputs,
   previewMessage,
+  generationState,
+  job,
+  elapsedSeconds,
 }: {
   tool: PdpStudioHomeToolDialogDefinition;
   selectedImage: { name: string; previewUrl: string } | null;
   outputs: PdpStudioAsset[];
   previewMessage: string | null;
+  generationState: PdpStudioAiToolDialogProps["generationState"];
+  job: PdpStudioJob | null;
+  elapsedSeconds: number;
 }) {
+  const isBusy =
+    generationState === "uploading" || generationState === "working";
+  if (isBusy) {
+    return (
+      <PdpStudioGenerationProgressCard
+        imageUrl={selectedImage?.previewUrl ?? tool.illustrationImage}
+        imageAlt={`${tool.label} processing preview`}
+        className="max-w-[34rem]"
+        stage={
+          generationState === "uploading"
+            ? "Uploading private assets"
+            : job?.progress.stage ?? "Preparing generation"
+        }
+        percent={
+          generationState === "uploading" ? 8 : job?.progress.percent ?? 0
+        }
+        elapsedSeconds={elapsedSeconds}
+        status={
+          generationState === "uploading"
+            ? "uploading"
+            : job?.status ?? "running"
+        }
+      />
+    );
+  }
+
   if (outputs.length > 0) {
     return (
       <div className="grid w-full place-items-center text-center">
@@ -432,6 +466,7 @@ export function PdpStudioAiToolDialog({
   generationState,
   generationError,
   job,
+  elapsedSeconds,
   tools,
   onOpenChange,
   onSwitchTool,
@@ -456,12 +491,19 @@ export function PdpStudioAiToolDialog({
   const isBusy =
     generationState === "uploading" || generationState === "working";
   const hasRequiredReferences =
-    tool?.mode !== "dual-upload" || referenceImages.length > 0;
+    tool?.mode !== "dual-upload" ||
+    tool.referenceUploadsOptional ||
+    referenceImages.length > 0;
+  const missingRequiredInput =
+    requiresImage && !selectedImage
+      ? "Add the image you want to process."
+      : !hasRequiredReferences
+        ? "Add at least one real product photo to enable generation."
+        : null;
   const canGenerate =
     tool?.mode !== "chooser" &&
     !isBusy &&
-    hasRequiredReferences &&
-    (!requiresImage || Boolean(selectedImage));
+    !missingRequiredInput;
   const outputs = job?.outputs ?? [];
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -541,7 +583,11 @@ export function PdpStudioAiToolDialog({
                       ? `${referenceImages.length} reference ${
                           referenceImages.length === 1 ? "image" : "images"
                         } selected`
-                      : tool.secondaryUploadLabel}
+                      : `${tool.secondaryUploadLabel} ${
+                          tool.referenceUploadsOptional
+                            ? "(optional)"
+                            : "(required)"
+                        }`}
                   </span>
                   <input
                     type="file"
@@ -591,6 +637,14 @@ export function PdpStudioAiToolDialog({
             Leave blank to use the recommended default. Your description
             replaces that default.
           </p>
+          {missingRequiredInput && !isBusy ? (
+            <p
+              role="status"
+              className="mt-3 text-[0.6875rem] font-medium leading-4 text-[var(--color-pdp-ink-soft)]"
+            >
+              {missingRequiredInput}
+            </p>
+          ) : null}
 
           {generationError ? (
             <p
@@ -652,6 +706,9 @@ export function PdpStudioAiToolDialog({
             selectedImage={selectedImage}
             outputs={outputs}
             previewMessage={previewMessage}
+            generationState={generationState}
+            job={job}
+            elapsedSeconds={elapsedSeconds}
           />
         </main>
 

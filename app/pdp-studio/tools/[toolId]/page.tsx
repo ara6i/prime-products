@@ -3,6 +3,8 @@ import { PdpStudioAppShell } from "../../workspace/components/shell/PdpStudioApp
 import { ToolWorkspace } from "../../workspace/components/tools/ToolWorkspace";
 import { loadPdpStudioPageContext } from "../../workspace/services/loadPdpStudioPageContext";
 import { getPdpStudioToolDefinition } from "../../workspace/services/pdpStudioUiService";
+import { AiBackgroundsWorkspace } from "../../ai-backgrounds/components/AiBackgroundsWorkspace";
+import { PhotoEditorWorkspace } from "../../photo-editor/components/PhotoEditorWorkspace";
 
 interface PdpStudioToolPageProps {
   params: Promise<{ toolId: string }>;
@@ -20,6 +22,14 @@ export default async function PdpStudioToolPage({
   ]);
 
   if (!tool) notFound();
+
+  if (tool.id === "ai-backgrounds") {
+    return <AiBackgroundsWorkspace />;
+  }
+
+  if (tool.id === "retouch" || tool.id === "background-remover") {
+    return <PhotoEditorWorkspace tool={tool.id} />;
+  }
 
   return (
     <PdpStudioAppShell user={user} view={view}>

@@ -48,6 +48,7 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
   const objectUrls = useRef<string[]>([]);
   const {
     job,
+    elapsedSeconds,
     setJob,
     watch,
     stop,
@@ -101,9 +102,22 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
   const canPreview = useMemo(() => {
     if (previewState === "uploading" || previewState === "working") return false;
     if (requiresPrimaryUpload && primaryFiles.length === 0) return false;
-    if (tool.mode === "dual-upload" && secondaryFiles.length === 0) return false;
+    if (
+      tool.mode === "dual-upload" &&
+      !tool.referenceUploadsOptional &&
+      secondaryFiles.length === 0
+    ) {
+      return false;
+    }
     return true;
-  }, [previewState, primaryFiles.length, requiresPrimaryUpload, secondaryFiles.length, tool.mode]);
+  }, [
+    previewState,
+    primaryFiles.length,
+    requiresPrimaryUpload,
+    secondaryFiles.length,
+    tool.mode,
+    tool.referenceUploadsOptional,
+  ]);
 
   function addPrimaryFiles(files: File[]): void {
     const localFiles = toLocalFiles(tool.acceptsMultiple ? files.slice(0, 4) : files.slice(0, 1));
@@ -207,6 +221,7 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
     previewState,
     previewId,
     job,
+    elapsedSeconds,
     error: effectiveError,
     canPreview,
     setPrompt,

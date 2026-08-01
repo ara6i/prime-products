@@ -41,6 +41,7 @@ export function PdpStudioInlineToolDialogs({
         generationState={dialogs.generationState}
         generationError={dialogs.generationError}
         job={dialogs.job}
+        elapsedSeconds={dialogs.elapsedSeconds}
         tools={tools}
         onOpenChange={(open) => {
           if (!open) dialogs.closeAiTool();

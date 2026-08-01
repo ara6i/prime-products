@@ -78,6 +78,7 @@ export function usePdpStudioHomeDialogs() {
   );
   const {
     job,
+    elapsedSeconds,
     setJob,
     watch,
     stop,
@@ -201,11 +202,15 @@ export function usePdpStudioHomeDialogs() {
   const generatePreview = async () => {
     if (!activeToolId) return;
     const activeTool = PDP_STUDIO_HOME_TOOL_DIALOGS[activeToolId];
-    if (activeTool.mode === "chooser" || activeToolId === "ai-images") return;
+    if (activeTool.mode === "chooser") return;
     const requiresImage =
       activeTool.mode !== "text-generator";
     if (requiresImage && !selectedImage) return;
-    if (activeTool.mode === "dual-upload" && referenceImages.length === 0) {
+    if (
+      activeTool.mode === "dual-upload" &&
+      !activeTool.referenceUploadsOptional &&
+      referenceImages.length === 0
+    ) {
       setGenerationError("Add at least one real product reference image.");
       return;
     }
@@ -306,6 +311,7 @@ export function usePdpStudioHomeDialogs() {
     generationState,
     generationError,
     job,
+    elapsedSeconds,
     openImageLibrary,
     closeImageLibrary,
     setImageLibraryTab,

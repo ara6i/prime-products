@@ -32,7 +32,10 @@ export async function pdpStudioApiRequest<T>(
   if (!response.ok) {
     const issue = data.issues?.find((item) => item.message)?.message;
     throw new PdpStudioApiError(
-      data.error || data.message || issue || `PDP Studio request failed (${response.status}).`,
+      data.error ||
+        data.message ||
+        issue ||
+        `PDP Studio request failed (${response.status}).`,
       response.status,
     );
   }
