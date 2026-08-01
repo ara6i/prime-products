@@ -220,6 +220,60 @@ final result: blocked
 
 final result: passed
 
+## Separate Influencer and Merchant landing pages — August 1, 2026
+
+### Evidence and normalization
+
+- Source visual truth: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/.artifacts/landing-design/browser-generations-balanced/final-combined-direction-clean.png`
+- Influencer implementation: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/.artifacts/landing-qa/influencer-desktop-separate.png`
+- Merchant implementation: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/.artifacts/landing-qa/merchant-desktop-separate.png`
+- Influencer same-input hero comparison: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/.artifacts/landing-qa/influencer-hero-comparison.png`
+- Merchant same-input hero comparison: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/.artifacts/landing-qa/merchant-hero-comparison.png`
+- Responsive evidence: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/.artifacts/landing-qa/influencer-mobile-separate.png`, `/Users/arashsn/Projects/PrimeStyleAI/prime-products/.artifacts/landing-qa/merchant-mobile-separate.png`, and `/Users/arashsn/Projects/PrimeStyleAI/prime-products/.artifacts/landing-qa/merchant-mobile-menu.png`
+- Interaction-state evidence: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/.artifacts/landing-qa/merchant-form-success-separate.png`
+- Source board: `1086 x 1448` pixels. The board contains two full-page concept columns, so each hero region was cropped from its audience column and normalized into a `700 x 510` comparison panel.
+- Desktop implementation: `1440 x 1050` CSS pixels and image pixels at density `1`.
+- Mobile implementation: `390 x 844` CSS pixels and image pixels at density `1`.
+- State: public, signed-out influencer and merchant routes with muted autoplay film; mobile navigation open; merchant interest form success.
+- The two same-input hero comparisons are the focused comparison evidence. They retain readable navigation, display typography, CTAs, image masks, product rails, annotations, and supporting proof. Additional focused crops were not needed.
+
+### Comparison history and fixes
+
+- P1 fixed: the first implementation treated influencer and merchant pages as audience variants of one shared UI. The replacement removes the shared hero, story, journey, impact, header, footer, and dialog components. Each route now has its own components, data model, mapper, custom page hook, navigation, feature architecture, form UI, and CSS module.
+- P1 fixed: the initial feature copy was not grounded closely enough in the procedures manual. Influencer content now covers publisher activation, approved products, current rate conditions, authorized fit/try-on, tracked merchant/product referrals, merchant checkout, validated transaction states, statements, reversals, and payout. Merchant content now covers channel separation, catalog connection, Direct Connected product pages, sizing, authorized AI shopping, exact-variant carts, order/return reconciliation, direct publisher campaigns, permissions, and controlled pilots.
+- P2 fixed: unverified campaign metrics and generic creator-matching/content-approval claims were removed. The merchant hero now shows non-numeric integration and event states only.
+- P2 fixed: the mobile menu CTA initially opened the interest dialog without closing the menu. Both audience headers now close their menus before opening their independent dialogs. Post-fix browser evidence showed `dialog: true` and `menu: false`.
+- Post-fix visual evidence: both same-input hero comparisons and both mobile hero captures listed above.
+
+### Required fidelity surfaces
+
+- Fonts and typography: Manrope provides the clean editorial sans hierarchy; Georgia supplies the source-like italic display accent. Desktop and mobile wrapping, optical weights, line height, and small uppercase labels are consistent and unclipped.
+- Spacing and layout rhythm: the influencer route uses a fluid editorial split, curved film, handwritten notes, four-part creator toolkit, film rail, payout journey, and commission statement. The merchant route uses a precise grid, clipped studio film, catalog tray, systems canvas, capability matrix, two-track program contrast, campaign term board, and pilot story. Both have zero horizontal overflow at `1440px` and `390px`.
+- Colors and visual tokens: both routes preserve PrimeStyleAI cobalt, pale blue, purple, orange annotation, white, and near-black tokens. The influencer route uses softer editorial whitespace; the merchant route uses technical grid lines and square controls.
+- Image quality and asset fidelity: supplied PrimeStyleAI product assets and real fashion footage are used at their intended aspect ratios with stable crops and posters. Phosphor supplies all UI icons. No inline SVG, emoji, placeholder illustration, or handcrafted CSS illustration replaces a target asset.
+- Copy and content: the approved design's value hierarchy is retained, while wording that contradicted or exceeded the procedures manual was intentionally replaced with manual-backed claims. The influencer commission statement uses the manual's precise `100% of the commission PrimeStyleAI actually receives` qualification rather than claiming `100% commission`.
+- Responsiveness and accessibility: desktop and `390 x 844` mobile layouts have no horizontal overflow. Menus use semantic navigation and expanded state, dialogs are labelled and modal, form fields have labels, CTAs are real buttons, links are real links, images have alt text, controls have practical mobile tap targets, and reduced-motion CSS is present.
+
+### Functional verification
+
+- Influencer secondary CTA scrolled to `#creator-journey`; target settled within `88px` of the sticky header.
+- Merchant secondary CTA scrolled to `#connected-system`; target settled within `80px` of the sticky header.
+- Merchant mobile navigation opened with all six expected destinations.
+- Merchant form accepted name, work email, and website, then rendered its success state.
+- Influencer form accepted name, email, and creator profile, then rendered its independent success state.
+- Mobile menu closed before either form dialog opened.
+- Browser console errors: `0` after influencer and merchant interaction passes.
+- Mobile horizontal overflow: `0` on both routes (`scrollWidth = 390`).
+- Scoped ESLint: passed.
+- Production build: passed. The build retains one unrelated existing Turbopack NFT warning from the sizing-lab Apple fused tape-scale route.
+
+### Follow-up polish
+
+- P3: the approved concept board still contains campaign analytics numbers and creator-matching claims that the procedures manual does not substantiate. The implementation intentionally preserves the visual system rather than those claims.
+- P3: autoplay fashion footage is currently borrowed replacement media and should be swapped for PrimeStyleAI-owned production footage before a public launch.
+
+final result: passed
+
 ## AI Backgrounds dedicated editor
 
 ### Evidence

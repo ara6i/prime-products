@@ -53,6 +53,7 @@ next-env.d.ts
 /.codex-frontend-3000.log
 /outputs/
 /artifacts/
+/.artifacts/
 /reports/
 /tmp/
 /.agents/
