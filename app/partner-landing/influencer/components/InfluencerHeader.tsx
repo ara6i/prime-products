@@ -14,31 +14,37 @@ interface InfluencerHeaderProps {
 export function InfluencerHeader(props: InfluencerHeaderProps) {
   return (
     <header className={styles.header}>
-      <Link href="/" className={styles.logoLink} aria-label="PrimeStyleAI home">
-        <Image src="/images/landing/optimized/logo-navbar-transparent.webp" alt="PrimeStyleAI virtual try-on" width={116} height={92} priority />
+      <Link href="/" className={styles.logoLink} aria-label="Prime Style AI home">
+        <Image
+          src="/media/partner-landing/primestyleai-new-mark.png"
+          alt="Prime Style AI"
+          width={1254}
+          height={1254}
+          sizes="42px"
+          priority
+        />
+        <span>Prime Style AI</span>
       </Link>
       <nav className={styles.desktopNav} aria-label="Influencer navigation">
         <Link href="/influencers" aria-current="page">Influencers</Link>
-        <button type="button" onClick={() => props.onSectionSelect("creator-tools")}>Creator tools</button>
+        <button type="button" onClick={() => props.onSectionSelect("outfit-studio")}>Outfit Studio</button>
         <button type="button" onClick={() => props.onSectionSelect("creator-journey")}>How you earn</button>
         <button type="button" onClick={() => props.onSectionSelect("creator-commission")}>Commission</button>
         <Link href="/merchants">For merchants</Link>
       </nav>
       <div className={styles.headerActions}>
-        <Link href="/customer/login" className={styles.signIn}>Sign in</Link>
-        <button type="button" className={styles.headerCta} onClick={props.onPrimaryAction}>Start earning</button>
+        <button type="button" className={styles.headerCta} onClick={props.onPrimaryAction}>Join waitlist</button>
         <button type="button" className={styles.menuButton} onClick={props.onMenuToggle} aria-label={props.mobileMenuOpen ? "Close menu" : "Open menu"} aria-expanded={props.mobileMenuOpen}>
           {props.mobileMenuOpen ? <X size={24} /> : <List size={24} />}
         </button>
       </div>
       {props.mobileMenuOpen ? (
         <nav className={styles.mobileNav} aria-label="Mobile influencer navigation">
-          <button type="button" onClick={() => props.onSectionSelect("creator-tools")}>Creator tools</button>
+          <button type="button" onClick={() => props.onSectionSelect("outfit-studio")}>Outfit Studio</button>
           <button type="button" onClick={() => props.onSectionSelect("creator-journey")}>How you earn</button>
           <button type="button" onClick={() => props.onSectionSelect("creator-commission")}>Commission</button>
           <Link href="/merchants" onClick={props.onMenuClose}>For merchants</Link>
-          <Link href="/customer/login" onClick={props.onMenuClose}>Sign in</Link>
-          <button type="button" className={styles.mobileCta} onClick={() => { props.onMenuClose(); props.onPrimaryAction(); }}>Start earning</button>
+          <button type="button" className={styles.mobileCta} onClick={() => { props.onMenuClose(); props.onPrimaryAction(); }}>Join waitlist</button>
         </nav>
       ) : null}
     </header>

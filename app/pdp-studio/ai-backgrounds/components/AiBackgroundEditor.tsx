@@ -33,7 +33,7 @@ export function AiBackgroundEditor({ ui }: AiBackgroundEditorProps) {
   const [moreOpen, setMoreOpen] = useState(false);
 
   return (
-    <div className="flex h-screen min-h-[36rem] flex-col overflow-hidden bg-white text-[var(--color-pdp-ink)]">
+    <div data-pdp-studio className="flex h-[100dvh] min-h-[36rem] flex-col overflow-hidden bg-white font-[family-name:var(--font-pdp-body)] text-[var(--color-pdp-ink)]">
       <header className="relative z-40 flex min-h-16 items-center overflow-x-auto border-b border-[var(--color-pdp-rule)] bg-white px-3">
         <PdpStudioButton
           asChild
@@ -147,7 +147,7 @@ export function AiBackgroundEditor({ ui }: AiBackgroundEditorProps) {
         </div>
       </header>
 
-      <main className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_18rem] lg:grid-cols-[minmax(0,1fr)_21.5rem] lg:grid-rows-1">
+      <main className="grid min-h-0 flex-1 grid-rows-[minmax(20rem,1fr)_minmax(18rem,42dvh)] lg:grid-cols-[minmax(0,1fr)_21.5rem] lg:grid-rows-1">
         <section className="flex min-h-0 min-w-0 flex-col">
           <AiBackgroundCanvas ui={ui} />
           <div className="border-t border-[var(--color-pdp-rule)] bg-white px-5 py-3">

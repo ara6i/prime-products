@@ -1,0 +1,1468 @@
+.billingHub {
+  --billing-ink: #1b1c2d;
+  --billing-muted: #747784;
+  --billing-navy: #1d1d32;
+  --billing-blue: #2c63ee;
+  --billing-pink: #ffb7c5;
+  --billing-soft-pink: #ffe7ec;
+  --billing-line: #e8e9ef;
+  --billing-surface: #f3f4f7;
+  --billing-green: #24765a;
+  display: grid;
+  min-width: 0;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #ececf1;
+  border-radius: 28px;
+  background: var(--billing-surface);
+  color: var(--billing-ink);
+}
+
+.billingHub * {
+  box-sizing: border-box;
+}
+
+.billingHub button,
+.billingHub input,
+.billingHub select {
+  font: inherit;
+}
+
+.billingHub button,
+.billingHub select {
+  cursor: pointer;
+}
+
+.workspaceToolbar,
+.toolbarActions,
+.periodPicker,
+.lightButton,
+.cardHeader,
+.maskedCardTop,
+.maskedCardBottom,
+.walletHeading,
+.settlementHeader,
+.settlementFooter,
+.statusRows button,
+.reviewCard,
+.reviewCard > div,
+.recipientsCard,
+.historyHeader,
+.historyActions,
+.historyTabs,
+.creatorCell,
+.documentCell,
+.methodOption,
+.providerButton,
+.securityNote,
+.paymentModal > header,
+.paymentModal footer,
+.toast,
+.demoNote {
+  display: flex;
+  align-items: center;
+}
+
+.workspaceToolbar,
+.cardHeader,
+.settlementHeader,
+.settlementFooter,
+.reviewCard,
+.recipientsCard,
+.historyHeader,
+.paymentModal > header,
+.paymentModal footer {
+  justify-content: space-between;
+}
+
+.workspaceToolbar {
+  min-height: 50px;
+  gap: 18px;
+  padding: 0 4px;
+}
+
+.workspaceToolbar p,
+.historyHeader p {
+  margin: 4px 0 0;
+  color: var(--billing-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.eyebrow {
+  color: var(--billing-blue);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.toolbarActions {
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.periodPicker,
+.lightButton,
+.statusFilter,
+.downloadAllButton {
+  min-height: 38px;
+  border: 1px solid #dfe1e8;
+  border-radius: 999px;
+  background: #fff;
+  color: #4e5160;
+}
+
+.periodPicker {
+  gap: 6px;
+  padding: 0 7px 0 11px;
+}
+
+.periodPicker select,
+.statusFilter select {
+  height: 36px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.lightButton {
+  gap: 7px;
+  padding: 0 13px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.bentoGrid {
+  display: grid;
+  min-width: 0;
+  align-items: stretch;
+  grid-template-columns: minmax(218px, 0.76fr) minmax(410px, 1.48fr) minmax(
+      238px,
+      0.86fr
+    );
+  gap: 14px;
+}
+
+.leftStack,
+.rightStack {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 10px;
+}
+
+.rightStack {
+  gap: 8px;
+}
+
+.paymentCardPanel,
+.walletCard,
+.settlementCard,
+.fundingCard,
+.statusCard,
+.reviewCard,
+.recipientsCard,
+.historyCard {
+  min-width: 0;
+  border: 1px solid rgba(228, 229, 236, 0.82);
+  background: #fff;
+  box-shadow: 0 14px 38px rgba(31, 32, 52, 0.045);
+}
+
+.paymentCardPanel,
+.walletCard,
+.settlementCard,
+.fundingCard,
+.statusCard,
+.historyCard {
+  border-radius: 22px;
+}
+
+.paymentCardPanel {
+  padding: 12px;
+}
+
+.cardHeader {
+  min-width: 0;
+  gap: 12px;
+}
+
+.cardHeader > div,
+.walletHeading > div,
+.recipientsCard > div,
+.paymentModal .walletHeading > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.cardTitle {
+  color: var(--billing-ink);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: -0.015em;
+}
+
+.cardHeader small,
+.walletHeading small,
+.recipientsCard small,
+.paymentModal p {
+  color: var(--billing-muted);
+  font-size: 9.5px;
+  line-height: 1.35;
+}
+
+.iconButton {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #f3f4f7;
+  color: #575a68;
+}
+
+.maskedCard {
+  display: grid;
+  min-height: 150px;
+  align-content: space-between;
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 18px;
+  background: var(--billing-navy);
+  box-shadow: 0 14px 28px rgba(29, 29, 50, 0.19);
+  color: #fff;
+}
+
+.maskedCardTop,
+.maskedCardBottom {
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.maskedCardTop strong {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.055em;
+}
+
+.cardBrandLogo {
+  width: 48px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.maskedCard > span {
+  align-self: end;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 9px;
+  font-weight: 720;
+}
+
+.maskedCard > p {
+  margin: 0;
+  font-size: clamp(14px, 1.2vw, 17px);
+  font-weight: 720;
+  letter-spacing: 0.065em;
+  white-space: nowrap;
+}
+
+.maskedCardBottom small {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 8.5px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.maskedEmail {
+  overflow: hidden;
+  margin: 8px 2px 0;
+  color: #8b8e99;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.walletCard {
+  padding: 13px;
+}
+
+.walletHeading {
+  min-width: 0;
+  gap: 9px;
+}
+
+.softIcon,
+.darkIcon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 10px;
+}
+
+.softIcon {
+  background: #edf1ff;
+  color: var(--billing-blue);
+}
+
+.darkIcon {
+  background: var(--billing-navy);
+  color: #fff;
+}
+
+.walletCard > strong {
+  display: block;
+  margin-top: 12px;
+  font-size: 28px;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.walletCard > span {
+  color: var(--billing-muted);
+  font-size: 9.5px;
+}
+
+.walletBreakdown {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 9px 0 0;
+}
+
+.walletBreakdown div {
+  display: grid;
+  gap: 3px;
+  padding: 6px;
+  border-radius: 10px;
+  background: #f6f7fa;
+}
+
+.walletBreakdown dt,
+.walletBreakdown dd {
+  margin: 0;
+}
+
+.walletBreakdown dt {
+  color: #888b97;
+  font-size: 7.5px;
+  text-transform: uppercase;
+}
+
+.walletBreakdown dd {
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.inlineButton {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--billing-blue);
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.settlementCard {
+  display: grid;
+  align-content: start;
+  padding: 17px;
+}
+
+.settlementState {
+  display: inline-flex;
+  min-height: 27px;
+  align-items: center;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: var(--billing-soft-pink);
+  color: #8e4252;
+  font-size: 8.5px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.settlementState[data-state="funded"],
+.settlementState[data-state="paid"] {
+  background: #e6f5ed;
+  color: var(--billing-green);
+}
+
+.settlementAmount {
+  padding: 14px 0 11px;
+  border-bottom: 1px solid var(--billing-line);
+}
+
+.settlementAmount > span {
+  color: #6c6f7d;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+
+.settlementAmount > strong {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(34px, 4vw, 43px);
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.settlementAmount > p {
+  max-width: 430px;
+  margin: 9px 0 0;
+  color: #7c7f8b;
+  font-size: 9.5px;
+  line-height: 1.45;
+}
+
+.settlementBreakdown {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 14px;
+  margin: 7px 0 0;
+}
+
+.settlementBreakdown > div {
+  display: flex;
+  min-height: 54px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid #f0f0f4;
+}
+
+.settlementBreakdown dt {
+  display: grid;
+  gap: 2px;
+  color: #3e414e;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.settlementBreakdown dt small {
+  color: #9597a1;
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.settlementBreakdown dd {
+  margin: 0;
+  color: var(--billing-ink);
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.settlementDates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.settlementDates > span {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 7px;
+  padding: 8px;
+  border-radius: 11px;
+  background: #f6f7fa;
+}
+
+.settlementDates svg {
+  grid-row: 1 / 3;
+  align-self: center;
+  color: var(--billing-blue);
+}
+
+.settlementDates small {
+  color: #8a8d98;
+  font-size: 7.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.settlementDates strong {
+  overflow: hidden;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settlementFooter {
+  align-self: end;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.settlementFooter > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #737684;
+  font-size: 8.5px;
+  line-height: 1.35;
+}
+
+.settlementFooter > span svg {
+  flex: 0 0 auto;
+  color: var(--billing-green);
+}
+
+.primaryButton,
+.cancelButton,
+.providerButton,
+.downloadAllButton,
+.rowAction {
+  border: 0;
+  font-weight: 850;
+}
+
+.primaryButton {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 13px;
+  border-radius: 11px;
+  background: var(--billing-navy);
+  color: #fff;
+  font-size: 9.5px;
+  white-space: nowrap;
+}
+
+.primaryButton:disabled {
+  cursor: default;
+  opacity: 0.56;
+}
+
+.fundingCard {
+  padding: 12px;
+  background: #fff;
+}
+
+.fundingCard > strong {
+  display: block;
+  margin-top: 11px;
+  font-size: clamp(25px, 2.75vw, 32px);
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+.fundingCard > p {
+  margin: 5px 0 9px;
+  color: #81838e;
+  font-size: 9px;
+}
+
+.fundingCard > button {
+  display: inline-flex;
+  min-height: 29px;
+  align-items: center;
+  gap: 5px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--billing-navy);
+  color: #fff;
+  font-size: 8.5px;
+  font-weight: 850;
+}
+
+.statusCard {
+  padding: 12px;
+}
+
+.statusRows {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.statusRows button {
+  min-width: 0;
+  min-height: 29px;
+  gap: 7px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 9px;
+  background: #f7f7fa;
+  color: #626572;
+  text-align: left;
+}
+
+.statusRows button:nth-child(1) svg {
+  color: #a96d18;
+}
+
+.statusRows button:nth-child(2) svg {
+  color: var(--billing-blue);
+}
+
+.statusRows button:nth-child(3) svg {
+  color: var(--billing-green);
+}
+
+.statusRows button:nth-child(4) svg {
+  color: #a84457;
+}
+
+.statusRows span {
+  min-width: 0;
+  flex: 1;
+  font-size: 8.5px;
+  font-weight: 750;
+}
+
+.statusRows strong {
+  color: var(--billing-ink);
+  font-size: 8.5px;
+  white-space: nowrap;
+}
+
+.reviewCard,
+.recipientsCard {
+  border-radius: 17px;
+}
+
+.reviewCard {
+  min-height: 56px;
+  gap: 10px;
+  padding: 8px 10px;
+  background: #fff4e5;
+  border-color: #f3ddbb;
+}
+
+.reviewCard > div {
+  min-width: 0;
+  gap: 7px;
+}
+
+.reviewCard > div > svg {
+  flex: 0 0 auto;
+  color: #9a651d;
+}
+
+.reviewCard span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.reviewCard strong {
+  overflow: hidden;
+  color: #6d4b1e;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reviewCard small {
+  color: #9a7542;
+  font-size: 7.5px;
+  line-height: 1.25;
+}
+
+.reviewCard button {
+  min-height: 29px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 8px;
+  background: #fff;
+  color: #7b531d;
+  font-size: 8px;
+  font-weight: 850;
+}
+
+.recipientsCard {
+  min-height: 68px;
+  gap: 10px;
+  padding: 10px;
+}
+
+.avatarStack {
+  display: flex;
+  flex: 0 0 auto;
+  padding-left: 8px;
+}
+
+.recipientsCard > .avatarStack {
+  display: flex;
+}
+
+.avatarStack img,
+.avatarStack > span {
+  width: 34px;
+  height: 34px;
+  margin-left: -8px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+
+.avatarStack img {
+  object-fit: cover;
+  object-position: top center;
+}
+
+.avatarStack > span {
+  display: grid;
+  place-items: center;
+  background: var(--billing-blue);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.historyCard {
+  overflow: hidden;
+}
+
+.historyHeader {
+  min-height: 83px;
+  gap: 18px;
+  padding: 15px 17px 12px;
+}
+
+.historyHeader h2,
+.paymentModal h2 {
+  margin: 3px 0 0;
+  color: var(--billing-ink);
+  font-size: 16px;
+  letter-spacing: -0.03em;
+}
+
+.historyActions {
+  flex: 0 0 auto;
+  gap: 7px;
+}
+
+.statusFilter {
+  display: flex;
+  padding: 0 6px 0 10px;
+}
+
+.downloadAllButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 11px;
+  background: var(--billing-navy);
+  color: #fff;
+  font-size: 9px;
+}
+
+.historyTabs {
+  gap: 4px;
+  padding: 0 17px 11px;
+  border-bottom: 1px solid var(--billing-line);
+}
+
+.historyTabs button {
+  min-height: 31px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #777a87;
+  font-size: 8.5px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.historyTabs button[aria-selected="true"] {
+  background: var(--billing-soft-pink);
+  color: #7d3e4b;
+}
+
+.tableScroll {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.commissionTable,
+.documentTable,
+.creditTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.commissionTable {
+  min-width: 980px;
+}
+
+.documentTable,
+.creditTable {
+  min-width: 730px;
+}
+
+.commissionTable th,
+.documentTable th,
+.creditTable th {
+  padding: 9px 11px;
+  background: #fafafd;
+  color: #8a8d98;
+  font-size: 7.5px;
+  font-weight: 900;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.commissionTable td,
+.documentTable td,
+.creditTable td {
+  height: 62px;
+  padding: 9px 11px;
+  border-top: 1px solid #efeff3;
+  color: #626572;
+  font-size: 8.5px;
+  vertical-align: middle;
+}
+
+.commissionTable tbody tr:hover,
+.documentTable tbody tr:hover,
+.creditTable tbody tr:hover {
+  background: #fcfcfe;
+}
+
+.creatorCell,
+.documentCell {
+  min-width: 0;
+  gap: 8px;
+}
+
+.creatorCell img {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.creatorCell > span,
+.stackedCell,
+.documentCell > span:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.creatorCell strong,
+.stackedCell strong,
+.documentCell strong {
+  color: var(--billing-ink);
+  font-size: 8.5px;
+}
+
+.creatorCell small,
+.stackedCell small,
+.documentCell small {
+  color: #92949e;
+  font-size: 7.5px;
+  line-height: 1.3;
+}
+
+.issueText {
+  max-width: 155px;
+  color: #a66618 !important;
+}
+
+.commissionAmount {
+  color: var(--billing-ink);
+  font-size: 9.5px;
+  white-space: nowrap;
+}
+
+.statusBadge {
+  display: inline-flex;
+  min-height: 23px;
+  align-items: center;
+  gap: 4px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #eef0f5;
+  color: #666a78;
+  font-size: 7.5px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.statusBadge[data-status="pending"],
+.statusBadge[data-status="due"] {
+  background: #fff0d8;
+  color: #946119;
+}
+
+.statusBadge[data-status="locked"] {
+  background: #e8efff;
+  color: #315fba;
+}
+
+.statusBadge[data-status="funded"],
+.statusBadge[data-status="paid"] {
+  background: #e5f4ec;
+  color: #277154;
+}
+
+.statusBadge[data-status="onhold"],
+.statusBadge[data-status="cancelled"] {
+  background: #ffe6eb;
+  color: #a34255;
+}
+
+.documentCell > span:first-child {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 9px;
+  background: #edf1ff;
+  color: var(--billing-blue);
+}
+
+.rowAction {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 5px;
+  padding: 0 8px;
+  border: 1px solid #e0e2e9;
+  border-radius: 8px;
+  background: #fff;
+  color: #4f5260;
+  font-size: 8px;
+}
+
+.creditPositive {
+  color: var(--billing-green);
+}
+
+.creditNegative {
+  color: #a34255;
+}
+
+.creditStatus {
+  display: inline-flex;
+  min-height: 23px;
+  align-items: center;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #e8efff;
+  color: #315fba;
+  font-size: 7.5px;
+  font-weight: 850;
+}
+
+.emptyState {
+  display: grid;
+  min-height: 130px;
+  place-items: center;
+  align-content: center;
+  gap: 7px;
+  color: #858894;
+  font-size: 9px;
+}
+
+.modalBackdrop {
+  position: fixed;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(18, 19, 31, 0.52);
+  inset: 0;
+}
+
+.paymentModal {
+  width: min(540px, 100%);
+  overflow: hidden;
+  border: 1px solid #e5e6eb;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 28px 80px rgba(19, 20, 35, 0.25);
+}
+
+.paymentModal > header {
+  gap: 16px;
+  padding: 17px 18px;
+  border-bottom: 1px solid var(--billing-line);
+}
+
+.paymentModal h2 {
+  font-size: 17px;
+}
+
+.paymentModal p {
+  margin: 3px 0 0;
+  font-size: 10px;
+}
+
+.paymentModal form {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.methodOptions {
+  display: grid;
+  gap: 8px;
+}
+
+.methodOption {
+  min-height: 66px;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #e3e4eb;
+  border-radius: 13px;
+  background: #fff;
+}
+
+.methodOption[data-selected="true"] {
+  border-color: #9aafea;
+  background: #f7f9ff;
+  box-shadow: 0 0 0 3px rgba(44, 99, 238, 0.08);
+}
+
+.methodOption input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--billing-blue);
+}
+
+.methodOption > span:nth-of-type(2) {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 3px;
+}
+
+.methodOption strong {
+  color: var(--billing-ink);
+  font-size: 11px;
+}
+
+.methodOption small {
+  overflow: hidden;
+  color: #858894;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.methodOption > svg {
+  color: var(--billing-green);
+}
+
+.providerButton {
+  min-height: 41px;
+  justify-content: center;
+  gap: 7px;
+  border: 1px dashed #cfd3df;
+  border-radius: 11px;
+  background: #fafafd;
+  color: #545766;
+  font-size: 9.5px;
+}
+
+.securityNote {
+  gap: 7px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #edf6f2;
+  color: #39715d;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.securityNote svg {
+  flex: 0 0 auto;
+}
+
+.paymentModal footer {
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.cancelButton {
+  min-height: 40px;
+  padding: 0 13px;
+  border: 1px solid #dfe1e8;
+  border-radius: 11px;
+  background: #fff;
+  color: #4e5160;
+  font-size: 9.5px;
+}
+
+.toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 85;
+  max-width: min(410px, calc(100vw - 32px));
+  min-height: 48px;
+  gap: 8px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 13px;
+  background: var(--billing-navy);
+  box-shadow: 0 14px 34px rgba(22, 23, 38, 0.23);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 750;
+  text-align: left;
+}
+
+.toast svg {
+  flex: 0 0 auto;
+  color: var(--billing-pink);
+}
+
+.demoNote {
+  justify-content: flex-end;
+  gap: 5px;
+  margin: -2px 3px 0;
+  color: #8a8d98;
+  font-size: 8px;
+  text-align: right;
+}
+
+.demoNote svg {
+  flex: 0 0 auto;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.billingHub button:hover:not(:disabled),
+.billingHub select:hover {
+  filter: brightness(0.975);
+}
+
+.billingHub button:focus-visible,
+.billingHub select:focus-visible,
+.billingHub input:focus-visible,
+.methodOption:focus-within {
+  outline: 3px solid rgba(44, 99, 238, 0.28);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1180px) {
+  .bentoGrid {
+    grid-template-columns: minmax(220px, 0.72fr) minmax(430px, 1.28fr);
+  }
+
+  .rightStack {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .fundingCard,
+  .statusCard,
+  .reviewCard,
+  .recipientsCard {
+    min-height: 100%;
+  }
+
+  .reviewCard,
+  .recipientsCard {
+    align-content: center;
+  }
+}
+
+@media (max-width: 880px) {
+  .billingHub {
+    padding: 13px;
+    border-radius: 23px;
+  }
+
+  .workspaceToolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .toolbarActions {
+    width: 100%;
+  }
+
+  .periodPicker,
+  .lightButton {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .bentoGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .leftStack {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rightStack {
+    grid-column: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .maskedCard {
+    min-height: 185px;
+  }
+
+  .walletCard {
+    display: grid;
+    align-content: start;
+  }
+}
+
+@media (max-width: 720px) {
+  .billingHub {
+    gap: 11px;
+    padding: 10px;
+    border-radius: 20px;
+  }
+
+  .toolbarActions,
+  .leftStack,
+  .rightStack {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbarActions {
+    display: grid;
+  }
+
+  .periodPicker,
+  .lightButton {
+    width: 100%;
+  }
+
+  .paymentCardPanel,
+  .walletCard,
+  .settlementCard,
+  .fundingCard,
+  .statusCard,
+  .historyCard {
+    border-radius: 18px;
+  }
+
+  .settlementAmount > strong {
+    font-size: 38px;
+  }
+
+  .settlementFooter,
+  .historyHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .settlementFooter .primaryButton,
+  .historyActions,
+  .statusFilter,
+  .downloadAllButton {
+    width: 100%;
+  }
+
+  .historyActions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .statusFilter select {
+    width: 100%;
+  }
+
+  .downloadAllButton {
+    justify-content: center;
+  }
+
+  .historyTabs {
+    overflow-x: auto;
+  }
+
+  .tableScroll {
+    overflow-x: hidden;
+  }
+
+  .commissionTable,
+  .documentTable,
+  .creditTable {
+    min-width: 0;
+  }
+
+  .commissionTable thead,
+  .documentTable thead,
+  .creditTable thead {
+    display: none;
+  }
+
+  .commissionTable tbody,
+  .documentTable tbody,
+  .creditTable tbody {
+    display: grid;
+    gap: 9px;
+    padding: 10px;
+  }
+
+  .commissionTable tbody tr,
+  .documentTable tbody tr,
+  .creditTable tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px 13px;
+    padding: 13px;
+    border: 1px solid #e8e9ef;
+    border-radius: 14px;
+    background: #fff;
+  }
+
+  .commissionTable td,
+  .documentTable td,
+  .creditTable td {
+    display: grid;
+    height: auto;
+    min-width: 0;
+    align-content: start;
+    gap: 4px;
+    padding: 0;
+    border: 0;
+    font-size: 9px;
+  }
+
+  .commissionTable td::before,
+  .documentTable td::before,
+  .creditTable td::before {
+    color: #8a8d98;
+    content: attr(data-label);
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+  }
+
+  .commissionTable td:first-child,
+  .commissionTable td:nth-child(2),
+  .commissionTable td:nth-child(6),
+  .documentTable td:first-child,
+  .creditTable td:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .commissionTable td:first-child::before,
+  .documentTable td:first-child::before {
+    display: none;
+  }
+
+  .issueText {
+    max-width: none;
+  }
+
+  .rowAction {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .demoNote {
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .leftStack,
+  .rightStack,
+  .historyActions,
+  .settlementDates {
+    grid-template-columns: 1fr;
+  }
+
+  .workspaceToolbar {
+    padding: 0;
+  }
+
+  .maskedCard > p {
+    font-size: 16px;
+  }
+
+  .walletBreakdown {
+    grid-template-columns: 1fr;
+  }
+
+  .walletBreakdown div {
+    grid-template-columns: 1fr auto;
+  }
+
+  .settlementBreakdown > div {
+    gap: 10px;
+  }
+
+  .settlementBreakdown {
+    grid-template-columns: 1fr;
+  }
+
+  .settlementFooter .primaryButton {
+    white-space: normal;
+  }
+
+  .historyHeader h2 {
+    font-size: 15px;
+  }
+
+  .methodOption {
+    align-items: flex-start;
+  }
+
+  .methodOption .darkIcon {
+    display: none;
+  }
+
+  .methodOption small {
+    white-space: normal;
+  }
+
+  .paymentModal footer {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .paymentModal footer button {
+    width: 100%;
+  }
+
+  .toast {
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .billingHub * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}

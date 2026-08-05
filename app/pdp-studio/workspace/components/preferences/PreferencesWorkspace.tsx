@@ -16,12 +16,12 @@ export function PreferencesWorkspace({ catalog }: PreferencesWorkspaceProps) {
   const accountSection = ui.activeSection.startsWith("account-");
 
   return (
-    <div className="grid gap-[var(--space-pdp-xl)]">
+    <div className="grid gap-8 pb-10">
       <PdpStudioPageHeader
         title="Preferences"
         description="Account identity, billing, usage, Space members, export defaults, and content controls."
       />
-      <div className="grid items-start gap-[var(--space-pdp-md)] lg:grid-cols-[15rem_minmax(0,1fr)]">
+      <div className="grid items-start gap-5 lg:grid-cols-[14rem_minmax(0,1fr)]">
         <PreferenceNavigation sections={catalog.preferenceSections} activeSection={ui.activeSection} onSelect={ui.setActiveSection} />
         {accountSection ? (
           <AccountPreferencePanels section={ui.activeSection} ui={ui} plans={catalog.plans} />

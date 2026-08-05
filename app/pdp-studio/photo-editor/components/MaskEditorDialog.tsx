@@ -29,26 +29,26 @@ export function MaskEditorDialog({ ui }: MaskEditorDialogProps) {
       aria-modal="true"
       aria-labelledby="photo-mask-editor-title"
       className={[
-        "fixed inset-0 z-[1000] grid place-items-center bg-black/55 backdrop-blur-[7px]",
+        "fixed inset-0 z-[1000] grid place-items-center bg-[var(--color-pdp-ink)]/28 backdrop-blur-[5px]",
         isRetouch ? "p-0" : "p-4",
       ].join(" ")}
     >
       <div
         className={[
-          "grid min-h-0 overflow-hidden bg-[#1e1f22] shadow-[0_30px_90px_rgba(0,0,0,0.42)]",
+          "grid min-h-0 overflow-hidden bg-[var(--color-pdp-surface)] text-[var(--color-pdp-ink)] shadow-[var(--shadow-pdp-overlay)]",
           isRetouch
-            ? "size-full rounded-none border-0 md:grid-cols-[60.5%_39.5%]"
-            : "h-[min(45rem,calc(100vh-3rem))] w-[min(54rem,calc(100vw-3rem))] rounded-[1rem] border border-white/10 md:grid-cols-[58%_42%]",
+            ? "size-full grid-rows-[minmax(16rem,1fr)_minmax(15rem,45dvh)] rounded-none border-0 md:grid-cols-[60.5%_39.5%] md:grid-rows-1"
+            : "h-[min(45rem,calc(100dvh-1.5rem))] w-[min(54rem,calc(100vw-1.5rem))] grid-rows-[minmax(15rem,1fr)_minmax(15rem,45dvh)] rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] md:grid-cols-[58%_42%] md:grid-rows-1",
         ].join(" ")}
       >
-        <section className="relative grid min-h-0 place-items-center bg-[#27282c]">
-          <div className="absolute left-4 top-4 z-20 flex overflow-hidden rounded-[0.75rem] border border-white/15 bg-[#37383d] shadow-sm">
+        <section className="relative grid min-h-0 place-items-center bg-[var(--color-pdp-paper)]">
+          <div className="absolute left-4 top-4 z-20 flex overflow-hidden rounded-[var(--radius-pdp-md)] border border-[var(--color-pdp-rule)] bg-white shadow-[var(--shadow-pdp-card)]">
             <button
               type="button"
               aria-label="Undo brush stroke"
               disabled={!ui.strokes.length}
               onClick={ui.undo}
-              className="grid size-10 place-items-center border-r border-white/10 text-white/65 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+              className="grid size-10 place-items-center border-r border-[var(--color-pdp-rule)] text-[var(--color-pdp-ink-soft)] transition hover:bg-[var(--color-pdp-surface-soft)] hover:text-[var(--color-pdp-ink)] disabled:cursor-not-allowed disabled:opacity-35"
             >
               <ArrowCounterClockwise size={20} aria-hidden />
             </button>
@@ -57,7 +57,7 @@ export function MaskEditorDialog({ ui }: MaskEditorDialogProps) {
               aria-label="Redo brush stroke"
               disabled={!ui.redoStrokes.length}
               onClick={ui.redo}
-              className="grid size-10 place-items-center text-white/65 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+              className="grid size-10 place-items-center text-[var(--color-pdp-ink-soft)] transition hover:bg-[var(--color-pdp-surface-soft)] hover:text-[var(--color-pdp-ink)] disabled:cursor-not-allowed disabled:opacity-35"
             >
               <ArrowClockwise size={20} aria-hidden />
             </button>
@@ -75,8 +75,8 @@ export function MaskEditorDialog({ ui }: MaskEditorDialogProps) {
 
         <aside
           className={[
-            "flex min-h-0 flex-col overflow-y-auto text-white",
-            isRetouch ? "bg-[#111214]" : "bg-[#202124]",
+            "flex min-h-0 flex-col overflow-y-auto border-t border-[var(--color-pdp-rule)] text-[var(--color-pdp-ink)] md:border-l md:border-t-0",
+            isRetouch ? "bg-white" : "bg-[var(--color-pdp-surface)]",
           ].join(" ")}
         >
           {ui.dialog === "retouch" ? (
@@ -96,11 +96,11 @@ function RetouchControls({ ui }: MaskEditorDialogProps) {
       <div className="p-4">
         <h2
           id="photo-mask-editor-title"
-          className="text-[1.6rem] font-semibold tracking-[-0.025em]"
+          className="text-[1.6rem] font-medium tracking-[-0.025em]"
         >
           Magic Retouch
         </h2>
-        <p className="mt-2 max-w-[34ch] text-[0.75rem] leading-5 text-white/62">
+        <p className="mt-2 max-w-[34ch] text-[0.75rem] leading-5 text-[var(--color-pdp-muted)]">
           Paint over the unwanted parts of your image, and let PDP Studio work
           its magic.
         </p>
@@ -129,7 +129,7 @@ function CutoutControls({ ui }: MaskEditorDialogProps) {
       <div className="p-4 md:p-5">
         <h2
           id="photo-mask-editor-title"
-          className="text-center text-[1.4rem] font-semibold tracking-[-0.02em]"
+          className="text-center text-[1.4rem] font-medium tracking-[-0.02em]"
         >
           Edit Cutout
         </h2>
@@ -151,7 +151,7 @@ function CutoutControls({ ui }: MaskEditorDialogProps) {
           />
         </div>
 
-        <div className="mt-5 grid grid-cols-2 rounded-[0.6rem] bg-[#2c2d32] p-0.5">
+        <div className="mt-5 grid grid-cols-2 rounded-[0.6rem] bg-[var(--color-pdp-surface-soft)] p-0.5">
           {(["guided", "manual"] as const).map((tab) => (
             <button
               key={tab}
@@ -161,8 +161,8 @@ function CutoutControls({ ui }: MaskEditorDialogProps) {
               className={[
                 "h-10 rounded-[0.5rem] text-[0.75rem] font-medium capitalize transition",
                 ui.cutoutTab === tab
-                  ? "bg-[#315cff] text-white"
-                  : "text-white/72 hover:bg-white/5",
+                  ? "bg-[var(--color-pdp-ink)] text-white"
+                  : "text-[var(--color-pdp-muted)] hover:bg-white",
               ].join(" ")}
             >
               {tab}
@@ -171,12 +171,12 @@ function CutoutControls({ ui }: MaskEditorDialogProps) {
         </div>
 
         {ui.cutoutTab === "guided" ? (
-          <p className="mt-2 text-[0.7rem] leading-5 text-white/68">
+          <p className="mt-2 text-[0.7rem] leading-5 text-[var(--color-pdp-muted)]">
             Objects are automatically detected to make your life easier!
           </p>
         ) : (
           <>
-            <p className="mt-2 text-[0.7rem] leading-5 text-white/68">
+            <p className="mt-2 text-[0.7rem] leading-5 text-[var(--color-pdp-muted)]">
               Use the mouse to {ui.cutoutMode} pixels manually.
             </p>
             <BrushSizeControl
@@ -201,7 +201,7 @@ function CutoutControls({ ui }: MaskEditorDialogProps) {
                 type="button"
                 aria-pressed={selected}
                 onClick={() => ui.setCutoutSuggestion(suggestion)}
-                className="text-center text-[0.7rem] text-white"
+                className="text-center text-[0.7rem] text-[var(--color-pdp-ink)]"
               >
                 <span
                   className={[
@@ -252,8 +252,8 @@ function ModeButton({
 }) {
   const toneClasses =
     tone === "red"
-      ? "border-[#ff485b] bg-[#4a2026] text-[#ff485b]"
-      : "border-[#00c88a] bg-[#153c33] text-[#00d396]";
+      ? "border-[var(--color-pdp-danger)] bg-[var(--color-pdp-danger-soft)] text-[var(--color-pdp-danger)]"
+      : "border-[var(--color-pdp-success)] bg-[var(--color-pdp-success-soft)] text-[var(--color-pdp-success)]";
 
   return (
     <button
@@ -263,14 +263,14 @@ function ModeButton({
       className={[
         "group grid justify-items-center gap-1.5 rounded-[0.75rem] text-[0.7rem] font-medium outline-none focus-visible:[&>span:first-child]:ring-2",
         tone === "red"
-          ? "focus-visible:[&>span:first-child]:ring-[#ff485b]"
-          : "focus-visible:[&>span:first-child]:ring-[#00c88a]",
+          ? "focus-visible:[&>span:first-child]:ring-[var(--color-pdp-danger)]"
+          : "focus-visible:[&>span:first-child]:ring-[var(--color-pdp-success)]",
       ].join(" ")}
     >
       <span
         className={[
           "relative grid size-[4.8rem] place-items-center rounded-full border-[3px] transition",
-          selected ? toneClasses : "border-transparent bg-[#22282a] text-white/64",
+          selected ? toneClasses : "border-transparent bg-[var(--color-pdp-surface-soft)] text-[var(--color-pdp-muted)]",
         ].join(" ")}
       >
         {icon}
@@ -278,14 +278,14 @@ function ModeButton({
           <span
             className={[
               "absolute -bottom-1 -right-0.5 grid size-6 place-items-center rounded-full text-white",
-              tone === "red" ? "bg-[#ff485b]" : "bg-[#00b87b]",
+              tone === "red" ? "bg-[var(--color-pdp-danger)]" : "bg-[var(--color-pdp-success)]",
             ].join(" ")}
           >
             <Check size={14} weight="bold" aria-hidden />
           </span>
         ) : null}
       </span>
-      <span className={selected ? (tone === "red" ? "text-[#ff5b69]" : "text-[#00d396]") : ""}>
+      <span className={selected ? (tone === "red" ? "text-[var(--color-pdp-danger)]" : "text-[var(--color-pdp-success)]") : ""}>
         {label}
       </span>
     </button>
@@ -303,7 +303,7 @@ function BrushSizeControl({
 }) {
   return (
     <label className={compact ? "mt-3 block" : "mt-3 block"}>
-      <span className="text-[0.7rem] font-semibold text-white">Brush size</span>
+      <span className="text-[0.7rem] font-medium text-[var(--color-pdp-ink)]">Brush size</span>
       <input
         aria-label="Brush size"
         type="range"
@@ -311,7 +311,7 @@ function BrushSizeControl({
         max={110}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="mt-2 h-1 w-full cursor-pointer accent-[#315cff]"
+        className="mt-2 h-1 w-full cursor-pointer accent-[var(--color-pdp-accent)]"
       />
     </label>
   );
@@ -331,19 +331,19 @@ function DialogActions({
   confirmLabel?: string;
 }) {
   return (
-    <div className="mt-auto border-t border-white/8 p-4">
+    <div className="mt-auto border-t border-[var(--color-pdp-rule)] bg-white p-4">
       <button
         type="button"
         disabled={confirmDisabled || confirmBusy}
         onClick={() => void onConfirm()}
-        className="h-12 w-full rounded-[0.7rem] bg-[#315cff] text-[0.8rem] font-medium text-white transition hover:bg-[#234be5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8aa1ff] disabled:cursor-not-allowed disabled:bg-white/15 disabled:text-white/45"
+        className="h-12 w-full rounded-[var(--radius-pdp-md)] bg-[var(--color-pdp-accent)] text-[0.8rem] font-medium text-white transition hover:bg-[var(--color-pdp-accent-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-pdp-focus)] disabled:cursor-not-allowed disabled:bg-[var(--color-pdp-rule)] disabled:text-[var(--color-pdp-muted)]"
       >
         {confirmLabel}
       </button>
       <button
         type="button"
         onClick={onCancel}
-        className="mt-2 h-10 w-full text-[0.75rem] font-medium text-[#8199ff] transition hover:text-white"
+        className="mt-2 h-10 w-full text-[0.75rem] font-medium text-[var(--color-pdp-accent)] transition hover:text-[var(--color-pdp-accent-hover)]"
       >
         Cancel
       </button>

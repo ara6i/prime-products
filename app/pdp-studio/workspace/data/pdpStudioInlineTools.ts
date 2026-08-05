@@ -4,12 +4,7 @@ import type { PdpStudioHomeAiToolId } from "../types/homeToolDialog";
 export function isPdpStudioHomeAiToolId(
   toolId: PdpStudioToolId,
 ): toolId is PdpStudioHomeAiToolId {
-  return (
-    toolId !== "ai-fashion-models" &&
-    toolId !== "background-remover" &&
-    toolId !== "ai-backgrounds" &&
-    toolId !== "ai-images"
-  );
+  return Boolean(toolId);
 }
 
 export function isPdpStudioInlineToolId(toolId: PdpStudioToolId): boolean {

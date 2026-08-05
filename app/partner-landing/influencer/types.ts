@@ -23,8 +23,7 @@ export interface InfluencerLandingViewModel {
     primaryCta: string;
     secondaryCta: string;
     annotation: string;
-    video: string;
-    poster: string;
+    image: string;
   };
   features: InfluencerFeature[];
   journey: InfluencerJourneyStep[];

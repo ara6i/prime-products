@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope, Poppins } from "next/font/google";
+import { Inter, Manrope, Poppins } from "next/font/google";
 import { Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
@@ -14,6 +14,11 @@ const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
@@ -40,7 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${manrope.variable} ${poppins.variable} ${geistMono.variable} antialiased`}
+        className={`${manrope.variable} ${poppins.variable} ${inter.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
         {gaId ? (

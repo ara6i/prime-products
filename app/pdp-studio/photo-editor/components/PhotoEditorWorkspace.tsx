@@ -35,7 +35,7 @@ export function PhotoEditorWorkspace({ tool }: PhotoEditorWorkspaceProps) {
   return (
     <main
       data-pdp-studio
-      className="flex h-screen min-h-[36rem] flex-col overflow-hidden bg-white font-[family-name:var(--font-pdp-body)] text-[var(--color-pdp-ink)]"
+      className="flex h-[100dvh] min-h-[36rem] flex-col overflow-hidden bg-white font-[family-name:var(--font-pdp-body)] text-[var(--color-pdp-ink)]"
     >
       <input
         ref={fileInputRef}
@@ -51,10 +51,10 @@ export function PhotoEditorWorkspace({ tool }: PhotoEditorWorkspaceProps) {
 
       <EditorToolbar ui={ui} />
 
-      <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_22.5rem]">
-        <section className="relative flex min-h-0 flex-col overflow-hidden bg-[#edf2f9]">
-          <div className="relative grid min-h-0 flex-1 place-items-center p-7">
-            <div className="relative aspect-square h-[min(55vh,31rem)] max-h-full max-w-full -translate-x-6 overflow-visible rounded-[0.25rem] bg-white shadow-[0_16px_60px_rgba(24,39,75,0.11)]">
+      <div className="grid min-h-0 flex-1 grid-rows-[minmax(20rem,1fr)_minmax(16rem,42dvh)] lg:grid-cols-[minmax(0,1fr)_22.5rem] lg:grid-rows-1">
+        <section className="relative flex min-h-0 flex-col overflow-hidden bg-[var(--color-pdp-paper)]">
+          <div className="relative grid min-h-0 flex-1 place-items-center p-4 sm:p-7">
+            <div className="relative aspect-square h-[min(55vh,31rem)] max-h-full max-w-full overflow-visible rounded-[var(--radius-pdp-md)] bg-white shadow-[var(--shadow-pdp-popover)] lg:-translate-x-6">
               <Image
                 src={ui.imageUrl}
                 alt="Product editor preview"
@@ -88,7 +88,7 @@ export function PhotoEditorWorkspace({ tool }: PhotoEditorWorkspaceProps) {
           </div>
           {ui.tool === "retouch" ? (
             <div className="absolute inset-x-0 bottom-20 z-10 px-5">
-              <div className="mx-auto flex max-w-[26.5rem] -translate-x-6 items-center gap-2 rounded-[0.85rem] border border-[var(--color-pdp-rule-strong)] bg-white p-1.5 shadow-sm">
+              <div className="mx-auto flex max-w-[26.5rem] items-center gap-2 rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule-strong)] bg-white p-1.5 shadow-[var(--shadow-pdp-card)] lg:-translate-x-6">
                 <input
                   type="text"
                   aria-label="Describe an edit"
@@ -123,7 +123,7 @@ export function PhotoEditorWorkspace({ tool }: PhotoEditorWorkspaceProps) {
           {ui.error ? (
             <p
               role="alert"
-              className="absolute bottom-5 left-1/2 z-20 max-w-[34rem] -translate-x-[58%] rounded-[0.65rem] border border-red-200 bg-red-50 px-4 py-2 text-center text-[0.72rem] text-red-700 shadow-sm"
+              className="absolute bottom-5 left-1/2 z-20 max-w-[calc(100%-2rem)] -translate-x-1/2 rounded-[0.65rem] border border-red-200 bg-red-50 px-4 py-2 text-center text-[0.72rem] text-red-700 shadow-sm lg:max-w-[34rem] lg:-translate-x-[58%]"
             >
               {ui.error}
             </p>
@@ -281,9 +281,9 @@ function PhotoInspectorRail({
   onReplace: () => void;
 }) {
   return (
-    <aside className="min-h-0 overflow-y-auto border-l border-[var(--color-pdp-rule)] bg-white">
+    <aside className="min-h-0 overflow-y-auto border-t border-[var(--color-pdp-rule)] bg-white lg:border-l lg:border-t-0">
       <div className="flex min-h-14 items-center justify-between border-b border-[var(--color-pdp-rule)] px-5">
-        <h1 className="text-[1rem] font-semibold">Photo</h1>
+        <h1 className="text-[1rem] font-medium">Photo</h1>
         <button
           type="button"
           className="text-[0.75rem] font-medium text-[var(--color-pdp-accent)]"

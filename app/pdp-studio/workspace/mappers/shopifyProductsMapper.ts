@@ -1,6 +1,6 @@
 import type {
   ShopifyConnection,
-  ShopifyProduct,
+	ShopifyProductDetail,
   ShopifyProductMedia,
   ShopifyProductVariant,
   ShopifyProductsPage,
@@ -36,10 +36,10 @@ export function mapShopifyProductsPage(
   };
 }
 
-function mapShopifyProduct(
-  value: unknown,
-  currency?: string | null,
-): ShopifyProduct {
+export function mapShopifyProduct(
+	value: unknown,
+	currency?: string | null,
+): ShopifyProductDetail {
   const record = asRecord(value);
   const variants = Array.isArray(record.variants)
     ? record.variants.map(mapVariant)
@@ -47,8 +47,9 @@ function mapShopifyProduct(
   return {
     id: String(record.id ?? ""),
     title: String(record.title ?? "Untitled product"),
-    handle: String(record.handle ?? ""),
-    status: String(record.status ?? "UNKNOWN"),
+		handle: String(record.handle ?? ""),
+		status: String(record.status ?? "UNKNOWN"),
+		storefrontUrl: asNullableString(record.storefrontUrl),
     featuredImage: asNullableString(record.featuredImage),
     media: Array.isArray(record.media) ? record.media.map(mapMedia) : [],
     variants,

@@ -34,14 +34,14 @@ function ToolSection({
   onActivateTool,
 }: ToolSectionProps) {
   return (
-    <section className="min-w-0">
+    <section className="min-w-0 rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-4 shadow-[var(--shadow-pdp-card)] sm:p-6">
       <div className="flex min-h-8 items-center justify-between gap-4">
-        <h2 className="text-[1rem] font-semibold text-[var(--color-pdp-ink)]">
+        <h2 className="text-[1rem] font-medium text-[var(--color-pdp-ink)]">
           {title}
         </h2>
         {action}
       </div>
-      <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 2xl:grid-cols-3">
         {tools.map((tool) => (
           <PdpStudioToolCard
             key={tool.id}
@@ -91,7 +91,7 @@ export function AiToolsWorkspace({ catalog }: AiToolsWorkspaceProps) {
 
   return (
     <>
-      <div className="grid gap-12 pb-16">
+      <div className="grid gap-5 pb-10">
         <ToolSection
           title="Recently used"
           tools={recentlyUsed}

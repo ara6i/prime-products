@@ -2,12 +2,9 @@
 
 import Link from "next/link";
 import { useMerchantLandingPage } from "../hooks/useMerchantLandingPage";
-import { MerchantCapabilities } from "./MerchantCapabilities";
-import { MerchantConnectedSystem } from "./MerchantConnectedSystem";
 import { MerchantHeader } from "./MerchantHeader";
-import { MerchantHero } from "./MerchantHero";
 import { MerchantInterestDialog } from "./MerchantInterestDialog";
-import { MerchantPrograms } from "./MerchantPrograms";
+import { MerchantNetworkJourney } from "./MerchantNetworkJourney";
 import styles from "./merchantLanding.module.css";
 
 export function MerchantLandingExperience() {
@@ -16,13 +13,13 @@ export function MerchantLandingExperience() {
     <div className={styles.page} data-audience="merchant">
       <MerchantHeader mobileMenuOpen={navigation.mobileMenuOpen} onMenuToggle={navigation.toggleMobileMenu} onMenuClose={navigation.closeMobileMenu} onPrimaryAction={interest.open} onSectionSelect={navigation.scrollToSection} />
       <main>
-        <MerchantHero viewModel={viewModel} onPrimaryAction={interest.open} onSecondaryAction={() => navigation.scrollToSection("connected-system")} />
-        <MerchantConnectedSystem viewModel={viewModel} />
-        <MerchantCapabilities viewModel={viewModel} />
-        <MerchantPrograms viewModel={viewModel} onPrimaryAction={interest.open} />
-        <section className={styles.finalCta}><span>Direct Connected Merchant Program</span><h2>Build a clearer product decision.<em>Keep control of the commerce.</em></h2><button type="button" onClick={interest.open}>Become connected</button></section>
+        <MerchantNetworkJourney onPrimaryAction={interest.open} />
       </main>
-      <footer className={styles.footer}><span>© {new Date().getFullYear()} PrimeStyleAI</span><nav><Link href="/privacy-policy">Privacy</Link><Link href="/terms">Terms</Link><Link href="/help-center">Merchant help</Link><Link href="/influencers">For influencers</Link></nav></footer>
+      <footer className={styles.footer}>
+        <div className={styles.footerBrand}><span>PrimeStyleAI</span><small>Products meet the creators who move them.</small></div>
+        <nav aria-label="Footer navigation"><button type="button" onClick={() => navigation.scrollToSection("influencer-network")}>Creators</button><button type="button" onClick={() => navigation.scrollToSection("merchant-dashboard")}>Dashboard</button><button type="button" onClick={() => navigation.scrollToSection("pdp-studio-feature")}>PDP Studio</button><button type="button" onClick={() => navigation.scrollToSection("outfit-builder")}>Try-on</button><Link href="/influencers">For influencers</Link></nav>
+        <nav aria-label="Legal navigation"><Link href="/privacy-policy">Privacy</Link><Link href="/terms">Terms</Link><Link href="/help-center">Help</Link><span>© {new Date().getFullYear()}</span></nav>
+      </footer>
       <MerchantInterestDialog viewModel={viewModel} isOpen={interest.isOpen} message={interest.message} submissionState={interest.submissionState} onClose={interest.close} onSubmit={interest.submit} />
     </div>
   );

@@ -76,6 +76,7 @@ const TABS: IntegrationTab[] = [
       primaryLabel: "Install on Shopify",
       visual: {
         kind: "video",
+        webm: "/videos/primestyleai-product-demo.webm",
         mp4: "/videos/primestyleai-product-demo.mp4",
         poster: "/videos/primestyleai-product-demo-cover-20260623.png",
         label: "Shopify app demo",

@@ -149,10 +149,10 @@ function SettingsPreferences() {
 function PreferencesDialogContent() {
   const [active, setActive] = useState("Settings");
   return (
-    <div className="grid h-full min-h-0 grid-cols-[17.5rem_minmax(0,1fr)]">
+    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] md:grid-cols-[15rem_minmax(0,1fr)] md:grid-rows-1">
       <DialogTitle className="sr-only">Preferences</DialogTitle>
       <DialogDescription className="sr-only">Account and Space preferences.</DialogDescription>
-      <aside className="min-h-0 overflow-y-auto border-r border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface-soft)] px-6 py-7">
+      <aside className="max-h-[13rem] overflow-y-auto border-b border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] px-4 py-4 md:max-h-none md:min-h-0 md:border-b-0 md:border-r md:bg-[var(--color-pdp-surface-soft)] md:px-5 md:py-7">
         <nav>
           <p className="px-3 text-[0.8125rem] text-[var(--color-pdp-muted)]">Account</p>
           <div className="mt-2 grid gap-0.5">
@@ -172,7 +172,7 @@ function PreferencesDialogContent() {
             </button>
           ))}
           </div>
-          <p className="mt-8 flex items-center gap-2 px-3 text-[0.8125rem] font-medium text-[var(--color-pdp-muted)]">
+          <p className="mt-4 flex items-center gap-2 px-3 text-[0.8125rem] font-medium text-[var(--color-pdp-muted)] md:mt-8">
             <PdpStudioUiIcon name="chevron" size={13} />
             PrimeStyleAI&apos;s Space
           </p>
@@ -195,7 +195,7 @@ function PreferencesDialogContent() {
           </div>
         </nav>
       </aside>
-      <section className="min-h-0 overflow-y-auto px-16 py-10">
+      <section className="min-h-0 overflow-y-auto px-5 py-6 sm:px-8 md:px-10 md:py-9 xl:px-14">
         {active === "Settings" ? (
           <SettingsPreferences />
         ) : (
@@ -295,13 +295,13 @@ export function PdpStudioWorkspaceDialogs({
         className={[
           "rounded-[var(--radius-pdp-lg)] border-[var(--color-pdp-rule)] bg-[var(--color-pdp-paper)] p-0 text-[var(--color-pdp-ink)]",
           activeOverlay === "preferences"
-            ? "z-[601] h-[calc(100dvh-8rem)] max-h-none max-w-none overflow-hidden rounded-xl sm:max-w-none"
+            ? "z-[601] h-[calc(100dvh-1.5rem)] max-h-none max-w-none overflow-hidden rounded-[var(--radius-pdp-xl)] sm:h-[calc(100dvh-4rem)] sm:max-w-none"
             : "max-w-[min(92vw,34rem)] p-6",
         ].join(" ")}
         style={
           activeOverlay === "preferences"
             ? {
-                width: "calc(100vw - 8rem)",
+                width: "calc(100vw - 1.5rem)",
                 maxWidth: "none",
                 zIndex: 601,
               }

@@ -70,5 +70,5 @@ export async function getGoogleAuthUrlAction(): Promise<{ ok: boolean; url?: str
 
 export async function logoutAction(): Promise<void> {
   await logoutPdpStudio();
-  redirect("/pdp-studio");
+  redirect("/pdp-studio/login");
 }

@@ -4,33 +4,24 @@ import type {
   PdpStudioUiIconName,
 } from "./index";
 
-export type PdpStudioHomeAiToolId = Exclude<
-  PdpStudioToolId,
-  "ai-fashion-models" | "background-remover" | "ai-backgrounds" | "ai-images"
->;
+export type PdpStudioHomeAiToolId = PdpStudioToolId;
 
-export type PdpStudioImageLibrarySource =
-  | "start-photo"
-  | "background-remover";
+export interface PdpStudioDialogSourceImage {
+  name: string;
+  previewUrl: string;
+  file?: File;
+  assetId?: string;
+}
+
+export type PdpStudioImageLibrarySource = "start-photo" | "background-remover";
 
 export type PdpStudioImageLibraryTab =
-  | "all"
-  | "uploads"
-  | "products"
-  | "ai-images"
-  | "designs";
+  "all" | "uploads" | "products" | "ai-images" | "designs";
 
 export type PdpStudioToolDialogPanel =
-  | "tool"
-  | "quality"
-  | "size"
-  | "brand"
-  | null;
+  "tool" | "quality" | "size" | "brand" | null;
 
-export type PdpStudioGenerationQuality =
-  | "standard"
-  | "advanced"
-  | "premium";
+export type PdpStudioGenerationQuality = "standard" | "advanced" | "premium";
 
 export type PdpStudioGenerationSize =
   | "original"

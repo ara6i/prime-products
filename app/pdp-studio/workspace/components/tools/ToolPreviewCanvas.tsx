@@ -17,23 +17,25 @@ export function ToolPreviewCanvas({ tool, ui }: ToolPreviewCanvasProps) {
   const previewImage =
     output?.resourceType === "image"
       ? output.url
-      : ui.primaryFiles[0]?.previewUrl ?? PDP_STUDIO_TOOL_ASSETS[tool.id];
+      : ui.primaryFiles[0]?.previewUrl ??
+        ui.sourceAsset?.url ??
+        PDP_STUDIO_TOOL_ASSETS[tool.id];
 
   return (
-    <section className="relative min-h-[34rem] overflow-hidden rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface-soft)]">
+    <section className="relative min-h-[28rem] overflow-hidden rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-paper)] shadow-[var(--shadow-pdp-card)] sm:min-h-[34rem]">
       <div className="absolute inset-x-0 top-0 z-[var(--z-pdp-raised)] flex items-center justify-between border-b border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] px-[var(--space-pdp-md)] py-[var(--space-pdp-sm)]">
         <div>
-          <h2 className="text-[var(--text-pdp-sm)] font-bold">Preview canvas</h2>
+          <h2 className="text-[var(--text-pdp-sm)] font-medium">Preview canvas</h2>
           <p className="text-[var(--text-pdp-xs)] text-[var(--color-pdp-muted)]">
             {tool.defaultSize ?? "Original size"}
           </p>
         </div>
-        <span className="rounded-[var(--radius-pdp-pill)] bg-[var(--color-pdp-accent-soft)] px-[var(--space-pdp-sm)] py-[var(--space-pdp-2xs)] text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-accent)]">
+        <span className="rounded-[var(--radius-pdp-pill)] bg-[var(--color-pdp-orange-soft)] px-[var(--space-pdp-sm)] py-[var(--space-pdp-2xs)] text-[var(--text-pdp-xs)] font-medium text-[var(--color-pdp-orange)]">
           {ui.job?.status ?? "Ready"}
         </span>
       </div>
 
-      <div className="absolute inset-0 grid place-items-center px-[var(--space-pdp-xl)] pb-[var(--space-pdp-xl)] pt-[5rem]">
+      <div className="absolute inset-0 grid place-items-center px-4 pb-5 pt-[5rem] sm:px-8 sm:pb-8">
         {ui.previewState === "working" || ui.previewState === "uploading" ? (
           <PdpStudioGenerationProgressCard
             imageUrl={previewImage}
@@ -85,13 +87,13 @@ export function ToolPreviewCanvas({ tool, ui }: ToolPreviewCanvasProps) {
                     Job {ui.previewId.slice(0, 8)} ·{" "}
                     {ui.job?.model ?? ui.job?.provider}
                   </p>
-                  <a
+                  <div className="mt-2 flex items-center gap-3"><button type="button" onClick={() => void ui.editOutput()} className="text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-accent)] hover:underline">Edit design</button><a
                     href={output.url}
                     download={output.originalName ?? undefined}
-                    className="mt-2 inline-flex text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-accent)] hover:underline"
+                    className="inline-flex text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-accent)] hover:underline"
                   >
                     Download result
-                  </a>
+                  </a></div>
                 </div>
               ) : null}
             </div>
@@ -100,6 +102,8 @@ export function ToolPreviewCanvas({ tool, ui }: ToolPreviewCanvasProps) {
                 ? "Authenticated generated asset"
                 : ui.primaryFiles[0]
                   ? "Selected input image"
+                  : ui.sourceAsset
+                    ? "Selected Shopify product image"
                   : `${tool.label} before and after example`}
             </figcaption>
           </figure>

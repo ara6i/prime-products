@@ -25,15 +25,18 @@ export interface ShopifyProductVariant {
 }
 
 export interface ShopifyProduct {
-  id: string;
-  title: string;
-  handle: string;
-  status: ShopifyProductStatus;
-  featuredImage: string | null;
+	id: string;
+	title: string;
+	handle: string;
+	status: ShopifyProductStatus;
+	storefrontUrl: string | null;
+	featuredImage: string | null;
   media: ShopifyProductMedia[];
   variants: ShopifyProductVariant[];
-  priceLabel: string | null;
+	priceLabel: string | null;
 }
+
+export type ShopifyProductDetail = ShopifyProduct;
 
 export interface ShopifyProductsPage {
   products: ShopifyProduct[];

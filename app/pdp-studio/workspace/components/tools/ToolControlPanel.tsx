@@ -17,7 +17,7 @@ interface ToolControlPanelProps {
 export function ToolControlPanel({ tool, ui }: ToolControlPanelProps) {
   const showPrimaryUpload = !["text-generator", "chooser"].includes(tool.mode);
   const missingRequiredInput =
-    showPrimaryUpload && ui.primaryFiles.length === 0
+    showPrimaryUpload && ui.primaryFiles.length === 0 && !ui.sourceAsset
       ? "Add the image you want to process."
       : tool.mode === "dual-upload" &&
           !tool.referenceUploadsOptional &&
@@ -28,9 +28,9 @@ export function ToolControlPanel({ tool, ui }: ToolControlPanelProps) {
     ui.previewState === "working" || ui.previewState === "uploading";
 
   return (
-    <aside className="grid min-w-0 content-start gap-[var(--space-pdp-lg)] overflow-hidden rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-[var(--space-pdp-lg)]">
+    <aside className="grid min-w-0 content-start gap-5 overflow-hidden rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-4 shadow-[var(--shadow-pdp-card)] sm:p-5">
       <div>
-        <span className="inline-flex rounded-[var(--radius-pdp-pill)] bg-[var(--color-pdp-accent-soft)] px-[var(--space-pdp-sm)] py-[var(--space-pdp-2xs)] text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-accent)]">
+        <span className="inline-flex rounded-[var(--radius-pdp-pill)] bg-[var(--color-pdp-orange-soft)] px-[var(--space-pdp-sm)] py-[var(--space-pdp-2xs)] text-[var(--text-pdp-xs)] font-medium text-[var(--color-pdp-orange)]">
           Private processing
         </span>
         <p className="mt-[var(--space-pdp-sm)] text-[var(--text-pdp-xs)] leading-relaxed text-[var(--color-pdp-muted)]">
@@ -39,13 +39,25 @@ export function ToolControlPanel({ tool, ui }: ToolControlPanelProps) {
       </div>
 
       {showPrimaryUpload ? (
-        <PdpStudioUploadZone
-          id={`${tool.id}-primary-upload`}
-          label={tool.uploadLabel ?? "Add an image"}
-          files={ui.primaryFiles}
-          multiple={tool.acceptsMultiple}
-          onFiles={ui.addPrimaryFiles}
-        />
+        <div className="grid gap-[var(--space-pdp-sm)]">
+          {ui.sourceAsset ? (
+            <div className="flex items-center gap-[var(--space-pdp-sm)] rounded-[var(--radius-pdp-sm)] border border-[var(--color-pdp-accent-border)] bg-[var(--color-pdp-accent-soft)] p-[var(--space-pdp-sm)] text-[var(--text-pdp-xs)] text-[var(--color-pdp-ink-soft)]">
+              <PdpStudioUiIcon name="shopify" size={16} />
+              <span className="min-w-0 flex-1 truncate">Using the selected Shopify product image</span>
+            </div>
+          ) : null}
+          <PdpStudioUploadZone
+            id={`${tool.id}-primary-upload`}
+            label={
+              ui.sourceAsset
+                ? "Replace the selected product image"
+                : tool.uploadLabel ?? "Add an image"
+            }
+            files={ui.primaryFiles}
+            multiple={tool.acceptsMultiple}
+            onFiles={ui.addPrimaryFiles}
+          />
+        </div>
       ) : null}
 
       {tool.mode === "dual-upload" ? (
@@ -70,7 +82,7 @@ export function ToolControlPanel({ tool, ui }: ToolControlPanelProps) {
 
       {tool.promptLabel ? (
         <label className="grid gap-[var(--space-pdp-xs)]">
-          <span className="text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-ink-soft)]">
+          <span className="text-[var(--text-pdp-xs)] font-medium text-[var(--color-pdp-ink-soft)]">
             {tool.promptLabel}{" "}
             <span className="font-normal text-[var(--color-pdp-muted)]">
               (optional)

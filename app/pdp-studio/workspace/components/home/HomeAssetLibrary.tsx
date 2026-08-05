@@ -29,10 +29,11 @@ export function HomeAssetLibrary() {
   }
 
   return (
-    <section className="mt-[3.125rem] border-t border-[var(--color-pdp-rule)] pt-8">
+    <section className="rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-4 shadow-[var(--shadow-pdp-card)] sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-[1rem] font-semibold">Image library</h2>
+          <p className="text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-[var(--color-pdp-muted)]">Your content</p>
+          <h2 className="mt-1 text-[1.125rem] font-medium tracking-[-0.025em]">Image library</h2>
           <p className="mt-1 text-[0.8125rem] text-[var(--color-pdp-muted)]">
             Private uploads, connected products, and persisted generations.
           </p>

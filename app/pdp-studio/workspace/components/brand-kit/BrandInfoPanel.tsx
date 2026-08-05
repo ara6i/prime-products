@@ -14,7 +14,7 @@ interface BrandInfoPanelProps {
 
 export function BrandInfoPanel({ ui }: BrandInfoPanelProps) {
   return (
-    <section className="max-w-[52rem] rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-[var(--space-pdp-lg)]">
+    <section className="max-w-[52rem] rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-4 shadow-[var(--shadow-pdp-card)] sm:p-6">
       <div className="grid gap-[var(--space-pdp-md)]">
         <label className="grid gap-[var(--space-pdp-xs)]">
           <Label>Brand name</Label>
@@ -49,13 +49,13 @@ export function BrandInfoPanel({ ui }: BrandInfoPanelProps) {
         </label>
       </div>
       <div className="mt-[var(--space-pdp-lg)] flex items-center gap-[var(--space-pdp-sm)]">
-        <PdpStudioButton type="button" onClick={ui.savePreview}>
-          Save preview
+        <PdpStudioButton type="button" disabled={ui.saving} onClick={() => void ui.save()}>
+          {ui.saving ? "Saving…" : "Save Brand Kit"}
         </PdpStudioButton>
         {ui.saved ? (
           <span role="status" className="flex items-center gap-[var(--space-pdp-xs)] text-[var(--text-pdp-sm)] font-semibold text-[var(--color-pdp-success)]">
             <PdpStudioUiIcon name="check" />
-            Saved in this tab
+            Saved to your Space
           </span>
         ) : null}
       </div>

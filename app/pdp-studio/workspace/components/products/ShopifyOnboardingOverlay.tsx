@@ -61,9 +61,9 @@ export function ShopifyOnboardingOverlay({
       role="dialog"
       aria-modal="true"
       aria-label="Shopify setup"
-      className="fixed inset-0 z-[650] grid place-items-center bg-[#111827]/55 p-3 backdrop-blur-sm"
+      className="fixed inset-0 z-[650] grid place-items-center bg-[var(--color-pdp-ink)]/35 p-3 backdrop-blur-sm"
     >
-      <div className="relative grid h-[min(46rem,calc(100vh-1.5rem))] w-full max-w-[70rem] overflow-hidden rounded-[1.5rem] border border-white/20 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.3)] md:grid-cols-[1.05fr_1fr]">
+      <div className="relative grid h-[min(46rem,calc(100dvh-1.5rem))] w-full max-w-[70rem] overflow-hidden rounded-[var(--radius-pdp-xl)] border border-white/30 bg-white shadow-[var(--shadow-pdp-overlay)] md:grid-cols-[1.05fr_1fr]">
         <button
           type="button"
           onClick={onClose}
@@ -73,9 +73,9 @@ export function ShopifyOnboardingOverlay({
           <PdpStudioUiIcon name="close" size={17} />
         </button>
 
-        <div className="relative hidden overflow-hidden bg-[linear-gradient(145deg,#eef5ff_0%,#f8fbff_46%,#e4efff_100%)] p-8 md:block">
-          <div className="absolute -left-20 -top-24 size-64 rounded-full bg-[#8eb8ff]/25 blur-3xl" />
-          <div className="absolute -bottom-20 right-0 size-72 rounded-full bg-[#c9dcff]/45 blur-3xl" />
+        <div className="relative hidden overflow-hidden bg-[var(--color-pdp-orange-soft)] p-8 md:block">
+          <div className="absolute -left-20 -top-24 size-64 rounded-full bg-[var(--color-pdp-orange)]/10 blur-3xl" />
+          <div className="absolute -bottom-20 right-0 size-72 rounded-full bg-[var(--color-pdp-accent)]/10 blur-3xl" />
           <div className="relative grid h-full grid-cols-2 gap-3 overflow-hidden rounded-[1.25rem] border border-white/80 bg-white/55 p-3 shadow-inner">
             {(productImages.length ? productImages : Array(6).fill(null)).map(
               (image, index) => (
@@ -108,10 +108,10 @@ export function ShopifyOnboardingOverlay({
         <div className="flex min-w-0 flex-col bg-white px-6 pb-6 pt-16 sm:px-10 sm:pb-10 md:px-12 md:pt-12">
           {isRetrieval ? (
             <>
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-pdp-accent)]">
+              <span className="text-xs font-medium uppercase tracking-[0.16em] text-[var(--color-pdp-orange)]">
                 {storeName}
               </span>
-              <h2 className="mt-3 text-[2rem] font-semibold leading-[1.05] tracking-[-0.035em]">
+              <h2 className="mt-3 text-[2rem] font-medium leading-[1.05] tracking-[-0.035em]">
                 {error
                   ? "Store sync needs attention"
                   : ready
@@ -154,7 +154,7 @@ export function ShopifyOnboardingOverlay({
               <span className="text-xs font-medium text-[var(--color-pdp-muted)]">
                 Step {tourStep}/{TOUR_CONTENT.length}
               </span>
-              <h2 className="mt-3 max-w-md text-[2rem] font-semibold leading-[1.05] tracking-[-0.035em]">
+              <h2 className="mt-3 max-w-md text-[2rem] font-medium leading-[1.05] tracking-[-0.035em]">
                 {tour.title}
               </h2>
               <p className="mt-4 max-w-md text-sm leading-6 text-[var(--color-pdp-muted)]">

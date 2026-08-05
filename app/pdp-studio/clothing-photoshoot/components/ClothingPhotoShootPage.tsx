@@ -69,39 +69,39 @@ export function ClothingPhotoShootPage({
           : null;
 
   return (
-    <main className="min-h-screen bg-[#eef3ff] p-3 text-[#19191b]">
+    <main data-pdp-studio className="min-h-[100dvh] bg-[var(--color-pdp-paper)] p-2 font-[family-name:var(--font-pdp-body)] text-[var(--color-pdp-ink)] sm:p-3">
       <div className={needsAuth ? "pointer-events-none select-none blur-[1px]" : ""}>
-        <div className="relative flex min-h-[calc(100vh-24px)] flex-col overflow-hidden rounded-lg border border-[#d8e2ff] bg-[#f8fbff] shadow-[0_18px_60px_rgba(33,84,239,0.12)] lg:flex-row">
-          <aside className="flex w-full shrink-0 flex-col overflow-y-auto border-b border-[#d8e2ff] bg-white p-4 lg:max-w-[330px] lg:border-b-0 lg:border-r">
+        <div className="relative flex min-h-[calc(100dvh-1rem)] flex-col overflow-hidden rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface-soft)] shadow-[var(--shadow-pdp-popover)] sm:min-h-[calc(100dvh-1.5rem)] lg:flex-row">
+          <aside className="order-2 flex max-h-[45dvh] w-full shrink-0 flex-col overflow-y-auto border-t border-[var(--color-pdp-rule)] bg-white p-4 lg:order-1 lg:max-h-none lg:max-w-[330px] lg:border-r lg:border-t-0">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="flex items-center gap-1 text-lg font-semibold">
+                <div className="flex items-center gap-1 text-lg font-medium">
                   Clothing photoshoot
                   <ChevronDown className="h-4 w-4 text-black/45" aria-hidden />
                 </div>
               </div>
-              <span className="rounded-md bg-[#eff5ff] px-2 py-1 text-xs font-semibold text-[#2154ef]">Live</span>
+              <span className="rounded-[var(--radius-pdp-pill)] bg-[var(--color-pdp-orange-soft)] px-2.5 py-1 text-xs font-medium text-[var(--color-pdp-orange)]">Live</span>
             </div>
 
             <label
               htmlFor="pdp-studio-garment-upload"
-              className="mt-5 flex h-24 cursor-pointer items-center justify-center gap-3 rounded-lg border border-dashed border-[#aebfff] bg-[#f8faff] px-3 text-sm font-medium text-black/55 transition-colors hover:border-[#2154ef] hover:bg-white"
+              className="mt-5 flex h-24 cursor-pointer items-center justify-center gap-3 rounded-[var(--radius-pdp-lg)] border border-dashed border-[var(--color-pdp-rule-strong)] bg-[var(--color-pdp-paper)] px-3 text-sm font-medium text-[var(--color-pdp-muted)] transition-colors hover:border-[var(--color-pdp-accent)] hover:bg-[var(--color-pdp-accent-soft)]"
             >
               {ui.garmentImageDataUri ? (
                 <>
-                  <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md border border-[#d8e2ff] bg-white">
+                  <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-[var(--radius-pdp-md)] border border-[var(--color-pdp-rule)] bg-white">
                     <Image src={ui.garmentImageDataUri} alt="" fill unoptimized sizes="64px" className="object-contain" />
                   </span>
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-semibold text-black/76">{ui.garmentFileName || "Clothing image"}</span>
-                    <span className="mt-1 block text-xs font-medium text-[#2154ef]">Change image</span>
+                    <span className="block truncate text-sm font-medium text-[var(--color-pdp-ink)]">{ui.garmentFileName || "Clothing image"}</span>
+                    <span className="mt-1 block text-xs font-medium text-[var(--color-pdp-accent)]">Change image</span>
                   </span>
                 </>
               ) : (
                 <>
                   <UploadCloud className="h-4 w-4" aria-hidden />
                   <span>
-                    Drop cloth image or <span className="text-[#2154ef]">select image</span>
+                    Drop cloth image or <span className="text-[var(--color-pdp-accent)]">select image</span>
                   </span>
                 </>
               )}
@@ -145,17 +145,17 @@ export function ClothingPhotoShootPage({
               value={ui.prompt}
               onChange={(event) => ui.setPrompt(event.target.value)}
               placeholder="Describe the image you want (optional)"
-              className="mt-4 min-h-[96px] resize-none rounded-lg border border-[#d8e2ff] bg-[#f8faff] px-3 py-3 text-sm text-[#19191b] outline-none placeholder:text-black/38 focus:border-[#2154ef]"
+              className="mt-4 min-h-[96px] resize-none rounded-[var(--radius-pdp-md)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-paper)] px-3 py-3 text-sm text-[var(--color-pdp-ink)] outline-none placeholder:text-[var(--color-pdp-muted)] focus:border-[var(--color-pdp-accent)] focus:ring-2 focus:ring-[var(--color-pdp-accent-soft)]"
             />
 
             <button
               type="button"
               disabled={needsAuth || !ui.canGenerate}
               onClick={() => void ui.generatePhotoShoot()}
-              className={`mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-colors ${
+              className={`mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-[var(--radius-pdp-md)] text-sm font-medium transition-colors ${
                 needsAuth || !ui.canGenerate
-                  ? "cursor-not-allowed bg-[#2154ef] text-white opacity-45"
-                  : "bg-[#2154ef] text-white hover:bg-[#1745d2]"
+                  ? "cursor-not-allowed bg-[var(--color-pdp-accent)] text-white opacity-45"
+                  : "bg-[var(--color-pdp-accent)] text-white hover:bg-[var(--color-pdp-accent-hover)]"
               }`}
             >
               {ui.isGenerating ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
@@ -208,11 +208,11 @@ export function ClothingPhotoShootPage({
             />
           ) : null}
 
-          <section className="relative flex min-h-[520px] min-w-0 flex-1 px-5 py-14 lg:px-10">
+          <section className="relative order-1 flex min-h-[52dvh] min-w-0 flex-1 px-4 py-12 lg:order-[3] lg:min-h-[520px] lg:px-10 lg:py-14">
             <Link
               href="/pdp-studio"
               aria-label="Close clothing photoshoot"
-              className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-[#d8e2ff] bg-white text-black transition-colors hover:bg-[#f8faff]"
+              className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-pdp-rule)] bg-white text-[var(--color-pdp-ink)] shadow-[var(--shadow-pdp-card)] transition-colors hover:bg-[var(--color-pdp-surface-soft)]"
             >
               <X className="h-5 w-5" aria-hidden />
             </Link>
@@ -253,13 +253,13 @@ function PrimaryPickerCard({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-lg border p-2 text-center transition-colors ${
-        active ? "border-[#2154ef] bg-[#f3f7ff] ring-2 ring-[#bed6ff]" : "border-[#d8e2ff] bg-[#f8faff] hover:border-[#aebfff] hover:bg-white"
+      className={`rounded-[var(--radius-pdp-md)] border p-2 text-center transition-colors ${
+        active ? "border-[var(--color-pdp-accent)] bg-[var(--color-pdp-accent-soft)] ring-2 ring-[var(--color-pdp-accent-border)]" : "border-[var(--color-pdp-rule)] bg-[var(--color-pdp-paper)] hover:border-[var(--color-pdp-rule-strong)] hover:bg-white"
       }`}
     >
       <AssetThumb item={item} variant={variant} size="small" />
-      <p className="mt-2 text-sm font-semibold text-black/82">{label}</p>
-      <p className="truncate text-xs text-black/48">{item?.label ?? "Select"}</p>
+      <p className="mt-2 text-sm font-medium text-[var(--color-pdp-ink)]">{label}</p>
+      <p className="truncate text-xs text-[var(--color-pdp-muted)]">{item?.label ?? "Select"}</p>
     </button>
   );
 }
@@ -281,14 +281,14 @@ function SelectionRow({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-12 w-full items-center justify-between gap-3 rounded-lg border px-3 text-left text-sm transition-colors ${
-        active ? "border-[#2154ef] bg-[#f3f7ff]" : "border-[#d8e2ff] bg-[#f8faff] hover:border-[#aebfff] hover:bg-white"
+      className={`flex h-12 w-full items-center justify-between gap-3 rounded-[var(--radius-pdp-md)] border px-3 text-left text-sm transition-colors ${
+        active ? "border-[var(--color-pdp-accent)] bg-[var(--color-pdp-accent-soft)]" : "border-[var(--color-pdp-rule)] bg-[var(--color-pdp-paper)] hover:border-[var(--color-pdp-rule-strong)] hover:bg-white"
       }`}
     >
-      <span className="font-medium text-black/76">{label}</span>
-      <span className="flex min-w-0 items-center gap-2 text-black/52">
-        <span className="truncate text-black/62">{item?.label ?? "Select"}</span>
-        <span className="h-8 w-8 shrink-0 overflow-hidden rounded-md border border-[#d8e2ff]">
+      <span className="font-medium text-[var(--color-pdp-ink)]">{label}</span>
+      <span className="flex min-w-0 items-center gap-2 text-[var(--color-pdp-muted)]">
+        <span className="truncate">{item?.label ?? "Select"}</span>
+        <span className="h-8 w-8 shrink-0 overflow-hidden rounded-md border border-[var(--color-pdp-rule)]">
           <AssetThumb item={item} variant={variant} size="tiny" />
         </span>
       </span>
@@ -322,18 +322,18 @@ function PickerPanel({
     <div
       role="dialog"
       aria-label={title}
-      className={`absolute inset-x-3 top-[232px] z-[80] max-h-[calc(100vh-260px)] overflow-y-auto rounded-lg border border-[#b9c8ff] bg-white p-4 shadow-[0_22px_70px_rgba(33,84,239,0.22)] lg:inset-x-auto lg:left-[344px] lg:top-[74px] lg:max-h-[calc(100vh-118px)] ${panelWidthClass}`}
+      className={`absolute inset-x-3 bottom-3 z-[80] max-h-[70dvh] overflow-y-auto rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] bg-white p-4 shadow-[var(--shadow-pdp-overlay)] lg:bottom-auto lg:inset-x-auto lg:left-[344px] lg:top-[74px] lg:max-h-[calc(100dvh-118px)] ${panelWidthClass}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold text-black/86">{title}</h2>
-          <p className="mt-1 text-xs font-medium text-black/45">{description}</p>
+          <h2 className="text-base font-medium text-[var(--color-pdp-ink)]">{title}</h2>
+          <p className="mt-1 text-xs text-[var(--color-pdp-muted)]">{description}</p>
         </div>
         <button
           type="button"
           onClick={onClose}
           aria-label={`Close ${title}`}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#d8e2ff] text-black/62 hover:bg-[#f8faff]"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--color-pdp-rule)] text-[var(--color-pdp-ink-soft)] hover:bg-[var(--color-pdp-surface-soft)]"
         >
           <X className="h-4 w-4" aria-hidden />
         </button>
@@ -342,16 +342,16 @@ function PickerPanel({
       <div className={`mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 ${gridClass}`}>
         <button
           type="button"
-          className="rounded-lg border border-[#d8e2ff] bg-[#f8faff] p-2 text-left transition-colors hover:border-[#2154ef] hover:bg-white"
+          className="rounded-[var(--radius-pdp-md)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-paper)] p-2 text-left transition-colors hover:border-[var(--color-pdp-accent)] hover:bg-white"
         >
           <div
-            className={`flex items-center justify-center rounded-md border border-dashed border-[#aebfff] bg-white text-[#2154ef] ${
+            className={`flex items-center justify-center rounded-md border border-dashed border-[var(--color-pdp-rule-strong)] bg-white text-[var(--color-pdp-accent)] ${
               variant === "background" ? "aspect-[1.7]" : "aspect-[3/4]"
             }`}
           >
             <Plus className="h-7 w-7" aria-hidden />
           </div>
-          <p className="mt-2 truncate text-sm font-semibold text-black/82">{customLabel}</p>
+          <p className="mt-2 truncate text-sm font-medium text-[var(--color-pdp-ink)]">{customLabel}</p>
         </button>
 
         {items.map((item) => {
@@ -362,17 +362,17 @@ function PickerPanel({
               key={item.id}
               type="button"
               onClick={() => onSelect(item.id)}
-              className={`relative rounded-lg border bg-white p-2 text-left transition-colors ${
-                selected ? "border-[#2154ef] ring-2 ring-[#bed6ff]" : "border-[#d8e2ff] hover:border-[#aebfff]"
+              className={`relative rounded-[var(--radius-pdp-md)] border bg-white p-2 text-left transition-colors ${
+                selected ? "border-[var(--color-pdp-accent)] ring-2 ring-[var(--color-pdp-accent-border)]" : "border-[var(--color-pdp-rule)] hover:border-[var(--color-pdp-rule-strong)]"
               }`}
             >
               {selected ? (
-                <span className="absolute right-3 top-3 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#5e70ff] text-white shadow-sm">
+                <span className="absolute right-3 top-3 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-pdp-accent)] text-white shadow-sm">
                   <Check className="h-4 w-4" aria-hidden />
                 </span>
               ) : null}
               <AssetThumb item={item} variant={variant} size="large" />
-              <p className="mt-2 truncate text-sm font-semibold text-black/82">{item.label}</p>
+              <p className="mt-2 truncate text-sm font-medium text-[var(--color-pdp-ink)]">{item.label}</p>
             </button>
           );
         })}
@@ -398,18 +398,18 @@ function ControlPickerShell({
     <div
       role="dialog"
       aria-label={title}
-      className={`absolute inset-x-3 top-[232px] z-[80] max-h-[calc(100vh-260px)] overflow-y-auto rounded-lg border border-[#b9c8ff] bg-white p-4 shadow-[0_22px_70px_rgba(33,84,239,0.22)] lg:inset-x-auto lg:left-[344px] lg:top-[74px] lg:max-h-[calc(100vh-118px)] ${widthClass}`}
+      className={`absolute inset-x-3 bottom-3 z-[80] max-h-[70dvh] overflow-y-auto rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] bg-white p-4 shadow-[var(--shadow-pdp-overlay)] lg:bottom-auto lg:inset-x-auto lg:left-[344px] lg:top-[74px] lg:max-h-[calc(100dvh-118px)] ${widthClass}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold text-black/86">{title}</h2>
-          <p className="mt-1 text-xs font-medium text-black/45">{description}</p>
+          <h2 className="text-base font-medium text-[var(--color-pdp-ink)]">{title}</h2>
+          <p className="mt-1 text-xs text-[var(--color-pdp-muted)]">{description}</p>
         </div>
         <button
           type="button"
           onClick={onClose}
           aria-label={`Close ${title}`}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#d8e2ff] text-black/62 hover:bg-[#f8faff]"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--color-pdp-rule)] text-[var(--color-pdp-ink-soft)] hover:bg-[var(--color-pdp-surface-soft)]"
         >
           <X className="h-4 w-4" aria-hidden />
         </button>
@@ -586,14 +586,14 @@ function ControlRow({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-11 w-full items-center justify-between gap-3 rounded-lg border px-3 text-left text-sm transition-colors ${
-        active ? "border-[#2154ef] bg-[#f3f7ff]" : "border-[#d8e2ff] bg-[#f8faff] hover:border-[#aebfff] hover:bg-white"
+      className={`flex h-11 w-full items-center justify-between gap-3 rounded-[var(--radius-pdp-md)] border px-3 text-left text-sm transition-colors ${
+        active ? "border-[var(--color-pdp-accent)] bg-[var(--color-pdp-accent-soft)]" : "border-[var(--color-pdp-rule)] bg-[var(--color-pdp-paper)] hover:border-[var(--color-pdp-rule-strong)] hover:bg-white"
       }`}
     >
-      <span className="font-medium text-black/76">{label}</span>
-      <span className="flex min-w-0 items-center gap-2 text-black/52">
+      <span className="font-medium text-[var(--color-pdp-ink)]">{label}</span>
+      <span className="flex min-w-0 items-center gap-2 text-[var(--color-pdp-muted)]">
         {supportingValue ? <span className="truncate">{supportingValue}</span> : null}
-        <span className={value.length <= 2 ? "rounded bg-white px-2 py-1 font-bold text-[#2154ef]" : "truncate text-black/62"}>{value}</span>
+        <span className={value.length <= 2 ? "rounded bg-white px-2 py-1 font-medium text-[var(--color-pdp-accent)]" : "truncate text-[var(--color-pdp-ink-soft)]"}>{value}</span>
       </span>
     </button>
   );

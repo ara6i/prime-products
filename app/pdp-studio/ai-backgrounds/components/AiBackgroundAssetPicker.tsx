@@ -59,17 +59,17 @@ export function AiBackgroundAssetPicker({
     >
       <DialogContent
         showCloseButton={ui.editorOpen}
-        className="flex !h-[min(84vh,48rem)] !w-[min(94vw,68rem)] !max-w-none flex-col gap-0 overflow-hidden rounded-[1rem] border-[var(--color-pdp-rule)] bg-white p-0 text-[var(--color-pdp-ink)]"
+        className="flex !h-[min(88dvh,48rem)] !w-[min(94vw,68rem)] !max-w-none flex-col gap-0 overflow-hidden rounded-[var(--radius-pdp-xl)] border-[var(--color-pdp-rule)] bg-white p-0 text-[var(--color-pdp-ink)]"
         overlayClassName="bg-[var(--color-pdp-ink)]/30 backdrop-blur-sm"
       >
-        <header className="border-b border-[var(--color-pdp-rule)] px-6 pt-5">
-          <DialogTitle className="text-[1.125rem] font-semibold">
+        <header className="border-b border-[var(--color-pdp-rule)] px-4 pt-5 sm:px-6">
+          <DialogTitle className="text-[1.125rem] font-medium">
             {title}
           </DialogTitle>
           <DialogDescription className="mt-1 text-[0.8125rem] text-[var(--color-pdp-muted)]">
             Upload a new image or reuse a private image from your Space.
           </DialogDescription>
-          <nav className="mt-5 flex gap-5" aria-label="Image library">
+          <nav className="mt-5 flex gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Image library">
             {TABS.map((tab) => (
               <PdpStudioButton
                 key={tab.id}
@@ -77,7 +77,7 @@ export function AiBackgroundAssetPicker({
                 variant="ghost"
                 onClick={() => ui.setAssetTab(tab.id)}
                 className={[
-                  "min-h-10 rounded-none border-b-2 px-0 text-[0.8125rem] font-medium",
+                  "min-h-10 shrink-0 rounded-none border-b-2 px-0 text-[0.8125rem] font-medium",
                   ui.assetTab === tab.id
                     ? "border-[var(--color-pdp-accent)] text-[var(--color-pdp-ink)]"
                     : "border-transparent text-[var(--color-pdp-muted)]",
@@ -89,7 +89,7 @@ export function AiBackgroundAssetPicker({
           </nav>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6">
           <label className="relative mb-4 block">
             <PdpStudioUiIcon
               name="search"
@@ -145,7 +145,7 @@ export function AiBackgroundAssetPicker({
               Loading your private images…
             </div>
           ) : ui.assets.length ? (
-            <div className="mt-5 grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-5">
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
               {ui.assets.map((asset) => {
                 const active = selected?.asset?.id === asset.id;
                 return (
@@ -212,7 +212,7 @@ export function AiBackgroundAssetPicker({
           ) : null}
         </div>
 
-        <footer className="flex min-h-16 items-center justify-between border-t border-[var(--color-pdp-rule)] px-6">
+        <footer className="flex min-h-16 items-center justify-between gap-3 border-t border-[var(--color-pdp-rule)] px-4 sm:px-6">
           <span className="max-w-[60%] truncate text-[0.75rem] text-[var(--color-pdp-muted)]">
             {selected ? selected.name : "Select one image"}
           </span>

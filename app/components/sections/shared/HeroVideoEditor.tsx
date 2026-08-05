@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { cn } from "@/app/shared/lib/utils";
 
-const VIDEO_SRC = "/videos/primestyleai-product-demo.mp4";
+const VIDEO_WEBM_SRC = "/videos/primestyleai-product-demo.webm";
+const VIDEO_MP4_SRC = "/videos/primestyleai-product-demo.mp4";
 const VIDEO_POSTER = "/videos/primestyleai-product-demo-cover-20260623.png";
 
 interface HeroVideoEditorProps {
@@ -98,14 +99,16 @@ export function HeroVideoEditor({ variant = "desktop" }: HeroVideoEditorProps) {
           />
           <video
             ref={videoRef}
-            src={VIDEO_SRC}
             poster={VIDEO_POSTER}
             muted={isMuted}
             loop
             playsInline
             preload="none"
             className="absolute inset-0 h-full w-full object-cover"
-          />
+          >
+            <source src={VIDEO_WEBM_SRC} type="video/webm" />
+            <source src={VIDEO_MP4_SRC} type="video/mp4" />
+          </video>
           {/* Keep the approved thumbnail visible until playback starts. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

@@ -9,7 +9,8 @@ import { LoginMobileHeader } from "./components/LoginMobileHeader";
 
 export const dynamic = "force-dynamic";
 
-const CUSTOMER_LOGIN_VIDEO_SRC = "/videos/customer/login-hero.mp4";
+const CUSTOMER_LOGIN_VIDEO_WEBM = "/videos/customer/login-hero.webm";
+const CUSTOMER_LOGIN_VIDEO_MP4 = "/videos/customer/login-hero.mp4";
 const CUSTOMER_LOGIN_VIDEO_POSTER = "/images/login/customer-login-video-poster.jpg";
 
 export default async function CustomerLoginPage() {
@@ -50,7 +51,8 @@ export default async function CustomerLoginPage() {
               disablePictureInPicture
               aria-hidden
             >
-              <source src={CUSTOMER_LOGIN_VIDEO_SRC} type="video/mp4" />
+              <source src={CUSTOMER_LOGIN_VIDEO_WEBM} type="video/webm" />
+              <source src={CUSTOMER_LOGIN_VIDEO_MP4} type="video/mp4" />
             </video>
             <div className="absolute inset-0 bg-white/10" aria-hidden />
             <video
@@ -64,7 +66,8 @@ export default async function CustomerLoginPage() {
               disablePictureInPicture
               aria-label="PrimeStyleAI try-on and sizing preview"
             >
-              <source src={CUSTOMER_LOGIN_VIDEO_SRC} type="video/mp4" />
+              <source src={CUSTOMER_LOGIN_VIDEO_WEBM} type="video/webm" />
+              <source src={CUSTOMER_LOGIN_VIDEO_MP4} type="video/mp4" />
             </video>
           </aside>
 

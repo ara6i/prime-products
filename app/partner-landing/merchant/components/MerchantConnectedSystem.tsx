@@ -17,7 +17,7 @@ export function MerchantConnectedSystem({ viewModel }: { viewModel: MerchantLand
           {viewModel.commerceSteps.map((step) => <article key={step.number}><span>{step.number}</span><PartnerIcon name={step.icon} /><div><h3>{step.title}</h3><p>{step.description}</p></div></article>)}
         </div>
         <div className={styles.systemVisual}>
-          <video src={viewModel.hero.video} poster={viewModel.hero.poster} autoPlay muted loop playsInline />
+          <Image src={viewModel.hero.image} alt="Connected merchant fashion campaign" fill sizes="70vw" />
           <div className={styles.productDecision}><span>DIRECT CONNECTED PDP</span><Image src="/images/landing/product-cardigan-yellow.png" alt="Connected product" width={96} height={120} /><div><strong>Exact product</strong><small>Size · color · fit</small></div></div>
           <div className={styles.cartDecision}><CheckCircle size={18} weight="fill" /><span>Confirmed variant<strong>Open merchant cart</strong></span><ArrowRight size={18} /></div>
         </div>

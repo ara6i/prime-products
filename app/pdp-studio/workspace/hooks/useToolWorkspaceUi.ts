@@ -2,7 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePdpStudioJobProgress } from "../../platform/hooks/usePdpStudioJobProgress";
-import { uploadPdpStudioAsset } from "../../platform/services/pdpStudioAssetService";
+import {
+  getPdpStudioAsset,
+  uploadPdpStudioAsset,
+} from "../../platform/services/pdpStudioAssetService";
+import type { PdpStudioAsset } from "../../platform/types/pdpStudioPlatform";
 import {
   cancelPdpStudioJob,
   createPdpStudioToolJob,
@@ -10,6 +14,8 @@ import {
   retryPdpStudioJob,
 } from "../../platform/services/pdpStudioJobService";
 import { mapPdpStudioToolOptions } from "../mappers/pdpStudioToolRequestMapper";
+import { createDesign } from "../../editor/services/pdpStudioDesignService";
+import { useRouter } from "next/navigation";
 import type {
   PdpStudioLocalFile,
   PdpStudioToolDefinition,
@@ -33,8 +39,10 @@ function toLocalFiles(files: File[]): PdpStudioLocalFile[] {
 }
 
 export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
+  const router = useRouter();
   const [primaryFiles, setPrimaryFiles] = useState<PdpStudioLocalFile[]>([]);
   const [secondaryFiles, setSecondaryFiles] = useState<PdpStudioLocalFile[]>([]);
+  const [sourceAsset, setSourceAsset] = useState<PdpStudioAsset | null>(null);
   const [prompt, setPrompt] = useState("");
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(
     () =>
@@ -91,6 +99,32 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
     };
   }, [tool.id, tool.mode, watch]);
 
+  useEffect(() => {
+    const sourceAssetId = new URL(window.location.href).searchParams.get(
+      "sourceAssetId",
+    );
+    if (!sourceAssetId || tool.mode === "text-generator" || tool.mode === "chooser") {
+      return;
+    }
+    let active = true;
+    void getPdpStudioAsset(sourceAssetId)
+      .then((asset) => {
+        if (!active || asset.resourceType !== "image") return;
+        setSourceAsset(asset);
+      })
+      .catch((caught) => {
+        if (!active) return;
+        setError(
+          caught instanceof Error
+            ? caught.message
+            : "The selected Shopify image could not be loaded.",
+        );
+      });
+    return () => {
+      active = false;
+    };
+  }, [tool.mode]);
+
   useEffect(
     () => () => {
       objectUrls.current.forEach((url) => URL.revokeObjectURL(url));
@@ -101,7 +135,7 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
   const requiresPrimaryUpload = !["text-generator", "chooser"].includes(tool.mode);
   const canPreview = useMemo(() => {
     if (previewState === "uploading" || previewState === "working") return false;
-    if (requiresPrimaryUpload && primaryFiles.length === 0) return false;
+    if (requiresPrimaryUpload && primaryFiles.length === 0 && !sourceAsset) return false;
     if (
       tool.mode === "dual-upload" &&
       !tool.referenceUploadsOptional &&
@@ -113,6 +147,7 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
   }, [
     previewState,
     primaryFiles.length,
+    sourceAsset,
     requiresPrimaryUpload,
     secondaryFiles.length,
     tool.mode,
@@ -123,6 +158,7 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
     const localFiles = toLocalFiles(tool.acceptsMultiple ? files.slice(0, 4) : files.slice(0, 1));
     objectUrls.current.push(...localFiles.map((file) => file.previewUrl));
     setPrimaryFiles(localFiles);
+    setSourceAsset(null);
     stop();
     setJob(null);
     setPreviewState("idle");
@@ -154,7 +190,7 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
     setError(null);
     setPreviewState("uploading");
     try {
-      const [primaryAssets, referenceAssets] = await Promise.all([
+      const [uploadedPrimaryAssets, referenceAssets] = await Promise.all([
         Promise.all(
           primaryFiles.flatMap((item) =>
             item.file ? [uploadPdpStudioAsset(item.file)] : [],
@@ -166,6 +202,7 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
           ),
         ),
       ]);
+      const primaryAssets = sourceAsset ? [sourceAsset] : uploadedPrimaryAssets;
       const mapped = mapPdpStudioToolOptions(tool, selectedOptions);
       setPreviewState("working");
       const job = await createPdpStudioToolJob(tool.id, {
@@ -212,10 +249,12 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
       setPreviewState("failed");
     }
   }
+  async function editOutput():Promise<void>{const output=job?.outputs.find(asset=>asset.resourceType==="image");if(!output)return;try{const design=await createDesign({name:`${tool.label} result`,sourceAssetId:output.id,width:output.width??1200,height:output.height??1200});router.push(`/pdp-studio/designs/${design.id}`)}catch(caught){setError(caught instanceof Error?caught.message:"Unable to open this result in the editor.")}}
 
   return {
     primaryFiles,
     secondaryFiles,
+    sourceAsset,
     prompt,
     selectedOptions,
     previewState,
@@ -231,6 +270,7 @@ export function useToolWorkspaceUi(tool: PdpStudioToolDefinition) {
     runPreview,
     cancel,
     retry,
+    editOutput,
   };
 }
 

@@ -1,4 +1,5 @@
 import { ArrowDownRight, CheckCircle } from "@phosphor-icons/react";
+import Image from "next/image";
 import type { MerchantLandingViewModel } from "../types";
 import { PartnerIcon } from "../../components/PartnerIcon";
 import styles from "./merchantLanding.module.css";
@@ -15,7 +16,7 @@ export function MerchantCapabilities({ viewModel }: { viewModel: MerchantLanding
         {viewModel.capabilities.map((capability, index) => (
           <article key={capability.title} className={index === 2 || index === 5 ? styles.featuredCapability : undefined}>
             <span>{capability.label}</span><PartnerIcon name={capability.icon} /><h3>{capability.title}</h3><p>{capability.description}</p>
-            {index === 2 ? <div className={styles.aiFilm}><video src="/media/partner-landing/creator-portrait.mp4" poster="/media/partner-landing/creator-portrait-poster.jpg" autoPlay muted loop playsInline /><strong><CheckCircle size={16} weight="fill" /> Authorized output</strong></div> : null}
+            {index === 2 ? <div className={styles.aiFilm}><Image src="/media/partner-landing/creator-portrait-poster.jpg" alt="Authorized creator content" fill sizes="33vw" /><strong><CheckCircle size={16} weight="fill" /> Authorized output</strong></div> : null}
           </article>
         ))}
       </div>

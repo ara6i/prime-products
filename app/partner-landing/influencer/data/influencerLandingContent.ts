@@ -3,14 +3,13 @@ import type { InfluencerLandingViewModel } from "../types";
 export const INFLUENCER_LANDING_CONTENT: InfluencerLandingViewModel = {
   hero: {
     eyebrow: "For fashion creators",
-    titleLead: "Make every look",
-    titleAccent: "shoppable.",
+    titleLead: "Your\ninfluence",
+    titleAccent: "should\npay.",
     body: "Choose approved fashion products, add fit confidence, publish a tracked look, and earn when your audience completes an eligible purchase.",
-    primaryCta: "Start earning",
+    primaryCta: "Join waitlist",
     secondaryCta: "See the creator journey",
     annotation: "Your style. Your link. Your credit.",
-    video: "/media/partner-landing/influencer-runway.mp4",
-    poster: "/media/partner-landing/influencer-runway-poster.jpg",
+    image: "/media/partner-landing/influencer-steps-static-v2.webp",
   },
   features: [
     {
@@ -50,8 +49,8 @@ export const INFLUENCER_LANDING_CONTENT: InfluencerLandingViewModel = {
     },
     {
       number: "02",
-      title: "Help them choose",
-      description: "The shopper sees permitted sizing and try-on help, then confirms the exact size and color they want.",
+      title: "We help them choose",
+      description: "When shoppers open your link, we help them choose with virtual try-on and AI sizing before they pick their size and color.",
     },
     {
       number: "03",
@@ -66,7 +65,7 @@ export const INFLUENCER_LANDING_CONTENT: InfluencerLandingViewModel = {
   ],
   commissionLabels: ["Fixed rate", "Variable rate", "Conditional rate"],
   interest: {
-    title: "Turn your next look into income.",
-    body: "Tell us where you create. We will send the next creator-access details.",
+    title: "Join the creator waitlist.",
+    body: "Tell us where you create. We will let you know when creator access opens.",
   },
 };

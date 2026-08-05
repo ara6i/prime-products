@@ -115,6 +115,14 @@ export async function uploadPdpStudioAsset(
   return finalized.asset;
 }
 
+export async function getPdpStudioAsset(assetId: string): Promise<PdpStudioAsset> {
+	const response = await pdpStudioApiRequest<{
+		ok: true;
+		asset: PdpStudioAsset;
+	}>(`/assets/${encodeURIComponent(assetId)}`);
+	return response.asset;
+}
+
 export async function deletePdpStudioAsset(assetId: string): Promise<void> {
   await fetch(`/api/pdp-studio/platform/assets/${encodeURIComponent(assetId)}`, {
     method: "DELETE",

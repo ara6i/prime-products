@@ -16,12 +16,12 @@ export function PdpStudioToolCard({
 }: PdpStudioToolCardProps) {
   const image = PDP_STUDIO_TOOL_ASSETS[tool.id];
   const className =
-    "group relative flex h-20 w-full min-w-0 items-center justify-start gap-3 overflow-hidden rounded-[var(--radius-pdp-sm)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-2 text-left text-[var(--color-pdp-ink)] outline-none transition-[border-color,background-color] duration-[var(--dur-pdp-short)] ease-[var(--ease-pdp-out)] hover:border-[var(--color-pdp-rule-strong)] hover:bg-[var(--color-pdp-surface-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-pdp-focus)]";
+    "group relative flex min-h-24 w-full min-w-0 items-center justify-start gap-3 overflow-hidden rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-2.5 text-left text-[var(--color-pdp-ink)] shadow-[var(--shadow-pdp-card)] outline-none transition-[transform,border-color,box-shadow] duration-[var(--dur-pdp-short)] ease-[var(--ease-pdp-out)] hover:-translate-y-0.5 hover:border-[var(--color-pdp-accent-border)] hover:shadow-[var(--shadow-pdp-popover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-pdp-focus)]";
 
   const content = (
     <>
       <div className="min-w-0 flex-1 px-2">
-        <h3 className="truncate text-[0.875rem] font-normal leading-tight">
+        <h3 className="truncate text-[0.875rem] font-medium leading-tight">
           {tool.label}
         </h3>
         {tool.badge ? (
@@ -31,7 +31,7 @@ export function PdpStudioToolCard({
         ) : null}
       </div>
 
-      <div className="relative grid size-16 shrink-0 place-items-center overflow-hidden rounded-[0.5rem] bg-[var(--color-pdp-surface-soft)]">
+      <div className="relative grid size-[4.5rem] shrink-0 place-items-center overflow-hidden rounded-[var(--radius-pdp-md)] border border-[var(--color-pdp-accent-border)] bg-[var(--color-pdp-surface-blue)]">
         {image ? (
           <Image
             src={image}

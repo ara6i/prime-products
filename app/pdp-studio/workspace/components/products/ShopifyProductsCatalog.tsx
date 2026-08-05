@@ -1,6 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
+import Link from "next/link";
 import { PdpStudioButton } from "../shared/PdpStudioButton";
 import { PdpStudioUiIcon } from "../shared/PdpStudioUiIcon";
 import type {
@@ -72,15 +73,16 @@ export function ShopifyProductsCatalog({
   }
 
   return (
-    <div className="grid gap-5 py-5">
+    <div className="grid gap-5 pb-10">
       <header className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-3">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#e8f7e8]">
+            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[var(--color-pdp-accent-soft)]">
               <PdpStudioUiIcon name="shopify" size={22} />
             </span>
             <div className="min-w-0">
-              <h1 className="truncate text-[1.65rem] font-semibold tracking-[-0.03em]">
+              <p className="text-[0.625rem] font-medium uppercase tracking-[0.16em] text-[var(--color-pdp-orange)]">Connected catalog</p>
+              <h1 className="truncate text-[1.65rem] font-medium tracking-[-0.03em]">
                 Shopify Products
               </h1>
               <p className="truncate text-xs text-[var(--color-pdp-muted)]">
@@ -138,7 +140,7 @@ export function ShopifyProductsCatalog({
       <div className="grid gap-3">
         <form
           onSubmit={handleSearch}
-          className="flex min-h-11 items-center gap-2 rounded-xl border border-[var(--color-pdp-rule)] bg-white px-3 focus-within:border-[var(--color-pdp-accent)] focus-within:ring-2 focus-within:ring-[var(--color-pdp-accent-soft)]"
+          className="flex min-h-11 items-center gap-2 rounded-[var(--radius-pdp-pill)] border border-[var(--color-pdp-rule)] bg-white px-4 shadow-[var(--shadow-pdp-card)] focus-within:border-[var(--color-pdp-accent)] focus-within:ring-2 focus-within:ring-[var(--color-pdp-accent-soft)]"
         >
           <PdpStudioUiIcon
             name="search"
@@ -226,7 +228,7 @@ export function ShopifyProductsCatalog({
       {loading ? (
         <ProductSkeletonGrid />
       ) : products.length === 0 ? (
-        <div className="grid min-h-80 place-items-center rounded-2xl border border-dashed border-[var(--color-pdp-rule)] bg-white text-center">
+        <div className="grid min-h-80 place-items-center rounded-[var(--radius-pdp-xl)] border border-dashed border-[var(--color-pdp-rule)] bg-white text-center shadow-[var(--shadow-pdp-card)]">
           <div>
             <PdpStudioUiIcon
               name="product"
@@ -290,46 +292,51 @@ function ProductCard({
   onImport: () => void;
 }) {
   const isList = viewMode === "list";
+  const productHref = `/pdp-studio/products/${encodeURIComponent(product.id)}`;
   return (
     <article
-      className={`group overflow-hidden rounded-xl border border-[var(--color-pdp-rule)] bg-white transition hover:-translate-y-0.5 hover:border-[#b7c8e5] hover:shadow-[0_12px_30px_rgba(28,55,100,0.1)] ${
+      className={`group overflow-hidden rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-white shadow-[var(--shadow-pdp-card)] transition hover:-translate-y-0.5 hover:border-[var(--color-pdp-rule-strong)] hover:shadow-[var(--shadow-pdp-popover)] ${
         isList ? "flex min-h-28 items-center" : ""
       }`}
     >
-      <div
-        className={`relative grid shrink-0 place-items-center overflow-hidden bg-[#f5f6f8] ${
-          isList ? "h-28 w-28" : "aspect-square w-full"
+      <Link
+        href={productHref}
+        className={`min-w-0 flex-1 outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-pdp-focus)] ${
+          isList ? "flex min-h-28 items-center" : "block"
         }`}
+        aria-label={`Open ${product.title}`}
       >
-        {product.featuredImage ? (
-          // Shopify media is served from dynamic merchant CDN hosts.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={product.featuredImage}
-            alt={product.title}
-            loading="lazy"
-            className="size-full object-contain transition duration-300 group-hover:scale-[1.02]"
-          />
-        ) : (
-          <PdpStudioUiIcon
-            name="image"
-            size={30}
-            className="text-[#9aa5b5]"
-          />
-        )}
-        <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide shadow-sm">
-          {product.status}
-        </span>
-      </div>
-      <div
-        className={`min-w-0 flex-1 ${
-          isList
-            ? "flex items-center gap-4 px-4 py-3"
-            : "grid gap-2 px-3 pb-3 pt-2.5"
-        }`}
-      >
-        <div className="min-w-0 flex-1">
-          <h2 className="truncate text-sm font-semibold" title={product.title}>
+        <div
+          className={`relative grid shrink-0 place-items-center overflow-hidden bg-[#f5f6f8] ${
+            isList ? "h-28 w-28" : "aspect-square w-full"
+          }`}
+        >
+          {product.featuredImage ? (
+            // Shopify media is served from dynamic merchant CDN hosts.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={product.featuredImage}
+              alt={product.title}
+              loading="lazy"
+              className="size-full object-contain transition duration-300 group-hover:scale-[1.02]"
+            />
+          ) : (
+            <PdpStudioUiIcon
+              name="image"
+              size={30}
+              className="text-[#9aa5b5]"
+            />
+          )}
+          <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide shadow-sm">
+            {product.status}
+          </span>
+        </div>
+        <div
+          className={`min-w-0 flex-1 ${
+            isList ? "px-4 py-3" : "px-3 pb-2.5 pt-2.5"
+          }`}
+        >
+          <h2 className="truncate text-sm font-medium" title={product.title}>
             {product.title}
           </h2>
           <p className="mt-1 truncate text-xs text-[var(--color-pdp-muted)]">
@@ -337,13 +344,16 @@ function ProductCard({
             {product.media.length} images
           </p>
         </div>
-        <button
+      </Link>
+      <div className={isList ? "mr-4 shrink-0" : "px-3 pb-3"}>
+        <PdpStudioButton
           type="button"
+          variant="secondary"
           onClick={onImport}
           disabled={importing}
           className={`inline-flex min-h-8 items-center justify-center gap-1.5 rounded-lg border px-2.5 text-xs font-semibold transition ${
             importedCount !== undefined
-              ? "border-green-200 bg-green-50 text-green-700"
+              ? "border-[var(--color-pdp-accent-border)] bg-[var(--color-pdp-accent-soft)] text-[var(--color-pdp-accent)]"
               : "border-[var(--color-pdp-rule)] bg-white text-[var(--color-pdp-ink)] hover:border-[var(--color-pdp-accent)] hover:text-[var(--color-pdp-accent)]"
           }`}
         >
@@ -356,7 +366,7 @@ function ProductCard({
             : importedCount !== undefined
               ? `${importedCount} imported`
               : "Import"}
-        </button>
+        </PdpStudioButton>
       </div>
     </article>
   );

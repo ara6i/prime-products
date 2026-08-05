@@ -25,6 +25,10 @@ export async function getPdpStudioBatch(
   }>(`/batch/${encodeURIComponent(batchId)}`);
   return response.batch;
 }
+export async function listPdpStudioBatches(): Promise<PdpStudioBatch[]> {
+  const response = await pdpStudioApiRequest<{ ok: true; batches: PdpStudioBatch[] }>("/batch");
+  return response.batches;
+}
 
 export async function cancelPdpStudioBatch(
   batchId: string,

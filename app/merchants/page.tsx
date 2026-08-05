@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { MerchantLandingExperience } from "../partner-landing/merchant/components/MerchantLandingExperience";
 
 export const metadata: Metadata = {
-  title: "For Merchants · From Catalog to Confident Cart | PrimeStyleAI",
+  title: "PrimeStyleAI | Fashion Commerce Network for Merchants",
   description:
-    "Connect catalog data, fit and sizing, authorized AI shopping, exact-variant carts, and order reporting through the PrimeStyleAI Connected Merchant Program.",
+    "Connect your catalog to creators, PDP Studio, AI sizing, virtual try-on, outfit building, and measurable fashion commerce through PrimeStyleAI.",
 };
 
 export default function MerchantLandingPage() {

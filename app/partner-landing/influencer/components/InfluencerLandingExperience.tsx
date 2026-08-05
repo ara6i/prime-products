@@ -1,12 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { useInfluencerLandingPage } from "../hooks/useInfluencerLandingPage";
-import { InfluencerCreatorTools } from "./InfluencerCreatorTools";
+import { InfluencerCreatorCollective } from "./InfluencerCreatorCollective";
 import { InfluencerEarningJourney } from "./InfluencerEarningJourney";
+import { InfluencerFooter } from "./InfluencerFooter";
 import { InfluencerHeader } from "./InfluencerHeader";
 import { InfluencerHero } from "./InfluencerHero";
 import { InfluencerInterestDialog } from "./InfluencerInterestDialog";
+import { InfluencerLookBuilder } from "./InfluencerLookBuilder";
+import { InfluencerOutfitStudio } from "./InfluencerOutfitStudio";
+import { InfluencerReferenceRemix } from "./InfluencerReferenceRemix";
 import styles from "./influencerLanding.module.css";
 
 export function InfluencerLandingExperience() {
@@ -16,11 +19,18 @@ export function InfluencerLandingExperience() {
       <InfluencerHeader mobileMenuOpen={navigation.mobileMenuOpen} onMenuToggle={navigation.toggleMobileMenu} onMenuClose={navigation.closeMobileMenu} onPrimaryAction={interest.open} onSectionSelect={navigation.scrollToSection} />
       <main>
         <InfluencerHero viewModel={viewModel} onPrimaryAction={interest.open} onSecondaryAction={() => navigation.scrollToSection("creator-journey")} />
-        <InfluencerCreatorTools viewModel={viewModel} />
+        <InfluencerOutfitStudio />
+        <section className={styles.creatorStudioSuite} aria-label="Create and remix your look">
+          <div className={styles.creatorStudioScreen}>
+            <InfluencerLookBuilder />
+            <InfluencerReferenceRemix />
+          </div>
+        </section>
+        <InfluencerCreatorCollective />
         <InfluencerEarningJourney viewModel={viewModel} onPrimaryAction={interest.open} />
-        <section className={styles.finalCta}><span>Creator access</span><h2>Your audience already trusts your taste.<em>Make the journey shoppable.</em></h2><button type="button" onClick={interest.open}>Start earning</button></section>
+        <section className={styles.finalCta}><span>Creator waitlist</span><h2>Your audience already trusts your taste.<em>Make the journey shoppable.</em></h2><button type="button" onClick={interest.open}>Join waitlist</button></section>
       </main>
-      <footer className={styles.footer}><span>© {new Date().getFullYear()} PrimeStyleAI</span><nav><Link href="/privacy-policy">Privacy</Link><Link href="/terms">Terms</Link><Link href="/help-center">Creator help</Link><Link href="/merchants">For merchants</Link></nav></footer>
+      <InfluencerFooter />
       <InfluencerInterestDialog viewModel={viewModel} isOpen={interest.isOpen} message={interest.message} submissionState={interest.submissionState} onClose={interest.close} onSubmit={interest.submit} />
     </div>
   );

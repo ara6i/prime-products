@@ -23,8 +23,8 @@ export interface MerchantLandingViewModel {
     primaryCta: string;
     secondaryCta: string;
     annotation: string;
-    video: string;
-    poster: string;
+    image: string;
+    heroImage: string;
   };
   commerceSteps: MerchantCommerceStep[];
   capabilities: MerchantCapability[];

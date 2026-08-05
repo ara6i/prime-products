@@ -139,6 +139,7 @@ export function PdpStudioUiIcon({
         alt=""
         width={size}
         height={size}
+        style={{ width: size, height: size }}
         className={className}
         aria-hidden
       />

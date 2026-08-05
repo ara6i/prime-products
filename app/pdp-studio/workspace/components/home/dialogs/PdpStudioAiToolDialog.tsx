@@ -139,7 +139,7 @@ function ToolSwitcherPanel({
     <div
       role="dialog"
       aria-label="Choose AI tool"
-      className="absolute left-4 top-[3.75rem] z-30 w-[min(35rem,calc(100vw-5rem))] overflow-hidden rounded-[0.875rem] border border-[var(--color-pdp-rule)] bg-white p-4 shadow-[0_22px_65px_rgba(17,24,39,0.18)]"
+      className="fixed inset-x-3 bottom-3 z-50 max-h-[70dvh] overflow-y-auto rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] bg-white p-4 shadow-[var(--shadow-pdp-overlay)] sm:absolute sm:bottom-auto sm:left-4 sm:right-auto sm:top-[3.75rem] sm:w-[min(35rem,calc(100vw-5rem))]"
     >
       <h3 className="text-[0.75rem] font-semibold text-[var(--color-pdp-muted)]">
         Recently used
@@ -181,7 +181,7 @@ function QualityPanel({
     <div
       role="dialog"
       aria-label="Select quality"
-      className="absolute left-[18rem] top-[11.5rem] z-30 w-[min(36rem,calc(100vw-21rem))] rounded-[0.875rem] border border-[var(--color-pdp-rule)] bg-white p-3 shadow-[0_22px_65px_rgba(17,24,39,0.18)]"
+      className="fixed inset-x-3 bottom-3 z-50 rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] bg-white p-3 shadow-[var(--shadow-pdp-overlay)] sm:absolute sm:bottom-auto sm:left-[18rem] sm:right-auto sm:top-[11.5rem] sm:w-[min(36rem,calc(100vw-21rem))]"
     >
       <div className="grid gap-2 sm:grid-cols-3">
         {PDP_STUDIO_QUALITY_OPTIONS.map((option) => (
@@ -234,7 +234,7 @@ function SizePanel({
     <div
       role="dialog"
       aria-label="Select size"
-      className="absolute left-[18rem] top-[15rem] z-30 w-[min(31rem,calc(100vw-21rem))] rounded-[0.875rem] border border-[var(--color-pdp-rule)] bg-white p-3 shadow-[0_22px_65px_rgba(17,24,39,0.18)]"
+      className="fixed inset-x-3 bottom-3 z-50 rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] bg-white p-3 shadow-[var(--shadow-pdp-overlay)] sm:absolute sm:bottom-auto sm:left-[18rem] sm:right-auto sm:top-[15rem] sm:w-[min(31rem,calc(100vw-21rem))]"
     >
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {PDP_STUDIO_SIZE_OPTIONS.map((option) => (
@@ -280,7 +280,7 @@ function BrandPanel({
     <div
       role="dialog"
       aria-label="Brand style"
-      className="absolute left-[18rem] top-[18.5rem] z-30 w-[min(30rem,calc(100vw-21rem))] rounded-[0.875rem] border border-[var(--color-pdp-rule)] bg-white p-4 shadow-[0_22px_65px_rgba(17,24,39,0.18)]"
+      className="fixed inset-x-3 bottom-3 z-50 rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] bg-white p-4 shadow-[var(--shadow-pdp-overlay)] sm:absolute sm:bottom-auto sm:left-[18rem] sm:right-auto sm:top-[18.5rem] sm:w-[min(30rem,calc(100vw-21rem))]"
     >
       <label className="flex items-center gap-3 text-[0.8125rem] font-semibold">
         <PdpStudioButton
@@ -524,7 +524,7 @@ export function PdpStudioAiToolDialog({
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="grid !z-[400] !h-[min(88vh,52rem)] !w-[min(94vw,88rem)] !max-w-none grid-cols-[19rem_minmax(0,1fr)] gap-0 overflow-hidden rounded-[1rem] border-[var(--color-pdp-rule)] bg-[var(--color-pdp-paper)] p-0 text-[var(--color-pdp-ink)]"
+        className="grid !z-[400] !h-[calc(100dvh-1.5rem)] !w-[calc(100vw-1.5rem)] !max-w-none grid-rows-[minmax(0,0.95fr)_minmax(18rem,1.05fr)] gap-0 overflow-hidden rounded-[var(--radius-pdp-xl)] border-[var(--color-pdp-rule)] bg-[var(--color-pdp-paper)] p-0 text-[var(--color-pdp-ink)] sm:!h-[min(90dvh,52rem)] sm:!w-[min(94vw,88rem)] sm:grid-cols-[19rem_minmax(0,1fr)] sm:grid-rows-1"
         overlayClassName="!z-[300] bg-[var(--color-pdp-ink)]/25 backdrop-blur-sm"
         onPointerDownOutside={onClosePanel}
       >
@@ -533,14 +533,14 @@ export function PdpStudioAiToolDialog({
           Configure and run {tool.label}.
         </DialogDescription>
 
-        <aside className="relative z-20 border-r border-[var(--color-pdp-rule)] bg-white p-4">
+        <aside className="relative z-20 min-h-0 overflow-y-auto border-b border-[var(--color-pdp-rule)] bg-white p-4 sm:border-b-0 sm:border-r">
           <PdpStudioButton
             type="button"
             variant="ghost"
             aria-label="Switch AI tool"
             aria-expanded={activePanel === "tool"}
             onClick={() => onTogglePanel("tool")}
-            className="flex min-h-11 w-full items-center justify-start gap-2 rounded-[0.625rem] bg-transparent px-1 text-left text-[1rem] font-semibold text-[var(--color-pdp-ink)] outline-none hover:bg-transparent hover:text-[var(--color-pdp-accent)]"
+            className="flex min-h-11 w-full items-center justify-start gap-2 rounded-[0.625rem] bg-transparent px-1 text-left text-[1rem] font-medium text-[var(--color-pdp-ink)] outline-none hover:bg-transparent hover:text-[var(--color-pdp-accent)]"
           >
             <PdpStudioUiIcon
               name={tool.icon}
@@ -700,7 +700,7 @@ export function PdpStudioAiToolDialog({
           ) : null}
         </aside>
 
-        <main className="relative grid min-w-0 place-items-center overflow-hidden bg-[var(--color-pdp-surface-soft)] p-8">
+        <main className="relative grid min-h-0 min-w-0 place-items-center overflow-auto bg-[var(--color-pdp-paper)] p-4 sm:p-8">
           <ToolExample
             tool={tool}
             selectedImage={selectedImage}

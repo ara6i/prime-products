@@ -10,6 +10,7 @@ import {
 } from "react";
 import { usePdpStudioJobProgress } from "../../platform/hooks/usePdpStudioJobProgress";
 import {
+  getPdpStudioAsset,
   listPdpStudioAssets,
   uploadPdpStudioAsset,
 } from "../../platform/services/pdpStudioAssetService";
@@ -178,13 +179,41 @@ export function useAiBackgroundsWorkspace() {
 
   useEffect(() => {
     const jobId = new URL(window.location.href).searchParams.get("job");
+    const sourceAssetId = new URL(window.location.href).searchParams.get(
+      "sourceAssetId",
+    );
     if (!jobId) {
       let active = true;
-      queueMicrotask(() => {
-        if (!active) return;
-        setRestoringJob(false);
-        setAssetPickerOpen(true);
-      });
+      if (sourceAssetId) {
+        void getPdpStudioAsset(sourceAssetId)
+          .then((asset) => {
+            if (!active || asset.resourceType !== "image") return;
+            setSource({
+              id: asset.id,
+              name: asset.originalName ?? "Shopify product image",
+              previewUrl: asset.url,
+              asset,
+            });
+            setEditorOpen(true);
+            setAssetPickerOpen(false);
+            setRestoringJob(false);
+          })
+          .catch((caught) => {
+            if (!active) return;
+            setRestoringJob(false);
+            setError(
+              caught instanceof Error
+                ? caught.message
+                : "The selected Shopify image could not be loaded.",
+            );
+          });
+      } else {
+        queueMicrotask(() => {
+          if (!active) return;
+          setRestoringJob(false);
+          setAssetPickerOpen(true);
+        });
+      }
       return () => {
         active = false;
       };

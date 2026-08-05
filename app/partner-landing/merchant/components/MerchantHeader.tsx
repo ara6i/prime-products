@@ -12,27 +12,28 @@ export function MerchantHeader({ mobileMenuOpen, onMenuToggle, onMenuClose, onPr
 }) {
   return (
     <header className={styles.header}>
-      <Link href="/" className={styles.logoLink} aria-label="PrimeStyleAI home"><Image src="/images/landing/optimized/logo-navbar-transparent.webp" alt="PrimeStyleAI virtual try-on" width={116} height={92} priority /></Link>
+      <Link href="/" className={styles.logoLink} aria-label="PrimeStyleAI home"><Image src="/media/partner-landing/primestyleai-commerce-gateway-mark.webp" alt="PrimeStyleAI" width={600} height={471} sizes="64px" priority /></Link>
       <nav className={styles.desktopNav} aria-label="Merchant navigation">
-        <Link href="/merchants" aria-current="page">Merchants</Link>
-        <button type="button" onClick={() => onSectionSelect("connected-system")}>Connected system</button>
-        <button type="button" onClick={() => onSectionSelect("merchant-capabilities")}>Capabilities</button>
-        <button type="button" onClick={() => onSectionSelect("merchant-channels")}>Programs</button>
-        <Link href="/influencers">For influencers</Link>
+        <button type="button" onClick={() => onSectionSelect("influencer-network")}>Creators</button>
+        <button type="button" onClick={() => onSectionSelect("creator-discovery")}>Discovery</button>
+        <button type="button" onClick={() => onSectionSelect("merchant-dashboard")}>Dashboard</button>
+        <button type="button" onClick={() => onSectionSelect("pdp-studio-feature")}>PDP Studio</button>
+        <button type="button" onClick={() => onSectionSelect("outfit-builder")}>Try-on</button>
       </nav>
       <div className={styles.headerActions}>
-        <Link href="/customer/login" className={styles.signIn}>Sign in</Link>
-        <button type="button" className={styles.headerCta} onClick={onPrimaryAction}>Become connected</button>
+        <Link className={styles.signIn} href="/login">Sign in</Link>
+        <button type="button" className={styles.headerCta} onClick={onPrimaryAction}>Join the network</button>
         <button type="button" className={styles.menuButton} onClick={onMenuToggle} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-expanded={mobileMenuOpen}>{mobileMenuOpen ? <X size={24} /> : <List size={24} />}</button>
       </div>
       {mobileMenuOpen ? (
         <nav className={styles.mobileNav} aria-label="Mobile merchant navigation">
-          <button type="button" onClick={() => onSectionSelect("connected-system")}>Connected system</button>
-          <button type="button" onClick={() => onSectionSelect("merchant-capabilities")}>Capabilities</button>
-          <button type="button" onClick={() => onSectionSelect("merchant-channels")}>Programs</button>
-          <Link href="/influencers" onClick={onMenuClose}>For influencers</Link>
-          <Link href="/customer/login" onClick={onMenuClose}>Sign in</Link>
-          <button type="button" className={styles.mobileCta} onClick={() => { onMenuClose(); onPrimaryAction(); }}>Become connected</button>
+          <button type="button" onClick={() => onSectionSelect("influencer-network")}>Creator showcase</button>
+          <button type="button" onClick={() => onSectionSelect("creator-discovery")}>Find creators</button>
+          <button type="button" onClick={() => onSectionSelect("merchant-dashboard")}>Merchant dashboard</button>
+          <button type="button" onClick={() => onSectionSelect("pdp-studio-feature")}>PDP Studio</button>
+          <button type="button" onClick={() => onSectionSelect("outfit-builder")}>Virtual try-on</button>
+          <Link href="/login" onClick={onMenuClose}>Sign in</Link>
+          <button type="button" className={styles.mobileCta} onClick={() => { onMenuClose(); onPrimaryAction(); }}>Join the network</button>
         </nav>
       ) : null}
     </header>

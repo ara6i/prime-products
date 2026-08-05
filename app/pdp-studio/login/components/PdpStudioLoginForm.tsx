@@ -57,12 +57,6 @@ export function PdpStudioLoginForm({ compact = false }: { compact?: boolean }) {
           primary
         />
         <AuthProviderButton
-          icon={<FacebookIcon />}
-          label="Continue with Facebook"
-          onClick={startFacebook}
-          disabled={socialPending}
-        />
-        <AuthProviderButton
           icon={<AppleIcon className="h-6 w-6" />}
           label="Continue with Apple"
           onClick={startApple}

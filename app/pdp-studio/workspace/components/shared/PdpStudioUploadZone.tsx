@@ -29,14 +29,14 @@ export function PdpStudioUploadZone({
     <div>
       <label
         htmlFor={id}
-        className="flex min-h-[9rem] cursor-pointer flex-col items-center justify-center gap-[var(--space-pdp-sm)] rounded-[var(--radius-pdp-lg)] border border-dashed border-[var(--color-pdp-rule-strong)] bg-[var(--color-pdp-surface-soft)] p-[var(--space-pdp-lg)] text-center outline-none hover:border-[var(--color-pdp-accent)] focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--color-pdp-focus)]"
+        className="flex min-h-[9rem] cursor-pointer flex-col items-center justify-center gap-[var(--space-pdp-sm)] rounded-[var(--radius-pdp-lg)] border border-dashed border-[var(--color-pdp-rule-strong)] bg-[var(--color-pdp-paper)] p-5 text-center outline-none transition-colors hover:border-[var(--color-pdp-accent)] hover:bg-[var(--color-pdp-accent-soft)] focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--color-pdp-focus)]"
       >
         <span className="grid size-[2.75rem] place-items-center rounded-[var(--radius-pdp-pill)] bg-[var(--color-pdp-accent-soft)] text-[var(--color-pdp-accent)]">
           <PdpStudioUiIcon name="upload" />
         </span>
-        <span className="text-[var(--text-pdp-sm)] font-semibold text-[var(--color-pdp-ink)]">{label}</span>
+        <span className="text-[var(--text-pdp-sm)] font-medium text-[var(--color-pdp-ink)]">{label}</span>
         <span className="text-[var(--text-pdp-xs)] text-[var(--color-pdp-muted)]">
-          PNG, JPG, or WebP · local preview only
+          PNG, JPG, or WebP · private upload
         </span>
         <input
           id={id}

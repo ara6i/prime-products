@@ -1,7 +1,9 @@
 import { pdpStudioApiRequest } from "../../platform/services/pdpStudioApiClient";
-import { mapShopifyConnection, mapShopifyProductsPage } from "../mappers/shopifyProductsMapper";
+import { mapShopifyConnection, mapShopifyProduct, mapShopifyProductsPage } from "../mappers/shopifyProductsMapper";
+import type { PdpStudioAsset } from "../../platform/types/pdpStudioPlatform";
 import type {
-  ShopifyConnection,
+	ShopifyConnection,
+	ShopifyProductDetail,
   ShopifyProductsPage,
 } from "../types/shopifyProducts";
 
@@ -65,15 +67,32 @@ export async function listShopifyProducts(input: {
   return mapShopifyProductsPage(response, input.currency);
 }
 
+export async function getShopifyProduct(
+	productId: string,
+	currency?: string | null,
+): Promise<ShopifyProductDetail> {
+	const response = await pdpStudioApiRequest<{ ok: true; product: unknown }>(
+		`/shopify/products/${encodeURIComponent(productId)}`,
+	);
+	return mapShopifyProduct(response.product, currency);
+}
+
+export async function importShopifyProductMedia(
+	productId: string,
+	mediaIds?: string[],
+): Promise<PdpStudioAsset[]> {
+	const response = await pdpStudioApiRequest<{
+		ok: true;
+		assets: PdpStudioAsset[];
+	}>(`/shopify/products/${encodeURIComponent(productId)}/import`, {
+		method: "POST",
+		body: JSON.stringify(mediaIds?.length ? { mediaIds } : {}),
+	});
+	return response.assets;
+}
+
 export async function importShopifyProductImages(
-  productId: string,
+	productId: string,
 ): Promise<number> {
-  const response = await pdpStudioApiRequest<{
-    ok: true;
-    assets: unknown[];
-  }>(`/shopify/products/${encodeURIComponent(productId)}/import`, {
-    method: "POST",
-    body: JSON.stringify({}),
-  });
-  return response.assets.length;
+	return (await importShopifyProductMedia(productId)).length;
 }

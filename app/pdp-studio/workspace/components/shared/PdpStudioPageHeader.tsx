@@ -12,13 +12,16 @@ export function PdpStudioPageHeader({
   actions,
 }: PdpStudioPageHeaderProps) {
   return (
-    <header className="flex flex-col gap-[var(--space-pdp-md)] sm:flex-row sm:items-center sm:justify-between">
+    <header className="flex flex-col gap-[var(--space-pdp-md)] sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
-        <h1 className="min-w-0 font-[family-name:var(--font-pdp-display)] text-[var(--text-pdp-xl)] font-semibold leading-tight tracking-[-0.025em] text-[var(--color-pdp-ink)] [overflow-wrap:anywhere]">
+        <p className="mb-2 text-[0.6875rem] font-medium uppercase tracking-[0.16em] text-[var(--color-pdp-muted)]">
+          PDP Studio · Workspace
+        </p>
+        <h1 className="min-w-0 font-[family-name:var(--font-pdp-display)] text-[var(--text-pdp-xl)] font-medium leading-[1.08] tracking-[-0.035em] text-[var(--color-pdp-ink)] [overflow-wrap:anywhere]">
           {title}
         </h1>
         {description ? (
-          <p className="mt-[var(--space-pdp-xs)] max-w-[65ch] text-[var(--text-pdp-sm)] leading-relaxed text-[var(--color-pdp-muted)]">
+          <p className="mt-[var(--space-pdp-xs)] max-w-[65ch] text-[var(--text-pdp-sm)] leading-6 text-[var(--color-pdp-muted)]">
             {description}
           </p>
         ) : null}

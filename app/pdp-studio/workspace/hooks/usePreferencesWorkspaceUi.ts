@@ -1,59 +1,10 @@
 "use client";
-
-import { useState } from "react";
-
-export interface PreferenceToggleState {
-  autoRegenerate: boolean;
-  privateDesigns: boolean;
-  spaceTemplatesOnly: boolean;
-  blockExports: boolean;
-  keepFilename: boolean;
-}
-
-export function usePreferencesWorkspaceUi() {
-  const [activeSection, setActiveSection] = useState("account-profile");
-  const [displayName, setDisplayName] = useState("PrimeStyleAI");
-  const [language, setLanguage] = useState("English");
-  const [appearance, setAppearance] = useState("System");
-  const [spaceName, setSpaceName] = useState("Primestyleai’s Space");
-  const [spaceDescription, setSpaceDescription] = useState("Private product imagery workspace.");
-  const [exportFormat, setExportFormat] = useState("Best for image");
-  const [savedSection, setSavedSection] = useState("");
-  const [toggles, setToggles] = useState<PreferenceToggleState>({
-    autoRegenerate: false,
-    privateDesigns: false,
-    spaceTemplatesOnly: false,
-    blockExports: false,
-    keepFilename: true,
-  });
-
-  function toggle(key: keyof PreferenceToggleState): void {
-    setToggles((current) => ({ ...current, [key]: !current[key] }));
-    setSavedSection("");
-  }
-
-  function save(section: string): void {
-    setSavedSection(section);
-  }
-
-  return {
-    activeSection,
-    displayName,
-    language,
-    appearance,
-    spaceName,
-    spaceDescription,
-    exportFormat,
-    savedSection,
-    toggles,
-    setActiveSection,
-    setDisplayName,
-    setLanguage,
-    setAppearance,
-    setSpaceName,
-    setSpaceDescription,
-    setExportFormat,
-    toggle,
-    save,
-  };
-}
+import{useEffect,useState}from"react";import{getPdpStudioProfile,updatePdpStudioProfile}from"../../platform/services/pdpStudioProfileService";import{getPdpBilling,getPdpUsage,getWorkspaceSettings,inviteWorkspaceMember,listWorkspaceMembers,listWorkspaces,updateWorkspaceSettings,type UsageDto,type WorkspaceDto,type WorkspaceSettings}from"../../platform/services/pdpStudioWorkspaceService";
+export interface PreferenceToggleState{contentSafety:boolean}
+const DEFAULT:WorkspaceSettings={language:"English",appearance:"system",exportFormat:"png",exportQuality:94,contentSafety:true,defaultWidth:1200,defaultHeight:1200,description:""};
+export function usePreferencesWorkspaceUi(){const[activeSection,setActiveSection]=useState("account-profile"),[displayName,setDisplayName]=useState(""),[email,setEmail]=useState(""),[language,setLanguage]=useState("English"),[appearance,setAppearance]=useState("system"),[spaceName,setSpaceName]=useState(""),[spaceDescription,setSpaceDescription]=useState(""),[exportFormat,setExportFormat]=useState("png"),[exportQuality,setExportQuality]=useState(94),[savedSection,setSavedSection]=useState(""),[toggles,setToggles]=useState<PreferenceToggleState>({contentSafety:true}),[workspaces,setWorkspaces]=useState<WorkspaceDto[]>([]),[members,setMembers]=useState<Array<{accountId:string;name:string;email:string;role:string;joinedAt:string}>>([]),[usage,setUsage]=useState<UsageDto|null>(null),[billing,setBilling]=useState<Awaited<ReturnType<typeof getPdpBilling>>|null>(null),[error,setError]=useState("");
+ useEffect(()=>{void Promise.all([getPdpStudioProfile(),getWorkspaceSettings(),listWorkspaces(),getPdpUsage(),getPdpBilling()]).then(async([profile,settings,spaces,usageValue,billingValue])=>{setDisplayName(profile.name);setEmail(profile.email);setSpaceName(profile.workspace.name);setLanguage(settings.language);setAppearance(settings.appearance);setExportFormat(settings.exportFormat);setExportQuality(settings.exportQuality);setSpaceDescription(settings.description);setToggles({contentSafety:settings.contentSafety});setWorkspaces(spaces);setUsage(usageValue);setBilling(billingValue);const active=spaces.find(space=>space.id===profile.workspace.id)??spaces[0];if(active&&["owner","admin"].includes(active.role))setMembers(await listWorkspaceMembers(active.id))}).catch(reason=>setError(reason instanceof Error?reason.message:"Unable to load settings."))},[]);
+ function toggle(key:keyof PreferenceToggleState){setToggles(current=>({...current,[key]:!current[key]}));setSavedSection("")}
+ async function save(section:string){setError("");try{if(section==="account-profile"||section==="space-details")await updatePdpStudioProfile({name:displayName,workspaceName:spaceName});if(section==="space-settings"||section==="space-details"||section==="account-profile")await updateWorkspaceSettings({language,appearance:appearance as "light"|"system",exportFormat:exportFormat as "png"|"jpeg"|"webp",exportQuality,contentSafety:toggles.contentSafety,defaultWidth:1200,defaultHeight:1200,description:spaceDescription});setSavedSection(section)}catch(reason){setError(reason instanceof Error?reason.message:"Unable to save settings.")}}
+ async function invite(emailValue:string,role:string){const active=workspaces[0];if(!active)return;const invitation=await inviteWorkspaceMember(active.id,emailValue,role);setMembers(await listWorkspaceMembers(active.id));return invitation}
+ return{activeSection,displayName,email,language,appearance,spaceName,spaceDescription,exportFormat,exportQuality,savedSection,toggles,workspaces,members,usage,billing,error,setActiveSection,setDisplayName,setLanguage,setAppearance,setSpaceName,setSpaceDescription,setExportFormat,setExportQuality,toggle,save,invite};}

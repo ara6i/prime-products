@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { Input } from "@/app/shared/components/ui/input";
 import { Label } from "@/app/shared/components/ui/label";
 import type { usePreferencesWorkspaceUi } from "../../hooks/usePreferencesWorkspaceUi";
@@ -15,17 +17,14 @@ function SpaceSettings({ ui }: { ui: PreferencesUi }) {
         <label className="grid max-w-[26rem] gap-[var(--space-pdp-xs)]">
           <Label>Default export</Label>
           <select value={ui.exportFormat} onChange={(event) => ui.setExportFormat(event.target.value)} className="h-[var(--size-pdp-control)] rounded-[var(--radius-pdp-sm)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-paper)] px-[var(--space-pdp-sm)] text-[var(--text-pdp-sm)] outline outline-2 outline-transparent focus-visible:outline-[var(--color-pdp-focus)]">
-            {["Best for image", "PNG", "JPG", "WebP", "AVIF"].map((format) => <option key={format}>{format}</option>)}
+            <option value="png">PNG</option><option value="jpeg">JPG</option><option value="webp">WebP</option>
           </select>
           <span className="text-[var(--text-pdp-xs)] text-[var(--color-pdp-muted)]">
             PNG and AVIF preserve transparency; JPG creates smaller opaque files.
           </span>
         </label>
-        <ToggleRow label="Keep original file name" description="Retain the source name when exporting." checked={ui.toggles.keepFilename} onToggle={() => ui.toggle("keepFilename")} />
-        <ToggleRow label="Automatic AI regeneration" description="Automatically regenerate AI Backgrounds and AI Shadows." checked={ui.toggles.autoRegenerate} onToggle={() => ui.toggle("autoRegenerate")} />
-        <ToggleRow label="Make new designs private" description="Only the creator can see a new design until it is shared." checked={ui.toggles.privateDesigns} onToggle={() => ui.toggle("privateDesigns")} />
-        <ToggleRow label="Show Space templates only" description="Hide templates that were not created by Space members." checked={ui.toggles.spaceTemplatesOnly} onToggle={() => ui.toggle("spaceTemplatesOnly")} />
-        <ToggleRow label="Block export in Space" description="Admins can prevent all Space members from exporting." checked={ui.toggles.blockExports} onToggle={() => ui.toggle("blockExports")} />
+        <label className="grid max-w-[26rem] gap-1"><Label>Export quality · {ui.exportQuality}%</Label><input type="range" min="1" max="100" value={ui.exportQuality} onChange={event=>ui.setExportQuality(Number(event.target.value))} className="accent-[var(--color-pdp-accent)]"/></label>
+        <ToggleRow label="Content safety" description="Apply the configured provider safety policies to generation jobs." checked={ui.toggles.contentSafety} onToggle={() => ui.toggle("contentSafety")} />
         <div className="flex items-center gap-[var(--space-pdp-sm)]">
           <PdpStudioButton type="button" onClick={() => ui.save("space-settings")}>Save settings</PdpStudioButton>
           <SavedIndicator visible={ui.savedSection === "space-settings"} />
@@ -45,19 +44,14 @@ export function SpacePreferencePanels({
   if (section === "space-settings") return <SpaceSettings ui={ui} />;
 
   if (section === "space-members") {
+    const InviteMembers = () => {
+      const [email,setEmail]=useState(""); const [role,setRole]=useState("editor"); const [notice,setNotice]=useState("");
+      return <><div className="flex flex-col gap-2 sm:flex-row"><Input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Member email" className="h-[var(--size-pdp-control)] border-[var(--color-pdp-rule)]"/><select value={role} onChange={e=>setRole(e.target.value)} className="h-[var(--size-pdp-control)] rounded-xl border border-[var(--color-pdp-rule)] bg-white px-3 text-sm"><option value="admin">Admin</option><option value="editor">Editor</option><option value="reviewer">Reviewer</option><option value="viewer">Viewer</option></select><PdpStudioButton disabled={!email.trim()} onClick={async()=>{const result=await ui.invite(email,role);if(result)setNotice(`Invitation created for ${result.email}. It expires ${new Date(result.expiresAt).toLocaleDateString()}.`);setEmail("")}}>Invite</PdpStudioButton></div>{notice?<p className="mt-2 text-xs text-[var(--color-pdp-success)]">{notice}</p>:null}</>;
+    };
     return (
       <PreferenceCard title="Members" description="Search members, invite people, and review admin roles.">
-        <div className="flex flex-col gap-[var(--space-pdp-md)] sm:flex-row">
-          <Input placeholder="Search Space members" className="h-[var(--size-pdp-control)] border-[var(--color-pdp-rule)]" />
-          <PdpStudioButton type="button" disabled>Invite people · preview only</PdpStudioButton>
-        </div>
-        <div className="mt-[var(--space-pdp-md)] flex items-center justify-between rounded-[var(--radius-pdp-md)] bg-[var(--color-pdp-surface-soft)] p-[var(--space-pdp-md)]">
-          <div>
-            <p className="text-[var(--text-pdp-sm)] font-semibold">PrimeStyleAI</p>
-            <p className="text-[var(--text-pdp-xs)] text-[var(--color-pdp-muted)]">admin@primestyleai.com</p>
-          </div>
-          <span className="rounded-[var(--radius-pdp-pill)] bg-[var(--color-pdp-accent-soft)] px-[var(--space-pdp-sm)] py-[var(--space-pdp-2xs)] text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-accent)]">Admin</span>
-        </div>
+        <InviteMembers />
+        <div className="mt-4 grid gap-2">{ui.members.map(member=><div key={member.accountId} className="flex items-center justify-between rounded-[var(--radius-pdp-md)] bg-[var(--color-pdp-surface-soft)] p-[var(--space-pdp-md)]"><div><p className="text-sm font-medium">{member.name}</p><p className="text-xs text-[var(--color-pdp-muted)]">{member.email}</p></div><span className="rounded-full bg-[var(--color-pdp-accent-soft)] px-3 py-1 text-xs font-medium text-[var(--color-pdp-accent)]">{member.role}</span></div>)}</div>
       </PreferenceCard>
     );
   }
@@ -84,11 +78,11 @@ export function SpacePreferencePanels({
   }
 
   return (
-    <PreferenceCard title={section === "space-billing" ? "Space billing" : "Space usage"} description="This panel is a UI-only representation of the audited Space controls.">
+    <PreferenceCard title={section === "space-billing" ? "Space billing" : "Space usage"} description="Live workspace limits and immutable usage data.">
       <div className="rounded-[var(--radius-pdp-md)] bg-[var(--color-pdp-accent-soft)] p-[var(--space-pdp-lg)]">
-        <p className="text-[var(--text-pdp-xl)] font-bold">{section === "space-billing" ? "Free Space" : "18 AI credits · 26 exports"}</p>
+        <p className="text-[var(--text-pdp-xl)] font-medium">{section === "space-billing" ? `${ui.billing?.plan ?? "free"} Space` : `${ui.usage?.credits.used ?? 0} AI credits · ${ui.usage?.exports.used ?? 0} exports`}</p>
         <p className="mt-[var(--space-pdp-xs)] text-[var(--text-pdp-sm)] text-[var(--color-pdp-muted)]">
-          {section === "space-billing" ? "Upgrade controls are disabled in UI preview mode." : "Sample values renew August 24."}
+          {section === "space-billing" ? (ui.billing?.checkoutReady ? "Checkout is configured." : "Checkout stays disabled until all six Lemon Squeezy variants are configured.") : "Usage is read from the workspace ledger."}
         </p>
       </div>
     </PreferenceCard>

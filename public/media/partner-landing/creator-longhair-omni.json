@@ -1,0 +1,14 @@
+{
+  "model": "gemini-omni-flash-preview",
+  "interactionId": "v1_Chc2TkJ4YW9iSk8tbkVuc0VQNmZmSjhRWRIXNk5CeGFvYkpPLW5FbnNFUDZmZko4UVk",
+  "status": "completed",
+  "references": [
+    "public/images/ai-stylist/creator-longhair-outfit-1.png",
+    "public/images/ai-stylist/creator-longhair-outfit-2.png",
+    "public/images/ai-stylist/creator-longhair-outfit-3.png",
+    "public/images/ai-stylist/creator-longhair-outfit-4.png",
+    "public/images/ai-stylist/creator-longhair-outfit-5.png"
+  ],
+  "output": "public/media/partner-landing/creator-longhair-omni.mp4",
+  "createdAt": "2026-08-04T11:45:58.162Z"
+}

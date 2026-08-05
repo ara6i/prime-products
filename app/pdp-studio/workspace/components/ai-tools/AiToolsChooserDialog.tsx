@@ -33,7 +33,7 @@ export function AiToolsChooserDialog({
         aria-describedby="ai-tools-chooser-description"
         showCloseButton={false}
         overlayClassName="!z-[999] bg-[var(--color-pdp-ink)]/32 backdrop-blur-[2px]"
-        className="!z-[1000] flex h-[calc(100dvh-8rem)] max-h-[44rem] w-[calc(100vw-8rem)] max-w-[72rem] flex-col gap-0 overflow-hidden rounded-[1rem] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-0 shadow-[0_24px_80px_rgba(15,23,42,0.22)] sm:max-w-[72rem]"
+        className="!z-[1000] flex h-[calc(100dvh-1.5rem)] max-h-[50rem] w-[calc(100vw-1.5rem)] max-w-[72rem] flex-col gap-0 overflow-hidden rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-0 shadow-[var(--shadow-pdp-overlay)] sm:h-[calc(100dvh-4rem)] sm:w-[calc(100vw-4rem)] sm:max-w-[72rem]"
       >
         <DialogClose asChild>
           <PdpStudioButton
@@ -47,8 +47,8 @@ export function AiToolsChooserDialog({
           </PdpStudioButton>
         </DialogClose>
 
-        <div className="shrink-0 px-7 pb-5 pt-7 text-center">
-          <DialogTitle className="text-[1.5rem] font-semibold leading-tight tracking-[-0.025em] text-[var(--color-pdp-ink)]">
+        <div className="shrink-0 px-5 pb-4 pt-6 text-center sm:px-7 sm:pb-5 sm:pt-7">
+          <DialogTitle className="text-[1.5rem] font-medium leading-tight tracking-[-0.025em] text-[var(--color-pdp-ink)]">
             What do you need?
           </DialogTitle>
           <DialogDescription
@@ -59,9 +59,9 @@ export function AiToolsChooserDialog({
           </DialogDescription>
         </div>
 
-        <div className="min-h-0 overflow-y-auto px-7 pb-7">
+        <div className="min-h-0 overflow-y-auto px-4 pb-5 sm:px-7 sm:pb-7">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-[1rem] font-semibold text-[var(--color-pdp-ink)]">
+            <h2 className="text-[1rem] font-medium text-[var(--color-pdp-ink)]">
               Create images with AI
             </h2>
             <span className="text-[0.8125rem] font-medium text-[var(--color-pdp-muted)]">

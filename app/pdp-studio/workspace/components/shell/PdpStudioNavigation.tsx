@@ -24,7 +24,7 @@ export function PdpStudioNavigation({
   const ui = usePdpStudioNavigationUi();
 
   return (
-    <nav aria-label="PDP Studio" className="flex min-h-0 flex-1 flex-col gap-5 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <nav aria-label="PDP Studio" className="flex min-h-0 flex-1 flex-col gap-6 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {groups.map((group, groupIndex) => (
         <section
           key={group.label ?? `primary-${groupIndex}`}
@@ -36,7 +36,7 @@ export function PdpStudioNavigation({
               variant="ghost"
               aria-expanded={ui.expandedGroup === group.label}
               onClick={() => ui.toggleGroup(group.label!)}
-              className="min-h-[2.5rem] w-full justify-start gap-3 rounded-[var(--radius-pdp-sm)] bg-transparent px-3 text-[0.8125rem] font-normal text-[var(--color-pdp-muted)] hover:bg-[var(--color-pdp-surface-soft)]"
+              className="min-h-8 w-full justify-start gap-3 rounded-[var(--radius-pdp-sm)] bg-transparent px-3 text-[0.6875rem] font-medium uppercase tracking-[0.12em] text-[var(--color-pdp-muted)] hover:bg-[var(--color-pdp-surface-soft)]"
             >
               <span>{group.label}</span>
               <PdpStudioUiIcon
@@ -68,7 +68,7 @@ export function PdpStudioNavigation({
                 type="button"
                 variant="ghost"
                 onClick={() => onOpenOverlay(item.id)}
-                className="min-h-[2.5rem] justify-start gap-3 rounded-[var(--radius-pdp-sm)] bg-transparent px-3 text-[0.875rem] font-normal text-[var(--color-pdp-ink-soft)] hover:bg-[var(--color-pdp-surface-soft)] hover:text-[var(--color-pdp-ink)]"
+                className="min-h-[2.75rem] justify-start gap-3 rounded-[var(--radius-pdp-pill)] bg-transparent px-3 text-[0.8125rem] font-normal text-[var(--color-pdp-ink-soft)] hover:bg-[var(--color-pdp-surface-soft)] hover:text-[var(--color-pdp-ink)]"
               >
                 <PdpStudioUiIcon name={item.icon} size={20} />
                 <span className={compact ? "truncate" : ""}>{item.label}</span>
@@ -86,18 +86,21 @@ export function PdpStudioNavigation({
                   onClick={onNavigate}
                   aria-current={active ? "page" : undefined}
                   className={[
-                    "flex min-h-[2.5rem] items-center gap-3 rounded-[var(--radius-pdp-sm)] px-3",
-                    "whitespace-nowrap text-[0.875rem] font-normal outline-none",
+                    "group relative flex min-h-[2.75rem] items-center gap-3 rounded-[var(--radius-pdp-pill)] px-3",
+                    "whitespace-nowrap text-[0.8125rem] font-normal outline-none transition-colors",
                     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-pdp-focus)]",
                     active
-                      ? "bg-[var(--color-pdp-accent-soft)] text-[var(--color-pdp-accent-strong)]"
+                      ? "bg-[var(--color-pdp-accent)] text-white shadow-[0_0.5rem_1.25rem_rgb(47_91_234_/_0.18)]"
                       : "text-[var(--color-pdp-ink-soft)] hover:bg-[var(--color-pdp-surface-soft)] hover:text-[var(--color-pdp-ink)]",
                   ].join(" ")}
                 >
-                  <PdpStudioUiIcon name={item.icon} size={20} />
+                  <PdpStudioUiIcon name={item.icon} size={18} weight={active ? "fill" : "regular"} />
                   <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                  {active ? (
+                    <span className="size-1.5 shrink-0 rounded-full bg-[var(--color-pdp-orange)]" aria-hidden />
+                  ) : null}
                   {item.badge ? (
-                    <span className="rounded bg-[var(--color-pdp-ink)] px-1.5 py-0.5 text-[0.5625rem] font-semibold text-white">
+                    <span className="rounded bg-[var(--color-pdp-accent)] px-1.5 py-0.5 text-[0.5625rem] font-semibold text-white">
                       {item.badge}
                     </span>
                   ) : null}
@@ -110,7 +113,7 @@ export function PdpStudioNavigation({
                 type="button"
                 variant="ghost"
                 onClick={() => onOpenOverlay(item.id)}
-                className="min-h-[2.5rem] justify-start gap-3 rounded-[var(--radius-pdp-sm)] bg-transparent px-3 text-[0.875rem] font-normal text-[var(--color-pdp-ink-soft)] hover:bg-[var(--color-pdp-surface-soft)] hover:text-[var(--color-pdp-ink)]"
+                className="min-h-[2.75rem] justify-start gap-3 rounded-[var(--radius-pdp-pill)] bg-transparent px-3 text-[0.8125rem] font-normal text-[var(--color-pdp-ink-soft)] hover:bg-[var(--color-pdp-surface-soft)] hover:text-[var(--color-pdp-ink)]"
               >
                 <PdpStudioUiIcon name={item.icon} size={20} />
                 <span className={compact ? "truncate" : ""}>{item.label}</span>

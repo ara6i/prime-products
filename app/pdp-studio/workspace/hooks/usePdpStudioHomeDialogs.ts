@@ -10,6 +10,7 @@ import {
 } from "../../platform/services/pdpStudioJobService";
 import { PDP_STUDIO_HOME_TOOL_DIALOGS } from "../data/pdpStudioHomeDialogData";
 import type {
+  PdpStudioDialogSourceImage,
   PdpStudioGenerationQuality,
   PdpStudioGenerationSize,
   PdpStudioHomeAiToolId,
@@ -18,19 +19,8 @@ import type {
   PdpStudioToolDialogPanel,
 } from "../types/homeToolDialog";
 
-interface SelectedLocalImage {
-  name: string;
-  previewUrl: string;
-  file: File;
-}
-
 type GenerationState =
-  | "idle"
-  | "uploading"
-  | "working"
-  | "ready"
-  | "failed"
-  | "cancelled";
+  "idle" | "uploading" | "working" | "ready" | "failed" | "cancelled";
 
 const QUALITY_TO_IMAGE_SIZE: Record<PdpStudioGenerationQuality, string> = {
   standard: "1K",
@@ -60,29 +50,25 @@ export function usePdpStudioHomeDialogs() {
     useState<PdpStudioToolDialogPanel>(null);
   const [quality, setQuality] =
     useState<PdpStudioGenerationQuality>("standard");
-  const [size, setSize] =
-    useState<PdpStudioGenerationSize>("landscape-3-2");
+  const [size, setSize] = useState<PdpStudioGenerationSize>("landscape-3-2");
   const [brandEnabled, setBrandEnabled] = useState(false);
   const [brandDescription, setBrandDescription] = useState("");
   const [prompt, setPrompt] = useState("");
   const [selectedImage, setSelectedImage] =
-    useState<SelectedLocalImage | null>(null);
-  const [referenceImages, setReferenceImages] = useState<SelectedLocalImage[]>(
-    [],
+    useState<PdpStudioDialogSourceImage | null>(null);
+  const [referenceImages, setReferenceImages] = useState<
+    PdpStudioDialogSourceImage[]
+  >([]);
+  const [localPreviewMessage, setPreviewMessage] = useState<string | null>(
+    null,
   );
-  const [localPreviewMessage, setPreviewMessage] = useState<string | null>(null);
   const [localGenerationState, setGenerationState] =
     useState<GenerationState>("idle");
   const [localGenerationError, setGenerationError] = useState<string | null>(
     null,
   );
-  const {
-    job,
-    elapsedSeconds,
-    setJob,
-    watch,
-    stop,
-  } = usePdpStudioJobProgress();
+  const { job, elapsedSeconds, setJob, watch, stop } =
+    usePdpStudioJobProgress();
   const generationState: GenerationState = job
     ? job.status === "succeeded"
       ? "ready"
@@ -95,7 +81,7 @@ export function usePdpStudioHomeDialogs() {
   const generationError =
     localGenerationError ??
     (job?.status === "failed"
-      ? job.error?.message ?? "PDP Studio generation failed."
+      ? (job.error?.message ?? "PDP Studio generation failed.")
       : null);
   const previewMessage = job
     ? job.status === "succeeded"
@@ -107,7 +93,7 @@ export function usePdpStudioHomeDialogs() {
 
   useEffect(() => {
     return () => {
-      if (selectedImage?.previewUrl) {
+      if (selectedImage?.previewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(selectedImage.previewUrl);
       }
     };
@@ -115,7 +101,11 @@ export function usePdpStudioHomeDialogs() {
 
   useEffect(() => {
     return () => {
-      referenceImages.forEach((image) => URL.revokeObjectURL(image.previewUrl));
+      referenceImages.forEach((image) => {
+        if (image.previewUrl.startsWith("blob:")) {
+          URL.revokeObjectURL(image.previewUrl);
+        }
+      });
     };
   }, [referenceImages]);
 
@@ -144,10 +134,15 @@ export function usePdpStudioHomeDialogs() {
     setImageLibraryTab("all");
   };
 
-  const openAiTool = (toolId: PdpStudioHomeAiToolId) => {
+  const openAiTool = (
+    toolId: PdpStudioHomeAiToolId,
+    sourceImage?: PdpStudioDialogSourceImage,
+  ) => {
     resetGenerationState();
     setActiveToolId(toolId);
     setSize(PDP_STUDIO_HOME_TOOL_DIALOGS[toolId].defaultSize);
+    setSelectedImage(sourceImage ?? null);
+    setActivePanel(toolId === "ai-images" ? "tool" : null);
   };
 
   const closeAiTool = () => {
@@ -160,7 +155,7 @@ export function usePdpStudioHomeDialogs() {
     setJob(null);
     setActiveToolId(toolId);
     setSize(PDP_STUDIO_HOME_TOOL_DIALOGS[toolId].defaultSize);
-    setActivePanel(null);
+    setActivePanel(toolId === "ai-images" ? "tool" : null);
     setPreviewMessage(null);
   };
 
@@ -203,8 +198,7 @@ export function usePdpStudioHomeDialogs() {
     if (!activeToolId) return;
     const activeTool = PDP_STUDIO_HOME_TOOL_DIALOGS[activeToolId];
     if (activeTool.mode === "chooser") return;
-    const requiresImage =
-      activeTool.mode !== "text-generator";
+    const requiresImage = activeTool.mode !== "text-generator";
     if (requiresImage && !selectedImage) return;
     if (
       activeTool.mode === "dual-upload" &&
@@ -221,39 +215,60 @@ export function usePdpStudioHomeDialogs() {
     setGenerationState("uploading");
     setPreviewMessage("Uploading private assets…");
     try {
-      const [inputAssets, referenceAssets] = await Promise.all([
-        selectedImage
-          ? Promise.all([uploadPdpStudioAsset(selectedImage.file)])
-          : Promise.resolve([]),
+      const [uploadedInputAsset, referenceAssets] = await Promise.all([
+        requiresImage && selectedImage?.file
+          ? uploadPdpStudioAsset(selectedImage.file)
+          : Promise.resolve(null),
         Promise.all(
-          referenceImages.map((image) =>
-            uploadPdpStudioAsset(image.file),
+          referenceImages.flatMap((image) =>
+            image.file ? [uploadPdpStudioAsset(image.file)] : [],
           ),
         ),
       ]);
       setGenerationState("working");
       setPreviewMessage("Creating generation job…");
       const requestedAspectRatio = SIZE_TO_ASPECT_RATIO[size];
-      const job = await createPdpStudioToolJob(activeToolId, {
-        inputAssetIds: inputAssets.map((asset) => asset.id),
-        referenceAssetIds: referenceAssets.map((asset) => asset.id),
-        ...(prompt.trim() ? { prompt: prompt.trim() } : {}),
-        options: {
-          imageSize: QUALITY_TO_IMAGE_SIZE[quality],
-          aspectRatio:
-            activeToolId === "video-generator"
-              ? requestedAspectRatio === "9:16"
-                ? "9:16"
-                : "16:9"
-              : requestedAspectRatio,
-          outputCount: activeTool.outputCount,
-          ...(activeToolId === "ai-shot-list"
-            ? { count: activeTool.outputCount }
-            : {}),
+      const inputAssetIds =
+        requiresImage && selectedImage
+          ? selectedImage.assetId
+            ? [selectedImage.assetId]
+            : uploadedInputAsset
+              ? [uploadedInputAsset.id]
+              : []
+          : [];
+      const options: Record<string, unknown> =
+        activeToolId === "ai-backgrounds"
+          ? {
+              mode: prompt.trim() ? "manual" : "assisted",
+              modelPreset: "studio",
+              imageSize: QUALITY_TO_IMAGE_SIZE[quality],
+              aspectRatio: requestedAspectRatio,
+              ...(prompt.trim() ? {} : { surface: "clean studio surface" }),
+            }
+          : {
+              imageSize: QUALITY_TO_IMAGE_SIZE[quality],
+              aspectRatio:
+                activeToolId === "video-generator"
+                  ? requestedAspectRatio === "9:16"
+                    ? "9:16"
+                    : "16:9"
+                  : requestedAspectRatio,
+              outputCount: activeTool.outputCount,
+              ...(activeToolId === "ai-shot-list"
+                ? { count: activeTool.outputCount }
+                : {}),
+            };
+      const job = await createPdpStudioToolJob(
+        activeToolId as Exclude<PdpStudioHomeAiToolId, "ai-images">,
+        {
+          inputAssetIds,
+          referenceAssetIds: referenceAssets.map((asset) => asset.id),
+          ...(prompt.trim() ? { prompt: prompt.trim() } : {}),
+          options,
+          useBrandKit: brandEnabled,
+          idempotencyKey: crypto.randomUUID(),
         },
-        useBrandKit: brandEnabled,
-        idempotencyKey: crypto.randomUUID(),
-      });
+      );
       watch(job);
     } catch (caught) {
       setGenerationState("failed");

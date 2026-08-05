@@ -14,8 +14,8 @@ export function PreferenceCard({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-[var(--radius-pdp-lg)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-[var(--space-pdp-lg)]">
-      <h2 className="text-[var(--text-pdp-lg)] font-bold">{title}</h2>
+    <section className="rounded-[var(--radius-pdp-xl)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-4 shadow-[var(--shadow-pdp-card)] sm:p-6">
+      <h2 className="text-[var(--text-pdp-lg)] font-medium">{title}</h2>
       {description ? (
         <p className="mt-[var(--space-pdp-xs)] text-[var(--text-pdp-sm)] leading-relaxed text-[var(--color-pdp-muted)]">{description}</p>
       ) : null}
@@ -47,7 +47,7 @@ export function ToggleRow({
   return (
     <div className="flex items-start justify-between gap-[var(--space-pdp-lg)] border-b border-[var(--color-pdp-rule)] py-[var(--space-pdp-md)] last:border-b-0">
       <div>
-        <h3 className="text-[var(--text-pdp-sm)] font-semibold">{label}</h3>
+        <h3 className="text-[var(--text-pdp-sm)] font-medium">{label}</h3>
         <p className="mt-[var(--space-pdp-2xs)] max-w-[60ch] text-[var(--text-pdp-xs)] leading-relaxed text-[var(--color-pdp-muted)]">{description}</p>
       </div>
       <PdpStudioButton

@@ -2,15 +2,15 @@ import type { MerchantLandingViewModel } from "../types";
 
 export const MERCHANT_LANDING_CONTENT: MerchantLandingViewModel = {
   hero: {
-    eyebrow: "For fashion merchants",
-    titleLead: "From catalog",
-    titleAccent: "to confident cart.",
-    body: "Connect product data, fit and sizing, authorized AI shopping, exact-variant cart handoff, and order reporting in one merchant-controlled program.",
-    primaryCta: "Become connected",
-    secondaryCta: "Explore the system",
-    annotation: "Your catalog. A clearer decision.",
-    video: "/media/partner-landing/merchant-studio.mp4",
-    poster: "/media/partner-landing/merchant-studio-poster.jpg",
+    eyebrow: "PrimeStyleAI Shopping Network",
+    titleLead: "Where fashion",
+    titleAccent: "becomes personal.",
+    body: "PrimeStyleAI connects merchant catalogs, AI-powered fitting, virtual try-on, creators, and commerce content in one intelligent shopping network—helping shoppers discover the right product, experience it personally, and purchase with confidence.",
+    primaryCta: "Join the network",
+    secondaryCta: "Explore the network",
+    annotation: "See it. Try it. Size it. Share it. Buy it.",
+    image: "/media/partner-landing/merchant-network/running-shoe.webp",
+    heroImage: "/media/partner-landing/merchant-network/hero-voltage.webp",
   },
   commerceSteps: [
     { number: "01", icon: "catalog", title: "Connect the catalog", description: "Shopify app, SDK/API, authorized feed, or enterprise connector." },
@@ -29,7 +29,7 @@ export const MERCHANT_LANDING_CONTENT: MerchantLandingViewModel = {
   ],
   campaignTerms: ["Eligible products", "Publisher authorization", "Commission or fee", "Attribution window", "Exclusions and validation", "Returns and payment timing"],
   interest: {
-    title: "Build your connected commerce path.",
-    body: "Tell us about your catalog and platform. Our merchant team will prepare the right integration path.",
+    title: "Join the PrimeStyleAI network.",
+    body: "Tell us how you want to connect—as a supplier, affiliate merchant, or direct connected merchant.",
   },
 };

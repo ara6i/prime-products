@@ -6,6 +6,8 @@ import {
   cancelPdpStudioJob,
   retryPdpStudioJob,
 } from "../../platform/services/pdpStudioJobService";
+import { getPdpStudioAsset } from "../../platform/services/pdpStudioAssetService";
+import type { PdpStudioAsset } from "../../platform/types/pdpStudioPlatform";
 import { PDP_STUDIO_TOOL_ASSETS } from "../../workspace/data/pdpStudioToolAssets";
 import {
   createBackgroundRemovalJob,
@@ -32,6 +34,7 @@ const FALLBACK_IMAGE_DIMENSIONS: PhotoEditorImageDimensions = {
 
 export function usePhotoEditorWorkspace(tool: PhotoEditorTool) {
   const [sourceFile, setSourceFile] = useState<File | null>(null);
+  const [sourceAsset, setSourceAsset] = useState<PdpStudioAsset | null>(null);
   const [localImageUrl, setLocalImageUrl] = useState<string | null>(null);
   const [imageDimensions, setImageDimensions] =
     useState<PhotoEditorImageDimensions>(FALLBACK_IMAGE_DIMENSIONS);
@@ -58,8 +61,8 @@ export function usePhotoEditorWorkspace(tool: PhotoEditorTool) {
       ? job.outputs[0]
       : null;
   const imageUrl =
-    outputAsset?.url ?? localImageUrl ?? PDP_STUDIO_TOOL_ASSETS[tool];
-  const sourceAssetId = outputAsset?.id ?? null;
+    outputAsset?.url ?? sourceAsset?.url ?? localImageUrl ?? PDP_STUDIO_TOOL_ASSETS[tool];
+  const sourceAssetId = outputAsset?.id ?? sourceAsset?.id ?? null;
   const hasProcessableSource = Boolean(sourceFile || sourceAssetId);
   const busy =
     submitting || job?.status === "queued" || job?.status === "running";
@@ -85,12 +88,41 @@ export function usePhotoEditorWorkspace(tool: PhotoEditorTool) {
     [localImageUrl],
   );
 
+  useEffect(() => {
+    const sourceAssetId = new URL(window.location.href).searchParams.get(
+      "sourceAssetId",
+    );
+    if (!sourceAssetId) return;
+    let active = true;
+    void getPdpStudioAsset(sourceAssetId)
+      .then((asset) => {
+        if (!active || asset.resourceType !== "image") return;
+        setSourceAsset(asset);
+        setImageDimensions({
+          width: asset.width ?? FALLBACK_IMAGE_DIMENSIONS.width,
+          height: asset.height ?? FALLBACK_IMAGE_DIMENSIONS.height,
+        });
+      })
+      .catch((caught) => {
+        if (!active) return;
+        setLocalError(
+          caught instanceof Error
+            ? caught.message
+            : "The selected Shopify image could not be loaded.",
+        );
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const replaceImage = useCallback(
     (file: File | null) => {
       if (!file || !file.type.startsWith("image/")) return;
       stop();
       setJob(null);
       setSourceFile(file);
+      setSourceAsset(null);
       setLocalImageUrl((current) => {
         if (current) URL.revokeObjectURL(current);
         return URL.createObjectURL(file);

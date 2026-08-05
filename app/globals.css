@@ -1047,3 +1047,15 @@ body {
 .floating-badge-secondary {
   animation: ps-float-login-secondary 5.9s ease-in-out infinite;
 }
+
+[data-pdp-studio] .editor-tool {
+  display: inline-flex; height: 2.5rem; align-items: center; gap: .45rem; border-radius: .75rem;
+  padding: 0 .75rem; color: #475569; font-size: .8125rem; font-weight: 500;
+  transition: background-color .15s ease, color .15s ease;
+}
+[data-pdp-studio] .editor-tool:hover { background: #f3f4f6; color: #111827; }
+[data-pdp-studio] .editor-icon {
+  display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border-radius: .75rem; color: #475569;
+}
+[data-pdp-studio] .editor-icon:hover { background: #f3f4f6; color: #111827; }
+[data-pdp-studio] .editor-icon:disabled { opacity: .35; pointer-events: none; }

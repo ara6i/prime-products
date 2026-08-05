@@ -34,15 +34,15 @@ function HomeLauncherContent({
     <>
       <span
         className={[
-          "grid size-12 shrink-0 place-items-center rounded-[var(--radius-pdp-xs)] border",
+          "grid size-11 shrink-0 place-items-center rounded-[var(--radius-pdp-md)] border",
           featured
-            ? "border-transparent bg-[var(--color-pdp-accent)] text-white"
-            : "border-[var(--color-pdp-rule)] bg-white text-[var(--color-pdp-ink)]",
+            ? "border-transparent bg-white/15 text-white"
+            : "border-[var(--color-pdp-accent-border)] bg-[var(--color-pdp-accent-soft)] text-[var(--color-pdp-accent)]",
         ].join(" ")}
       >
         <PdpStudioUiIcon name={icon} size={19} weight="regular" />
       </span>
-      <span className="min-w-0 truncate">{label}</span>
+      <span className="min-w-0 whitespace-normal text-left leading-4">{label}</span>
       {badge ? (
         <span className="absolute right-1.5 top-1 rounded border border-[var(--color-pdp-rule)] bg-white px-1 py-px text-[0.5625rem] font-medium text-[var(--color-pdp-accent)]">
           {badge}
@@ -104,16 +104,16 @@ export function HomeToolGrid({
 
   const launcherClassName = (featured: boolean) =>
     [
-      "group relative flex min-h-[4.125rem] min-w-0 items-center justify-start gap-3 rounded-[var(--radius-pdp-sm)] border px-2 py-2 text-[0.75rem] font-medium outline-none transition-[background-color,border-color] duration-[var(--dur-pdp-short)]",
+      "group relative flex min-h-[4rem] min-w-0 items-center justify-start gap-3 rounded-[var(--radius-pdp-md)] border px-2.5 py-2 text-[0.75rem] font-medium outline-none transition-[background-color,border-color,box-shadow,transform] duration-[var(--dur-pdp-short)] hover:-translate-y-0.5",
       "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-pdp-focus)]",
       featured
-        ? "border-[var(--color-pdp-accent)] bg-[var(--color-pdp-accent-soft)] text-[var(--color-pdp-accent-strong)] hover:bg-[var(--color-pdp-accent-soft)]"
-        : "border-transparent bg-[var(--color-pdp-surface-soft)] text-[var(--color-pdp-ink)] hover:border-[var(--color-pdp-rule-strong)] hover:bg-[var(--color-pdp-surface-soft)]",
+        ? "border-[var(--color-pdp-accent)] bg-[var(--color-pdp-accent)] text-white shadow-[0_0.75rem_2rem_rgb(47_91_234_/_0.2)] hover:bg-[var(--color-pdp-accent-hover)]"
+        : "border-[var(--color-pdp-rule)] bg-white text-[var(--color-pdp-ink)] hover:border-[var(--color-pdp-accent-border)] hover:bg-[var(--color-pdp-surface-blue)] hover:shadow-[var(--shadow-pdp-card)]",
     ].join(" ");
 
   return (
     <section aria-label="Quick tools">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-2.5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
         {launchers.map((tool) => {
           const content = (
             <HomeLauncherContent

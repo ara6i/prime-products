@@ -37,20 +37,22 @@ export function PdpStudioAppShell({
   const primaryNavigation = getPrimaryPdpStudioNavigation(view.catalog.navigation);
 
   return (
-    <main data-pdp-studio className="min-h-screen overflow-x-clip bg-[var(--color-pdp-paper)] font-[family-name:var(--font-pdp-body)] text-[var(--color-pdp-ink)] max-[599px]:h-[100dvh] max-[599px]:overflow-hidden">
+    <main data-pdp-studio className="min-h-screen overflow-x-clip bg-[var(--color-pdp-paper)] font-[family-name:var(--font-pdp-body)] text-[var(--color-pdp-ink)]">
       <div className={needsAuth ? "pointer-events-none select-none blur-[1px]" : ""}>
         <div className="flex min-h-screen">
           <PdpStudioSidebar
             groups={primaryNavigation}
+            user={user}
             onOpenOverlay={ui.openOverlay}
           />
 
           <div className="min-w-0 flex-1 lg:pl-[var(--size-pdp-sidebar)]">
             <PdpStudioTopbar
+              user={user}
               onOpenSearch={() => ui.setCommandOpen(true)}
               onOpenMobileNav={() => ui.setMobileNavOpen(true)}
             />
-            <div className="w-full px-4 pb-8 sm:px-6 lg:px-8">{children}</div>
+            <div className="mx-auto w-full max-w-[var(--size-pdp-content)] px-4 pb-10 pt-5 sm:px-6 sm:pt-7 lg:px-8 lg:pb-12">{children}</div>
           </div>
         </div>
       </div>
@@ -61,14 +63,14 @@ export function PdpStudioAppShell({
       >
         <SheetContent
           side="left"
-          className="w-[min(90vw,22rem)] gap-0 border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-[var(--space-pdp-md)] text-[var(--color-pdp-ink)]"
+          className="w-[min(88vw,20rem)] gap-0 border-[var(--color-pdp-rule)] bg-[var(--color-pdp-surface)] p-5 text-[var(--color-pdp-ink)]"
         >
           <SheetHeader className="border-b border-[var(--color-pdp-rule)] p-0 pb-[var(--space-pdp-md)]">
-            <SheetTitle className="font-[family-name:var(--font-pdp-wordmark)] text-[var(--text-pdp-md)]">
-              PDP Studio
+            <SheetTitle className="font-[family-name:var(--font-pdp-display)] text-[var(--text-pdp-md)] font-medium">
+              PrimeStyleAI Studio
             </SheetTitle>
             <SheetDescription className="text-[var(--text-pdp-xs)] text-[var(--color-pdp-muted)]">
-              Primestyleai’s Space
+              Creative workspace
             </SheetDescription>
           </SheetHeader>
           <div className="min-h-0 flex-1 pt-[var(--space-pdp-md)]">
@@ -103,42 +105,13 @@ export function PdpStudioAppShell({
           size="icon"
           aria-label="Help"
           onClick={() => ui.openOverlay("help")}
-          className="fixed bottom-4 right-4 z-[var(--z-pdp-sticky)] size-9 min-h-0 rounded-full border border-[var(--color-pdp-rule)] bg-white p-0 text-[var(--color-pdp-ink-soft)] shadow-sm hover:bg-[var(--color-pdp-surface-soft)] max-[599px]:hidden"
+          className="fixed bottom-4 right-4 z-[var(--z-pdp-sticky)] size-10 min-h-0 rounded-full border border-[var(--color-pdp-rule)] bg-white p-0 text-[var(--color-pdp-ink-soft)] shadow-[var(--shadow-pdp-card)] hover:border-[var(--color-pdp-rule-strong)] hover:bg-[var(--color-pdp-surface-soft)]"
         >
           <PdpStudioUiIcon name="help" size={17} />
         </PdpStudioButton>
       ) : null}
       {needsAuth ? <PdpStudioWorkspaceAuthGate /> : null}
 
-      <section
-        aria-labelledby="pdp-small-window-title"
-        className="fixed inset-0 z-[700] hidden place-items-center bg-[var(--color-pdp-paper)] px-8 text-center max-[599px]:grid"
-      >
-        <div className="max-w-[22rem]">
-          <span className="mx-auto grid size-12 place-items-center rounded-full bg-[var(--color-pdp-accent-soft)] text-[var(--color-pdp-accent)]">
-            <PdpStudioUiIcon name="resize" size={22} />
-          </span>
-          <h1
-            id="pdp-small-window-title"
-            className="mt-5 text-[1.25rem] font-semibold"
-          >
-            Your browser window is too small
-          </h1>
-          <p className="mt-2 text-[0.875rem] leading-6 text-[var(--color-pdp-muted)]">
-            Resize your browser window to be at least 600px wide and 400px high
-            to use PDP Studio.
-          </p>
-        </div>
-        <PdpStudioButton
-          type="button"
-          variant="ghost"
-          size="icon"
-          aria-label="Help"
-          className="absolute bottom-5 right-5 grid size-9 min-h-0 place-items-center rounded-full border border-[var(--color-pdp-rule)] bg-white p-0 text-[var(--color-pdp-ink-soft)] shadow-sm"
-        >
-          <PdpStudioUiIcon name="help" size={17} />
-        </PdpStudioButton>
-      </section>
     </main>
   );
 }
