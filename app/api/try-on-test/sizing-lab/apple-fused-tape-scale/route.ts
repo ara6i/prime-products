@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
   const started = performance.now();
   const tempDirectory = await mkdtemp(path.join(tmpdir(), "primestyle-apple-fused-tape-"));
   try {
-    const cached = JSON.parse(await readFile(tapePath, "utf8")) as TapeVisualCache;
+    const cached = JSON.parse(await readFile(/* turbopackIgnore: true */ tapePath, "utf8")) as TapeVisualCache;
     const visual = normalizeTapeVisualCache(cached);
     if (!visual) {
       throw new Error("The tape support-path cache is invalid. Retry the tape scan.");
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     }));
 
     const python = process.env.DEPTH_PRO_PYTHON ?? "/Users/arashsn/.codex/runtime/geocalib-venv/bin/python";
-    const script = path.resolve(/* turbopackIgnore: true */ process.cwd(), "scripts/apple_fused_tape_scale.py");
+    const script = path.join(process.cwd(), "scripts", "apple_fused_tape_scale.py");
     const segmentArgs = segments.flatMap((segment) => [
       "--segment", segment.id,
       String(segment.start.x), String(segment.start.y),

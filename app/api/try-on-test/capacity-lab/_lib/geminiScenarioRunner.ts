@@ -1409,13 +1409,19 @@ function getGarmentDataUri(): string {
 }
 
 function readPublicDataUri(relativePath: string, mimeType: string): string {
-  const filePath = path.join(process.cwd(), relativePath);
+  const filePath = path.join(
+    /* turbopackIgnore: true */ process.cwd(),
+    relativePath,
+  );
   const value = readFileSync(filePath).toString("base64");
   return `data:${mimeType};base64,${value}`;
 }
 
 async function readResizedPublicDataUri(relativePath: string, maxDimension: number, quality: number): Promise<string> {
-  const filePath = path.join(process.cwd(), relativePath);
+  const filePath = path.join(
+    /* turbopackIgnore: true */ process.cwd(),
+    relativePath,
+  );
   const value = await sharp(filePath)
     .rotate()
     .resize({ width: maxDimension, height: maxDimension, fit: "inside", withoutEnlargement: true })
