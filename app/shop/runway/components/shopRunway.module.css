@@ -1,0 +1,399 @@
+.runway {
+  --runway-ink: #101416;
+  --runway-paper: #ffffff;
+  --runway-stage: #eef6f8;
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 540px;
+  overflow: hidden;
+  background: var(--runway-stage);
+  color: var(--runway-ink);
+  font-family: var(--font-manrope), Arial, sans-serif;
+}
+
+.runway *,
+.runway *::before,
+.runway *::after {
+  box-sizing: border-box;
+}
+
+.runway button {
+  font: inherit;
+}
+
+.runwayShell,
+.runwayLayout {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.runwayShell {
+  position: relative;
+  overflow: hidden;
+  background: var(--runway-paper);
+}
+
+.runwayLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 76%) minmax(0, 24%);
+  overflow: hidden;
+}
+
+.stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  outline: none;
+  background: var(--runway-stage);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.runway[data-dragging="true"] .stage,
+.runway[data-dragging="true"] .productRail {
+  cursor: grabbing;
+}
+
+.stage:focus-visible {
+  box-shadow: inset 0 0 0 2px #e85334;
+}
+
+.intro {
+  position: absolute;
+  z-index: 18;
+  top: 6.5%;
+  left: 5.2%;
+  width: min(38%, 420px);
+  pointer-events: none;
+}
+
+.intro h2 {
+  margin: 0 0 clamp(8px, 1.2vw, 18px);
+  font-size: clamp(17px, 1.75vw, 28px);
+  font-weight: 450;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.intro p {
+  max-width: 39ch;
+  margin: 0;
+  color: #687477;
+  font-size: clamp(7px, 0.62vw, 10px);
+  line-height: 1.7;
+}
+
+.lookRail {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.look {
+  position: absolute;
+  bottom: 2%;
+  left: var(--look-left);
+  width: var(--look-width);
+  height: var(--look-height);
+  overflow: hidden;
+  opacity: var(--look-opacity);
+  filter: blur(var(--look-blur)) saturate(var(--look-saturation));
+  transform: translate3d(-50%, 0, 0) scale(var(--look-scale));
+  transform-origin: center bottom;
+  transition:
+    left var(--motion-duration) cubic-bezier(0.22, 1, 0.36, 1),
+    width var(--motion-duration) cubic-bezier(0.22, 1, 0.36, 1),
+    height var(--motion-duration) cubic-bezier(0.22, 1, 0.36, 1),
+    filter var(--motion-duration) cubic-bezier(0.22, 1, 0.36, 1),
+    opacity var(--look-opacity-duration) ease,
+    transform var(--motion-duration) cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: left, width, height, opacity, filter, transform;
+}
+
+.look img {
+  pointer-events: none;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.lookMeta {
+  position: absolute;
+  z-index: 20;
+  bottom: 6.3%;
+  left: 5.2%;
+  display: grid;
+  gap: clamp(5px, 0.8vw, 11px);
+}
+
+.lookMeta strong {
+  font-size: clamp(17px, 1.75vw, 28px);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.lookMeta button {
+  width: fit-content;
+  padding: 0 0 2px;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: #758184;
+  font-size: clamp(6px, 0.56vw, 9px);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.runwayControls {
+  position: absolute;
+  z-index: 22;
+  right: 3%;
+  bottom: 3%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.stage:hover .runwayControls,
+.stage:focus-within .runwayControls {
+  opacity: 1;
+}
+
+.runwayControls button,
+.advanceLook {
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(16, 20, 22, 0.65);
+  background: rgba(255, 255, 255, 0.78);
+  color: inherit;
+  cursor: pointer;
+}
+
+.runwayControls button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.runwayControls span {
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.advanceLook {
+  position: absolute;
+  z-index: 24;
+  top: 51%;
+  left: 86%;
+  width: clamp(38px, 4vw, 64px);
+  height: clamp(20px, 2.2vw, 32px);
+  border-radius: 999px;
+  opacity: 0.78;
+  transform: translate(-50%, -50%);
+}
+
+.advanceLook:hover,
+.advanceLook:focus-visible {
+  background: #101416;
+  color: #fff;
+}
+
+.productRail {
+  position: relative;
+  z-index: 26;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-left: 1px solid rgba(16, 20, 22, 0.09);
+  background: #fff;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.productStack {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 100%;
+  transform: translate3d(0, var(--product-shift), 0);
+  transition: transform var(--motion-duration) cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.runwayProduct {
+  position: relative;
+  width: 100%;
+  height: 33.333333%;
+  min-height: 0;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(16, 20, 22, 0.1);
+  background: #fff;
+}
+
+.productVisual {
+  position: absolute;
+  inset: 5% 5% 22%;
+  overflow: hidden;
+  background: #f4f7f7;
+}
+
+.productVisual img {
+  pointer-events: none;
+  object-fit: contain;
+  object-position: center 22%;
+}
+
+.productCopy {
+  position: absolute;
+  right: 11%;
+  bottom: 6%;
+  left: 7%;
+  display: grid;
+  gap: 2px;
+  pointer-events: none;
+}
+
+.productCopy span {
+  color: #7c898c;
+  font-size: clamp(5px, 0.46vw, 8px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.productCopy strong {
+  overflow: hidden;
+  font-size: clamp(6px, 0.6vw, 10px);
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.productCopy small {
+  font-size: clamp(6px, 0.54vw, 9px);
+  font-weight: 750;
+}
+
+.favorite,
+.addProduct {
+  position: absolute;
+  z-index: 5;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--runway-ink);
+  cursor: pointer;
+}
+
+.favorite {
+  top: 3%;
+  left: 4%;
+}
+
+.favorite[aria-pressed="true"] {
+  color: #e85334;
+}
+
+.addProduct {
+  right: 3%;
+  bottom: 5%;
+}
+
+@media (max-width: 760px) {
+  .runway {
+    min-height: 520px;
+  }
+
+  .runwayLayout {
+    grid-template-columns: minmax(0, 70%) minmax(0, 30%);
+  }
+
+  .look {
+    overflow: visible;
+    transform: translate3d(-50%, 0, 0) scale(var(--look-scale)) scale(1.72);
+  }
+
+  .intro {
+    top: 5%;
+    left: 6%;
+    width: 54%;
+  }
+
+  .intro h2 {
+    font-size: clamp(12px, 3.4vw, 18px);
+    white-space: normal;
+  }
+
+  .intro p {
+    font-size: 6px;
+  }
+
+  .lookMeta {
+    bottom: 5%;
+    left: 6%;
+  }
+
+  .lookMeta strong {
+    font-size: clamp(13px, 4vw, 19px);
+  }
+
+  .lookMeta button {
+    font-size: 6px;
+  }
+
+  .advanceLook {
+    left: 91%;
+    width: 34px;
+    height: 22px;
+  }
+
+  .runwayControls {
+    display: none;
+  }
+
+  .productVisual {
+    inset: 7% 5% 28%;
+  }
+
+  .productCopy {
+    right: 6%;
+    bottom: 7%;
+    left: 6%;
+  }
+
+  .productCopy span,
+  .productCopy strong,
+  .productCopy small {
+    font-size: 5px;
+  }
+
+  .favorite,
+  .addProduct {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .look,
+  .productStack {
+    transition-duration: 0ms;
+  }
+}

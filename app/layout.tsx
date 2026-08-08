@@ -43,7 +43,7 @@ export default function RootLayout({
     "wwb75cfm2z";
 
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body
         className={`${manrope.variable} ${poppins.variable} ${inter.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning

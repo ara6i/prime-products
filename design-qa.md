@@ -1,3 +1,263 @@
+# Denim ten-product photography set — 2026-08-07
+
+## Evidence
+
+- Generation surface: the user's logged-in ChatGPT session at `https://chatgpt.com/c/6a75ff08-6990-83eb-8903-27f5e0af99f5`.
+- Generated source sheets: `public/media/global-shop/denim-products/denim-products-sheet-01-05.png` (`2172 x 724`) and `public/media/global-shop/denim-products/denim-products-sheet-06-10.png` (`1774 x 887`).
+- Ten-asset contact sheet: `qa/denim-products-10-generated-contact-sheet.png` (`1260 x 600`).
+- Final assets: `public/media/global-shop/denim-products/denim-jeans-01-light-wide-leg-v2.png` through `denim-jeans-10-tailored-cargo-v2.png`, each `840 x 1000`.
+- Desktop live implementation: `qa/shop-category-denim-10-products-desktop-clean-1440x900.png` from Chrome at `1440 x 900`, DPR 1.
+- Mobile live implementation: `qa/shop-category-denim-10-products-mobile-final-card-390x844.png` from Chrome at `390 x 844`, DPR 1.
+- State: `/shop/category/denim`, default sort and filters.
+
+## Findings and fixes
+
+- Pass 1, P1 catalog mismatch: Denim still contained four unrelated set, jacket, bag, and editorial images instead of the requested ten jeans product photographs.
+- Fix: generated two coordinated five-look studio sheets in the logged-in ChatGPT session, exported ten separate model photographs, and replaced the Denim catalog with ten distinct jeans products and matching metadata.
+- Pass 2, P2 responsive crop: a `780 x 1000` output matched the desktop card but the mobile `0.84` frame could crop the model vertically.
+- Fix: recomposed every asset at `840 x 1000`, exactly matching the mobile frame ratio. Desktop crops only empty side background; mobile shows each model from head through shoes.
+- Pass 3, P2 sheet gutter artifacts: the second generated sheet's white outer separators appeared at the product-frame edges.
+- Fix: tightened each panel crop, sampled the clean studio background inside the panel, and exported cache-busted `-v2` assets. Final live cards show no gutter artifacts.
+
+## Required fidelity surfaces
+
+- Typography and copy: existing product-card typography, labels, prices, metadata, and controls are preserved.
+- Spacing and layout: the three-column desktop and one-column mobile grids are unchanged. Product photography exactly fits the card proportions without vertical subject loss.
+- Colors: the coordinated cool-gray studio background supports light, mid, indigo, raw, and patchwork denim without fighting the pale-sage page canvas.
+- Image quality: all ten products are realistic raster photographs generated in the logged-in ChatGPT session. Every jean waistband, leg shape, hem, and shoe is visible; no CSS art, SVG approximation, logo, watermark, or embedded text is present.
+- Content: the catalog now contains ten jeans-only products covering wide-leg, straight, barrel, bootcut, carpenter, low-rise baggy, flare, cropped cigarette, patchwork wide-leg, and cargo silhouettes.
+
+## Runtime checks
+
+- Chrome DOM reported 10 product cards and 10 fully loaded images.
+- Fresh Chrome console: no errors or warnings.
+- Desktop `1440 x 900` and mobile `390 x 844`: passed with no horizontal overflow.
+- Prettier, scoped ESLint, full TypeScript, and production build: passed. The build retains the existing unrelated Turbopack NFT tracing warning from the sizing-lab `apple-fused-tape-scale` route.
+
+final result: passed
+
+## Denim category crossed ticker ribbons — 2026-08-07
+
+### Evidence and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-ed65cead-96e8-4b59-9abd-8d10df3a57d7.png` (`1200 x 900`, DPR 1).
+- Final implementation: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/qa/shop-category-denim-ticker-final-1440x900.jpg`, rendered from `/shop/category/denim` at a `1440 x 900` CSS viewport and captured by the Codex in-app browser at its `1280 x 720` surface size.
+- Same-input focused comparison: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/qa/shop-category-denim-ticker-reference-comparison-final.png`. The source's left-page ticker crop and the implementation ticker crop are normalized to equal `1280px` panel widths.
+- State: initial desktop viewport at scroll position 0. Focused comparison is required because the reference shows the complete page at reduced scale and the ribbon spacing and angles are too small to judge reliably in the full view.
+
+### Findings and comparison history
+
+- Pass 1, P1 ribbon composition mismatch: both implementation bands were black, nearly parallel, and overlapped through most of the width, while the reference uses a sage rear band, a black foreground band, opposing angles, and a visible wedge-shaped gap.
+- Fix: separated the bands vertically, changed the rear band to the page's sage tone, increased both opposing rotations, strengthened the desktop ticker typography, and preserved the repeated labels and sparkle icons.
+- Pass 2, P2 angle and proportion mismatch: the first correction established the correct layering but remained visibly flatter and thinner than the reference.
+- Fix: increased the rear band to `-2.4deg`, the foreground band to `3.2deg`, the desktop band height to `48px`, and the ticker frame to `132px`. The bands now cross near the left and open toward the right like the supplied reference.
+- Post-fix evidence: the first product card begins at `778.56px` in the `900px` desktop viewport, so the initial product row remains visible. The document width remains within the viewport. No actionable P0, P1, or P2 mismatch remains for the requested ribbon geometry.
+
+### Required fidelity surfaces
+
+- Typography: the existing Impact-style condensed display family remains; ticker text is `17px` on desktop and retains uppercase hierarchy.
+- Spacing and layout: the rear and foreground bands have deliberate separation at center, overlap near the left, and a widening gap toward the right. The expanded ticker does not hide the first product row.
+- Colors and tokens: the rear band uses the existing page sage `#aeb8ad`; the foreground remains near-black `#090b0a`; white copy and icons preserve contrast.
+- Image quality and assets: no new raster assets were needed. The existing Phosphor sparkle icon remains; no placeholder, custom SVG, or CSS-drawn icon was introduced.
+- Copy and content: `Fresh arrivals`, `Step into ’26`, `Limited release`, and `New season drop` are preserved and repeated across both bands.
+
+### Runtime checks
+
+- Desktop route rendered at `1440 x 900` with no document overflow and no browser console errors captured after reload.
+- The responsive mobile rules retain the crossed-ribbon composition with reduced angles and a `100px` frame.
+- Prettier, scoped ESLint, full TypeScript, and the production build passed. The build retains one existing unrelated Turbopack NFT tracing warning from `next.config.ts` through the sizing-lab `apple-fused-tape-scale` route.
+
+final result: passed
+
+# Denim generated campaign banner replacement — 2026-08-07
+
+## Evidence and normalization
+
+- Source visual truth: `/Users/arashsn/Downloads/Screenshot - 2026-08-07T210048.177.png` (`1674 x 604`, DPR 1) for the live page geometry and `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-21780e94-dfca-4fd0-9b81-70f31ee2fc58.png` (`736 x 872`, DPR 1) for the giant-denim-shoe art direction.
+- Generated source: `public/media/global-shop/denim-category-shoe-two-models-source.png` (`2172 x 724`).
+- Exact desktop asset: `public/media/global-shop/denim-category-shoe-two-models-banner.png` (`1672 x 320`).
+- Responsive asset: `public/media/global-shop/denim-category-shoe-two-models-mobile.png` (`780 x 1020`).
+- Desktop implementation screenshot: `qa/shop-category-denim-new-banner-reference-viewport-1674x604.png` (Chrome content capture `1663 x 600` from a `1674 x 604` viewport override, DPR 1).
+- Same-input full-view comparison: `qa/shop-category-denim-banner-reference-comparison.png` (`3348 x 604`); the implementation capture was padded by 11 horizontal and 4 vertical pixels to normalize it to the source screenshot without scaling.
+- Desktop above-the-fold evidence: `qa/shop-category-denim-new-banner-desktop-final-1440x900.png`.
+- Mobile implementation screenshot: `qa/shop-category-denim-new-banner-mobile-final-390x844.png` from a `390 x 844` Chrome viewport override, DPR 1.
+- State: `/shop/category/denim`, page top, default catalog filters and sort.
+- Focused comparison was unnecessary because the generated hero is the only changed surface and the entire 320px banner, copy card, subjects, seams, ticker boundary, and first product row are legible in the full-view captures.
+
+## Findings and comparison history
+
+- Pass 1, P1 mobile subject crop: the exact ultra-wide desktop banner used with `object-fit: cover` cut most of the reclining model from the `390 x 844` view.
+- Fix: derived a dedicated `780 x 1020` responsive composition from the same ChatGPT-generated source and added an optional typed mobile hero source. The final mobile capture shows the full shoe and both women above the untouched copy card.
+- Pass 2: the exact-size desktop banner preserves the source page's 320px campaign slot, leaves the lower-left copy safe area clear, and shows both complete models with the giant denim high heel. No actionable P0, P1, or P2 difference remains.
+
+## Required fidelity surfaces
+
+- Fonts and typography: the existing Impact-based campaign headline and copy-card hierarchy are unchanged; line breaks, weights, tracking, and contrast match the supplied page screenshot.
+- Spacing and layout rhythm: the header, season title, 320px desktop hero, lower-left copy card, ticker, and catalog spacing are unchanged. At `1440 x 900`, the first product row remains visible in the initial viewport.
+- Colors and visual tokens: the new pale icy-blue studio background matches the existing cool denim palette and keeps sufficient contrast behind the off-white copy card and black ticker.
+- Image quality and asset fidelity: the user's logged-in ChatGPT session generated the real raster campaign source. It contains one enormous denim-covered high-heel shoe, one standing model with a denim bag, and one reclining model, with realistic denim texture and no embedded text, logos, CSS drawings, SVG approximations, or video.
+- Copy and content: all existing category copy, navigation, ticker labels, filters, sort controls, and product content are preserved.
+
+## Runtime checks
+
+- Desktop hero image loaded completely at native `1672 x 320`; its rendered desktop media box measured `1663 x 320` in the normalized reference viewport.
+- Chrome desktop `1440 x 900`, source-size `1674 x 604`, and mobile `390 x 844` rendering passed.
+- Browser console: no errors. One expected development-only Fast Refresh full-reload warning was recorded after editing imported category data.
+- Primary page HTTP response: `200`. Backend `/api/health`: `200`.
+
+final result: passed
+
+# Global Shop brand catalogs from the interaction GIF — 2026-08-07
+
+## Evidence and normalization
+
+- Source visual truth: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/9ff20e8058750e29132d70b409b952f8.gif` (`1400 x 2040`, 450 frames, 13.5 seconds).
+- Source states: `qa/shop-brand-gif/reference-catalog-1400x2040.png`, `qa/shop-brand-gif/reference-filter-open-1400x2040.png`, and `qa/shop-brand-gif/reference-product-detail-1400x2040.png`.
+- Browser-rendered implementation states: `qa/shop-brand-gif/brand-catalog-closed-1389x1235.png`, `qa/shop-brand-gif/brand-catalog-filter-open-1389x1235.png`, and `qa/shop-brand-gif/brand-product-detail-1389x1235.png`.
+- Same-input comparisons: `qa/shop-brand-gif/comparison-catalog.png`, `qa/shop-brand-gif/comparison-filter-open.png`, and `qa/shop-brand-gif/comparison-product-detail.png` (`2776 x 1234`).
+- Mobile evidence: `qa/shop-brand-gif/brand-catalog-mobile-390x844.png` and `qa/shop-brand-gif/brand-filter-mobile-390x844.png`.
+- The desktop browser was set to a `1400 x 2040` CSS viewport at DPR 1. The in-app screenshot surface returned a `1389 x 1235` clipped image. For same-input review, the reference was scaled to `1388 x 2022` and top-cropped to `1388 x 1234`; the implementation was normalized to `1388 x 1234` before horizontal pairing.
+- State: `/shop/brand/nike`, filter closed, filter open, product detail, desktop and mobile.
+
+## Findings and comparison history
+
+- Pass 1, P1 missing brand journey: the six featured brand names were static text and the two story CTAs opened category pages, so the requested brand-product experience did not exist. Added statically generated routes for Nike, adidas, GANNI, New Balance, Reiss, Aritzia, Assembly 01, and Northline; every brand tile and story now opens its matching catalog.
+- Pass 2, P2 filter interaction drift: the initial CSS layout snapped cards from three columns to two when the filter opened. Replaced the snap with a FLIP position-and-size transition. Browser measurements confirmed continuous movement over `560ms`: on opening, the first card moved from the full-grid slot toward `x=367`, while the third card moved from the first row to `y=837`; intermediate samples showed progressive positions rather than a jump.
+- Pass 3, user correction: removed the gray presentation frame and made catalog and detail pages full-screen. The catalog keeps the GIF's restrained white storefront, sparse header, light product fields, badges, tiny metadata, and open-filter two-column composition while filling the browser surface.
+- Pass 4, user correction: replaced the brand-name tiles and page-header labels with authentic Nike, adidas, GANNI, New Balance, Reiss, and Aritzia logo assets. Assembly 01 and Northline remain explicitly project-created wordmarks.
+- Pass 5: the normalized catalog, open-filter, and detail comparisons retain the source interaction hierarchy. Product content intentionally uses PrimeStyleAI's real local runway cutouts instead of copying the GIF's Nike product photography. No actionable P0, P1, or P2 mismatch remains.
+
+## Required fidelity surfaces
+
+- Fonts and typography: existing Manrope is retained. The compact uppercase navigation, strong catalog title, small prices, filter labels, and bold detail title follow the source hierarchy and optical weight.
+- Spacing and layout rhythm: full-screen desktop uses the source's three-column closed catalog, two-column filter-open catalog, square product fields, compact gutters, small control row, three-part product-detail stage, and three-card recommendation rail. Mobile uses a two-column catalog and stacks the open filter above the products with zero horizontal overflow.
+- Colors and visual tokens: white canvas, near-black type/actions, pale product surfaces, quiet gray dividers, black NEW/SALE flags, and neutral filter controls match the source's minimal palette.
+- Image quality and asset fidelity: real project product cutouts are served from the existing high-resolution runway assets. Authentic external brand SVGs are local project files. No CSS illustration, placeholder art, emoji, or handcrafted replacement icon was introduced; interface icons use Phosphor.
+- Copy and content: labels, breadcrumbs, sorting, categories, seasons, colors, sizes, price bands, product metadata, recommendations, and purchase controls are realistic PrimeStyleAI catalog content rather than prompt text.
+
+## Interactions, accessibility, and runtime checks
+
+- Featured brand logo navigation to `/shop/brand/nike`: passed.
+- Filter open/close, category filtering, clear filters, price/size/color controls, and three-to-two-column card motion: passed.
+- Outerwear filter returned exactly three matching cards; sorting and search remain state-driven.
+- Product-card open, thumbnail/color alternatives, size selection, add to bag, singular bag label, recommendations, and back-to-catalog: passed.
+- Mobile measured `379px` client width and `379px` scroll width inside the `390 x 844` browser viewport: no document-level horizontal overflow.
+- Final fresh browser console errors and warnings: none.
+- Scoped ESLint, TypeScript, Prettier, and `git diff --check`: passed.
+
+final result: passed
+
+# Global Shop category route and Denim edit — 2026-08-07
+
+## Evidence
+
+- Source reference: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-1fac957f-66b4-4395-a811-ed80050e8459.png`
+- Desktop viewport: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/qa/shop-category-denim-viewport.png`
+- Desktop source comparison: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/qa/shop-category-denim-reference-comparison.png`
+- Mobile hero: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/qa/shop-category-denim-mobile-top.png`
+- Mobile Shop the Edit: `/Users/arashsn/Projects/PrimeStyleAI/prime-products/qa/shop-category-denim-mobile-edit.png`
+- Tested route: `http://127.0.0.1:3000/shop/category/denim`
+
+## Source parity
+
+- The category page follows the reference's pale-sage editorial canvas, compact storefront header, oversized condensed season title, full-width campaign banner, overlapping angled black announcement bands, and filter-plus-three-column product grid.
+- Denim uses the existing high-resolution `1672 x 941` generated denim campaign source requested for this category.
+- The responsive version keeps the same hierarchy, moves filters into a compact two-column rail, and renders a single-column product catalog without horizontal clipping.
+
+## Architecture
+
+- `/shop/category/[categoryId]` is a statically generated category route for Women, Men, Denim, and Accessories.
+- UI, typed catalog models, raw data, mapper, category service, and catalog hook are separated under `app/shop/category`.
+- The landing page's category actions navigate to the route; the old inline Denim section and category dialog were removed.
+
+## Interaction and verification
+
+- Landing-page Denim action routes to `/shop/category/denim`: passed.
+- Header category navigation and mobile menu route between category IDs: passed.
+- Search, sorting, expandable filters, filter clearing, favorites, and add-to-bag counter: passed.
+- Desktop `1200 x 900` and mobile `390 x 844` visual QA: passed.
+- Browser console: no new errors or warnings after reload.
+- Scoped ESLint: passed.
+- TypeScript: passed.
+- Production build: passed with one pre-existing Turbopack NFT tracing warning from `apple-fused-tape-scale/route.ts`.
+
+final result: passed
+
+## `/shop` interactive Runway video-reference section — 2026-08-07
+
+### Evidence
+
+- Source visual truth: `/Users/arashsn/Downloads/d138ceddab9667dc4ee11303cb3ec79b_720w.mp4` (`720 x 540`, 25 fps, 10.84 seconds).
+- Frame-by-frame transition evidence: `qa/shop-video-reference/transitions/look15-to-16-10fps.png`, `qa/shop-video-reference/transitions/look16-to-17-10fps.png`, and `qa/shop-video-reference/transitions/look18-to-19-10fps.png`.
+- Final live Chrome captures: `qa/shop-runway-perspective-fullscreen-final.png` (`1686 x 779`, DPR 1) and `qa/shop-runway-perspective-mobile-final.png` (`390 x 844`, DPR 1).
+- Matched-asset and transition captures: `qa/shop-runway-matched-assets-final.png` and `qa/shop-runway-ghost-free-transition-final.png`, captured from the live Runway in the Codex in-app browser.
+- User live correction capture: `/Users/arashsn/Downloads/Screenshot - 2026-08-07T203925.995.png`, showing the enlarged Look 16 model and all three selected products fully visible at once.
+- Corrected Look 16 source and keyed-asset evidence: `public/media/global-shop/runway-generated/look-16-sheet-black-boot.png` and `qa/shop-runway-look16-black-boot-assets.png`.
+- Measured live geometry: the Runway is the full `779px` viewport height and full content width. Its stage/product split remains `76% / 24%`; no header or department navigation is rendered inside the section.
+
+### Findings and comparison history
+
+- Pass 1, P1 motion mismatch: changing state sent the foreground model backward into the left stack and remounted/faded the product cards. This contradicted the video.
+- Fix: the frame sequence shows a directional perspective carousel. On forward motion the foreground model exits beyond the right edge, the nearest left model expands into the active slot, and every deeper model advances one scale/blur/depth position.
+- Fix: model poses now interpolate continuously from a shared drag progress value. The products use the same progress value in a seamless vertical track; three product cards leave while the next look's three cards enter without fading or remount animation.
+- Pass 2, interaction mismatch: the reference supports direct manipulation rather than only button/automatic state changes.
+- Fix: horizontal pointer drag on the model stage and vertical pointer drag on the product rail both control the same perspective transition. Arrow keys and explicit previous/next controls remain available.
+- Pass 3, scope correction: removed the duplicated PrimeStyleAI/Runway header and Collections/Clothing navigation from inside this section, then expanded the Runway edge-to-edge to exactly one viewport height. All other `/shop` sections remain mounted.
+- Pass 4, P1 transition ghost: the wraparound model interpolated between the hidden right slot and far-left depth slot, briefly appearing as a translucent figure through the center of the stage.
+- Fix: wraparound figures now switch to zero opacity with a `0ms` opacity duration for the entire forward or reverse transition. Live mid-transition inspection confirmed the wrap slot at opacity `0` in both directions while the intended four visible models continue their perspective motion.
+- Pass 5, P1 catalog mismatch: the earlier model outfits did not match the three products shown beside each look.
+- Fix: generated five coherent model-and-product sheets in the user's logged-in ChatGPT session, separated them into 20 transparent assets, and mapped each model to the exact three generated products it wears.
+- Pass 6, P1 asset cleanup: final inspection found residual green-screen pixels and neighboring sleeve fragments in the newest Look 15 bag crop.
+- Fix: re-cropped that bag from its original ChatGPT-generated sheet, keyed the green background to real alpha, removed the neighboring garment, cache-busted the mapped asset, and rechecked it on white in the final product contact sheet.
+- Pass 7, P1 scale and visibility mismatch: wide transparent model canvases made people visually small, while a `138%` product stack guaranteed that the selected outfit's third item was clipped below the viewport.
+- Fix: five tight-alpha model crops now fill the pose boxes, the active pose is `36% x 92%`, and the product stack is exactly `100%` high so all three cards are complete. The user's live Look 16 capture confirms both corrections.
+- Pass 8, P1 outfit mismatch: Look 16 paired a camel coat and black mini dress with cobalt sneakers, which broke the selected outfit's visual coherence.
+- Fix: the exact Look 16 source sheet was uploaded to the user's logged-in ChatGPT session and regenerated with matching black leather ankle boots on the model and in the third product cutout. The keyed model and boot assets were inspected together on the live pale-blue stage color.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the existing Manrope family is retained. The wide-tracked season title, small editorial paragraph, and bottom-left look number reproduce the source hierarchy.
+- Spacing and layout rhythm: the pale-blue stage and white product rail fill the viewport edge-to-edge with the reference's `76% / 24%` split. The active model now occupies about `88%` of a desktop viewport and all three selected-outfit cards fit fully inside the rail.
+- Colors and visual tokens: pale-blue runway stage, white product rail, black text, muted copy, and hairline dividers are matched with scoped Runway tokens.
+- Image quality and asset fidelity: five ChatGPT-generated full-body fashion models and fifteen matching product cutouts provide coherent outfits with transparent edges. No CSS drawings, custom SVGs, placeholders, or embedded video are used. Icons use the existing Phosphor library.
+- Copy and content: the source's runway language is adapted to PrimeStyleAI's Spring/Summer 2026 connected-commerce story and project product data.
+
+### Interactions, accessibility, and runtime checks
+
+- Horizontal drag advances the model depth stack and matched product rail together; every active model now visibly wears the same three pieces shown in its rail.
+- Chrome vertical product-rail drag advanced Look 16 to Look 17 and changed the rail's first item from `Cloudline Layer Coat` to `Lilac Volume Jacket`.
+- Chrome mobile emulation measured the Runway at exactly `390 x 844` with zero horizontal overflow; horizontal drag also advanced the model and product states together.
+- The Runway DOM contains zero nested `header` or `nav` elements after the requested removal.
+- Arrow-left and Arrow-right keyboard handling, visible focus treatment, descriptive active-model alt text, reduced-motion behavior, and labeled product actions are present.
+- Chrome console errors: none. Scoped ESLint, full TypeScript, and the production build passed. The build retained one existing unrelated Turbopack trace warning from `next.config.ts` through the sizing-lab `apple-fused-tape-scale` route.
+- Existing `/shop` content was preserved: hero, arrivals, Runway, AI Stylist, outfit campaign, brands, and footer were all present in the live DOM.
+- Fresh live recapture of the final black-boot asset is blocked because the in-app browser's URL policy rejects localhost navigation. No alternate browser, raw CDP, or policy workaround was used. The corrected assets, code geometry, build, and HTTP runtime checks passed, but this prevents a final browser-rendered comparison and console confirmation.
+
+final result: blocked
+
+# Global Shop Modern Style and category-edit correction — 2026-08-07
+
+## Implemented
+
+- Modern Style is exactly one viewport tall on desktop and mobile.
+- Its three outfit scenes now use the original `1672 x 941` PNG sources instead of lower-quality derivatives.
+- All three scenes stay mounted and crossfade with opacity and scale transitions, preventing the previous abrupt image swap.
+- The landing page no longer renders `SHOP THE EDIT` product grids inline.
+- Women, Men, Denim, and Accessories actions now open a category-specific full-screen shop-edit dialog with working category tabs, Denim wash filters, favorites, close/Escape behavior, and add-to-bag behavior.
+
+## Verification
+
+- Scoped ESLint: passed.
+- TypeScript: passed.
+- Production build: passed with one pre-existing Turbopack NFT tracing warning from `apple-fused-tape-scale/route.ts`.
+- Frontend `/shop`: HTTP 200.
+- Backend `/api/health`: HTTP 200.
+- `git diff --check`: passed.
+- Source image dimensions: all three Modern Style scenes are `1672 x 941`.
+- Live visual recapture: blocked in this turn because the in-app browser rejected control of the existing localhost tab under its URL security policy. No alternate browser or CDP workaround was used.
+
+final result: blocked
+
 # PDP Studio Home Design QA
 
 ## Evidence
@@ -217,6 +477,162 @@ final result: blocked
 - Scope: every PDP Studio AI tool using `PdpStudioAiToolDialog` inherits this correction; no per-tool layout override was added.
 - Visual result: all three quality cards are readable with no overlap, clipping, or unintended horizontal overflow.
 - Scoped ESLint, TypeScript, and `git diff --check`: passed.
+
+final result: passed
+
+## Global Shop denim category and interactive outfit story — 2026-08-07
+
+### Evidence and same-input comparisons
+
+- Outfit-builder source: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-b92d450b-5f35-4716-8899-f653d5450f7e.png`.
+- Final outfit capture: `qa/shop-editorial-outfit-final.png`; combined reference comparison: `qa/shop-outfit-reference-comparison.png`.
+- Denim source: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-c6fea2b4-bc34-464e-81aa-e7c36e0d864e.png`.
+- Final denim capture: `qa/shop-denim-category-final.png`; combined reference comparison: `qa/shop-denim-reference-comparison.png`.
+- All four production assets were generated fresh in the signed-in ChatGPT session inside the Codex browser and exported as high-quality WebP with the PNG sources retained.
+
+### Findings and corrections
+
+- The new red-and-cream story matches the reference hierarchy: oversized modern headline, centered cream look over the red panel, product card, size controls, bag-color controls, and strong lower action.
+- The denim category matches the requested sculptural composition: a woman visibly leans her back against monumental folded denim while her full denim look, footwear, and handbag remain readable.
+- A desktop overflow defect was found during interaction QA: the fixed minimum stage height expanded its 16:9 width and an automated click horizontally shifted the section. The stage now uses an explicit responsive height and fixed 100% width, leaving document overflow at zero.
+- The pale yellow strip above the influencer footer was removed only on `/shop`; the orange CTA now flows directly into the curved dark footer.
+- The existing lavender outfit builder, earlier denim story, market edit, brand section, and influencer footer content remain intact.
+
+### Interactions, responsiveness, and runtime checks
+
+- Black, cobalt, and orange bag selectors swap the complete generated scene; size selection and saved-look states were tested in the live page.
+- Denim wash filters update the product count and cards; favorite and add-to-bag actions retain the existing shop behavior.
+- Desktop and `390 x 844` browser QA showed no document-level horizontal overflow. The mobile headline, controls, denim crop, and footer transition remain readable.
+- Fresh browser console errors: none. Deep-linking directly to `#outfit-campaign` produces one Next.js LCP advisory for the otherwise correctly lazy-loaded later-section image; the normal `/shop` entry keeps that asset deferred for faster initial loading.
+- Scoped ESLint, full TypeScript, diff checks, and the production build passed. The build retains one existing unrelated Turbopack NFT trace warning from the sizing-lab route.
+
+final result: passed
+
+## Global shop 3D editorial landing page — 2026-08-06
+
+### Evidence and normalized comparison
+
+- Hero source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-de109e0b-b882-48a2-8251-ee0b621c6a4a.png`.
+- AI Stylist source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-ce84acf7-2e18-49b9-ae31-7fcef58e7d9e.png`.
+- Denim source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-18f1299c-34f5-423b-8b2e-2a21c042b90a.png`.
+- Final desktop captures: `qa/shop-desktop-hero-final.jpg`, `qa/shop-desktop-products-final.jpg`, `qa/shop-desktop-stylist-final.jpg`, `qa/shop-desktop-stylist-coral-final.jpg`, and `qa/shop-desktop-denim-final.jpg` at `1440 x 1000`, DPR 1.
+- Final mobile captures: `qa/shop-mobile-hero-final.jpg`, `qa/shop-mobile-layer-final.jpg`, and `qa/shop-mobile-stylist-final.jpg` at a measured `390 x 844`, DPR 1.
+- Same-input comparison boards: `qa/comparison-hero.png` and `qa/comparison-sections.png`.
+- The in-app browser compositor duplicated content below the first mobile viewport in some captures. Layout was therefore judged from the clipped `390 x 844` evidence plus DOM bounding-box measurements and live interaction checks.
+
+### Findings and fix history
+
+- P1 asset mismatch: the first pass used clean photography and reused older creator imagery instead of the requested premium 3D editorial language. Every visible shop asset was replaced with a fresh high-resolution 3D CGI render generated in the signed-in ChatGPT browser session.
+- P1 hero crop: the first rectangular hero crop cut the model's head and kept her inside the image box. It was replaced with a true-alpha `1024 x 1536` generated cutout layered over the full-width headline, ticker, and coral hero surface.
+- P1 hierarchy: the first hero model sat too far right, the headline did not fill the row, and ticker labels were hidden by the foreground model. The final model is centered, the headline spans the desktop width, the ticker is thicker, and its four labels are split before and after the model.
+- P1 missing purple/denim direction: the final AI Stylist uses two matched lavender CGI renders with blue and coral bag variants; the denim chapter uses a new giant rolled-jeans CGI composition with a separate walking model.
+- Final same-input review preserves the references' editorial scale, model breakout, monochrome chapter surfaces, product-card rhythm, and surreal denim proportion without reusing their image pixels. No actionable P0, P1, or P2 issue remains.
+
+### Assets, interactions, and verification
+
+- High-resolution PNG sources are retained under `public/media/global-shop/source/`; optimized WebP derivatives range from roughly `90 KB` to `400 KB`.
+- The hero, AI Stylist variants, and denim chapter serve the high-quality project-owned WebP directly; lower-page cards remain lazily optimized through Next Image.
+- Desktop navigation, category filters, search open/fill/clear/close, favorite state, add-to-bag dialog, AI Stylist mood controls, bag swap, save state, and section navigation passed.
+- Mobile menu open, AI Stylist navigation, responsive section stacking, and `390 x 844` layout measurements passed.
+- Final browser console errors and warnings: none.
+- Scoped ESLint, TypeScript, `git diff --check`, and production build passed. The build retained one existing unrelated Turbopack NFT trace warning from `next.config.ts` through the sizing-lab `apple-fused-tape-scale` route.
+
+final result: passed
+
+### Outfit-builder reference-parity correction — 2026-08-06
+
+#### Evidence and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-721b8545-8c90-4201-a393-59a9c99c931d.png` (`1200 x 1200`). The source is a full-page collage, so the implementation recreates its hero, editorial identity story, category directions, and runway product rail as one live outfit-builder chapter rather than treating it as one flat image.
+- Final desktop captures: `qa/shop-outfit-builder-hero-final.jpg`, `qa/shop-outfit-builder-editorial-final.jpg`, and `qa/shop-outfit-builder-runway-final.jpg` (`1280 x 720`, CSS viewport `1280 x 720`, DPR 1).
+- Same-input comparison board: `qa/comparison-outfit-builder-views.png` (`1824 x 1200`), with the native source on the left and the three native implementation views on the right.
+- Focused hero comparison: `qa/comparison-outfit-builder-hero.png` (`2083 x 720`).
+- Default comparison state: `Everyday` mood with the lavender bag selected.
+- Fresh signed-in ChatGPT assets: `public/media/global-shop/source/outfit-builder-lavender-model.png` and `public/media/global-shop/source/outfit-builder-coral-model.png` (`1122 x 1402` each), with optimized delivery files `outfit-builder-lavender-model.webp` (about `227 KB`) and `outfit-builder-coral-model.webp` (about `203 KB`).
+
+#### Findings and fix history
+
+- Pass 1, P1 layout mismatch: the earlier two-column AI Stylist panel did not share the reference's lavender stage, floating white page, centered purple-fashion model, oversized editorial serif, identity story, or runway card rhythm.
+- Pass 1, P1 type mismatch: the new section initially referenced an undefined project serif variable and rendered its most important headlines as sans-serif. The outfit-builder display faces now use a direct Georgia editorial stack.
+- Pass 2, P2 scale mismatch: the initial `660px` hero left too much empty vertical space. The final desktop hero is `480px`, keeping the model, `Simply`, `450K`, and `Beyond Elegance` inside one compact reference-like frame.
+- Final result: the reference's lavender canvas, centered black-bob model, purple sunglasses and faux-fur look, oversized serif composition, floating fashion cards, category stories, and four-card runway rail are all represented with project-owned assets and live interface elements. No reference pixels are reused.
+
+#### Interaction and verification
+
+- The three mood controls update selected state and reset the save state. Category stories select their corresponding mood and move to the daily edit.
+- Lavender and coral bag controls update the hero image and complete-look summary; `Try this outfit` changes to the confirmed `Look saved to your fitting room` state.
+- Scoped ESLint, full TypeScript, `git diff --check`, and production build passed. Moving generated `.next.recovery-*` caches outside the repository removed the false Tailwind CSS scan warnings; the existing unrelated Turbopack trace warning from `next.config.ts` through the sizing-lab `apple-fused-tape-scale` route remains.
+
+final result: passed
+
+### Outfit-builder full-width and desktop-type correction — 2026-08-06
+
+#### Evidence and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-721b8545-8c90-4201-a393-59a9c99c931d.png` (`1200 x 1200`).
+- Final browser capture: `qa/shop-outfit-builder-fullwidth-final.jpg` (`1269 x 714`, CSS viewport `1269 x 714`, DPR 1) at `/shop#ai-stylist` in the default Everyday/Lavender state.
+- Same-input comparison: `qa/comparison-outfit-builder-fullwidth-final.png` (`2024 x 720`). The source was proportionally normalized to `720px` high and placed beside the native implementation viewport.
+- Footer evidence: `qa/shop-merchant-footer-final.jpg` (`1269 x 714`). Shop and merchant footer text was compared from the live DOM and matched exactly.
+
+#### Findings and correction history
+
+- P1 outer-frame mismatch: the prior section sat inside a max-width floating card with wide lavender canvas padding and a large shadow. The user's correction explicitly overrides that part of the reference treatment. The final section now fills the browser width with zero outer padding, no max-width, no shadow, and no surrounding pink/lavender field.
+- P1 desktop readability: supporting copy and controls were previously `7px–10px`, which was below normal desktop reading size. Body copy is now `13px–14px`, navigation and buttons are `11px–13px`, product titles are `15px`, and micro labels are `10px–11px`; the already-approved display headlines remain unchanged.
+- P2 unnecessary category story: `Casual Cool`, `Artistic Vibes`, and `Youth Culture` were removed completely at the user's direction. The editorial identity story now flows directly into `Runway Ready / Your Daily Edit`.
+- Footer consistency: `/shop` and `/merchants` now render the same shared `MerchantLandingFooter` component and merchant footer CSS, eliminating duplicated footer markup and visual drift.
+
+#### Required fidelity surfaces and verification
+
+- Typography: editorial serif scale is preserved; previously undersized supporting text is now readable at desktop density.
+- Spacing and layout: the outfit-builder is true full bleed. The intentional removal of the outer lavender canvas is a user-directed deviation from the original moodboard.
+- Colors: the white/ivory page surface now reaches both viewport edges; lavender remains only as an internal outfit-builder accent.
+- Imagery: the generated lavender model remains sharp and uncropped at the center of the full-width hero.
+- Copy: the three removed category labels and descriptions are absent; the hero, identity story, runway edit, and builder copy remain intact.
+- Scoped ESLint, TypeScript, `git diff --check`, and the production build passed. Live `/shop`, `/merchants`, and backend `/api/health` returned 200. The build retained one existing unrelated Turbopack trace warning from `next.config.ts` through the sizing-lab `apple-fused-tape-scale` route.
+
+final result: passed
+
+### Global Shop footer source correction — 2026-08-07
+
+- The user clarified that `/shop` must use the influencer landing footer, not the merchant landing footer. The earlier merchant-footer conclusion above is superseded for `/shop` only.
+- `/shop` now renders the same `InfluencerFooter` component used by `/influencers`; `/merchants` keeps its existing merchant footer.
+- Live comparison confirmed identical footer text, CSS-module classes, navy background (`rgb(20, 24, 42)`), curved top radius (`112px 112px 0 0`), and one footer per page. Browser console errors were zero on both routes.
+- Scoped ESLint, repository TypeScript, and `git diff --check` passed.
+
+final result: passed
+
+### Denim reference-parity correction — 2026-08-06
+
+#### Evidence and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-18f1299c-34f5-423b-8b2e-2a21c042b90a.png` (`736 x 872`).
+- User-reported failing state: `/Users/arashsn/Downloads/Screenshot - 2026-08-06T210545.966.png` (`1590 x 773`), showing the two-line display copy and oversized rolled-jeans asset.
+- Final browser-rendered implementation: `qa/shop-desktop-denim-final.jpg` (`1280 x 720`, CSS viewport `1280 x 720`, DPR 1), captured on `/shop` with the `DENIM` heading aligned to the top of the viewport.
+- Same-input comparison evidence: `qa/comparison-denim-final.png` (`1901 x 720`). The portrait reference was proportionally normalized to `608 x 720` and placed beside the native `1280 x 720` implementation with a 24px divider.
+- Focused evidence: the same comparison is the focused denim-region evidence; the single headline, tagline, folded-denim scale, model scale, crop, and surface texture are all readable at native height, so a second crop was unnecessary.
+- Final generated source: `public/media/global-shop/source/denim-editorial-final-3d.png` (`1672 x 941`); delivery derivative: `public/media/global-shop/denim-editorial-final-3d.webp` (about `162 KB`).
+
+#### Findings and comparison history
+
+- Pass 1, P1 composition mismatch: the earlier asset used an enormous rolled pair of jeans that filled most of the visible scene, while the model was small and pushed to the far edge. The reference balances one sculptural denim form on the left with a clearly readable walking model.
+- Pass 1, P1 typography mismatch: `DENIM, REIMAGINED.` wrapped into two oversized lines and dominated the section. The reference uses one ultra-light `DENIM` word with a restrained `Always the right choice.` line.
+- Fix: generated a new high-resolution 3D CGI asset in the signed-in ChatGPT session, constrained the denim sculpture to the far-left quarter, enlarged the model, retained a powder-blue reflective studio, and preserved clean upper negative space.
+- Fix: replaced the two-line heading with the single ultra-light `DENIM` display word and moved the reference-aligned tagline to the right. The asset now begins under the headline instead of forcing the copy and image into two disconnected blocks.
+- Post-fix comparison: the final board matches the source hierarchy and editorial balance while using a distinct newly generated model and garment. The denim object is intentionally smaller than the source because the user's explicit correction was that the previous pants were too large. No actionable P0, P1, or P2 issue remains in this desktop correction.
+
+#### Required fidelity surfaces
+
+- Fonts and typography: one-line Manrope `DENIM`, weight 200, tight tracking, and the smaller editorial-serif tagline replace the heavy two-line treatment. The micro chapter label remains a PrimeStyleAI navigation cue.
+- Spacing and layout rhythm: the headline occupies one shallow band, the image overlaps its lower edge, the model reads center-right, and the folded denim stays contained at the far left.
+- Colors and visual tokens: the pale powder-blue stage and slate-blue type closely follow the reference while remaining inside the existing global-shop palette.
+- Image quality and asset fidelity: the `1672 x 941` source was inspected at original resolution. The final WebP remains sharp, contains no text or watermark, and replaces the rejected oversized asset rather than cropping it more aggressively.
+- Copy and content: the visible chapter copy is now exactly `DENIM` and `Always the right choice.`; the existing shop-specific explanatory copy and working Shop denim action remain below the campaign image.
+
+#### Verification
+
+- Scoped ESLint passed with only the expected CSS-module ignore warning; full TypeScript passed.
+- Production build passed after stopping the dev server to clear its `.next` cache, then the `/shop` preview was restarted on port 3000. The build retained one existing unrelated Turbopack trace warning from `next.config.ts` through the sizing-lab `apple-fused-tape-scale` route.
+- The final `/shop` browser render contains the updated `DENIM` region and the new project-owned asset. The correction changes only chapter copy, imagery, and responsive presentation; the existing Shop denim action and global-shop interactions are unchanged.
 
 final result: passed
 
@@ -1205,7 +1621,6 @@ final result: passed
 - Production build: passed. Next.js emitted one pre-existing Turbopack NFT trace warning from the sizing-lab route, unrelated to this dashboard.
 
 final result: passed
-
 
 ## Influencer dashboard Ghost Mode product-image correction
 
@@ -2544,5 +2959,45 @@ final result: passed
 - Payment-method UI contains no raw card-number or CVV inputs. Dialog labels, close behavior, semantic tabs/tables, focus styles, status text, and reduced-motion rules are present.
 - Fresh browser console errors and warnings: none.
 - Scoped ESLint, full TypeScript, Prettier, and the production build passed. The build reported one existing unrelated Turbopack trace warning from `next.config.ts` through the sizing-lab `apple-fused-tape-scale` route.
+
+final result: passed
+
+## Global Shop dynamic product-ID PDP — 2026-08-07
+
+### Evidence and normalization
+
+- Source visual truth: `qa/shop-pdp/reference-modern-white-gray-pdp.jpg` (`736 x 1104`, DPR 1), the Pinterest Modern White & Gray Product Detail UI reference.
+- Desktop implementation: `qa/shop-pdp/nike-signal-shell-desktop.png` (`1440 x 1000`, DPR 1) at `/shop/product/nike-signal-shell`.
+- Desktop lower state: `qa/shop-pdp/nike-signal-shell-desktop-lower.png` (`1440 x 1000`, DPR 1), showing the tabbed detail panel and recommendation rail.
+- Mobile implementation: `qa/shop-pdp/nike-signal-shell-mobile.png`, `qa/shop-pdp/nike-signal-shell-mobile-purchase.png`, and `qa/shop-pdp/nike-signal-shell-mobile-lower.png` (`390 x 844`, DPR 1).
+- Same-input comparison: `qa/shop-pdp/reference-vs-nike-pdp.png` (`1896 x 900`). The reference and implementation were proportionally scaled to the same `900px` height and placed side by side without cropping.
+- State: Nike Signal Shell, first gallery image, XS selected, empty bag, desktop and mobile.
+
+### Findings and comparison history
+
+- Pre-QA P1 navigation mismatch: brand products opened an in-memory detail state on `/shop/brand/nike`, so products had no direct URL and browser back could not represent the catalog-to-product journey.
+- Fix: added the statically generated `/shop/product/[productId]` module, removed the old in-page detail state, and linked every brand and category product card to its real product ID.
+- Pass 1, P2 primary-action regression: Tailwind class merging treated the semantic product-button text color and font-size utilities as conflicting, leaving black text on the black Add to bag action.
+- Fix: added typed arbitrary color and length utilities to the shared commerce button variants. Computed styles now report white text on the near-black action.
+- Pass 2, P2 source hierarchy mismatch: the first PDP pass lacked the reference's utility strip and image-led split detail section.
+- Fix: added a compact global-delivery strip and a two-column tab panel that pairs product details with the existing styled runway close-up. The final comparison now preserves the reference order: utility/header, thumbnail gallery, product information and purchase controls, benefits, tabbed details, and recommendations.
+- Final comparison: typography, quiet white/gray surfaces, thin dividers, strong black purchase action, thumbnail-to-hero balance, and recommendation-card rhythm match the reference while using the authentic Nike logo and PrimeStyleAI product assets. No actionable P0, P1, or P2 visual mismatch remains.
+
+### Architecture and content fidelity
+
+- The module follows the coding guide flow: server page to raw service to mapper to interaction hook to pure rendering components. Desktop and mobile views live inside the product module.
+- `/shop/product/[productId]` statically generates 115 direct product routes across brand and category catalogs. Unknown IDs return the existing not-found flow.
+- Product names, prices, compare-at prices, descriptions, colors, sizes, style codes, source collections, and images come from the existing catalog data. Supplementary materials, fit, shipping, and network-checkout copy are mapped into a typed view model.
+- Brand PDPs use the real local brand SVG and the existing runway product, styled-model, and close-up raster assets. Category PDPs use their existing catalog and campaign assets. No placeholder, CSS illustration, generated replacement, or sprite crop was added.
+- New shop-PDP color, spacing, typography, control, radius, and responsive values are defined as semantic global tokens and registered in the Tailwind theme. Clickable actions use shared Button variants; tabs and mobile accordions use shared UI primitives.
+
+### Interactions, accessibility, and runtime checks
+
+- Desktop gallery thumbnail, M size, size guide dialog, favorite toggle, Add to bag confirmation, singular bag count, Materials tab, related-product navigation, and browser back: passed.
+- Mobile S size, Add to bag confirmation, Materials accordion, gallery, and horizontally scrollable recommendation rail: passed.
+- Nike brand-card link resolved to `/shop/product/nike-signal-shell`; Women category image link resolved to `/shop/product/orange-shell`.
+- Final browser session at `1440 x 1000` and `390 x 844`: no new errors or warnings after reload.
+- Product route returned HTTP `200`.
+- Prettier, scoped ESLint, full TypeScript, `git diff --check`, and production build passed. The build retains the existing unrelated Turbopack NFT tracing warning from the sizing-lab `apple-fused-tape-scale` route.
 
 final result: passed

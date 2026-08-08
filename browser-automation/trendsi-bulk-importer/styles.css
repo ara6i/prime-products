@@ -1,0 +1,319 @@
+#psa-trendsi-bot-root,
+#psa-trendsi-bot-root * {
+  box-sizing: border-box;
+}
+
+#psa-trendsi-bot-root {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2147483646;
+  width: 390px;
+  color: #171717;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 13px;
+}
+
+#psa-trendsi-bot-root[data-mode="manager"] {
+  width: 470px;
+}
+
+#psa-trendsi-bot-root .psa-bot-card {
+  overflow: hidden;
+  border: 1px solid rgba(17, 24, 39, 0.18);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.24);
+}
+
+#psa-trendsi-bot-root .psa-bot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 13px;
+  color: #ffffff;
+  background: #111827;
+}
+
+#psa-trendsi-bot-root .psa-bot-title {
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+
+#psa-trendsi-bot-root .psa-bot-collapse {
+  width: 28px;
+  height: 26px;
+  border: 0;
+  border-radius: 7px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  cursor: pointer;
+}
+
+#psa-trendsi-bot-root .psa-bot-body {
+  max-height: min(720px, calc(100vh - 80px));
+  overflow: auto;
+  padding: 13px;
+}
+
+#psa-trendsi-bot-root.psa-collapsed {
+  width: 255px;
+}
+
+#psa-trendsi-bot-root.psa-collapsed .psa-bot-body {
+  display: none;
+}
+
+#psa-trendsi-bot-root .psa-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+#psa-trendsi-bot-root .psa-field {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 9px;
+}
+
+#psa-trendsi-bot-root .psa-field > span {
+  color: #4b5563;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+#psa-trendsi-bot-root input,
+#psa-trendsi-bot-root textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 9px;
+  color: #111827;
+  background: #ffffff;
+  font: inherit;
+}
+
+#psa-trendsi-bot-root textarea {
+  min-height: 76px;
+  resize: vertical;
+  line-height: 1.35;
+}
+
+#psa-trendsi-bot-root input:disabled,
+#psa-trendsi-bot-root textarea:disabled {
+  color: #6b7280;
+  background: #f3f4f6;
+}
+
+#psa-trendsi-bot-root .psa-warning {
+  margin: 8px 0 10px;
+  border-radius: 9px;
+  padding: 9px 10px;
+  color: #7c2d12;
+  background: #fff7ed;
+  line-height: 1.35;
+}
+
+#psa-trendsi-bot-root .psa-warning.psa-danger {
+  color: #991b1b;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+#psa-trendsi-bot-root .psa-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+
+#psa-trendsi-bot-root .psa-summary-grid > div {
+  display: grid;
+  gap: 3px;
+  border-radius: 9px;
+  padding: 9px 10px;
+  color: #111827;
+  background: #f3f4f6;
+}
+
+#psa-trendsi-bot-root .psa-summary-grid small,
+#psa-trendsi-bot-root .psa-worker-row small {
+  color: #6b7280;
+  font-size: 10px;
+}
+
+#psa-trendsi-bot-root .psa-summary-grid strong {
+  font-size: 12px;
+}
+
+#psa-trendsi-bot-root .psa-throttle {
+  margin: 4px 0 9px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 7px 9px;
+  color: #4b5563;
+  background: #fafafa;
+  font-size: 11px;
+}
+
+#psa-trendsi-bot-root .psa-status {
+  display: grid;
+  grid-template-columns: 104px 1fr;
+  gap: 5px 8px;
+  margin: 10px 0;
+  border-radius: 9px;
+  padding: 9px 10px;
+  background: #f3f4f6;
+}
+
+#psa-trendsi-bot-root .psa-status dt {
+  color: #6b7280;
+}
+
+#psa-trendsi-bot-root .psa-status dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-weight: 650;
+}
+
+#psa-trendsi-bot-root .psa-actions {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 7px;
+}
+
+#psa-trendsi-bot-root .psa-actions {
+  grid-template-columns: 1fr 1fr;
+}
+
+#psa-trendsi-bot-root .psa-manager-actions {
+  display: grid;
+  grid-template-columns: 1.3fr 0.8fr 0.8fr;
+  gap: 7px;
+}
+
+#psa-trendsi-bot-root .psa-button {
+  min-height: 36px;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+#psa-trendsi-bot-root .psa-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+#psa-trendsi-bot-root .psa-primary {
+  color: #ffffff;
+  background: #dc2626;
+}
+
+#psa-trendsi-bot-root .psa-secondary {
+  color: #111827;
+  background: #e5e7eb;
+}
+
+#psa-trendsi-bot-root .psa-log {
+  max-height: 130px;
+  overflow: auto;
+  margin-top: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 7px 9px;
+  color: #374151;
+  background: #fafafa;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+#psa-trendsi-bot-root .psa-worker-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  max-height: 290px;
+  overflow: auto;
+  margin-top: 9px;
+  padding-right: 2px;
+}
+
+#psa-trendsi-bot-root .psa-worker-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 6px;
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 7px 8px;
+  color: #111827;
+  background: #ffffff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+#psa-trendsi-bot-root .psa-worker-row:hover {
+  border-color: #9ca3af;
+  background: #f9fafb;
+}
+
+#psa-trendsi-bot-root .psa-worker-row > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+#psa-trendsi-bot-root .psa-worker-row > span:last-child {
+  text-align: right;
+}
+
+#psa-trendsi-bot-root .psa-worker-row strong,
+#psa-trendsi-bot-root .psa-worker-row small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#psa-trendsi-bot-root .psa-empty {
+  grid-column: 1 / -1;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 12px;
+  color: #6b7280;
+  text-align: center;
+}
+
+#psa-trendsi-bot-root .psa-footnote {
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+@media (max-width: 640px) {
+  #psa-trendsi-bot-root,
+  #psa-trendsi-bot-root[data-mode="manager"] {
+    right: 8px;
+    bottom: 8px;
+    width: min(470px, calc(100vw - 16px));
+  }
+
+  #psa-trendsi-bot-root .psa-worker-list {
+    grid-template-columns: 1fr;
+  }
+}
