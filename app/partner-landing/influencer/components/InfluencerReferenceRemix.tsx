@@ -2,7 +2,6 @@
 
 import { ArrowUpRight, FilmStrip, ImageSquare, Play, Sparkle } from "@phosphor-icons/react";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import styles from "./influencerLanding.module.css";
 
@@ -11,18 +10,20 @@ type RemixReference = {
   title: string;
   cue: string;
   kind: "photo" | "video";
+  orientation?: "portrait" | "landscape";
   poster: string;
   video?: string;
+  webm?: string;
 };
 
 const REMIX_REFERENCES: RemixReference[] = [
-  { id: "turn", title: "The runway turn", cue: "Camera movement", kind: "video", poster: "/media/partner-landing/influencer-runway-poster.jpg", video: "/media/partner-landing/influencer-runway.mp4" },
-  { id: "reveal", title: "The portrait reveal", cue: "Pose and pacing", kind: "video", poster: "/media/partner-landing/creator-portrait-poster.jpg", video: "/media/partner-landing/creator-portrait.mp4" },
-  { id: "walk", title: "The campaign cut", cue: "Edit rhythm", kind: "video", poster: "/media/partner-landing/merchant-studio-poster.jpg", video: "/media/partner-landing/merchant-studio.mp4" },
-  { id: "duo", title: "Color-block duo", cue: "Pose and palette", kind: "photo", poster: "/media/partner-landing/creator-collective-01.png" },
-  { id: "street", title: "Creator street cast", cue: "Group direction", kind: "photo", poster: "/media/partner-landing/creator-collective-02.png" },
-  { id: "sun", title: "Sunlit statement", cue: "Light and color", kind: "photo", poster: "/media/partner-landing/creator-collective-03.png" },
-  { id: "tailoring", title: "Cobalt tailoring", cue: "Silhouette", kind: "photo", poster: "/media/partner-landing/creator-collective-04.png" },
+  { id: "turn", title: "The runway turn", cue: "Camera movement", kind: "video", orientation: "portrait", poster: "/media/partner-landing/influencer-runway-poster.jpg", webm: "/media/partner-landing/influencer-runway.webm", video: "/media/partner-landing/influencer-runway.mp4" },
+  { id: "reveal", title: "The portrait reveal", cue: "Pose and pacing", kind: "video", orientation: "portrait", poster: "/media/partner-landing/creator-portrait-poster.jpg", webm: "/media/partner-landing/creator-portrait.webm", video: "/media/partner-landing/creator-portrait.mp4" },
+  { id: "walk", title: "The campaign cut", cue: "Edit rhythm", kind: "video", orientation: "landscape", poster: "/media/partner-landing/merchant-studio-poster.jpg", webm: "/media/partner-landing/merchant-studio.webm", video: "/media/partner-landing/merchant-studio.mp4" },
+  { id: "duo", title: "Color-block duo", cue: "Pose and palette", kind: "photo", poster: "/media/partner-landing/optimized/creator-collective-01.webp" },
+  { id: "street", title: "Creator street cast", cue: "Group direction", kind: "photo", poster: "/media/partner-landing/optimized/creator-collective-02.webp" },
+  { id: "sun", title: "Sunlit statement", cue: "Light and color", kind: "photo", poster: "/media/partner-landing/optimized/creator-collective-03.webp" },
+  { id: "tailoring", title: "Cobalt tailoring", cue: "Silhouette", kind: "photo", poster: "/media/partner-landing/optimized/creator-collective-04.webp" },
   { id: "orange-motion", title: "Orange in motion", cue: "Energy", kind: "photo", poster: "/media/partner-landing/merchant-network/influencer-showcase/creator-01-orange-motion.webp" },
   { id: "detail", title: "Blue-orange detail", cue: "Product focus", kind: "photo", poster: "/media/partner-landing/merchant-network/influencer-showcase/creator-02-blue-orange-detail.webp" },
   { id: "coat", title: "Cobalt confidence", cue: "Editorial stance", kind: "photo", poster: "/media/partner-landing/merchant-network/influencer-showcase/creator-03-cobalt-tailoring.webp" },
@@ -32,7 +33,7 @@ const REMIX_REFERENCES: RemixReference[] = [
   { id: "blue-suit", title: "Blue suit strip", cue: "Frame sequence", kind: "photo", poster: "/media/partner-landing/merchant-network/influencer-showcase/creator-07-blue-suit-strip.webp" },
 ];
 
-export function InfluencerReferenceRemix() {
+export function InfluencerReferenceRemix({ onCtaClick }: { onCtaClick: () => void }) {
   const [activeId, setActiveId] = useState("sun");
   const activeReference = REMIX_REFERENCES.find((reference) => reference.id === activeId) ?? REMIX_REFERENCES[0];
 
@@ -59,7 +60,7 @@ export function InfluencerReferenceRemix() {
           {REMIX_REFERENCES.map((reference) => (
             <button
               key={reference.id}
-              className={styles.remixTile}
+              className={`${styles.remixTile} ${reference.kind === "video" ? styles.remixTileVideo : ""}`}
               type="button"
               aria-label={`Preview ${reference.title}`}
               aria-pressed={activeReference.id === reference.id}
@@ -70,10 +71,14 @@ export function InfluencerReferenceRemix() {
             </button>
           ))}
 
-          <article className={styles.remixHero} aria-live="polite">
+          <article
+            className={`${styles.remixHero} ${activeReference.kind === "video" ? styles.remixHeroVideo : ""} ${activeReference.orientation === "portrait" ? styles.remixHeroPortrait : ""}`}
+            aria-live="polite"
+          >
             <div className={styles.remixHeroMedia}>
               {activeReference.kind === "video" && activeReference.video ? (
-                <video key={activeReference.video} autoPlay loop muted playsInline preload="metadata" poster={activeReference.poster}>
+                <video key={activeReference.video} autoPlay loop muted playsInline preload="none" poster={activeReference.poster}>
+                  {activeReference.webm ? <source src={activeReference.webm} type="video/webm" /> : null}
                   <source src={activeReference.video} type="video/mp4" />
                 </video>
               ) : (
@@ -84,9 +89,9 @@ export function InfluencerReferenceRemix() {
               <small>{activeReference.cue}</small>
               <h3>{activeReference.title}</h3>
               <p>Your face. Your outfit. Your version.</p>
-              <Link href="/influencers/dashboard/outfit-studio">
+              <button type="button" onClick={onCtaClick}>
                 Recreate this style <ArrowUpRight size={17} weight="bold" />
-              </Link>
+              </button>
             </div>
           </article>
         </div>

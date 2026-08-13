@@ -1,27 +1,28 @@
-import Link from "next/link";
 import {
   BookmarkIcon,
   BookmarkOutlineIcon,
   StarIcon,
-  TryOnIcon,
 } from "@/app/shared/components/icons";
 import { Button } from "@/app/shared/components/ui/button";
 import type {
   ProductDetailInteractionState,
   ProductDetailViewModel,
 } from "../types/productDetail.types";
+import { ProductTryOnButton } from "./ProductTryOnButton";
 import styles from "./productDetail.module.css";
 
 interface ProductPurchasePanelProps {
   product: ProductDetailViewModel;
   state: ProductDetailInteractionState;
   headingId: string;
+  viewport: "desktop" | "mobile";
 }
 
 export function ProductPurchasePanel({
   product,
   state,
   headingId,
+  viewport,
 }: ProductPurchasePanelProps) {
   return (
     <section className={styles.purchasePanel} aria-labelledby={headingId}>
@@ -32,15 +33,19 @@ export function ProductPurchasePanel({
 
       <h1 id={headingId}>{product.name}</h1>
 
-      <div className={styles.ratingRow}>
-        <span className={styles.stars} aria-hidden="true">
-          {Array.from({ length: 5 }, (_, index) => (
-            <StarIcon key={index} />
-          ))}
-        </span>
-        <span>{product.ratingLabel}</span>
-        <span>{product.reviewLabel}</span>
-      </div>
+      {product.ratingLabel || product.reviewLabel ? (
+        <div className={styles.ratingRow}>
+          {product.ratingLabel ? (
+            <span className={styles.stars} aria-hidden="true">
+              {Array.from({ length: 5 }, (_, index) => (
+                <StarIcon key={index} />
+              ))}
+            </span>
+          ) : null}
+          {product.ratingLabel ? <span>{product.ratingLabel}</span> : null}
+          {product.reviewLabel ? <span>{product.reviewLabel}</span> : null}
+        </div>
+      ) : null}
 
       <div className={styles.priceRow}>
         <strong>{product.priceLabel}</strong>
@@ -51,6 +56,14 @@ export function ProductPurchasePanel({
       </div>
 
       <p className={styles.productDescription}>{product.description}</p>
+
+      {product.sizeRecommendation ? (
+        <div className={styles.aiSizeRecommendation} data-status={product.sizeRecommendation.status}>
+          <span>PrimeStyleAI size</span>
+          <strong>{product.sizeRecommendation.label}</strong>
+          <p>{product.sizeRecommendation.detail}</p>
+        </div>
+      ) : null}
 
       <div className={styles.colorField}>
         <div>
@@ -66,31 +79,37 @@ export function ProductPurchasePanel({
 
       <div className={styles.sizeField}>
         <div className={styles.sizeFieldHeader}>
-          <span>Select size</span>
-          <Button
-            className={styles.sizeGuideButton}
-            type="button"
-            variant="link"
-            onClick={() => state.setSizeGuideOpen(true)}
-          >
-            Size guide
-          </Button>
-        </div>
-        <div className={styles.sizeOptions}>
-          {product.sizes.map((size) => (
+          <span>{product.sizes.length > 0 ? "Select size" : "Sizes"}</span>
+          {product.sizes.length > 0 ? (
             <Button
-              className={styles.sizeOption}
-              data-active={state.selectedSize === size}
-              key={size}
+              className={styles.sizeGuideButton}
               type="button"
-              variant="ghost"
-              aria-pressed={state.selectedSize === size}
-              onClick={() => state.setSelectedSize(size)}
+              variant="link"
+              onClick={() => state.setSizeGuideOpen(true)}
             >
-              {size}
+              Size guide
             </Button>
-          ))}
+          ) : null}
         </div>
+        {product.sizes.length > 0 ? (
+          <div className={styles.sizeOptions}>
+            {product.sizes.map((size) => (
+              <Button
+                className={styles.sizeOption}
+                data-active={state.selectedSize === size}
+                key={size}
+                type="button"
+                variant="ghost"
+                aria-pressed={state.selectedSize === size}
+                onClick={() => state.setSelectedSize(size)}
+              >
+                {size}
+              </Button>
+            ))}
+          </div>
+        ) : (
+          <p className={styles.sizeUnavailable}>No verified size list is available for this item.</p>
+        )}
       </div>
 
       <div className={styles.purchaseActions}>
@@ -118,16 +137,9 @@ export function ProductPurchasePanel({
         </Button>
       </div>
 
-      <Button
-        className={styles.tryOnButton}
-        variant="commerce-outline"
-        size="commerce"
-        asChild
-      >
-        <Link href={`/try-on-test?product=${product.id}`}>
-          <TryOnIcon /> Try with AI
-        </Link>
-      </Button>
+      {product.tryOnSupported !== false ? (
+        <ProductTryOnButton product={product} state={state} viewport={viewport} />
+      ) : null}
 
       {state.confirmation ? (
         <p className={styles.confirmation} role="status">

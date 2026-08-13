@@ -15,10 +15,8 @@ export function MerchantHeader({ mobileMenuOpen, onMenuToggle, onMenuClose, onPr
       <Link href="/" className={styles.logoLink} aria-label="PrimeStyleAI home"><Image src="/media/partner-landing/primestyleai-commerce-gateway-mark.webp" alt="PrimeStyleAI" width={600} height={471} sizes="64px" priority /></Link>
       <nav className={styles.desktopNav} aria-label="Merchant navigation">
         <button type="button" onClick={() => onSectionSelect("influencer-network")}>Creators</button>
-        <button type="button" onClick={() => onSectionSelect("creator-discovery")}>Discovery</button>
         <button type="button" onClick={() => onSectionSelect("merchant-dashboard")}>Dashboard</button>
         <button type="button" onClick={() => onSectionSelect("pdp-studio-feature")}>PDP Studio</button>
-        <button type="button" onClick={() => onSectionSelect("outfit-builder")}>Try-on</button>
       </nav>
       <div className={styles.headerActions}>
         <Link className={styles.signIn} href="/login">Sign in</Link>
@@ -31,7 +29,6 @@ export function MerchantHeader({ mobileMenuOpen, onMenuToggle, onMenuClose, onPr
           <button type="button" onClick={() => onSectionSelect("creator-discovery")}>Find creators</button>
           <button type="button" onClick={() => onSectionSelect("merchant-dashboard")}>Merchant dashboard</button>
           <button type="button" onClick={() => onSectionSelect("pdp-studio-feature")}>PDP Studio</button>
-          <button type="button" onClick={() => onSectionSelect("outfit-builder")}>Virtual try-on</button>
           <Link href="/login" onClick={onMenuClose}>Sign in</Link>
           <button type="button" className={styles.mobileCta} onClick={() => { onMenuClose(); onPrimaryAction(); }}>Join the network</button>
         </nav>

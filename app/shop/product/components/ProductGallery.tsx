@@ -27,6 +27,7 @@ export function ProductGallery({
           fill
           sizes={mobile ? "(max-width: 47.5rem) 95vw, 49vw" : "49vw"}
           loading="eager"
+          unoptimized={activeItem.src.startsWith("http")}
         />
         <span className={styles.galleryCounter}>
           {activeIndex + 1} / {items.length}
@@ -46,7 +47,13 @@ export function ProductGallery({
               aria-pressed={index === activeIndex}
               onClick={() => onSelect(index)}
             >
-              <Image src={item.src} alt="" fill sizes="10vw" />
+              <Image
+                src={item.src}
+                alt=""
+                fill
+                sizes="10vw"
+                unoptimized={item.src.startsWith("http")}
+              />
             </Button>
           ))}
         </div>

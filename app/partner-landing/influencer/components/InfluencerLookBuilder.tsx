@@ -18,7 +18,7 @@ import Image from "next/image";
 import { useState } from "react";
 import styles from "./influencerLanding.module.css";
 
-const EDITORIAL_IMAGE = "/media/partner-landing/look-builder-editorial-v2.png";
+const EDITORIAL_IMAGE = "/media/partner-landing/optimized/look-builder-editorial.webp";
 
 const FILTERS = [
   { id: "pearl", label: "Pearl White" },

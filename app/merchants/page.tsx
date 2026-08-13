@@ -4,7 +4,7 @@ import { MerchantLandingExperience } from "../partner-landing/merchant/component
 export const metadata: Metadata = {
   title: "PrimeStyleAI | Fashion Commerce Network for Merchants",
   description:
-    "Connect your catalog to creators, PDP Studio, AI sizing, virtual try-on, outfit building, and measurable fashion commerce through PrimeStyleAI.",
+    "Connect products and creators through campaign discovery, merchant analytics, and PDP Studio.",
 };
 
 export default function MerchantLandingPage() {

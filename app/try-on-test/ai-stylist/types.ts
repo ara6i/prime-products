@@ -23,6 +23,86 @@ export interface AiStylistGenderSegment {
   priceBands: Record<string, number>;
 }
 
+export interface AiStylistScenarioCoverageGroup {
+  id: string;
+  label: string;
+  ready: number;
+  total: number;
+  available: number;
+  target: number;
+  readinessPercent: number;
+}
+
+export interface AiStylistScenarioCoverageRow {
+  id: string;
+  gender: string;
+  genderLabel: string;
+  occasion: string;
+  occasionLabel: string;
+  occasionApi: string;
+  season: string;
+  seasonLabel: string;
+  budget: string;
+  budgetLabel: string;
+  budgetRange: string;
+  available: number;
+  gap: number;
+  eligibleProducts: number;
+  eligibleBySlot: Record<string, number>;
+  measured: boolean;
+}
+
+export interface AiStylistScenarioCoverage {
+  definition: {
+    source: string;
+    formula: string;
+    totalScenarios: number;
+    targetPerScenario: number;
+    targetOutfitSlots: number;
+  };
+  snapshot: {
+    generatedAt: string | null;
+    method: string;
+    summary: {
+      ready: number;
+      partial: number;
+      missing: number;
+      availableOutfitSlots: number;
+      targetOutfitSlots: number;
+      outfitReadinessPercent: number;
+      scenarioReadinessPercent: number;
+    };
+  };
+  refresh: {
+    status: "idle" | "running" | "complete" | "failed";
+    checked: number;
+    total: number;
+    percent: number;
+    startedAt: string | null;
+    updatedAt: string | null;
+    completedAt: string | null;
+    error: string | null;
+  };
+  qaPresets: {
+    passed: number;
+    failed: number;
+    stale: number;
+  };
+  groups: {
+    gender: AiStylistScenarioCoverageGroup[];
+    occasion: AiStylistScenarioCoverageGroup[];
+    season: AiStylistScenarioCoverageGroup[];
+    budget: AiStylistScenarioCoverageGroup[];
+  };
+  blockers: Array<{
+    id: string;
+    label: string;
+    blockedScenarios: number;
+    detail: string;
+  }>;
+  scenarios: AiStylistScenarioCoverageRow[];
+}
+
 export interface AiStylistLabStatus {
   generatedAt: string;
   scope: {
@@ -91,6 +171,13 @@ export interface AiStylistLabStatus {
 export interface AiStylistLabStatusResponse {
   ok: boolean;
   status?: AiStylistLabStatus;
+  error?: string;
+  message?: string;
+}
+
+export interface AiStylistScenarioCoverageResponse {
+  ok: boolean;
+  scenarioCoverage?: AiStylistScenarioCoverage;
   error?: string;
   message?: string;
 }

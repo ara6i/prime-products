@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       {
         headers: { Authorization: `Bearer ${apiKey}` },
         cache: "no-store",
-        signal: AbortSignal.timeout(15_000),
+        signal: AbortSignal.timeout(45_000),
       },
     );
     const body = await response.text();

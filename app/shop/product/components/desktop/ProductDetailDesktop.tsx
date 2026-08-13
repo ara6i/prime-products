@@ -41,6 +41,7 @@ export function ProductDetailDesktop({
           product={product}
           state={state}
           headingId="desktop-product-title"
+          viewport="desktop"
         />
       </section>
 

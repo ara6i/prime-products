@@ -34,6 +34,7 @@ export function ProductDetailMobile({
         product={product}
         state={state}
         headingId="mobile-product-title"
+        viewport="mobile"
       />
       <ProductInformation sections={product.information} mobile />
       <RelatedProducts products={product.related} />

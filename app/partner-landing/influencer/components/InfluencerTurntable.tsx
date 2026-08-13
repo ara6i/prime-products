@@ -28,11 +28,11 @@ const TURNTABLE = {
 } as const;
 
 const MODEL_IMAGES = [
-  "/images/ai-stylist/creator-longhair-outfit-1.png",
-  "/images/ai-stylist/creator-longhair-outfit-2.png",
-  "/images/ai-stylist/creator-longhair-outfit-3.png",
-  "/images/ai-stylist/creator-longhair-outfit-4.png",
-  "/images/ai-stylist/creator-longhair-outfit-5.png",
+  "/media/partner-landing/optimized/turntable/creator-longhair-outfit-1.webp",
+  "/media/partner-landing/optimized/turntable/creator-longhair-outfit-2.webp",
+  "/media/partner-landing/optimized/turntable/creator-longhair-outfit-3.webp",
+  "/media/partner-landing/optimized/turntable/creator-longhair-outfit-4.webp",
+  "/media/partner-landing/optimized/turntable/creator-longhair-outfit-5.webp",
 ] as const;
 
 interface PlatformTuning {
@@ -225,18 +225,17 @@ function StylistDisc({
       }}
     >
       <Image
-        src="/images/ai-stylist/platform-disc-tight.png"
+        src="/media/partner-landing/optimized/turntable/platform-disc-tight.webp"
         alt=""
         width={832}
         height={299}
         className={styles.turntableDiscShell}
         draggable={false}
-        priority
       />
 
       <div ref={rotatingTopRef} className={styles.turntableDiscTop}>
         <Image
-          src="/images/ai-stylist/disc-top-texture.png"
+          src="/media/partner-landing/optimized/turntable/disc-top-texture.webp"
           alt=""
           width={413}
           height={604}
@@ -254,7 +253,7 @@ function StylistDisc({
 
       <div className={styles.turntableDiscFrontRim}>
         <Image
-          src="/images/ai-stylist/platform-disc-tight.png"
+          src="/media/partner-landing/optimized/turntable/platform-disc-tight.webp"
           alt=""
           width={832}
           height={299}
@@ -383,7 +382,6 @@ function ModelCarousel({
               width={1497}
               height={2160}
               draggable={false}
-              priority={index === 0}
             />
           </span>
         ))}

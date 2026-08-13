@@ -16,14 +16,14 @@ const SOCIAL_LINKS = [
   { href: "https://www.youtube.com/@PrimeStyleAI", label: "YouTube", Icon: YoutubeLogo },
 ] as const;
 
-export function InfluencerFooter() {
+export function InfluencerFooter({ onCtaClick }: { onCtaClick?: () => void }) {
   return (
     <footer className={styles.networkFooter}>
       <div className={styles.footerFrame}>
         <section className={styles.footerMain} aria-label="PrimeStyleAI footer">
           <Link href="/" className={styles.footerMark} aria-label="PrimeStyleAI home">
             <Image
-              src="/media/partner-landing/primestyleai-new-mark.png"
+              src="/media/partner-landing/optimized/primestyleai-mark-256.webp"
               alt="PrimeStyleAI"
               width={1254}
               height={1254}
@@ -51,8 +51,17 @@ export function InfluencerFooter() {
             </div>
 
             <div className={styles.footerActions}>
-              <Link href="/influencers/dashboard/outfit-studio">Open Outfit Studio <ArrowUpRight size={14} weight="bold" /></Link>
-              <Link href="#creator-journey">How it works <ArrowUpRight size={14} weight="bold" /></Link>
+              {onCtaClick ? (
+                <>
+                  <button type="button" onClick={onCtaClick}>Open Outfit Studio <ArrowUpRight size={14} weight="bold" /></button>
+                  <button type="button" onClick={onCtaClick}>How it works <ArrowUpRight size={14} weight="bold" /></button>
+                </>
+              ) : (
+                <>
+                  <Link href="/influencers/dashboard/outfit-studio">Open Outfit Studio <ArrowUpRight size={14} weight="bold" /></Link>
+                  <Link href="#creator-journey">How it works <ArrowUpRight size={14} weight="bold" /></Link>
+                </>
+              )}
             </div>
 
             <nav className={styles.footerQuickLinks} aria-label="Footer navigation">
@@ -68,7 +77,7 @@ export function InfluencerFooter() {
             <nav aria-label="Legal links">
               <Link href="/privacy-policy">Privacy policy</Link>
               <Link href="/terms">Terms</Link>
-              <Link href="/help-center">Creator help</Link>
+              <a href="https://primestyleai.com/help-center">Creator help</a>
             </nav>
           </div>
         </section>

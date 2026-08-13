@@ -18,13 +18,9 @@ import {
   Play,
   Plus,
   Quotes,
-  Ruler,
   SealCheck,
-  ShoppingBag,
   Sparkle,
-  Stack,
   TiktokLogo,
-  TShirt,
   UsersThree,
   YoutubeLogo,
 } from "@phosphor-icons/react";
@@ -95,11 +91,6 @@ const dashboardViews = {
 } as const;
 
 const pdpOutputs = ["Background Removal", "AI Backgrounds", "Studio Photoshoot", "Batch Edits", "Retouch"] as const;
-const outfitItems = [
-  { id: "jacket", label: "Shell jacket", icon: TShirt },
-  { id: "trouser", label: "Tailored trouser", icon: Stack },
-  { id: "shoe", label: "Runner 01", icon: ShoppingBag },
-] as const;
 
 function BenefitList({ items }: { items: string[] }) {
   return (
@@ -145,8 +136,6 @@ export function MerchantNetworkJourney({ onPrimaryAction }: MerchantNetworkJourn
   const [savedCreators, setSavedCreators] = useState<string[]>([]);
   const [dashboardView, setDashboardView] = useState<keyof typeof dashboardViews>("Overview");
   const [pdpOutput, setPdpOutput] = useState<(typeof pdpOutputs)[number]>("Background Removal");
-  const [selectedSize, setSelectedSize] = useState("M");
-  const [selectedOutfitItem, setSelectedOutfitItem] = useState("shoe");
   const normalizedCreatorSearch = creatorSearch.trim().toLowerCase();
   const visibleCreatorIds = new Set(
     creatorDirectoryProfiles
@@ -168,7 +157,7 @@ export function MerchantNetworkJourney({ onPrimaryAction }: MerchantNetworkJourn
         <div className={styles.creatorShowcaseFrame}>
           <header className={styles.creatorShowcaseHeader}>
             <div className={styles.creatorShowcaseIndex}>
-              <span>02</span>
+              <span>01</span>
               <p><b>Influencer Network</b><small>Trusted discovery</small></p>
             </div>
             <div className={styles.creatorCommunity}>
@@ -525,75 +514,6 @@ export function MerchantNetworkJourney({ onPrimaryAction }: MerchantNetworkJourn
         </div>
       </section>
 
-      <section id="outfit-builder" className={styles.outfitFeature} aria-labelledby="outfit-feature-title">
-        <div className={styles.outfitBackdrop} aria-hidden="true">
-          <Image src="/media/partner-landing/merchant-network/merchant-features/tryon-background-v2.webp" alt="" fill sizes="100vw" />
-        </div>
-        <div className={styles.outfitFeatureCopy}>
-          <p>05 · Virtual try-on + outfit building</p>
-          <h2 id="outfit-feature-title">Let shoppers try your<br />products together.</h2>
-          <span>Turn individual catalog items into personalized looks shoppers can size, style, save, and purchase with confidence.</span>
-        </div>
-
-        <div className={styles.outfitInterface}>
-          <header className={styles.outfitInterfaceHeader}>
-            <span><Image src="/media/partner-landing/primestyleai-commerce-gateway-mark.webp" alt="" width={34} height={27} /><b>AI Fitting Room</b></span>
-            <strong>PrimeStyleAI</strong>
-            <button type="button" onClick={onPrimaryAction}><ShoppingBag size={15} weight="fill" /> Outfit (3)</button>
-          </header>
-
-          <div className={styles.outfitInterfaceBody}>
-            <div className={styles.outfitModelStage}>
-              <span className={styles.outfitMaterialZoom}><Image src="/media/partner-landing/merchant-network/merchant-features/sneaker-detail.webp" alt="Sneaker material detail" fill sizes="110px" /></span>
-              <Image src="/media/partner-landing/merchant-network/merchant-features/tryon-model-reference-v2.webp" alt="Shopper preview wearing a complete merchant outfit" fill sizes="(max-width: 720px) 90vw, 48vw" />
-              <div className={styles.outfitRotation}><ArrowRight size={17} /><span>360° outfit preview</span><ArrowRight size={17} /></div>
-            </div>
-
-            <aside className={styles.outfitControlPanel}>
-              <div className={styles.outfitMeasureCard}>
-                <span><Ruler size={17} weight="duotone" /> Shopper profile</span>
-                <div><small>Chest</small><b>81 cm</b><small>Waist</small><b>69 cm</b></div>
-                <button type="button" onClick={onPrimaryAction}>Update fit profile</button>
-              </div>
-              <div className={styles.outfitProductCard}>
-                <span>You are styling</span>
-                <div>
-                  <Image src="/media/partner-landing/merchant-network/running-shoe.webp" alt="Runner 01 gray technical sneaker" width={76} height={76} />
-                  <p><strong>Runner 01</strong><small>Technical everyday sneaker</small><b>$149</b></p>
-                </div>
-                <label>Size</label>
-                <div className={styles.outfitSizes}>
-                  {["XS", "S", "M", "L", "XL"].map((size) => (
-                    <button key={size} type="button" aria-pressed={selectedSize === size} onClick={() => setSelectedSize(size)}>{size}</button>
-                  ))}
-                </div>
-                <button type="button" className={styles.outfitBuildButton} onClick={onPrimaryAction}>Build this outfit <ArrowRight size={15} weight="bold" /></button>
-              </div>
-            </aside>
-          </div>
-
-          <div className={styles.outfitRail}>
-            <span>Build the look</span>
-            <div>
-              {outfitItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className={selectedOutfitItem === item.id ? styles.outfitRailActive : undefined}
-                    aria-pressed={selectedOutfitItem === item.id}
-                    onClick={() => setSelectedOutfitItem(item.id)}
-                  >
-                    <Icon size={22} weight="duotone" /><small>{item.label}</small>
-                  </button>
-                );
-              })}
-              <button type="button" onClick={onPrimaryAction}><Plus size={20} weight="bold" /><small>Add product</small></button>
-            </div>
-          </div>
-        </div>
-      </section>
     </>
   );
 }

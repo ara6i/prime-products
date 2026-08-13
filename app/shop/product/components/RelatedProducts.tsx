@@ -32,6 +32,7 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
                 alt={product.name}
                 fill
                 sizes="(max-width: 760px) 74vw, 22vw"
+                unoptimized={product.image.startsWith("http")}
               />
               {product.badge ? <b>{product.badge}</b> : null}
             </span>

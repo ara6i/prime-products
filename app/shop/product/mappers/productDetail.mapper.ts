@@ -130,7 +130,7 @@ function getInformation(
       id: "details",
       title: "Details",
       summary: description,
-      items: [`Designed in ${color}`, "PrimeStyleAI fit profile available"],
+      items: [`Shown in ${color}`, "PrimeStyleAI fit profile available"],
     },
     {
       id: "materials",
@@ -147,8 +147,8 @@ function getInformation(
       summary:
         category === "Bags"
           ? "One-size accessory. Dimensions are confirmed at checkout."
-          : "Fits true to size. Choose your usual size or use AI sizing for a personal match.",
-      items: ["AI sizing available", "Virtual try-on ready"],
+          : "Available sizes and fit details are confirmed by the connected merchant.",
+      items: ["Merchant size selection available", "Virtual try-on ready"],
     },
     {
       id: "shipping",
@@ -164,6 +164,16 @@ function getBrandGallery(
   product: BrandProduct,
   productIndex: number,
 ): ProductGalleryItem[] {
+  if (product.image.startsWith("http")) {
+    return [
+      {
+        id: `${product.id}-view-1`,
+        src: product.image,
+        alt: `${product.name} product view`,
+      },
+    ];
+  }
+
   const lookNumber = 15 + Math.floor(productIndex / 3);
   const gallery = [
     product.image,
@@ -223,6 +233,11 @@ function mapBrandProduct(
 ): ProductDetailViewModel {
   const product = source.catalog.products[source.productIndex];
   const gallery = getBrandGallery(product, source.productIndex);
+  const sizes = product.sizes.length > 0
+    ? product.sizes
+    : product.category === "Bags"
+      ? ["One size"]
+      : ["XS", "S", "M", "L", "XL"];
   const compareAtPriceCents = product.originalPrice
     ? product.originalPrice * 100
     : undefined;
@@ -245,7 +260,7 @@ function mapBrandProduct(
     discountLabel: getDiscountLabel(product.price * 100, compareAtPriceCents),
     ratingLabel: (4.4 + product.popularity / 250).toFixed(1),
     reviewLabel: `${Math.max(18, product.popularity + source.productIndex * 7)} reviews`,
-    sizes: product.sizes,
+    sizes,
     gallery,
     featureImage: gallery.at(-1)?.src ?? product.image,
     sourceHref: `/shop/brand/${source.catalog.id}`,

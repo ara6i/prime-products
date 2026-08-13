@@ -5,7 +5,7 @@ export const INFLUENCER_LANDING_CONTENT: InfluencerLandingViewModel = {
     eyebrow: "For fashion creators",
     titleLead: "Your\ninfluence",
     titleAccent: "should\npay.",
-    body: "Choose approved fashion products, add fit confidence, publish a tracked look, and earn when your audience completes an eligible purchase.",
+    body: "Connect with fashion merchants, add fit confidence, publish a tracked look, and earn when your audience completes an eligible purchase.",
     primaryCta: "Join waitlist",
     secondaryCta: "See the creator journey",
     annotation: "Your style. Your link. Your credit.",
@@ -22,8 +22,8 @@ export const INFLUENCER_LANDING_CONTENT: InfluencerLandingViewModel = {
     {
       number: "02",
       icon: "bag",
-      title: "Choose approved products",
-      description: "See the products, links, assets, commission conditions, and promotion rules you are cleared to use.",
+      title: "Connect with merchants",
+      description: "Discover merchant campaigns, products, creative assets, commission conditions, and promotion rules in one place.",
       note: "Current offers, not mystery rates.",
     },
     {
@@ -44,7 +44,7 @@ export const INFLUENCER_LANDING_CONTENT: InfluencerLandingViewModel = {
   journey: [
     {
       number: "01",
-      title: "Share the approved story",
+      title: "Share the merchant story",
       description: "Create in your own voice, add a clear material-connection disclosure, and use the product link assigned to you.",
     },
     {
@@ -66,6 +66,6 @@ export const INFLUENCER_LANDING_CONTENT: InfluencerLandingViewModel = {
   commissionLabels: ["Fixed rate", "Variable rate", "Conditional rate"],
   interest: {
     title: "Join the creator waitlist.",
-    body: "Tell us where you create. We will let you know when creator access opens.",
+    body: "Tell us where you create and who you reach. We will keep your creator application separate and let you know when access opens.",
   },
 };

@@ -4,20 +4,13 @@ import { ArrowRight } from "@phosphor-icons/react";
 import Image from "next/image";
 import type { InfluencerLandingViewModel } from "../types";
 import { InfluencerHeroJourney } from "./InfluencerHeroJourney";
+import { INFLUENCER_HERO_REELS } from "./influencerHeroMedia";
 import styles from "./influencerLanding.module.css";
 
 const CREATOR_CARDS = [
-  "/images/landing/landing-model-3-43db80.png",
-  "/images/landing/landing-model-4-4d2cdf.png",
-  "/media/partner-landing/creator-portrait-poster.jpg",
-];
-
-const HERO_REELS = [
-  { src: "/videos/ugc-hero/linh-black-jacket.mp4", label: "Black jacket try-on" },
-  { src: "/videos/ugc-hero/linh-heaven-made.mp4", label: "Heaven Made tee try-on" },
-  { src: "/videos/ugc-hero/rafael-scvcn-sunglasses.mp4", label: "Sports sunglasses try-on" },
-  { src: "/videos/ugc-hero/yuna-lavender-set.mp4", label: "Lavender set try-on" },
-  { src: "/videos/ugc-hero/diego-genius-23-jersey.mp4", label: "Genius 23 jersey try-on" },
+  "/media/partner-landing/optimized/creator-avatar-01.webp",
+  "/media/partner-landing/optimized/creator-avatar-02.webp",
+  "/media/partner-landing/optimized/avatar-elena-96.webp",
 ];
 
 export function InfluencerHero({ viewModel, onPrimaryAction, onSecondaryAction }: {
@@ -43,10 +36,11 @@ export function InfluencerHero({ viewModel, onPrimaryAction, onSecondaryAction }
         </div>
 
         <div className={styles.heroFilm} aria-label="Creator try-on reels">
-          {HERO_REELS.map((reel) => (
-            <div className={styles.heroReel} key={reel.src}>
-              <video autoPlay loop muted playsInline preload="metadata" aria-label={reel.label}>
-                <source src={reel.src} type="video/mp4" />
+          {INFLUENCER_HERO_REELS.map((reel) => (
+            <div className={styles.heroReel} key={reel.webm}>
+              <video autoPlay loop muted playsInline preload="auto" poster={reel.poster} aria-label={reel.label}>
+                <source src={reel.webm} type="video/webm" />
+                <source src={reel.mp4} type="video/mp4" />
               </video>
             </div>
           ))}

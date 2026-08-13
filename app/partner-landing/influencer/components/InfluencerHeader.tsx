@@ -16,21 +16,21 @@ export function InfluencerHeader(props: InfluencerHeaderProps) {
     <header className={styles.header}>
       <Link href="/" className={styles.logoLink} aria-label="Prime Style AI home">
         <Image
-          src="/media/partner-landing/primestyleai-new-mark.png"
+          src="/media/partner-landing/optimized/primestyleai-mark-256.webp"
           alt="Prime Style AI"
           width={1254}
           height={1254}
           sizes="42px"
-          priority
+          preload
         />
         <span>Prime Style AI</span>
       </Link>
       <nav className={styles.desktopNav} aria-label="Influencer navigation">
-        <Link href="/influencers" aria-current="page">Influencers</Link>
+        <Link href="/" aria-current="page">Influencers</Link>
         <button type="button" onClick={() => props.onSectionSelect("outfit-studio")}>Outfit Studio</button>
         <button type="button" onClick={() => props.onSectionSelect("creator-journey")}>How you earn</button>
         <button type="button" onClick={() => props.onSectionSelect("creator-commission")}>Commission</button>
-        <Link href="/merchants">For merchants</Link>
+        <a href="https://primestyleai.com/merchants">For merchants</a>
       </nav>
       <div className={styles.headerActions}>
         <button type="button" className={styles.headerCta} onClick={props.onPrimaryAction}>Join waitlist</button>
@@ -43,7 +43,7 @@ export function InfluencerHeader(props: InfluencerHeaderProps) {
           <button type="button" onClick={() => props.onSectionSelect("outfit-studio")}>Outfit Studio</button>
           <button type="button" onClick={() => props.onSectionSelect("creator-journey")}>How you earn</button>
           <button type="button" onClick={() => props.onSectionSelect("creator-commission")}>Commission</button>
-          <Link href="/merchants" onClick={props.onMenuClose}>For merchants</Link>
+          <a href="https://primestyleai.com/merchants" onClick={props.onMenuClose}>For merchants</a>
           <button type="button" className={styles.mobileCta} onClick={() => { props.onMenuClose(); props.onPrimaryAction(); }}>Join waitlist</button>
         </nav>
       ) : null}

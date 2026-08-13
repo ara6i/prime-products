@@ -35,6 +35,7 @@ export function ProductShopHeader({
               fill
               sizes="10vw"
               priority
+              unoptimized={brandLogo.startsWith("http")}
             />
           ) : (
             <span>{brandName}</span>

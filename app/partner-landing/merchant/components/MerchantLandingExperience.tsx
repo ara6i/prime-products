@@ -21,7 +21,10 @@ export function MerchantLandingExperience() {
       <main>
         <MerchantNetworkJourney onPrimaryAction={interest.open} />
       </main>
-      <MerchantLandingFooter onSectionSelect={navigation.scrollToSection} />
+      <MerchantLandingFooter
+        onCtaClick={interest.open}
+        onSectionSelect={navigation.scrollToSection}
+      />
       <MerchantInterestDialog
         viewModel={viewModel}
         isOpen={interest.isOpen}

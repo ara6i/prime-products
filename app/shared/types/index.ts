@@ -35,6 +35,8 @@ export interface FilterOption {
   count?: number;
 }
 
+export type FilterFacetCounts = Record<string, Record<string, number>>;
+
 /** A color filter option with a swatch */
 export interface ColorFilterOption extends FilterOption {
   swatchColor: string;

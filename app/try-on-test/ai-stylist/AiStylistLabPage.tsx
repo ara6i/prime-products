@@ -16,13 +16,16 @@ import {
   Shirt,
   Sparkles,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
   AiStylistLabStatus,
   AiStylistLabStatusResponse,
   AiStylistGenderSegment,
   AiStylistProductPreview,
+  AiStylistScenarioCoverage,
+  AiStylistScenarioCoverageResponse,
 } from "./types";
+import { ScenarioCoveragePanel } from "./ScenarioCoveragePanel";
 
 const POLL_INTERVAL_MS = 10_000;
 
@@ -305,8 +308,16 @@ export function AiStylistLabPage() {
   const [status, setStatus] = useState<AiStylistLabStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [scenarioRefreshPending, setScenarioRefreshPending] = useState(false);
+  const [scenarioCoverage, setScenarioCoverage] =
+    useState<AiStylistScenarioCoverage | null>(null);
+  const [scenarioError, setScenarioError] = useState<string | null>(null);
+  const refreshInFlightRef = useRef(false);
+  const scenarioRefreshInFlightRef = useRef(false);
 
   const refresh = useCallback(async (quiet = false) => {
+    if (refreshInFlightRef.current) return;
+    refreshInFlightRef.current = true;
     if (!quiet) setLoading(true);
     try {
       const response = await fetch("/api/try-on-test/ai-stylist/status", {
@@ -327,9 +338,68 @@ export function AiStylistLabPage() {
           : "Pipeline status request failed.",
       );
     } finally {
+      refreshInFlightRef.current = false;
       setLoading(false);
     }
   }, []);
+
+  const refreshScenarioCoverage = useCallback(async () => {
+    if (scenarioRefreshInFlightRef.current) return;
+    scenarioRefreshInFlightRef.current = true;
+    try {
+      const response = await fetch(
+        "/api/try-on-test/ai-stylist/scenario-coverage",
+        { cache: "no-store" },
+      );
+      const payload =
+        (await response.json()) as AiStylistScenarioCoverageResponse;
+      if (!response.ok || !payload.ok || !payload.scenarioCoverage) {
+        throw new Error(
+          payload.message || payload.error || "Scenario status request failed.",
+        );
+      }
+      setScenarioCoverage(payload.scenarioCoverage);
+      setScenarioError(null);
+    } catch (requestError) {
+      setScenarioError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Scenario status request failed.",
+      );
+    } finally {
+      scenarioRefreshInFlightRef.current = false;
+    }
+  }, []);
+
+  const refreshScenarios = useCallback(async () => {
+    setScenarioRefreshPending(true);
+    try {
+      const response = await fetch(
+        "/api/try-on-test/ai-stylist/scenario-coverage/refresh",
+        { method: "POST", cache: "no-store" },
+      );
+      const payload = (await response.json()) as {
+        ok?: boolean;
+        error?: string;
+        message?: string;
+      };
+      if (!response.ok || !payload.ok) {
+        throw new Error(
+          payload.message || payload.error || "Scenario refresh failed.",
+        );
+      }
+      await refreshScenarioCoverage();
+      setScenarioError(null);
+    } catch (requestError) {
+      setScenarioError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Scenario refresh failed.",
+      );
+    } finally {
+      setScenarioRefreshPending(false);
+    }
+  }, [refreshScenarioCoverage]);
 
   useEffect(() => {
     const firstRefresh = window.setTimeout(() => void refresh(), 0);
@@ -342,6 +412,21 @@ export function AiStylistLabPage() {
       window.clearInterval(interval);
     };
   }, [refresh]);
+
+  useEffect(() => {
+    const firstRefresh = window.setTimeout(
+      () => void refreshScenarioCoverage(),
+      0,
+    );
+    const interval = window.setInterval(
+      () => void refreshScenarioCoverage(),
+      POLL_INTERVAL_MS,
+    );
+    return () => {
+      window.clearTimeout(firstRefresh);
+      window.clearInterval(interval);
+    };
+  }, [refreshScenarioCoverage]);
 
   const total = status?.summary.total ?? 0;
 
@@ -485,6 +570,13 @@ export function AiStylistLabPage() {
             ))}
         </div>
       </section>
+
+      <ScenarioCoveragePanel
+        coverage={scenarioCoverage}
+        error={scenarioError}
+        onRefresh={() => void refreshScenarios()}
+        refreshPending={scenarioRefreshPending}
+      />
 
       <section className="mt-6">
         <div className="mb-4 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">

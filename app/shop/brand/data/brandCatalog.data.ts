@@ -3,6 +3,7 @@ import type {
   BrandProduct,
   ShopBrandId,
 } from "../types/brandCatalog.types";
+import { rakutenPartnerProducts } from "./rakutenPartnerProducts.data";
 
 const productTemplates: Omit<BrandProduct, "name" | "styleCode">[] = [
   {
@@ -165,11 +166,53 @@ const brands: Array<{
   descriptor: string;
 }> = [
   {
+    id: "bloomingdales",
+    name: "Bloomingdale's",
+    shortName: "BLOOMINGDALE'S",
+    logo: "/images/landing/brand-bloomingdales.svg",
+    descriptor: "The luxury department-store edit, curated for now.",
+  },
+  {
+    id: "ymi-jeans",
+    name: "YMI Jeans",
+    shortName: "YMI",
+    logo: "https://ymijeans.com/cdn/shop/files/black-logo_100x@2x.png?v=1701906525",
+    descriptor: "Los Angeles denim made around confidence and fit.",
+  },
+  {
+    id: "shop-simon",
+    name: "ShopSimon",
+    shortName: "SHOPSIMON",
+    logo: "/images/landing/brand-shopsimon.svg",
+    descriptor: "Designer finds and outlet discoveries in one edit.",
+  },
+  {
+    id: "davids-bridal",
+    name: "David's Bridal",
+    shortName: "DAVID'S BRIDAL",
+    logo: "/images/landing/brand-davids-bridal.svg",
+    descriptor: "Celebration dressing for every aisle and invitation.",
+  },
+  {
+    id: "mens-wearhouse",
+    name: "Men's Wearhouse",
+    shortName: "MEN'S WEARHOUSE",
+    logo: "/images/landing/brand-mens-wearhouse.svg",
+    descriptor: "Modern tailoring and occasion-ready menswear.",
+  },
+  {
+    id: "patbo",
+    name: "PatBO",
+    shortName: "PATBO",
+    logo: "/images/landing/brand-patbo.svg",
+    descriptor: "Brazilian craft, vibrant color, and statement silhouettes.",
+  },
+  {
     id: "nike",
     name: "Nike",
     shortName: "NIKE",
     logo: "/media/global-shop/brand-logos/nike.svg",
-    descriptor: "Motion, remixed for every day.",
+    descriptor: "Performance essentials selected for everyday movement.",
   },
   {
     id: "adidas",
@@ -221,28 +264,43 @@ const brands: Array<{
 ];
 
 export const brandCatalogData: BrandCatalog[] = brands.map(
-  (brand, brandIndex) => ({
-    ...brand,
-    products: productTemplates.map((product, productIndex) => ({
-      ...product,
-      id: `${brand.id}-${product.id}`,
-      name: `${brand.name} ${
-        [
-          "Signal Shell",
-          "Arc Mini",
-          "Cloud Runner 02",
-          "Column Coat",
-          "Nocturne Mini",
-          "Form Ankle Boot",
-          "Volume Jacket",
-          "Cobalt Midi",
-          "Form 02 Handbag",
-          "Mist Track Set",
-          "Cloud Runner 03",
-          "Half-Moon Bag",
-        ][productIndex]
-      }`,
-      styleCode: `${brand.id.slice(0, 3).toUpperCase()}-${String(brandIndex + 1).padStart(2, "0")}${String(productIndex + 1).padStart(2, "0")}`,
-    })),
-  }),
+  (brand, brandIndex) => {
+    const partnerProducts = rakutenPartnerProducts[brand.id];
+
+    return {
+      ...brand,
+      products: partnerProducts
+        ? partnerProducts.map((product, productIndex) => ({
+            ...product,
+            id: `${brand.id}-${product.id}`,
+            badge: productIndex < 2 ? ("NEW" as const) : undefined,
+            season: "Current",
+            sizes: ["See merchant"],
+            description: `${product.name} from ${brand.name}, sourced from the retailer's approved Rakuten catalog snapshot.`,
+            popularity: 100 - productIndex,
+            styleCode: `RKT-${String(brandIndex + 1).padStart(2, "0")}-${String(productIndex + 1).padStart(2, "0")}`,
+          }))
+        : productTemplates.map((product, productIndex) => ({
+            ...product,
+            id: `${brand.id}-${product.id}`,
+            name: `${brand.name} ${
+              [
+                "Signal Shell",
+                "Arc Mini",
+                "Cloud Runner 02",
+                "Column Coat",
+                "Nocturne Mini",
+                "Form Ankle Boot",
+                "Volume Jacket",
+                "Cobalt Midi",
+                "Form 02 Handbag",
+                "Mist Track Set",
+                "Cloud Runner 03",
+                "Half-Moon Bag",
+              ][productIndex]
+            }`,
+            styleCode: `${brand.id.slice(0, 3).toUpperCase()}-${String(brandIndex + 1).padStart(2, "0")}${String(productIndex + 1).padStart(2, "0")}`,
+          })),
+    };
+  },
 );

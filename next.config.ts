@@ -4,16 +4,35 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 
 const DEVELOPER_PORTAL = "https://myaifitting.com";
+const creatorHostRedirectExclusions = [
+  { type: "host" as const, value: "creators\\.primestyleai\\.com" },
+  { type: "host" as const, value: "creators\\.localhost(?::\\d+)?" },
+];
 const siteAuthEnabled = process.env.PRIME_PRODUCTS_SITE_AUTH_ENABLED === "true";
+const buildDistDir = process.env.PRIME_PRODUCTS_DIST_DIR || ".next";
+const isCreatorStaticExport =
+  process.env.PRIME_CREATOR_STATIC_EXPORT === "true";
 const localWorkspaceRoot = path.resolve(process.cwd(), "..");
-const localSdkReactEntry = path.join(localWorkspaceRoot, "primestyleai-tryon-sdk/src/react/index.ts");
-const localSdkReactAlias = path.relative(localWorkspaceRoot, localSdkReactEntry);
+const localSdkRoot = process.env.PRIME_PRODUCTS_LOCAL_SDK_ROOT
+  ? path.resolve(process.env.PRIME_PRODUCTS_LOCAL_SDK_ROOT)
+  : path.join(localWorkspaceRoot, "primestyleai-tryon-sdk");
+const localSdkReactEntry = path.join(localSdkRoot, "src/react/index.ts");
+const localSdkReactAlias = path.relative(
+  localWorkspaceRoot,
+  localSdkReactEntry,
+);
 const useLocalSdkSource =
-  process.env.NODE_ENV === "development" &&
   process.env.PRIME_PRODUCTS_USE_PACKAGED_SDK !== "true" &&
   existsSync(localSdkReactEntry);
 
 const nextConfig: NextConfig = {
+  distDir: buildDistDir,
+  // The creator release exports only the statically rendered influencer page.
+  // Unrelated application routes can be type-checked separately without
+  // blocking this isolated artifact.
+  typescript: {
+    ignoreBuildErrors: isCreatorStaticExport,
+  },
   allowedDevOrigins: ["127.0.0.1", "localhost", "192.168.6.123"],
   serverExternalPackages: ["onnxruntime-node"],
   ...(useLocalSdkSource ? { transpilePackages: ["@primestyleai/tryon"] } : {}),
@@ -36,6 +55,8 @@ const nextConfig: NextConfig = {
       }
     : {}),
   images: {
+    unoptimized: isCreatorStaticExport,
+    qualities: [75, 90],
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
@@ -48,15 +69,34 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "drive.google.com" },
       { protocol: "https", hostname: "images.bloomingdalesassets.com" },
       { protocol: "https", hostname: "image.menswearhouse.com" },
+      { protocol: "https", hostname: "ymijeans.com" },
+      { protocol: "https", hostname: "cdn.sanity.io" },
     ],
   },
   async redirects() {
     return [
-      { source: "/dashboard", destination: `${DEVELOPER_PORTAL}/developer/dashboard?preview=1`, permanent: false },
-      { source: "/dashboard/:path*", destination: `${DEVELOPER_PORTAL}/developer/dashboard/:path*?preview=1`, permanent: false },
+      {
+        source: "/dashboard",
+        destination: `${DEVELOPER_PORTAL}/developer/dashboard?preview=1`,
+        permanent: false,
+        missing: creatorHostRedirectExclusions,
+      },
+      {
+        source: "/dashboard/:path*",
+        destination: `${DEVELOPER_PORTAL}/developer/dashboard/:path*?preview=1`,
+        permanent: false,
+        missing: creatorHostRedirectExclusions,
+      },
       ...(siteAuthEnabled
         ? []
-        : [{ source: "/login", destination: `${DEVELOPER_PORTAL}/developer/login?preview=1`, permanent: false }]),
+        : [
+            {
+              source: "/login",
+              destination: `${DEVELOPER_PORTAL}/developer/login?preview=1`,
+              permanent: false,
+              missing: creatorHostRedirectExclusions,
+            },
+          ]),
     ];
   },
   async rewrites() {
@@ -74,9 +114,12 @@ const nextConfig: NextConfig = {
 
 const isVercel =
   process.env.VERCEL === "1" ||
-  Boolean(process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.NEXT_PUBLIC_VERCEL_URL);
+  Boolean(
+    process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.NEXT_PUBLIC_VERCEL_URL,
+  );
 const sentryEnabled =
-  (process.env.SENTRY_FRONTEND_ENABLED ?? process.env.NEXT_PUBLIC_ENABLE_FRONTEND_SENTRY) === "true" &&
+  (process.env.SENTRY_FRONTEND_ENABLED ??
+    process.env.NEXT_PUBLIC_ENABLE_FRONTEND_SENTRY) === "true" &&
   !isVercel &&
   Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN);
 

@@ -1,18 +1,21 @@
 (() => {
   "use strict";
 
-  const VERSION = "5.1.0";
+  const VERSION = "5.7.0";
   const ROOT_ID = "psa-trendsi-bot-root";
   const CONFIG_KEY = "psaTrendsiMultiV4:config";
   const GLOBAL_THROTTLE_KEY = "psaTrendsiMultiV4:globalThrottle";
   const WORKER_KEY_PREFIX = "psaTrendsiMultiV4:worker:";
   const WORKER_PARAM = "psaWorker";
-  const SHARD_COUNT = 2;
+  const WORKER_VERSION_PARAM = "psaVersion";
+  const RANGE_COUNT = 2;
   const DEFAULT_WOMEN_START_PAGE = 1;
   const DEFAULT_ACTION_DELAY_MS = 7000;
   const DEFAULT_IMPORT_TIMEOUT_MINUTES = 12;
   const DEFAULT_LAUNCH_STAGGER_MS = 3000;
   const SUBMISSION_ATTEMPT_TIMEOUT_MS = 60 * 1000;
+  const CONFIRMATION_RELOAD_MS = 20 * 1000;
+  const MAX_PAGE_RETRIES_BEFORE_DEFER = 5;
   const STORE_NAME = "PrimeStyleAI";
 
   const CATALOGS = [
@@ -27,6 +30,12 @@
       label: "Men",
       baseUrl:
         "https://www.trendsi.com/classify/Men?curPage=1&stockGtList=%5B50%5D",
+    },
+    {
+      id: "shoes",
+      label: "Shoes",
+      baseUrl:
+        "https://www.trendsi.com/classify/Category/Shoes?curPage=1&stockGtList=%5B50%5D",
     },
   ];
 
@@ -121,20 +130,23 @@
     const workers = [];
     let order = 0;
     for (const catalog of CATALOGS) {
-      for (let shardIndex = 0; shardIndex < SHARD_COUNT; shardIndex += 1) {
-        const firstPage =
-          catalog.id === "women" ? womenStartPage + shardIndex : shardIndex + 1;
+      for (let rangeIndex = 0; rangeIndex < RANGE_COUNT; rangeIndex += 1) {
+        const catalogStartPage =
+          catalog.id === "women" ? womenStartPage : 1;
         workers.push({
-          id: `${catalog.id}-${shardIndex + 1}`,
-          label: `${catalog.label} ${shardIndex + 1}/${SHARD_COUNT}`,
+          id: `${catalog.id}-${rangeIndex + 1}`,
+          label: `${catalog.label} ${rangeIndex + 1}/${RANGE_COUNT}`,
           catalogId: catalog.id,
           catalogLabel: catalog.label,
           baseUrl: catalog.baseUrl,
-          shardIndex,
-          shardCount: SHARD_COUNT,
+          rangeIndex,
+          rangeCount: RANGE_COUNT,
           order,
-          firstPage,
-          page: firstPage,
+          catalogStartPage,
+          rangeStart: 0,
+          rangeEnd: 0,
+          firstPage: catalogStartPage,
+          page: catalogStartPage,
           pageCapacity: 90,
           totalItems: 0,
           totalPages: 0,
@@ -148,10 +160,11 @@
           ],
           submittedPages: [],
           submittedProducts: 0,
+          deferredPages: [],
           retryAt: "",
           retryCount: 0,
           lastError: "",
-          lastMessage: `Ready at page ${firstPage}`,
+          lastMessage: `Ready to detect range from page ${catalogStartPage}`,
           logs: [],
           runId: config.runId,
           config: {
@@ -165,8 +178,66 @@
         order += 1;
       }
     }
-    workers.forEach(advancePastCompletedPages);
+    workers.forEach((worker) => {
+      const knownTotalPages = Number(
+        config.totalPagesByCatalog?.[worker.catalogId] || 0,
+      );
+      if (knownTotalPages > 0) {
+        worker.totalPages = knownTotalPages;
+        assignWorkerRange(worker);
+      }
+      advancePastCompletedPages(worker);
+    });
     return workers;
+  }
+
+  function assignWorkerRange(worker) {
+    const totalPages = Math.max(0, Number(worker.totalPages) || 0);
+    if (!totalPages) return false;
+    const catalogStartPage = Math.max(
+      1,
+      Number(worker.catalogStartPage) || DEFAULT_WOMEN_START_PAGE,
+    );
+    const rangeCount = Math.max(1, Number(worker.rangeCount) || RANGE_COUNT);
+    const rangeIndex = Math.min(
+      rangeCount - 1,
+      Math.max(0, Number(worker.rangeIndex) || 0),
+    );
+    const pageCount = Math.max(0, totalPages - catalogStartPage + 1);
+    const baseSize = Math.floor(pageCount / rangeCount);
+    const extraPages = pageCount % rangeCount;
+    const pagesBefore =
+      rangeIndex * baseSize + Math.min(rangeIndex, extraPages);
+    const rangeSize = baseSize + (rangeIndex < extraPages ? 1 : 0);
+    const rangeStart = catalogStartPage + pagesBefore;
+    const rangeEnd = rangeStart + rangeSize - 1;
+    const sameRange =
+      Number(worker.rangeStart) === rangeStart &&
+      Number(worker.rangeEnd) === rangeEnd;
+
+    worker.rangeStart = rangeStart;
+    worker.rangeEnd = rangeEnd;
+    worker.firstPage = rangeStart;
+    if (
+      !sameRange ||
+      Number(worker.page) < rangeStart ||
+      Number(worker.page) > rangeEnd
+    ) {
+      worker.page = rangeStart;
+    }
+    return !sameRange;
+  }
+
+  function workerRangeEnd(worker) {
+    return Math.max(
+      0,
+      Number(worker.rangeEnd) || Number(worker.totalPages) || 0,
+    );
+  }
+
+  function workerFinished(worker) {
+    const endPage = workerRangeEnd(worker);
+    return endPage > 0 && Number(worker.page) > endPage;
   }
 
   function advancePastCompletedPages(worker) {
@@ -176,12 +247,15 @@
         .map((entry) => Number(entry.page))
         .filter(Number.isFinite),
     ]);
-    while (completed.has(worker.page)) worker.page += worker.shardCount;
+    while (completed.has(worker.page) && !workerFinished(worker))
+      worker.page += 1;
     return worker;
   }
 
   function completedPagesByCatalog(workers) {
-    const result = { women: new Set(), men: new Set() };
+    const result = Object.fromEntries(
+      CATALOGS.map((catalog) => [catalog.id, new Set()]),
+    );
     workers.forEach((worker) => {
       if (!result[worker.catalogId]) return;
       (worker.completedPages || []).forEach((page) =>
@@ -218,7 +292,7 @@
     );
     return [...workers].sort(
       (a, b) =>
-        a.shardIndex - b.shardIndex ||
+        a.rangeIndex - b.rangeIndex ||
         (catalogOrder.get(a.catalogId) ?? 99) -
           (catalogOrder.get(b.catalogId) ?? 99),
     );
@@ -241,6 +315,7 @@
     url.searchParams.set("curPage", String(page));
     url.searchParams.set("stockGtList", "[50]");
     url.searchParams.set(WORKER_PARAM, worker.id);
+    url.searchParams.set(WORKER_VERSION_PARAM, VERSION);
     return url.toString();
   }
 
@@ -252,6 +327,7 @@
       current.searchParams.get("curPage") ===
         target.searchParams.get("curPage") &&
       current.searchParams.get("stockGtList") === "[50]"
+      && current.searchParams.get(WORKER_VERSION_PARAM) === VERSION
     );
   }
 
@@ -354,6 +430,24 @@
     );
   }
 
+  function parsedImportProgress(progressDialog) {
+    const text = normalize(progressDialog?.textContent);
+    const match = text.match(/(\d+)\s*\/\s*(\d+)/);
+    return {
+      current: match ? Number(match[1]) : 0,
+      total: match ? Number(match[2]) : 0,
+      text,
+    };
+  }
+
+  function closeCompletedImportProgress(progressDialog) {
+    const close =
+      progressDialog?.querySelector(
+        ".el-dialog__headerbtn, [aria-label='Close'], .el-dialog__close",
+      ) || null;
+    if (close && visible(close)) close.click();
+  }
+
   function toastText() {
     return [
       ...document.querySelectorAll(
@@ -452,19 +546,67 @@
     worker.retryAt = "";
     worker.retryCount = 0;
     worker.lastError = "";
-    worker.page += worker.shardCount;
+    worker.page += 1;
     advancePastCompletedPages(worker);
     appendLog(
       worker,
       `Skipped page ${skippedPage}: all ${existingCount} products already show the Shopify icon; next page ${worker.page}.`,
     );
 
-    if (worker.totalPages > 0 && worker.page > worker.totalPages) {
+    if (workerFinished(worker)) {
       worker.done = true;
       worker.running = false;
       worker.paused = true;
       worker.phase = "done";
-      appendLog(worker, `Finished shard at catalog page ${worker.totalPages}.`);
+      appendLog(
+        worker,
+        `Finished assigned range ${worker.rangeStart}-${worker.rangeEnd}.`,
+      );
+      await writeWorker(worker);
+      return;
+    }
+
+    worker.phase = "collect";
+    await writeWorker(worker);
+    await sleep(400 + Math.round(Math.random() * 400));
+    navigateWorker(worker);
+  }
+
+  async function deferCurrentPage(worker, message) {
+    const deferredPage = Number(worker.page);
+    const existing = (worker.deferredPages || []).filter((entry) => {
+      const page = Number(typeof entry === "object" ? entry.page : entry);
+      return page !== deferredPage;
+    });
+    worker.deferredPages = [
+      ...existing,
+      {
+        page: deferredPage,
+        reason: message,
+        deferredAt: new Date().toISOString(),
+      },
+    ];
+    const retryCount = Math.max(0, Number(worker.retryCount) || 0);
+    worker.inFlight = null;
+    worker.retryAt = "";
+    worker.retryCount = 0;
+    worker.lastError = message;
+    worker.page += 1;
+    advancePastCompletedPages(worker);
+    appendLog(
+      worker,
+      `Deferred page ${deferredPage} after ${retryCount} failed attempts; continuing at page ${worker.page}.`,
+    );
+
+    if (workerFinished(worker)) {
+      worker.done = true;
+      worker.running = false;
+      worker.paused = true;
+      worker.phase = "done-with-deferred";
+      appendLog(
+        worker,
+        `Finished assigned range with ${worker.deferredPages.length} deferred page(s) still needing a later rescan.`,
+      );
       await writeWorker(worker);
       return;
     }
@@ -500,55 +642,77 @@
     );
     if (automaticallySelected) return;
     const select = input.closest(".el-select");
+    const dropdownOptions = () => {
+      const candidates = [
+        ...(select
+          ? select.querySelectorAll(
+              "li.el-select-dropdown__item, [role='option']",
+            )
+          : []),
+        ...document.querySelectorAll(
+          "li.el-select-dropdown__item, [role='option'], .el-select-dropdown li",
+        ),
+      ];
+      return [...new Set(candidates)].filter(
+        (item) => normalize(item.textContent) === expectedText,
+      );
+    };
+    const optionInOpenMenu = (item) => {
+      if (visible(item)) return true;
+      const popup = item.closest(
+        ".el-select-dropdown, .el-popper, [role='listbox']",
+      );
+      if (!popup || popup.getAttribute("aria-hidden") === "true") return false;
+      const style = window.getComputedStyle(popup);
+      return style.display !== "none" && style.visibility !== "hidden";
+    };
+    const currentOption = (allowMountedFallback = false) => {
+      if (normalize(input.value) === expectedText) return true;
+      const candidates = dropdownOptions();
+      return (
+        candidates.find(visible) ||
+        candidates.find(optionInOpenMenu) ||
+        (allowMountedFallback ? candidates.at(-1) : null)
+      );
+    };
     const openDropdown = () => {
-      const target = input.closest(".el-input") || input;
-      target.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+      input.focus({ preventScroll: true });
       input.click();
     };
     openDropdown();
     let option = await waitFor(
-      () => {
-        if (normalize(input.value) === expectedText) return true;
-        const candidates = [
-          ...(select
-            ? select.querySelectorAll(
-                "li.el-select-dropdown__item, [role='option']",
-              )
-            : []),
-          ...document.querySelectorAll(
-            "li.el-select-dropdown__item, [role='option']",
-          ),
-        ];
-        return (
-          candidates.find(
-            (item) =>
-              visible(item) && normalize(item.textContent) === expectedText,
-          ) || null
-        );
-      },
-      remaining(8000),
+      () => currentOption(false),
+      remaining(4000),
       150,
     );
     if (!option) {
+      // Element UI can mount the real options before its popper receives a
+      // measurable rectangle. Use the newest matching mounted option instead
+      // of clicking the selector again and accidentally closing the menu.
+      option = currentOption(true);
+    }
+    if (!option) {
+      input.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key: "Escape",
+          code: "Escape",
+          bubbles: true,
+        }),
+      );
       openDropdown();
       option = await waitFor(
-        () =>
-          [
-            ...document.querySelectorAll(
-              "li.el-select-dropdown__item, [role='option']",
-            ),
-          ].find(
-            (item) =>
-              visible(item) && normalize(item.textContent) === expectedText,
-          ) || null,
-        remaining(5000),
+        () => currentOption(true),
+        remaining(4000),
         150,
       );
     }
     if (option === true) return;
     if (!option)
       throw new Error(`Dropdown option “${expectedText}” was not found.`);
-    option.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    option.scrollIntoView({ block: "nearest" });
+    option.dispatchEvent(
+      new MouseEvent("mousedown", { bubbles: true, cancelable: true }),
+    );
     option.click();
     const selected = await waitFor(
       () => normalize(input.value) === expectedText,
@@ -623,6 +787,230 @@
     }
   }
 
+  async function renewSubmissionSlot(workerId) {
+    const response = await sendRuntimeMessage({
+      type: "PSA_ACQUIRE_SUBMISSION_SLOT",
+      workerId,
+    });
+    if (!response?.ok || !response.acquired) {
+      throw new Error(
+        response?.error ||
+          "Lost the exclusive Trendsi submission slot during Shopify import.",
+      );
+    }
+  }
+
+  async function waitForShopifyConfirmation(worker, selectedCount, productIds) {
+    const expectedIds = [...new Set(productIds.filter(Boolean))];
+    const expectedSet = new Set(expectedIds);
+    const timeoutMs =
+      Math.max(1, Number(worker.config.importTimeoutMinutes) || 12) *
+      60 *
+      1000;
+    const startedAt =
+      Date.parse(worker.inFlight?.startedAt || "") || Date.now();
+    const deadline = startedAt + timeoutMs;
+    let lastLeaseRenewal = 0;
+    let lastStatusWrite = 0;
+    let progressCurrent = 0;
+    let progressTotal = selectedCount;
+    let sawProgress = false;
+    let sawCompleteProgress = false;
+    let confirmedCount = 0;
+    let reloadAt = Date.now() + CONFIRMATION_RELOAD_MS;
+
+    while (Date.now() < deadline) {
+      const error = limitOrImportError();
+      if (error) throw new Error(error);
+
+      if (Date.now() - lastLeaseRenewal >= 60 * 1000) {
+        await renewSubmissionSlot(worker.id);
+        lastLeaseRenewal = Date.now();
+      }
+
+      const progressDialog = visibleImportProgress();
+      if (progressDialog) {
+        sawProgress = true;
+        const progress = parsedImportProgress(progressDialog);
+        progressCurrent = Math.max(progressCurrent, progress.current);
+        progressTotal = Math.max(
+          progressTotal,
+          progress.total || selectedCount,
+        );
+        if (
+          progress.current > 0 &&
+          progress.total > 0 &&
+          progress.current >= progress.total
+        ) {
+          sawCompleteProgress = true;
+          closeCompletedImportProgress(progressDialog);
+        }
+      }
+
+      const currentState = pageProductState();
+      confirmedCount = currentState.existingIds.filter((id) =>
+        expectedSet.has(id),
+      ).length;
+      if (expectedIds.length > 0 && confirmedCount === expectedIds.length) {
+        return { confirmedCount, progressCurrent, progressTotal };
+      }
+
+      if (Date.now() - lastStatusWrite >= 5000) {
+        const controlState = await readWorker(worker.id);
+        if (controlState) {
+          worker.tabId = controlState.tabId;
+          worker.running = controlState.running;
+          worker.paused = controlState.paused;
+        }
+        worker.phase = "confirm";
+        worker.lastError = "";
+        worker.lastMessage = `Shopify import ${progressCurrent}/${progressTotal}; ${confirmedCount}/${expectedIds.length} icons confirmed.`;
+        worker.inFlight = {
+          ...(worker.inFlight || {}),
+          page: worker.page,
+          selectedCount,
+          productIds: expectedIds,
+          startedAt: new Date(startedAt).toISOString(),
+          progressCurrent,
+          progressTotal,
+          confirmedCount,
+          updatedAt: new Date().toISOString(),
+        };
+        await writeWorker(worker);
+        lastStatusWrite = Date.now();
+      }
+
+      if (!progressDialog && Date.now() >= reloadAt) {
+        appendLog(
+          worker,
+          `Reloading page ${worker.page} to refresh Shopify icons (${confirmedCount}/${expectedIds.length} confirmed).`,
+        );
+        await writeWorker(worker);
+        window.location.reload();
+        await new Promise(() => {});
+      }
+
+      await sleep(progressDialog ? 750 : 1250);
+    }
+
+    const progressStatus = sawProgress
+      ? `${progressCurrent}/${progressTotal}`
+      : "not detected";
+    const completionStatus = sawCompleteProgress
+      ? "Trendsi reached its final progress count, but Shopify icons never appeared."
+      : "Trendsi never reached its final progress count.";
+    worker.inFlight = null;
+    await writeWorker(worker);
+    throw new Error(
+      `Shopify confirmation timed out: ${confirmedCount}/${expectedIds.length} product icons confirmed; import progress ${progressStatus}. ${completionStatus}`,
+    );
+  }
+
+  async function completeShopifyConfirmedPage(
+    worker,
+    selectedCount,
+    productIds,
+    confirmation,
+  ) {
+    const controlState = await readWorker(worker.id);
+    const pausedDuringSubmission = Boolean(
+      controlState && (controlState.paused || !controlState.running),
+    );
+    if (controlState) {
+      worker.tabId = controlState.tabId;
+      worker.running = controlState.running;
+      worker.paused = controlState.paused;
+    }
+    const submittedPage = worker.page;
+    worker.submittedPages = [
+      ...(worker.submittedPages || []),
+      {
+        page: submittedPage,
+        selectedCount,
+        productIds,
+        submittedAt: new Date().toISOString(),
+      },
+    ].slice(-800);
+    worker.submittedProducts =
+      Number(worker.submittedProducts || 0) + selectedCount;
+    worker.inFlight = null;
+    worker.retryAt = "";
+    worker.retryCount = 0;
+    worker.lastError = "";
+    worker.page += 1;
+    advancePastCompletedPages(worker);
+    appendLog(
+      worker,
+      `Shopify-confirmed page ${submittedPage} (${confirmation.confirmedCount}/${selectedCount} icons); next page ${worker.page}.`,
+    );
+
+    if (workerFinished(worker)) {
+      worker.done = true;
+      worker.running = false;
+      worker.paused = true;
+      worker.phase = "done";
+      appendLog(
+        worker,
+        `Finished assigned range ${worker.rangeStart}-${worker.rangeEnd}.`,
+      );
+      await writeWorker(worker);
+      return;
+    }
+
+    if (pausedDuringSubmission) {
+      worker.phase = "paused";
+      appendLog(worker, "Paused after the current page was Shopify-confirmed.");
+      await writeWorker(worker);
+      return;
+    }
+
+    worker.phase = "collect";
+    await writeWorker(worker);
+    await sleep(750 + Math.round(Math.random() * 800));
+    navigateWorker(worker);
+  }
+
+  async function resumeShopifyConfirmation(worker) {
+    if (!sameWorkerPage(worker)) {
+      navigateWorker(worker);
+      return;
+    }
+    await waitForStableProductGrid(30000);
+    const inFlight = worker.inFlight || {};
+    const productIds = [...new Set((inFlight.productIds || []).filter(Boolean))];
+    const selectedCount = Number(inFlight.selectedCount) || productIds.length;
+    if (!productIds.length || Number(inFlight.page) !== Number(worker.page)) {
+      worker.inFlight = null;
+      worker.phase = "collect";
+      worker.lastError = "";
+      await writeWorker(worker);
+      await collectCurrentPage(worker);
+      return;
+    }
+
+    const slotAcquired = await acquireSubmissionSlot(worker);
+    if (!slotAcquired) return;
+    try {
+      worker.phase = "confirm";
+      worker.lastError = "";
+      worker.lastMessage = `Reloaded page ${worker.page}; verifying Shopify icons.`;
+      await writeWorker(worker);
+      const confirmation = await waitForShopifyConfirmation(
+        worker,
+        selectedCount,
+        productIds,
+      );
+      await completeShopifyConfirmedPage(
+        worker,
+        selectedCount,
+        productIds,
+        confirmation,
+      );
+    } finally {
+      await releaseSubmissionSlot(worker.id);
+    }
+  }
+
   async function submitCurrentPage(worker, selectedCount, productIds) {
     const slotAcquired = await acquireSubmissionSlot(worker);
     if (!slotAcquired) return;
@@ -686,78 +1074,46 @@
 
       await pacedDelay(worker, 0.75);
       submit.click();
-      const timeoutMs = attemptTimeout(
-        Math.max(1, worker.config.importTimeoutMinutes) * 60 * 1000,
-      );
-      const accepted = await waitFor(
+      const started = await waitFor(
         () => {
           const error = limitOrImportError();
           if (error) throw new Error(error);
           return visibleImportProgress() || null;
         },
-        timeoutMs,
+        attemptTimeout(20000),
         200,
       );
-      if (!accepted)
+      if (!started)
         throw new Error(
           "Trendsi did not confirm that the Shopify import started.",
         );
 
-      const controlState = await readWorker(worker.id);
-      const pausedDuringSubmission = Boolean(
-        controlState && (controlState.paused || !controlState.running),
-      );
-      if (controlState) {
-        worker.tabId = controlState.tabId;
-        worker.running = controlState.running;
-        worker.paused = controlState.paused;
-      }
-      const submittedPage = worker.page;
-      worker.submittedPages = [
-        ...(worker.submittedPages || []),
-        {
-          page: submittedPage,
-          selectedCount,
-          productIds,
-          submittedAt: new Date().toISOString(),
-        },
-      ].slice(-800);
-      worker.submittedProducts =
-        Number(worker.submittedProducts || 0) + selectedCount;
-      worker.retryAt = "";
-      worker.retryCount = 0;
+      worker.phase = "confirm";
       worker.lastError = "";
-      worker.page += worker.shardCount;
-      advancePastCompletedPages(worker);
-      appendLog(
+      worker.inFlight = {
+        page: worker.page,
+        selectedCount,
+        productIds: [...new Set(productIds.filter(Boolean))],
+        startedAt: new Date().toISOString(),
+        progressCurrent: 0,
+        progressTotal: selectedCount,
+        confirmedCount: 0,
+        updatedAt: new Date().toISOString(),
+      };
+      await writeWorker(worker);
+
+      const confirmation = await waitForShopifyConfirmation(
         worker,
-        `Accepted page ${submittedPage} (${selectedCount} selected); next page ${worker.page}.`,
+        selectedCount,
+        productIds,
       );
 
-      if (worker.totalPages > 0 && worker.page > worker.totalPages) {
-        worker.done = true;
-        worker.running = false;
-        worker.paused = true;
-        worker.phase = "done";
-        appendLog(
-          worker,
-          `Finished shard at catalog page ${worker.totalPages}.`,
-        );
-        await writeWorker(worker);
-        return;
-      }
-
-      if (pausedDuringSubmission) {
-        worker.phase = "paused";
-        appendLog(worker, "Paused after the current page was accepted.");
-        await writeWorker(worker);
-        return;
-      }
-
-      worker.phase = "collect";
-      await writeWorker(worker);
-      await sleep(750 + Math.round(Math.random() * 800));
-      navigateWorker(worker);
+      await completeShopifyConfirmedPage(
+        worker,
+        selectedCount,
+        productIds,
+        confirmation,
+      );
     } finally {
       await releaseSubmissionSlot(worker.id);
     }
@@ -765,14 +1121,14 @@
 
   async function collectCurrentPage(worker) {
     advancePastCompletedPages(worker);
-    if (worker.totalPages > 0 && worker.page > worker.totalPages) {
+    if (workerFinished(worker)) {
       worker.done = true;
       worker.running = false;
       worker.paused = true;
       worker.phase = "done";
       appendLog(
         worker,
-        `No pages remain after ${worker.page - worker.shardCount}.`,
+        `No pages remain in range ${worker.rangeStart}-${worker.rangeEnd}.`,
       );
       await writeWorker(worker);
       return;
@@ -794,6 +1150,31 @@
     ]);
 
     const detectedTotal = parseTotalItems();
+    if (detectedTotal) {
+      worker.pageCapacity = Math.max(
+        worker.pageCapacity || 0,
+        stableCardCount || 0,
+        90,
+      );
+      worker.totalItems = detectedTotal;
+      worker.totalPages = Math.ceil(detectedTotal / worker.pageCapacity);
+      const pageBeforeRangeAssignment = worker.page;
+      const rangeChanged = assignWorkerRange(worker);
+      advancePastCompletedPages(worker);
+      if (rangeChanged) {
+        appendLog(
+          worker,
+          `Assigned ${worker.catalogLabel} pages ${worker.rangeStart}-${worker.rangeEnd}.`,
+        );
+      }
+      if (worker.page !== pageBeforeRangeAssignment) {
+        worker.phase = "navigate";
+        await writeWorker(worker);
+        navigateWorker(worker);
+        return;
+      }
+      if (rangeChanged) await writeWorker(worker);
+    }
     if (!stableCardCount || !bulkButton) {
       const estimatedPages = detectedTotal
         ? Math.ceil(detectedTotal / Math.max(1, worker.pageCapacity || 90))
@@ -861,9 +1242,10 @@
       selectedCount || 0,
       90,
     );
-    if (totalItems) {
+    if (totalItems && !worker.totalPages) {
       worker.totalItems = totalItems;
       worker.totalPages = Math.ceil(totalItems / worker.pageCapacity);
+      assignWorkerRange(worker);
     }
     if (selectedCount === 0 && pageState.missingIds.length === 0) {
       await advanceSkippedPage(worker, pageState.existingIds.length);
@@ -954,16 +1336,28 @@
       return;
     }
     worker.retryCount = Math.max(0, Number(worker.retryCount) || 0) + 1;
+    const globalError =
+      /1000|sku.{0,30}limit|24\s*hours?|429|too many|rate|throttl|too frequent|restricted/i.test(
+        message,
+      );
+    const deferrableError =
+      /did not select the page products|stable product grid|Bulk Select|Dropdown option|Dropdown did not select|selector was not found|Submission attempt exceeded|did not confirm that the Shopify import started/i.test(
+        message,
+      );
+    if (
+      deferrableError &&
+      !globalError &&
+      worker.retryCount >= MAX_PAGE_RETRIES_BEFORE_DEFER
+    ) {
+      await deferCurrentPage(worker, message);
+      return;
+    }
     const delayMs = retryDelayMs(message, worker.retryCount);
     worker.retryAt = new Date(Date.now() + delayMs).toISOString();
     worker.running = true;
     worker.paused = false;
     worker.phase = "retry";
     worker.lastError = message;
-    const globalError =
-      /1000|sku.{0,30}limit|24\s*hours?|429|too many|rate|throttl|too frequent|restricted/i.test(
-        message,
-      );
     if (globalError) await setGlobalThrottle(message, worker.retryAt);
     const waitLabel =
       delayMs < 60000
@@ -1045,7 +1439,8 @@
 
       worker.startAfter = "";
       worker.retryAt = "";
-      await collectCurrentPage(worker);
+      if (worker.inFlight) await resumeShopifyConfirmation(worker);
+      else await collectCurrentPage(worker);
     } catch (error) {
       worker = (await readWorker(workerId)) || worker;
       await scheduleAutomaticRetry(
@@ -1065,6 +1460,7 @@
       document.documentElement.appendChild(root);
     }
     root.dataset.mode = mode;
+    root.dataset.version = VERSION;
     root.classList.toggle("psa-collapsed", panelCollapsed);
     return root;
   }
@@ -1091,7 +1487,7 @@
 
   async function initializeAllWorkers(root) {
     if (isSignedOut()) {
-      window.alert("Sign into Trendsi first, then launch the four workers.");
+      window.alert("Sign into Trendsi first, then launch the six workers.");
       return;
     }
     const womenStartPage = Math.max(
@@ -1118,7 +1514,7 @@
       launchStaggerMs: DEFAULT_LAUNCH_STAGGER_MS,
       // An explicit rebuild is a catalog rescan. The Shopify icon is the
       // source of truth, so previously accepted pages must be visited again.
-      completedPagesByCatalog: { women: [], men: [] },
+      completedPagesByCatalog: { women: [], men: [], shoes: [] },
       preservedSubmittedPages:
         Number(existingConfig?.preservedSubmittedPages || 0) +
         currentTotals.pages,
@@ -1145,30 +1541,37 @@
     await renderManager();
   }
 
-  async function migrateToFourWorkers() {
+  async function migrateToSixWorkers() {
     const [existingConfig, existingWorkers] = await Promise.all([
       readConfig(),
       readAllWorkers(),
     ]);
+    const expectedCatalogIds = new Set(CATALOGS.map((catalog) => catalog.id));
+    const expectedWorkerCount = CATALOGS.length * RANGE_COUNT;
     const alreadyMigrated =
       existingConfig?.version === VERSION &&
-      existingWorkers.length === 4 &&
+      existingWorkers.length === expectedWorkerCount &&
       existingWorkers.every(
         (worker) =>
-          ["women", "men"].includes(worker.catalogId) &&
-          worker.shardCount === SHARD_COUNT,
+          expectedCatalogIds.has(worker.catalogId) &&
+          worker.rangeCount === RANGE_COUNT &&
+          Number(worker.rangeStart) > 0 &&
+          Number(worker.rangeEnd) >= Number(worker.rangeStart),
       );
     if (alreadyMigrated) return false;
 
-    await sendRuntimeMessage({ type: "PSA_CLOSE_ALL_WORKER_TABS" });
-    const currentTotals = submissionTotals(existingWorkers);
+    const requiresShoeConfirmationRescan =
+      existingConfig?.version === "5.3.0";
     const womenStartPage = Math.max(
       1,
       Number(existingConfig?.womenStartPage) || DEFAULT_WOMEN_START_PAGE,
     );
+    const migratedCompletedPages = completedPagesByCatalog(existingWorkers);
+    if (requiresShoeConfirmationRescan) migratedCompletedPages.shoes = [];
     const config = {
+      ...existingConfig,
       version: VERSION,
-      runId: createRunId(),
+      runId: existingConfig?.runId || createRunId(),
       storeName: STORE_NAME,
       womenStartPage,
       actionDelayMs: Math.max(
@@ -1177,30 +1580,110 @@
       ),
       importTimeoutMinutes: DEFAULT_IMPORT_TIMEOUT_MINUTES,
       launchStaggerMs: DEFAULT_LAUNCH_STAGGER_MS,
-      completedPagesByCatalog: completedPagesByCatalog(existingWorkers),
-      preservedSubmittedPages:
-        Number(existingConfig?.preservedSubmittedPages || 0) +
-        currentTotals.pages,
-      preservedSubmittedProducts:
-        Number(existingConfig?.preservedSubmittedProducts || 0) +
-        currentTotals.products,
+      completedPagesByCatalog: migratedCompletedPages,
       migratedAt: new Date().toISOString(),
       startedAt: existingConfig?.startedAt || new Date().toISOString(),
     };
-    const workers = createWorkerDefinitions(womenStartPage, config);
-    const existingKeys = existingWorkers.map((worker) => workerKey(worker.id));
-    if (existingKeys.length) await storageRemove(existingKeys);
+    const definitions = createWorkerDefinitions(womenStartPage, config);
+    const existingById = new Map(
+      existingWorkers.map((worker) => [worker.id, worker]),
+    );
+    const now = Date.now();
+    const newWorkers = [];
+    const workers = definitions.map((definition) => {
+      const existing = existingById.get(definition.id);
+      if (existing) {
+        if (
+          requiresShoeConfirmationRescan &&
+          definition.catalogId === "shoes"
+        ) {
+          const worker = {
+            ...existing,
+            label: definition.label,
+            catalogLabel: definition.catalogLabel,
+            baseUrl: definition.baseUrl,
+            rangeIndex: definition.rangeIndex,
+            rangeCount: definition.rangeCount,
+            order: definition.order,
+            config: definition.config,
+            page: Math.max(1, Number(existing.rangeStart) || 1),
+            firstPage: Math.max(1, Number(existing.rangeStart) || 1),
+            completedPages: [],
+            submittedPages: [],
+            submittedProducts: 0,
+            running: true,
+            paused: false,
+            done: false,
+            phase: "collect",
+            retryAt: "",
+            retryCount: 0,
+            lastError: "",
+            tabId: undefined,
+            startAfter: new Date(
+              now +
+                (definition.rangeIndex + 1) * DEFAULT_LAUNCH_STAGGER_MS,
+            ).toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          appendLog(
+            worker,
+            "V5.4 reset this Shoes range because earlier Adding To Store messages were not Shopify confirmation.",
+          );
+          newWorkers.push(worker);
+          return worker;
+        }
+        return {
+          ...existing,
+          label: definition.label,
+          catalogLabel: definition.catalogLabel,
+          baseUrl: definition.baseUrl,
+          rangeIndex: definition.rangeIndex,
+          rangeCount: definition.rangeCount,
+          order: definition.order,
+          config: definition.config,
+          updatedAt: new Date().toISOString(),
+        };
+      }
+      const worker = {
+        ...definition,
+        running: definition.catalogId === "shoes",
+        paused: definition.catalogId !== "shoes",
+        phase: definition.catalogId === "shoes" ? "collect" : "paused",
+        startAfter:
+          definition.catalogId === "shoes"
+            ? new Date(
+                now +
+                  (definition.rangeIndex + 1) * DEFAULT_LAUNCH_STAGGER_MS,
+              ).toISOString()
+            : "",
+      };
+      if (definition.catalogId === "shoes") {
+        appendLog(worker, "Added automatically by the V5.3 shoe upgrade.");
+        newWorkers.push(worker);
+      }
+      return worker;
+    });
+    const expectedKeys = new Set(workers.map((worker) => workerKey(worker.id)));
+    const obsoleteKeys = existingWorkers
+      .map((worker) => workerKey(worker.id))
+      .filter((key) => !expectedKeys.has(key));
+    if (obsoleteKeys.length) await storageRemove(obsoleteKeys);
     await storageSet({
       [CONFIG_KEY]: config,
-      [GLOBAL_THROTTLE_KEY]: {
-        blockedUntil: "",
-        message: "",
-        updatedAt: new Date().toISOString(),
-      },
       ...Object.fromEntries(
         workers.map((worker) => [workerKey(worker.id), worker]),
       ),
     });
+    if (newWorkers.length) {
+      await sendRuntimeMessage({
+        type: "PSA_LAUNCH_WORKERS",
+        workers: newWorkers.map((worker) => ({
+          id: worker.id,
+          url: workerPageUrl(worker),
+          key: workerKey(worker.id),
+        })),
+      });
+    }
     return true;
   }
 
@@ -1266,7 +1749,10 @@
   }
 
   function workerStateLabel(worker) {
-    if (worker.done) return "Done";
+    if (worker.done)
+      return worker.deferredPages?.length
+        ? `Done · ${worker.deferredPages.length} deferred`
+        : "Done";
     if (worker.paused) return `Paused · ${worker.phase}`;
     return worker.phase || "running";
   }
@@ -1302,7 +1788,7 @@
             (worker) => `
           <button class="psa-worker-row" data-worker-id="${escapeHtml(worker.id)}" type="button">
             <span><strong>${escapeHtml(worker.label)}</strong><small>${escapeHtml(workerStateLabel(worker))}</small></span>
-            <span>Page <strong>${escapeHtml(worker.page)}</strong>${worker.totalPages ? ` / ${escapeHtml(worker.totalPages)}` : ""}<small>${escapeHtml(worker.submittedPages?.length || 0)} submitted</small></span>
+            <span>Page <strong>${escapeHtml(worker.page)}</strong>${worker.totalPages ? ` / ${escapeHtml(worker.totalPages)}` : ""}<small>${worker.rangeStart ? `range ${escapeHtml(worker.rangeStart)}-${escapeHtml(worker.rangeEnd)} · ` : ""}${escapeHtml(worker.submittedPages?.length || 0)} recorded${worker.deferredPages?.length ? ` · ${escapeHtml(worker.deferredPages.length)} deferred` : ""}</small></span>
           </button>`,
           )
           .join("")
@@ -1316,19 +1802,19 @@
     root.innerHTML = `
       <div class="psa-bot-card">
         <div class="psa-bot-header">
-          <div class="psa-bot-title">PrimeStyleAI Trendsi Bot · V5 · 4 Workers</div>
+          <div class="psa-bot-title">PrimeStyleAI Trendsi Bot · V${escapeHtml(VERSION)} · 6 Range Workers</div>
           <button class="psa-bot-collapse" type="button">${panelCollapsed ? "+" : "−"}</button>
         </div>
         <div class="psa-bot-body">
           <div class="psa-summary-grid">
             <div><small>Workers</small><strong>${active} active · ${done} done</strong></div>
-            <div><small>Submitted</small><strong>${submittedPages} pages · ${attemptedProducts.toLocaleString()} selected</strong></div>
+            <div><small>Recorded attempts</small><strong>${submittedPages} pages · ${attemptedProducts.toLocaleString()} selected</strong></div>
           </div>
           <div class="psa-warning ${signedOut ? "psa-danger" : ""}">
             ${
               signedOut
                 ? "Trendsi is signed out. Sign in before launching or resuming workers."
-                : "Two Women workers and two Men workers. Shopify-marked products are skipped; only missing products above 50 inventory are submitted as Draft."
+                : "Two Women, two Men, and two Shoes range workers. Shopify-marked products are skipped; only missing products above 50 inventory are submitted as Draft."
             }
           </div>
           <div class="psa-grid">
@@ -1343,12 +1829,13 @@
           </div>
           <div class="psa-throttle">${escapeHtml(throttleText)}</div>
           <div class="psa-manager-actions">
-            <button id="psa-launch-all" class="psa-button psa-primary" type="button" ${signedOut || active ? "disabled" : ""}>${workers.length ? "Rescan 4 workers" : "Create 4 workers"}</button>
+            <button id="psa-launch-all" class="psa-button psa-primary" type="button" ${signedOut || active ? "disabled" : ""}>${workers.length ? "Rescan 6 workers" : "Create 6 workers"}</button>
             <button id="psa-pause-all" class="psa-button psa-secondary" type="button" ${!active ? "disabled" : ""}>Pause all</button>
             <button id="psa-resume-all" class="psa-button psa-secondary" type="button" ${signedOut || !workers.some((worker) => worker.paused && !worker.done) ? "disabled" : ""}>Resume all</button>
           </div>
           <div class="psa-worker-list">${workerRows}</div>
-          <div class="psa-footnote">Set Women start page to 1 for a complete rescan. Each worker advances by two; Shopify-icon products and fully imported pages are skipped automatically.</div>
+          <div class="psa-footnote">Set Women start page to 1 for a complete rescan. Each catalog is split into two non-overlapping page ranges; Shopify-icon products and fully imported pages are skipped automatically.</div>
+          <div class="psa-footnote">Legacy Women and Men numbers are historical attempts, not Shopify proof. V5.7 closes duplicate worker tabs, counts new pages only after icon confirmation, and defers a page after five repeated UI failures so one product cannot block a whole range.</div>
         </div>
       </div>`;
     bindCollapse(root);
@@ -1358,7 +1845,7 @@
         if (
           workers.length &&
           !window.confirm(
-            "Rescan Women from the selected start page and Men from page 1? Shopify-icon products will be skipped, and existing Shopify products will not be deleted.",
+            "Rescan Women from the selected start page, plus Men and Shoes from page 1? Shopify-icon products will be skipped, and existing Shopify products will not be deleted.",
           )
         )
           return;
@@ -1387,17 +1874,18 @@
     root.innerHTML = `
       <div class="psa-bot-card">
         <div class="psa-bot-header">
-          <div class="psa-bot-title">Trendsi Worker · ${escapeHtml(worker.label)}</div>
+          <div class="psa-bot-title">Trendsi Worker · V${escapeHtml(VERSION)} · ${escapeHtml(worker.label)}</div>
           <button class="psa-bot-collapse" type="button">${panelCollapsed ? "+" : "−"}</button>
         </div>
         <div class="psa-bot-body">
           <dl class="psa-status">
             <dt>State</dt><dd>${escapeHtml(workerStateLabel(worker))}</dd>
             <dt>Catalog</dt><dd>${escapeHtml(worker.catalogLabel)}</dd>
-            <dt>Shard</dt><dd>${worker.shardIndex + 1} of ${worker.shardCount}</dd>
+            <dt>Worker</dt><dd>${worker.rangeIndex + 1} of ${worker.rangeCount}</dd>
             <dt>Page</dt><dd>${escapeHtml(worker.page)}${worker.totalPages ? ` / ${escapeHtml(worker.totalPages)}` : " / detecting…"}</dd>
-            <dt>Sequence</dt><dd>${escapeHtml(worker.firstPage)}, ${escapeHtml(worker.firstPage + worker.shardCount)}, ${escapeHtml(worker.firstPage + 2 * worker.shardCount)}…</dd>
+            <dt>Range</dt><dd>${worker.rangeStart ? `${escapeHtml(worker.rangeStart)}-${escapeHtml(worker.rangeEnd)}` : "Detecting…"}</dd>
             <dt>Submitted</dt><dd>${escapeHtml(worker.submittedPages?.length || 0)} pages · ${Number(worker.submittedProducts || 0).toLocaleString()} selected</dd>
+            <dt>Deferred</dt><dd>${escapeHtml(worker.deferredPages?.length || 0)} pages</dd>
             <dt>Retry</dt><dd>${escapeHtml(retryLabel)}</dd>
             <dt>Last result</dt><dd>${escapeHtml(worker.lastError || worker.lastMessage)}</dd>
           </dl>
@@ -1406,7 +1894,7 @@
             <button id="psa-worker-resume" class="psa-button psa-primary" type="button" ${!worker.paused || worker.done || isSignedOut() ? "disabled" : ""}>Resume worker</button>
           </div>
           <div class="psa-log">${escapeHtml((worker.logs || []).slice(-12).join("\n") || "Waiting to start.")}</div>
-          <div class="psa-footnote">This tab owns only its page sequence. Shopify imports continue in the background after Trendsi accepts each page.</div>
+          <div class="psa-footnote">This tab owns only its fixed page range. It advances after Shopify-icon confirmation, or defers a page after five repeated UI failures so the range can continue.</div>
         </div>
       </div>`;
     bindCollapse(root);
@@ -1477,7 +1965,7 @@
 
     if (!workerId) {
       await sendRuntimeMessage({ type: "PSA_CLOSE_DUPLICATE_MANAGER_TABS" });
-      await migrateToFourWorkers();
+      await migrateToSixWorkers();
       await renderManager();
       return;
     }
@@ -1494,6 +1982,6 @@
   }
 
   initialize().catch((error) =>
-    console.error("[PrimeStyleAI Trendsi V5]", error),
+    console.error(`[PrimeStyleAI Trendsi V${VERSION}]`, error),
   );
 })();

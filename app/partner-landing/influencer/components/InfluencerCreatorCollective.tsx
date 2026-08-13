@@ -1,36 +1,35 @@
 import { ArrowUpRight, Camera, FilmStrip, ShareNetwork, Sparkle } from "@phosphor-icons/react";
 import Image from "next/image";
-import Link from "next/link";
 import styles from "./influencerLanding.module.css";
 
 const CREATOR_STORIES = [
   {
-    src: "/media/partner-landing/creator-collective-01.png",
+    src: "/media/partner-landing/optimized/creator-collective-01.webp",
     step: "Try it on",
     note: "See the full look on you",
     icon: Camera,
   },
   {
-    src: "/media/partner-landing/creator-collective-02.png",
+    src: "/media/partner-landing/optimized/creator-collective-02.webp",
     step: "Build the look",
     note: "Style campaign pieces together",
     icon: Sparkle,
   },
   {
-    src: "/media/partner-landing/creator-collective-03.png",
+    src: "/media/partner-landing/optimized/creator-collective-03.webp",
     step: "Direct the story",
     note: "Create photos and video",
     icon: FilmStrip,
   },
   {
-    src: "/media/partner-landing/creator-collective-04.png",
+    src: "/media/partner-landing/optimized/creator-collective-04.webp",
     step: "Share & earn",
     note: "Publish every shoppable look",
     icon: ShareNetwork,
   },
 ] as const;
 
-export function InfluencerCreatorCollective() {
+export function InfluencerCreatorCollective({ onCtaClick }: { onCtaClick: () => void }) {
   return (
     <section
       id="creator-collective"
@@ -48,9 +47,9 @@ export function InfluencerCreatorCollective() {
           Try on campaign pieces yourself, build complete outfits, and turn every look into
           polished photos and videos your audience can discover, share, and shop.
         </p>
-        <Link className={styles.collectiveCta} href="/influencers/dashboard/outfit-studio">
+        <button type="button" className={styles.collectiveCta} onClick={onCtaClick}>
           Open Outfit Studio <ArrowUpRight size={18} weight="bold" />
-        </Link>
+        </button>
       </div>
 
       <div className={styles.collectivePortraits}>

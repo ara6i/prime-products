@@ -632,8 +632,8 @@
   font-size: 14px;
   line-height: 1.65;
 }
-.stylistHeroCopy button,
-.stylistEditorialCopy button {
+.stylistPrimaryAction,
+.stylistEditorialAction {
   display: inline-flex;
   min-height: 42px;
   align-items: center;
@@ -645,6 +645,7 @@
   color: #6430cc;
   font-size: 12px;
   font-weight: 850;
+  text-decoration: none;
   cursor: pointer;
 }
 .stylistHeroModel {

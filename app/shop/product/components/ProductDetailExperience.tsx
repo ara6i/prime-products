@@ -10,15 +10,17 @@ import styles from "./productDetail.module.css";
 
 interface ProductDetailExperienceProps {
   product: ProductDetailViewModel;
+  theme?: "default" | "ai-stylist";
 }
 
 export function ProductDetailExperience({
   product,
+  theme = "default",
 }: ProductDetailExperienceProps) {
   const state = useProductDetail(product);
 
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${theme === "ai-stylist" ? styles.aiStylistTheme : ""}`}>
       <ProductShopHeader
         brandName={product.brandName}
         brandLogo={product.brandLogo}

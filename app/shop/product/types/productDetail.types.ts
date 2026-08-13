@@ -36,6 +36,12 @@ export type ProductRelatedItem = {
   badge?: string;
 };
 
+export type ProductSizeGuideData = {
+  title: string;
+  headers: string[];
+  rows: string[][];
+};
+
 export type ProductDetailViewModel = {
   id: string;
   name: string;
@@ -48,15 +54,24 @@ export type ProductDetailViewModel = {
   styleCode: string;
   description: string;
   priceLabel: string;
+  currency?: string;
   compareAtPriceLabel?: string;
   discountLabel?: string;
-  ratingLabel: string;
-  reviewLabel: string;
+  ratingLabel?: string;
+  reviewLabel?: string;
+  sizeRecommendation?: {
+    status: "ready" | "not-needed" | "unavailable";
+    label: string;
+    detail: string;
+    recommendedSize?: string;
+  };
   sizes: string[];
   gallery: ProductGalleryItem[];
   featureImage: string;
   sourceHref: string;
   sourceLabel: string;
+  canonicalHref?: string;
+  tryOnSupported?: boolean;
   note: string;
   information: ProductInformationSection[];
   related: ProductRelatedItem[];

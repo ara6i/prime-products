@@ -4,6 +4,25 @@ export const dynamic = "force-dynamic";
 
 const EXTRA_ROWS = [
   {
+    setId: "wear3d-pilot-001",
+    label: "WEAR 3D pilot 001 · synthetic front · 163.9 cm · 55.3 kg",
+    gender: "female" as const,
+    heightCm: 163.9,
+    weightKg: 55.3,
+    age: 0,
+    chestCm: 84.9,
+    waistCm: 73,
+    waistTarget: "natural" as const,
+    trouserWaistCm: 0,
+    hipsCm: 94,
+    pelvisCm: 0,
+    underChestCm: 74.5,
+    cup: null,
+    bra: null,
+    frontImageUrl: "/api/try-on-test/model-forge/proof-image?view=render",
+    sideImageUrl: "",
+  },
+  {
     setId: "setayesh",
     label: "Setayesh · female · 171 cm · 68.05 kg",
     gender: "female" as const,

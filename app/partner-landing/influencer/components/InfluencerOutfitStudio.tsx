@@ -1,7 +1,6 @@
 "use client";
 
 import { ArrowUpRight, Camera, FilmStrip, Sparkle, Stack } from "@phosphor-icons/react";
-import Link from "next/link";
 import { useState } from "react";
 import { InfluencerTurntable } from "./InfluencerTurntable";
 import styles from "./influencerLanding.module.css";
@@ -9,7 +8,7 @@ import styles from "./influencerLanding.module.css";
 const STUDIO_MODES = {
   campaign: {
     label: "Campaign mode",
-    note: "Build with approved campaign products. Every look stays connected to the brief, brand, and shoppable item.",
+    note: "Build with products from connected merchant campaigns. Every look stays connected to the brief, brand, and shoppable item.",
     badge: "CAMPAIGN WARDROBE · CONNECTED",
   },
   free: {
@@ -21,7 +20,7 @@ const STUDIO_MODES = {
 
 type StudioMode = keyof typeof STUDIO_MODES;
 
-export function InfluencerOutfitStudio() {
+export function InfluencerOutfitStudio({ onCtaClick }: { onCtaClick: () => void }) {
   const [mode, setMode] = useState<StudioMode>("campaign");
   const selectedMode = STUDIO_MODES[mode];
 
@@ -32,7 +31,11 @@ export function InfluencerOutfitStudio() {
         <h2 id="outfit-studio-title">Try it on. Build the look. <em>Direct the content.</em></h2>
         <div>
           <p>Start with your real photo, style campaign pieces or your own references, then turn one outfit into polished photos and video.</p>
-          <Link href="/influencers/dashboard/outfit-studio">Explore Outfit Studio <ArrowUpRight size={17} weight="bold" /></Link>
+          <div className={styles.studioBenefitList} aria-label="Creator production benefits">
+            <span><Camera size={17} weight="bold" /> AI try-on images and mix-and-match complete outfits</span>
+            <span><FilmStrip size={17} weight="bold" /> AI fashion videos created from the looks you build</span>
+          </div>
+          <button type="button" className={styles.studioIntroCta} onClick={onCtaClick}>Explore Outfit Studio <ArrowUpRight size={17} weight="bold" /></button>
         </div>
       </div>
 
@@ -66,9 +69,9 @@ export function InfluencerOutfitStudio() {
 
         <div className={styles.studioReels} aria-label="Creator video examples">
           <figure>
-            <video autoPlay loop muted playsInline preload="metadata" poster="/media/partner-landing/creator-longhair-omni-poster.jpg" aria-hidden tabIndex={-1}>
-              <source src="/media/partner-landing/creator-longhair-omni.webm" type="video/webm" />
-              <source src="/media/partner-landing/creator-longhair-omni.mp4" type="video/mp4" />
+            <video autoPlay loop muted playsInline preload="metadata" poster="/media/partner-landing/optimized/creator-longhair-omni-poster.webp" aria-hidden tabIndex={-1}>
+              <source src="/media/partner-landing/optimized/creator-longhair-omni.webm" type="video/webm" />
+              <source src="/media/partner-landing/optimized/creator-longhair-omni.mp4" type="video/mp4" />
             </video>
             <figcaption className={styles.studioReelHeadline}>
               <small>01 · Frame the look</small>

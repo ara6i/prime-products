@@ -36,6 +36,197 @@
 
 final result: passed
 
+## Merchant supplier marketplace motion reference — 2026-08-10
+
+### Evidence and normalization
+
+- Source visual truth: `/tmp/primestyle-supplier-reference-audit/01-dropship-hero-desktop.png` (`1425 x 990`) and `/tmp/primestyle-supplier-reference-audit/02-dropship-hero-mobile.png` from the live Dropship.io homepage.
+- Final desktop implementation: `/tmp/primestyle-supplier-reference-audit/07-primestyle-logo-center-desktop.png` (`1429 x 992` browser pixels from a `1440 x 1000` CSS viewport) on `/merchants`.
+- Final mobile implementation: `/tmp/primestyle-supplier-reference-audit/09-primestyle-logo-center-mobile.png`; focused marketplace state: `/tmp/primestyle-supplier-reference-audit/10-primestyle-logo-center-motion-mobile.png` from a `390 x 844` CSS viewport.
+- Same-input desktop comparison: `/tmp/primestyle-supplier-reference-audit/11-logo-center-comparison.png` (`2850 x 990`), with the implementation normalized to the reference capture size.
+
+### Findings and comparison history
+
+- Reference inspection confirmed the hero is not video: three live DOM card rows use a 35-second infinite CSS marquee, while a static WebP supplies the blue center wave.
+- Pass 1, P1 center mismatch: an iridescent crystal occupied the convergence point instead of the PrimeStyleAI logo, weakening the reference concept.
+- Fix: the exact transparent PrimeStyleAI commerce mark now occupies the mathematical center of the moving marketplace. It sits in a compact rounded node like the reference logo, without copying Dropship.io branding or its blue funnel asset.
+- P1 transition mismatch: the first pass showed uniformly colored product cards. The final motion applies grayscale and soft fading at both outer approach zones, then reveals full-color product cards as they move toward the center logo.
+- PrimeStyleAI product cards represent the three documented selling paths—Bulk Wholesale, Dropshipping, and Direct-to-Consumer—and remain readable near the focal point.
+- The fixed mode cards below the motion preserve the operational meaning of each path, while the secondary CTA scrolls directly to them.
+- The desktop comparison shows equivalent centered-logo hierarchy, edge-to-center product movement, information density, and first-viewport motion placement. Mobile preserves the same grayscale-to-color transition around a smaller centered logo node.
+
+### Interactions, accessibility, and runtime checks
+
+- `Join the supplier network` opens the existing merchant-network dialog; `See the three ways` scrolls to all three mode cards.
+- The marquee moved between sampled computed transforms, pauses on hover, and is disabled under `prefers-reduced-motion`.
+- Desktop measured `1429px` document and client width from the `1440px` browser viewport; mobile measured `379px` document and client width from the `390px` browser viewport. No horizontal overflow occurred.
+- The three mode headings rendered as Bulk Wholesale, Dropshipping, and Direct-to-Consumer.
+- Scoped ESLint, full TypeScript, and `git diff --check` passed.
+
+final result: passed
+
+## Supplier dashboard reference adaptation — 2026-08-10
+
+### Evidence and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-db249606-87ae-48bb-9534-2d41bdfdd5bd.png` (`1200 x 952`, DPR 1).
+- Desktop implementation: `qa/supplier-dashboard/generated-asset-final-desktop-settled-1200x952.png` (`1189 x 943` browser pixels from a requested `1200 x 952` CSS viewport, DPR 1) on `/suppliers/dashboard`, Dashboard selected, menus and dialogs closed.
+- Normalized implementation: `qa/supplier-dashboard/final-generated-desktop-normalized-1200x952.png` (`1200 x 952`) for direct source comparison.
+- Full same-input comparison: `qa/supplier-dashboard/final-generated-reference-comparison.png` (`2400 x 1004`).
+- Focused shell comparison: `qa/supplier-dashboard/final-generated-focused-comparison.png` (`2220 x 779`).
+- Responsive evidence: `qa/supplier-dashboard/final-mobile-390x844.png`, `final-mobile-mid-390x844.png`, and `final-mobile-lower-390x844.png` from a `390 x 844` CSS viewport.
+
+### Findings and comparison history
+
+- Pass 1 preserves the supplied visual system: a pale gray canvas, centered white rounded shell, black active navigation pill, compact circular utilities, icon rail, soft blue plan card, white analytics cards, mint creator card, and fluorescent lime highlights.
+- Asset pass: two coordinated iridescent folded-couture prism assets were generated inside the user's logged-in ChatGPT session in the Codex browser. The optimized `3:2` version now occupies the catalog card and directly echoes the source's floating prism centerpiece; the high-resolution portrait master is retained for future supplier surfaces.
+- The source's generic finance content was intentionally translated into supplier operations without changing the visible hierarchy. The cards now represent catalog capacity, order activity, independent Bulk/Dropship/DTC revenue, creator sales, total revenue, and fulfillment health.
+- Functional correction: the creator-partnership arrow links directly to `/influencers/dashboard` instead of displaying only a local notice. The final browser pass navigated to the existing Creator Dashboard and returned successfully.
+- No actionable P0, P1, or P2 visual issue remains. The supplier version is slightly denser than the source because it carries six operational KPIs instead of decorative finance content; the dashboard shell, spacing language, card proportions, palette, and visual grouping remain faithful to the requested template.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the existing Poppins/Manrope product fonts replace the reference's unavailable face while preserving light display headings, tight tracking, compact card labels, and legible KPI hierarchy.
+- Spacing and layout: desktop comparison confirms the centered frame, top navigation, title-and-actions row, left rail, tall lead card, three-card upper row, and wide-plus-compact lower row. Responsive CSS changes the bento grid to two columns below `1100px` and one column with a sticky horizontal icon rail below `720px`.
+- Colors and surfaces: `#eef0f5` canvas, `#f8f8fc` shell, white cards, pale blue catalog card, mint creator card, black active controls, teal chart, and lime data accents map directly to the supplied reference. No gradient was introduced.
+- Image quality and assets: the dashboard uses the existing PrimeStyleAI mark, real local team avatars, and ChatGPT-generated `catalog-prism-card.webp` / `catalog-prism-portrait.webp` assets. The card asset is a sharp `1536 x 1024` WebP at `38 KB`, with a seamless pale-blue background and an art-directed crop. Phosphor supplies the complete icon family; there are no handcrafted SVGs, CSS illustrations, emoji, or placeholder image boxes.
+- Copy and content: every visible feature is supplier-facing. Internal system testing, implementation notes, and legal notes are absent from the product UI.
+
+### Interactions, accessibility, and runtime checks
+
+- The in-app browser verified Dashboard, Payouts, and Reports state changes; the Payouts view exposed `Supplier Payouts` / `Available balance`, and Reports exposed `Supplier Reports` / `Report health`.
+- Date selection changed to `Last 30 days`; the manager and product forms submitted successfully; the search popover's explicit submit control returned its success state. Forms have labels, dialogs use `aria-modal`, the active rail item uses `aria-pressed`, the selected top view uses `aria-current`, and reduced-motion behavior is defined.
+- The creator-partnership link navigated to `/influencers/dashboard` with title `Creator Dashboard | PrimeStyleAI`, then returned to the supplier dashboard successfully.
+- Mobile metrics were `390 x 844` CSS viewport, `379px` document width, and `379px` scroll width with no horizontal document overflow. Top, middle, and lower captures confirmed the catalog, order, channel, creator, revenue, and fulfillment cards remain readable and sequential.
+- The live local server returned HTTP `200` for both `/suppliers/dashboard` and `/influencers/dashboard`; rendered supplier HTML contains `href="/influencers/dashboard"`, `Supplier Dashboard`, and `Creator sales`.
+- The first server render exposed Recharts `width(-1)` / `height(-1)` initialization warnings. Each chart now supplies a positive `initialDimension` and `minWidth={0}`; a fresh `/suppliers/dashboard` request returned `200` with no repeated chart warning.
+- Final in-app browser console errors and warnings: none.
+- Scoped ESLint, full TypeScript, and Prettier checks passed after the final source change.
+
+final result: passed
+
+## Dressing Room infinite canvas — 2026-08-09
+
+### Evidence and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-7d76f501-8066-4382-aeff-9298e94e0095.png` (`554 x 355` pixels), used for the three-region composition, centered `DRESSING ROOM` masthead, gender/category library, fashion-canvas hierarchy, and monochrome editorial density.
+- Behavioral source truth: `/Users/arashsn/Downloads/bb2285f4a8322d93866a1bc167f32124.mp4` (`576 x 1024`, 9.06 seconds, 50 fps), inspected at 0.5-second intervals and in focused key frames. It defines add-from-library, direct piece movement, free arrangement, and pinch scaling; the video is not embedded in the implementation.
+- Final desktop implementation: `qa/dressing-room/dressing-room-desktop-1110x710.png` (`1099 x 703` browser pixels from a `1110 x 710` CSS viewport, DPR 1) at `/shop/dressing-room`.
+- Final mobile implementation: `qa/dressing-room/dressing-room-mobile-390x844.png` (`379 x 820` browser pixels from a `390 x 844` CSS viewport, DPR 1).
+- Full same-input comparison: `qa/dressing-room/reference-vs-implementation-desktop.png` (`2222 x 710`). The low-resolution source was normalized to `1110 x 710`; the implementation capture was normalized from `1099 x 703` to `1110 x 710`, so both panels have the same comparison size and density.
+- State: Women, View all, four-piece starter look, Form Trench selected, expanded desktop library and inspector. The mobile capture uses the same look with both rails collapsed to maximize canvas space.
+- A focused comparison was unnecessary: the source is itself only `554 x 355`, and the 2x same-input normalization already exposes every source region at its maximum available detail. Further cropping would enlarge interpolation rather than reveal additional evidence.
+
+### Findings and comparison history
+
+- Pass 1, P1 clothing-library density failure: catalog cards compressed into shallow rows, hiding most garment photography and breaking the reference's readable product hierarchy.
+- Fix: gave the grid intrinsic max-content rows and fixed card rhythm, preserving four complete product cards above the fold with the remaining catalog in a dedicated scroll area.
+- Pass 2, P0 mobile rail access and crop failure: the overlay transform exposed blank rail edges instead of the reopen controls, and the fitted look was partially hidden behind those rails.
+- Fix: aligned collapsed controls, vertical Women/Men and Edit Look labels, and the item-count badge to the exposed rail edges. Fit-to-view now accounts for the `56px` library rail and `52px` inspector rail before centering and scaling the outfit.
+- Pass 3, P2 runtime image warnings: responsive panel transitions briefly produced zero-height `fill` warnings for catalog images, and an above-the-fold asset produced an LCP-loading warning.
+- Fix: catalog thumbnails now use explicit intrinsic dimensions and eager loading for the visible first row; selected and starter-canvas imagery also loads eagerly. A fresh reload and collapse/expand cycle produced no browser warnings or errors.
+- Post-fix comparison: the implementation preserves the reference's centered masthead, left gender/category navigation, dominant fashion workspace, and right detail region. The mannequin was intentionally replaced by the video's directly manipulable flat-lay pieces, and the reference's right product grid was intentionally condensed into the left library so the user-requested right side remains minimal. No actionable P0, P1, or P2 issue remains.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the existing PrimeStyleAI Manrope family, uppercase letter-spaced masthead, compact utility labels, strong product names, muted metadata, and restrained numerical hierarchy remain readable at both tested viewports. Copy does not wrap into controls or leak prompt language into the UI.
+- Spacing and layout rhythm: desktop retains three crisp regions with thin rules and sharp editorial cards; collapsing either rail materially enlarges the canvas. Mobile exposes two narrow reopen rails while reserving the central width for the full outfit. No persistent action is clipped.
+- Colors and visual tokens: warm paper, soft stone canvas, charcoal ink, PrimeStyleAI coral/cobalt accents, and a single lavender styling-note surface create clear hierarchy without decorative gradients or visual noise.
+- Image quality and asset fidelity: the canvas and catalog use real high-resolution raster garment cutouts derived from existing `public/media/global-shop/runway-generated/` assets and tightly alpha-trimmed into `public/media/global-shop/dressing-room/`. Product crops remain sharp, correctly proportioned, and free of placeholder boxes, CSS illustration, handcrafted SVG, watermark, or embedded UI text.
+- Copy and content: Women/Men, category names, realistic item/brand/color/price metadata, look total, save/reset actions, canvas instructions, and selected-piece styling guidance are complete and internally consistent.
+
+### Interactions, accessibility, and runtime checks
+
+- Verified library tap-to-add and true pointer drag/drop to the exact canvas drop position (`4` pieces to `5`), direct garment drag, blank-canvas pan, anchored zoom, fit-to-view, resize handle, inspector size and rotation controls, duplicate, front/back layering, remove, reset, save state, category/gender switching, and desktop/mobile rail collapse/expand. Two-pointer piece scaling/rotation is implemented through Pointer Events but was not independently exercised because the in-app browser test surface did not expose multi-touch injection; the resize handle and inspector scaling paths were exercised.
+- The final desktop browser pass confirmed `dropWorks`, `itemMoved`, `canvasPanned`, `canvasZoomed`, `libraryCollapses`, and `inspectorCollapses`. The mobile pass confirmed both hidden panels remain reopenable and the product catalog/inspector are accessible.
+- Buttons have descriptive names, the infinite canvas and panels have landmarks, garment imagery has item-specific alt text, decorative thumbnails use empty alt text, keyboard Delete/Backspace/Escape and Space-pan behavior are available, and reduced-motion mode removes panel/card transitions.
+- Fresh final in-app browser console after reload: no errors or warnings.
+- Scoped ESLint: passed with no warnings. Full TypeScript: passed. `git diff --check`: passed. Route-specific Next.js production build passed and statically prerendered `/shop/dressing-room`.
+- Repository-wide `npm run build` remains blocked by an unrelated existing unresolved `@primestyleai/tryon/react` import in demo product-detail files and `app/shop/product/components/ProductTryOnButton.tsx`; the new Dressing Room route does not import that package.
+
+final result: passed
+
+## Bloomingdale's ten-category merchant rail — 2026-08-09
+
+### Evidence and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-0514ff1c-c0c9-4492-9c41-9a8c4d57a77b.png` (`736 x 981`, DPR 1), specifically its `Shop by category` circular-photo rail and immediate product-preview hierarchy.
+- Generated source evidence: `qa/shop-brand-categories/bloomingdales-category-sheet-1.png` (`1693 x 929`) and `qa/shop-brand-categories/bloomingdales-category-sheet-2.png` (`1672 x 941`), both generated in the user's signed-in ChatGPT session.
+- Ten-asset contact sheet: `qa/shop-brand-categories/bloomingdales-category-crops.png` (`3000 x 1200`). Each production WebP is `600 x 600` and lives in `public/media/global-shop/brand-categories/`.
+- Final desktop implementation: `qa/shop-brand-categories/final-desktop-1280x720.png`, captured at a `1280 x 720` CSS viewport, DPR 1.
+- Final mobile implementation: `qa/shop-brand-categories/final-mobile-390x844.png`, captured at a `390 x 844` CSS viewport, DPR 1.
+- Same-input full comparison: `qa/shop-brand-categories/reference-implementation-full.png` (`1920 x 720`).
+- Same-input focused comparison: `qa/shop-brand-categories/reference-implementation-category-focus.png` (`1800 x 360`), with both category regions normalized to `900 x 360` panels.
+- State: `/shop/brand/bloomingdales`, page top, default catalog filters. The focused comparison was required because category labels and image crops are too small to judge reliably in the reduced full-page source.
+
+### Findings and comparison history
+
+- Pass 1, P1 category coverage and asset mismatch: the Bloomingdale's rail exposed only the catalog-derived `All styles`, `Dresses`, and `Gowns` cards and reused product thumbnails, while the supplied reference and latest request require a broad department-store category rail with real category photography, including both Women and Men.
+- Fix: generated two coordinated five-panel studio sheets in the signed-in ChatGPT session, exported ten individually measured square assets, and added Women, Men, Dresses, Gowns, Tops, Denim, Shoes, Handbags, Accessories, and Activewear. Real merchant counts remain attached only to filterable Dresses (`6`) and Gowns (`3`); broader categories use working shop routes instead of fabricated product totals.
+- Pass 2 responsive and interaction check: all ten cards fit in one desktop row; the mobile rail scrolls horizontally without widening the document, and its end state exposes Shoes, Handbags, Accessories, and Activewear. The Dresses card synchronizes the existing catalog filter and renders six products. No actionable P0, P1, or P2 issue remains.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the reference's clear uppercase category eyebrow, editorial serif category heading, compact bold category names, and subdued metadata hierarchy are preserved. Labels stay readable at both tested viewports without overlapping.
+- Spacing and layout rhythm: the ten-card desktop rail remains directly under `Just dropped`, the reference-like circular thumbnails share consistent size and baseline, and the campaign/product preview remains visible below the rail in the first desktop and mobile screens.
+- Colors and visual tokens: generated warm-ivory studio backgrounds blend into the existing white/ivory merchant canvas; charcoal text, neutral dividers, and muted metadata preserve the established page palette and contrast.
+- Image quality and asset fidelity: all ten category visuals are real raster photographs generated in ChatGPT, with correct subjects, consistent lighting, crop-safe composition, no text, logos, watermarks, CSS art, handcrafted SVG substitutes, or placeholder imagery. The real Bloomingdale's wordmark remains unchanged.
+- Copy and content: all requested categories are present. Women and Men route to their real global category pages; Denim and Accessories destinations resolve to existing category routes; merchant-specific Dresses and Gowns retain accurate `6 styles` and `3 styles` counts.
+
+### Interactions, accessibility, and runtime checks
+
+- Tested Women navigation to `/shop/category/women`, Dresses filtering to six Bloomingdale's products, selected-state semantics, `View all`, and mobile access to the final rail items.
+- Desktop metrics: `1280px` viewport width and `1280px` document width. Mobile metrics: `390px` viewport width and `390px` document width. All ten optimized category images loaded successfully.
+- Category links and filter buttons have descriptive accessible names; filter buttons retain `aria-pressed`; generated thumbnails are decorative beneath their named controls.
+- Final in-app browser console errors: none.
+- Prettier, scoped ESLint, `git diff --check`, full TypeScript, and the production build passed.
+
+final result: passed
+
+## Rakuten advertiser brand pages — 2026-08-08
+
+- Replaced the six shop-logo slots with approved Rakuten advertisers: Bloomingdale's, YMI Jeans, ShopSimon, David's Bridal, Men's Wearhouse, and PatBO.
+- Each logo resolves to its own `/shop/brand/[brandId]` route with current advertiser products and unique `/shop/product/[productId]` detail routes.
+- Removed the catalog intro copy above the filter controls, including “Motion, remixed for every day.” and “Shop the Nike edit,” and tightened the remaining section spacing.
+- Corrected the David's Bridal slot to use the official David's header wordmark instead of the mislabeled YMI asset.
+- Desktop and `390 x 844` browser checks passed for the editorial page, readable filter panel, product grid, and advertiser PDP navigation.
+- Scoped ESLint, full TypeScript, `git diff --check`, and the production build passed.
+
+final result: passed
+
+## Global Shop brand editorial landing pages — 2026-08-08
+
+### Evidence and normalized comparison
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-7d0ff4ed-e103-44f7-8c43-4e97ebdba783.png` (`375 x 750`, DPR 1).
+- Final desktop implementation: `qa/shop-brand-editorial/final-desktop-1440x900.png` (`1440 x 900`, DPR 1) at `/shop/brand/nike`.
+- Final mobile implementation: `qa/shop-brand-editorial/final-mobile-390x844.png` (`390 x 844`, DPR 1).
+- Supporting mobile states: `qa/shop-brand-editorial/pass2-mobile-stories.png`, `mobile-catalog-closed.png`, and `mobile-filter-open.png`.
+- Same-input comparison: `qa/shop-brand-editorial/reference-implementation-comparison.png` (`780 x 1688`). It pairs the supplied reference with the final mobile hero, story rail, collection, and open-filter states.
+
+### Findings and comparison history
+
+- Pass 1, P2 mobile image-crop mismatch: the first responsive pass enlarged the generated strips and hid outer subjects, while the reference keeps all four hero portraits and all three story panels visible. The mobile aspect ratios were restored to `3 / 1`, and the Women/Men collage was restored to a compact full-width composition.
+- Pass 1, P2 filter control density: the desktop filter action stretched across its grid track instead of retaining the compact reference width. It now uses a fit-content action, while the open panel keeps the previously requested larger filter text.
+- Pass 2: the final composition preserves the reference hierarchy and rhythm: black utility ticker, oversized condensed title, four-image drop rail, real brand-logo row, Women/Men collage, three promotional stories, oversized news title, three news cards, and the existing shoppable catalog below. No actionable P0, P1, or P2 mismatch remains.
+
+### Asset, content, and architecture fidelity
+
+- The four campaign rasters were generated as separate `2172 x 724` images in the user's signed-in ChatGPT session from the supplied reference. The optimized WebP files live in `public/media/global-shop/brand-editorial/`; the page does not use placeholders, CSS illustration, or sprite crops.
+- Nike, adidas, GANNI, New Balance, Reiss, and Aritzia use their existing real local SVG wordmarks and link to the matching brand routes.
+- Existing brand products, prices, compare-at prices, badges, and product IDs remain the data source. The four drop cards and all catalog cards link to the statically generated `/shop/product/[productId]` routes.
+- The feature follows the coding-guide flow: server route to catalog service to editorial mapper to interaction hook to pure rendering components. UI actions use the shared Button primitive, and responsive behavior stays inside the brand module.
+
+### Interactions, accessibility, and runtime checks
+
+- Desktop filter open/close transition, FLIP card movement, mobile filter expansion, Outerwear filtering, Clear all, search control, sort control, and product-ID navigation: passed.
+- Mobile `390 x 844` reports a `390px` document width with no horizontal overflow. Filter copy remains at readable mobile sizes, and all generated image strips preserve their complete subject set.
+- Semantic links, headings, form labels, pressed/expanded states, descriptive image alt text, keyboard focus styles, and reduced-motion handling are present.
+- Fresh final browser session: no console errors or warnings. `/shop/brand/nike` and `/shop/product/nike-signal-shell` both resolved successfully.
+- Prettier, scoped ESLint, full TypeScript, `git diff --check`, and the production build passed. The build retains three existing unrelated Turbopack dynamic-filesystem tracing warnings from the sizing-lab and capacity-lab routes.
+
+final result: passed
+
 ## Denim category crossed ticker ribbons — 2026-08-07
 
 ### Evidence and normalization
@@ -2999,5 +3190,354 @@ final result: passed
 - Final browser session at `1440 x 1000` and `390 x 844`: no new errors or warnings after reload.
 - Product route returned HTTP `200`.
 - Prettier, scoped ESLint, full TypeScript, `git diff --check`, and production build passed. The build retains the existing unrelated Turbopack NFT tracing warning from the sizing-lab `apple-fused-tape-scale` route.
+
+final result: passed
+
+## Merchant brand masthead and category navigation — 2026-08-09
+
+### Evidence and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-0514ff1c-c0c9-4492-9c41-9a8c4d57a77b.png` (`736 x 981`, DPR 1).
+- Final reference-width implementation: `qa/shop-brand-merchant-v2/final-normalized-736x981.png` (`736 x 981`, DPR 1) on `/shop/brand/nike`, captured from the in-app browser with a `747 x 996` CSS viewport so the rendered page image matched the supplied source exactly.
+- Final category state: `qa/shop-brand-merchant-v2/final-category-normalized-736x981.png` (`736 x 981`, DPR 1), Nike, All styles, filter drawer closed.
+- Same-input full comparison: `qa/shop-brand-merchant-v2/reference-vs-final.png` (`1472 x 981`).
+- Focused category comparison: `qa/shop-brand-merchant-v2/category-reference-vs-final.png` (`1472 x 260`).
+- Responsive evidence: `qa/shop-brand-merchant-v2/final-mobile-top.png` and `qa/shop-brand-merchant-v2/final-mobile-category.png` (`379 x 820` browser image from an explicit `390 x 844` CSS viewport).
+
+### Findings and comparison history
+
+- Pass 1, P1 hierarchy mismatch: the previous merchant page opened with the generic `24/7 SUPPORT` utility ticker and did not establish the merchant identity. The ticker was removed and replaced with a centered premium masthead containing the merchant's real logo, full name, descriptor, verified-merchant label, and collection action.
+- Pass 1, P1 missing journey: there was no visual category entry point. A data-backed `Shop by category` rail now derives labels, product counts, and representative thumbnails from the current merchant catalog; selecting a chip applies that category to the existing product collection.
+- Pass 1, P2 visual mismatch: the first masthead logo read too small, the horizontal scrollbar remained visible, and the final category card fell outside the reference-width frame.
+- Fix: increased the logo presentation, hid the decorative rail scrollbar, and compacted the reference/tablet category cards. The final `736px` evidence shows all seven Nike entries in one row.
+- Intentional scope boundary: the reference includes an unrelated C-STYLE global header, shipping-benefit bar, promotion cards, store locator, and chat widget. Those were not copied; the existing PrimeStyleAI merchant editorial and catalog remain intact around the requested masthead and category pattern.
+
+### Required fidelity surfaces
+
+- Typography: the masthead uses the existing editorial serif and compact uppercase merchant labels; the pre-existing condensed `Just dropped` typography remains part of the established shop theme.
+- Layout and spacing: the merchant identity is centered and dominant, followed by the retained editorial story and a reference-shaped category header, `View all` action, and circular category rail.
+- Color: quiet ivory, white, charcoal, and warm gray surfaces match the existing PrimeStyleAI merchant theme and the neutral reference treatment.
+- Assets: the masthead uses each merchant's real catalog logo, and category circles use actual merchant product images. No generated asset, placeholder logo, CSS illustration, or unsupported award badge was introduced.
+- Copy and content: merchant names, descriptors, category labels, and counts come from the typed catalog view model. The page does not make an unverified award claim.
+
+### Interactions, accessibility, and runtime checks
+
+- Desktop `Bags` selection produced exactly three Nike bag product cards; mobile `Outerwear` selection produced exactly three Nike outerwear product cards and excluded bag products.
+- `View all` clears category selection, each chip exposes its selected state and exact product count through `aria-pressed` and `aria-label`, decorative product thumbnails use empty alt text, and reduced-motion users receive immediate scrolling without category-image animation.
+- Bloomingdale's uses its real logo, merchant-specific product catalog, and category set through the shared dynamic brand template.
+- Final in-app browser console errors: none. The removed `24/7 SUPPORT` ticker is absent from the rendered DOM.
+- Prettier, scoped ESLint, full TypeScript, `git diff --check`, and the final production build passed.
+
+final result: passed
+
+## Merchant logo-first category hierarchy correction — 2026-08-09
+
+### Evidence and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-0514ff1c-c0c9-4492-9c41-9a8c4d57a77b.png` (`736 x 981`, DPR 1), with the user's explicit correction that `Browse the merchant edit / Shop by category` must follow the merchant logo immediately.
+- Before correction: `qa/shop-brand-merchant-v3/before-bloomingdales.png` (`1269 x 714`, DPR 1).
+- Final desktop: `qa/shop-brand-merchant-v3/final-desktop-bloomingdales.png` (`1269 x 714`, DPR 1) on `/shop/brand/bloomingdales`, All styles selected.
+- Final normalized implementation: `qa/shop-brand-merchant-v3/final-normalized-736x981.png` (`736 x 981`, DPR 1), captured from a `747 x 996` CSS viewport to match the reference pixels.
+- Final mobile: `qa/shop-brand-merchant-v3/final-mobile-bloomingdales.png` (`379 x 820` browser image from a `390 x 844` CSS viewport).
+- Full source comparison: `qa/shop-brand-merchant-v3/reference-vs-final.png` (`1472 x 981`).
+- Focused hierarchy comparison: `qa/shop-brand-merchant-v3/before-vs-final.png` (`2538 x 714`).
+
+### Findings and comparison history
+
+- Pass 1, P1 duplicate merchant identity: the previous masthead repeated `Verified merchant spotlight`, the logo, a second text-rendered merchant name, a generic descriptor, and a collection button. This made the brand page feel like a template rather than a merchant storefront.
+- Fix: removed the spotlight label, duplicated visible name, descriptor, and generic CTA. The merchant name remains as a screen-reader-only `h1`, while the real logo is the sole visible identity.
+- Pass 1, P1 wrong category order: `Shop by category` appeared after the complete `Just dropped` section instead of directly beneath the merchant logo.
+- Fix: moved the entire functional category rail immediately below the logo masthead and above all editorial content.
+- Pass 1, P2 excessive masthead height: the old masthead spent most of the first viewport on repeated copy. The final masthead uses compact logo-focused spacing, so the category entry point is visible above the fold on desktop and mobile.
+- Post-fix evidence shows the exact requested order: real Bloomingdale's logo, `Browse the merchant edit`, `Shop by category`, category controls, then `Just dropped`. No actionable P0, P1, or P2 issue remains.
+
+### Required fidelity surfaces
+
+- Typography: the real Bloomingdale's wordmark owns the masthead; the category eyebrow and serif title match the existing editorial system without duplicating the brand in a mismatched typeface.
+- Spacing and layout: the masthead is compact, category navigation immediately follows it, and the three real Bloomingdale's category options fit without overflow at desktop or mobile widths.
+- Colors: the warm ivory logo field, white category field, charcoal typography, and thin neutral borders stay within the established merchant theme.
+- Image quality: the real merchant logo and actual Bloomingdale's catalog product photography are preserved. No generated or placeholder asset is used.
+- Copy and content: only the requested category eyebrow/title remains visible below the logo; counts are catalog-derived and no generic verification or award claim is shown.
+
+### Interactions, accessibility, and runtime checks
+
+- Selecting `Dresses` set `aria-pressed`, synchronized the existing filter panel, and rendered exactly six Bloomingdale's dress products; `Gowns` remains available with three products and `View all` clears the selection.
+- The visible wordmark has descriptive alt text and the visually hidden merchant-name `h1` preserves a useful page heading without repeating the name on screen.
+- Final in-app browser console errors: none.
+- Prettier, scoped ESLint, full TypeScript, `git diff --check`, and production build passed.
+
+final result: passed
+
+## Influencer public profile and creator dashboard stories — 2026-08-10
+
+### Evidence and normalization
+
+- Product source truth: the live local public profile at `/influencers/maya-laurent` and creator workspace at `/influencers/dashboard`. Source captures are `qa/influencer-profile-dashboard/source-public-profile-1280x720.png` and `qa/influencer-profile-dashboard/source-creator-dashboard-1280x720.png` (`1269 x 714` browser pixels from a `1280 x 720` CSS viewport, DPR 1).
+- Visual-reference direction: Pinterest's ecommerce-profile and influencer-dashboard boards at `https://www.pinterest.com/ideas/ecommerce-profile-page-design/916167378079/` and `https://www.pinterest.com/ideas/influencer-marketing-dashboard/941195166788/`, used for editorial storefront and compact performance-card hierarchy rather than copied branding.
+- Desktop implementation: `qa/influencer-profile-dashboard/implementation-public-profile-1280x720.png` and `qa/influencer-profile-dashboard/implementation-creator-dashboard-1280x720.png` (`1269 x 714`, DPR 1) on `/influencers`.
+- Mobile implementation: `qa/influencer-profile-dashboard/implementation-public-profile-mobile-390x720.png`, `implementation-public-profile-preview-mobile-390x720.png`, `implementation-creator-dashboard-mobile-390x720.png`, and `implementation-creator-dashboard-preview-mobile-390x720.png`, captured from a `390 x 844` CSS viewport at DPR 1 with a `390 x 720` visible comparison region.
+- Same-input desktop comparisons: `qa/influencer-profile-dashboard/comparison-public-profile-desktop.png` and `comparison-creator-dashboard-desktop.png` (`2560 x 720`). Each source and implementation panel was normalized from `1269 x 714` to `1280 x 720`.
+- Same-input focused mobile comparisons: `qa/influencer-profile-dashboard/comparison-public-profile-mobile-preview.png` and `comparison-creator-dashboard-mobile-preview.png` (`780 x 720`). The dashboard source used its unscaled top `390 x 720` crop from the `390 x 844` capture; no density scaling was applied.
+- State: public-profile section start, public profile preview, dashboard story start, and dashboard preview; menus closed, horizontal mobile rails at their first item.
+
+### Findings and comparison history
+
+- Pass 1: the profile section preserves Maya's portrait, lavender editorial identity panel, follower proof, shoppable product rail, and explicit commission receipt while adapting the full profile into a landing-page story. The dashboard section preserves the source workspace's cream/lavender/orange/mint cards, creator identity, merchant connections, earnings, and payout hierarchy.
+- The new narrative copy explicitly connects audience discovery, virtual try-on, merchant checkout, eligible validated commission, and the exact `Try it. Buy it. Say it. Post it. Sell it.` sequence. `Approved products` is absent from the influencer landing and the primary workspace action is `Connect with merchants`.
+- No actionable P0, P1, or P2 mismatch remains. The horizontally scrollable mobile product and five-step rails intentionally expose the next card edge as a continuation cue; this is acceptable behavior rather than hidden content.
+
+### Required fidelity surfaces
+
+- Fonts and typography: existing Manrope body and UI type, oversized tight-tracked display headings, and Georgia italic accents are preserved. Desktop and mobile comparisons show readable wrapping, no truncation, and consistent optical hierarchy.
+- Spacing and layout rhythm: the public profile uses the landing's established asymmetric editorial split; the dashboard uses the existing dark transition, wide rule, and compact bento workspace. Desktop and mobile section widths match their viewports with no document overflow.
+- Colors and tokens: existing cobalt `#2154ef`, purple `#6035f2`, orange `#ff8a00`, cream, lavender, mint, white, and dark navy are reused. Semantic eligible, pending, validated, and paid states remain distinct and legible.
+- Image quality and asset fidelity: Maya's real local portrait and the existing merchant product rasters are sharp and correctly cropped. The dashboard uses the existing creator avatar and Phosphor icon library; there are no generated placeholders, handcrafted SVGs, CSS-drawn icons, or stretched screenshots in the product UI.
+- Copy and content: the two requested stories are complete, commission is qualified as eligible and validated, merchant checkout remains explicit, both primary CTAs route to the real profile and dashboard, and the landing metadata now describes merchant connections and a public shoppable profile.
+
+### Interactions, accessibility, and runtime checks
+
+- `See a public creator profile` navigated to `/influencers/maya-laurent`; `Explore the creator dashboard` navigated to `/influencers/dashboard`. Both route titles loaded correctly.
+- The mobile product rail was scrolled to its final card; the offscreen Organic cotton tee image lazy-loaded successfully. Section landmarks use `aria-labelledby`, preview regions have descriptive labels, links have clear accessible names, and decorative creator avatars use empty alt text.
+- Final desktop metrics: `1280 x 720` CSS viewport, `1269px` document width. Final mobile metrics: `390 x 844` CSS viewport, `390px` document width. No horizontal document overflow occurred.
+- Fresh final in-app browser console at desktop and mobile: no errors or warnings. All visible profile images loaded successfully.
+- Scoped ESLint, full TypeScript, and `git diff --check` passed.
+
+final result: passed
+
+## Merchant category placement below Just dropped — 2026-08-09
+
+### Evidence and normalization
+
+- Source visual truth: the supplied merchant-page reference at `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-0514ff1c-c0c9-4492-9c41-9a8c4d57a77b.png` plus the user's explicit hierarchy correction: the `Browse the merchant edit / Shop by category` block belongs below the complete `Just dropped` section.
+- Before correction: `qa/shop-brand-merchant-v3/final-normalized-736x981.png` (`736 x 981`, DPR 1), with category navigation above `Just dropped`.
+- Final implementation: `qa/shop-brand-merchant-v4/final-bloomingdales-736x981.png` (`736 x 981`, DPR 1) from a `747 x 996` CSS viewport, Bloomingdale's, All styles selected.
+- Full same-input comparison: `qa/shop-brand-merchant-v4/before-vs-final.png` (`1472 x 981`). The left side shows the rejected order; the right side shows the requested order.
+- Responsive evidence: `qa/shop-brand-merchant-v4/final-mobile-top.png` and `qa/shop-brand-merchant-v4/final-mobile-category.png` (`379 x 820` browser image from a `390 x 844` CSS viewport).
+- A separate focused crop was unnecessary because the full comparison renders both section headings and their relative positions at readable size.
+
+### Findings and comparison history
+
+- Pass 1, P1 hierarchy mismatch: the category section immediately followed the merchant logo, contradicting the latest instruction that `Just dropped` must come first.
+- Fix: moved the complete functional category section after the full `Just dropped` heading, navigation, campaign image, and four product summaries. No copy, assets, filtering behavior, or other surrounding sections changed.
+- Post-fix comparison shows the requested order on desktop and mobile: merchant logo, `Just dropped`, then `Browse the merchant edit / Shop by category`. No actionable P0, P1, or P2 issue remains.
+
+### Required fidelity surfaces
+
+- Typography: the existing condensed `Just dropped` display face, category serif title, uppercase eyebrows, weights, and line heights are unchanged.
+- Spacing and layout: only section order changed; existing gutters, divider rhythm, category-circle sizing, and responsive horizontal fit are preserved.
+- Colors: the established ivory, white, charcoal, and neutral-divider tokens remain unchanged.
+- Image quality: the real Bloomingdale's logo, existing editorial strip, and real merchant product images remain sharp and correctly cropped; no new or generated asset was introduced.
+- Copy and content: the exact `Browse the merchant edit` and `Shop by category` copy remains intact and now follows `Just dropped` as requested.
+
+### Interactions, accessibility, and runtime checks
+
+- Selecting `Dresses` after the reorder preserved `aria-pressed`, synchronized the catalog filter, and rendered exactly six dress product cards.
+- Desktop and mobile captures show no new horizontal overflow or clipping.
+- Final in-app browser console errors: none.
+- Prettier, scoped ESLint, full TypeScript, `git diff --check`, and production build passed.
+
+final result: passed
+
+## Complete supplier portal — 2026-08-11
+
+### Evidence and normalization
+
+- Product source truth: `/Users/arashsn/Downloads/PrimeStyleAI_Supplier_Manufacturer_Marketplace_Guide_for_Arash (1).docx`, fully extracted and visually reviewed as 24 rendered pages under `qa/supplier-dashboard/source-guide-render/`.
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-db249606-87ae-48bb-9534-2d41bdfdd5bd.png` (`1200 x 952`). It defines the compact header, icon rail, pale full-screen shell, bento cards, rounded controls, mint/blue/lime accents, and standard desktop type.
+- Browser implementation: `qa/supplier-dashboard/all-pages-dashboard-reference-1200x952.png`, captured at a `1200 x 952` CSS viewport and DPR 1. The implementation image is `1200 x 952`; the browser document viewport measured `1189 x 952` because of the visible scrollbar.
+- Same-input comparison: `qa/supplier-dashboard/all-pages-reference-comparison.png` (`2400 x 952`), source on the left and implementation on the right at equal `1200 x 952` pixels. A separate focused crop was not needed because both panels remain at native width and the navigation, card typography, controls, logo, and images are readable in the combined comparison.
+- Additional desktop evidence: `all-pages-merchant-matches-1280x800.png`, `all-pages-influencer-matches-1280x800.png`, `all-pages-messages-1280x800.png`, `all-pages-campaigns-1280x800.png`, and `all-pages-payments-1280x800.png` under `qa/supplier-dashboard/`.
+- Mobile evidence: `qa/supplier-dashboard/all-pages-dashboard-mobile-final-v2-390x844.png` and `qa/supplier-dashboard/all-pages-messages-mobile-final-390x844.png`, captured from a `390 x 844` CSS viewport at DPR 1.
+
+### Findings and comparison history
+
+- P1 incomplete product scope: the earlier build was a single dashboard surface and did not provide the full manufacturer working area required by the guide. The final portal has 14 real routes: dashboard, merchant matches, influencer matches, company page, products, selling options, messages and RFQs, orders, merchant relationships, influencer campaigns, payments and payouts, performance, policies and terms, and team and settings.
+- P1 workflow gap: supplier actions previously stopped at summary cards. The final build makes partner discovery, saving merchants, campaign-rate acceptance, RFQ thread selection and reply, order acceptance/status progression, channel enable/disable controls, product filtering, payout requests, team invitations, and shared search/filter/date controls interactive.
+- P2 mobile header collision: the first 390px pass kept desktop text labels in the top navigation and crowded the logo/account controls. The final mobile header uses the same three navigation targets as compact icon buttons; the title, primary action, horizontal page rail, and dashboard cards remain readable.
+- P2 creator asset mismatch: Sienna Brooks initially used a group photograph. The final card uses an existing single-creator PrimeStyleAI portrait while retaining the real Maya Laurent profile asset and approved creator art direction.
+- P2 mobile order-table drift: the order table's wide column content could move the root viewport horizontally. The final route clips root-page overflow while preserving an intentional horizontal table scroller inside the Orders panel; a horizontal root gesture leaves `window.scrollX` at `0`.
+- The outer floating frame from the reference remains intentionally absent because the user required a full-screen dashboard.
+
+### Required fidelity surfaces
+
+- Fonts and typography: Poppins/Manrope preserve the reference's rounded geometric hierarchy, regular-weight page titles, compact labels, readable desktop controls, and restrained KPI scale. Mobile titles and UI copy remain readable without clipping.
+- Spacing and layout rhythm: the header, title/action row, grouped icon rail, dashboard bento, metric strips, tables, conversations, campaign proposals, and finance statements use the same compact radii, gutters, and low-elevation rhythm. Longer pages scroll normally while the dashboard fits its `1200 x 952` viewport.
+- Colors and visual tokens: pale gray, soft blue, white, mint, black, teal, and fluorescent lime consistently map to neutral, verified, active, and needs-attention states without introducing gradients.
+- Image quality and asset fidelity: the exact logo-only influencer landing asset is used in the header; the iridescent discovery prism and real PrimeStyleAI creator/product imagery are sharp and correctly cropped. Phosphor supplies UI icons; there are no placeholder images, custom SVGs, emoji, or CSS illustrations.
+- Copy and content: every page is supplier-facing. Merchant import history is absent. Merchant buyers, protected relationships, creator rates, eligible DTC products, channel-specific offers, fulfillment states, plan usage, commissions, refunds, reserves, and net payouts remain explicitly separated.
+
+### Interactions, accessibility, and runtime checks
+
+- All 14 routes returned HTTP `200`, rendered the expected `h1`, and had no desktop root-width overflow at `1280 x 800`.
+- Browser-tested workflows: top navigation to Merchant Matches, partner-matching modal open/close, RFQ thread selection and reply, Bulk order acceptance, influencer-rate acceptance, payout modal open/close, and per-product selling-mode toggling.
+- At `390 x 844`, Dashboard, Influencer Matches, Messages and RFQs, Campaigns, Payments, and Team and Settings remain within the root viewport. The Orders table uses its contained horizontal scroller and cannot drag the root page sideways.
+- Navigation links, headings, dialogs, form controls, status feedback, accessible names, `aria-current`, tables, and semantic message/order/campaign regions are present.
+- A fresh final browser tab produced no console warnings or errors after loading Influencer Matches, Messages and RFQs, and the Dashboard. Prettier, scoped ESLint, full TypeScript, `git diff --check`, and HTTP checks for all 14 routes passed.
+
+final result: passed
+
+## Supplier-to-merchant landing page — 2026-08-10
+
+### Evidence and normalization
+
+- Source visual truth: `.design-qa/supplier/source-merchant-first-concept.png` (`856 x 1795`), the approved merchant-first supplier concept generated in the user's signed-in ChatGPT session. The supplied editorial reference at `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-75cf8af6-1596-4fbd-ab8e-33b2bcb8498b.png` established the cream, black, cobalt, mint, lime, Bodoni-style, and fashion-editorial visual language.
+- Brand source truth: `.design-qa/supplier/source-influencer-logo-1280x720.png` (`1269 x 714` browser pixels from a `1280 x 720` CSS viewport, DPR 1) captures the existing `/influencers` header and its approved `public/media/partner-landing/optimized/primestyleai-mark-256.webp` logo asset.
+- Browser-rendered desktop implementation: `.design-qa/supplier/implementation-desktop-1280.png` (`1280 x 5111` stitched content capture) from `/suppliers` at a `1280 x 720` CSS viewport, DPR 1.
+- Browser-rendered mobile implementation: `.design-qa/supplier/implementation-mobile-390x844.png` (`390 x 844`) from a real `390 x 844` iframe viewport in the Codex in-app browser, DPR 1.
+- Updated logo and image-quality captures: `.design-qa/supplier/implementation-desktop-logo-quality-1280x720.png` (`1269 x 714` browser pixels from a `1280 x 720` CSS viewport, DPR 1) and `.design-qa/supplier/implementation-mobile-logo-quality-390x844.png` (`379 x 820` browser pixels from a `390 x 844` CSS viewport, DPR 1).
+- Normalized implementation: `.design-qa/supplier/implementation-desktop-normalized-856.png` (`856 x 3418`), downsampled from the `1280px` desktop capture to the source's `856px` pixel width with no aspect distortion.
+- Full same-input comparison: `.design-qa/supplier/comparison-full-source-left-implementation-right.png` (`1752 x 3418`). The source is on the left and the normalized implementation is on the right.
+- Focused hero comparison: `.design-qa/supplier/comparison-hero-source-left-implementation-right.png` (`1752 x 720`), source left and implementation right at equal `856px` panel widths. This focused comparison was required because the full comparison reduces the header, CTA labels, hero crop, and display typography too far for reliable judgment.
+- Updated focused hero comparison: `.design-qa/supplier/comparison-hero-logo-quality-source-left-implementation-right.png` (`1752 x 720`). The implementation evidence was stitched from the page-top capture and a second capture at `scrollY 637`, removing the `82px` sticky-header overlap, then normalized from `1269 x 1068` to the source panel's `856 x 720` dimensions.
+- Focused brand comparison: `.design-qa/supplier/comparison-logo-influencer-left-supplier-right.png` (`2578 x 100`), with the approved `/influencers` header on the left and the corrected `/suppliers` header on the right at equal captured density.
+- Source density is unknown because it is a concept raster rather than a live CSS viewport. Exact scroll length was therefore not treated as pixel truth; page order, relative hierarchy, crop, type treatment, palette, and visual rhythm were compared directly.
+- Comparison state: page top, light theme, desktop navigation visible, mobile menu closed.
+
+### Findings and comparison history
+
+- Pass 1, P2 mobile decorative overlap: the large `PS` editorial motif crossed the mobile body copy and primary CTA at `390px`, weakening readability and changing the above-the-fold hierarchy.
+- Fix: removed the motif below `900px` while preserving the headline, merchant message, CTA, and Supplier → Merchants → Orders flow. Post-fix evidence is `.design-qa/supplier/implementation-mobile-390x844.png`; document and scroll width both remain `390px`.
+- Pass 2, P2 desktop motif and hero proportion: the first desktop rendering exposed only a clipped black fragment of the `PS` motif, and the hero ended materially earlier than the source concept.
+- Fix: repositioned the editorial motif as a low-opacity layer that does not block the model, increased the desktop hero to the source-like proportion, and changed the secondary hero action to `Meet the merchant network`. The post-fix focused comparison shows matched headline hierarchy, merchant-first CTA language, garment subjects, lime action, three-node network flow, and hero endpoint.
+- Pass 3, P2 brand and image-delivery fidelity: the supplier header used a hand-set text wordmark instead of the exact logo already approved on `/influencers`, and the generated fashion rasters relied on the default `75` optimization quality.
+- Fix: reused the exact `primestyleai-mark-256.webp` asset and `Prime Style AI` lockup in both supplier header and footer, raised all five supplier photographs and the mark to the configured `90` quality, corrected the desktop hero `sizes` hint to its measured `61vw` slot, and replaced the deprecated hero `priority` prop with `preload`. The clean desktop browser now selects the `828px` hero source at `q=90`; mobile selects `640px` at `q=90`.
+- Post-fix evidence: the focused brand comparison shows the identical mark, lockup text, `42px` desktop presentation, and source path on both routes. The updated hero comparison and mobile capture show sharp subjects, stable crops, and no horizontal overflow. No actionable P0, P1, or P2 finding remains.
+- Pass 4, P0 supplier CTA routing: the supplier header `Sign in` still targeted the shared `/login` route, which redirects to the external MyAIFitting developer portal, while primary supplier CTAs opened an interest form instead of the supplier workspace.
+- Fix: removed the supplier interest-modal path and changed every supplier conversion action—desktop and mobile Sign in, Join the network, both Join the supplier network actions, both Meet the merchant network actions, Add creators to my growth plan, and the footer Supplier dashboard link—to direct internal `/suppliers/dashboard` links.
+- Post-fix evidence: a live DOM audit found all eight rendered conversion links targeting `/suppliers/dashboard`. Clicking desktop `Join the network` and `Sign in` both opened `http://127.0.0.1:3000/suppliers/dashboard`, rendered the `Supplier Dashboard` heading, and retained the `Supplier Dashboard | PrimeStyleAI` title. No supplier CTA references `/login` or the interest hook.
+- The production implementation intentionally expands the concept's compressed infographic rows into readable cards and complete merchant workflows. This increases full-page height but preserves the same section order and visual grouping; it is an acceptable production adaptation rather than a remaining P2 mismatch.
+- No actionable P0, P1, or P2 finding remains.
+
+### Required fidelity surfaces
+
+- Fonts and typography: Bodoni Moda supplies the display and italic editorial hierarchy; Manrope supplies body and UI copy. Headline scale, tight display tracking, cobalt uppercase eyebrows, compact navigation, and readable card copy match the concept without truncation or broken wrapping.
+- Spacing and layout rhythm: the final hero, merchant journey, wholesale/dropship/DTC modes, optional creator layer, dark conversion close, and footer follow the concept's sequence. Desktop uses an asymmetric editorial split and two-column operational cards; tablet and mobile stack without collision or horizontal overflow.
+- Colors and visual tokens: warm ivory, charcoal, cobalt, pale mint, restrained sage, white, and fluorescent lime map directly to the selected concept. Borders, shadows, radii, and opacity remain quiet and editorial; no decorative gradient was introduced.
+- Image quality and asset fidelity: five real raster fashion assets were generated in the user's logged-in ChatGPT session and placed at measured 16:10 or 4:3 slots. The model, mint puffer, boutique buyer, sample package, fulfilled order rail, and creator-filming scene render through responsive `srcset` candidates at `q=90`, remain sharp with coherent lighting and crop, and use the exact existing influencer-logo raster for the brand lockup. Phosphor supplies all icons; no placeholder image, handcrafted SVG, CSS illustration, emoji, or copied screenshot is used in the page UI.
+- Copy and content: the headline and first three sections explicitly sell merchant access to suppliers and manufacturers. Creators are a clearly labeled optional DTC layer. Internal testing, implementation, legal, and compliance notes are absent from the visible product features.
+
+### Interactions, accessibility, and runtime checks
+
+- All supplier conversion actions are semantic internal links to `/suppliers/dashboard`; actual desktop navigation was exercised for both the main header CTA and Sign in. Section-navigation buttons remain in-page controls and do not leave the supplier landing.
+- The mobile menu exposes all four section links plus supplier-dashboard Sign in and Join actions, and closes after section selection. The `Ways to sell` navigation reaches the mobile selling cards. The creator heading and creator image remain correctly stacked.
+- Images have descriptive alt text, links and controls have accessible names, and reduced-motion behavior is defined. The obsolete supplier interest dialog and its form-submission hook are no longer rendered or imported.
+- Desktop metrics: `1280 x 720` CSS viewport, `1280px` document and scroll width, `5111px` document height. Mobile metrics: `390 x 844` CSS viewport and `390px` document and scroll width. Tablet metrics: `820 x 900` CSS viewport and `820px` document and scroll width.
+- Final in-app browser check found no broken rendered images. Desktop and mobile header/footer marks resolved to the exact influencer asset at `q=90`; desktop and mobile document overflow remained `0px`. Both `/suppliers` and the preserved `/suppliers/dashboard` returned HTTP `200`.
+- The original development tab retained transient Fast Refresh `usePartnerInterest is not defined` errors from the intermediate two-step removal of the hook and component. A new tab opened after the final bundle rendered `/suppliers` with eight dashboard links, zero `/login` links, and zero console errors.
+- Prettier check, scoped ESLint, full TypeScript, and `git diff --check` passed after the logo and image-quality correction.
+
+### Open questions
+
+- None blocking. The concept's short total page length is intentionally not used as a production viewport constraint.
+
+### Follow-up polish
+
+- P3: if a future branded `PS` monogram asset becomes available, replace the low-opacity typographic motif with that exact raster or approved brand asset.
+
+final result: passed
+
+## Influencer hero journey restoration and campaign-link correction — 2026-08-10
+
+### Evidence and normalization
+
+- Source visual truth: `/Users/arashsn/Downloads/Screenshot - 2026-08-10T232302.317.png` (`1638 x 478`, supplied raster).
+- Final desktop implementation: `artifacts/design-qa/influencer-journey/final-raw-1638x478.png` from `/influencers` at a `1638 x 900` CSS viewport, DPR 1, with the waitlist closed and desktop navigation visible.
+- Normalized journey crop: `artifacts/design-qa/influencer-journey/final-section-1638x478.png` (`1638 x 478`). The sticky header was removed by cropping `99px` from the captured top and padding the bottom with white; no scale or density change was applied.
+- Same-input comparison: `artifacts/design-qa/influencer-journey/final-reference-vs-implementation.png` (`3276 x 478`), source on the left and implementation on the right at equal pixel density.
+- Responsive verification: `390 x 844` CSS viewport, one-column journey, `390px` viewport width, `379px` document width, and no horizontal overflow.
+- New asset source: the user's logged-in ChatGPT session at `https://chatgpt.com/c/6a7a27e1-cfdc-83eb-a773-a2f8d0b4a61b`. The `1122 x 1402` PNG master was converted to `public/media/partner-landing/optimized/creator-campaign-affiliate.webp` (`257,044` bytes) at high WebP quality.
+
+### Findings and comparison history
+
+- Pass 1 restored the supplied open four-column composition, numbered blue rails, fit card, phone card, handwritten orange annotations, and payout statement instead of the later pastel card-shell treatment.
+- P1 horizontal alignment mismatch: the restored source styles began the journey at roughly `74px`, while the reference begins at `30px` and retains the same right edge. The desktop journey now extends `44px` toward the left and resets to normal width below `1080px`; the final measured journey is `1597.3px` wide at `x=29.7px`.
+- User-directed content change: Step 1 now says `Connect with merchants and choose products.` Step 2 is `Create campaigns & affiliate links` with the new campaign/link image. Step 3 is `Post it. Sell it.` and uses the screenshot's former second-step phone/social visual. Step 4 remains unchanged.
+- The new campaign image is subject-relevant, sharp, uncropped at its measured `176 x 220` slot, and visually matches the orange, white, and warm-neutral journey palette. Campaign and link icons use the existing Phosphor family.
+- The final same-input comparison confirms the source's column rhythm, rail geometry, top alignment, fit-card dimensions, phone dimensions, payout-card dimensions, type scale, and white-space balance. Steps 2 and 3 differ only where the user explicitly requested new copy and imagery.
+- No actionable P0, P1, or P2 visual issue remains. The black Next.js development badge visible in local screenshots is a development-only browser overlay, not landing-page content.
+
+### Runtime and accessibility checks
+
+- The live DOM rendered the four requested headings and exact Step 1 copy. All four journey images reported `complete=true` with positive intrinsic dimensions.
+- A fresh post-fix browser reload produced no console errors or warnings.
+- At `390 x 844`, the journey measured `343px` wide inside the viewport, used one column, and did not widen the document.
+- Scoped ESLint, full TypeScript, and `git diff --check` passed after the final implementation changes.
+
+final result: passed
+
+## Separate Privacy Policy and Terms of Service — 2026-08-11
+
+### Evidence and normalization
+
+- Source visual truth: `https://cargokite.com/privacy?utm_source=Pinterest&utm_medium=organic`, captured as `artifacts/design-qa/legal-pages/source-cargokite-privacy-desktop.png` plus the top-to-bottom mobile sequence `source-cargokite-mobile-01.png` through `source-cargokite-mobile-08.png`.
+- Legal source truth: `/Users/arashsn/Downloads/PrimeStyleAI_International_Creator_Program_Agreement_and_Content_Policy.docx`, rendered and visually reviewed across all 35 pages under `artifacts/legal-source-docx-render/`.
+- Final desktop implementations: `artifacts/design-qa/legal-pages/implementation-privacy-desktop-1440x1000.png` and `implementation-terms-desktop-1440x1000.png`, captured from `1440 x 1000` CSS viewports at DPR 1. Full-page evidence is `implementation-privacy-desktop-full.png` and `implementation-terms-desktop-full.png`; the Terms contact/footer state is `implementation-terms-desktop-end.png`.
+- Final mobile implementations: `artifacts/design-qa/legal-pages/implementation-privacy-mobile-390x844.png` and `implementation-terms-mobile-390x844.png`, captured from `390 x 844` CSS viewports at DPR 1. Full-page evidence is `implementation-privacy-mobile-full.png` and `implementation-terms-mobile-full.png`.
+- Influencer-header correction evidence: `artifacts/design-qa/legal-pages/implementation-privacy-desktop-influencer-header.png`, `implementation-privacy-mobile-influencer-header.png`, `implementation-privacy-mobile-influencer-menu.png`, and `implementation-privacy-mobile-waitlist-splash.png`.
+- Same-input full desktop comparison: `artifacts/design-qa/legal-pages/comparison-privacy-desktop.jpg`, with the CargoKite reference on the left and PrimeStyleAI implementation on the right.
+- Same-input focused mobile comparison: `artifacts/design-qa/legal-pages/comparison-privacy-mobile.jpg`, with both page tops normalized into equal-width panels. This focused comparison is required because the source desktop full-page capture repeats its fixed layout while the implementation is a normal document scroll.
+- State: page top for both routes, desktop navigation visible, mobile menu closed, Privacy/Terms switch visible; an additional mobile state verified the expanded `On this page` contents control.
+
+### Findings and comparison history
+
+- Pass 1, P1 legal information architecture: the existing shared policy template used stacked cards and developer-oriented Terms copy, while the requested source establishes a flat editorial reading surface. The final routes are separate at `/privacy-policy` and `/terms`, use a CargoKite-like split color rail on desktop, and collapse to a clean single-column legal document on mobile.
+- Pass 1, P1 entity and program mismatch: the previous copy named `PrimeStyleAI, Inc.` and did not cover the supplied international creator agreement. The final copy identifies BellagioUSA Inc. doing business as PrimeStyleAI and covers creator pages, merchant campaigns, tracked links, creator commissions, payouts, content disclosure, licensing, AI likeness permissions, privacy rights, and dispute terms from the supplied agreement.
+- Pass 1, P2 mobile title spacing: the initial tight display tracking made `Privacy Policy` read as one word at `390px`. Mobile tracking was relaxed while the tighter desktop display treatment was retained.
+- Pass 2, P1 header mismatch: the first legal implementation inherited the generic developer header instead of the influencer landing header. Both legal routes now render the shared `InfluencerHeader` component, its exact logo/navigation treatment, responsive menu, and the same animated creator waitlist splash.
+- The combined reference/implementation comparisons confirm the requested flat hierarchy, oversized legal title, generous white reading column, restrained separators, and responsive single-column behavior. PrimeStyleAI cobalt replaces CargoKite orange to remain consistent with the existing site. No actionable P0, P1, or P2 mismatch remains.
+
+### Required fidelity surfaces
+
+- Typography: Manrope remains the product typeface; desktop titles render at editorial display scale and legal body copy remains `18px` with generous line height. Mobile body copy remains `17px`, avoiding desktop-style microcopy.
+- Layout and spacing: the desktop page uses a persistent 36% cobalt rail and a wide white reading column with flat section rules. Mobile hides the rail, preserves strong spacing, and exposes a native expandable table of contents.
+- Colors and visual tokens: existing PrimeStyleAI cobalt `#2154EF`, black, white, and neutral gray replace the reference brand colors without introducing a new palette.
+- Assets and icons: the exact influencer landing logo/header component and existing footer assets are preserved; Lucide supplies the legal-page mail and external-link icons. No generated visual asset or copied CargoKite content is used.
+- Copy and content: Privacy and Terms are distinct documents with their own metadata, route, title, contents, contact copy, and active switch state. Both show the August 10, 2026 effective and updated dates and the Laguna Niguel, California location from the supplied agreement.
+
+### Interactions, accessibility, and runtime checks
+
+- Clicking the visible `Terms` switch on Privacy navigated to `/terms`; browser back returned to `/privacy-policy`. The mobile `On this page` control expanded successfully and exposes anchor links to every section and Contact.
+- The desktop influencer navigation rendered on both legal routes. At `390 x 844`, the influencer menu opened without overflow and its `Join waitlist` action opened the same animated creator waitlist dialog used on `/influencers`; closing animation completed successfully.
+- Both routes use one `h1`, semantic section headings, labeled legal navigation, `aria-current` on the active document, visible focusable links, and a direct `mailto:support@primestyleai.com` contact action.
+- Fresh final browser tabs reported no console errors or warnings. `/privacy-policy`, `/terms`, and backend `/api/health` returned HTTP `200` on ports 3000 and 4000.
+- Scoped ESLint, full TypeScript, and `git diff --check` passed.
+
+final result: passed
+
+## Influencer creator benefits and free-account benchmarks — 2026-08-11
+
+### Evidence and normalization
+
+- Source visual truth: `/Users/arashsn/Downloads/PrimeStyleAI_Creator_Benefits_and_Free_Account_Flyer.png` (`2560 x 1440`), supplied by the user as the content and benchmark reference.
+- Final desktop implementation: `artifacts/design-qa/influencer-benefits/final-desktop-top-1440x1000.png` and `final-desktop-cards-1440x1000.png` (`1429 x 992` browser pixels from a `1440 x 1000` CSS viewport, DPR 1).
+- Stitched desktop section: `artifacts/design-qa/influencer-benefits/final-section-desktop.png` (`1428 x 1138`).
+- Final mobile implementation: `artifacts/design-qa/influencer-benefits/final-mobile-top-390x844.png` and `final-mobile-cards-390x844.png` (`379 x 820` browser pixels from a `390 x 844` CSS viewport, DPR 1).
+- Same-input full comparison: `artifacts/design-qa/influencer-benefits/final-comparison-full-source-left-implementation-right.png` (`3452 x 1138`), with the source flyer on the left and the stitched website section on the right at equal height.
+- State: `/influencers`, benefit sections visible with the waitlist closed; a separate interaction pass opened and closed the waitlist from the benchmark CTA.
+
+### Findings and comparison history
+
+- Intentional adaptation: the flyer presents every benefit in one static sheet, while the requested website treatment distributes each feature into its related product section. Shoppable creator-page copy is in the public-profile story; AI try-on, outfit mixing, and AI-video copy is in Outfit Studio; connected-brand discovery is in the dashboard; and package-price and commission negotiation is in the commission offer card.
+- The new near-page-end section preserves the source's primary promise, starter allowance, early-access CTA, and qualifying-activity footnote. Its current minimums are `500` qualified creator-page visitors, `100` product clicks, or `5` qualifying purchases per month, and it sits immediately before the final waitlist section as requested.
+- Threshold revision pass: the updated `500 / 100 / 5` monthly copy was rechecked in the live DOM and visually at `1440 x 1000` and `390 x 844`. The static comparison captures listed above predate this copy-only revision.
+- Pass 1, P2 desktop legal-copy density: the qualifying-activity footnote rendered at `10px`, repeating the miniature desktop-copy problem the page had previously addressed.
+- Fix: increased desktop fine print to `12px` with stronger contrast and a `1.65` line height, while retaining a compact `10px` mobile treatment. The final desktop capture shows readable terms without competing with the benchmark cards.
+- No actionable P0, P1, or P2 finding remains.
+
+### Required fidelity surfaces
+
+- Fonts and typography: existing Manrope and Georgia treatments preserve the landing page's sans-serif/editorial hierarchy. The oversized free-account headline, large metrics, normal desktop body copy, and compact legal note remain distinct and readable.
+- Spacing and layout rhythm: the section uses the flyer's intro-plus-statistics hierarchy but expands it into a web-native two-column intro, starter-portfolio card, and three equal benchmark cards. Mobile stacks the same content without truncation or horizontal overflow.
+- Colors and visual tokens: the existing PrimeStyleAI cobalt, lavender, peach, mint, white, and black palette replaces the flyer's plum/coral palette so the new section belongs to the surrounding influencer page.
+- Image quality and asset fidelity: the source flyer is used only as design evidence and is not copied into the page. Existing page photography stays untouched; Phosphor supplies the benchmark and feature icons, with no placeholder, handcrafted SVG, emoji, or CSS illustration.
+- Copy and content: all five benefits, the early-creator starter portfolio of up to 10 AI try-on images and 4 AI fashion videos, the three monthly minimum benchmarks, and all qualification limitations are represented in the rendered page.
+
+### Interactions, accessibility, and runtime checks
+
+- The benchmark CTA opened the existing animated creator waitlist and the close action completed successfully; no form was submitted.
+- The new section is a labeled semantic region with an `h2`, an `h3`, three benchmark articles, descriptive labels, and a real button. The distributed benefit copy remains readable text rather than embedded raster text.
+- Desktop document/client/scroll width measured `1429px` inside the `1440px` browser viewport. Mobile document/client/scroll width measured `379px` inside the `390px` viewport. Neither state has horizontal overflow.
+- Fresh development-server output showed successful compilation and repeated `/influencers` `200` responses with no new runtime error. The rendered DOM showed no Next.js error alert.
+- Scoped ESLint, full TypeScript, new-component Prettier, and `git diff --check` passed. Frontend `/influencers` and backend `/api/health` returned HTTP `200` on ports 3000 and 4000. The repo-wide production build remains blocked by unrelated, pre-existing imports of the missing `@primestyleai/tryon/react` package in demo and product-detail files; the influencer route itself compiles and responds successfully.
 
 final result: passed

@@ -1,4 +1,10 @@
 export const SHOP_BRAND_IDS = [
+  "bloomingdales",
+  "ymi-jeans",
+  "shop-simon",
+  "davids-bridal",
+  "mens-wearhouse",
+  "patbo",
   "nike",
   "adidas",
   "ganni",
@@ -44,4 +50,52 @@ export type ActiveBrandFilters = {
   colors: string[];
   sizes: string[];
   price: "all" | "under-125" | "125-175" | "over-175";
+};
+
+export type BrandFilterOptions = {
+  categories: string[];
+  categoryCounts: Record<string, number>;
+  seasons: string[];
+  colors: string[];
+  sizes: string[];
+};
+
+export type BrandCategoryCard = {
+  label: string;
+  value: string | null;
+  image: string;
+  count?: number;
+  href?: string;
+  meta?: string;
+  imageFit?: "contain" | "cover";
+};
+
+export type EditorialProduct = {
+  product: BrandProduct;
+  eyebrow: string;
+};
+
+export type EditorialStory = {
+  eyebrow: string;
+  title: string;
+  href: string;
+};
+
+export type BrandEditorialAssets = {
+  dropped: string;
+  gender: string;
+  promos: string;
+  news: string;
+};
+
+export type BrandEditorialViewModel = {
+  catalog: BrandCatalog;
+  assets: BrandEditorialAssets;
+  droppedProducts: EditorialProduct[];
+  categoryCards: BrandCategoryCard[];
+  promoStories: EditorialStory[];
+  newsStories: EditorialStory[];
+  filterOptions: BrandFilterOptions;
+  newCount: number;
+  saleCount: number;
 };

@@ -1,4 +1,5 @@
 import type { PartnerInterestPayload, PartnerInterestResult } from "../types";
+import { validateCreatorProfileUrl } from "./creatorProfileValidation";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -9,6 +10,27 @@ export async function submitPartnerInterest(
     return {
       ok: false,
       message: "Add your name and a valid email so we can follow up.",
+    };
+  }
+
+  if (
+    payload.audience === "influencer" &&
+    ((!payload.creatorProfiles?.length && !payload.website?.trim()) ||
+      (payload.creatorProfiles?.some(
+        (profile) =>
+          !profile.platform ||
+          !validateCreatorProfileUrl(profile.platform, profile.url).valid,
+      ) ??
+        false) ||
+      !payload.primaryChannel ||
+      !payload.audienceSize ||
+      !payload.location?.trim() ||
+      payload.marketingConsent !== true)
+  ) {
+    return {
+      ok: false,
+      message:
+        "Complete your creator profile details and consent before joining.",
     };
   }
 
@@ -25,12 +47,39 @@ export async function submitPartnerInterest(
         product: payload.audience,
         name: payload.name.trim(),
         website: payload.website?.trim() || undefined,
+        primaryChannel: payload.primaryChannel,
+        creatorProfiles: payload.creatorProfiles?.map((profile) => {
+          const validation = validateCreatorProfileUrl(
+            profile.platform,
+            profile.url,
+          );
+          return {
+            platform: profile.platform,
+            url: validation.valid
+              ? validation.normalizedUrl
+              : profile.url.trim(),
+          };
+        }),
+        audienceSize: payload.audienceSize,
+        location: payload.location?.trim() || undefined,
+        timezone: payload.timezone?.trim() || undefined,
+        marketingConsent: payload.marketingConsent,
+        leadSource: payload.leadSource,
       }),
     });
 
     if (!response.ok) {
-      const error = (await response.json().catch(() => ({}))) as { error?: string; message?: string };
-      return { ok: false, message: error.error ?? error.message ?? "Could not join the network. Try again." };
+      const error = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        message?: string;
+      };
+      return {
+        ok: false,
+        message:
+          error.error ??
+          error.message ??
+          "Could not join the network. Try again.",
+      };
     }
 
     return {
@@ -38,9 +87,17 @@ export async function submitPartnerInterest(
       message:
         payload.audience === "influencer"
           ? "You’re on the creator waitlist. We’ll be in touch when access opens."
-          : "Your request to join the network is in. We’ll be in touch with the right connection path.",
+          : payload.audience === "supplier"
+            ? "Your supplier request is in. We’ll be in touch about the right merchant connection path."
+            : "Your request to join the network is in. We’ll be in touch with the right connection path.",
     };
   } catch {
-    return { ok: false, message: payload.audience === "merchant" ? "Could not join the network. Try again." : "Could not join the waitlist. Try again." };
+    return {
+      ok: false,
+      message:
+        payload.audience === "influencer"
+          ? "Could not join the waitlist. Try again."
+          : "Could not join the network. Try again.",
+    };
   }
 }

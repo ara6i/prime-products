@@ -15,25 +15,17 @@ import {
 } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { InfluencerFooter } from "../../partner-landing/influencer/components/InfluencerFooter";
-import { getCategoryHref } from "../category/mappers/categoryCatalog.mapper";
+import { useShopNavigation } from "../hooks/useShopNavigation";
 import { ShopRunwayExperience } from "../runway/components/ShopRunwayExperience";
+import type {
+  GlobalShopCategoryFilter,
+  GlobalShopProduct,
+} from "../types/globalShop.types";
 import styles from "./globalShop.module.css";
 
-type Product = {
-  id: string;
-  name: string;
-  brand: string;
-  price: number;
-  category: "Women" | "Men" | "Denim" | "Accessories";
-  image: string;
-  tone: string;
-  note: string;
-};
-
-const products: Product[] = [
+const products: GlobalShopProduct[] = [
   {
     id: "vela-denim",
     name: "Vela Cropped Denim",
@@ -116,38 +108,44 @@ const products: Product[] = [
   },
 ];
 
-const categories = ["All", "Women", "Men", "Denim", "Accessories"] as const;
+const categories: GlobalShopCategoryFilter[] = [
+  "All",
+  "Women",
+  "Men",
+  "Denim",
+  "Accessories",
+];
 
 const featuredBrands = [
   {
-    id: "nike",
-    label: "Nike",
-    logo: "/media/global-shop/brand-logos/nike.svg",
+    id: "bloomingdales",
+    label: "Bloomingdale's",
+    logo: "/images/landing/brand-bloomingdales.svg",
   },
   {
-    id: "adidas",
-    label: "adidas",
-    logo: "/media/global-shop/brand-logos/adidas.svg",
+    id: "ymi-jeans",
+    label: "YMI Jeans",
+    logo: "https://ymijeans.com/cdn/shop/files/black-logo_100x@2x.png?v=1701906525",
   },
   {
-    id: "ganni",
-    label: "GANNI",
-    logo: "/media/global-shop/brand-logos/ganni.svg",
+    id: "shop-simon",
+    label: "ShopSimon",
+    logo: "/images/landing/brand-shopsimon.svg",
   },
   {
-    id: "new-balance",
-    label: "New Balance",
-    logo: "/media/global-shop/brand-logos/new-balance.svg",
+    id: "davids-bridal",
+    label: "David's Bridal",
+    logo: "/images/landing/brand-davids-bridal.svg",
   },
   {
-    id: "reiss",
-    label: "Reiss",
-    logo: "/media/global-shop/brand-logos/reiss.svg",
+    id: "mens-wearhouse",
+    label: "Men's Wearhouse",
+    logo: "/images/landing/brand-mens-wearhouse.svg",
   },
   {
-    id: "aritzia",
-    label: "Aritzia",
-    logo: "/media/global-shop/brand-logos/aritzia.svg",
+    id: "patbo",
+    label: "PatBO",
+    logo: "/images/landing/brand-patbo.svg",
   },
 ] as const;
 
@@ -171,11 +169,10 @@ const bagLooks = [
 const moods = ["Everyday", "Statement", "Weekend"] as const;
 
 export function GlobalShopExperience() {
-  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [category, setCategory] = useState<(typeof categories)[number]>("All");
+  const [category, setCategory] = useState<GlobalShopCategoryFilter>("All");
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [bagCount, setBagCount] = useState(0);
   const [cartOpen, setCartOpen] = useState(false);
@@ -184,6 +181,10 @@ export function GlobalShopExperience() {
   );
   const [mood, setMood] = useState<(typeof moods)[number]>("Everyday");
   const [stylistReady, setStylistReady] = useState(false);
+  const closeNavigation = useCallback(() => setMenuOpen(false), []);
+  const { aiStylistHref, openBrandPage, openCategoryPage } = useShopNavigation({
+    onNavigate: closeNavigation,
+  });
   const filteredProducts = useMemo(() => {
     const normalized = searchTerm.trim().toLowerCase();
     return products.filter((product) => {
@@ -216,16 +217,6 @@ export function GlobalShopExperience() {
   function addToBag() {
     setBagCount((count) => count + 1);
     setCartOpen(true);
-  }
-
-  function openCategoryPage(nextCategory: Product["category"]) {
-    router.push(getCategoryHref(nextCategory));
-    setMenuOpen(false);
-  }
-
-  function openBrandPage(brandId: string) {
-    router.push(`/shop/brand/${brandId}`);
-    setMenuOpen(false);
   }
 
   return (
@@ -533,9 +524,13 @@ export function GlobalShopExperience() {
                 Step into a world where fashion speaks your language. Build a
                 complete look around your taste, fit, and the products you love.
               </p>
-              <button type="button" onClick={() => scrollTo("outfit-edit")}>
+              <Link
+                className={styles.stylistPrimaryAction}
+                href={aiStylistHref}
+                prefetch={false}
+              >
                 Build my outfit <ArrowUpRight size={15} />
-              </button>
+              </Link>
             </div>
             <div className={styles.stylistHeroModel}>
               <Image
@@ -594,9 +589,12 @@ export function GlobalShopExperience() {
                 products from connected brands—then turns them into one complete
                 shoppable look.
               </p>
-              <button type="button" onClick={() => scrollTo("outfit-edit")}>
+              <Link
+                className={styles.stylistEditorialAction}
+                href="/shop/dressing-room"
+              >
                 Create my look <ArrowRight size={14} />
-              </button>
+              </Link>
             </div>
             <figure className={styles.stylistEditorialRight}>
               <Image
@@ -727,7 +725,7 @@ export function GlobalShopExperience() {
         aria-labelledby="brands-title"
       >
         <div className={styles.brandsTop}>
-          <span>03 · Connected brands</span>
+          <span>03 · Rakuten partners</span>
           <h2 id="brands-title">
             THE NAMES
             <br />
@@ -740,11 +738,11 @@ export function GlobalShopExperience() {
             </i>
           </h2>
           <p>
-            One global shop for established labels, emerging studios, and
-            merchant collections—all ready for personalized discovery.
+            One global shop for approved retail partners and their fashion
+            collections—all ready for personalized discovery.
           </p>
         </div>
-        <div className={styles.brandRail} aria-label="Featured brands">
+        <div className={styles.brandRail} aria-label="Featured retail partners">
           {featuredBrands.map((brand) => (
             <button
               key={brand.id}
@@ -766,16 +764,16 @@ export function GlobalShopExperience() {
           <article>
             <Image
               src="/media/global-shop/product-cobalt-3d.webp"
-              alt="Assembly 01 cobalt seasonal menswear"
+              alt="Bloomingdale's seasonal fashion edit"
               fill
               sizes="50vw"
             />
             <div>
-              <span>Assembly 01</span>
-              <h3>The essential, rebuilt.</h3>
+              <span>Bloomingdale&apos;s</span>
+              <h3>The new luxury edit.</h3>
               <button
                 type="button"
-                onClick={() => openBrandPage("assembly-01")}
+                onClick={() => openBrandPage("bloomingdales")}
               >
                 Explore brand <ArrowUpRight size={15} />
               </button>
@@ -784,14 +782,14 @@ export function GlobalShopExperience() {
           <article>
             <Image
               src="/media/global-shop/product-denim-blonde-3d.webp"
-              alt="Northline dimensional denim collection"
+              alt="YMI Jeans dimensional denim collection"
               fill
               sizes="50vw"
             />
             <div>
-              <span>Northline</span>
-              <h3>A new language of denim.</h3>
-              <button type="button" onClick={() => openBrandPage("northline")}>
+              <span>YMI Jeans</span>
+              <h3>Denim built around fit.</h3>
+              <button type="button" onClick={() => openBrandPage("ymi-jeans")}>
                 Explore brand <ArrowUpRight size={15} />
               </button>
             </div>

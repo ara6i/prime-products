@@ -3,6 +3,7 @@ import type {
   FilterSectionConfig,
   FilterState,
   ColorFilterOption,
+  FilterFacetCounts,
 } from "@/app/shared/types";
 
 export const SORT_OPTIONS: SortOption[] = [
@@ -113,3 +114,15 @@ export const DEFAULT_FILTER_STATE: FilterState = {
   selectedFilters: {},
   priceRange: { min: 0, max: 0 },
 };
+
+export function filterSectionsWithCounts(
+  facets?: FilterFacetCounts,
+): FilterSectionConfig[] {
+  return FILTER_SECTIONS.map((section) => ({
+    ...section,
+    options: section.options.map((option) => ({
+      ...option,
+      count: facets?.[section.id]?.[option.value],
+    })),
+  }));
+}

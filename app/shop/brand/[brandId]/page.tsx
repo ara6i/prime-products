@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BrandCatalogExperience } from "../components/BrandCatalogExperience";
+import { mapBrandCatalogToEditorial } from "../mappers/brandEditorial.mapper";
 import {
   getBrandCatalog,
   getStaticBrandIds,
@@ -33,5 +34,6 @@ export default async function BrandPage({ params }: BrandPageProps) {
   const { brandId } = await params;
   const catalog = await getBrandCatalog(brandId);
   if (!catalog) notFound();
-  return <BrandCatalogExperience catalog={catalog} />;
+  const viewModel = mapBrandCatalogToEditorial(catalog);
+  return <BrandCatalogExperience viewModel={viewModel} />;
 }

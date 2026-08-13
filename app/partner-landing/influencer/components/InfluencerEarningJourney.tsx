@@ -11,7 +11,7 @@ export function InfluencerEarningJourney({ viewModel, onPrimaryAction }: { viewM
         <div className={styles.journeyHeading}>
           <span>How you earn</span>
           <h2 id="earning-journey-title">Everything from inspiration <em>to a validated payout.</em></h2>
-          <p>Activate your creator profile, build and publish approved looks, and keep every qualified sale connected through merchant validation.</p>
+          <p>Activate your creator profile, connect with merchants, publish shoppable looks, and keep every qualified sale connected through merchant validation.</p>
         </div>
         <div className={styles.journeyGrid}>
           {viewModel.features.map((feature, index) => {
@@ -37,7 +37,7 @@ export function InfluencerEarningJourney({ viewModel, onPrimaryAction }: { viewM
           })}
         </div>
         <div className={styles.statementStory}>
-          <div className={styles.statementFilm}><Image src="/media/partner-landing/creator-payout-story.png" alt="Fashion creator preparing an approved look for a merchant link" fill sizes="70vw" /><span>YOUR LOOK</span></div>
+          <div className={styles.statementFilm}><Image src="/media/partner-landing/optimized/creator-payout-story.webp" alt="Fashion creator preparing an approved look for a merchant link" fill sizes="70vw" /><span>YOUR LOOK</span></div>
           <div className={styles.statementCard}>
             <span>Creator statement</span>
             <h3>Every status, clearly named.</h3>
@@ -50,18 +50,33 @@ export function InfluencerEarningJourney({ viewModel, onPrimaryAction }: { viewM
 
       <section id="creator-commission" className={styles.commissionSection} aria-labelledby="commission-title">
         <div className={styles.commissionRule}>
-          <span>The affiliate-channel rule</span>
+          <span>The creator commission promise</span>
           <strong>100%</strong>
-          <h2 id="commission-title">of the commission PrimeStyleAI actually receives on eligible purchases from the originating merchant.</h2>
-          <p>Not “100% commission.” Rates, eligibility, return windows, exclusions, reversals, currency, and payment timing still apply.</p>
+          <h2 id="commission-title">of the creator commission you agree upon with the merchant goes to you. PrimeStyleAI does not take a percentage.</h2>
+          <p>Applies to qualifying purchases tracked through PrimeStyleAI. Merchant terms, eligibility requirements, attribution periods, returns, cancellations, reversals, payment-processing fees, taxes, currency conversion and payment timing may apply.</p>
         </div>
-        <div className={styles.rateCard}>
-          <span>Know the offer before you publish</span>
-          <div>{viewModel.commissionLabels.map((label) => <strong key={label}>{label}</strong>)}</div>
-          <p>The offer shows its last-updated conditions beside the product or link action. The transaction record then shows the rate and commission actually validated.</p>
-          <button type="button" onClick={onPrimaryAction}>Join waitlist <ArrowRight size={17} /></button>
-          <em>Real earnings. Real conditions.</em>
-        </div>
+        <aside className={styles.rateCard} aria-labelledby="commission-offer-title">
+          <h3 id="commission-offer-title">Review the offer before you accept</h3>
+          <dl className={styles.commissionOfferTerms}>
+            <div>
+              <dt>Your commission</dt>
+              <dd>The commission rate proposed by the merchant—or the rate you agree on after negotiation.</dd>
+            </div>
+            <div>
+              <dt>What counts as a qualifying purchase</dt>
+              <dd>The conditions a purchase must meet for you to earn a commission.</dd>
+            </div>
+            <div>
+              <dt>Tracking and payment</dt>
+              <dd>How purchases are credited to you, when you are paid, and how returns, cancellations or refunds are handled.</dd>
+            </div>
+          </dl>
+          <p>Every merchant offer will clearly show the proposed commission rate and all important conditions. You can review the offer, negotiate directly with the merchant and decide whether to accept it.</p>
+          <p>After you accept an offer, your transaction history will show purchases credited to you, along with any returns, cancellations, refunds or other adjustments.</p>
+          <p className={styles.commissionNegotiation}><strong>YOU CONTROL YOUR TERMS</strong><br />Set your prices for paid content packages and negotiate your commission directly with merchants before accepting an offer.</p>
+          <button type="button" onClick={onPrimaryAction}>Join the waitlist <ArrowRight size={17} /></button>
+          <em>Your content. Your commission.</em>
+        </aside>
       </section>
     </>
   );
