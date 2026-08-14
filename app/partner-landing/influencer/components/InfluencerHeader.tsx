@@ -18,7 +18,7 @@ export function InfluencerHeader(props: InfluencerHeaderProps) {
 
   return (
     <header className={styles.header}>
-      <Link href="/" className={styles.logoLink} aria-label={t("Prime Style AI home")}>
+      <Link href="/influencers" className={styles.logoLink} aria-label={t("Prime Style AI home")}>
         <Image
           src="/media/partner-landing/optimized/primestyleai-mark-256.webp"
           alt="Prime Style AI"
