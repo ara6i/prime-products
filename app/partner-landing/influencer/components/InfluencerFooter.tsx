@@ -81,7 +81,6 @@ export function InfluencerFooter({ onCtaClick }: { onCtaClick?: () => void }) {
             <nav aria-label={t("Legal links")}>
               <Link href="/privacy-policy">{t("Privacy policy")}</Link>
               <Link href="/terms">{t("Terms")}</Link>
-              <a href="https://primestyleai.com/help-center">{t("Creator help")}</a>
             </nav>
           </div>
         </section>
