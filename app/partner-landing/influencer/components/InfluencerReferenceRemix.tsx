@@ -1,0 +1,107 @@
+"use client";
+
+import { ArrowUpRight, FilmStrip, ImageSquare, Play, Sparkle } from "@phosphor-icons/react";
+import Image from "next/image";
+import { useState } from "react";
+import { useCreatorLanguage } from "../../i18n/CreatorLanguageProvider";
+import styles from "./influencerLanding.module.css";
+
+type RemixReference = {
+  id: string;
+  title: string;
+  cue: string;
+  kind: "photo" | "video";
+  orientation?: "portrait" | "landscape";
+  poster: string;
+  video?: string;
+  webm?: string;
+};
+
+const REMIX_REFERENCES: RemixReference[] = [
+  { id: "turn", title: "The runway turn", cue: "Camera movement", kind: "video", orientation: "portrait", poster: "/media/partner-landing/influencer-runway-poster.jpg", webm: "/media/partner-landing/influencer-runway.webm", video: "/media/partner-landing/influencer-runway.mp4" },
+  { id: "reveal", title: "The portrait reveal", cue: "Pose and pacing", kind: "video", orientation: "portrait", poster: "/media/partner-landing/creator-portrait-poster.jpg", webm: "/media/partner-landing/creator-portrait.webm", video: "/media/partner-landing/creator-portrait.mp4" },
+  { id: "walk", title: "The campaign cut", cue: "Edit rhythm", kind: "video", orientation: "landscape", poster: "/media/partner-landing/merchant-studio-poster.jpg", webm: "/media/partner-landing/merchant-studio.webm", video: "/media/partner-landing/merchant-studio.mp4" },
+  { id: "duo", title: "Color-block duo", cue: "Pose and palette", kind: "photo", poster: "/media/partner-landing/optimized/creator-collective-01.webp" },
+  { id: "street", title: "Creator street cast", cue: "Group direction", kind: "photo", poster: "/media/partner-landing/optimized/creator-collective-02.webp" },
+  { id: "sun", title: "Sunlit statement", cue: "Light and color", kind: "photo", poster: "/media/partner-landing/optimized/creator-collective-03.webp" },
+  { id: "tailoring", title: "Cobalt tailoring", cue: "Silhouette", kind: "photo", poster: "/media/partner-landing/optimized/creator-collective-04.webp" },
+  { id: "orange-motion", title: "Orange in motion", cue: "Energy", kind: "photo", poster: "/media/partner-landing/merchant-network/influencer-showcase/creator-01-orange-motion.webp" },
+  { id: "detail", title: "Blue-orange detail", cue: "Product focus", kind: "photo", poster: "/media/partner-landing/merchant-network/influencer-showcase/creator-02-blue-orange-detail.webp" },
+  { id: "coat", title: "Cobalt confidence", cue: "Editorial stance", kind: "photo", poster: "/media/partner-landing/merchant-network/influencer-showcase/creator-03-cobalt-tailoring.webp" },
+  { id: "orange-editorial", title: "Orange editorial", cue: "Set direction", kind: "photo", poster: "/media/partner-landing/merchant-network/influencer-showcase/creator-04-orange-editorial.webp" },
+  { id: "ice-blue", title: "Ice-blue streetwear", cue: "Mood and texture", kind: "photo", poster: "/media/partner-landing/merchant-network/influencer-showcase/creator-05-ice-blue-streetwear.webp" },
+  { id: "glasses", title: "Statement glasses", cue: "Accessory story", kind: "photo", poster: "/media/partner-landing/merchant-network/influencer-showcase/creator-06-white-orange-glasses.webp" },
+  { id: "blue-suit", title: "Blue suit strip", cue: "Frame sequence", kind: "photo", poster: "/media/partner-landing/merchant-network/influencer-showcase/creator-07-blue-suit-strip.webp" },
+];
+
+export function InfluencerReferenceRemix({ onCtaClick }: { onCtaClick: () => void }) {
+  const [activeId, setActiveId] = useState("sun");
+  const activeReference = REMIX_REFERENCES.find((reference) => reference.id === activeId) ?? REMIX_REFERENCES[0];
+  const { t } = useCreatorLanguage();
+
+  return (
+    <section id="reference-remix" className={styles.referenceRemix} aria-labelledby="reference-remix-title">
+      <div className={styles.remixIntro}>
+        <p className={styles.eyebrow}>{t("Reference remix · coming next")}</p>
+        <h2 id="reference-remix-title">{t("See it. Recreate it.")} <em>{t("Own the result.")}</em></h2>
+        <p>
+          {t("Start from a PrimeStyleAI photo or video reference. Keep the camera move, pose, edit rhythm, or mood—then remake it with your identity, your outfit, and your campaign.")}
+        </p>
+      </div>
+
+      <div className={styles.remixBoard}>
+        <div className={styles.remixBoardBar}>
+          <strong><Sparkle size={16} weight="fill" /> {t("PrimeStyle references")}</strong>
+          <span><FilmStrip size={15} weight="bold" /> {t("Video")}</span>
+          <span><ImageSquare size={15} weight="bold" /> {t("Photo")}</span>
+          <small>{t("{count} directions", { count: REMIX_REFERENCES.length })}</small>
+        </div>
+
+        <div className={styles.remixMosaic}>
+          {REMIX_REFERENCES.map((reference) => (
+            <button
+              key={reference.id}
+              className={`${styles.remixTile} ${reference.kind === "video" ? styles.remixTileVideo : ""}`}
+              type="button"
+              aria-label={t("Preview {title}", { title: t(reference.title) })}
+              aria-pressed={activeReference.id === reference.id}
+              onClick={() => setActiveId(reference.id)}
+            >
+              <Image src={reference.poster} alt="" fill sizes="(max-width: 620px) 31vw, 16vw" />
+              <span>{reference.kind === "video" ? <Play size={12} weight="fill" /> : <ImageSquare size={12} weight="bold" />}</span>
+            </button>
+          ))}
+
+          <article
+            className={`${styles.remixHero} ${activeReference.kind === "video" ? styles.remixHeroVideo : ""} ${activeReference.orientation === "portrait" ? styles.remixHeroPortrait : ""}`}
+            aria-live="polite"
+          >
+            <div className={styles.remixHeroMedia}>
+              {activeReference.kind === "video" && activeReference.video ? (
+                <video key={activeReference.video} autoPlay loop muted playsInline preload="none" poster={activeReference.poster}>
+                  {activeReference.webm ? <source src={activeReference.webm} type="video/webm" /> : null}
+                  <source src={activeReference.video} type="video/mp4" />
+                </video>
+              ) : (
+                <Image src={activeReference.poster} alt={t("{title} reference", { title: t(activeReference.title) })} fill sizes="420px" />
+              )}
+            </div>
+            <div className={styles.remixHeroCopy}>
+              <small>{t(activeReference.cue)}</small>
+              <h3>{t(activeReference.title)}</h3>
+              <p>{t("Your face. Your outfit. Your version.")}</p>
+              <button type="button" onClick={onCtaClick}>
+                {t("Recreate this style")} <ArrowUpRight size={17} weight="bold" />
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <div className={styles.remixPromise}>
+          <span>{t("Coming to Outfit Studio")}</span>
+          <p>{t("Choose a reference video, add your real image and campaign pieces, then direct a new version that still feels completely yours.")}</p>
+        </div>
+      </div>
+    </section>
+  );
+}

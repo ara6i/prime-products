@@ -1,4 +1,4 @@
-import { PolicyPage } from "@/app/legal-content/components/PolicyPage";
+import { LegalEditorialPage } from "@/app/legal-content/components/LegalEditorialPage";
 import { POLICY_PAGES } from "@/app/legal-content/data/policyPages";
 
 export const metadata = {
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function PrivacyPolicyPage() {
-  return <PolicyPage page={POLICY_PAGES.privacyPolicy} />;
+  return <LegalEditorialPage page={POLICY_PAGES.privacyPolicy} />;
 }

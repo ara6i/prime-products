@@ -4,7 +4,12 @@ import {
   SITE_AUTH_COOKIE_NAME,
   verifySiteSessionToken,
 } from "@/app/shared/auth/siteSession";
-import { isTestLabAvailableForHost, isTryOnTestApiPath, isTryOnTestPath, normalizeHost } from "@/app/try-on-test/lib/access";
+import {
+  isTestLabAvailableForHost,
+  isTryOnTestApiPath,
+  isTryOnTestPath,
+  normalizeHost,
+} from "@/app/try-on-test/lib/access";
 
 // Domains that should serve the /admin tree as their root.
 // Configurable via ADMIN_HOSTS (comma-separated) to avoid hard-coding env-specific hosts.
@@ -14,70 +19,99 @@ const DEFAULT_ADMIN_HOSTS = [
   "admin.localhost",
 ];
 
-const DEFAULT_PUBLIC_PRODUCTION_HOSTS = [
-  "primestyleai.com",
-  "www.primestyleai.com",
-  "myaifitting.com",
-  "www.myaifitting.com",
+const DEFAULT_CREATOR_HOSTS = [
+  "creators.primestyleai.com",
+  "creators.localhost",
 ];
+const DEFAULT_PUBLIC_HOSTS = ["primestyleai.com", "www.primestyleai.com"];
+const CREATOR_LANDING_PATH = "/influencers";
+const CREATOR_PUBLIC_API_PATHS = new Set([
+  "/api/contact/notify",
+  "/api/creator-profiles/validate",
+]);
+const CREATOR_LEGAL_PATHS = new Set(["/privacy-policy", "/terms"]);
+const CREATOR_PUBLIC_URL =
+  process.env.CREATOR_PUBLIC_URL || "https://creators.primestyleai.com";
 
-function getAdminHosts(): string[] {
-  const env = process.env.ADMIN_HOSTS;
-  if (!env) return DEFAULT_ADMIN_HOSTS;
-  return env.split(",").map((h) => h.trim().toLowerCase()).filter(Boolean);
+function getConfiguredHosts(
+  environmentValue: string | undefined,
+  defaults: string[],
+): string[] {
+  if (!environmentValue) return defaults;
+  return environmentValue
+    .split(",")
+    .map((host) => normalizeHost(host))
+    .filter(Boolean);
 }
 
-function getPublicProductionHosts(): string[] {
-  const env = process.env.PRIME_PRODUCTS_PUBLIC_PRODUCTION_HOSTS;
-  if (!env) return DEFAULT_PUBLIC_PRODUCTION_HOSTS;
-  return env.split(",").map((h) => h.trim().toLowerCase()).filter(Boolean);
+function getAdminHosts(): string[] {
+  return getConfiguredHosts(process.env.ADMIN_HOSTS, DEFAULT_ADMIN_HOSTS);
 }
 
 export async function proxy(req: NextRequest) {
   const host = normalizeHost(req.headers.get("host"));
   const adminHosts = getAdminHosts();
-  const publicProductionHosts = getPublicProductionHosts();
   const isAdminHost = adminHosts.includes(host);
+  const isCreatorHost = getConfiguredHosts(
+    process.env.CREATOR_HOSTS,
+    DEFAULT_CREATOR_HOSTS,
+  ).includes(host);
+  const isPublicHost = getConfiguredHosts(
+    process.env.PUBLIC_SITE_HOSTS,
+    DEFAULT_PUBLIC_HOSTS,
+  ).includes(host);
   const siteAuthEnabled = isSiteAuthEnabled();
 
   const url = req.nextUrl;
   const pathname = url.pathname;
-  const isSiteLoginPath = pathname === "/login" || pathname.startsWith("/login/");
+  const isSiteLoginPath =
+    pathname === "/login" || pathname.startsWith("/login/");
   const isTryOnTestRoute = isTryOnTestPath(pathname);
   const isTryOnTestApiRoute = isTryOnTestApiPath(pathname);
-  const isPublicProductionHost = publicProductionHosts.includes(host);
-  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
-  const isAdminApiRoute = pathname === "/api/admin" || pathname.startsWith("/api/admin/");
-  const isTestLabRoute = pathname === "/test-lab" || pathname.startsWith("/test-lab/");
-  const isTestLabApiRoute = pathname === "/api/test-lab" || pathname.startsWith("/api/test-lab/");
 
-  if (isPublicProductionHost && isAdminApiRoute) {
-    return NextResponse.json({ message: "Not found" }, { status: 404 });
-  }
-
-  if (isPublicProductionHost && isAdminRoute) {
-    const redirectUrl = url.clone();
-    redirectUrl.pathname = "/";
-    redirectUrl.search = "";
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  if (isPublicProductionHost && isTestLabApiRoute) {
-    return NextResponse.json({ message: "Not found" }, { status: 404 });
-  }
-
-  if (isPublicProductionHost && isTestLabRoute) {
-    return new NextResponse("Not found", { status: 404 });
-  }
-
-  if (isPublicProductionHost && (isTryOnTestRoute || isTryOnTestApiRoute)) {
-    if (isTryOnTestApiRoute) {
-      return NextResponse.json({ message: "Not found" }, { status: 404 });
+  // The creator subdomain is a focused public site. Its root serves the
+  // influencer landing internally, while its creator Terms and Privacy Policy
+  // remain directly accessible. The waitlist APIs also remain available.
+  if (isCreatorHost) {
+    if (pathname === "/" || pathname === "") {
+      const rewritten = url.clone();
+      rewritten.pathname = CREATOR_LANDING_PATH;
+      return NextResponse.rewrite(rewritten);
     }
-    return new NextResponse("Not found", { status: 404 });
+
+    if (CREATOR_PUBLIC_API_PATHS.has(pathname)) {
+      if (req.method === "POST" || req.method === "OPTIONS") {
+        return NextResponse.next();
+      }
+      return new NextResponse("Not found", { status: 404 });
+    }
+
+    if (CREATOR_LEGAL_PATHS.has(pathname)) {
+      return NextResponse.next();
+    }
+
+    if (pathname.startsWith("/api/")) {
+      return new NextResponse("Not found", { status: 404 });
+    }
+
+    const creatorRoot = url.clone();
+    creatorRoot.pathname = "/";
+    creatorRoot.search = "";
+    return NextResponse.redirect(creatorRoot);
   }
 
-  if ((isTryOnTestRoute || isTryOnTestApiRoute) && !isTestLabAvailableForHost(host)) {
+  // Keep the old public URL useful without serving a second copy of the
+  // landing page. Nested profile/dashboard prototypes remain on the main host.
+  if (isPublicHost && pathname === CREATOR_LANDING_PATH) {
+    const creatorLanding = new URL(CREATOR_PUBLIC_URL);
+    creatorLanding.search = url.search;
+    return NextResponse.redirect(creatorLanding, 308);
+  }
+
+  if (
+    (isTryOnTestRoute || isTryOnTestApiRoute) &&
+    !isTestLabAvailableForHost(host)
+  ) {
     if (isTryOnTestApiRoute) {
       return NextResponse.json({ message: "Not found" }, { status: 404 });
     }
@@ -124,8 +158,8 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Non-admin, non-public-production hosts can still expose staging/local tools
-  // according to their environment allowlists.
+  // /admin/* passes through on any host — accessible at both
+  // admin.primestyleai.com/* and primestyleai.com/admin/*.
   return NextResponse.next();
 }
 
