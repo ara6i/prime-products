@@ -16,6 +16,7 @@ import {
 } from "@phosphor-icons/react";
 import Image from "next/image";
 import { useState } from "react";
+import { useCreatorLanguage } from "../../i18n/CreatorLanguageProvider";
 import styles from "./influencerLanding.module.css";
 
 const EDITORIAL_IMAGE = "/media/partner-landing/optimized/look-builder-editorial.webp";
@@ -48,13 +49,14 @@ export function InfluencerLookBuilder() {
   const [activeSticker, setActiveSticker] = useState<StickerId>("heart");
   const [activeFrame, setActiveFrame] = useState(3);
   const [activeTool, setActiveTool] = useState<EditorTool>("effects");
+  const { t } = useCreatorLanguage();
 
   return (
     <section id="look-builder" className={styles.lookBuilder} aria-labelledby="look-builder-title">
       <div className={styles.lookBuilderIntro}>
-        <p className={styles.eyebrow}>Your look, your edit</p>
-        <h2 id="look-builder-title">Build the outfit. <em>Share the story.</em></h2>
-        <p>Turn campaign pieces into your own edit. Style the fit, add your voice, and make every frame ready to share.</p>
+        <p className={styles.eyebrow}>{t("Your look, your edit")}</p>
+        <h2 id="look-builder-title">{t("Build the outfit.")} <em>{t("Share the story.")}</em></h2>
+        <p>{t("Turn campaign pieces into your own edit. Style the fit, add your voice, and make every frame ready to share.")}</p>
       </div>
 
       <div id="outfit-editor-demo" className={styles.lookEditor} data-tool={activeTool}>
@@ -62,21 +64,21 @@ export function InfluencerLookBuilder() {
           <Image
             className={styles.editorCanvasImage}
             src={EDITORIAL_IMAGE}
-            alt="Creator in vivid orange and yellow fashion styling"
+            alt={t("Creator in vivid orange and yellow fashion styling")}
             fill
             sizes="(max-width: 680px) 92vw, 760px"
           />
-          <div className={styles.editorTextSelection} aria-label="Selected title: I’m Cool">
+          <div className={styles.editorTextSelection} aria-label={t("Selected title: I’m Cool")}>
             <i aria-hidden="true" />
-            <strong>I’m Cool</strong>
+            <strong>{t("I’m Cool")}</strong>
             <i aria-hidden="true" />
             <i aria-hidden="true" />
             <i aria-hidden="true" />
           </div>
         </div>
 
-        <div className={styles.editorFilters} aria-label="Choose a video filter">
-          <strong>Filters</strong>
+        <div className={styles.editorFilters} aria-label={t("Choose a video filter")}>
+          <strong>{t("Filters")}</strong>
           <div>
             {FILTERS.map((filter) => (
               <button
@@ -91,24 +93,24 @@ export function InfluencerLookBuilder() {
                 <span data-filter={filter.id}>
                   <Image src={EDITORIAL_IMAGE} alt="" fill sizes="56px" />
                 </span>
-                <small>{filter.label}</small>
+                <small>{t(filter.label)}</small>
               </button>
             ))}
           </div>
         </div>
 
-        <div className={styles.editorStickers} aria-label="Choose a sticker">
-          <strong>Stickers</strong>
-          <nav aria-label="Sticker categories">
-            <button type="button" aria-pressed="true">Basics</button>
-            <button type="button">Weather</button>
+        <div className={styles.editorStickers} aria-label={t("Choose a sticker")}>
+          <strong>{t("Stickers")}</strong>
+          <nav aria-label={t("Sticker categories")}>
+            <button type="button" aria-pressed="true">{t("Basics")}</button>
+            <button type="button">{t("Weather")}</button>
           </nav>
           <div>
             {STICKERS.map(({ id, label, Icon }) => (
               <button
                 key={id}
                 type="button"
-                aria-label={label}
+                aria-label={t(label)}
                 aria-pressed={activeSticker === id}
                 onClick={() => {
                   setActiveSticker(id);
@@ -122,7 +124,7 @@ export function InfluencerLookBuilder() {
           <ArrowRight className={styles.stickerArrow} size={32} weight="fill" aria-hidden="true" />
         </div>
 
-        <div className={styles.editorHeroSticker} aria-label="Heart eyes sticker selected">
+        <div className={styles.editorHeroSticker} aria-label={t("Heart eyes sticker selected")}>
           <Smiley size={60} weight="bold" />
           <Heart className={styles.stickerHeartLeft} size={21} weight="fill" />
           <Heart className={styles.stickerHeartRight} size={21} weight="fill" />
@@ -136,15 +138,15 @@ export function InfluencerLookBuilder() {
           <i />
         </div>
 
-        <div className={styles.editorTimeline} aria-label="Video timeline">
+        <div className={styles.editorTimeline} aria-label={t("Video timeline")}>
           <FilmStrip size={15} weight="fill" aria-hidden="true" />
-          <button type="button" aria-label="Previous frame"><ArrowRight size={15} weight="bold" /></button>
+          <button type="button" aria-label={t("Previous frame")}><ArrowRight size={15} weight="bold" /></button>
           <div>
             {Array.from({ length: 7 }, (_, index) => (
               <button
                 key={index}
                 type="button"
-                aria-label={`Select frame ${index + 1}`}
+                aria-label={t("Select frame {number}", { number: index + 1 })}
                 aria-pressed={activeFrame === index}
                 onClick={() => setActiveFrame(index)}
               >
@@ -153,7 +155,7 @@ export function InfluencerLookBuilder() {
               </button>
             ))}
           </div>
-          <button type="button" aria-label="Next frame"><ArrowRight size={15} weight="bold" /></button>
+          <button type="button" aria-label={t("Next frame")}><ArrowRight size={15} weight="bold" /></button>
         </div>
 
         <button
@@ -162,7 +164,7 @@ export function InfluencerLookBuilder() {
           aria-pressed={activeTool === "effects"}
           onClick={() => setActiveTool("effects")}
         >
-          <MagicWand size={26} weight="fill" /> Effects
+          <MagicWand size={26} weight="fill" /> {t("Effects")}
         </button>
         <button
           className={`${styles.editorAction} ${styles.editorStickersAction}`}
@@ -170,9 +172,9 @@ export function InfluencerLookBuilder() {
           aria-pressed={activeTool === "stickers"}
           onClick={() => setActiveTool("stickers")}
         >
-          <Smiley size={26} weight="fill" /> Stickers
+          <Smiley size={26} weight="fill" /> {t("Stickers")}
         </button>
-        <button className={styles.editorPlay} type="button" aria-label="Play outfit story">
+        <button className={styles.editorPlay} type="button" aria-label={t("Play outfit story")}>
           <Play size={16} weight="fill" />
         </button>
       </div>

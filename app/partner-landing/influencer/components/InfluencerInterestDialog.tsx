@@ -29,6 +29,7 @@ import {
 import { validateCreatorProfileUrl } from "../../services/creatorProfileValidation";
 import type { CreatorPrimaryChannel } from "../../types";
 import type { InfluencerLandingViewModel } from "../types";
+import { useCreatorLanguage } from "../../i18n/CreatorLanguageProvider";
 import styles from "./influencerLanding.module.css";
 
 type DialogPhase = "opening" | "open" | "closing";
@@ -128,25 +129,13 @@ const COUNTRY_CODES =
   "AF AL DZ AS AD AO AI AQ AG AR AM AW AU AT AZ BS BH BD BB BY BE BZ BJ BM BT BO BQ BA BW BV BR IO BN BG BF BI CV KH CM CA KY CF TD CL CN CX CC CO KM CG CD CK CR CI HR CU CW CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FK FO FJ FI FR GF PF TF GA GM GE DE GH GI GR GL GD GP GU GT GG GN GW GY HT HM VA HN HK HU IS IN ID IR IQ IE IM IL IT JM JP JE JO KZ KE KI KP KR KW KG LA LV LB LS LR LY LI LT LU MO MG MW MY MV ML MT MH MQ MR MU YT MX FM MD MC MN ME MS MA MZ MM NA NR NP NL NC NZ NI NE NG NU NF MK MP NO OM PK PW PS PA PG PY PE PH PN PL PT PR QA RE RO RU RW BL SH KN LC MF PM VC WS SM ST SA SN RS SC SL SG SX SK SI SB SO ZA GS SS ES LK SD SR SJ SE CH SY TW TJ TZ TH TL TG TK TO TT TN TR TM TC TV UG UA AE GB US UM UY UZ VU VE VN VG VI WF EH YE ZM ZW XK".split(
     " ",
   );
+const COUNTRY_VALUE_NAMES = new Intl.DisplayNames(["en"], { type: "region" });
 
 function countryFlag(code: string): string {
   return code.replace(/./g, (letter) =>
     String.fromCodePoint(127397 + letter.charCodeAt(0)),
   );
 }
-
-const COUNTRY_NAMES = new Intl.DisplayNames(["en"], { type: "region" });
-const CREATOR_COUNTRY_OPTIONS: DropdownOption[] = COUNTRY_CODES.map((code) => ({
-  value: COUNTRY_NAMES.of(code) ?? code,
-  label: COUNTRY_NAMES.of(code) ?? code,
-  icon: <span className={styles.dialogCountryFlag}>{countryFlag(code)}</span>,
-}))
-  .sort((left, right) => left.label.localeCompare(right.label))
-  .concat({
-    value: "Other / not listed",
-    label: "Other / not listed",
-    icon: <span className={styles.dialogCountryFlag}>🌍</span>,
-  });
 
 function CreatorPlatformLinks({
   isOpen,
@@ -155,6 +144,7 @@ function CreatorPlatformLinks({
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
 }) {
+  const { t } = useCreatorLanguage();
   const [selectedPlatforms, setSelectedPlatforms] = useState<
     CreatorPrimaryChannel[]
   >([]);
@@ -309,7 +299,7 @@ function CreatorPlatformLinks({
     if (!validation.valid) {
       setProfileChecks((current) => ({
         ...current,
-        [platform]: { status: "invalid", message: validation.message },
+        [platform]: { status: "invalid", message: t(validation.message) },
       }));
       rootRef.current
         ?.querySelector<HTMLInputElement>(
@@ -329,7 +319,9 @@ function CreatorPlatformLinks({
       ...current,
       [platform]: {
         status: "checking",
-        message: `Checking the public ${activeOption?.label ?? "profile"} page…`,
+        message: t("Checking the public {platform} page…", {
+          platform: t(activeOption?.label ?? "profile"),
+        }),
       },
     }));
 
@@ -353,7 +345,7 @@ function CreatorPlatformLinks({
           ...current,
           [platform]: {
             status: "invalid",
-            message: result.message ?? "This public profile could not be found.",
+            message: t(result.message ?? "This public profile could not be found."),
           },
         }));
         focusPlatformInput(platform);
@@ -365,14 +357,16 @@ function CreatorPlatformLinks({
       completedCheck = {
         status: result.status === "verified" ? "verified" : "unverified",
         message:
-          result.message ??
-          "Profile link saved. We’ll verify that the page is public during review.",
+          t(
+            result.message ??
+              "Profile link saved. We’ll verify that the page is public during review.",
+          ),
       };
     } catch {
       completedCheck = {
         status: "unverified",
         message:
-          "Profile link saved. We couldn’t confirm automatically that it is public, so we’ll verify it during review.",
+          t("Profile link saved. We couldn’t confirm automatically that it is public, so we’ll verify it during review."),
       };
     }
 
@@ -422,11 +416,11 @@ function CreatorPlatformLinks({
         data-complete={isComplete}
         data-missing-platform={firstIncompletePlatform ?? ""}
         tabIndex={-1}
-        aria-label="Creator platform profile links"
+        aria-label={t("Creator platform profile links")}
       />
 
       <span className={styles.dialogFieldLabel} id={labelId}>
-        Creator platforms &amp; profile links
+        {t("Creator platforms & profile links")}
       </span>
       <button
         type="button"
@@ -454,13 +448,21 @@ function CreatorPlatformLinks({
           <span>
             <strong>
               {selectedPlatforms.length > 0
-                ? `${selectedPlatforms.length} platform${selectedPlatforms.length === 1 ? "" : "s"} selected`
-                : "Select your platforms"}
+                ? t(
+                    selectedPlatforms.length === 1
+                      ? "1 platform selected"
+                      : "{count} platforms selected",
+                    { count: selectedPlatforms.length },
+                  )
+                : t("Select your platforms")}
             </strong>
             <small>
               {selectedPlatforms.length > 0
-                ? `${completedCount} of ${selectedPlatforms.length} profile links added`
-                : "Choose every place where you create"}
+                ? t("{completed} of {count} profile links added", {
+                    completed: completedCount,
+                    count: selectedPlatforms.length,
+                  })
+                : t("Choose every place where you create")}
             </small>
           </span>
         </span>
@@ -473,8 +475,8 @@ function CreatorPlatformLinks({
       >
         <div className={styles.dialogDropdownSurface}>
           <div className={styles.creatorPlatformPickerHeading}>
-            <span>Select multiple platforms</span>
-            <small>{selectedPlatforms.length} selected</small>
+            <span>{t("Select multiple platforms")}</span>
+            <small>{t("{count} selected", { count: selectedPlatforms.length })}</small>
           </div>
           <div
             className={styles.creatorPlatformPicker}
@@ -495,7 +497,7 @@ function CreatorPlatformLinks({
                 >
                   <span>
                     {option.icon}
-                    <strong>{option.label}</strong>
+                    <strong>{t(option.label)}</strong>
                   </span>
                   <span className={styles.creatorPlatformCheck}>
                     {isSelected ? (
@@ -514,7 +516,7 @@ function CreatorPlatformLinks({
             onClick={finishPlatformSelection}
             disabled={selectedPlatforms.length === 0}
           >
-            Done · add profile links
+            {t("Done · add profile links")}
           </button>
         </div>
       </div>
@@ -522,11 +524,11 @@ function CreatorPlatformLinks({
       {selectedOptions.length > 0 ? (
         <div className={styles.creatorProfileWorkspace}>
           <p className={styles.creatorPlatformHint}>
-            Choose a platform, paste its URL, then select Save &amp; next.
+            {t("Choose a platform, paste its URL, then select Save & next.")}
           </p>
           <div
             className={styles.creatorPlatformTabs}
-            aria-label="Selected creator platforms"
+            aria-label={t("Selected creator platforms")}
           >
             {selectedOptions.map((option) => {
               const hasLink =
@@ -535,19 +537,25 @@ function CreatorPlatformLinks({
                   option.value,
                   links[option.value] ?? "",
                 ).valid;
+              const profileIsVerified =
+                profileChecks[option.value]?.status === "verified";
               return (
                 <button
                   type="button"
                   key={option.value}
                   data-active={option.value === activePlatform}
-                  data-complete={hasLink}
+                  data-complete={profileIsVerified}
                   data-platform-tab={option.value}
                   onClick={() => setActivePlatform(option.value)}
-                  aria-label={`Edit ${option.label} profile link`}
+                  aria-label={t("Edit {platform} profile link", { platform: t(option.label) })}
                 >
                   {option.icon}
-                  <span>{option.label}</span>
-                  {hasLink ? <Check size={12} weight="bold" /> : <i />}
+                  <span>{t(option.label)}</span>
+                  {profileIsVerified ? (
+                    <Check size={12} weight="bold" />
+                  ) : (
+                    <i data-saved={hasLink} />
+                  )}
                 </button>
               );
             })}
@@ -555,7 +563,7 @@ function CreatorPlatformLinks({
               type="button"
               className={styles.creatorPlatformAdd}
               onClick={() => onOpenChange(true)}
-              aria-label="Add another platform"
+              aria-label={t("Add another platform")}
             >
               <Plus size={15} weight="bold" />
             </button>
@@ -566,7 +574,7 @@ function CreatorPlatformLinks({
               <span>{activeOption.icon}</span>
               <span>
                 <label htmlFor={`${labelId}-${activeOption.value}`}>
-                  {activeOption.label} profile URL
+                  {t("{platform} profile URL", { platform: t(activeOption.label) })}
                 </label>
                 <input
                   id={`${labelId}-${activeOption.value}`}
@@ -594,7 +602,7 @@ function CreatorPlatformLinks({
                   placeholder={activeOption.placeholder}
                   data-platform-link-input={activeOption.value}
                   required
-                  aria-label={`${activeOption.label} profile URL`}
+                  aria-label={t("{platform} profile URL", { platform: t(activeOption.label) })}
                   aria-invalid={activeProfileCheck?.status === "invalid"}
                   aria-describedby={`${labelId}-${activeOption.value}-status`}
                 />
@@ -603,26 +611,29 @@ function CreatorPlatformLinks({
                 type="button"
                 className={styles.creatorProfileSaveButton}
                 data-saved={activeProfileIsSaved}
+                data-verified={activeProfileCheck?.status === "verified"}
                 data-checking={activeProfileIsChecking}
                 data-platform-save-button={activeOption.value}
                 onClick={() => void saveActiveProfile()}
                 disabled={activeProfileIsSaved || activeProfileIsChecking}
               >
                 {activeProfileIsChecking ? (
-                  <>Checking…</>
+                  <>{t("Checking…")}</>
                 ) : activeProfileIsSaved ? (
                   <>
-                    <Check size={14} weight="bold" />
-                    Saved
+                    {activeProfileCheck?.status === "verified" ? (
+                      <Check size={14} weight="bold" />
+                    ) : null}
+                    {t("Saved")}
                   </>
                 ) : nextPlatformAfterSave ? (
                   <>
-                    Save &amp; next
+                    {t("Save & next")}
                     <ArrowRight size={14} weight="bold" />
                   </>
                 ) : (
                   <>
-                    Save profile
+                    {t("Save profile")}
                     <Check size={14} weight="bold" />
                   </>
                 )}
@@ -645,10 +656,10 @@ function CreatorPlatformLinks({
             >
               {activeProfileCheck?.message ??
                 (activeProfileIsSaved
-                  ? `${activeOption.label} saved.`
+                  ? t("{platform} saved.", { platform: t(activeOption.label) })
                   : nextPlatformOption
-                    ? `Save this link to continue to ${nextPlatformOption.label}.`
-                    : "Save this link to finish your platform profiles.")}
+                    ? t("Save this link to continue to {platform}.", { platform: t(nextPlatformOption.label) })
+                    : t("Save this link to finish your platform profiles."))}
             </p>
           ) : null}
         </div>
@@ -676,6 +687,7 @@ function AnimatedDropdown({
   onOpenChange: (isOpen: boolean) => void;
   className?: string;
 }) {
+  const { t } = useCreatorLanguage();
   const [query, setQuery] = useState("");
   const [selectedValue, setSelectedValue] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
@@ -742,7 +754,7 @@ function AnimatedDropdown({
       >
         <span>
           {selectedOption?.icon}
-          <strong>{selectedOption?.label ?? placeholder}</strong>
+          <strong>{selectedOption ? t(selectedOption.label) : t(placeholder)}</strong>
         </span>
         <CaretDown size={17} weight="bold" />
       </button>
@@ -756,7 +768,7 @@ function AnimatedDropdown({
                   ref={searchRef}
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Search countries"
+                  placeholder={t("Search countries")}
                 />
               </label>
             ) : null}
@@ -780,7 +792,7 @@ function AnimatedDropdown({
                 >
                   <span>
                     {option.icon}
-                    <strong>{option.label}</strong>
+                    <strong>{t(option.label)}</strong>
                   </span>
                   {option.value === selectedValue ? (
                     <Check size={17} weight="bold" />
@@ -788,7 +800,7 @@ function AnimatedDropdown({
                 </button>
               ))}
               {filteredOptions.length === 0 ? (
-                <p className={styles.dialogDropdownEmpty}>No country found.</p>
+                <p className={styles.dialogDropdownEmpty}>{t("No country found.")}</p>
               ) : null}
             </div>
           </div>
@@ -813,9 +825,24 @@ export function InfluencerInterestDialog({
   onClose: () => void;
   onSubmit: (formData: FormData) => Promise<void>;
 }) {
+  const { language, t } = useCreatorLanguage();
   const [isMounted, setIsMounted] = useState(false);
   const [phase, setPhase] = useState<DialogPhase>("opening");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const countryOptions = useMemo<DropdownOption[]>(() => {
+    const displayNames = new Intl.DisplayNames([language], { type: "region" });
+    return COUNTRY_CODES.map((code) => ({
+      value: COUNTRY_VALUE_NAMES.of(code) ?? code,
+      label: displayNames.of(code) ?? code,
+      icon: <span className={styles.dialogCountryFlag}>{countryFlag(code)}</span>,
+    }))
+      .sort((left, right) => left.label.localeCompare(right.label, language))
+      .concat({
+        value: "OTHER",
+        label: t("Other / not listed"),
+        icon: <span className={styles.dialogCountryFlag}>🌍</span>,
+      });
+  }, [language, t]);
 
   useEffect(() => {
     let phaseTimeout: number | undefined;
@@ -935,11 +962,11 @@ export function InfluencerInterestDialog({
             setOpenDropdown(null);
             onClose();
           }}
-          aria-label="Close form"
+          aria-label={t("Close form")}
         >
           <X size={20} />
         </button>
-        <span>Creator waitlist</span>
+        <span>{t("Creator waitlist")}</span>
         <h2 id="influencer-interest-title">{viewModel.interest.title}</h2>
         <p>{viewModel.interest.body}</p>
         {submissionState === "success" ? (
@@ -950,17 +977,17 @@ export function InfluencerInterestDialog({
         ) : (
           <form onSubmit={handleSubmit} noValidate>
             <label>
-              Name
+              {t("Name")}
               <input
                 name="name"
                 autoComplete="name"
                 required
-                placeholder="Your name"
+                placeholder={t("Your name")}
                 autoFocus
               />
             </label>
             <label>
-              Email
+              {t("Email")}
               <input
                 name="email"
                 type="email"
@@ -978,8 +1005,8 @@ export function InfluencerInterestDialog({
             <div className={styles.dialogFieldRow}>
               <AnimatedDropdown
                 name="audienceSize"
-                label="Audience size"
-                placeholder="Choose a range"
+                label={t("Audience size")}
+                placeholder={t("Choose a range")}
                 options={CREATOR_AUDIENCE_OPTIONS}
                 isOpen={openDropdown === "audienceSize"}
                 onOpenChange={(nextOpen) =>
@@ -988,9 +1015,9 @@ export function InfluencerInterestDialog({
               />
               <AnimatedDropdown
                 name="location"
-                label="Country or region"
-                placeholder="Choose your country"
-                options={CREATOR_COUNTRY_OPTIONS}
+                label={t("Country or region")}
+                placeholder={t("Choose your country")}
+                options={countryOptions}
                 searchable
                 isOpen={openDropdown === "location"}
                 onOpenChange={(nextOpen) =>
@@ -1002,28 +1029,27 @@ export function InfluencerInterestDialog({
             <label className={styles.dialogConsent}>
               <input name="marketingConsent" type="checkbox" required />
               <span>
-                I agree to receive creator-program updates from PrimeStyleAI and
-                accept the{" "}
+                {t("I agree to receive creator-program updates from PrimeStyleAI and accept the")} {" "}
                 <Link
                   href="/privacy-policy"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Privacy Policy
+                  {t("Privacy Policy")}
                 </Link>{" "}
-                and{" "}
+                {t("and")}{" "}
                 <Link
                   href="/terms"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Terms
+                  {t("Terms")}
                 </Link>
-                . I can opt out at any time.
+                {t(". I can opt out at any time.")}
               </span>
             </label>
             <p className={styles.dialogPrivacyNote}>
-              Creator applications stay separate from merchant outreach.
+              {t("Creator applications stay separate from merchant outreach.")}
             </p>
             {message ? (
               <p className={styles.formMessage} data-state={submissionState}>
@@ -1031,7 +1057,7 @@ export function InfluencerInterestDialog({
               </p>
             ) : null}
             <button type="submit" disabled={submissionState === "submitting"}>
-              {submissionState === "submitting" ? "Joining…" : "Join waitlist"}
+              {submissionState === "submitting" ? t("Joining…") : t("Join waitlist")}
               <ArrowRight size={17} />
             </button>
           </form>

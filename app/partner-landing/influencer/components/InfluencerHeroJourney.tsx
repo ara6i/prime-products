@@ -10,6 +10,7 @@ import {
   TiktokLogo,
 } from "@phosphor-icons/react";
 import Image from "next/image";
+import { useCreatorLanguage } from "../../i18n/CreatorLanguageProvider";
 import styles from "./influencerLanding.module.css";
 
 const HERO_STEPS = [
@@ -27,33 +28,35 @@ function StepRail({ number }: { number: string }) {
 }
 
 export function InfluencerHeroJourney() {
+  const { t } = useCreatorLanguage();
+
   return (
     <div className={styles.heroJourney}>
       <div className={styles.heroSteps}>
         <article className={styles.heroStep}>
           <StepRail number={HERO_STEPS[0].number} />
-          <h2>{HERO_STEPS[0].title}</h2>
-          <p>{HERO_STEPS[0].body}</p>
+          <h2>{t(HERO_STEPS[0].title)}</h2>
+          <p>{t(HERO_STEPS[0].body)}</p>
           <div className={styles.fitProof}>
-            <div className={styles.fitPortrait}><Image src={CREATOR_IMAGE} alt="Creator styling a shoppable look" fill sizes="220px" /></div>
+            <div className={styles.fitPortrait}><Image src={CREATOR_IMAGE} alt={t("Creator styling a shoppable look")} fill sizes="220px" /></div>
             <div className={styles.fitPanel}>
-              <span>Size <small>XXS &nbsp; XS &nbsp; S &nbsp; M &nbsp; L &nbsp; XL</small></span>
-              <span>Height <small>5′ 3″</small></span>
-              <span>Fit <small>True to size</small></span>
-              <strong>AI fit confidence <em>94%</em></strong>
+              <span>{t("Size")} <small>XXS &nbsp; XS &nbsp; S &nbsp; M &nbsp; L &nbsp; XL</small></span>
+              <span>{t("Height")} <small>5′ 3″</small></span>
+              <span>{t("Fit")} <small>{t("True to size")}</small></span>
+              <strong>{t("AI fit confidence")} <em>94%</em></strong>
             </div>
           </div>
         </article>
 
         <article className={styles.heroStep}>
           <StepRail number={HERO_STEPS[1].number} />
-          <h2>{HERO_STEPS[1].title}</h2>
-          <p>{HERO_STEPS[1].body}</p>
+          <h2>{t(HERO_STEPS[1].title)}</h2>
+          <p>{t(HERO_STEPS[1].body)}</p>
           <div className={styles.campaignProof}>
             <div className={styles.campaignPortrait}>
-              <Image src={CAMPAIGN_IMAGE} alt="Creator building a fashion campaign and affiliate link" fill quality={90} sizes="176px" />
+              <Image src={CAMPAIGN_IMAGE} alt={t("Creator building a fashion campaign and affiliate link")} fill quality={90} sizes="176px" />
             </div>
-            <div className={styles.campaignStack} aria-label="Campaign and affiliate link tools">
+            <div className={styles.campaignStack} aria-label={t("Campaign and affiliate link tools")}>
               <span><MegaphoneSimple size={19} weight="fill" /></span>
               <span><LinkSimple size={19} weight="bold" /></span>
             </div>
@@ -62,14 +65,14 @@ export function InfluencerHeroJourney() {
 
         <article className={styles.heroStep}>
           <StepRail number={HERO_STEPS[2].number} />
-          <h2>{HERO_STEPS[2].title}</h2>
-          <p>{HERO_STEPS[2].body}</p>
+          <h2>{t(HERO_STEPS[2].title)}</h2>
+          <p>{t(HERO_STEPS[2].body)}</p>
           <div className={styles.shareProof}>
             <div className={styles.creatorPhone}>
-              <Image src={CREATOR_IMAGE} alt="Creator publishing a tracked shoppable look" fill sizes="180px" />
-              <span><CheckCircle size={11} weight="fill" /> Ready</span>
+              <Image src={CREATOR_IMAGE} alt={t("Creator publishing a tracked shoppable look")} fill sizes="180px" />
+              <span><CheckCircle size={11} weight="fill" /> {t("Ready")}</span>
             </div>
-            <div className={styles.socialStack} aria-label="Supported creator channels">
+            <div className={styles.socialStack} aria-label={t("Supported creator channels")}>
               <span><TiktokLogo size={18} weight="fill" /></span>
               <span><InstagramLogo size={18} weight="fill" /></span>
               <span><LinkSimple size={18} weight="bold" /></span>
@@ -79,21 +82,21 @@ export function InfluencerHeroJourney() {
 
         <article className={styles.heroStep}>
           <StepRail number={HERO_STEPS[3].number} />
-          <h2>{HERO_STEPS[3].title}</h2>
-          <p>{HERO_STEPS[3].body}</p>
+          <h2>{t(HERO_STEPS[3].title)}</h2>
+          <p>{t(HERO_STEPS[3].body)}</p>
           <div className={styles.earningProof}>
-            <span>Commission earned</span>
+            <span>{t("Commission earned")}</span>
             <strong>$128.40</strong>
-            <small>+24% vs last 7 days</small>
-            <div><span>Order #10492</span><b>$42.30</b></div>
-            <div><span>Order #10491</span><b>$36.20</b></div>
-            <div><span>Order #10490</span><b>$49.90</b></div>
-            <p><Image src={CREATOR_IMAGE} alt="" width={22} height={22} /><span>Paid to you<small>After network validation</small></span></p>
+            <small>{t("+24% vs last 7 days")}</small>
+            <div><span>{t("Order #{number}", { number: "10492" })}</span><b>$42.30</b></div>
+            <div><span>{t("Order #{number}", { number: "10491" })}</span><b>$36.20</b></div>
+            <div><span>{t("Order #{number}", { number: "10490" })}</span><b>$49.90</b></div>
+            <p><Image src={CREATOR_IMAGE} alt="" width={22} height={22} /><span>{t("Paid to you")}<small>{t("After network validation")}</small></span></p>
           </div>
         </article>
 
-        <p className={`${styles.heroScribble} ${styles.heroScribbleStart}`}><ArrowBendDownRight size={36} weight="light" /><span>Approved products.<br />Real rates.</span></p>
-        <p className={`${styles.heroScribble} ${styles.heroScribbleEnd}`}><ArrowBendDownLeft size={36} weight="light" /><span>Tracked sale.<br />Validated payout.</span></p>
+        <p className={`${styles.heroScribble} ${styles.heroScribbleStart}`}><ArrowBendDownRight size={36} weight="light" /><span>{t("Approved products.")}<br />{t("Real rates.")}</span></p>
+        <p className={`${styles.heroScribble} ${styles.heroScribbleEnd}`}><ArrowBendDownLeft size={36} weight="light" /><span>{t("Tracked sale.")}<br />{t("Validated payout.")}</span></p>
       </div>
     </div>
   );

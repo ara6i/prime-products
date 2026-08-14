@@ -89,7 +89,7 @@ async function fetchPublicProfilePage(
 
 async function readResponsePrefix(
   response: Response,
-  limit = 180_000,
+  limit = 900_000,
 ): Promise<string> {
   if (!response.body) return "";
 
@@ -164,6 +164,21 @@ function hasPublicProfileSignal(
   ];
   const hasUsernameSignal = usernameSignals.some((signal) => compact.includes(signal));
 
+  if (platform === "instagram") {
+    const usernameSignal = `"username":"${normalizedHandle}"`;
+    let usernameIndex = compact.indexOf(usernameSignal);
+
+    while (usernameIndex >= 0) {
+      const profileWindow = compact.slice(
+        Math.max(0, usernameIndex - 2_000),
+        Math.min(compact.length, usernameIndex + 5_000),
+      );
+      if (/"is_?private":false/i.test(profileWindow)) return true;
+      usernameIndex = compact.indexOf(usernameSignal, usernameIndex + usernameSignal.length);
+    }
+
+    return false;
+  }
   if (platform === "youtube") {
     return hasUsernameSignal && compact.includes('"channelid"');
   }

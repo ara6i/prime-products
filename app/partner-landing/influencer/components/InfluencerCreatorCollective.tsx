@@ -1,5 +1,6 @@
 import { ArrowUpRight, Camera, FilmStrip, ShareNetwork, Sparkle } from "@phosphor-icons/react";
 import Image from "next/image";
+import { useCreatorLanguage } from "../../i18n/CreatorLanguageProvider";
 import styles from "./influencerLanding.module.css";
 
 const CREATOR_STORIES = [
@@ -30,6 +31,8 @@ const CREATOR_STORIES = [
 ] as const;
 
 export function InfluencerCreatorCollective({ onCtaClick }: { onCtaClick: () => void }) {
+  const { t } = useCreatorLanguage();
+
   return (
     <section
       id="creator-collective"
@@ -38,17 +41,16 @@ export function InfluencerCreatorCollective({ onCtaClick }: { onCtaClick: () => 
     >
       <div className={styles.collectiveCopy}>
         <span className={styles.collectivePill}>
-          <Sparkle size={15} weight="fill" /> Creator collective · built to be shared
+          <Sparkle size={15} weight="fill" /> {t("Creator collective · built to be shared")}
         </span>
         <h2 id="creator-collective-title">
-          Where your style becomes <em>a story people can shop.</em>
+          {t("Where your style becomes")} <em>{t("a story people can shop.")}</em>
         </h2>
         <p>
-          Try on campaign pieces yourself, build complete outfits, and turn every look into
-          polished photos and videos your audience can discover, share, and shop.
+          {t("Try on campaign pieces yourself, build complete outfits, and turn every look into polished photos and videos your audience can discover, share, and shop.")}
         </p>
         <button type="button" className={styles.collectiveCta} onClick={onCtaClick}>
-          Open Outfit Studio <ArrowUpRight size={18} weight="bold" />
+          {t("Open Outfit Studio")} <ArrowUpRight size={18} weight="bold" />
         </button>
       </div>
 
@@ -58,7 +60,7 @@ export function InfluencerCreatorCollective({ onCtaClick }: { onCtaClick: () => 
             <div className={styles.collectiveImageFrame}>
               <Image
                 src={src}
-                alt={`${step}: full-body fashion creator editorial`}
+                alt={t("{step}: full-body fashion creator editorial", { step: t(step) })}
                 fill
                 sizes="(max-width: 620px) 86vw, (max-width: 980px) 44vw, 25vw"
               />
@@ -66,7 +68,7 @@ export function InfluencerCreatorCollective({ onCtaClick }: { onCtaClick: () => 
             </div>
             <div className={styles.collectiveLabel}>
               <Icon size={18} weight="bold" aria-hidden />
-              <span><strong>{step}</strong><small>{note}</small></span>
+              <span><strong>{t(step)}</strong><small>{t(note)}</small></span>
             </div>
           </article>
         ))}

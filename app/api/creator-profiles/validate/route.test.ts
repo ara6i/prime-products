@@ -58,7 +58,7 @@ describe("creator profile validation route", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(
-        new Response('<script>{"username":"creator"}</script>', {
+        new Response('<script>{"username":"creator","is_private":false}</script>', {
           status: 200,
         }),
       ),
@@ -73,6 +73,42 @@ describe("creator profile validation route", () => {
       message: "Public Instagram profile confirmed.",
     });
     expect(body.message).not.toMatch(/human|ownership/i);
+  });
+
+  it("rejects an Instagram profile when its privacy marker appears late in the page", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          `<script>{"username":"cristian"}${"x".repeat(220_000)}"is_private":true</script>`,
+          { status: 200 },
+        ),
+      ),
+    );
+
+    const response = await POST(request("instagram", "instagram.com/cristian"));
+    const body = await response.json();
+
+    expect(response.status).toBe(422);
+    expect(body).toMatchObject({
+      status: "invalid",
+      message: "Instagram profile appears private. Make it public, then try again.",
+    });
+  });
+
+  it("does not show Instagram as verified from the username alone", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response('<script>{"username":"creator"}</script>', { status: 200 }),
+      ),
+    );
+
+    const response = await POST(request("instagram", "instagram.com/creator"));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.status).toBe("unverified");
   });
 
   it("does not fetch arbitrary blog URLs", async () => {

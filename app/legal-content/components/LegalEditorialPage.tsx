@@ -1,5 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowUpRight, ChevronDown, Mail } from "lucide-react";
+import { useMemo } from "react";
+import {
+  CreatorLanguageProvider,
+  localizePolicyPage,
+  useCreatorLanguage,
+} from "@/app/partner-landing/i18n/CreatorLanguageProvider";
 import { PublicPolicyChrome } from "./PublicPolicyChrome";
 import type { PolicyPageContent, PolicySection, PolicySubsection } from "../types";
 
@@ -7,8 +15,8 @@ interface LegalEditorialPageProps {
   page: PolicyPageContent;
 }
 
-function slugify(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+function sectionAnchor(index: number) {
+  return `section-${index + 1}`;
 }
 
 function BodyText({ paragraphs }: { paragraphs?: string[] }) {
@@ -32,7 +40,7 @@ function BulletList({ items }: { items?: string[] }) {
   if (!items?.length) return null;
 
   return (
-    <ul className="mt-6 space-y-4 border-l border-[#C9D7FF] pl-5 md:pl-7">
+    <ul className="mt-6 space-y-4 border-s border-[#C9D7FF] ps-5 md:ps-7">
       {items.map((item) => (
         <li key={item} className="break-words text-[17px] leading-[1.75] text-[#4A4D54] md:text-[18px]">
           {item}
@@ -56,10 +64,10 @@ function Subsection({ subsection }: { subsection: PolicySubsection }) {
   );
 }
 
-function Section({ section }: { section: PolicySection }) {
+function Section({ section, index }: { section: PolicySection; index: number }) {
   return (
     <section
-      id={slugify(section.title)}
+      id={sectionAnchor(index)}
       className="scroll-mt-28 border-t border-[#DADCE1] py-10 md:scroll-mt-36 md:py-14"
     >
       <h2 className="max-w-[820px] text-[29px] font-semibold leading-[1.16] tracking-[-0.035em] text-[#111216] md:text-[38px]">
@@ -81,6 +89,7 @@ function Section({ section }: { section: PolicySection }) {
 }
 
 function PolicySwitch({ current, inverse = false }: { current: string; inverse?: boolean }) {
+  const { t } = useCreatorLanguage();
   const base = inverse
     ? "border-white/45 text-white/72 hover:border-white hover:text-white"
     : "border-[#C9CCD3] text-[#5C6068] hover:border-[#2154EF] hover:text-[#2154EF]";
@@ -89,10 +98,10 @@ function PolicySwitch({ current, inverse = false }: { current: string; inverse?:
     : "border-[#111216] bg-[#111216] text-white";
 
   return (
-    <nav aria-label="Legal pages" className="flex flex-wrap gap-2.5">
+    <nav aria-label={t("Legal pages")} className="flex flex-wrap gap-2.5">
       {[
-        { label: "Privacy", href: "/privacy-policy", slug: "privacy-policy" },
-        { label: "Terms", href: "/terms", slug: "terms" },
+        { label: t("Privacy"), href: "/privacy-policy", slug: "privacy-policy" },
+        { label: t("Terms"), href: "/terms", slug: "terms" },
       ].map((item) => (
         <Link
           key={item.href}
@@ -125,12 +134,13 @@ function MetaItem({ label, value, inverse = false }: { label: string; value?: st
 }
 
 function TableOfContents({ page, inverse = false }: { page: PolicyPageContent; inverse?: boolean }) {
+  const { t } = useCreatorLanguage();
   return (
-    <nav aria-label={`Contents of ${page.title}`} className="space-y-1">
-      {page.sections.map((section) => (
+    <nav aria-label={t("Contents of {title}", { title: page.title })} className="space-y-1">
+      {page.sections.map((section, index) => (
         <a
           key={section.title}
-          href={`#${slugify(section.title)}`}
+          href={`#${sectionAnchor(index)}`}
           className={`block py-1.5 text-[13px] leading-[1.4] transition-colors ${
             inverse ? "text-white/68 hover:text-white" : "text-[#5C6068] hover:text-[#2154EF]"
           }`}
@@ -144,19 +154,32 @@ function TableOfContents({ page, inverse = false }: { page: PolicyPageContent; i
           inverse ? "text-white/68 hover:text-white" : "text-[#5C6068] hover:text-[#2154EF]"
         }`}
       >
-        Contact
+        {t("Contact")}
       </a>
     </nav>
   );
 }
 
 export function LegalEditorialPage({ page }: LegalEditorialPageProps) {
+  return (
+    <CreatorLanguageProvider>
+      <LocalizedLegalEditorialPage page={page} />
+    </CreatorLanguageProvider>
+  );
+}
+
+function LocalizedLegalEditorialPage({ page: sourcePage }: LegalEditorialPageProps) {
+  const { direction, language, t } = useCreatorLanguage();
+  const page = useMemo(
+    () => localizePolicyPage(sourcePage, t),
+    [sourcePage, t],
+  );
   const contactEmail = page.contactEmail ?? "support@primestyleai.com";
-  const railStatement = page.slug === "privacy-policy" ? "Clarity about your data." : "Clear rules for working together.";
+  const railStatement = page.slug === "privacy-policy" ? t("Clarity about your data.") : t("Clear rules for working together.");
 
   return (
     <PublicPolicyChrome>
-      <main className="bg-white font-[family-name:var(--font-manrope)] text-[#111216]">
+      <main dir={direction} lang={language} className="bg-white font-[family-name:var(--font-manrope)] text-[#111216]">
         <div className="lg:grid lg:grid-cols-[minmax(390px,36vw)_minmax(0,1fr)]">
           <aside className="relative hidden bg-[#2154EF] text-white lg:block">
             <div className="sticky top-[92px] flex h-[calc(100vh-92px)] min-h-[620px] flex-col px-[clamp(42px,4.1vw,78px)] py-[clamp(42px,4vw,74px)]">
@@ -169,17 +192,17 @@ export function LegalEditorialPage({ page }: LegalEditorialPageProps) {
                   <PolicySwitch current={page.slug} inverse />
                 </div>
                 <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5">
-                  <MetaItem label="Effective" value={page.effectiveDate} inverse />
-                  <MetaItem label="Updated" value={page.lastUpdated} inverse />
+                  <MetaItem label={t("Effective")} value={page.effectiveDate} inverse />
+                  <MetaItem label={t("Updated")} value={page.lastUpdated} inverse />
                   <div className="col-span-2">
-                    <MetaItem label="Company location" value={page.location} inverse />
+                    <MetaItem label={t("Company location")} value={page.location} inverse />
                   </div>
                 </div>
               </div>
 
               <div className="mt-9 min-h-0 flex-1 border-t border-white/25 pt-6">
-                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">On this page</p>
-                <div className="h-full overflow-y-auto pr-3 [scrollbar-color:rgba(255,255,255,0.42)_transparent] [scrollbar-width:thin]">
+                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">{t("On this page")}</p>
+                <div className="h-full overflow-y-auto pe-3 [scrollbar-color:rgba(255,255,255,0.42)_transparent] [scrollbar-width:thin]">
                   <TableOfContents page={page} inverse />
                 </div>
               </div>
@@ -204,10 +227,10 @@ export function LegalEditorialPage({ page }: LegalEditorialPageProps) {
                 </p>
 
                 <div className="mt-9 grid grid-cols-2 gap-x-5 gap-y-5 lg:hidden">
-                  <MetaItem label="Effective" value={page.effectiveDate} />
-                  <MetaItem label="Updated" value={page.lastUpdated} />
+                  <MetaItem label={t("Effective")} value={page.effectiveDate} />
+                  <MetaItem label={t("Updated")} value={page.lastUpdated} />
                   <div className="col-span-2">
-                    <MetaItem label="Company location" value={page.location} />
+                    <MetaItem label={t("Company location")} value={page.location} />
                   </div>
                 </div>
               </header>
@@ -230,7 +253,7 @@ export function LegalEditorialPage({ page }: LegalEditorialPageProps) {
 
               <details className="group border-b border-[#DADCE1] py-5 lg:hidden">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[14px] font-semibold uppercase tracking-[0.16em] text-[#111216] [&::-webkit-details-marker]:hidden">
-                  On this page
+                  {t("On this page")}
                   <ChevronDown className="h-5 w-5 text-[#2154EF] transition-transform group-open:rotate-180" aria-hidden />
                 </summary>
                 <div className="mt-5 pb-2">
@@ -239,18 +262,19 @@ export function LegalEditorialPage({ page }: LegalEditorialPageProps) {
               </details>
 
               <div>
-                {page.sections.map((section) => (
-                  <Section key={section.title} section={section} />
+                {page.sections.map((section, index) => (
+                  <Section key={`${index}-${section.title}`} section={section} index={index} />
                 ))}
               </div>
 
               <section id="contact" className="scroll-mt-28 border-t border-[#111216] pt-10 md:scroll-mt-36 md:pt-14">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#2154EF]">Contact</p>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#2154EF]">{t("Contact")}</p>
                 <h2 className="mt-4 max-w-[720px] text-[34px] font-semibold leading-[1.12] tracking-[-0.04em] text-[#111216] md:text-[48px]">
                   {page.contactTitle}
                 </h2>
                 <p className="mt-5 max-w-[820px] text-[17px] leading-[1.8] text-[#4A4D54] md:text-[18px]">{page.contactBody}</p>
                 <a
+                  dir="ltr"
                   href={`mailto:${contactEmail}`}
                   className="mt-8 inline-flex max-w-full items-center gap-3 rounded-full bg-[#2154EF] px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-[#193EDC]"
                 >

@@ -3,6 +3,7 @@
 import { ArrowUpRight, FilmStrip, ImageSquare, Play, Sparkle } from "@phosphor-icons/react";
 import Image from "next/image";
 import { useState } from "react";
+import { useCreatorLanguage } from "../../i18n/CreatorLanguageProvider";
 import styles from "./influencerLanding.module.css";
 
 type RemixReference = {
@@ -36,24 +37,24 @@ const REMIX_REFERENCES: RemixReference[] = [
 export function InfluencerReferenceRemix({ onCtaClick }: { onCtaClick: () => void }) {
   const [activeId, setActiveId] = useState("sun");
   const activeReference = REMIX_REFERENCES.find((reference) => reference.id === activeId) ?? REMIX_REFERENCES[0];
+  const { t } = useCreatorLanguage();
 
   return (
     <section id="reference-remix" className={styles.referenceRemix} aria-labelledby="reference-remix-title">
       <div className={styles.remixIntro}>
-        <p className={styles.eyebrow}>Reference remix · coming next</p>
-        <h2 id="reference-remix-title">See it. Recreate it. <em>Own the result.</em></h2>
+        <p className={styles.eyebrow}>{t("Reference remix · coming next")}</p>
+        <h2 id="reference-remix-title">{t("See it. Recreate it.")} <em>{t("Own the result.")}</em></h2>
         <p>
-          Start from a PrimeStyleAI photo or video reference. Keep the camera move, pose,
-          edit rhythm, or mood—then remake it with your identity, your outfit, and your campaign.
+          {t("Start from a PrimeStyleAI photo or video reference. Keep the camera move, pose, edit rhythm, or mood—then remake it with your identity, your outfit, and your campaign.")}
         </p>
       </div>
 
       <div className={styles.remixBoard}>
         <div className={styles.remixBoardBar}>
-          <strong><Sparkle size={16} weight="fill" /> PrimeStyle references</strong>
-          <span><FilmStrip size={15} weight="bold" /> Video</span>
-          <span><ImageSquare size={15} weight="bold" /> Photo</span>
-          <small>{REMIX_REFERENCES.length} directions</small>
+          <strong><Sparkle size={16} weight="fill" /> {t("PrimeStyle references")}</strong>
+          <span><FilmStrip size={15} weight="bold" /> {t("Video")}</span>
+          <span><ImageSquare size={15} weight="bold" /> {t("Photo")}</span>
+          <small>{t("{count} directions", { count: REMIX_REFERENCES.length })}</small>
         </div>
 
         <div className={styles.remixMosaic}>
@@ -62,7 +63,7 @@ export function InfluencerReferenceRemix({ onCtaClick }: { onCtaClick: () => voi
               key={reference.id}
               className={`${styles.remixTile} ${reference.kind === "video" ? styles.remixTileVideo : ""}`}
               type="button"
-              aria-label={`Preview ${reference.title}`}
+              aria-label={t("Preview {title}", { title: t(reference.title) })}
               aria-pressed={activeReference.id === reference.id}
               onClick={() => setActiveId(reference.id)}
             >
@@ -82,23 +83,23 @@ export function InfluencerReferenceRemix({ onCtaClick }: { onCtaClick: () => voi
                   <source src={activeReference.video} type="video/mp4" />
                 </video>
               ) : (
-                <Image src={activeReference.poster} alt={`${activeReference.title} reference`} fill sizes="420px" />
+                <Image src={activeReference.poster} alt={t("{title} reference", { title: t(activeReference.title) })} fill sizes="420px" />
               )}
             </div>
             <div className={styles.remixHeroCopy}>
-              <small>{activeReference.cue}</small>
-              <h3>{activeReference.title}</h3>
-              <p>Your face. Your outfit. Your version.</p>
+              <small>{t(activeReference.cue)}</small>
+              <h3>{t(activeReference.title)}</h3>
+              <p>{t("Your face. Your outfit. Your version.")}</p>
               <button type="button" onClick={onCtaClick}>
-                Recreate this style <ArrowUpRight size={17} weight="bold" />
+                {t("Recreate this style")} <ArrowUpRight size={17} weight="bold" />
               </button>
             </div>
           </article>
         </div>
 
         <div className={styles.remixPromise}>
-          <span>Coming to Outfit Studio</span>
-          <p>Choose a reference video, add your real image and campaign pieces, then direct a new version that still feels completely yours.</p>
+          <span>{t("Coming to Outfit Studio")}</span>
+          <p>{t("Choose a reference video, add your real image and campaign pieces, then direct a new version that still feels completely yours.")}</p>
         </div>
       </div>
     </section>

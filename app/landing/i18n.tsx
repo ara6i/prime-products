@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronDown, Globe2 } from "lucide-react";
+import Image from "next/image";
 import { ASK_AI, CTA, FEATURES, GARMENTS, HERO, PROBLEM, SCALE, SDK_DEMO } from "@/app/content/landing";
 import { LANDING_STRING_TRANSLATIONS } from "./contentTranslations";
 
@@ -46,17 +47,18 @@ export const LANDING_LANGUAGES: Array<{
   label: string;
   nativeLabel: string;
   shortLabel: string;
+  flagCode: string;
 }> = [
-  { code: "en", label: "English", nativeLabel: "English", shortLabel: "EN" },
-  { code: "es", label: "Spanish", nativeLabel: "Español", shortLabel: "ES" },
-  { code: "fr", label: "French", nativeLabel: "Français", shortLabel: "FR" },
-  { code: "de", label: "German", nativeLabel: "Deutsch", shortLabel: "DE" },
-  { code: "it", label: "Italian", nativeLabel: "Italiano", shortLabel: "IT" },
-  { code: "pt-BR", label: "Portuguese (Brazil)", nativeLabel: "Português", shortLabel: "PT" },
-  { code: "ja", label: "Japanese", nativeLabel: "日本語", shortLabel: "JA" },
-  { code: "zh-CN", label: "Chinese (Simplified)", nativeLabel: "简体中文", shortLabel: "ZH" },
-  { code: "ko", label: "Korean", nativeLabel: "한국어", shortLabel: "KO" },
-  { code: "ar", label: "Arabic", nativeLabel: "العربية", shortLabel: "AR" },
+  { code: "en", label: "English", nativeLabel: "English", shortLabel: "EN", flagCode: "en" },
+  { code: "es", label: "Spanish", nativeLabel: "Español", shortLabel: "ES", flagCode: "es" },
+  { code: "fr", label: "French", nativeLabel: "Français", shortLabel: "FR", flagCode: "fr" },
+  { code: "de", label: "German", nativeLabel: "Deutsch", shortLabel: "DE", flagCode: "de" },
+  { code: "it", label: "Italian", nativeLabel: "Italiano", shortLabel: "IT", flagCode: "it" },
+  { code: "pt-BR", label: "Portuguese (Brazil)", nativeLabel: "Português", shortLabel: "PT", flagCode: "pt" },
+  { code: "ja", label: "Japanese", nativeLabel: "日本語", shortLabel: "JA", flagCode: "ja" },
+  { code: "zh-CN", label: "Chinese (Simplified)", nativeLabel: "简体中文", shortLabel: "ZH", flagCode: "zh" },
+  { code: "ko", label: "Korean", nativeLabel: "한국어", shortLabel: "KO", flagCode: "ko" },
+  { code: "ar", label: "Arabic", nativeLabel: "العربية", shortLabel: "AR", flagCode: "ar" },
 ];
 
 export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslation> = {
@@ -409,6 +411,7 @@ interface LandingLanguageSwitcherProps {
   onLanguageChange: (language: LandingLanguageCode) => void;
   compact?: boolean;
   className?: string;
+  variant?: "default" | "creator";
 }
 
 export function LandingLanguageSwitcher({
@@ -416,6 +419,7 @@ export function LandingLanguageSwitcher({
   onLanguageChange,
   compact = false,
   className = "",
+  variant = "default",
 }: LandingLanguageSwitcherProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -441,27 +445,54 @@ export function LandingLanguageSwitcher({
     ? "h-[34px] px-2.5 text-[11.5px] rounded-full"
     : "h-[2.604vw] px-[1vw] text-[0.833vw] rounded-[52.083vw]";
   const iconClassName = compact ? "h-3.5 w-3.5" : "h-[0.9vw] w-[0.9vw]";
+  const creatorVariant = variant === "creator";
+  const creatorTriggerClassName =
+    "h-[42px] min-w-[88px] rounded-full border-[#d8e1f6] bg-white/90 px-2.5 text-[12px] text-[#101116] shadow-[0_6px_18px_rgba(21,33,66,0.08)] hover:border-[#2154ef]/35 hover:bg-white hover:text-[#2154ef]";
+  const creatorPanelClassName =
+    "right-0 mt-2.5 w-[280px] max-h-[min(570px,calc(100vh-108px))] overflow-y-auto rounded-[24px] border-[#2154ef]/15 bg-white/95 p-2 shadow-[0_24px_65px_rgba(21,33,66,0.18)] backdrop-blur-xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[860px]:right-[-63px] max-[860px]:w-[min(280px,calc(100vw-40px))]";
 
   return (
     <div ref={ref} className={`relative ${className}`}>
       <button
         type="button"
-        className={`inline-flex items-center justify-center gap-1.5 border border-text-primary/10 bg-white/80 font-semibold text-text-primary shadow-sm backdrop-blur-sm transition-colors hover:border-brand-blue/30 hover:text-brand-blue ${triggerClassName}`}
+        className={`inline-flex items-center justify-center gap-1.5 border font-semibold backdrop-blur-sm transition-[color,background-color,border-color,box-shadow] duration-200 ${
+          creatorVariant
+            ? creatorTriggerClassName
+            : `border-text-primary/10 bg-white/80 text-text-primary shadow-sm hover:border-brand-blue/30 hover:text-brand-blue ${triggerClassName}`
+        }`}
         aria-label={translation.languageLabel}
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <Globe2 className={iconClassName} strokeWidth={1.8} />
+        {creatorVariant ? (
+          <span className="grid h-6 w-6 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-white bg-white shadow-[0_2px_7px_rgba(21,33,66,0.18)]" aria-hidden="true">
+            <Image
+              src={`/images/landing/ps/ps-flag-${currentLanguage.flagCode}.png`}
+              alt=""
+              width={24}
+              height={24}
+              className="h-full w-full object-cover"
+            />
+          </span>
+        ) : (
+          <Globe2 className={iconClassName} strokeWidth={1.8} />
+        )}
         <span>{compact ? currentLanguage.shortLabel : currentLanguage.nativeLabel}</span>
         <ChevronDown
-          className={`${iconClassName} transition-transform ${open ? "rotate-180" : ""}`}
+          className={`${creatorVariant ? "h-3 w-3 text-[#2154ef]" : iconClassName} transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           strokeWidth={1.8}
         />
       </button>
 
       <div
-        className={`absolute right-0 top-full z-50 mt-2 w-[min(74vw,220px)] overflow-hidden rounded-2xl border border-text-primary/10 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.16)] transition-all duration-150 ${
-          open ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
+        className={`absolute top-full z-50 border transition-all ${
+          creatorVariant
+            ? creatorPanelClassName
+            : "right-0 mt-2 w-[min(74vw,220px)] overflow-hidden rounded-2xl border-text-primary/10 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.16)] duration-150"
+        } ${
+          open
+            ? "visible translate-y-0 scale-100 opacity-100"
+            : "invisible pointer-events-none -translate-y-1 scale-[0.98] opacity-0"
         }`}
       >
         {LANDING_LANGUAGES.map((option) => {
@@ -470,19 +501,42 @@ export function LandingLanguageSwitcher({
             <button
               key={option.code}
               type="button"
-              className={`flex w-full items-center justify-between gap-3 px-3.5 py-2.5 text-left text-[13px] transition-colors hover:bg-brand-blue/10 ${
-                selected ? "text-brand-blue" : "text-text-primary"
+              className={`flex w-full items-center justify-between gap-3 text-start text-[13px] transition-[color,background-color,transform] duration-150 ${
+                creatorVariant
+                  ? `min-h-[50px] rounded-[15px] px-2.5 py-2 hover:bg-[#edf3ff] ${
+                      selected ? "bg-[#edf3ff] text-[#2154ef]" : "text-[#101116]"
+                    }`
+                  : `px-3.5 py-2.5 hover:bg-brand-blue/10 ${
+                      selected ? "text-brand-blue" : "text-text-primary"
+                    }`
               }`}
               onClick={() => {
                 onLanguageChange(option.code);
                 setOpen(false);
               }}
             >
-              <span className="flex flex-col leading-tight">
-                <span className="font-semibold">{option.nativeLabel}</span>
-                <span className="text-[11px] text-text-body">{option.label}</span>
+              <span className="flex min-w-0 items-center gap-3">
+                {creatorVariant ? (
+                  <span className="grid h-8 w-8 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-white bg-white shadow-[0_3px_9px_rgba(21,33,66,0.16)]" aria-hidden="true">
+                    <Image
+                      src={`/images/landing/ps/ps-flag-${option.flagCode}.png`}
+                      alt=""
+                      width={32}
+                      height={32}
+                      className="h-full w-full object-cover"
+                    />
+                  </span>
+                ) : null}
+                <span className="flex min-w-0 flex-col leading-tight">
+                  <span className="font-semibold">{option.nativeLabel}</span>
+                  <span className={`mt-0.5 text-[11px] ${creatorVariant ? "text-[#6b7180]" : "text-text-body"}`}>{option.label}</span>
+                </span>
               </span>
-              {selected && <Check className="h-4 w-4" strokeWidth={2} />}
+              {selected && (
+                <span className={creatorVariant ? "grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#2154ef] text-white shadow-[0_4px_10px_rgba(33,84,239,0.24)]" : "shrink-0"}>
+                  <Check className={creatorVariant ? "h-3.5 w-3.5" : "h-4 w-4"} strokeWidth={2.4} />
+                </span>
+              )}
             </button>
           );
         })}

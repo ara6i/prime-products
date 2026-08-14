@@ -16,6 +16,7 @@ import {
   type RefObject,
 } from "react";
 import styles from "./influencerLanding.module.css";
+import { useCreatorLanguage } from "../../i18n/CreatorLanguageProvider";
 
 const TWO_PI = Math.PI * 2;
 const MODEL_COUNT = 5;
@@ -284,6 +285,7 @@ function ModelCarousel({
   rotationRef: RefObject<number>;
   tuning: PlatformTuning;
 }) {
+  const { t } = useCreatorLanguage();
   const modelContainerRef = useRef<HTMLDivElement>(null);
   const shadowContainerRef = useRef<HTMLDivElement>(null);
   const spotlightContainerRef = useRef<HTMLDivElement>(null);
@@ -378,7 +380,7 @@ function ModelCarousel({
           <span key={source}>
             <Image
               src={source}
-              alt={`AI Stylist outfit model ${index + 1}`}
+              alt={t("AI Stylist outfit model {number}", { number: index + 1 })}
               width={1497}
               height={2160}
               draggable={false}
@@ -393,6 +395,7 @@ function ModelCarousel({
 export function InfluencerTurntable() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { rotationRef, isDragging, pointerHandlers } = useTurntableRotation(selectedIndex, setSelectedIndex);
+  const { t } = useCreatorLanguage();
 
   const navigate = useCallback((direction: -1 | 1) => {
     setSelectedIndex((current) => (current + direction + MODEL_COUNT) % MODEL_COUNT);
@@ -405,7 +408,7 @@ export function InfluencerTurntable() {
 
       <div
         className={styles.turntableDragSurface}
-        aria-label="Drag left or right to rotate the MyAIFitting styling platform"
+        aria-label={t("Drag left or right to rotate the MyAIFitting styling platform")}
         role="slider"
         aria-valuemin={1}
         aria-valuemax={MODEL_COUNT}
@@ -423,16 +426,16 @@ export function InfluencerTurntable() {
 
       <div className={styles.turntableMoveHint} aria-hidden>
         <HandGrabbing size={15} weight="fill" />
-        <span>Drag to rotate</span>
+        <span>{t("Drag to rotate")}</span>
         <ArrowsLeftRight size={17} weight="bold" />
       </div>
 
-      <div className={styles.turntableControls} aria-label="Platform rotation controls">
-        <button type="button" aria-label="Rotate platform left" onClick={() => navigate(-1)}>
+      <div className={styles.turntableControls} aria-label={t("Platform rotation controls")}>
+        <button type="button" aria-label={t("Rotate platform left")} onClick={() => navigate(-1)}>
           <ArrowCounterClockwise size={17} weight="bold" />
         </button>
-        <span><strong>{selectedIndex + 1}</strong> of {MODEL_COUNT}</span>
-        <button type="button" aria-label="Rotate platform right" onClick={() => navigate(1)}>
+        <span><strong>{selectedIndex + 1}</strong> {t("of")} {MODEL_COUNT}</span>
+        <button type="button" aria-label={t("Rotate platform right")} onClick={() => navigate(1)}>
           <ArrowClockwise size={17} weight="bold" />
         </button>
       </div>

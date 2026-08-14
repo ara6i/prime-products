@@ -12,7 +12,7 @@ const SOCIAL_LINKS = [
   { Icon: Youtube, href: "https://www.youtube.com/@PrimeStyleAI", label: "YouTube" },
 ];
 
-export function Footer() {
+export function Footer({ translateLabel = (label) => label }: { translateLabel?: (label: string) => string } = {}) {
   const { t } = useLandingLanguage();
   const copyright = t.footer.copyright.replace("{year}", String(new Date().getFullYear()));
 
@@ -58,7 +58,7 @@ export function Footer() {
             href={link.href}
             className="rounded-full border border-text-primary/10 bg-white/60 px-3 py-1.5 text-[11px] font-semibold leading-[1.4] text-text-body transition-colors hover:border-brand-blue/25 hover:bg-white hover:text-brand-blue"
           >
-            {link.label}
+            {translateLabel(link.label)}
           </Link>
         ))}
       </div>
@@ -67,6 +67,7 @@ export function Footer() {
 
       <div className="flex flex-col items-center gap-1.5 text-[12px] leading-[1.5] text-text-body">
         <a
+          dir="ltr"
           href="mailto:support@primestyleai.com"
           className="flex items-center gap-1.5 hover:text-brand-blue transition-colors"
         >

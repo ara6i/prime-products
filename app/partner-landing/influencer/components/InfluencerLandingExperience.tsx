@@ -1,5 +1,11 @@
 "use client";
 
+import { useMemo } from "react";
+import {
+  CreatorLanguageProvider,
+  localizeInfluencerLandingViewModel,
+  useCreatorLanguage,
+} from "../../i18n/CreatorLanguageProvider";
 import { useInfluencerLandingPage } from "../hooks/useInfluencerLandingPage";
 import { InfluencerAccessBenchmarks } from "./InfluencerAccessBenchmarks";
 import { InfluencerCreatorCollective } from "./InfluencerCreatorCollective";
@@ -16,15 +22,33 @@ import { InfluencerReferenceRemix } from "./InfluencerReferenceRemix";
 import styles from "./influencerLanding.module.css";
 
 export function InfluencerLandingExperience() {
-  const { viewModel, navigation, interest } = useInfluencerLandingPage();
   return (
-    <div className={styles.page} data-audience="influencer">
+    <CreatorLanguageProvider>
+      <InfluencerLandingContent />
+    </CreatorLanguageProvider>
+  );
+}
+
+function InfluencerLandingContent() {
+  const { viewModel, navigation, interest } = useInfluencerLandingPage();
+  const { direction, language, t } = useCreatorLanguage();
+  const localizedViewModel = useMemo(
+    () => localizeInfluencerLandingViewModel(viewModel, t),
+    [t, viewModel],
+  );
+  return (
+    <div
+      className={styles.page}
+      data-audience="influencer"
+      dir={direction}
+      lang={language}
+    >
       <InfluencerMediaPreloads />
       <InfluencerHeader mobileMenuOpen={navigation.mobileMenuOpen} onMenuToggle={navigation.toggleMobileMenu} onMenuClose={navigation.closeMobileMenu} onPrimaryAction={interest.open} onSectionSelect={navigation.scrollToSection} />
       <main>
-        <InfluencerHero viewModel={viewModel} onPrimaryAction={interest.open} onSecondaryAction={interest.open} />
+        <InfluencerHero viewModel={localizedViewModel} onPrimaryAction={interest.open} onSecondaryAction={interest.open} />
         <InfluencerOutfitStudio onCtaClick={interest.open} />
-        <section className={styles.creatorStudioSuite} aria-label="Create and remix your look">
+        <section className={styles.creatorStudioSuite} aria-label={t("Create and remix your look")}>
           <div className={styles.creatorStudioScreen}>
             <InfluencerLookBuilder />
             <InfluencerReferenceRemix onCtaClick={interest.open} />
@@ -32,12 +56,12 @@ export function InfluencerLandingExperience() {
         </section>
         <InfluencerCreatorCollective onCtaClick={interest.open} />
         <InfluencerProfileDashboardStory onCtaClick={interest.open} />
-        <InfluencerEarningJourney viewModel={viewModel} onPrimaryAction={interest.open} />
+        <InfluencerEarningJourney viewModel={localizedViewModel} onPrimaryAction={interest.open} />
         <InfluencerAccessBenchmarks onCtaClick={interest.open} />
-        <section className={styles.finalCta}><span>Creator waitlist</span><h2>Your audience already trusts your taste.<em>Make the journey shoppable.</em></h2><button type="button" onClick={interest.open}>Join waitlist</button></section>
+        <section className={styles.finalCta}><span>{t("Creator waitlist")}</span><h2>{t("Your audience already trusts your taste.")}<em>{t("Make the journey shoppable.")}</em></h2><button type="button" onClick={interest.open}>{t("Join waitlist")}</button></section>
       </main>
       <InfluencerFooter onCtaClick={interest.open} />
-      <InfluencerInterestDialog viewModel={viewModel} isOpen={interest.isOpen} message={interest.message} submissionState={interest.submissionState} onClose={interest.close} onSubmit={interest.submit} />
+      <InfluencerInterestDialog viewModel={localizedViewModel} isOpen={interest.isOpen} message={t(interest.message)} submissionState={interest.submissionState} onClose={interest.close} onSubmit={interest.submit} />
     </div>
   );
 }

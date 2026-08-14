@@ -6,6 +6,7 @@ import {
   Sparkle,
 } from "@phosphor-icons/react";
 import styles from "./influencerLanding.module.css";
+import { useCreatorLanguage } from "../../i18n/CreatorLanguageProvider";
 
 const ACCESS_BENCHMARKS = [
   {
@@ -33,6 +34,8 @@ export function InfluencerAccessBenchmarks({
 }: {
   onCtaClick: () => void;
 }) {
+  const { t } = useCreatorLanguage();
+
   return (
     <section
       id="creator-access"
@@ -41,25 +44,25 @@ export function InfluencerAccessBenchmarks({
     >
       <div className={styles.accessIntro}>
         <div>
-          <span>Early creator access · minimum activity</span>
+          <span>{t("Early creator access · minimum activity")}</span>
           <h2 id="creator-access-title">
-            Keep your full account <em>free.</em>
+            {t("Keep your full account")} <em>{t("free.")}</em>
           </h2>
           <p>
-            Meet any <strong>one</strong> benchmark each month.
+            {t("Meet any")} <strong>{t("one")}</strong> {t("benchmark each month.")}
           </p>
         </div>
 
         <aside
           className={styles.starterPortfolio}
-          aria-label="Early-creator starter portfolio"
+          aria-label={t("Early-creator starter portfolio")}
         >
           <span>
-            <Sparkle size={18} weight="fill" /> Early-creator starter portfolio
+            <Sparkle size={18} weight="fill" /> {t("Early-creator starter portfolio")}
           </span>
-          <strong>Up to 10 AI try-on images + 4 AI fashion videos*</strong>
+          <strong>{t("Up to 10 AI try-on images + 4 AI fashion videos*")}</strong>
           <small>
-            Starter content unlocks in stages and remains subject to approval.
+            {t("Starter content unlocks in stages and remains subject to approval.")}
           </small>
         </aside>
       </div>
@@ -67,13 +70,13 @@ export function InfluencerAccessBenchmarks({
       <div className={styles.accessBenchmarkPanel}>
         <header>
           <div>
-            <span>Choose any one</span>
+            <span>{t("Choose any one")}</span>
             <h3>
-              One clear benchmark keeps your creator account active and free.
+              {t("One clear benchmark keeps your creator account active and free.")}
             </h3>
           </div>
           <button type="button" onClick={onCtaClick}>
-            Join the early-access waitlist{" "}
+            {t("Join the early-access waitlist")}{" "}
             <ArrowUpRight size={18} weight="bold" />
           </button>
         </header>
@@ -85,19 +88,15 @@ export function InfluencerAccessBenchmarks({
                 <Icon size={22} weight="bold" />
               </span>
               <strong>{value}</strong>
-              <p>{label}</p>
-              <small>per month</small>
+              <p>{t(label)}</p>
+              <small>{t("per month")}</small>
             </article>
           ))}
         </div>
       </div>
 
       <p className={styles.accessFinePrint}>
-        *Starter content is subject to approval, eligible products, and staged
-        unlocks. Qualified activity excludes bots, self-generated, duplicate,
-        incentivized, or manipulated traffic. A qualifying purchase must be
-        attributed to the creator and not canceled, returned, or charged back.
-        Earnings are not guaranteed.
+        {t("*Starter content is subject to approval, eligible products, and staged unlocks. Qualified activity excludes bots, self-generated, duplicate, incentivized, or manipulated traffic. A qualifying purchase must be attributed to the creator and not canceled, returned, or charged back. Earnings are not guaranteed.")}
       </p>
     </section>
   );
