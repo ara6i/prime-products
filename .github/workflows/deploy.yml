@@ -54,6 +54,10 @@ jobs:
             echo "Building project..."
             npm run build
 
+            echo "Publishing creator static site..."
+            CREATOR_RELEASE_LABEL="$(date -u +%Y%m%d-%H%M%S)-${{ github.sha }}" \
+              bash scripts/deploy-creator-static.sh
+
             echo "Restarting PM2..."
             if pm2 describe prime-products > /dev/null 2>&1; then
               pm2 restart prime-products --update-env
