@@ -17,15 +17,23 @@ const SOCIAL_LINKS = [
   { href: "https://www.youtube.com/@PrimeStyleAI", label: "YouTube", Icon: YoutubeLogo },
 ] as const;
 
-export function InfluencerFooter({ onCtaClick }: { onCtaClick?: () => void }) {
+export function InfluencerFooter({
+  onCtaClick,
+  variant = "landing",
+}: {
+  onCtaClick?: () => void;
+  variant?: "landing" | "legal";
+}) {
   const languageContext = useOptionalCreatorLanguage();
   const t = languageContext?.t ?? ((value: string) => value);
 
   return (
-    <footer className={styles.networkFooter}>
+    <footer
+      className={`${styles.networkFooter} ${variant === "legal" ? styles.networkFooterLegal : ""}`}
+    >
       <div className={styles.footerFrame}>
         <section className={styles.footerMain} aria-label={t("PrimeStyleAI footer")}>
-          <Link href="/" className={styles.footerMark} aria-label="PrimeStyleAI home">
+          <Link href="/influencers" className={styles.footerMark} aria-label="PrimeStyleAI home">
             <Image
               src="/media/partner-landing/optimized/primestyleai-mark-256.webp"
               alt="PrimeStyleAI"

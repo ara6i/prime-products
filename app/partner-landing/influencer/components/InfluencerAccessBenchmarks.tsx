@@ -1,5 +1,6 @@
 import {
   ArrowUpRight,
+  CreditCard,
   CursorClick,
   Eye,
   ShoppingBagOpen,
@@ -48,9 +49,7 @@ export function InfluencerAccessBenchmarks({
           <h2 id="creator-access-title">
             {t("Keep your full account")} <em>{t("free.")}</em>
           </h2>
-          <p>
-            {t("Meet any")} <strong>{t("one")}</strong> {t("benchmark each month.")}
-          </p>
+          <p>{t("Your full account stays free when all three monthly benchmarks are met.")}</p>
         </div>
 
         <aside
@@ -70,9 +69,9 @@ export function InfluencerAccessBenchmarks({
       <div className={styles.accessBenchmarkPanel}>
         <header>
           <div>
-            <span>{t("Choose any one")}</span>
+            <span>{t("Three milestones · one free account")}</span>
             <h3>
-              {t("One clear benchmark keeps your creator account active and free.")}
+              {t("Your creator account remains active and free when all three monthly milestones are reached.")}
             </h3>
           </div>
           <button type="button" onClick={onCtaClick}>
@@ -82,8 +81,11 @@ export function InfluencerAccessBenchmarks({
         </header>
 
         <div className={styles.accessBenchmarkGrid}>
-          {ACCESS_BENCHMARKS.map(({ value, label, icon: Icon, tone }) => (
+          {ACCESS_BENCHMARKS.map(({ value, label, icon: Icon, tone }, index) => (
             <article key={label} data-tone={tone}>
+              {index > 0 ? (
+                <b className={styles.accessBenchmarkJoin} aria-hidden="true">+</b>
+              ) : null}
               <span>
                 <Icon size={22} weight="bold" />
               </span>
@@ -93,6 +95,27 @@ export function InfluencerAccessBenchmarks({
             </article>
           ))}
         </div>
+
+        <aside
+          className={styles.accessBillingNotice}
+          aria-label={t("monthly account fee")}
+        >
+          <div className={styles.accessBillingAmount}>
+            <span>
+              <CreditCard size={17} weight="bold" /> {t("Once activity begins")}
+            </span>
+            <strong>$4.99</strong>
+            <small>{t("monthly account fee")}</small>
+          </div>
+          <div className={styles.accessBillingCopy}>
+            <h4>
+              {t("If one milestone isn’t reached, your account continues for $4.99 that month.")}
+            </h4>
+            <p>
+              {t("Your monthly activity period begins with your first qualified impression or product click. When all three milestones are reached during that period, your full account stays free.")}
+            </p>
+          </div>
+        </aside>
       </div>
 
       <p className={styles.accessFinePrint}>

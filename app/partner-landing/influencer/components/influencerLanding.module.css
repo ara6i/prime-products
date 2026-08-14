@@ -1364,16 +1364,34 @@
 .accessBenchmarkPanel > header h3 { max-width: 22ch; margin: 8px 0 0; font-size: clamp(24px, 2.3vw, 36px); font-weight: 650; letter-spacing: -.045em; line-height: 1.08; }
 .accessBenchmarkPanel > header button { display: inline-flex; min-height: 48px; flex: 0 0 auto; align-items: center; justify-content: center; gap: 9px; padding: 0 22px; border: 0; border-radius: 999px; background: var(--blue); box-shadow: 0 12px 24px rgba(33,84,239,.2); color: #fff; font: inherit; font-size: 12px; font-weight: 850; cursor: pointer; transition: background 180ms ease, transform 180ms ease; }
 .accessBenchmarkPanel > header button:hover { background: var(--purple); transform: translateY(-2px); }
-.accessBenchmarkGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.accessBenchmarkGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .accessBenchmarkGrid article {
   position: relative;
   display: grid;
   min-height: 252px;
   align-content: end;
   padding: clamp(24px, 2.8vw, 40px);
-  overflow: hidden;
+  overflow: visible;
   border-radius: 28px 28px 7px 28px;
   background: #dbe6ff;
+}
+.accessBenchmarkJoin {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: -10px;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 5px solid rgba(255,255,255,.9);
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 8px 20px rgba(20,24,42,.18);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  transform: translate(-50%, -50%);
 }
 .accessBenchmarkGrid article[data-tone="peach"] { background: #ffd9ad; }
 .accessBenchmarkGrid article[data-tone="mint"] { background: #c6eedf; }
@@ -1383,6 +1401,31 @@
 .accessBenchmarkGrid article > strong { font-size: clamp(62px, 6vw, 98px); font-weight: 650; letter-spacing: -.075em; line-height: .78; }
 .accessBenchmarkGrid article > p { max-width: 17ch; margin: 21px 0 0; font-size: clamp(16px, 1.35vw, 21px); font-weight: 750; letter-spacing: -.025em; line-height: 1.2; }
 .accessBenchmarkGrid article > small { margin-top: 9px; color: rgba(16,17,22,.58); font-size: 11px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.accessBillingNotice {
+  display: grid;
+  grid-template-columns: minmax(210px, .38fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: clamp(24px, 3vw, 48px);
+  margin-top: 20px;
+  padding: clamp(24px, 3vw, 42px);
+  border: 1px solid rgba(33,84,239,.16);
+  border-radius: 7px 30px 30px 30px;
+  background: linear-gradient(125deg, #dfe8ff 0%, #eee8ff 54%, #fff0dc 100%);
+  box-shadow: 0 20px 46px rgba(72,50,148,.1);
+  color: var(--ink);
+}
+.accessBillingAmount {
+  display: grid;
+  align-content: center;
+  padding-right: clamp(24px, 3vw, 48px);
+  border-right: 1px solid rgba(33,84,239,.18);
+}
+.accessBillingAmount > span { display: flex; align-items: center; gap: 8px; color: var(--blue); font-size: 11px; font-weight: 850; letter-spacing: .11em; text-transform: uppercase; }
+.accessBillingAmount > strong { margin-top: 14px; color: var(--purple); font-size: clamp(56px, 5vw, 82px); font-weight: 650; letter-spacing: -.07em; line-height: .88; }
+.accessBillingAmount > small { margin-top: 11px; color: rgba(16,17,22,.58); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.accessBillingCopy { display: grid; align-content: center; }
+.accessBillingCopy h4 { max-width: 25ch; margin: 0; font-size: clamp(24px, 2.35vw, 38px); font-weight: 620; letter-spacing: -.045em; line-height: 1.08; }
+.accessBillingCopy p { max-width: 68ch; margin: 18px 0 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
 .accessFinePrint { max-width: 1430px; margin: 24px auto 0; color: rgba(16,17,22,.62); font-size: 12px; line-height: 1.65; }
 
 .finalCta { display: flex; min-height: 570px; flex-direction: column; align-items: center; justify-content: center; padding: 80px 24px; background: #ffd9ad; color: var(--ink); text-align: center; }
@@ -1395,6 +1438,11 @@
   overflow: hidden;
   background: #ffd9ad;
   color: var(--ink);
+}
+.networkFooterLegal {
+  padding-top: 0;
+  overflow: visible;
+  background: linear-gradient(to right, var(--blue) 0 36vw, #fff 36vw 100%);
 }
 .footerFrame { width: 100%; }
 .footerMain {
@@ -1446,6 +1494,10 @@
 .footerLegal nav { display: flex; flex-wrap: wrap; gap: 16px; }
 .footerLegal a { color: inherit; text-decoration: none; }
 .footerLegal a:hover { color: #89a5ff; }
+
+@media (max-width: 1023px) {
+  .networkFooterLegal { background: #fff; }
+}
 
 @keyframes dialogSplashOpen {
   from { clip-path: circle(0 at 50% 50%); }
@@ -1867,10 +1919,14 @@
   .accessBenchmarkPanel > header { padding: 14px 9px 25px; }
   .accessBenchmarkPanel > header h3 { font-size: 27px; }
   .accessBenchmarkPanel > header button { width: 100%; }
-  .accessBenchmarkGrid { grid-template-columns: 1fr; }
+  .accessBenchmarkGrid { grid-template-columns: 1fr; gap: 36px; }
   .accessBenchmarkGrid article { min-height: 220px; padding: 27px; border-radius: 22px 22px 6px 22px; }
+  .accessBenchmarkJoin { top: -18px; left: 50%; }
   .accessBenchmarkGrid article > strong { font-size: 76px; }
   .accessBenchmarkGrid article > p { font-size: 19px; }
+  .accessBillingNotice { grid-template-columns: 1fr; gap: 24px; padding: 28px 24px; border-radius: 6px 24px 24px 24px; }
+  .accessBillingAmount { padding: 0 0 24px; border-right: 0; border-bottom: 1px solid rgba(33,84,239,.18); }
+  .accessBillingCopy h4 { font-size: 27px; }
   .accessFinePrint { margin-top: 19px; font-size: 10px; }
   .finalCta { min-height: 510px; }
   .networkFooter { padding: 66px 0 0; }

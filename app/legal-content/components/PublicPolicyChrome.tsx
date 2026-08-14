@@ -56,7 +56,7 @@ function LocalizedPublicPolicyChrome({ children }: PublicPolicyChromeProps) {
         onSectionSelect={openInfluencerSection}
       />
       {children}
-      <InfluencerFooter onCtaClick={interest.open} />
+      <InfluencerFooter onCtaClick={interest.open} variant="legal" />
       <InfluencerInterestDialog
         viewModel={localizedViewModel}
         isOpen={interest.isOpen}
