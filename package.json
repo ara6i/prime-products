@@ -11,6 +11,7 @@
     "process-images": "tsx scripts/process-platform-images.ts"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@primestyleai/tryon": "5.10.240",
     "@react-oauth/google": "^0.13.4",
     "@react-three/drei": "^10.7.7",
