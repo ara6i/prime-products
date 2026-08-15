@@ -72,7 +72,7 @@ const CREATOR_CHANNEL_OPTIONS: CreatorChannelOption[] = [
   {
     value: "threads",
     label: "Threads",
-    placeholder: "https://threads.net/@yourname",
+    placeholder: "https://threads.com/@yourname",
     icon: (
       <ThreadsLogo className={styles.brandThreads} size={20} weight="fill" />
     ),

@@ -1095,11 +1095,12 @@
   "Your week is growing": "Tu semana esta creciendo",
   "YouTube": "youtube",
   "Once activity begins": "Una vez que comienza la actividad",
-  "Three milestones · one free account": "Tres objetivos · una cuenta gratuita",
-  "Your creator account remains active and free when all three monthly milestones are reached.": "Tu cuenta de creador permanece activa y gratuita cuando alcanzas los tres objetivos mensuales.",
-  "Your full account stays free when all three monthly benchmarks are met.": "Tu cuenta completa sigue siendo gratuita cuando cumples los tres objetivos mensuales.",
-  "If one milestone isn’t reached, your account continues for $4.99 that month.": "Si no alcanzas uno de los objetivos, tu cuenta continúa por $4.99 ese mes.",
+  "Meet any monthly milestone": "Cumple cualquier objetivo mensual",
+  "Reach any monthly milestone to keep your creator account active and free.": "Alcanza cualquier objetivo mensual para mantener tu cuenta de creador activa y gratuita.",
+  "Your full account stays free when any monthly benchmark is met.": "Tu cuenta completa sigue siendo gratuita cuando cumples cualquier objetivo mensual.",
+  "If no milestone is reached, your account continues for $4.99 that month.": "Si no alcanzas ningún objetivo, tu cuenta continúa por $4.99 ese mes.",
   "monthly account fee": "cuota mensual de la cuenta",
-  "Your monthly activity period begins with your first qualified impression or product click. When all three milestones are reached during that period, your full account stays free.": "Tu período de actividad mensual comienza con tu primera impresión válida o clic en un producto. Cuando alcanzas los tres objetivos durante ese período, tu cuenta completa sigue siendo gratuita.",
+  "Your monthly activity period begins with your first qualified impression or product click. When any milestone is reached during that period, your full account stays free.": "Tu período de actividad mensual comienza con tu primera impresión válida o clic en un producto. Cuando alcanzas cualquier objetivo durante ese período, tu cuenta completa sigue siendo gratuita.",
+  "or": "o",
   "youtube.com": "youtube.com"
 }

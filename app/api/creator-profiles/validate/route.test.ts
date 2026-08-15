@@ -96,6 +96,116 @@ describe("creator profile validation route", () => {
     });
   });
 
+  it("confirms a matching public profile through TikTok's creator oEmbed response", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        Response.json({
+          provider_name: "TikTok",
+          embed_type: "profile",
+          author_url: "https://www.tiktok.com/@kainat234a",
+          title: "Fruit Emotional Stories's Creator Profile",
+        }),
+      ),
+    );
+
+    const response = await POST(
+      request("tiktok", "https://www.tiktok.com/@kainat234a"),
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      status: "verified",
+      normalizedUrl: "https://www.tiktok.com/@kainat234a",
+      message: "Public TikTok profile confirmed.",
+    });
+  });
+
+  it("rejects a TikTok profile when the official endpoint reports no public embed", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(Response.json({ code: 400 }, { status: 400 })),
+    );
+
+    const response = await POST(
+      request("tiktok", "https://www.tiktok.com/@privatecreator"),
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(422);
+    expect(body).toMatchObject({
+      status: "invalid",
+      message: "No public TikTok profile was found at this link. Check the username.",
+    });
+  });
+
+  it("confirms a public Threads profile and normalizes the former threads.net domain", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          '<meta property="og:title" content="Mark Zuckerberg (@zuck)"><script>{"username":"zuck","is_private":false}</script>',
+          { status: 200 },
+        ),
+      ),
+    );
+
+    const response = await POST(request("threads", "threads.net/@zuck"));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      status: "verified",
+      normalizedUrl: "https://www.threads.com/@zuck",
+      message: "Public Threads profile confirmed.",
+    });
+  });
+
+  it("confirms a public YouTube channel from its matching channel payload", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          '<link rel="canonical" href="https://www.youtube.com/channel/UC123"><script>{"canonicalBaseUrl":"/@MrBeast","channelId":"UC123"}</script>',
+          { status: 200 },
+        ),
+      ),
+    );
+
+    const response = await POST(request("youtube", "youtube.com/@MrBeast"));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      status: "verified",
+      message: "Public YouTube profile confirmed.",
+    });
+  });
+
+  it("confirms a public Pinterest profile from its matching profile metadata", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          '<meta property="og:title" content="Pinterest"><script>{"username":"pinterest"}</script>',
+          { status: 200 },
+        ),
+      ),
+    );
+
+    const response = await POST(
+      request("pinterest", "pinterest.com/pinterest"),
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      status: "verified",
+      message: "Public Pinterest profile confirmed.",
+    });
+  });
+
   it("does not show Instagram as verified from the username alone", async () => {
     vi.stubGlobal(
       "fetch",

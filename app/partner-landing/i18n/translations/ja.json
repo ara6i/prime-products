@@ -1095,11 +1095,12 @@
   "Your week is growing": "あなたの週は成長しています",
   "YouTube": "YouTube",
   "Once activity begins": "アクティビティが始まったら",
-  "Three milestones · one free account": "3つの目標 · 1つの無料アカウント",
-  "Your creator account remains active and free when all three monthly milestones are reached.": "毎月3つすべての目標を達成すると、クリエイターアカウントを有効かつ無料で維持できます。",
-  "Your full account stays free when all three monthly benchmarks are met.": "毎月3つすべての基準を満たすと、フルアカウントを無料で維持できます。",
-  "If one milestone isn’t reached, your account continues for $4.99 that month.": "いずれかの目標を達成できなかった月は、4.99ドルでアカウントを継続できます。",
+  "Meet any monthly milestone": "月間目標のいずれかを達成",
+  "Reach any monthly milestone to keep your creator account active and free.": "月間目標のいずれかを達成すると、クリエイターアカウントを有効かつ無料で維持できます。",
+  "Your full account stays free when any monthly benchmark is met.": "月間基準のいずれかを満たすと、フルアカウントを無料で維持できます。",
+  "If no milestone is reached, your account continues for $4.99 that month.": "目標を達成できなかった月は、4.99ドルでアカウントを継続できます。",
   "monthly account fee": "月額アカウント料金",
-  "Your monthly activity period begins with your first qualified impression or product click. When all three milestones are reached during that period, your full account stays free.": "毎月のアクティビティ期間は、最初の有効なインプレッションまたは商品クリックから始まります。その期間中に3つすべての目標を達成すると、フルアカウントを無料で維持できます。",
+  "Your monthly activity period begins with your first qualified impression or product click. When any milestone is reached during that period, your full account stays free.": "毎月のアクティビティ期間は、最初の有効なインプレッションまたは商品クリックから始まります。その期間中にいずれかの目標を達成すると、フルアカウントを無料で維持できます。",
+  "or": "または",
   "youtube.com": "youtube.com"
 }
