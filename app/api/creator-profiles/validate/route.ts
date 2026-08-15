@@ -2,7 +2,7 @@ import {
   getCreatorPlatformLabel,
   isCreatorPlatformHostname,
   validateCreatorProfileUrl,
-} from "@/app/partner-landing/services/creatorProfileValidation";
+} from "../../../partner-landing/services/creatorProfileValidation";
 import type { CreatorPrimaryChannel } from "@/app/partner-landing/types";
 
 export const runtime = "nodejs";
