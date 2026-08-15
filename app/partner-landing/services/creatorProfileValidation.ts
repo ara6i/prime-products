@@ -30,8 +30,13 @@ const PLATFORM_HOSTS: Record<
     accepted: ["tiktok.com", "www.tiktok.com"],
   },
   threads: {
-    canonical: "www.threads.net",
-    accepted: ["threads.net", "www.threads.net"],
+    canonical: "www.threads.com",
+    accepted: [
+      "threads.com",
+      "www.threads.com",
+      "threads.net",
+      "www.threads.net",
+    ],
   },
   youtube: {
     canonical: "www.youtube.com",
@@ -82,7 +87,7 @@ function buildHandleUrl(
     case "tiktok":
       return `https://www.tiktok.com/@${handle}`;
     case "threads":
-      return `https://www.threads.net/@${handle}`;
+      return `https://www.threads.com/@${handle}`;
     case "youtube":
       return `https://www.youtube.com/@${handle}`;
     case "pinterest":

@@ -200,6 +200,66 @@ function manualReviewMessage(label: string): string {
   return `${label} link saved. We couldn’t confirm automatically that the profile is public, so we’ll verify it during review.`;
 }
 
+async function verifyTikTokProfileWithOEmbed(
+  normalizedUrl: string,
+  handle: string | undefined,
+  signal: AbortSignal,
+): Promise<VerificationResult | null> {
+  const endpoint = new URL("https://www.tiktok.com/oembed");
+  endpoint.searchParams.set("url", normalizedUrl);
+
+  const response = await fetch(endpoint, {
+    method: "GET",
+    cache: "no-store",
+    signal,
+    headers: {
+      Accept: "application/json",
+      "Accept-Language": "en-US,en;q=0.8",
+      "User-Agent":
+        "Mozilla/5.0 (compatible; PrimeStyleAI-ProfileCheck/1.0; +https://primestyleai.com)",
+    },
+  });
+
+  if ([400, 404, 410].includes(response.status)) {
+    await response.body?.cancel().catch(() => undefined);
+    return result(
+      "invalid",
+      normalizedUrl,
+      "No public TikTok profile was found at this link. Check the username.",
+    );
+  }
+  if (!response.ok) {
+    await response.body?.cancel().catch(() => undefined);
+    return null;
+  }
+
+  const payload = (await response.json().catch(() => null)) as {
+    author_url?: unknown;
+    provider_name?: unknown;
+    embed_type?: unknown;
+  } | null;
+  if (
+    !payload ||
+    payload.provider_name !== "TikTok" ||
+    payload.embed_type !== "profile" ||
+    typeof payload.author_url !== "string"
+  ) {
+    return null;
+  }
+
+  const authorProfile = validateCreatorProfileUrl("tiktok", payload.author_url);
+  if (
+    !authorProfile.valid ||
+    !authorProfile.handle ||
+    !handle ||
+    authorProfile.handle.toLowerCase() !== handle.toLowerCase()
+  ) {
+    return null;
+  }
+
+  return result("verified", normalizedUrl, "Public TikTok profile confirmed.");
+}
+
 async function verifyPublicCreatorProfile(
   platform: CreatorPrimaryChannel,
   normalizedUrl: string,
@@ -222,6 +282,15 @@ async function verifyPublicCreatorProfile(
   const timeout = setTimeout(() => controller.abort(), 4_500);
 
   try {
+    if (platform === "tiktok") {
+      const oEmbedResult = await verifyTikTokProfileWithOEmbed(
+        normalizedUrl,
+        handle,
+        controller.signal,
+      );
+      if (oEmbedResult) return oEmbedResult;
+    }
+
     const fetched = await fetchPublicProfilePage(
       platform,
       normalizedUrl,
@@ -262,14 +331,11 @@ async function verifyPublicCreatorProfile(
       );
     }
 
-    const html = normalizeInspectableHtml(await readResponsePrefix(response));
-    if (appearsMissing(html)) {
-      return result(
-        "invalid",
-        normalizedUrl,
-        `No public ${label} profile was found at this link. Check the username.`,
-      );
-    }
+    const inspectionLimit =
+      platform === "youtube" || platform === "pinterest" ? 1_500_000 : 900_000;
+    const html = normalizeInspectableHtml(
+      await readResponsePrefix(response, inspectionLimit),
+    );
     if (appearsPrivate(html)) {
       return result(
         "invalid",
@@ -277,7 +343,27 @@ async function verifyPublicCreatorProfile(
         `${label} profile appears private. Make it public, then try again.`,
       );
     }
-    if (hasPublicProfileSignal(platform, html, handle)) {
+
+    const publicProfileConfirmed = hasPublicProfileSignal(platform, html, handle);
+
+    // TikTok includes localized missing-account messages in the JavaScript
+    // dictionary of valid profile pages. Its matching user-detail payload is
+    // the stronger signal and must be checked before those generic strings.
+    if (platform === "tiktok" && publicProfileConfirmed) {
+      return result(
+        "verified",
+        normalizedUrl,
+        `Public ${label} profile confirmed.`,
+      );
+    }
+    if (appearsMissing(html)) {
+      return result(
+        "invalid",
+        normalizedUrl,
+        `No public ${label} profile was found at this link. Check the username.`,
+      );
+    }
+    if (publicProfileConfirmed) {
       return result(
         "verified",
         normalizedUrl,

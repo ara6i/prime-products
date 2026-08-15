@@ -1389,8 +1389,11 @@
   background: var(--ink);
   box-shadow: 0 8px 20px rgba(20,24,42,.18);
   color: #fff;
-  font-size: 20px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .08em;
   line-height: 1;
+  text-transform: uppercase;
   transform: translate(-50%, -50%);
 }
 .accessBenchmarkGrid article[data-tone="peach"] { background: #ffd9ad; }

@@ -1095,11 +1095,12 @@
   "Your week is growing": "Deine Woche wächst",
   "YouTube": "YouTube",
   "Once activity begins": "Sobald die Aktivität beginnt",
-  "Three milestones · one free account": "Drei Meilensteine · ein kostenloses Konto",
-  "Your creator account remains active and free when all three monthly milestones are reached.": "Dein Creator-Konto bleibt aktiv und kostenlos, wenn alle drei monatlichen Meilensteine erreicht werden.",
-  "Your full account stays free when all three monthly benchmarks are met.": "Dein vollständiges Konto bleibt kostenlos, wenn alle drei monatlichen Richtwerte erfüllt sind.",
-  "If one milestone isn’t reached, your account continues for $4.99 that month.": "Wird ein Meilenstein nicht erreicht, läuft dein Konto in diesem Monat für 4,99 $ weiter.",
+  "Meet any monthly milestone": "Erreiche ein beliebiges Monatsziel",
+  "Reach any monthly milestone to keep your creator account active and free.": "Erreiche ein beliebiges Monatsziel, damit dein Creator-Konto aktiv und kostenlos bleibt.",
+  "Your full account stays free when any monthly benchmark is met.": "Dein vollständiges Konto bleibt kostenlos, sobald ein beliebiges Monatsziel erreicht wird.",
+  "If no milestone is reached, your account continues for $4.99 that month.": "Wenn kein Meilenstein erreicht wird, läuft dein Konto in diesem Monat für 4,99 $ weiter.",
   "monthly account fee": "monatliche Kontogebühr",
-  "Your monthly activity period begins with your first qualified impression or product click. When all three milestones are reached during that period, your full account stays free.": "Dein monatlicher Aktivitätszeitraum beginnt mit deiner ersten qualifizierten Impression oder deinem ersten Produktklick. Werden alle drei Meilensteine in diesem Zeitraum erreicht, bleibt dein vollständiges Konto kostenlos.",
+  "Your monthly activity period begins with your first qualified impression or product click. When any milestone is reached during that period, your full account stays free.": "Dein monatlicher Aktivitätszeitraum beginnt mit deiner ersten qualifizierten Impression oder deinem ersten Produktklick. Wird in diesem Zeitraum ein beliebiger Meilenstein erreicht, bleibt dein vollständiges Konto kostenlos.",
+  "or": "oder",
   "youtube.com": "youtube.com"
 }

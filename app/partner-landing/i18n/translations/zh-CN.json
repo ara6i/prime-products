@@ -1095,11 +1095,12 @@
   "Your week is growing": "你的一周正在增长",
   "YouTube": "YouTube",
   "Once activity begins": "活动开始后",
-  "Three milestones · one free account": "三项目标 · 一个免费账户",
-  "Your creator account remains active and free when all three monthly milestones are reached.": "达成全部三项目标后，您的创作者账户将保持有效且免费。",
-  "Your full account stays free when all three monthly benchmarks are met.": "每月满足全部三项指标，即可保持完整账户免费。",
-  "If one milestone isn’t reached, your account continues for $4.99 that month.": "如果有一项目标未达成，您的账户当月可继续使用，费用为 4.99 美元。",
+  "Meet any monthly milestone": "达成任意一项目标",
+  "Reach any monthly milestone to keep your creator account active and free.": "达成任意一项月度目标，即可让您的创作者账户保持有效且免费。",
+  "Your full account stays free when any monthly benchmark is met.": "每月满足任意一项指标，即可保持完整账户免费。",
+  "If no milestone is reached, your account continues for $4.99 that month.": "如果没有达成任何目标，您的账户当月可继续使用，费用为 4.99 美元。",
   "monthly account fee": "每月账户费用",
-  "Your monthly activity period begins with your first qualified impression or product click. When all three milestones are reached during that period, your full account stays free.": "您的月度活动周期从第一次有效展示或商品点击开始。在该周期内达成全部三项目标，即可保持完整账户免费。",
+  "Your monthly activity period begins with your first qualified impression or product click. When any milestone is reached during that period, your full account stays free.": "您的月度活动周期从第一次有效展示或商品点击开始。在该周期内达成任意一项目标，即可保持完整账户免费。",
+  "or": "或",
   "youtube.com": "youtube.com"
 }

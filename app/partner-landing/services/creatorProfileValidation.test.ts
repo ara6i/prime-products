@@ -26,7 +26,13 @@ describe("validateCreatorProfileUrl", () => {
     });
     expect(validateCreatorProfileUrl("threads", "@creator")).toMatchObject({
       valid: true,
-      normalizedUrl: "https://www.threads.net/@creator",
+      normalizedUrl: "https://www.threads.com/@creator",
+    });
+    expect(
+      validateCreatorProfileUrl("threads", "threads.net/@creator"),
+    ).toMatchObject({
+      valid: true,
+      normalizedUrl: "https://www.threads.com/@creator",
     });
   });
 
