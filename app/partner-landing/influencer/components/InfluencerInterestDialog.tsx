@@ -229,10 +229,6 @@ function CreatorPlatformLinks({
     setActivePlatform(platform);
   };
 
-  const firstProfile = profiles.find((profile) =>
-    savedPlatforms.includes(profile.platform) &&
-    validateCreatorProfileUrl(profile.platform, profile.url).valid,
-  );
   const activeProfileUrl = activePlatform ? links[activePlatform] ?? "" : "";
   const activeProfileIsSaved = Boolean(
     activePlatform &&
@@ -395,14 +391,6 @@ function CreatorPlatformLinks({
         className={styles.dialogDropdownValue}
         name="primaryChannel"
         value={selectedPlatforms[0] ?? ""}
-        onChange={() => undefined}
-        tabIndex={-1}
-        aria-hidden="true"
-      />
-      <input
-        className={styles.dialogDropdownValue}
-        name="website"
-        value={firstProfile?.url ?? ""}
         onChange={() => undefined}
         tabIndex={-1}
         aria-hidden="true"
