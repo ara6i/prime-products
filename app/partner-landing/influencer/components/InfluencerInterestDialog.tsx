@@ -389,14 +389,6 @@ function CreatorPlatformLinks({
     >
       <input
         className={styles.dialogDropdownValue}
-        name="primaryChannel"
-        value={selectedPlatforms[0] ?? ""}
-        onChange={() => undefined}
-        tabIndex={-1}
-        aria-hidden="true"
-      />
-      <input
-        className={styles.dialogDropdownValue}
         name="creatorProfiles"
         value={JSON.stringify(profiles)}
         onChange={() => undefined}

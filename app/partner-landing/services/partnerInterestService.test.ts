@@ -29,7 +29,6 @@ describe("submitPartnerInterest", () => {
       audience: "influencer",
       name: "Arash QA Test",
       email: "ara6i.sn@gmail.com",
-      primaryChannel: "instagram",
       creatorProfiles,
       audienceSize: "under-10k",
       location: "Armenia",
@@ -45,6 +44,7 @@ describe("submitPartnerInterest", () => {
     const body = JSON.parse(String(request.body));
 
     expect(body).not.toHaveProperty("website");
+    expect(body).not.toHaveProperty("primaryChannel");
     expect(body.creatorProfiles).toHaveLength(7);
     expect(body.creatorProfiles.map((profile: { platform: string }) => profile.platform)).toEqual(
       creatorProfiles.map((profile) => profile.platform),

@@ -22,7 +22,6 @@ export async function submitPartnerInterest(
           !validateCreatorProfileUrl(profile.platform, profile.url).valid,
       ) ??
         false) ||
-      !payload.primaryChannel ||
       !payload.audienceSize ||
       !payload.location?.trim() ||
       payload.marketingConsent !== true)
@@ -47,7 +46,6 @@ export async function submitPartnerInterest(
         product: payload.audience,
         name: payload.name.trim(),
         website: payload.website?.trim() || undefined,
-        primaryChannel: payload.primaryChannel,
         creatorProfiles: payload.creatorProfiles?.map((profile) => {
           const validation = validateCreatorProfileUrl(
             profile.platform,

@@ -53,11 +53,6 @@ export function usePartnerInterest(audience: PartnerAudience) {
           audience === "influencer"
             ? undefined
             : String(formData.get("website") ?? ""),
-        primaryChannel:
-          creatorProfiles[0]?.platform ??
-          (String(
-            formData.get("primaryChannel") ?? "",
-          ) as CreatorPrimaryChannel),
         creatorProfiles,
         audienceSize: String(formData.get("audienceSize") ?? "") as
           "under-10k" | "10k-50k" | "50k-250k" | "250k-1m" | "1m-plus",

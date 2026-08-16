@@ -35,7 +35,6 @@ export interface PartnerInterestPayload {
   name: string;
   email: string;
   website?: string;
-  primaryChannel?: CreatorPrimaryChannel;
   creatorProfiles?: Array<{
     platform: CreatorPrimaryChannel;
     url: string;
