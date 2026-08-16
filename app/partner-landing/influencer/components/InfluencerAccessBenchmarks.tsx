@@ -49,7 +49,7 @@ export function InfluencerAccessBenchmarks({
           <h2 id="creator-access-title">
             {t("Keep your full account")} <em>{t("free.")}</em>
           </h2>
-          <p>{t("Your full account stays free when any monthly benchmark is met.")}</p>
+          <p>{t("Your full account stays free when all monthly benchmarks are met.")}</p>
         </div>
 
         <aside
@@ -69,9 +69,9 @@ export function InfluencerAccessBenchmarks({
       <div className={styles.accessBenchmarkPanel}>
         <header>
           <div>
-            <span>{t("Meet any monthly milestone")}</span>
+            <span>{t("Meet every monthly milestone")}</span>
             <h3>
-              {t("Reach any monthly milestone to keep your creator account active and free.")}
+              {t("Reach every monthly milestone to keep your creator account active and free.")}
             </h3>
           </div>
           <button type="button" onClick={onCtaClick}>
@@ -84,7 +84,7 @@ export function InfluencerAccessBenchmarks({
           {ACCESS_BENCHMARKS.map(({ value, label, icon: Icon, tone }, index) => (
             <article key={label} data-tone={tone}>
               {index > 0 ? (
-                <b className={styles.accessBenchmarkJoin} aria-hidden="true">{t("or")}</b>
+                <b className={styles.accessBenchmarkJoin} aria-hidden="true">{t("and")}</b>
               ) : null}
               <span>
                 <Icon size={22} weight="bold" />
@@ -109,10 +109,10 @@ export function InfluencerAccessBenchmarks({
           </div>
           <div className={styles.accessBillingCopy}>
             <h4>
-              {t("If no milestone is reached, your account continues for $4.99 that month.")}
+              {t("If any monthly milestone is not reached, your account continues for $4.99 that month.")}
             </h4>
             <p>
-              {t("Your monthly activity period begins with your first qualified impression or product click. When any milestone is reached during that period, your full account stays free.")}
+              {t("Your monthly activity period begins with your first qualified impression or product click. When all milestones are reached during that period, your full account stays free.")}
             </p>
           </div>
         </aside>
