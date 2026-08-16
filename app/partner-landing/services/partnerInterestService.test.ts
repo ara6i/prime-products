@@ -16,6 +16,42 @@ afterEach(() => {
 });
 
 describe("submitPartnerInterest", () => {
+  it("rejects every incomplete creator application before calling the backend", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const completePayload = {
+      audience: "influencer" as const,
+      name: "Arash QA Test",
+      email: "ara6i.sn@gmail.com",
+      creatorProfiles,
+      audienceSize: "under-10k" as const,
+      location: "Armenia",
+      timezone: "Asia/Yerevan",
+      marketingConsent: true,
+      leadSource: "creator-waitlist" as const,
+    };
+    const incompletePayloads = [
+      { ...completePayload, name: " " },
+      { ...completePayload, email: "not-an-email" },
+      { ...completePayload, creatorProfiles: [] },
+      {
+        ...completePayload,
+        creatorProfiles: creatorProfiles.map((profile, index) =>
+          index === 0 ? { ...profile, url: "" } : profile,
+        ),
+      },
+      { ...completePayload, audienceSize: undefined },
+      { ...completePayload, location: " " },
+      { ...completePayload, marketingConsent: false },
+    ];
+
+    for (const payload of incompletePayloads) {
+      const result = await submitPartnerInterest(payload);
+      expect(result.ok).toBe(false);
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("submits every creator profile without duplicating the first link as a website", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ ok: true }), {

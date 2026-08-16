@@ -18,6 +18,7 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import {
+  useCallback,
   useEffect,
   useId,
   useMemo,
@@ -131,6 +132,33 @@ const COUNTRY_CODES =
   );
 const COUNTRY_VALUE_NAMES = new Intl.DisplayNames(["en"], { type: "region" });
 
+function isCreatorWaitlistFormComplete(
+  form: HTMLFormElement | null,
+): boolean {
+  if (!form) return false;
+
+  const input = (name: string) => {
+    const field = form.elements.namedItem(name);
+    return field instanceof HTMLInputElement ? field : null;
+  };
+  const name = input("name");
+  const email = input("email");
+  const creatorProfiles = input("creatorProfiles");
+  const audienceSize = input("audienceSize");
+  const location = input("location");
+  const marketingConsent = input("marketingConsent");
+
+  return Boolean(
+    name?.value.trim() &&
+      email?.value.trim() &&
+      email.validity.valid &&
+      creatorProfiles?.dataset.complete === "true" &&
+      audienceSize?.value.trim() &&
+      location?.value.trim() &&
+      marketingConsent?.checked,
+  );
+}
+
 function countryFlag(code: string): string {
   return code.replace(/./g, (letter) =>
     String.fromCodePoint(127397 + letter.charCodeAt(0)),
@@ -140,9 +168,11 @@ function countryFlag(code: string): string {
 function CreatorPlatformLinks({
   isOpen,
   onOpenChange,
+  onCompletionChange,
 }: {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  onCompletionChange: () => void;
 }) {
   const { t } = useCreatorLanguage();
   const [selectedPlatforms, setSelectedPlatforms] = useState<
@@ -184,6 +214,10 @@ function CreatorPlatformLinks({
       validateCreatorProfileUrl(profile.platform, profile.url).valid,
   ).length;
   const isComplete = profiles.length > 0 && completedCount === profiles.length;
+
+  useEffect(() => {
+    onCompletionChange();
+  }, [isComplete, onCompletionChange]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -656,6 +690,7 @@ function AnimatedDropdown({
   searchable = false,
   isOpen,
   onOpenChange,
+  onValueChange,
   className,
 }: {
   name: string;
@@ -665,6 +700,7 @@ function AnimatedDropdown({
   searchable?: boolean;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  onValueChange: () => void;
   className?: string;
 }) {
   const { t } = useCreatorLanguage();
@@ -768,6 +804,7 @@ function AnimatedDropdown({
                     setSelectedValue(option.value);
                     setQuery("");
                     onOpenChange(false);
+                    onValueChange();
                   }}
                 >
                   <span>
@@ -809,6 +846,13 @@ export function InfluencerInterestDialog({
   const [isMounted, setIsMounted] = useState(false);
   const [phase, setPhase] = useState<DialogPhase>("opening");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [isFormComplete, setIsFormComplete] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const refreshFormCompletion = useCallback(() => {
+    window.requestAnimationFrame(() => {
+      setIsFormComplete(isCreatorWaitlistFormComplete(formRef.current));
+    });
+  }, []);
   const countryOptions = useMemo<DropdownOption[]>(() => {
     const displayNames = new Intl.DisplayNames([language], { type: "region" });
     return COUNTRY_CODES.map((code) => ({
@@ -833,6 +877,7 @@ export function InfluencerInterestDialog({
         setPhase("opening");
         phaseTimeout = window.setTimeout(() => setPhase("open"), 700);
       } else {
+        setIsFormComplete(false);
         setPhase("closing");
         phaseTimeout = window.setTimeout(() => setIsMounted(false), 700);
       }
@@ -955,7 +1000,13 @@ export function InfluencerInterestDialog({
             <strong>{message}</strong>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} noValidate>
+          <form
+            ref={formRef}
+            onSubmit={handleSubmit}
+            onChange={refreshFormCompletion}
+            onInput={refreshFormCompletion}
+            noValidate
+          >
             <label>
               {t("Name")}
               <input
@@ -978,6 +1029,7 @@ export function InfluencerInterestDialog({
             </label>
             <CreatorPlatformLinks
               isOpen={openDropdown === "creatorPlatforms"}
+              onCompletionChange={refreshFormCompletion}
               onOpenChange={(nextOpen) =>
                 setOpenDropdown(nextOpen ? "creatorPlatforms" : null)
               }
@@ -992,6 +1044,7 @@ export function InfluencerInterestDialog({
                 onOpenChange={(nextOpen) =>
                   setOpenDropdown(nextOpen ? "audienceSize" : null)
                 }
+                onValueChange={refreshFormCompletion}
               />
               <AnimatedDropdown
                 name="location"
@@ -1003,6 +1056,7 @@ export function InfluencerInterestDialog({
                 onOpenChange={(nextOpen) =>
                   setOpenDropdown(nextOpen ? "location" : null)
                 }
+                onValueChange={refreshFormCompletion}
                 className={styles.dialogCountryDropdown}
               />
             </div>
@@ -1036,7 +1090,10 @@ export function InfluencerInterestDialog({
                 {message}
               </p>
             ) : null}
-            <button type="submit" disabled={submissionState === "submitting"}>
+            <button
+              type="submit"
+              disabled={submissionState === "submitting" || !isFormComplete}
+            >
               {submissionState === "submitting" ? t("Joining…") : t("Join waitlist")}
               <ArrowRight size={17} />
             </button>
