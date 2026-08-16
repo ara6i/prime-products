@@ -50,7 +50,9 @@ export function usePartnerInterest(audience: PartnerAudience) {
         name: String(formData.get("name") ?? ""),
         email: String(formData.get("email") ?? ""),
         website:
-          creatorProfiles[0]?.url ?? String(formData.get("website") ?? ""),
+          audience === "influencer"
+            ? undefined
+            : String(formData.get("website") ?? ""),
         primaryChannel:
           creatorProfiles[0]?.platform ??
           (String(
