@@ -60,8 +60,8 @@ const CONTACT_LINKS = [
   {
     Icon: MapPin,
     label: "Address",
-    value: "Laguna Niguel, California",
-    href: "https://www.google.com/maps/search/?api=1&query=Laguna%20Niguel%2C%20California",
+    value: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
+    href: "https://www.google.com/maps/search/?api=1&query=1968%20S.%20Coast%20Hwy%20%234471%2C%20Laguna%20Beach%2C%20CA%2092651",
   },
 ];
 

@@ -9,7 +9,7 @@ export const POLICY_PAGES = {
       "The rules for creator pages, merchant campaigns, AI fashion content, tracked links, commissions, payouts, licensing, and use of the PrimeStyleAI platform.",
     lastUpdated: "August 10, 2026",
     effectiveDate: "August 10, 2026",
-    location: "Laguna Niguel, California, USA",
+    location: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
     tone: "legal",
     intro: [
       'These Terms of Service, including the International Creator Program Agreement and Content Policy, are a legally binding agreement between BellagioUSA Inc., a California corporation doing business as PrimeStyleAI ("PrimeStyleAI," "we," "us," or "our"), and each person or entity that accesses or uses the platform ("you").',
@@ -243,7 +243,7 @@ export const POLICY_PAGES = {
     ],
     contactTitle: "Questions about these Terms?",
     contactBody:
-      "Contact BellagioUSA Inc. doing business as PrimeStyleAI in Laguna Niguel, California, USA. Use the subject LEGAL NOTICE for formal notices, PRIVACY REQUEST for privacy matters, or COPYRIGHT NOTICE for rights reports.",
+      "Contact BellagioUSA Inc. doing business as PrimeStyleAI at 1968 S. Coast Hwy #4471, Laguna Beach, CA 92651. Use the subject LEGAL NOTICE for formal notices, PRIVACY REQUEST for privacy matters, or COPYRIGHT NOTICE for rights reports.",
     contactEmail: "support@primestyleai.com",
   },
 
@@ -255,7 +255,7 @@ export const POLICY_PAGES = {
       "How PrimeStyleAI handles information across shopper profiles, creator pages, merchant campaigns, tracked links, payments, AI sizing, and virtual try-on services.",
     lastUpdated: "August 10, 2026",
     effectiveDate: "August 10, 2026",
-    location: "Laguna Niguel, California, USA",
+    location: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
     tone: "legal",
     intro: [
       'BellagioUSA Inc., a California corporation doing business as PrimeStyleAI ("PrimeStyleAI," "we," "our," or "us"), respects your privacy and is committed to protecting your personal information.',
@@ -677,7 +677,7 @@ export const POLICY_PAGES = {
       "How PrimeStyleAI uses cookies and similar technologies across primestyleai.com, applications, developer portals, dashboards, profile services, APIs, SDK-enabled experiences, and related Services.",
     lastUpdated: "June 25, 2026",
     effectiveDate: "June 25, 2026",
-    location: "Laguna Niguel, California, USA",
+    location: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
     tone: "legal",
     intro: [
       "This Cookie Policy explains how PrimeStyleAI uses cookies and similar technologies across PrimeStyleAI websites, applications, developer portals, dashboards, profile services, APIs, and SDK-enabled experiences where applicable, collectively the Services.",
@@ -827,7 +827,7 @@ export const POLICY_PAGES = {
     ],
     contactTitle: "12. Contact Us",
     contactBody:
-      "For questions about our use of cookies, contact PrimeStyleAI in Laguna Niguel, California, USA at support@primestyleai.com, privacy@primestyleai.com, or legal@primestyleai.com.",
+      "For questions about our use of cookies, contact PrimeStyleAI at 1968 S. Coast Hwy #4471, Laguna Beach, CA 92651 via support@primestyleai.com, privacy@primestyleai.com, or legal@primestyleai.com.",
     contactEmail: "support@primestyleai.com",
   },
 
@@ -863,7 +863,7 @@ export const POLICY_PAGES = {
         title: "2. Data Controller Information",
         body: [
           "For purposes of GDPR and CCPA/CPRA, PrimeStyleAI is the Data Controller.",
-          "Company: PrimeStyleAI. Website: primestyleai.com. Location: Laguna Niguel, California, USA.",
+          "Company: PrimeStyleAI. Website: primestyleai.com. Location: 1968 S. Coast Hwy #4471, Laguna Beach, CA 92651.",
         ],
       },
       {
@@ -958,7 +958,7 @@ export const POLICY_PAGES = {
       },
     ],
     contactTitle: "14. Contact Information",
-    contactBody: "For questions or concerns regarding GDPR or CCPA compliance, contact PrimeStyleAI in Laguna Niguel, California, USA.",
+    contactBody: "For questions or concerns regarding GDPR or CCPA compliance, contact PrimeStyleAI at 1968 S. Coast Hwy #4471, Laguna Beach, CA 92651.",
   },
 
   helpCenter: {
@@ -1248,6 +1248,6 @@ export const POLICY_PAGES = {
       },
     ],
     contactTitle: "14. Contact Information",
-    contactBody: "For pricing or billing questions, contact PrimeStyleAI in Laguna Niguel, California, USA.",
+    contactBody: "For pricing or billing questions, contact PrimeStyleAI at 1968 S. Coast Hwy #4471, Laguna Beach, CA 92651.",
   },
 } satisfies Record<string, PolicyPageContent>;

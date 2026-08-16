@@ -79,7 +79,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
       brand: "PrimeStyle AI",
       tagline: "The Decision Engine for fit.",
       copyright: "© {year} PrimeStyle AI. All rights reserved.",
-      location: "Laguna Niguel, California",
+      location: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
     },
   },
   es: {
@@ -99,7 +99,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
       brand: "PrimeStyle AI",
       tagline: "El motor de decisión para el ajuste.",
       copyright: "© {year} PrimeStyle AI. Todos los derechos reservados.",
-      location: "Laguna Niguel, California",
+      location: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
     },
   },
   fr: {
@@ -119,7 +119,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
       brand: "PrimeStyle AI",
       tagline: "Le moteur de décision pour la coupe.",
       copyright: "© {year} PrimeStyle AI. Tous droits réservés.",
-      location: "Laguna Niguel, Californie",
+      location: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
     },
   },
   de: {
@@ -139,7 +139,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
       brand: "PrimeStyle AI",
       tagline: "Die Entscheidungs-Engine für Passform.",
       copyright: "© {year} PrimeStyle AI. Alle Rechte vorbehalten.",
-      location: "Laguna Niguel, Kalifornien",
+      location: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
     },
   },
   it: {
@@ -159,7 +159,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
       brand: "PrimeStyle AI",
       tagline: "Il motore decisionale per la vestibilità.",
       copyright: "© {year} PrimeStyle AI. Tutti i diritti riservati.",
-      location: "Laguna Niguel, California",
+      location: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
     },
   },
   "pt-BR": {
@@ -179,7 +179,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
       brand: "PrimeStyle AI",
       tagline: "O mecanismo de decisão para caimento.",
       copyright: "© {year} PrimeStyle AI. Todos os direitos reservados.",
-      location: "Laguna Niguel, Califórnia",
+      location: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
     },
   },
   ja: {
@@ -199,7 +199,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
       brand: "PrimeStyle AI",
       tagline: "フィット判断のための意思決定エンジン。",
       copyright: "© {year} PrimeStyle AI. 無断転載を禁じます。",
-      location: "カリフォルニア州ラグナニゲル",
+      location: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
     },
   },
   "zh-CN": {
@@ -219,7 +219,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
       brand: "PrimeStyle AI",
       tagline: "面向合身度的决策引擎。",
       copyright: "© {year} PrimeStyle AI. 保留所有权利。",
-      location: "加利福尼亚州拉古纳尼格尔",
+      location: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
     },
   },
   ko: {
@@ -239,7 +239,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
       brand: "PrimeStyle AI",
       tagline: "핏 결정을 위한 의사결정 엔진.",
       copyright: "© {year} PrimeStyle AI. 모든 권리 보유.",
-      location: "캘리포니아 라구나 니겔",
+      location: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
     },
   },
   ar: {
@@ -259,7 +259,7 @@ export const LANDING_TRANSLATIONS: Record<LandingLanguageCode, LandingTranslatio
       brand: "PrimeStyle AI",
       tagline: "محرك القرار للملاءمة.",
       copyright: "© {year} PrimeStyle AI. جميع الحقوق محفوظة.",
-      location: "لاغونا نيغيل، كاليفورنيا",
+      location: "1968 S. Coast Hwy #4471, Laguna Beach, CA 92651",
     },
   },
 };

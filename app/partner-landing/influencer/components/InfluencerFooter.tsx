@@ -52,7 +52,7 @@ export function InfluencerFooter({
             <div className={styles.footerContact}>
               <h3>{t("Contact")}</h3>
               <a href="mailto:support@primestyleai.com"><EnvelopeSimple size={16} /> support@primestyleai.com</a>
-              <span><MapPin size={16} /> {t("Laguna Niguel, California")}</span>
+              <span><MapPin size={16} /> {t("1968 S. Coast Hwy #4471, Laguna Beach, CA 92651")}</span>
               <nav aria-label={t("Social links")}>
                 {SOCIAL_LINKS.map(({ href, label, Icon }) => (
                   <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label}>

@@ -62,7 +62,7 @@ export function Footer() {
             <div className="flex items-center gap-[0.417vw]">
               <MapPin className="text-catalog-link-underline shrink-0 w-[1.042vw] h-[1.042vw]" />
               <span className="text-[0.833vw] leading-[1.625] text-text-primary font-normal">
-                Laguna Niguel, California
+                1968 S. Coast Hwy #4471, Laguna Beach, CA 92651
               </span>
             </div>
           </div>

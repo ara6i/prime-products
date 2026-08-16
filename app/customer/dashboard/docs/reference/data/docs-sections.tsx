@@ -1868,7 +1868,7 @@ function LegalContactBlock() {
         </a>
         <span className="flex items-center gap-3 text-sm text-gray-600">
           <MapPin className="size-4 text-[#2154EF] flex-shrink-0" />
-          28171 Westfield Drive, Laguna Niguel, CA 92677, USA
+          1968 S. Coast Hwy #4471, Laguna Beach, CA 92651
         </span>
       </div>
     </div>
