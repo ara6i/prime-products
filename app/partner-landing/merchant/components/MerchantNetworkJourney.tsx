@@ -157,7 +157,7 @@ export function MerchantNetworkJourney({ onPrimaryAction }: MerchantNetworkJourn
         <div className={styles.creatorShowcaseFrame}>
           <header className={styles.creatorShowcaseHeader}>
             <div className={styles.creatorShowcaseIndex}>
-              <span>01</span>
+              <span>02</span>
               <p><b>Influencer Network</b><small>Trusted discovery</small></p>
             </div>
             <div className={styles.creatorCommunity}>

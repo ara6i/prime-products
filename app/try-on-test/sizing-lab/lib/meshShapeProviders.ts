@@ -59,6 +59,18 @@ export interface MeshShapePreview {
   triangleCount: number;
 }
 
+export type MeshProjectedEdgeKind = "neck" | "chest" | "underbust" | "waist" | "hips";
+
+export interface MeshProjectedPhotoEdge {
+  kind: MeshProjectedEdgeKind;
+  yNorm: number;
+  leftXNorm: number;
+  rightXNorm: number;
+  slicePointCount: number;
+  alignmentErrorPx: number;
+  source: "meta-sam-3d-body-mesh";
+}
+
 export interface MeshShapePredictionResponse {
   ok: boolean;
   provider: MeshShapeProviderId;
@@ -68,6 +80,7 @@ export interface MeshShapePredictionResponse {
   elapsedMs: number;
   rows: MeshShapePredictionRow[];
   meshPreview?: MeshShapePreview;
+  projectedEdgeRows?: MeshProjectedPhotoEdge[];
   personBoxPx?: [number, number, number, number];
   maskConditioned?: boolean;
   depthProfileConditioned?: boolean;

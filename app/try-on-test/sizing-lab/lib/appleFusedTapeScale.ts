@@ -18,6 +18,13 @@ export interface AppleFusedTapePrediction {
   confidence: "high" | "medium" | "low";
 }
 
+export interface AppleFusedTapeTargetProjection extends AppleFusedTapePrediction {
+  targetCm: number;
+  projectionErrorCm: number;
+  direction: -1 | 1;
+  inputPolicy: string;
+}
+
 export interface AppleFusedTapePlane {
   visibleTopYPx: number;
   visibleBottomYPx: number;
@@ -63,6 +70,9 @@ export interface AppleFusedTapeApiResult {
   cacheKey: string;
   model: AppleFusedTapeModel;
   segments: AppleFusedTapePrediction[];
+  segmentErrors?: Array<{ id: string; error: string }>;
+  targetProjections?: AppleFusedTapeTargetProjection[];
+  targetErrors?: Array<{ id: string; error: string }>;
   elapsedMs: number;
   visualSource: "manual-color-only" | "ocr-cache";
   pathEvidence: "colour-mask" | "ocr-position-only";

@@ -14,12 +14,17 @@ import { ModelLayerInspector } from "./ModelLayerInspector";
 import type {
   AppleFusedTapeApiResult,
   AppleFusedTapeModel,
+  AppleFusedTapeTargetProjection,
   AppleFusedTapeTest,
 } from "../lib/appleFusedTapeScale";
 import type { AppleFusedBodyScaleApiResult } from "../lib/appleFusedBodyScale";
-import type { AppleVisionBodyScaleResult } from "../lib/appleVisionBodyScale";
+import {
+  measureAppleVisionSegmentAtBodyPlane,
+  type AppleVisionBodyScaleResult,
+} from "../lib/appleVisionBodyScale";
 import type { GeminiBodyGuide, GeminiGuideDepthRatioOverrides, GeminiGuideLine, GeminiGuideMeasurement } from "../lib/geminiGuide";
 import {
+  predictWearAbsoluteDepthCm,
   predictWearShapeExponent,
   type LocalMlDepthMethod,
   type LocalMlNormalizedRowPrediction,
@@ -221,6 +226,7 @@ interface Props {
   knownDepthRatioAnswers?: GeminiGuideDepthRatioOverrides;
   onDepthRatioOverrideChange?: (kind: GuideKind, ratio: number | null) => void;
   onAppleVisionBodyScaleChange?: (result: AppleVisionBodyScaleResult | null) => void;
+  appleOnlyProof?: boolean;
   fullScreenPhotoComparison?: ReactNode;
   onChange: (guide: GeminiBodyGuide) => void;
   onReset: () => void;
@@ -337,6 +343,7 @@ export function ManualCoordinateGuidePanel({
   depthRatioOverrides,
   onDepthRatioOverrideChange,
   onAppleVisionBodyScaleChange,
+  appleOnlyProof = false,
   fullScreenPhotoComparison,
   onChange,
   onReset,
@@ -364,8 +371,9 @@ export function ManualCoordinateGuidePanel({
   const [linkedHoverLabel, setLinkedHoverLabel] = useState<string | null>(null);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  // Apple Vision is the primary body-width path in this lab. Depth Pro stays
-  // selectable as experimental comparison evidence only.
+  // Preserve the established Local ML circumference path. Depth Pro remains
+  // an explicit comparison until its smaller body widths are independently
+  // validated across rows and people.
   const [bodyWidthMethod, setBodyWidthMethod] = useState<BodyWidthMethod>("apple-vision");
   const scaleProofSourceKey = `${imageUrl ?? ""}:${imageWidth}x${imageHeight}`;
   const activeManualHeightScaleOverride = manualHeightScaleOverride?.sourceKey === scaleProofSourceKey
@@ -1243,7 +1251,10 @@ export function ManualCoordinateGuidePanel({
                   imageWidth={imageWidth}
                   imageHeight={imageHeight}
                   zoom={zoom}
-                  customLabel={`${rowLabel(redLineProofKind)} copy · ${redLineProofSourceSpanPx.toFixed(0)} px`}
+                  customLabel={`${rowLabel(redLineProofKind)} tape proof · ${Math.hypot(
+                    redLineProofRuler.end.x - redLineProofRuler.start.x,
+                    redLineProofRuler.end.y - redLineProofRuler.start.y,
+                  ).toFixed(0)} px`}
                   onLineDragStart={startRedLineProofDrag}
                 />
               ) : null}
@@ -1381,7 +1392,7 @@ export function ManualCoordinateGuidePanel({
               onReset={resetManualHeightScaleOverride}
             />
           ) : null}
-          {measurement ? (
+          {!appleOnlyProof && measurement ? (
             <ScaleSensitivityPanel
               measurement={measurement}
               heightCm={heightCm}
@@ -1439,9 +1450,11 @@ export function ManualCoordinateGuidePanel({
             onFloorRulerUnitChange={setFloorRulerUnit}
             onPlaceFreeRulerFromFloor={placeFreeRulerFromFloor}
             onPlaceRedLineProofBesideTape={placeRedLineProofBesideTape}
-            bodyWidthMethod={bodyWidthMethod}
+            onRedLineProofRulerChange={setRedLineProofRuler}
+            bodyWidthMethod={appleOnlyProof ? "apple-vision" : bodyWidthMethod}
             onBodyWidthMethodChange={setBodyWidthMethod}
             onAppleVisionBodyScaleChange={!isFullscreen ? onAppleVisionBodyScaleChange : undefined}
+            appleOnlyProof={appleOnlyProof}
             autoRun={!isFullscreen}
           />
           {measurement ? (
@@ -1555,14 +1568,16 @@ export function ManualCoordinateGuidePanel({
                       onFloorRulerUnitChange={setFloorRulerUnit}
                       onPlaceFreeRulerFromFloor={placeFreeRulerFromFloor}
                       onPlaceRedLineProofBesideTape={placeRedLineProofBesideTape}
-                      bodyWidthMethod={bodyWidthMethod}
+                      onRedLineProofRulerChange={setRedLineProofRuler}
+                      bodyWidthMethod={appleOnlyProof ? "apple-vision" : bodyWidthMethod}
                       onBodyWidthMethodChange={setBodyWidthMethod}
                       onAppleVisionBodyScaleChange={isFullscreen ? onAppleVisionBodyScaleChange : undefined}
+                      appleOnlyProof={appleOnlyProof}
                       compact
                       autoRun={isFullscreen}
                     />
                   </div>
-                  <details className="mt-3 rounded-lg border border-slate-300 bg-slate-50 p-2">
+                  <details className={`${appleOnlyProof ? "hidden" : ""} mt-3 rounded-lg border border-slate-300 bg-slate-50 p-2`}>
                     <summary className="cursor-pointer text-xs font-black text-slate-700">Advanced formulas and debugging</summary>
                     <div className="mt-2 space-y-3">
                   {guide?.notes || linkedEditor?.guide?.notes ? (
@@ -1845,9 +1860,11 @@ function ScaleProofPanel({
   onFloorRulerUnitChange,
   onPlaceFreeRulerFromFloor,
   onPlaceRedLineProofBesideTape,
+  onRedLineProofRulerChange,
   bodyWidthMethod,
   onBodyWidthMethodChange,
   onAppleVisionBodyScaleChange,
+  appleOnlyProof = false,
   compact = false,
   autoRun = true,
 }: {
@@ -1893,13 +1910,21 @@ function ScaleProofPanel({
   onFloorRulerUnitChange: (unit: ScaleProofUnit) => void;
   onPlaceFreeRulerFromFloor: (targetCm?: number) => void;
   onPlaceRedLineProofBesideTape: (kind?: RedLineVerticalProofKind) => void;
+  onRedLineProofRulerChange: (ruler: ScaleProofRuler) => void;
   bodyWidthMethod: BodyWidthMethod;
   onBodyWidthMethodChange: (method: BodyWidthMethod) => void;
   onAppleVisionBodyScaleChange?: (result: AppleVisionBodyScaleResult | null) => void;
+  appleOnlyProof?: boolean;
   compact?: boolean;
   autoRun?: boolean;
 }) {
   const [applyAppleTapeCorrection, setApplyAppleTapeCorrection] = useState(false);
+  const [blindProofFreeze, setBlindProofFreeze] = useState<{
+    sourceKey: string;
+    kind: RedLineVerticalProofKind;
+    targetCm: number;
+    source: string;
+  } | null>(null);
   const [appleVisionStatus, setAppleVisionStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [appleVisionError, setAppleVisionError] = useState<string | null>(null);
   const [appleVisionResult, setAppleVisionResult] = useState<AppleVisionBodyScaleResult | null>(null);
@@ -1983,6 +2008,30 @@ function ScaleProofPanel({
     && fusedBodyResult.geometryKey === fusedBodyGeometryKey
     ? fusedBodyResult
     : null;
+  const liveAppleBlindWidthCm = activeAppleVisionResult?.rows.find((row) => row.name === redLineProofKind)?.frontPlaneWidthCm ?? null;
+  const liveFusedBlindRow = activeFusedBodyResult?.rows.find((row) => row.name === redLineProofKind && row.valid) ?? null;
+  const liveBlindWidthCm = bodyWidthMethod === "depth-pro"
+    ? liveFusedBlindRow?.predictedWidthCm ?? null
+    : liveAppleBlindWidthCm;
+  const liveBlindWidthSource = bodyWidthMethod === "depth-pro"
+    ? "Apple + Depth Pro body surface"
+    : "Apple Vision body geometry";
+  const activeBlindProofFreeze = blindProofFreeze
+    && blindProofFreeze.sourceKey === redLineProofRuler.sourceKey
+    && blindProofFreeze.kind === redLineProofKind
+    ? blindProofFreeze
+    : null;
+  const blindTargetWidthCm = activeBlindProofFreeze?.targetCm ?? liveBlindWidthCm;
+  const blindTargetWidthSource = activeBlindProofFreeze?.source ?? liveBlindWidthSource;
+  const blindProjectionDirection: -1 | 1 = redLineProofRuler.end.y >= redLineProofRuler.start.y ? 1 : -1;
+  const blindProjectionRequest = blindTargetWidthCm && blindTargetWidthCm > 0
+    ? {
+        id: "red-width-proof",
+        anchor: redLineProofRuler.start,
+        targetCm: blindTargetWidthCm,
+        direction: blindProjectionDirection,
+      }
+    : null;
   const sourceTapeVisionResult = tapeVisionResult?.sourceImageUrl === imageUrl ? tapeVisionResult : null;
   const activeTapeVisionResult = sourceTapeVisionResult?.unit === unit ? sourceTapeVisionResult : null;
   const hiddenIntervals = activeTapeVisionResult
@@ -2007,6 +2056,7 @@ function ScaleProofPanel({
         active: { start: ruler.start, end: ruler.end },
         free: { start: freeRuler.start, end: freeRuler.end },
         redCopy: { start: redLineProofRuler.start, end: redLineProofRuler.end },
+        blindTarget: blindProjectionRequest,
         hidden: hiddenIntervalsKey,
       })
     : "";
@@ -2017,6 +2067,20 @@ function ScaleProofPanel({
   const fusedActivePrediction = activeFusedTapeResult?.segments.find((segment) => segment.id === "active") ?? null;
   const fusedFreePrediction = activeFusedTapeResult?.segments.find((segment) => segment.id === "free") ?? null;
   const fusedRedCopyPrediction = activeFusedTapeResult?.segments.find((segment) => segment.id === "red-copy") ?? null;
+  const blindRedWidthProjection: AppleFusedTapeTargetProjection | null = activeFusedTapeResult?.targetProjections?.find((projection) => projection.id === "red-width-proof") ?? null;
+  const blindRedWidthProjectionError = activeFusedTapeResult?.targetErrors?.find((error) => error.id === "red-width-proof")?.error ?? null;
+  const blindProjectionApplied = Boolean(
+    activeBlindProofFreeze
+    && blindRedWidthProjection
+    && Math.hypot(
+      redLineProofRuler.start.x - blindRedWidthProjection.start.x,
+      redLineProofRuler.start.y - blindRedWidthProjection.start.y,
+    ) <= 1
+    && Math.hypot(
+      redLineProofRuler.end.x - blindRedWidthProjection.end.x,
+      redLineProofRuler.end.y - blindRedWidthProjection.end.y,
+    ) <= 1,
+  );
   const fusedHiddenTapeTests = activeFusedTapeResult
     ? activeFusedTapeResult.segments.flatMap((prediction): AppleFusedTapeTest[] => {
         if (prediction.id === "active") return [];
@@ -2073,6 +2137,9 @@ function ScaleProofPanel({
   const redLineProofDeltaXPx = redLineProofRuler.end.x - redLineProofRuler.start.x;
   const redLineProofDeltaYPx = redLineProofRuler.end.y - redLineProofRuler.start.y;
   const redLineProofPixelSpan = Math.hypot(redLineProofDeltaXPx, redLineProofDeltaYPx);
+  const appleOnlyTapeMeasurement = activeAppleVisionResult
+    ? measureAppleVisionSegmentAtBodyPlane(activeAppleVisionResult, ruler.start, ruler.end)
+    : null;
   const activeCmPerPx = formulaActiveCmPerPx && formulaActiveCmPerPx > 0
     ? formulaActiveCmPerPx
     : scaleEvidence?.activeCmPerPx ?? null;
@@ -2274,7 +2341,7 @@ function ScaleProofPanel({
   };
   const tapeVisionAutoKey = `${imageUrl ?? ""}|${imageWidth}x${imageHeight}|${unit}`;
   useEffect(() => {
-    if (!compact || !autoRun || !imageUrl || imageWidth <= 0 || imageHeight <= 0) return;
+    if (appleOnlyProof || !compact || !autoRun || !imageUrl || imageWidth <= 0 || imageHeight <= 0) return;
     if (activeTapeVisionResult || tapeVisionStatus === "loading" || autoTapeVisionKeyRef.current === tapeVisionAutoKey) return;
     const timeoutId = window.setTimeout(() => {
       autoTapeVisionKeyRef.current = tapeVisionAutoKey;
@@ -2283,7 +2350,7 @@ function ScaleProofPanel({
     return () => window.clearTimeout(timeoutId);
     // The serialized key owns the image and unit used by the coordinate-only reader.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [compact, autoRun, tapeVisionAutoKey, activeTapeVisionResult, tapeVisionStatus, imageUrl, imageWidth, imageHeight]);
+  }, [appleOnlyProof, compact, autoRun, tapeVisionAutoKey, activeTapeVisionResult, tapeVisionStatus, imageUrl, imageWidth, imageHeight]);
   useEffect(() => {
     if (!autoRun || !imageUrl || !heightCm || !bodyRows.length || imageWidth <= 0 || imageHeight <= 0) return;
     if (autoAppleVisionKeyRef.current === geometryKey) return;
@@ -2296,7 +2363,7 @@ function ScaleProofPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geometryKey, autoRun, imageUrl, imageWidth, imageHeight, heightCm, bodyRows.length]);
   useEffect(() => {
-    if (!compact || !autoRun || !fusedTapeQueryKey || !activeAppleVisionResult || !activeTapeVisionResult || hiddenIntervals.length !== 4) return;
+    if (appleOnlyProof || !compact || !autoRun || !fusedTapeQueryKey || !activeAppleVisionResult || !activeTapeVisionResult || hiddenIntervals.length !== 4) return;
     if (activeFusedTapeResult || autoFusedTapeKeyRef.current === fusedTapeQueryKey) return;
     let cancelled = false;
     const timeoutId = window.setTimeout(() => {
@@ -2325,6 +2392,7 @@ function ScaleProofPanel({
           tapeUnit: unit,
           visualSource: "ocr-cache",
           segments,
+          targetProjections: blindProjectionRequest ? [blindProjectionRequest] : [],
         }),
       }, 35_000, "Apple fused tape scale")
         .then(async (response) => {
@@ -2354,7 +2422,7 @@ function ScaleProofPanel({
     // The request contains colour-path coordinates only. Expected tape length
     // and OCR values are joined for scoring after this response returns.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [compact, autoRun, fusedTapeQueryKey, activeAppleVisionResult, activeTapeVisionResult, hiddenIntervals.length, fusedTapeRetryCount]);
+  }, [appleOnlyProof, compact, autoRun, fusedTapeQueryKey, activeAppleVisionResult, activeTapeVisionResult, hiddenIntervals.length, fusedTapeRetryCount]);
   const retryFusedTape = () => {
     autoFusedTapeKeyRef.current = "";
     setFusedTapeResult(null);
@@ -2363,8 +2431,24 @@ function ScaleProofPanel({
     setFusedTapeElapsedMs(0);
     setFusedTapeRetryCount((current) => current + 1);
   };
+  const applyBlindRedWidthProjection = () => {
+    if (!blindRedWidthProjection || !blindTargetWidthCm || blindTargetWidthCm <= 0) return;
+    setBlindProofFreeze({
+      sourceKey: redLineProofRuler.sourceKey,
+      kind: redLineProofKind,
+      targetCm: blindRedWidthProjection.targetCm,
+      source: blindTargetWidthSource,
+    });
+    onRedLineProofRulerChange({
+      ...redLineProofRuler,
+      start: blindRedWidthProjection.start,
+      end: blindRedWidthProjection.end,
+      touchedStart: true,
+      touchedEnd: true,
+    });
+  };
   useEffect(() => {
-    if (!autoRun || !hasTwoHandles || !imageUrl || !heightCm || !heightScaleLine || !validInterval) return;
+    if (appleOnlyProof || !autoRun || !hasTwoHandles || !imageUrl || !heightCm || !heightScaleLine || !validInterval) return;
     const shouldRunBodyCrossCheck = Boolean(bodyRows.length && activeAppleVisionResult);
     const shouldRunRawProof = !compact;
     if (!shouldRunBodyCrossCheck && !shouldRunRawProof) return;
@@ -2380,6 +2464,7 @@ function ScaleProofPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     proofKey,
+    appleOnlyProof,
     compact,
     bodyDepthGeometryKey,
     activeDepthProBodyResult,
@@ -2395,7 +2480,7 @@ function ScaleProofPanel({
     validInterval,
   ]);
   useEffect(() => {
-    if (!autoRun || !activeAppleVisionResult || !activeDepthProBodyResult || !heightCm || !fusedBodyGeometryKey) return;
+    if (appleOnlyProof || !autoRun || !activeAppleVisionResult || !activeDepthProBodyResult || !heightCm || !fusedBodyGeometryKey) return;
     if (!bodySupportReady) return;
     if (activeFusedBodyResult || autoFusedBodyKeyRef.current === fusedBodyGeometryKey) return;
     let cancelled = false;
@@ -2437,7 +2522,89 @@ function ScaleProofPanel({
     };
     // The target-free geometry key owns every input to this body-plane run.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoRun, activeAppleVisionResult, activeDepthProBodyResult, heightCm, fusedBodyGeometryKey, activeFusedBodyResult, bodyMaskSupport, bodyRows.length, bodySupportReady]);
+  }, [appleOnlyProof, autoRun, activeAppleVisionResult, activeDepthProBodyResult, heightCm, fusedBodyGeometryKey, activeFusedBodyResult, bodyMaskSupport, bodyRows.length, bodySupportReady]);
+  if (appleOnlyProof) {
+    return (
+      <div
+        data-testid="apple-only-scale-proof"
+        className={compact
+          ? "mb-3 rounded-xl border-2 border-blue-300 bg-blue-50 p-3 text-blue-950"
+          : "rounded-xl border-2 border-blue-300 bg-blue-50 p-4 text-blue-950"}
+      >
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <div className="text-sm font-black">APPLE-ONLY BODY LINE CHECK</div>
+            <p className="mt-1 max-w-xl text-[11px] leading-4 text-blue-900">
+              Move a red line from the back edge to the front edge. Apple Vision uses the known height and its camera/body geometry to return centimetres. No Depth Pro, tape OCR or WEAR circumference is used here.
+            </p>
+          </div>
+          <button
+            type="button"
+            disabled={appleVisionStatus === "loading" || !imageUrl || !heightCm || !bodyRows.length}
+            onClick={() => void runAppleVisionBodyScale()}
+            className="rounded-lg bg-blue-700 px-3 py-2 text-xs font-black text-white disabled:opacity-50"
+          >
+            {appleVisionStatus === "loading" ? "Apple calculating…" : activeAppleVisionResult ? "Refresh Apple" : "Run Apple"}
+          </button>
+        </div>
+        {appleVisionError ? (
+          <div className="mt-3 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-[11px] font-semibold text-red-900">
+            Apple could not calculate: {appleVisionError}
+          </div>
+        ) : null}
+        {activeAppleVisionResult ? (
+          <>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-[10px] font-semibold">
+              <span className={`rounded-full px-2 py-1 ${activeAppleVisionResult.geometryQuality === "pass"
+                ? "bg-emerald-600 text-white"
+                : activeAppleVisionResult.geometryQuality === "check"
+                  ? "bg-amber-400 text-amber-950"
+                  : "bg-red-600 text-white"}`}>
+                Camera geometry: {activeAppleVisionResult.geometryQuality}
+              </span>
+              <span className="rounded-full border border-blue-300 bg-white px-2 py-1">
+                Apple {formatProcessingTime(appleVisionElapsedMs)}
+              </span>
+            </div>
+            {activeAppleVisionResult.geometryQuality === "reject" ? (
+              <div className="mt-3 rounded-lg border-2 border-red-500 bg-red-100 px-3 py-2 text-[11px] font-black text-red-950">
+                APPLE FAILED THIS PHOTO. Do not trust the centimetre numbers below. Move the lines if needed, but this camera result is not proof.
+              </div>
+            ) : activeAppleVisionResult.geometryQuality === "check" ? (
+              <div className="mt-3 rounded-lg border-2 border-amber-400 bg-amber-100 px-3 py-2 text-[11px] font-black text-amber-950">
+                APPLE IS UNVERIFIED ON THIS PHOTO. Compare with the real tape before trusting the number.
+              </div>
+            ) : (
+              <div className="mt-3 rounded-lg border-2 border-emerald-400 bg-emerald-100 px-3 py-2 text-[11px] font-black text-emerald-950">
+                APPLE CAMERA CHECK PASSED. Now place the red line exactly on the same body row as the real tape and compare.
+              </div>
+            )}
+            <div className="mt-3 space-y-2">
+              {activeAppleVisionResult.rows.map((row) => (
+                <div key={row.name} className="flex items-center justify-between gap-3 rounded-lg border border-blue-200 bg-white px-3 py-2">
+                  <div>
+                    <div className="text-[11px] font-semibold">{rowLabel(row.name)} red line</div>
+                    <div className="font-mono text-[10px] text-slate-500">{row.pixelSpan.toFixed(0)} px</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-mono text-xl font-black">{row.frontPlaneWidthCm.toFixed(2)} cm</div>
+                    <div className="text-[9px] text-slate-500">Apple Vision only</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 rounded-lg bg-white px-3 py-2 text-[11px] font-semibold text-blue-950">
+              Compare the matching red-line result with the real tape reference. The app does not read the tape number for this calculation.
+            </p>
+          </>
+        ) : (
+          <div className="mt-3 rounded-lg bg-white px-3 py-2 text-[11px] text-slate-600">
+            Waiting for Apple. Keep the full body visible, then move the red endpoints to the exact side edges.
+          </div>
+        )}
+      </div>
+    );
+  }
   return (
     <div
       data-testid="scale-proof-panel"
@@ -2534,13 +2701,30 @@ function ScaleProofPanel({
             fusedStatus={fusedTapeStatus}
             fusedError={fusedTapeError}
             fusedElapsedMs={fusedTapeElapsedMs}
+            bodyWidthCm={blindTargetWidthCm ?? null}
+            bodyWidthSource={blindTargetWidthSource}
+            independentBodyWidthCm={liveFusedBlindRow?.predictedWidthCm ?? null}
+            independentBodyConfidence={liveFusedBlindRow?.confidence ?? null}
+            independentBodyStatus={fusedBodyStatus}
+            tapeControlPassCount={fusedHiddenTapeTests.filter((test) => Math.abs(test.errorPct) <= 2).length}
+            tapeControlTotal={fusedHiddenTapeTests.length}
+            blindProjection={blindRedWidthProjection}
+            blindProjectionError={blindRedWidthProjectionError}
+            blindProjectionApplied={blindProjectionApplied}
             applyAppleCorrection={applyAppleTapeCorrection}
             tapeJudgeCm={redLineProofTapeMeasurement?.cm ?? null}
             tapeStartValue={redLineProofTapeMeasurement?.startValue ?? null}
             tapeEndValue={redLineProofTapeMeasurement?.endValue ?? null}
             tapeUnit={activeTapeVisionResult?.unit ?? unit}
-            onSelectKind={(kind) => onPlaceRedLineProofBesideTape(kind)}
-            onPlaceBesideTape={() => onPlaceRedLineProofBesideTape(redLineProofKind)}
+            onSelectKind={(kind) => {
+              setBlindProofFreeze(null);
+              onPlaceRedLineProofBesideTape(kind);
+            }}
+            onPlaceBesideTape={() => {
+              setBlindProofFreeze(null);
+              onPlaceRedLineProofBesideTape(redLineProofKind);
+            }}
+            onApplyBlindProjection={applyBlindRedWidthProjection}
             onApplyAppleCorrectionChange={setApplyAppleTapeCorrection}
             onRetryFused={retryFusedTape}
           />
@@ -2580,6 +2764,12 @@ function ScaleProofPanel({
             tapeVisionError={tapeVisionError}
             tapeVisionElapsedMs={tapeVisionElapsedMs}
             tapeVisionModel={activeTapeVisionResult?.model ?? null}
+            appleOnlyCm={appleOnlyTapeMeasurement?.lengthCm ?? null}
+            appleOnlyAssumedDepthM={appleOnlyTapeMeasurement?.assumedDepthM ?? null}
+            appleOnlyStartDepthM={appleOnlyTapeMeasurement?.startDepthM ?? null}
+            appleOnlyEndDepthM={appleOnlyTapeMeasurement?.endDepthM ?? null}
+            appleOnlyBodyPlaneTiltDeg={appleOnlyTapeMeasurement?.bodyPlaneTiltDeg ?? null}
+            appleGeometryQuality={activeAppleVisionResult?.geometryQuality ?? null}
             canSnapToTape={Boolean(tapeVisionSnap)}
             onSnapToTape={snapExactTapeInterval}
             onRetryTapeVision={() => void runTapeVision()}
@@ -3309,7 +3499,7 @@ function FullScreenEssentialMeasurementSummary({
           {!meshWorkspaceOpen ? <p className="mt-1 text-[11px] leading-4 text-slate-600">
             {measurementUnavailableMessage
               ? localMlMode
-                ? "Dataset values remain visible, but Local ML blocks circumference when any safe direct WEAR depth group is missing."
+                ? "Dataset values remain visible. Local ML blocks only the body part whose safe direct WEAR depth is missing."
                 : "Dataset values remain visible, but this model stage cannot produce circumference until 3D depth is trained."
               : measuredSideDepthActive
                 ? "Dataset is the real circumference. Our result uses front red lines for side-to-side width and side-photo red lines for front-to-back depth. The selected shape formula goes around those two measured dimensions."
@@ -3378,8 +3568,8 @@ function FullScreenEssentialMeasurementSummary({
             aria-label="Body width source"
             className="rounded border border-blue-300 bg-white px-2 py-1.5 text-[10px] font-medium text-slate-900"
           >
-            <option value="apple-vision">Apple Vision</option>
-            <option value="depth-pro">Depth Pro · experimental</option>
+            <option value="apple-vision">Apple Vision · Local ML default</option>
+            <option value="depth-pro">Apple + Depth Pro · comparison</option>
           </select>
         </label>
       ) : (
@@ -3396,7 +3586,7 @@ function FullScreenEssentialMeasurementSummary({
               className="block h-full w-full rounded-lg px-2 py-2 pr-9 text-left"
             >
               <span className="block text-xs font-semibold text-slate-950">Apple Vision</span>
-              <span className="mt-0.5 block text-[9px] leading-3 text-slate-600">Apple body and camera geometry</span>
+              <span className="mt-0.5 block text-[9px] leading-3 text-slate-600">Local ML default width</span>
             </button>
             <button
               type="button"
@@ -3418,8 +3608,8 @@ function FullScreenEssentialMeasurementSummary({
               onClick={() => onBodyWidthMethodChange("depth-pro")}
               className="block h-full w-full rounded-lg px-2 py-2 pr-9 text-left"
             >
-              <span className="block text-xs font-semibold text-slate-950">Depth Pro · experimental</span>
-              <span className="mt-0.5 block text-[9px] leading-3 text-slate-600">Optional comparison, not the default</span>
+              <span className="block text-xs font-semibold text-slate-950">Apple + Depth Pro</span>
+              <span className="mt-0.5 block text-[9px] leading-3 text-slate-600">Optional body-surface comparison</span>
             </button>
             <button
               type="button"
@@ -3435,7 +3625,7 @@ function FullScreenEssentialMeasurementSummary({
         </div>
         {openModelHelp === "apple-vision" ? (
           <div id="apple-vision-simple-help" className="mt-2 rounded-lg border border-blue-200 bg-white p-2.5 text-[10px] leading-4 text-slate-700">
-            <div className="font-semibold text-blue-950">Apple Vision is like a 3D stick-person.</div>
+            <div className="font-semibold text-blue-950">Apple Vision alone is like a 3D stick-person.</div>
             <p className="mt-1">
               It finds body joints, estimates the camera view and person distance, and uses the known height to turn the red line&apos;s pixels into a front-body width.
             </p>
@@ -3446,9 +3636,9 @@ function FullScreenEssentialMeasurementSummary({
         ) : null}
         {openModelHelp === "depth-pro" ? (
           <div id="depth-pro-simple-help" className="mt-2 rounded-lg border border-violet-200 bg-white p-2.5 text-[10px] leading-4 text-slate-700">
-            <div className="font-semibold text-violet-950">Depth Pro is like a distance map for every pixel.</div>
+            <div className="font-semibold text-violet-950">Apple + Depth Pro measures on the body surface.</div>
             <p className="mt-1">
-              It estimates how far the body surface is from the camera. Here we combine it with Apple&apos;s scale, the known height, the MediaPipe body mask and the red endpoints to find the front-body width.
+              The photo&apos;s iPhone camera data sets the lens scale. Depth Pro estimates how far each body pixel is from the camera. Apple&apos;s pose and the known height cross-check the scale; MediaPipe keeps samples on the person.
             </p>
             <p className="mt-1 text-slate-600">
               It does not know the real waist or hip circumference. {measuredSideDepthActive
@@ -3510,6 +3700,17 @@ function FullScreenEssentialMeasurementSummary({
           const depthFormula = candidate?.depthRatioTable?.table ?? null;
           const wearRowPrediction = wearRowPredictions?.find((prediction) => prediction.kind === kind) ?? null;
           const directCohort = wearRowPrediction?.wearDepthCohort ?? null;
+          const appleWidthRow = bodyWidthMethod === "apple-vision" && appleResult && appleResult.geometryQuality !== "reject"
+            ? appleResult.rows.find((row) => row.name === kind) ?? null
+            : null;
+          const localMlRowDepthUnavailable = Boolean(
+            localMlMode
+            && appleWidthRow
+            && wearRowPrediction
+            && (localMlDepthMethod === "wear-absolute-depth"
+              ? !wearRowPrediction.wearAbsoluteDepthModel
+              : wearRowPrediction.depthRatio == null && !directCohort),
+          );
           const wearShapeExponentModel = wearRowPrediction?.wearShapeExponentModel ?? null;
           const fallbackBounds = rowDepthRatioBounds(kind);
           const sideDepthRatio = rowUsesMeasuredSideDepth && candidate?.depthRatio != null
@@ -3521,19 +3722,32 @@ function FullScreenEssentialMeasurementSummary({
           const maximumDepthRatio = sideDepthRatio == null ? baseMaximumDepthRatio : Math.max(baseMaximumDepthRatio, sideDepthRatio);
           const wearRecommendedRatio = directCohort?.medianDepthRatio ?? depthFormula?.depthRatio ?? null;
           const depthOverride = depthRatioOverrides?.[kind] ?? candidate?.depthRatioOverride ?? null;
-          const selectedDepthRatio = candidate
-            ? rowUsesMeasuredSideDepth
-              ? candidate.depthRatio
-              : clamp(depthOverride ?? wearRecommendedRatio ?? candidate.depthRatio, minimumDepthRatio, maximumDepthRatio)
-            : null;
+          const selectedDepthRatio = rowUsesMeasuredSideDepth && candidate
+            ? candidate.depthRatio
+            : depthOverride != null
+              ? clamp(depthOverride, minimumDepthRatio, maximumDepthRatio)
+              : wearRecommendedRatio != null
+                ? clamp(wearRecommendedRatio, minimumDepthRatio, maximumDepthRatio)
+                : candidate?.depthRatio != null
+                  ? clamp(candidate.depthRatio, minimumDepthRatio, maximumDepthRatio)
+                  : null;
           const updateDepthRatio = (value: number) => {
             if (!Number.isFinite(value) || rowUsesMeasuredSideDepth) return;
             if (absoluteDepthActive) onLocalMlDepthMethodChange?.("wear-ratio");
+            setFormulaGeometryOverrides((current) => {
+              const activeOverride = current[kind];
+              if (activeOverride?.sourceKey !== geometrySourceKey || activeOverride.depthCm == null) return current;
+              const next = { ...current };
+              if (activeOverride.breadthCm == null) delete next[kind];
+              else next[kind] = { sourceKey: geometrySourceKey, breadthCm: activeOverride.breadthCm };
+              return next;
+            });
             onDepthRatioOverrideChange?.(kind, clamp(value, minimumDepthRatio, maximumDepthRatio));
           };
           const redLineBreadthCm = candidate?.calculationWidthExactCm
             ?? candidate?.calculationWidthCm
             ?? candidate?.formulaWidthCm
+            ?? appleWidthRow?.frontPlaneWidthCm
             ?? 0;
           const wearDepthCm = candidate?.calculationDepthExactCm ?? candidate?.depthCm ?? 0;
           const geometryOverride = formulaGeometryOverrides[kind]?.sourceKey === geometrySourceKey
@@ -3542,6 +3756,9 @@ function FullScreenEssentialMeasurementSummary({
           const activeCircumferenceWidthCm = geometryOverride?.breadthCm ?? redLineBreadthCm;
           const activeDepthOverrideCm = rowUsesMeasuredSideDepth ? undefined : geometryOverride?.depthCm;
           const activeCircumferenceDepthCm = activeDepthOverrideCm ?? wearDepthCm;
+          const activeGeometryDepthRatio = activeCircumferenceWidthCm > 0 && activeCircumferenceDepthCm > 0
+            ? activeCircumferenceDepthCm / activeCircumferenceWidthCm
+            : selectedDepthRatio;
           const updateGeometryDimension = (dimension: "breadthCm" | "depthCm", displayedValue: string) => {
             if (dimension === "depthCm" && rowUsesMeasuredSideDepth) return;
             const numericValue = Number(displayedValue);
@@ -3660,6 +3877,51 @@ function FullScreenEssentialMeasurementSummary({
                 : shapeExponentSource === "photo-body-shape"
                   ? "from photo + body shape"
                 : `from ${meshShapeProviderLabel(shapeExponentSource)}`;
+          const rawZeroDiffDepthTarget = targetCm != null
+            && activeCircumferenceWidthCm > 0
+            && (circumferenceMethod !== "superellipse" || shapeNumberReady)
+            ? solveDepthForTargetCircumferenceCm({
+                breadthCm: activeCircumferenceWidthCm,
+                targetCm,
+                method: circumferenceMethod,
+                superellipseExponent: activeSuperellipseExponent,
+                // This wider range is diagnostic only. The UI may explain why
+                // the tape answer is unreachable, but it must never apply a
+                // body depth outside the row's allowed range.
+                minimumRatio: 0.1,
+                maximumRatio: 2,
+              })
+            : null;
+          const zeroDiffDepthTarget = rawZeroDiffDepthTarget
+            && rawZeroDiffDepthTarget.ratio >= minimumDepthRatio
+            && rawZeroDiffDepthTarget.ratio <= maximumDepthRatio
+            ? rawZeroDiffDepthTarget
+            : null;
+          const blockedZeroDiffDepthTarget = rawZeroDiffDepthTarget && !zeroDiffDepthTarget
+            ? rawZeroDiffDepthTarget
+            : null;
+          const wearCohortDepthCm = wearRecommendedRatio != null && activeCircumferenceWidthCm > 0
+            ? activeCircumferenceWidthCm * wearRecommendedRatio
+            : null;
+          const wearAbsoluteDepthPrediction = wearRowPrediction?.wearAbsoluteDepthModel
+            && activeCircumferenceWidthCm > 0
+            && heightCm
+            && weightKg
+            && gender
+            ? predictWearAbsoluteDepthCm(wearRowPrediction.wearAbsoluteDepthModel, {
+                breadthCm: activeCircumferenceWidthCm,
+                heightCm,
+                weightKg,
+                gender,
+              })
+            : null;
+          const tapeNeededDepthCm = rawZeroDiffDepthTarget?.depthCm ?? null;
+          const wearCohortDepthGapCm = wearCohortDepthCm != null && tapeNeededDepthCm != null
+            ? wearCohortDepthCm - tapeNeededDepthCm
+            : null;
+          const wearAbsoluteDepthGapCm = wearAbsoluteDepthPrediction?.depthCm != null && tapeNeededDepthCm != null
+            ? wearAbsoluteDepthPrediction.depthCm - tapeNeededDepthCm
+            : null;
           const sameGenderShapeMaeCm = gender === "female"
             ? wearShapeExponentModel?.validationFemaleMaeCm
             : wearShapeExponentModel?.validationMaleMaeCm;
@@ -3735,6 +3997,8 @@ function FullScreenEssentialMeasurementSummary({
                 : "Setup needed"
             : shapeExponentSource === "wear-1d" && !wearShapeExponent
               ? "WEAR shape unavailable"
+              : localMlRowDepthUnavailable
+                ? "WEAR depth unavailable"
               : measurementUnavailableMessage
                 ? "Waiting for 3D"
                 : "Calculating";
@@ -3761,10 +4025,12 @@ function FullScreenEssentialMeasurementSummary({
                   <div className="font-mono text-base text-slate-950">{selectedCircumferenceCm != null ? formatCircumferenceValue(selectedCircumferenceCm, unit) : unavailableResultLabel}</div>
                   {!meshWorkspaceOpen ? <div className="mt-0.5 text-[9px] text-slate-500">
                     {selectedCircumferenceCm != null
-                      ? `${bodyWidthMethod === "apple-vision" ? "Apple Vision" : "Depth Pro"} · ${geometryOverride?.depthCm != null ? "manual depth cm" : rowUsesMeasuredSideDepth ? "side photo depth" : absoluteDepthActive ? "WEAR depth cm" : "WEAR ratio"} · ${selectedCircumferenceOption.label}${circumferenceMethod === "superellipse" ? ` · n ${activeSuperellipseExponent.toFixed(2)} ${activeShapeSourceLabel}` : circumferenceMethod === "meta-3d-contour" ? " · normalized to locked breadth/depth" : ""}`
+                      ? `${bodyWidthMethod === "apple-vision" ? "Apple Vision only" : "Apple + Depth Pro"} · ${geometryOverride?.depthCm != null ? "manual depth cm" : rowUsesMeasuredSideDepth ? "side photo depth" : absoluteDepthActive ? "WEAR depth cm" : depthOverride != null ? "manual ratio" : "WEAR ratio"} · ${selectedCircumferenceOption.label}${circumferenceMethod === "superellipse" ? ` · n ${activeSuperellipseExponent.toFixed(2)} ${activeShapeSourceLabel}` : circumferenceMethod === "meta-3d-contour" ? " · normalized to locked breadth/depth" : ""}`
                       : meshProviderId
                         ? "This result is not using a fallback shape number."
-                        : measurementUnavailableMessage ? "depth model not trained" : "shape number unavailable"}
+                        : localMlRowDepthUnavailable
+                          ? "Apple width ready · no safe WEAR depth for this part"
+                          : measurementUnavailableMessage ? "depth model not trained" : "shape number unavailable"}
                   </div> : null}
                 </div>
                 <div className={withinTwoPct ? "text-emerald-700" : errorPct == null ? "text-slate-500" : "text-rose-700"}>
@@ -3786,11 +4052,78 @@ function FullScreenEssentialMeasurementSummary({
               >
                 <span className="text-[9px] text-sky-800">Red line (front width)</span>
                 <span className="font-mono text-sm font-medium text-sky-950">
-                  {candidate && redLineBreadthCm > 0
+                  {redLineBreadthCm > 0
                     ? formatCircumferenceValue(redLineBreadthCm, unit)
                     : "not available"}
                 </span>
               </div> : null}
+
+              {!meshWorkspaceOpen && localMlMode ? (
+                <div
+                  data-testid={`wear-3d-depth-comparison-${kind}`}
+                  className="mt-2 rounded-md border border-teal-200 bg-teal-50/70 px-2 py-2"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <div className="text-[10px] font-semibold text-teal-950">WEAR 3D depth comparison</div>
+                      <div className="text-[8px] leading-3 text-teal-800">Switch Apple width above. Every depth below updates from that width.</div>
+                    </div>
+                    <span className="rounded border border-teal-300 bg-white px-2 py-1 text-[9px] font-medium text-teal-900">
+                      Width: {bodyWidthMethod === "apple-vision" ? "Apple Vision" : "Apple + Depth Pro"}
+                    </span>
+                  </div>
+
+                  <div className="mt-2 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-4">
+                    <div className="rounded border border-sky-200 bg-white px-2 py-1.5">
+                      <div className="text-[8px] text-sky-700">Active red-line width</div>
+                      <div className="font-mono text-[12px] font-medium text-sky-950">
+                        {activeCircumferenceWidthCm > 0 ? formatCircumferenceValue(activeCircumferenceWidthCm, unit) : "not available"}
+                      </div>
+                      <div className="text-[8px] text-slate-500">From the selected Apple width method</div>
+                    </div>
+
+                    <div className="rounded border border-violet-200 bg-white px-2 py-1.5">
+                      <div className="text-[8px] text-violet-700">WEAR cohort depth</div>
+                      <div className="font-mono text-[12px] font-medium text-violet-950">
+                        {wearCohortDepthCm == null ? "not available" : formatCircumferenceValue(wearCohortDepthCm, unit)}
+                      </div>
+                      <div className="text-[8px] text-slate-500">
+                        {wearRecommendedRatio == null ? "No safe matching cohort" : `WEAR ratio ${wearRecommendedRatio.toFixed(3)}`}
+                      </div>
+                      {wearCohortDepthGapCm == null ? null : (
+                        <div className="mt-0.5 text-[8px] font-medium text-violet-800">
+                          vs tape-needed {formatSignedCircumferenceValue(wearCohortDepthGapCm, unit)}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="rounded border border-emerald-200 bg-white px-2 py-1.5">
+                      <div className="text-[8px] text-emerald-700">WEAR depth-cm model</div>
+                      <div className="font-mono text-[12px] font-medium text-emerald-950">
+                        {wearAbsoluteDepthPrediction?.depthCm == null
+                          ? "not available"
+                          : formatCircumferenceValue(wearAbsoluteDepthPrediction.depthCm, unit)}
+                      </div>
+                      <div className="text-[8px] text-slate-500">Trained prediction from width + body profile</div>
+                      {wearAbsoluteDepthGapCm == null ? null : (
+                        <div className="mt-0.5 text-[8px] font-medium text-emerald-800">
+                          vs tape-needed {formatSignedCircumferenceValue(wearAbsoluteDepthGapCm, unit)}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="rounded border border-amber-300 bg-amber-50 px-2 py-1.5">
+                      <div className="text-[8px] text-amber-800">Depth needed to match tape</div>
+                      <div className="font-mono text-[12px] font-medium text-amber-950">
+                        {tapeNeededDepthCm == null ? "not available" : formatCircumferenceValue(tapeNeededDepthCm, unit)}
+                      </div>
+                      <div className="text-[8px] leading-3 text-amber-800">
+                        Debug judge only. Calculated from the known tape circumference and selected shape—not measured depth.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
 
               <div data-testid={`locked-geometry-${kind}`} className="mt-2 rounded-md border border-indigo-200 bg-indigo-50/70 px-2 py-2">
                 <div className="flex items-center justify-between gap-2">
@@ -4258,8 +4591,13 @@ function FullScreenEssentialMeasurementSummary({
                           ? "Depth ratio · move slider to use it"
                           : "Your selected depth ratio"}
                     </span>
-                    <span data-testid={`selected-depth-ratio-${kind}`} className="font-mono text-sm font-medium text-violet-950">
-                      {selectedDepthRatio == null ? "waiting" : selectedDepthRatio.toFixed(3)}
+                    <span className="font-mono text-sm font-medium text-violet-950">
+                      {activeCircumferenceDepthCm > 0
+                        ? `${formatCircumferenceValue(activeCircumferenceDepthCm, unit)} · `
+                        : ""}
+                      ratio <span data-testid={`selected-depth-ratio-${kind}`}>
+                        {activeGeometryDepthRatio == null ? "waiting" : activeGeometryDepthRatio.toFixed(3)}
+                      </span>
                     </span>
                   </div>
                   <input
@@ -4267,9 +4605,9 @@ function FullScreenEssentialMeasurementSummary({
                     min={minimumDepthRatio}
                     max={maximumDepthRatio}
                     step={0.001}
-                    value={selectedDepthRatio ?? minimumDepthRatio}
+                    value={clamp(activeGeometryDepthRatio ?? minimumDepthRatio, minimumDepthRatio, maximumDepthRatio)}
                     onChange={(event) => updateDepthRatio(Number(event.currentTarget.value))}
-                    disabled={!candidate || !onDepthRatioOverrideChange || rowUsesMeasuredSideDepth}
+                    disabled={!onDepthRatioOverrideChange || rowUsesMeasuredSideDepth || redLineBreadthCm <= 0}
                     aria-label={`${label} depth ratio`}
                     className="mt-1.5 h-2 w-full accent-violet-600 disabled:opacity-40"
                   />
@@ -4277,6 +4615,46 @@ function FullScreenEssentialMeasurementSummary({
                     <span>Min {minimumDepthRatio.toFixed(3)}</span>
                     <span>Max {maximumDepthRatio.toFixed(3)}</span>
                   </div>
+                  {zeroDiffDepthTarget ? (
+                    <div
+                      data-testid={`zero-diff-depth-target-${kind}`}
+                      className="mt-1.5 rounded border border-amber-300 bg-amber-50 px-2 py-1.5"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <div className="text-[9px] font-semibold text-amber-950">0-difference debug target</div>
+                          <div className="font-mono text-[11px] text-amber-950">
+                            {formatCircumferenceValue(zeroDiffDepthTarget.depthCm, unit)} · ratio {zeroDiffDepthTarget.ratio.toFixed(3)}
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => updateDepthRatio(zeroDiffDepthTarget.ratio)}
+                          disabled={!onDepthRatioOverrideChange || rowUsesMeasuredSideDepth}
+                          className="rounded border border-amber-400 bg-white px-2 py-1 text-[9px] font-medium text-amber-900 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Use target
+                        </button>
+                      </div>
+                      <div className="mt-1 text-[8px] leading-3 text-amber-800">
+                        Uses the dataset tape answer. Validation aid only—not a WEAR prediction or training label.
+                      </div>
+                    </div>
+                  ) : null}
+                  {blockedZeroDiffDepthTarget ? (
+                    <div
+                      data-testid={`blocked-zero-diff-depth-target-${kind}`}
+                      className="mt-1.5 rounded border border-red-300 bg-red-50 px-2 py-1.5 text-red-950"
+                    >
+                      <div className="text-[9px] font-semibold">Tape match blocked · input disagreement</div>
+                      <div className="mt-0.5 font-mono text-[11px]">
+                        It would require {formatCircumferenceValue(blockedZeroDiffDepthTarget.depthCm, unit)} · ratio {blockedZeroDiffDepthTarget.ratio.toFixed(3)}
+                      </div>
+                      <div className="mt-1 text-[8px] leading-3 text-red-800">
+                        Outside the allowed {minimumDepthRatio.toFixed(3)}–{maximumDepthRatio.toFixed(3)} body-shape range. Do not use it. The red width, scale, depth evidence, or selected shape disagrees with the tape answer.
+                      </div>
+                    </div>
+                  ) : null}
                   <div className="mt-1.5 flex flex-wrap items-center justify-between gap-1.5 border-t border-violet-200 pt-1.5 text-[9px]">
                     <span data-testid={`wear-recommended-depth-ratio-${kind}`} className="text-violet-800">
                       {rowUsesMeasuredSideDepth
@@ -4513,6 +4891,61 @@ function formatCircumferenceValue(valueCm: number, unit: ScaleProofUnit): string
 function formatSignedCircumferenceValue(valueCm: number, unit: ScaleProofUnit): string {
   const value = unit === "in" ? cmToIn(valueCm) : valueCm;
   return `${value >= 0 ? "+" : ""}${value.toFixed(2)} ${unit}`;
+}
+
+function solveDepthForTargetCircumferenceCm(args: {
+  breadthCm: number;
+  targetCm: number;
+  method: CircumferenceMethod;
+  superellipseExponent: number;
+  minimumRatio: number;
+  maximumRatio: number;
+}): { depthCm: number; ratio: number; circumferenceCm: number } | null {
+  const {
+    breadthCm,
+    targetCm,
+    method,
+    superellipseExponent,
+    minimumRatio,
+    maximumRatio,
+  } = args;
+  if (
+    !Number.isFinite(breadthCm)
+    || breadthCm <= 0
+    || !Number.isFinite(targetCm)
+    || targetCm <= 0
+    || method === "meta-3d-contour"
+    || method === "real-3d-contour"
+  ) return null;
+
+  let lowDepthCm = breadthCm * Math.min(minimumRatio, maximumRatio);
+  let highDepthCm = breadthCm * Math.max(minimumRatio, maximumRatio);
+  const lowCircumferenceCm = calculateCircumferenceCm(breadthCm, lowDepthCm, method, superellipseExponent);
+  const highCircumferenceCm = calculateCircumferenceCm(breadthCm, highDepthCm, method, superellipseExponent);
+  if (
+    lowCircumferenceCm == null
+    || highCircumferenceCm == null
+    || targetCm < lowCircumferenceCm
+    || targetCm > highCircumferenceCm
+  ) return null;
+
+  for (let index = 0; index < 80; index += 1) {
+    const middleDepthCm = (lowDepthCm + highDepthCm) / 2;
+    const middleCircumferenceCm = calculateCircumferenceCm(
+      breadthCm,
+      middleDepthCm,
+      method,
+      superellipseExponent,
+    );
+    if (middleCircumferenceCm == null) return null;
+    if (middleCircumferenceCm < targetCm) lowDepthCm = middleDepthCm;
+    else highDepthCm = middleDepthCm;
+  }
+
+  const depthCm = (lowDepthCm + highDepthCm) / 2;
+  const circumferenceCm = calculateCircumferenceCm(breadthCm, depthCm, method, superellipseExponent);
+  if (circumferenceCm == null) return null;
+  return { depthCm, ratio: depthCm / breadthCm, circumferenceCm };
 }
 
 function ManualScaleEvidence({

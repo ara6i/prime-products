@@ -11,10 +11,10 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const execFileAsync = promisify(execFile);
-const DEPTH_DIRECTORY = path.join(tmpdir(), "primestyle-depth-pro-cache");
+const DEPTH_DIRECTORY = path.join(tmpdir(), "primestyle-depth-pro-cache-v3");
 const POSE_DIRECTORY = path.join(tmpdir(), "primestyle-apple-vision-pose3d-cache");
 
-type BodyRowName = "waist" | "trouserWaist" | "hips";
+type BodyRowName = "neck" | "chest" | "underbust" | "waist" | "trouserWaist" | "hips";
 
 interface BodyRow {
   name: BodyRowName;
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
 }
 
 function validBodySupport(support: BodyMaskSupportRow[] | undefined, rows: BodyRow[] | undefined): support is BodyMaskSupportRow[] {
-  if (!Array.isArray(support) || !Array.isArray(rows) || support.length !== rows.length || support.length > 3) return false;
+  if (!Array.isArray(support) || !Array.isArray(rows) || support.length !== rows.length || support.length > 5) return false;
   const requiredNames = new Set(rows.map((row) => row.name));
   return support.every((row) => requiredNames.has(row.name)
     && Number.isFinite(row.threshold) && row.threshold >= 0 && row.threshold <= 255
@@ -115,8 +115,8 @@ function validBodySupport(support: BodyMaskSupportRow[] | undefined, rows: BodyR
 }
 
 function validRows(rows: BodyRow[] | undefined): rows is BodyRow[] {
-  const allowedNames = new Set<BodyRowName>(["waist", "trouserWaist", "hips"]);
-  return Array.isArray(rows) && rows.length >= 1 && rows.length <= 3
+  const allowedNames = new Set<BodyRowName>(["neck", "chest", "underbust", "waist", "trouserWaist", "hips"]);
+  return Array.isArray(rows) && rows.length >= 1 && rows.length <= 5
     && rows.every((row) => allowedNames.has(row.name)
       && [row.y, row.leftX, row.rightX].every(Number.isFinite)
       && Math.abs(row.rightX - row.leftX) >= 20);

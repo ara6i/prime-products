@@ -44,14 +44,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "The Depth Pro image does not match the frozen Apple Vision model." }, { status: 409 });
   }
 
-  const cachePath = path.join(tmpdir(), "primestyle-depth-pro-cache", `${imageHash}.npz`);
+  const cachePath = path.join(tmpdir(), "primestyle-depth-pro-cache-v3", `${imageHash}.npz`);
   if (!image && !existsSync(cachePath)) {
     return NextResponse.json({ ok: false, error: "Depth Pro cache expired; resend the image." }, { status: 409 });
   }
 
   try {
     const inference = await runCachedLocalInference<Record<string, unknown>>({
-      key: `depth-pro-cache:v2:${imageHash}`,
+      key: `depth-pro-cache:v3:${imageHash}`,
       label: "Depth Pro cache",
       cacheGroup: "depth-pro-cache-results",
       cacheTtlMs: 10 * 60_000,

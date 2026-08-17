@@ -27,7 +27,9 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+import { preload } from "react-dom";
 import type {
+  CSSProperties,
   PointerEvent as ReactPointerEvent,
   WheelEvent as ReactWheelEvent,
 } from "react";
@@ -42,6 +44,8 @@ import type {
   DressingRoomCategory,
   DressingRoomGender,
 } from "../data/dressingRoom.data";
+import { useDressingRoomBackground } from "../hooks/useDressingRoomBackground";
+import { CanvasBackgroundPicker } from "./CanvasBackgroundPicker";
 import styles from "./dressingRoom.module.css";
 
 type Camera = {
@@ -101,9 +105,7 @@ type ItemPinch = {
   startRotation: number;
 };
 
-const catalogById = new Map(
-  dressingRoomCatalog.map((item) => [item.id, item]),
-);
+const catalogById = new Map(dressingRoomCatalog.map((item) => [item.id, item]));
 
 const MIN_CANVAS_SCALE = 0.35;
 const MAX_CANVAS_SCALE = 2.2;
@@ -137,6 +139,14 @@ function getCompactViewportServerSnapshot() {
 }
 
 export function DressingRoomExperience() {
+  preload(
+    "/media/global-shop/dressing-room/outfit-grid-gingham-79de5e5c.webp",
+    {
+      as: "image",
+      type: "image/webp",
+      fetchPriority: "low",
+    },
+  );
   const [gender, setGender] = useState<DressingRoomGender>("Women");
   const [category, setCategory] = useState<DressingRoomCategory>("All");
   const [libraryCollapsedPreference, setLibraryCollapsedPreference] = useState<
@@ -154,6 +164,8 @@ export function DressingRoomExperience() {
   const [saved, setSaved] = useState(false);
   const [catalogDragPreview, setCatalogDragPreview] =
     useState<CatalogDrag | null>(null);
+  const { background, backgroundId, backgrounds, selectBackground } =
+    useDressingRoomBackground();
 
   const viewportRef = useRef<HTMLDivElement>(null);
   const interactionRef = useRef<CanvasInteraction | null>(null);
@@ -202,7 +214,7 @@ export function DressingRoomExperience() {
     [items, selectedId],
   );
   const selectedCatalogItem = selectedCanvasItem
-    ? catalogById.get(selectedCanvasItem.catalogId) ?? null
+    ? (catalogById.get(selectedCanvasItem.catalogId) ?? null)
     : null;
 
   const lookTotal = useMemo(
@@ -561,7 +573,9 @@ export function DressingRoomExperience() {
   }
 
   function handleCanvasPointerMove(event: ReactPointerEvent<HTMLDivElement>) {
-    const activeItemPointer = activeItemPointersRef.current.get(event.pointerId);
+    const activeItemPointer = activeItemPointersRef.current.get(
+      event.pointerId,
+    );
     if (activeItemPointer) {
       activeItemPointersRef.current.set(event.pointerId, {
         ...activeItemPointer,
@@ -593,8 +607,7 @@ export function DressingRoomExperience() {
                     MIN_ITEM_WIDTH,
                     MAX_ITEM_WIDTH,
                   ),
-                  rotation:
-                    pinch.startRotation + (angleDelta * 180) / Math.PI,
+                  rotation: pinch.startRotation + (angleDelta * 180) / Math.PI,
                 }
               : item,
           ),
@@ -825,7 +838,10 @@ export function DressingRoomExperience() {
                 </button>
               </div>
 
-              <nav className={styles.categoryList} aria-label="Clothing categories">
+              <nav
+                className={styles.categoryList}
+                aria-label="Clothing categories"
+              >
                 {dressingRoomCategories.map((option) => (
                   <button
                     key={option}
@@ -895,6 +911,18 @@ export function DressingRoomExperience() {
           className={`${styles.canvasViewport} ${
             isPanning || spacePressed ? styles.panning : ""
           }`}
+          style={
+            {
+              "--canvas-background-color": background.color,
+              "--canvas-background-image": background.imageUrl
+                ? `url("${background.imageUrl}")`
+                : "none",
+              "--canvas-grid-width": `${background.tileWidth * camera.scale}px`,
+              "--canvas-grid-height": `${background.tileHeight * camera.scale}px`,
+              "--canvas-grid-x": `${camera.x}px`,
+              "--canvas-grid-y": `${camera.y}px`,
+            } as CSSProperties
+          }
           data-testid="dressing-canvas"
           onPointerDown={handleCanvasPointerDown}
           onPointerMove={handleCanvasPointerMove}
@@ -931,9 +959,19 @@ export function DressingRoomExperience() {
               <Plus size={15} />
             </button>
             <i aria-hidden="true" />
-            <button type="button" aria-label="Fit look in view" onClick={fitCanvas}>
+            <button
+              type="button"
+              aria-label="Fit look in view"
+              onClick={fitCanvas}
+            >
               <CornersOut size={16} />
             </button>
+            <i aria-hidden="true" />
+            <CanvasBackgroundPicker
+              backgrounds={backgrounds}
+              selectedId={backgroundId}
+              onSelect={selectBackground}
+            />
           </div>
 
           <div
@@ -978,7 +1016,9 @@ export function DressingRoomExperience() {
                   />
                   {selected ? (
                     <>
-                      <span className={styles.selectionLabel}>{product.name}</span>
+                      <span className={styles.selectionLabel}>
+                        {product.name}
+                      </span>
                       <button
                         type="button"
                         className={styles.resizeHandle}
@@ -1068,7 +1108,14 @@ export function DressingRoomExperience() {
                     </div>
                     <div>
                       <dt>Scale</dt>
-                      <dd>{Math.round((selectedCanvasItem.width / selectedCatalogItem.defaultWidth) * 100)}%</dd>
+                      <dd>
+                        {Math.round(
+                          (selectedCanvasItem.width /
+                            selectedCatalogItem.defaultWidth) *
+                            100,
+                        )}
+                        %
+                      </dd>
                     </div>
                   </dl>
 
@@ -1145,7 +1192,9 @@ export function DressingRoomExperience() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => bringToFront(selectedCanvasItem.instanceId)}
+                      onClick={() =>
+                        bringToFront(selectedCanvasItem.instanceId)
+                      }
                     >
                       <Stack size={15} />
                       To front
@@ -1179,7 +1228,9 @@ export function DressingRoomExperience() {
                 <div className={styles.noSelection}>
                   <SidebarSimple size={22} />
                   <strong>Select a piece</strong>
-                  <p>Move it freely, resize it, rotate it, or change its layer.</p>
+                  <p>
+                    Move it freely, resize it, rotate it, or change its layer.
+                  </p>
                 </div>
               )}
 

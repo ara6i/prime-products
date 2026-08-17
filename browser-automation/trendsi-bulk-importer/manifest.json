@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "PrimeStyleAI Trendsi Bulk Importer",
-  "version": "0.9.1",
-  "description": "Coordinates Women, Men, and Shoes workers, confirms Shopify icons, and defers repeatedly blocked inventory-above-50 draft pages.",
+  "version": "0.10.2",
+  "description": "Coordinates Women, Men, Shoes, Bags, Accessories, and Fashion Jewelry workers for inventory-above-50 Shopify Draft imports.",
   "permissions": ["storage", "tabs"],
   "host_permissions": ["https://www.trendsi.com/*"],
   "content_scripts": [

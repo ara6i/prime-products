@@ -21,7 +21,10 @@ function testLabApiKey(): string {
   );
 }
 
-export async function GET(request: NextRequest) {
+async function proxyStatus(
+  request: NextRequest,
+  options: { method: "GET" | "POST"; path: string; timeoutMs: number },
+) {
   if (!(await hasCapacityLabAccess(request))) {
     return NextResponse.json(
       { ok: false, error: "AI Stylist Lab is not available on this host." },
@@ -39,11 +42,12 @@ export async function GET(request: NextRequest) {
 
   try {
     const response = await fetch(
-      `${backendBaseUrl()}/api/test-lab/ai-stylist/status`,
+      `${backendBaseUrl()}${options.path}`,
       {
+        method: options.method,
         headers: { Authorization: `Bearer ${apiKey}` },
         cache: "no-store",
-        signal: AbortSignal.timeout(45_000),
+        signal: AbortSignal.timeout(options.timeoutMs),
       },
     );
     const body = await response.text();
@@ -67,4 +71,20 @@ export async function GET(request: NextRequest) {
       { status: 502 },
     );
   }
+}
+
+export async function GET(request: NextRequest) {
+  return proxyStatus(request, {
+    method: "GET",
+    path: "/api/test-lab/ai-stylist/status",
+    timeoutMs: 15_000,
+  });
+}
+
+export async function POST(request: NextRequest) {
+  return proxyStatus(request, {
+    method: "POST",
+    path: "/api/test-lab/ai-stylist/status/refresh",
+    timeoutMs: 120_000,
+  });
 }

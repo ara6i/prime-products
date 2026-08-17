@@ -45,13 +45,13 @@ export async function POST(request: NextRequest) {
   }
 
   const imageHash = image ? createHash("sha256").update(image).digest("hex") : suppliedCacheKey!;
-  const cachePath = path.join(tmpdir(), "primestyle-depth-pro-cache", `${imageHash}.npz`);
+  const cachePath = path.join(tmpdir(), "primestyle-depth-pro-cache-v3", `${imageHash}.npz`);
   if (!image && !existsSync(cachePath)) {
     return NextResponse.json({ ok: false, error: "Depth cache expired; resend the image." }, { status: 409 });
   }
   try {
     const inferenceKey = createHash("sha256")
-      .update("depth-pro-scale-v2")
+      .update("depth-pro-scale-v3")
       .update(imageHash)
       .update(JSON.stringify({
         heightCm: body.heightCm,

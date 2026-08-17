@@ -2,7 +2,7 @@
 
 const WORKER_PARAM = "psaWorker";
 const WORKER_VERSION_PARAM = "psaVersion";
-const WORKER_VERSION = "5.7.0";
+const WORKER_VERSION = "5.8.2";
 const MAX_CONCURRENT_SUBMISSIONS = 1;
 const SUBMISSION_LEASE_MS = 5 * 60 * 1000;
 const SUBMISSION_LEASE_KEY = "psaTrendsiMultiV4:submissionLease";

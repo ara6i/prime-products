@@ -1,0 +1,22 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 720
+PlayResY: 1280
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Captions,Helvetica Neue,34,&H00FFFFFF,&H00FFFFFF,&H00101116,&HC0101116,-1,0,0,0,100,100,0.4,0,3,9,0,2,66,66,68,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:00.84,Captions,,0,0,0,,Fashion creators—
+Dialogue: 0,0:00:01.30,0:00:03.34,Captions,,0,0,0,,Ready to turn your influence\Ninto opportunity?
+Dialogue: 0,0:00:03.80,0:00:05.64,Captions,,0,0,0,,Join the PrimeStyleAI\NShopping Network.
+Dialogue: 0,0:00:06.03,0:00:07.05,Captions,,0,0,0,,Create shoppable looks.
+Dialogue: 0,0:00:07.38,0:00:09.99,Captions,,0,0,0,,Showcase products with\NAI-powered try-on and styling.
+Dialogue: 0,0:00:10.44,0:00:11.74,Captions,,0,0,0,,Connect directly with merchants.
+Dialogue: 0,0:00:12.14,0:00:14.29,Captions,,0,0,0,,Keep 100% of the commission\Nyou agree on.
+Dialogue: 0,0:00:14.74,0:00:16.72,Captions,,0,0,0,,Build your creator presence\Nand grow with the network.
+Dialogue: 0,0:00:17.13,0:00:20.30,Captions,,0,0,0,,Join the waitlist\Ncreators.PrimeStyleAI.com

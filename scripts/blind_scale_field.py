@@ -17,7 +17,7 @@ import torch
 from depth_pro import create_model_and_transforms, load_rgb
 
 
-MODEL_VERSION = "height-depth-pro-dense-field-v7"
+MODEL_VERSION = "height-depth-pro-dense-field-v8"
 
 
 def median_depth(depth, x, y, radius=4):
@@ -38,19 +38,27 @@ def median_depth(depth, x, y, radius=4):
 def load_depth(image_path, cache_path):
     if cache_path.is_file():
         cached = np.load(cache_path)
-        return cached["depth"].astype(np.float32), float(cached["focal"]), True
+        focal_source = str(cached["focal_source"]) if "focal_source" in cached else "legacy-unknown"
+        return cached["depth"].astype(np.float32), float(cached["focal"]), focal_source, True
 
     device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
     precision = torch.float16 if device.type == "mps" else torch.float32
     model, transform = create_model_and_transforms(device=device, precision=precision)
     model.eval()
-    image, _, _ = load_rgb(str(image_path))
-    prediction = model.infer(transform(image), f_px=None)
+    image, _, metadata_focal_px = load_rgb(str(image_path))
+    prediction = model.infer(transform(image), f_px=metadata_focal_px)
     depth = prediction["depth"].detach().float().cpu().numpy()
-    focal = float(prediction["focallength_px"].detach().float().cpu())
+    focal_value = prediction["focallength_px"]
+    focal = float(focal_value.detach().float().cpu()) if hasattr(focal_value, "detach") else float(focal_value)
+    focal_source = "photo-metadata" if metadata_focal_px is not None else "depth-pro-estimate"
     cache_path.parent.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(cache_path, depth=depth.astype(np.float16), focal=np.float32(focal))
-    return depth, focal, False
+    np.savez_compressed(
+        cache_path,
+        depth=depth.astype(np.float16),
+        focal=np.float32(focal),
+        focal_source=np.asarray(focal_source),
+    )
+    return depth, focal, focal_source, False
 
 
 def fit_reference_candidate(depth, x, sample_y, y_center, y_scale):
@@ -189,7 +197,7 @@ def profile_at_x(values, x):
     return float(values[low] + ((values[high] - values[low]) * ratio))
 
 
-def freeze_model(args, depth, depth_pro_focal):
+def freeze_model(args, depth, depth_pro_focal, depth_pro_focal_source):
     top_x, top_y = args.top
     bottom_x, bottom_y = args.bottom
     minimum_y = min(top_y, bottom_y)
@@ -257,6 +265,7 @@ def freeze_model(args, depth, depth_pro_focal):
         "applePersonDistanceM": args.person_distance,
         "appleGeometryQuality": args.geometry_quality,
         "depthProPredictedFocalPx": depth_pro_focal,
+        "depthProFocalSource": depth_pro_focal_source,
         "absoluteScaleSource": "known-height-yellow-line",
         "cameraSource": "Apple Vision VNDetectHumanBodyPose3DRequest",
         "relativeDepthSource": "Depth Pro frozen dense metric field with robust local depth line",
@@ -466,7 +475,7 @@ def main():
     cache_path = Path(args.cache_path)
     model_path = Path(args.model_path)
     model_cache_hit = model_path.is_file()
-    depth, depth_pro_focal, depth_cache_hit = load_depth(Path(args.image), cache_path)
+    depth, depth_pro_focal, depth_pro_focal_source, depth_cache_hit = load_depth(Path(args.image), cache_path)
     if model_cache_hit:
         model = json.loads(model_path.read_text())
     else:
@@ -479,7 +488,7 @@ def main():
             raise ValueError("Freezing a blind scale field requires height and Apple camera geometry.")
         if [depth.shape[1], depth.shape[0]] != [args.image_width, args.image_height]:
             raise ValueError("Depth map and source-image dimensions do not match.")
-        model = freeze_model(args, depth, depth_pro_focal)
+        model = freeze_model(args, depth, depth_pro_focal, depth_pro_focal_source)
         model_path.parent.mkdir(parents=True, exist_ok=True)
         model_path.write_text(json.dumps(model, separators=(",", ":")))
 

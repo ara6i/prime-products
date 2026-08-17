@@ -18,6 +18,8 @@ export interface MerchantLandingViewModel {
   hero: {
     eyebrow: string;
     titleLead: string;
+    titleMiddleLead: string;
+    titleMiddleTail: string;
     titleAccent: string;
     body: string;
     primaryCta: string;
@@ -25,6 +27,13 @@ export interface MerchantLandingViewModel {
     annotation: string;
     image: string;
     heroImage: string;
+    heroMobileImage: string;
+    pillars: Array<{
+      title: string;
+      description: string;
+      image: string;
+      imageAlt: string;
+    }>;
   };
   commerceSteps: MerchantCommerceStep[];
   capabilities: MerchantCapability[];

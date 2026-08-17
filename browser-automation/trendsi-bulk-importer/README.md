@@ -1,18 +1,21 @@
-# PrimeStyleAI Trendsi 6-Worker Importer
+# PrimeStyleAI Trendsi 12-Worker Importer
 
 Local Chrome extension that uses the signed-in Trendsi session and submits products to `PrimeStyleAI` as Shopify **Drafts**. It consumes no Codex or OpenAI tokens while running.
 
 ## Worker layout
 
-V5.7 launches six independent tabs:
+V5.8.2 launches twelve independent tabs:
 
 - 2 Women workers
 - 2 Men workers
 - 2 Shoes workers
+- 2 Bags workers
+- 2 Accessories workers
+- 2 Fashion Jewelry workers
 
 Each catalog is split into two contiguous, non-overlapping page ranges. For example, a 251-page Women catalog becomes pages **1–126** and **127–251**. The exact ranges are detected automatically from the live catalog total.
 
-Every catalog URL forces the Trendsi inventory filter to **More than 50**. The Shoes workers scan Trendsi's complete `Category/Shoes` catalog, which includes slippers, sneakers, athletic footwear, loafers/slip-ons, pumps, boots, and sandals. The backend blocks restricted products before Luna.
+Every catalog URL forces the Trendsi inventory filter to **More than 50**. The Bags, Accessories, and Fashion Jewelry workers scan only those Trendsi category routes; the backend blocks restricted products before Luna.
 
 ## Install or upgrade in Chrome
 
@@ -28,17 +31,17 @@ Every catalog URL forces the Trendsi inventory filter to **More than 50**. The S
 
 The coordinator panel appears in the lower-right corner.
 
-## Start the six workers
+## Start the workers
 
 1. Confirm **Women start page** is `1` for a complete catalog rescan.
 2. Keep the default worker delay at `7000` ms.
-3. Click **Create 6 workers**.
-4. Chrome opens six background tabs. Actions are staggered by three seconds so workers do not submit simultaneously.
+3. Click **Run Bags + Accessories + Jewelry (6)** to start only the new accessory catalogs, or **Create 12 workers** for a full rebuild.
+4. Chrome opens the required background tabs. Actions are staggered so workers do not submit simultaneously.
 5. Keep Chrome open and the Trendsi account signed in.
 
 Click any worker row in the coordinator to focus its tab. **Pause all** stops workers after their current browser action. **Resume all** reopens any missing worker tabs and restarts them with a small stagger.
 
-Use **Rescan 6 workers** to revisit all pages. Existing Shopify-icon products are deselected, so the rescan submits only missing products.
+Use **Rescan all 12 workers** to revisit every catalog page. Existing Shopify-icon products are deselected, so the rescan submits only missing products.
 
 ## How progress is isolated
 
@@ -52,12 +55,13 @@ Use **Rescan 6 workers** to revisit all pages. Existing Shopify-icon products ar
 - A global throttle record makes all workers back off together when Trendsi reports a rate, SKU, or daily limit.
 - Selection failures retry after 5/10/20/40 seconds. Other transient errors use exponential backoff.
 - A page that hits the same UI failure five times is recorded as deferred and the worker moves on. A later rescan revisits it; it is never counted as imported without Shopify-icon confirmation.
+- A watchdog restarts a worker if `collect`, `confirm`, or `navigate` stops updating for more than one minute. It preserves the assigned range and in-flight page instead of resubmitting from the beginning.
 
 ## Important limitations
 
-- **Adding To Store** only means the job started. V5.7 saves the in-flight page, reloads it to refresh stale Trendsi icons, and counts a page only after every selected product displays its Shopify icon. After five repeated UI failures, it defers the page instead of blocking the whole range.
+- **Adding To Store** only means the job started. V5.8.2 saves the in-flight page, reloads it to refresh stale Trendsi icons, and counts a page only after every selected product displays its Shopify icon. After five repeated UI failures, it defers the page instead of blocking the whole range.
 - Trendsi can skip already-added, duplicate, changed, or unavailable products.
-- Six tabs still put pressure on Trendsi and Shopify. V5.7 closes duplicate tabs for the same worker, refreshes old-version worker URLs, staggers launches, permits only one complete Add-to-Store import at a time, keeps that lock across page reloads, and shares rate-limit backoff, but it cannot bypass a true account restriction or Shopify resource limit.
+- Twelve tabs still put pressure on Trendsi and Shopify. V5.8.2 closes duplicate tabs for the same worker, refreshes old-version worker URLs, staggers launches, permits only one complete Add-to-Store import at a time, keeps that lock across page reloads, and shares rate-limit backoff, but it cannot bypass a true account restriction or Shopify resource limit.
 - Catalog contents can move while imports run. Reconcile supplier product IDs and variant SKUs in Shopify before enrichment.
 - Never load a second copy of the extension in the same Chrome profile.
 - Products remain Draft until the size-chart gate and enrichment pipeline admit them to the AI Stylist catalog.

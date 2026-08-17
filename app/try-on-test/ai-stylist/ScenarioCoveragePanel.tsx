@@ -134,6 +134,9 @@ export function ScenarioCoveragePanel({
   const summary = coverage?.snapshot.summary;
   const refresh = coverage?.refresh;
   const target = coverage?.definition.targetPerScenario ?? 20;
+  const totalScenarios = coverage?.definition.totalScenarios ?? 264;
+  const targetSlots =
+    coverage?.definition.targetOutfitSlots ?? totalScenarios * target;
   const refreshRunning = refresh?.status === "running";
   const occasions = coverage?.groups.occasion ?? [];
   const topBlocker = coverage?.blockers[0];
@@ -144,28 +147,40 @@ export function ScenarioCoveragePanel({
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="text-base font-semibold text-slate-950">
-              All 288 AI Stylist scenarios
+              All {number(totalScenarios)} AI Stylist scenarios
             </h2>
-            <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 ring-1 ring-blue-200">
-              Live backend report
+            <span
+              className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${
+                coverage?.freshness.isCurrent
+                  ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+                  : "bg-amber-50 text-amber-700 ring-amber-200"
+              }`}
+            >
+              {coverage?.freshness.isCurrent
+                ? "Current catalog"
+                : "Refresh needed"}
             </span>
           </div>
           <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-500">
-            2 genders × 9 occasions × 4 seasons × 4 budgets. Every row needs
-            20 valid outfits. The main readiness bar reaches 100% only when all
-            288 rows reach 20/20.
+            Eight occasions keep four seasons. Wedding Guest is combined into
+            one All seasons row per gender and budget. Every row needs {target}
+            valid outfits.
+          </p>
+          <p className="mt-1 text-xs text-slate-400">
+            Manual only. Recheck after catalog imports settle, then use Check
+            progress while an analysis is running.
           </p>
         </div>
         <button
           type="button"
           onClick={onRefresh}
-          disabled={refreshPending || refreshRunning}
+          disabled={refreshPending}
           className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-wait disabled:opacity-60"
         >
           <RefreshCw
-            className={`h-4 w-4 ${refreshPending || refreshRunning ? "animate-spin" : ""}`}
+            className={`h-4 w-4 ${refreshPending ? "animate-spin" : ""}`}
           />
-          {refreshRunning ? "Checking scenarios" : "Recheck all scenarios"}
+          {refreshRunning ? "Check progress" : "Recheck all scenarios"}
         </button>
       </div>
 
@@ -174,7 +189,7 @@ export function ScenarioCoveragePanel({
           <ProgressBar
             label="Current analysis run"
             value={refresh?.percent ?? 0}
-            detail={`${number(refresh?.checked ?? 0)} of ${number(refresh?.total ?? 288)} scenarios checked. The last complete snapshot remains visible below.`}
+            detail={`${number(refresh?.checked ?? 0)} of ${number(refresh?.total ?? totalScenarios)} scenarios checked. Click Check progress when you want an update; the last complete snapshot remains visible below.`}
           />
         </div>
       )}
@@ -193,7 +208,9 @@ export function ScenarioCoveragePanel({
         <div className="mt-5 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
-            <p className="font-semibold">Live scenario report is unavailable.</p>
+            <p className="font-semibold">
+              Live scenario report is unavailable.
+            </p>
             <p className="mt-1">{error}</p>
           </div>
         </div>
@@ -204,7 +221,9 @@ export function ScenarioCoveragePanel({
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
             <p className="font-semibold">
-              Main blocker: {topBlocker.label.toLowerCase()} in {number(topBlocker.blockedScenarios)} of {number(coverage?.definition.totalScenarios ?? 288)} scenarios.
+              Main blocker: {topBlocker.label.toLowerCase()} in{" "}
+              {number(topBlocker.blockedScenarios)} of {number(totalScenarios)}{" "}
+              scenarios.
             </p>
             <p className="mt-1 text-xs leading-5 text-red-700/80">
               {topBlocker.detail}
@@ -218,14 +237,14 @@ export function ScenarioCoveragePanel({
           <ProgressBar
             label="Outfit capacity readiness"
             value={summary?.outfitReadinessPercent ?? 0}
-            detail={`${number(summary?.availableOutfitSlots ?? 0)} of ${number(summary?.targetOutfitSlots ?? 5760)} required scenario outfit slots available`}
+            detail={`${number(summary?.availableOutfitSlots ?? 0)} of ${number(summary?.targetOutfitSlots ?? targetSlots)} required scenario outfit slots available`}
           />
         </div>
         <div className="rounded-2xl border border-slate-200 p-5">
           <ProgressBar
             label="Fully completed scenarios"
             value={summary?.scenarioReadinessPercent ?? 0}
-            detail={`${number(summary?.ready ?? 0)} of ${number(coverage?.definition.totalScenarios ?? 288)} scenarios have all ${target} outfits`}
+            detail={`${number(summary?.ready ?? 0)} of ${number(totalScenarios)} scenarios have all ${target} outfits`}
           />
         </div>
       </div>
@@ -297,7 +316,10 @@ export function ScenarioCoveragePanel({
               Every scenario
             </h3>
             <p className="mt-1 text-xs text-slate-500">
-              {number(rows.length)} shown · Last complete analysis {coverage?.snapshot.generatedAt ? new Date(coverage.snapshot.generatedAt).toLocaleString() : "has not finished yet"}
+              {number(rows.length)} shown · Last complete analysis{" "}
+              {coverage?.snapshot.generatedAt
+                ? new Date(coverage.snapshot.generatedAt).toLocaleString()
+                : "has not finished yet"}
             </p>
           </div>
           <div className="grid gap-2 sm:grid-cols-4">
@@ -370,7 +392,10 @@ export function ScenarioCoveragePanel({
                   waiting: "bg-slate-100 text-slate-500",
                 };
                 return (
-                  <tr key={scenario.id} className="bg-white hover:bg-slate-50/70">
+                  <tr
+                    key={scenario.id}
+                    className="bg-white hover:bg-slate-50/70"
+                  >
                     <td className="px-3 py-3 font-semibold text-slate-900">
                       {scenario.id}
                     </td>
@@ -378,7 +403,9 @@ export function ScenarioCoveragePanel({
                       {scenario.genderLabel}
                     </td>
                     <td className="px-3 py-3 text-slate-700">
-                      <span className="font-medium">{scenario.occasionLabel}</span>
+                      <span className="font-medium">
+                        {scenario.occasionLabel}
+                      </span>
                       <span className="mt-0.5 block text-[10px] text-slate-400">
                         {scenario.occasionApi}
                       </span>
@@ -393,8 +420,12 @@ export function ScenarioCoveragePanel({
                       </span>
                     </td>
                     <td className="px-3 py-3 text-right">
-                      <span className={`inline-flex min-w-16 justify-center rounded-full px-2.5 py-1 font-semibold tabular-nums ${tones[status]}`}>
-                        {scenario.measured ? `${scenario.available}/${target}` : "Waiting"}
+                      <span
+                        className={`inline-flex min-w-16 justify-center rounded-full px-2.5 py-1 font-semibold tabular-nums ${tones[status]}`}
+                      >
+                        {scenario.measured
+                          ? `${scenario.available}/${target}`
+                          : "Waiting"}
                       </span>
                     </td>
                     <td className="px-3 py-3 text-right tabular-nums text-slate-600">
@@ -428,8 +459,8 @@ export function ScenarioCoveragePanel({
           This report measures what the current accepted catalog can assemble
           using the real backend hard rules. Luna QA presets are reported
           separately. The older 894 legacy outfits are not counted here because
-          they do not carry every exact scenario dimension from this 288-row
-          plan.
+          they do not carry every exact scenario dimension from this{" "}
+          {number(totalScenarios)}-row plan.
         </p>
       </div>
     </section>

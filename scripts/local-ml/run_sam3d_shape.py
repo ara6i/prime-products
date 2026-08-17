@@ -3,8 +3,9 @@
 
 The API passes one JSON file. This adapter reconstructs a mesh from the photo,
 cuts it at the three exact red-row image heights, returns each closed 3D slice,
-and fits a superellipse shape exponent for comparison. It never reads dataset
-circumferences or changes red lines.
+and fits a superellipse shape exponent for comparison. Photo-edge mode instead
+projects closed torso slices back onto requested photo rows. It never reads
+dataset circumferences or changes red lines.
 """
 
 from __future__ import annotations
@@ -101,6 +102,22 @@ def derive_person_box(request: dict, width: int, height: int, mask: np.ndarray |
     The box is only an image crop for Meta. It does not change any red line,
     predict circumference, or read a dataset target.
     """
+    supplied_box = request.get("personBoxPx")
+    if isinstance(supplied_box, list) and len(supplied_box) == 4:
+        try:
+            x1, y1, x2, y2 = [float(value) for value in supplied_box]
+        except (TypeError, ValueError):
+            x1 = y1 = x2 = y2 = float("nan")
+        if all(math.isfinite(value) for value in (x1, y1, x2, y2)) and x2 - x1 >= 16 and y2 - y1 >= 32:
+            padding_x = max(4.0, (x2 - x1) * 0.035)
+            padding_y = max(4.0, (y2 - y1) * 0.025)
+            return np.asarray([[
+                max(0.0, x1 - padding_x),
+                max(0.0, y1 - padding_y),
+                min(float(width - 1), x2 + padding_x),
+                min(float(height - 1), y2 + padding_y),
+            ]], dtype=np.float32)
+
     if mask is not None:
         ys, xs = np.where(mask > 0)
         if len(xs) >= 100:
@@ -113,7 +130,9 @@ def derive_person_box(request: dict, width: int, height: int, mask: np.ndarray |
                 min(float(height - 1), float(ys.max()) + padding_y),
             ]], dtype=np.float32)
 
-    rows = request["rows"]
+    rows = request.get("rows") or request.get("edgeRows") or []
+    if not rows:
+        return np.asarray([[0.0, 0.0, float(width - 1), float(height - 1)]], dtype=np.float32)
     centers = np.asarray(
         [
             ((float(row["leftXNorm"]) + float(row["rightXNorm"])) / 2.0)
@@ -209,7 +228,7 @@ def neutral_vertices_from_output(estimator, output: dict) -> np.ndarray:
     return neutral
 
 
-def run_model(estimator, image_path: Path, request: dict):
+def run_model(estimator, image_path: Path, request: dict, capture: dict | None = None):
     import cv2
 
     image = cv2.imread(str(image_path))
@@ -238,17 +257,60 @@ def run_model(estimator, image_path: Path, request: dict):
     if not outputs:
         raise RuntimeError("SAM 3D Body did not return a person mesh.")
     output = outputs[0]
+    if capture is not None:
+        capture["pred_keypoints_2d"] = np.asarray(
+            output.get("pred_keypoints_2d", []),
+            dtype=np.float64,
+        )
+        capture["pred_keypoints_3d"] = np.asarray(
+            output.get("pred_keypoints_3d", []),
+            dtype=np.float64,
+        )
     vertices = np.asarray(output["pred_vertices"], dtype=np.float64)
     if vertices.ndim == 3:
         vertices = vertices[0]
     neutral_vertices = neutral_vertices_from_output(estimator, output)
     faces = np.asarray(estimator.faces, dtype=np.int64)
+    camera_translation = np.asarray(output["pred_cam_t"], dtype=np.float64).reshape(-1)[:3]
+    if camera_translation.shape != (3,) or not np.isfinite(camera_translation).all() or camera_translation[2] <= 0:
+        raise RuntimeError("Meta returned invalid camera translation for photo projection.")
+    requested_camera = request.get("cameraIntrinsics")
+    if requested_camera:
+        camera_projection = {
+            "fx": float(requested_camera["focalXPx"]),
+            "fy": float(requested_camera["focalYPx"]),
+            "cx": float(requested_camera["principalPointXPx"]),
+            "cy": float(requested_camera["principalPointYPx"]),
+        }
+    else:
+        focal_values = np.asarray(output["focal_length"], dtype=np.float64).reshape(-1)
+        focal = float(focal_values[0]) if len(focal_values) else float("nan")
+        if not math.isfinite(focal) or focal <= 0:
+            raise RuntimeError("Meta returned invalid camera focal length for photo projection.")
+        camera_projection = {
+            "fx": focal,
+            "fy": focal,
+            "cx": width / 2.0,
+            "cy": height / 2.0,
+        }
     mask_bounds_y = None
     if mask is not None:
         mask_ys = np.where(mask > 0)[0]
         if len(mask_ys):
             mask_bounds_y = (float(mask_ys.min()), float(mask_ys.max()))
-    return vertices, neutral_vertices, faces, boxes[0], mask_bounds_y, width, height, mask, cam_int is not None
+    return (
+        vertices,
+        neutral_vertices,
+        faces,
+        boxes[0],
+        mask_bounds_y,
+        width,
+        height,
+        mask,
+        cam_int is not None,
+        camera_translation,
+        camera_projection,
+    )
 
 
 def depth_point(depth: np.ndarray, focal: float, x: float, y: float, mask: np.ndarray, radius: int = 3) -> np.ndarray | None:
@@ -521,6 +583,129 @@ def slice_mesh(
     return loop, points_2d, float(max(breadth_m, depth_m)), float(min(breadth_m, depth_m)), perimeter_m
 
 
+def project_camera_points(
+    points: np.ndarray,
+    camera_translation: np.ndarray,
+    camera_projection: dict,
+) -> tuple[np.ndarray, np.ndarray]:
+    camera_points = np.asarray(points, dtype=np.float64) + camera_translation.reshape(1, 3)
+    valid = np.isfinite(camera_points).all(axis=1) & (camera_points[:, 2] > 1e-6)
+    projected = np.full((len(camera_points), 2), np.nan, dtype=np.float64)
+    projected[valid, 0] = (
+        float(camera_projection["fx"])
+        * camera_points[valid, 0]
+        / camera_points[valid, 2]
+        + float(camera_projection["cx"])
+    )
+    projected[valid, 1] = (
+        float(camera_projection["fy"])
+        * camera_points[valid, 1]
+        / camera_points[valid, 2]
+        + float(camera_projection["cy"])
+    )
+    valid &= np.isfinite(projected).all(axis=1)
+    return projected, valid
+
+
+def projected_photo_edges(
+    request: dict,
+    mesh: trimesh.Trimesh,
+    vertices: np.ndarray,
+    person_box: np.ndarray,
+    image_width: int,
+    image_height: int,
+    camera_translation: np.ndarray,
+    camera_projection: dict,
+) -> list[dict]:
+    """Project the largest closed body slice at each requested WEAR row.
+
+    The requested Y is kept unchanged. Only left/right X comes from Meta's
+    posed 3D mesh. Selecting the largest closed slice keeps separate arm loops
+    out of chest and waist widths.
+    """
+    requested_rows = request.get("edgeRows") or []
+    if not requested_rows:
+        return []
+    projected_vertices, projected_valid = project_camera_points(
+        vertices,
+        camera_translation,
+        camera_projection,
+    )
+    box_width = max(16.0, float(person_box[2] - person_box[0]))
+    output_rows = []
+    for requested in requested_rows:
+        target_y = float(requested["yNorm"]) * max(1, image_height - 1)
+        expected_center_x = float(requested.get(
+            "centerXNorm",
+            (float(requested["leftXNorm"]) + float(requested["rightXNorm"])) / 2.0,
+        )) * max(1, image_width - 1)
+        expected_span_px = (
+            float(requested["rightXNorm"]) - float(requested["leftXNorm"])
+        ) * max(1, image_width - 1)
+        central_half_width = max(10.0, min(box_width * 0.24, max(expected_span_px * 0.72, 18.0)))
+        level = None
+        base_band = max(3.0, image_height * 0.002)
+        for multiplier in (1.0, 2.0, 4.0, 8.0, 16.0):
+            candidates = (
+                projected_valid
+                & (np.abs(projected_vertices[:, 1] - target_y) <= base_band * multiplier)
+                & (np.abs(projected_vertices[:, 0] - expected_center_x) <= central_half_width)
+            )
+            if int(candidates.sum()) >= 8:
+                level = float(np.median(vertices[candidates, 1]))
+                break
+        if level is None:
+            top = float(person_box[1])
+            bottom = float(person_box[3])
+            fraction = max(0.0, min(1.0, (target_y - top) / max(1.0, bottom - top)))
+            level = float(vertices[:, 1].min() + fraction * np.ptp(vertices, axis=0)[1])
+
+        best = None
+        for offset_m in (0.0, -0.005, 0.005, -0.01, 0.01):
+            try:
+                loop, _, _, _, _ = slice_mesh(mesh, 1, level + offset_m)
+            except RuntimeError:
+                continue
+            projected_loop, valid_loop = project_camera_points(
+                loop,
+                camera_translation,
+                camera_projection,
+            )
+            projected_loop = projected_loop[valid_loop]
+            if len(projected_loop) < 8:
+                continue
+            left_x = float(np.min(projected_loop[:, 0]))
+            right_x = float(np.max(projected_loop[:, 0]))
+            span_px = right_x - left_x
+            if not math.isfinite(span_px) or span_px < max(6.0, expected_span_px * 0.28):
+                continue
+            if span_px > min(image_width * 0.92, max(expected_span_px * 2.6, box_width * 1.15)):
+                continue
+            midpoint_x = (left_x + right_x) / 2.0
+            alignment_error = float(np.median(projected_loop[:, 1]) - target_y)
+            score = abs(alignment_error) + 0.2 * abs(midpoint_x - expected_center_x)
+            candidate = (score, left_x, right_x, alignment_error, len(projected_loop))
+            if best is None or score < best[0]:
+                best = candidate
+        if best is None:
+            continue
+        _, left_x, right_x, alignment_error, point_count = best
+        left_x = max(0.0, min(float(image_width - 1), left_x))
+        right_x = max(0.0, min(float(image_width - 1), right_x))
+        if right_x - left_x < 6:
+            continue
+        output_rows.append({
+            "kind": requested["kind"],
+            "yNorm": round(float(requested["yNorm"]), 6),
+            "leftXNorm": round(left_x / max(1, image_width - 1), 6),
+            "rightXNorm": round(right_x / max(1, image_width - 1), 6),
+            "slicePointCount": int(point_count),
+            "alignmentErrorPx": round(alignment_error, 3),
+            "source": "meta-sam-3d-body-mesh",
+        })
+    return output_rows
+
+
 def main() -> None:
     if len(sys.argv) != 2:
         raise RuntimeError("Expected one request JSON path.")
@@ -542,6 +727,8 @@ def main() -> None:
                 image_height,
                 person_mask,
                 camera_conditioned,
+                camera_translation,
+                camera_projection,
             ) = run_model(estimator, image_path, request)
 
     mask_conditioned = person_mask is not None
@@ -563,6 +750,7 @@ def main() -> None:
         raise RuntimeError("SAM 3D Body returned an invalid mesh height.")
     scale = known_height_cm / 100.0 / mesh_height
     vertices = vertices * scale
+    camera_translation = camera_translation * scale
     mesh = trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
     head = float(vertices[:, vertical_axis].min())
     floor = float(vertices[:, vertical_axis].max())
@@ -585,8 +773,19 @@ def main() -> None:
         displayed[:, 2] -= center_z
         return displayed
 
+    projected_edge_rows = projected_photo_edges(
+        request,
+        mesh,
+        vertices,
+        person_box,
+        image_width,
+        image_height,
+        camera_translation,
+        camera_projection,
+    )
+
     rows = []
-    for requested in request["rows"]:
+    for requested in request.get("rows") or []:
         height_from_floor = requested.get("heightFromFloorCm")
         if mask_bounds_y is not None and mask_bounds_y[1] - mask_bounds_y[0] > 1:
             row_y = float(requested["yNorm"]) * max(1, image_height - 1)
@@ -625,27 +824,34 @@ def main() -> None:
             "shapeEvidence": {key: value for key, value in shape_evidence.items() if key != "exponent"},
             **({"depthProfileEvidence": depth_profile_evidence} if depth_profile_evidence is not None else {}),
         })
-    if {row["kind"] for row in rows} != set(KINDS):
+    if request.get("mode") != "photo-edges" and {row["kind"] for row in rows} != set(KINDS):
         raise RuntimeError("All three saved body rows are required.")
-    print(json.dumps({
+    response = {
         "rows": rows,
-        "meshPreview": {
-            "verticesM": np.round(display_points(vertices), 5).reshape(-1).tolist(),
-            "triangleIndices": faces.reshape(-1).tolist(),
-            "vertexCount": int(len(vertices)),
-            "triangleCount": int(len(faces)),
-        },
+        "projectedEdgeRows": projected_edge_rows,
         "personBoxPx": [round(float(value), 2) for value in person_box],
         "maskConditioned": mask_conditioned,
         "cameraIntrinsicsSource": "apple-vision" if camera_conditioned else "meta-default",
         "sliceAlignmentSource": "mask-projected-red-row" if mask_bounds_y is not None else "legacy-row-height",
         "depthProfileConditioned": depth_profile_context is not None,
         "warning": (
-            "Experimental mesh slice. Meta used the supplied person mask, Apple camera intrinsics, and the exact red-row image height. "
-            if mask_conditioned and camera_conditioned
-            else "Experimental mesh slice. Meta did not receive both a person mask and Apple camera intrinsics. "
-        ) + "Meta shape parameters were decoded in a neutral pose and fitted across nearby torso slices. The UI separately locks the slice to the selected red breadth and WEAR/manual depth; dataset targets are never model inputs.",
-    }))
+            "Meta photo edges come from projected closed 3D body slices. The row Y stays exactly at the WEAR-predicted position; dataset tape answers are never model inputs."
+            if request.get("mode") == "photo-edges"
+            else (
+                "Experimental mesh slice. Meta used the supplied person mask, Apple camera intrinsics, and the exact red-row image height. "
+                if mask_conditioned and camera_conditioned
+                else "Experimental mesh slice. Meta did not receive both a person mask and Apple camera intrinsics. "
+            ) + "Meta shape parameters were decoded in a neutral pose and fitted across nearby torso slices. The UI separately locks the slice to the selected red breadth and WEAR/manual depth; dataset targets are never model inputs."
+        ),
+    }
+    if request.get("mode") != "photo-edges":
+        response["meshPreview"] = {
+            "verticesM": np.round(display_points(vertices), 5).reshape(-1).tolist(),
+            "triangleIndices": faces.reshape(-1).tolist(),
+            "vertexCount": int(len(vertices)),
+            "triangleCount": int(len(faces)),
+        }
+    print(json.dumps(response))
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "5.7.0";
+  const VERSION = "5.8.2";
   const ROOT_ID = "psa-trendsi-bot-root";
   const CONFIG_KEY = "psaTrendsiMultiV4:config";
   const GLOBAL_THROTTLE_KEY = "psaTrendsiMultiV4:globalThrottle";
@@ -16,7 +16,14 @@
   const SUBMISSION_ATTEMPT_TIMEOUT_MS = 60 * 1000;
   const CONFIRMATION_RELOAD_MS = 20 * 1000;
   const MAX_PAGE_RETRIES_BEFORE_DEFER = 5;
+  const WORKER_WATCHDOG_INTERVAL_MS = 10 * 1000;
+  const WORKER_STALE_TIMEOUT_MS = 60 * 1000;
   const STORE_NAME = "PrimeStyleAI";
+  const FASHION_CATALOG_IDS = new Set([
+    "bags",
+    "accessories",
+    "fashion-jewelry",
+  ]);
 
   const CATALOGS = [
     {
@@ -37,12 +44,32 @@
       baseUrl:
         "https://www.trendsi.com/classify/Category/Shoes?curPage=1&stockGtList=%5B50%5D",
     },
+    {
+      id: "bags",
+      label: "Bags",
+      baseUrl:
+        "https://www.trendsi.com/classify/Category/Bags?curPage=1&stockGtList=%5B50%5D",
+    },
+    {
+      id: "accessories",
+      label: "Accessories",
+      baseUrl:
+        "https://www.trendsi.com/classify/Category/Accessories?curPage=1&stockGtList=%5B50%5D",
+    },
+    {
+      id: "fashion-jewelry",
+      label: "Fashion Jewelry",
+      baseUrl:
+        "https://www.trendsi.com/classify/Category/Jewelry%20%26%20Beauty/Fashion%20Jewelry?curPage=1&stockGtList=%5B50%5D",
+    },
   ];
 
   let runtimeBusy = false;
   let retryTimer = null;
   let panelCollapsed = false;
   let managerRenderTimer = null;
+  let workerWatchdogTimer = null;
+  let runtimeLastActivityAt = Date.now();
 
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const normalize = (value) =>
@@ -107,6 +134,7 @@
 
   async function writeWorker(worker) {
     worker.updatedAt = new Date().toISOString();
+    if (currentWorkerId() === worker.id) runtimeLastActivityAt = Date.now();
     await storageSet({ [workerKey(worker.id)]: worker });
     if (currentWorkerId() === worker.id) renderWorker(worker);
   }
@@ -1406,6 +1434,7 @@
   async function runWorker(workerId) {
     if (runtimeBusy) return;
     runtimeBusy = true;
+    runtimeLastActivityAt = Date.now();
     let worker = await readWorker(workerId);
     try {
       if (!worker || !worker.running || worker.paused || worker.done) return;
@@ -1487,7 +1516,7 @@
 
   async function initializeAllWorkers(root) {
     if (isSignedOut()) {
-      window.alert("Sign into Trendsi first, then launch the six workers.");
+      window.alert("Sign into Trendsi first, then launch the workers.");
       return;
     }
     const womenStartPage = Math.max(
@@ -1514,7 +1543,9 @@
       launchStaggerMs: DEFAULT_LAUNCH_STAGGER_MS,
       // An explicit rebuild is a catalog rescan. The Shopify icon is the
       // source of truth, so previously accepted pages must be visited again.
-      completedPagesByCatalog: { women: [], men: [], shoes: [] },
+      completedPagesByCatalog: Object.fromEntries(
+        CATALOGS.map((catalog) => [catalog.id, []]),
+      ),
       preservedSubmittedPages:
         Number(existingConfig?.preservedSubmittedPages || 0) +
         currentTotals.pages,
@@ -1541,7 +1572,7 @@
     await renderManager();
   }
 
-  async function migrateToSixWorkers() {
+  async function migrateToTwelveWorkers() {
     const [existingConfig, existingWorkers] = await Promise.all([
       readConfig(),
       readAllWorkers(),
@@ -1555,8 +1586,9 @@
         (worker) =>
           expectedCatalogIds.has(worker.catalogId) &&
           worker.rangeCount === RANGE_COUNT &&
-          Number(worker.rangeStart) > 0 &&
-          Number(worker.rangeEnd) >= Number(worker.rangeStart),
+          ((Number(worker.rangeStart) === 0 && Number(worker.rangeEnd) === 0) ||
+            (Number(worker.rangeStart) > 0 &&
+              Number(worker.rangeEnd) >= Number(worker.rangeStart))),
       );
     if (alreadyMigrated) return false;
 
@@ -1589,7 +1621,7 @@
       existingWorkers.map((worker) => [worker.id, worker]),
     );
     const now = Date.now();
-    const newWorkers = [];
+    const canAutoStartNewCatalogs = !isSignedOut();
     const workers = definitions.map((definition) => {
       const existing = existingById.get(definition.id);
       if (existing) {
@@ -1629,7 +1661,6 @@
             worker,
             "V5.4 reset this Shoes range because earlier Adding To Store messages were not Shopify confirmation.",
           );
-          newWorkers.push(worker);
           return worker;
         }
         return {
@@ -1644,22 +1675,30 @@
           updatedAt: new Date().toISOString(),
         };
       }
+      const isNewFashionCatalog = FASHION_CATALOG_IDS.has(
+        definition.catalogId,
+      );
+      const autoStart = isNewFashionCatalog && canAutoStartNewCatalogs;
       const worker = {
         ...definition,
-        running: definition.catalogId === "shoes",
-        paused: definition.catalogId !== "shoes",
-        phase: definition.catalogId === "shoes" ? "collect" : "paused",
+        running: autoStart,
+        paused: !autoStart,
+        phase: autoStart ? "collect" : "paused",
         startAfter:
-          definition.catalogId === "shoes"
+          autoStart
             ? new Date(
                 now +
                   (definition.rangeIndex + 1) * DEFAULT_LAUNCH_STAGGER_MS,
               ).toISOString()
             : "",
       };
-      if (definition.catalogId === "shoes") {
-        appendLog(worker, "Added automatically by the V5.3 shoe upgrade.");
-        newWorkers.push(worker);
+      if (isNewFashionCatalog) {
+        appendLog(
+          worker,
+          autoStart
+            ? "Added and started automatically by the V5.8.2 bags, accessories, and jewelry upgrade."
+            : "Added by V5.8.2. Sign into Trendsi, then run the six fashion-accessory workers.",
+        );
       }
       return worker;
     });
@@ -1674,10 +1713,13 @@
         workers.map((worker) => [workerKey(worker.id), worker]),
       ),
     });
-    if (newWorkers.length) {
+    const activeWorkers = workers.filter(
+      (worker) => worker.running && !worker.paused && !worker.done,
+    );
+    if (activeWorkers.length) {
       await sendRuntimeMessage({
         type: "PSA_LAUNCH_WORKERS",
-        workers: newWorkers.map((worker) => ({
+        workers: activeWorkers.map((worker) => ({
           id: worker.id,
           url: workerPageUrl(worker),
           key: workerKey(worker.id),
@@ -1740,6 +1782,38 @@
     await renderManager();
   }
 
+  async function resumeCatalogWorkers(catalogIds) {
+    const targetCatalogs = new Set(catalogIds);
+    const workers = await readAllWorkers();
+    const targets = workers.filter(
+      (worker) => targetCatalogs.has(worker.catalogId) && !worker.done,
+    );
+    if (!targets.length) return renderManager();
+    const start = Date.now();
+    const updates = {};
+    interleavedWorkers(targets).forEach((worker, index) => {
+      worker.running = true;
+      worker.paused = false;
+      worker.phase = "collect";
+      worker.retryAt = "";
+      worker.startAfter = new Date(start + index * 1200).toISOString();
+      worker.tabId = undefined;
+      worker.lastError = "";
+      appendLog(worker, "Started from the fashion-accessory coordinator.");
+      updates[workerKey(worker.id)] = worker;
+    });
+    await storageSet(updates);
+    await sendRuntimeMessage({
+      type: "PSA_LAUNCH_WORKERS",
+      workers: targets.map((worker) => ({
+        id: worker.id,
+        url: workerPageUrl(worker),
+        key: workerKey(worker.id),
+      })),
+    });
+    await renderManager();
+  }
+
   async function focusWorker(workerId) {
     await sendRuntimeMessage({
       type: "PSA_FOCUS_WORKER",
@@ -1770,6 +1844,15 @@
       (worker) => worker.running && !worker.paused && !worker.done,
     ).length;
     const done = workers.filter((worker) => worker.done).length;
+    const fashionWorkers = workers.filter((worker) =>
+      FASHION_CATALOG_IDS.has(worker.catalogId),
+    );
+    const activeFashionWorkers = fashionWorkers.filter(
+      (worker) => worker.running && !worker.paused && !worker.done,
+    ).length;
+    const pendingFashionWorkers = fashionWorkers.filter(
+      (worker) => !worker.done,
+    ).length;
     const submittedPages =
       Number(config?.preservedSubmittedPages || 0) +
       workers.reduce(
@@ -1792,7 +1875,7 @@
           </button>`,
           )
           .join("")
-      : '<div class="psa-empty">No V5 workers configured yet.</div>';
+      : '<div class="psa-empty">No workers configured yet.</div>';
     const throttleUntil = Date.parse(throttle?.blockedUntil || "") || 0;
     const throttleText =
       throttleUntil > Date.now()
@@ -1802,7 +1885,7 @@
     root.innerHTML = `
       <div class="psa-bot-card">
         <div class="psa-bot-header">
-          <div class="psa-bot-title">PrimeStyleAI Trendsi Bot · V${escapeHtml(VERSION)} · 6 Range Workers</div>
+          <div class="psa-bot-title">PrimeStyleAI Trendsi Bot · V${escapeHtml(VERSION)} · 12 Range Workers</div>
           <button class="psa-bot-collapse" type="button">${panelCollapsed ? "+" : "−"}</button>
         </div>
         <div class="psa-bot-body">
@@ -1814,7 +1897,7 @@
             ${
               signedOut
                 ? "Trendsi is signed out. Sign in before launching or resuming workers."
-                : "Two Women, two Men, and two Shoes range workers. Shopify-marked products are skipped; only missing products above 50 inventory are submitted as Draft."
+                : "Two workers each for Women, Men, Shoes, Bags, Accessories, and Fashion Jewelry. Shopify-marked products are skipped; only missing products above 50 inventory are submitted as Draft."
             }
           </div>
           <div class="psa-grid">
@@ -1829,13 +1912,14 @@
           </div>
           <div class="psa-throttle">${escapeHtml(throttleText)}</div>
           <div class="psa-manager-actions">
-            <button id="psa-launch-all" class="psa-button psa-primary" type="button" ${signedOut || active ? "disabled" : ""}>${workers.length ? "Rescan 6 workers" : "Create 6 workers"}</button>
+            <button id="psa-run-fashion" class="psa-button psa-primary" type="button" ${signedOut || !pendingFashionWorkers || activeFashionWorkers ? "disabled" : ""}>Run Bags + Accessories + Jewelry (6)</button>
+            <button id="psa-launch-all" class="psa-button psa-secondary" type="button" ${signedOut || active ? "disabled" : ""}>${workers.length ? "Rescan all 12 workers" : "Create 12 workers"}</button>
             <button id="psa-pause-all" class="psa-button psa-secondary" type="button" ${!active ? "disabled" : ""}>Pause all</button>
             <button id="psa-resume-all" class="psa-button psa-secondary" type="button" ${signedOut || !workers.some((worker) => worker.paused && !worker.done) ? "disabled" : ""}>Resume all</button>
           </div>
           <div class="psa-worker-list">${workerRows}</div>
           <div class="psa-footnote">Set Women start page to 1 for a complete rescan. Each catalog is split into two non-overlapping page ranges; Shopify-icon products and fully imported pages are skipped automatically.</div>
-          <div class="psa-footnote">Legacy Women and Men numbers are historical attempts, not Shopify proof. V5.7 closes duplicate worker tabs, counts new pages only after icon confirmation, and defers a page after five repeated UI failures so one product cannot block a whole range.</div>
+          <div class="psa-footnote">Legacy Women and Men numbers are historical attempts, not Shopify proof. V5.8.2 closes duplicate worker tabs, counts new pages only after icon confirmation, restarts stale active workers, and defers a page after five repeated UI failures so one product cannot block a whole range.</div>
         </div>
       </div>`;
     bindCollapse(root);
@@ -1845,7 +1929,7 @@
         if (
           workers.length &&
           !window.confirm(
-            "Rescan Women from the selected start page, plus Men and Shoes from page 1? Shopify-icon products will be skipped, and existing Shopify products will not be deleted.",
+            "Rescan Women from the selected start page, plus Men, Shoes, Bags, Accessories, and Fashion Jewelry from page 1? Shopify-icon products will be skipped, and existing Shopify products will not be deleted.",
           )
         )
           return;
@@ -1855,6 +1939,11 @@
           window.alert(error instanceof Error ? error.message : String(error));
         }
       });
+    root
+      .querySelector("#psa-run-fashion")
+      ?.addEventListener("click", () =>
+        resumeCatalogWorkers([...FASHION_CATALOG_IDS]),
+      );
     root
       .querySelector("#psa-pause-all")
       ?.addEventListener("click", () => setAllPaused(true));
@@ -1933,6 +2022,40 @@
     );
   }
 
+  function startWorkerWatchdog(workerId) {
+    if (workerWatchdogTimer) clearInterval(workerWatchdogTimer);
+    workerWatchdogTimer = setInterval(async () => {
+      try {
+        const worker = await readWorker(workerId);
+        if (
+          !worker ||
+          !worker.running ||
+          worker.paused ||
+          worker.done ||
+          !["collect", "confirm", "navigate"].includes(worker.phase)
+        )
+          return;
+        const lastActivity = Math.max(
+          runtimeLastActivityAt,
+          Date.parse(worker.updatedAt || "") || 0,
+        );
+        if (Date.now() - lastActivity < WORKER_STALE_TIMEOUT_MS) return;
+        runtimeBusy = false;
+        worker.retryAt = "";
+        worker.startAfter = "";
+        worker.lastError = "";
+        appendLog(
+          worker,
+          `Watchdog restarted stale ${worker.phase} processing without resetting page ${worker.page}.`,
+        );
+        await writeWorker(worker);
+        void runWorker(workerId);
+      } catch (error) {
+        console.warn(`[PrimeStyleAI Trendsi V${VERSION}] watchdog`, error);
+      }
+    }, WORKER_WATCHDOG_INTERVAL_MS);
+  }
+
   async function initialize() {
     const workerId = currentWorkerId();
     chrome.storage.onChanged.addListener((changes, areaName) => {
@@ -1965,7 +2088,7 @@
 
     if (!workerId) {
       await sendRuntimeMessage({ type: "PSA_CLOSE_DUPLICATE_MANAGER_TABS" });
-      await migrateToSixWorkers();
+      await migrateToTwelveWorkers();
       await renderManager();
       return;
     }
@@ -1977,6 +2100,7 @@
       return;
     }
     renderWorker(worker);
+    startWorkerWatchdog(workerId);
     if (worker.running && !worker.paused && !worker.done)
       setTimeout(() => runWorker(workerId), 800);
   }

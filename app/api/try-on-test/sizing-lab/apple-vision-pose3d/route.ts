@@ -8,6 +8,11 @@ import { promisify } from "node:util";
 import { NextResponse, type NextRequest } from "next/server";
 import { isSiteAuthEnabled, SITE_AUTH_COOKIE_NAME, verifySiteSessionToken } from "@/app/shared/auth/siteSession";
 import { isTestLabAvailableForHost } from "@/app/try-on-test/lib/access";
+import {
+  measureAppleVisionSegmentOnPlane,
+  type AppleVisionCameraVector,
+  type AppleVisionRayPlaneModel,
+} from "@/app/try-on-test/sizing-lab/lib/appleVisionBodyScale";
 import { runCachedLocalInference } from "../_lib/localInferenceScheduler";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +24,7 @@ const CACHE_DIRECTORY = path.join(tmpdir(), "primestyle-apple-vision-pose3d-cach
 const BINARY_PATH = path.join(tmpdir(), "primestyle-apple-vision-pose3d");
 let compilePromise: Promise<void> | null = null;
 
-type BodyRowName = "waist" | "trouserWaist" | "hips";
+type BodyRowName = "neck" | "chest" | "underbust" | "waist" | "trouserWaist" | "hips";
 
 interface BodyRow {
   name: BodyRowName;
@@ -187,18 +192,38 @@ function buildBodyScaleResult(
     throw new Error("Apple Vision returned an invalid body height reference.");
   }
   const heightScaleFactor = heightCm / (referenceHeightM * 100);
-  const anchors = buildDepthAnchors(joints);
+  const root = joints.find((joint) => joint.name === "human_root_3D") ?? joints[0]!;
+  const rootVisionJoint = vision.joints.find((joint) => joint.name === root.name);
+  const bodyPlaneBasis = extractBodyPlaneBasis(rootVisionJoint?.cameraRelativePosition);
+  if (!bodyPlaneBasis) throw new Error("Apple Vision body-plane orientation could not be solved.");
+  const bodyOriginCameraM = {
+    x: root.xM * heightScaleFactor,
+    y: root.yM * heightScaleFactor,
+    z: root.zM * heightScaleFactor,
+  };
+  const rayPlaneModel: AppleVisionRayPlaneModel = {
+    estimatedFocalXPx: horizontalFit.slope,
+    estimatedFocalYPx: verticalFit.slope,
+    principalPointXPx: horizontalFit.intercept,
+    principalPointYPx: verticalFit.intercept,
+    bodyOriginCameraM,
+    bodyPlaneNormalCamera: bodyPlaneBasis.normal,
+  };
   const solvedRows = rows.map((row) => {
-    const rawDepthM = interpolateDepth(anchors, row.y);
-    const bodyDepthM = rawDepthM * heightScaleFactor;
     const pixelSpan = Math.abs(row.rightX - row.leftX);
-    const cmPerPx = bodyDepthM / horizontalFit.slope * 100;
+    const measurement = measureAppleVisionSegmentOnPlane(
+      rayPlaneModel,
+      { x: row.leftX, y: row.y },
+      { x: row.rightX, y: row.y },
+    );
+    if (!measurement) throw new Error(`Apple Vision could not project the ${row.name} row onto the body plane.`);
+    const cmPerPx = pixelSpan > 0 ? measurement.lengthCm / pixelSpan : 0;
     return {
       ...row,
       pixelSpan,
-      bodyDepthM,
+      bodyDepthM: measurement.assumedDepthM,
       cmPerPx,
-      frontPlaneWidthCm: pixelSpan * cmPerPx,
+      frontPlaneWidthCm: measurement.lengthCm,
     };
   });
 
@@ -210,7 +235,6 @@ function buildBodyScaleResult(
     : focalMismatchPct <= 20 && normalizedRmsePct <= 4
       ? "check"
       : "reject";
-  const root = joints.find((joint) => joint.name === "human_root_3D") ?? joints[0]!;
   const cameraOrientation = estimateCameraOrientation(vision.cameraOriginMatrix);
   const skeletonJoints = joints.map((joint) => ({
     name: joint.name,
@@ -236,13 +260,71 @@ function buildBodyScaleResult(
     focalMismatchPct,
     normalizedRmsePct,
     geometryQuality,
-    bodyDistanceM: root.zM * heightScaleFactor,
+    bodyDistanceM: bodyOriginCameraM.z,
+    bodyOriginCameraM,
+    bodyPlaneRightCamera: bodyPlaneBasis.right,
+    bodyPlaneUpCamera: bodyPlaneBasis.up,
+    bodyPlaneNormalCamera: bodyPlaneBasis.normal,
     bodyReferenceXPx: root.xPx,
     bodyReferenceYPx: root.yPx,
     ...cameraOrientation,
     joints: skeletonJoints,
     rows: solvedRows,
   };
+}
+
+function extractBodyPlaneBasis(matrix: number[][] | undefined): {
+  right: AppleVisionCameraVector;
+  up: AppleVisionCameraVector;
+  normal: AppleVisionCameraVector;
+} | null {
+  if (!matrix || matrix.length < 3) return null;
+  const rawRight = matrixColumnToVector(matrix[0]);
+  const rawUp = matrixColumnToVector(matrix[1]);
+  const rawNormal = matrixColumnToVector(matrix[2]);
+  if (!rawRight || !rawUp || !rawNormal) return null;
+
+  const right = normalizeVector(rawRight);
+  if (!right) return null;
+  const upWithoutRight = subtractVectors(rawUp, scaleVector(right, dotVectors(rawUp, right)));
+  const up = normalizeVector(upWithoutRight);
+  if (!up) return null;
+  const crossedNormal = normalizeVector(crossVectors(right, up));
+  if (!crossedNormal) return null;
+  const normal = dotVectors(crossedNormal, rawNormal) < 0
+    ? scaleVector(crossedNormal, -1)
+    : crossedNormal;
+  return { right, up, normal };
+}
+
+function matrixColumnToVector(column: number[] | undefined): AppleVisionCameraVector | null {
+  if (!column || column.length < 3 || !column.slice(0, 3).every(Number.isFinite)) return null;
+  return { x: column[0]!, y: column[1]!, z: column[2]! };
+}
+
+function normalizeVector(vector: AppleVisionCameraVector): AppleVisionCameraVector | null {
+  const length = Math.hypot(vector.x, vector.y, vector.z);
+  return Number.isFinite(length) && length > 1e-8 ? scaleVector(vector, 1 / length) : null;
+}
+
+function dotVectors(left: AppleVisionCameraVector, right: AppleVisionCameraVector): number {
+  return left.x * right.x + left.y * right.y + left.z * right.z;
+}
+
+function crossVectors(left: AppleVisionCameraVector, right: AppleVisionCameraVector): AppleVisionCameraVector {
+  return {
+    x: left.y * right.z - left.z * right.y,
+    y: left.z * right.x - left.x * right.z,
+    z: left.x * right.y - left.y * right.x,
+  };
+}
+
+function subtractVectors(left: AppleVisionCameraVector, right: AppleVisionCameraVector): AppleVisionCameraVector {
+  return { x: left.x - right.x, y: left.y - right.y, z: left.z - right.z };
+}
+
+function scaleVector(vector: AppleVisionCameraVector, scale: number): AppleVisionCameraVector {
+  return { x: vector.x * scale, y: vector.y * scale, z: vector.z * scale };
 }
 
 function estimateCameraOrientation(matrix: number[][] | undefined): {
@@ -269,48 +351,6 @@ function estimateCameraOrientation(matrix: number[][] | undefined): {
     estimatedCameraRollDeg: roll * radiansToDegrees,
     estimatedCameraYawDeg: yaw * radiansToDegrees,
   };
-}
-
-function buildDepthAnchors(joints: ProjectedJoint[]): Array<{ y: number; z: number }> {
-  const byName = new Map(joints.map((joint) => [joint.name, joint]));
-  const groups = [
-    ["human_top_head_3D"],
-    ["human_center_shoulder_3D"],
-    ["human_spine_3D"],
-    ["human_root_3D", "human_left_hip_3D", "human_right_hip_3D"],
-    ["human_left_knee_3D", "human_right_knee_3D"],
-    ["human_left_ankle_3D", "human_right_ankle_3D"],
-  ];
-  return groups.flatMap((names): Array<{ y: number; z: number }> => {
-    const group = names.flatMap((name) => byName.has(name) ? [byName.get(name)!] : []);
-    if (!group.length) return [];
-    return [{
-      y: group.reduce((sum, joint) => sum + joint.yPx, 0) / group.length,
-      z: group.reduce((sum, joint) => sum + joint.zM, 0) / group.length,
-    }];
-  }).sort((a, b) => a.y - b.y);
-}
-
-function interpolateDepth(anchors: Array<{ y: number; z: number }>, y: number): number {
-  if (!anchors.length) throw new Error("Apple Vision returned no body-depth anchors.");
-  if (anchors.length === 1) return anchors[0]!.z;
-  let left = anchors[0]!;
-  let right = anchors[1]!;
-  if (y >= anchors[anchors.length - 1]!.y) {
-    left = anchors[anchors.length - 2]!;
-    right = anchors[anchors.length - 1]!;
-  } else {
-    for (let index = 1; index < anchors.length; index += 1) {
-      if (y <= anchors[index]!.y) {
-        left = anchors[index - 1]!;
-        right = anchors[index]!;
-        break;
-      }
-    }
-  }
-  const span = right.y - left.y;
-  const t = Math.abs(span) < 1e-6 ? 0 : (y - left.y) / span;
-  return left.z + (right.z - left.z) * t;
 }
 
 function fitLine(points: Array<{ x: number; y: number }>): { slope: number; intercept: number; rmse: number } | null {

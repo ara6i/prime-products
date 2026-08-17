@@ -30,6 +30,9 @@ interface ProductsResponse {
   page: number;
   limit: number;
   totalPages: number;
+  hasMore?: boolean;
+  nextPage?: number | null;
+  totalIsExact?: boolean;
   facets?: FilterFacetCounts;
 }
 
@@ -91,8 +94,15 @@ export async function fetchProducts(params: FetchProductsParams = {}): Promise<P
 
   if (params.categories?.length) query.set("categories", params.categories.join(","));
 
+  // Catalog cards use incremental backend pagination. Filter counts are loaded
+  // independently so the first product request never waits on a full facet scan.
+  query.set("pagination", "infinite");
+  query.set("includeFacets", "false");
+  query.set("view", "card");
+
   const res = await fetch(`/api/stylist/catalog/products?${query.toString()}`, {
     credentials: "include",
+    signal: AbortSignal.timeout(4_000),
   });
   if (!res.ok) throw new Error("Failed to fetch products");
   return res.json();

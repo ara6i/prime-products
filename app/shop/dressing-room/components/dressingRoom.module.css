@@ -434,7 +434,14 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  background: var(--canvas);
+  background-color: var(--canvas-background-color, #f7f6f2);
+  background-image: var(
+    --canvas-background-image,
+    url("/media/global-shop/dressing-room/outfit-grid-paper.png")
+  );
+  background-position: var(--canvas-grid-x, 0) var(--canvas-grid-y, 0);
+  background-size: var(--canvas-grid-width, 38px)
+    var(--canvas-grid-height, 38px);
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -550,7 +557,8 @@
   transform: translateX(-50%);
 }
 
-.canvasToolbar button {
+.canvasToolbar > button,
+.backgroundTrigger {
   display: grid;
   width: 31px;
   height: 31px;
@@ -561,7 +569,9 @@
   cursor: pointer;
 }
 
-.canvasToolbar button:hover {
+.canvasToolbar > button:hover,
+.backgroundTrigger:hover,
+.backgroundTrigger[aria-expanded="true"] {
   background: #ece9e1;
 }
 
@@ -578,6 +588,94 @@
   height: 19px;
   margin: 0 2px;
   background: var(--line);
+}
+
+.backgroundPicker {
+  position: relative;
+  display: grid;
+}
+
+.backgroundTrigger {
+  border: 0;
+}
+
+.backgroundMenu {
+  position: absolute;
+  top: calc(100% + 7px);
+  right: 0;
+  z-index: 70;
+  display: grid;
+  width: 214px;
+  gap: 4px;
+  padding: 7px;
+  border: 1px solid rgba(17, 17, 15, 0.14);
+  background: rgba(255, 254, 251, 0.98);
+  box-shadow: 0 14px 38px rgba(17, 17, 15, 0.14);
+  backdrop-filter: blur(14px);
+}
+
+.backgroundMenu > span {
+  padding: 4px 5px 3px;
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 820;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.backgroundOption {
+  display: grid;
+  width: 100%;
+  min-height: 51px;
+  grid-template-columns: 40px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 8px;
+  padding: 5px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.backgroundOption:hover,
+.selectedBackgroundOption {
+  border-color: rgba(33, 84, 239, 0.28);
+  background: #f4f7ff;
+}
+
+.backgroundOption > i {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(17, 17, 15, 0.12);
+  background-color: var(--background-preview-color, #f7f6f2);
+  background-image: var(--background-preview-image, none);
+  background-size: var(--background-preview-width, 22px)
+    var(--background-preview-height, 22px);
+}
+
+.backgroundOption > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.backgroundOption strong {
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.backgroundOption small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.backgroundOption > svg {
+  color: var(--blue);
 }
 
 .canvasHint {
@@ -1214,6 +1312,12 @@
   .canvasToolbar {
     top: auto;
     bottom: 56px;
+  }
+
+  .backgroundMenu {
+    top: auto;
+    right: -2px;
+    bottom: calc(100% + 7px);
   }
 
   .canvasHint {

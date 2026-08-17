@@ -12,13 +12,19 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const execFileAsync = promisify(execFile);
-const DEPTH_DIRECTORY = path.join(tmpdir(), "primestyle-depth-pro-cache");
+const DEPTH_DIRECTORY = path.join(tmpdir(), "primestyle-depth-pro-cache-v3");
 const POSE_DIRECTORY = path.join(tmpdir(), "primestyle-apple-vision-pose3d-cache");
 const TAPE_DIRECTORY = path.join(tmpdir(), "primestyle-apple-vision-tape-ocr-v7");
 const MANUAL_TAPE_DIRECTORY = path.join(tmpdir(), "primestyle-tape-visual-path-v1");
 
 interface Point { x: number; y: number }
 interface SegmentInput { id?: string; start?: Point; end?: Point }
+interface TargetProjectionInput {
+  id?: string;
+  anchor?: Point;
+  targetCm?: number;
+  direction?: -1 | 1;
+}
 interface RequestBody {
   cacheKey?: string;
   heightCm?: number;
@@ -26,6 +32,7 @@ interface RequestBody {
   tapeUnit?: "cm" | "in";
   visualSource?: "manual-color-only" | "ocr-cache";
   segments?: SegmentInput[];
+  targetProjections?: TargetProjectionInput[];
 }
 
 interface TapeVisualCache {
@@ -58,11 +65,13 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json() as RequestBody;
   const segments = parseSegments(body.segments ?? []);
+  const targetProjections = parseTargetProjections(body.targetProjections ?? []);
   if (!validHash(body.cacheKey)
     || !Number.isFinite(body.heightCm) || Number(body.heightCm) <= 50 || Number(body.heightCm) >= 260
     || !Number.isFinite(body.tapeHintX)
     || (body.tapeUnit !== "cm" && body.tapeUnit !== "in")
-    || !segments) {
+    || !segments
+    || !targetProjections) {
     return NextResponse.json({ ok: false, error: "Apple/Depth Pro tape inputs are invalid." }, { status: 400 });
   }
 
@@ -104,6 +113,11 @@ export async function POST(request: NextRequest) {
       String(segment.start.x), String(segment.start.y),
       String(segment.end.x), String(segment.end.y),
     ]);
+    const targetArgs = targetProjections.flatMap((target) => [
+      "--target", target.id,
+      String(target.anchor.x), String(target.anchor.y),
+      String(target.targetCm), String(target.direction),
+    ]);
     const { stdout } = await execFileAsync(python, [
       script,
       "--depth-cache", depthPath,
@@ -111,6 +125,7 @@ export async function POST(request: NextRequest) {
       "--visual-path", visualPath,
       "--height-cm", String(body.heightCm),
       ...segmentArgs,
+      ...targetArgs,
     ], { timeout: 30_000, maxBuffer: 2 * 1024 * 1024 });
     const result = JSON.parse(stdout.trim());
     return NextResponse.json({
@@ -287,6 +302,29 @@ function parseSegments(segments: SegmentInput[]): Array<{ id: string; start: Poi
     end: segment.end!,
   }));
   return parsed.every((segment) => isFinitePoint(segment.start) && isFinitePoint(segment.end)) ? parsed : null;
+}
+
+function parseTargetProjections(targets: TargetProjectionInput[]): Array<{
+  id: string;
+  anchor: Point;
+  targetCm: number;
+  direction: -1 | 1;
+}> | null {
+  if (!Array.isArray(targets) || targets.length > 3) return null;
+  const parsed = targets.map((target, index) => ({
+    id: typeof target.id === "string" && /^[a-zA-Z0-9_-]{1,40}$/.test(target.id)
+      ? target.id
+      : `target-${index + 1}`,
+    anchor: target.anchor!,
+    targetCm: Number(target.targetCm),
+    direction: target.direction === -1 ? -1 as const : 1 as const,
+  }));
+  return parsed.every((target) => (
+    isFinitePoint(target.anchor)
+    && Number.isFinite(target.targetCm)
+    && target.targetCm > 0
+    && target.targetCm <= 150
+  )) ? parsed : null;
 }
 
 function isFinitePoint(point: Point | undefined): point is Point {

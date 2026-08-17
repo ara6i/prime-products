@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Play, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/app/shared/components/ui/button";
 import { ImageUploader } from "./components/ImageUploader";
@@ -110,6 +111,9 @@ interface DatasetRow {
   frontImageUrl: string;
   alternateFrontImageUrl?: string;
   sideImageUrl: string;
+  appleOnlyProof?: boolean;
+  proofReferenceImageUrl?: string;
+  proofReferenceLabel?: string;
 }
 
 const DEFAULT_METRICS: MetricsInput = {
@@ -493,6 +497,14 @@ const NADIA_MANUAL_ROW_PRESET = {
 };
 const NADIA_MANUAL_ROW_PRESET_REVISION = "nadia-manual-2026-07-22-1699-1864-2067";
 
+const DELARAM_2_LOCAL_ML_REVIEW_ROW_PRESET = {
+  sourceImageHeight: 2560,
+  sourceImageWidth: 1920,
+  waist: { yPx: 1075, leftXPx: 750, rightXPx: 1159 },
+  trouserWaist: { yPx: 1326, leftXPx: 697, rightXPx: 1211 },
+  hips: { yPx: 1430, leftXPx: 686, rightXPx: 1221 },
+};
+
 function buildSavedManualHeightScaleOverride(
   setId: string,
   imageUrl: string,
@@ -611,7 +623,6 @@ export function SizingLabPage() {
   const [localMlPredictionStage, setLocalMlPredictionStage] = useState<LocalMlModelStage | null>(null);
   const [localMlPredictionRows, setLocalMlPredictionRows] = useState<LocalMlNormalizedRowPrediction[]>([]);
   const [localMlDepthReady, setLocalMlDepthReady] = useState(false);
-  const [localMlDirectWearDepthReady, setLocalMlDirectWearDepthReady] = useState(false);
   const [localMlEndpointSource, setLocalMlEndpointSource] = useState<LocalMlPredictionResponse["endpointSource"] | null>(null);
   const [localMlMessage, setLocalMlMessage] = useState<string | null>(null);
   const [localMlElapsedMs, setLocalMlElapsedMs] = useState<number | null>(null);
@@ -664,6 +675,7 @@ export function SizingLabPage() {
   }, []);
 
   const selectedDataset = datasetRows.find((row) => row.setId === selectedDatasetId) ?? null;
+  const appleOnlyProofActive = selectedDataset?.appleOnlyProof === true;
   const hasShahnazPhotoPair = selectedDataset?.setId === "shahnaz-2"
     && Boolean(selectedDataset.alternateFrontImageUrl);
   const shahnazTapeImageUrl = hasShahnazPhotoPair ? selectedDataset.frontImageUrl : null;
@@ -845,7 +857,6 @@ export function SizingLabPage() {
     setLocalMlPredictionStage(null);
     setLocalMlPredictionRows([]);
     setLocalMlDepthReady(false);
-    setLocalMlDirectWearDepthReady(false);
     setLocalMlEndpointSource(null);
     setLocalMlRunStatus("idle");
     setLocalMlMessage(null);
@@ -1228,12 +1239,17 @@ export function SizingLabPage() {
     if (!response.ok || !data.ok) throw new Error(data.error ?? "Local ML prediction failed.");
     const prediction = buildLocalMlGuidePrediction(data.rows, imageWidth, imageHeight);
     if (!prediction) throw new Error("Local ML returned unsafe or invalid red-line geometry.");
+    const directWearDepthPartCount = Object.values(prediction.directWearDepthRatios)
+      .filter((value) => typeof value === "number" && Number.isFinite(value))
+      .length;
     const message = data.modelStage === "wear-1d-row-prior"
       ? prediction.directWearDepthReady
         ? prediction.absoluteWearDepthReady
           ? `WEAR 1D placed all three vertical rows in ${(data.elapsedMs / 1000).toFixed(1)} s. MediaPipe supplied temporary visible endpoints. Compare photo red-line width + cohort ratio with photo red-line width + WEAR absolute depth. Saved answers choose neither result.`
           : `WEAR 1D placed all three vertical rows in ${(data.elapsedMs / 1000).toFixed(1)} s. The absolute-depth formula is unavailable, so only the direct measured-group ratio can run.`
-        : `WEAR 1D placed the red rows, but at least one matching depth group has fewer than five people. Circumference is intentionally blocked; no formula or saved-answer fallback is used.`
+        : directWearDepthPartCount > 0
+          ? `WEAR 1D placed all three red rows. ${directWearDepthPartCount} of 3 body parts have a safe matching depth group and calculate independently. A missing part stays blocked; no formula or saved-answer fallback is used.`
+          : `WEAR 1D placed the red rows, but no body part has a safe matching depth group. Circumference is blocked; no formula or saved-answer fallback is used.`
       : `Local ${data.modelVersion} predicted rows, endpoints and depth in ${(data.elapsedMs / 1000).toFixed(1)} s. Minimum confidence ${(prediction.minimumConfidence * 100).toFixed(0)}%. Apple scaling runs next.`;
     return {
       guide: prediction.guide,
@@ -1249,16 +1265,18 @@ export function SizingLabPage() {
     };
   }
 
-  function applySavedNadiaReviewLines(
+  function applySavedLocalMlReviewLines(
     prediction: LocalMlPhotoPrediction,
+    preset: typeof NADIA_MANUAL_ROW_PRESET,
+    personLabel: string,
     imageWidth: number,
     imageHeight: number,
   ): LocalMlPhotoPrediction {
     const guide = buildManualGuideFromPreset(
-      NADIA_MANUAL_ROW_PRESET,
+      preset,
       imageWidth,
       imageHeight,
-      "Nadia saved reviewed rows and endpoints are active for this Local ML shape/depth experiment. The original Local ML coordinates remain comparison evidence only.",
+      `${personLabel} saved reviewed rows and endpoints are active for this Local ML shape/depth experiment. The original Local ML coordinates remain comparison evidence only.`,
     );
     const predictionRows = prediction.predictionRows.map((row) => {
       const line = guide[row.kind];
@@ -1277,7 +1295,7 @@ export function SizingLabPage() {
         rightXNorm: rightXPx / Math.max(1, imageWidth),
         reviewedCoordinateOverride: {
           source: "saved-review" as const,
-          label: "Nadia saved reviewed line",
+          label: `${personLabel} saved reviewed line`,
           modelYPx: Math.round(row.yNorm * imageHeight),
           modelLeftXPx: Math.round(row.leftXNorm * imageWidth),
           modelRightXPx: Math.round(row.rightXNorm * imageWidth),
@@ -1288,7 +1306,7 @@ export function SizingLabPage() {
       ...prediction,
       guide,
       predictionRows,
-      message: `${prediction.message} Nadia's saved reviewed red rows and endpoints are active for the current calculation. They are a manual review override, not a Local ML row prediction.`,
+      message: `${prediction.message} ${personLabel}'s saved reviewed red rows and endpoints are active for the current calculation. They are a manual review override, not a Local ML row prediction.`,
     };
   }
 
@@ -1303,7 +1321,6 @@ export function SizingLabPage() {
     setLocalMlPredictionStage(prediction.predictionStage);
     setLocalMlPredictionRows(prediction.predictionRows);
     setLocalMlDepthReady(prediction.depthReady);
-    setLocalMlDirectWearDepthReady(prediction.directWearDepthReady);
     setLocalMlEndpointSource(prediction.endpointSource);
     setLocalMlElapsedMs(prediction.elapsedMs);
     setLocalMlRunStatus("ready");
@@ -1328,11 +1345,21 @@ export function SizingLabPage() {
     setLocalMlPredictionStage(null);
     setLocalMlPredictionRows([]);
     setLocalMlDepthReady(false);
-    setLocalMlDirectWearDepthReady(false);
     setLocalMlEndpointSource(null);
     const rawPrediction = await predictLocalMlPhoto(frontUrl, frontPose, imageWidth, imageHeight);
-    const prediction = selectedDatasetId === "nadia"
-      ? applySavedNadiaReviewLines(rawPrediction, imageWidth, imageHeight)
+    const savedReview = selectedDatasetId === "nadia"
+      ? { preset: NADIA_MANUAL_ROW_PRESET, personLabel: "Nadia" }
+      : selectedDatasetId === "delaram-2"
+        ? { preset: DELARAM_2_LOCAL_ML_REVIEW_ROW_PRESET, personLabel: "Delaram 2" }
+        : null;
+    const prediction = savedReview
+      ? applySavedLocalMlReviewLines(
+          rawPrediction,
+          savedReview.preset,
+          savedReview.personLabel,
+          imageWidth,
+          imageHeight,
+        )
       : rawPrediction;
     applyLocalMlPhotoPrediction(prediction);
     if (shahnazPhoto) {
@@ -2079,7 +2106,6 @@ export function SizingLabPage() {
     setLocalMlPredictionStage(null);
     setLocalMlPredictionRows([]);
     setLocalMlDepthReady(false);
-    setLocalMlDirectWearDepthReady(false);
     setLocalMlEndpointSource(null);
     setLocalMlRunStatus(localMlModelStatus?.checkpointReady ? "idle" : "waiting-for-checkpoint");
     setLocalMlMessage(localMlModelStatus?.message ?? "Run Analyze Local ML after a checkpoint is trained.");
@@ -2179,14 +2205,17 @@ export function SizingLabPage() {
       : undefined,
     localMlAbsoluteDepthCm: coordinateWorkbenchUsesMeasuredSideDepth ? undefined : localMlAbsoluteDepthPredictors,
     localMlDepthSource: usesLocalMl && !localMlDepthReady ? "wear-cohort-median" : "local-ml-depth-ratio",
-    requireCompleteLocalMlDepthRatios: usesLocalMl && !localMlUsesAbsoluteDepth && !coordinateWorkbenchUsesMeasuredSideDepth,
-    requireCompleteLocalMlAbsoluteDepth: localMlUsesAbsoluteDepth && !coordinateWorkbenchUsesMeasuredSideDepth,
+    requireLocalMlDepthPerRow: usesLocalMl && !localMlUsesAbsoluteDepth && !coordinateWorkbenchUsesMeasuredSideDepth,
+    requireLocalMlAbsoluteDepthPerRow: localMlUsesAbsoluteDepth && !coordinateWorkbenchUsesMeasuredSideDepth,
     applyWearDepthFormula: !usesLocalMl,
   });
+  const localMlDirectWearDepthPartCount = Object.values(localMlPredictedDepthRatios)
+    .filter((value) => typeof value === "number" && Number.isFinite(value))
+    .length;
   const localMlUsesDirectWearDepth = usesLocalMl
     && localMlPredictionStage === "wear-1d-row-prior"
     && !localMlDepthReady
-    && localMlDirectWearDepthReady;
+    && localMlDirectWearDepthPartCount > 0;
   const localMlUsesRowPrior = usesLocalMl && (
     localMlPredictionStage === "wear-1d-row-prior"
     || (localMlPredictionStage == null && localMlModelStatus?.activeStage === "wear-1d-row-prior")
@@ -2384,26 +2413,36 @@ export function SizingLabPage() {
         </div>
 
         {selectedDataset ? (
-          <div className="mt-4 grid grid-cols-2 gap-3 text-xs md:grid-cols-4 lg:grid-cols-12">
-            <DatasetStat label="Height" value={selectedDataset.heightCm > 0 ? `${selectedDataset.heightCm} cm` : "missing"} />
-            <DatasetStat label="Weight" value={`${selectedDataset.weightKg} kg`} />
-            <DatasetStat label="Gender" value={selectedDataset.gender} />
-            <DatasetStat label="Natural waist" value={selectedDatasetNaturalWaistCm ? `${selectedDatasetNaturalWaistCm} cm` : "—"} />
-            <DatasetStat label="Natural waist tape mark" value={formatDatasetTapeMark(selectedDataset.waistTapeMarkCm, selectedDataset.waistTapeMarkIn)} />
-            <DatasetStat label="Lower waist" value={selectedDatasetTrouserWaistCm ? `${selectedDatasetTrouserWaistCm} cm` : "—"} />
-            <DatasetStat label="Lower waist tape mark" value={formatDatasetTapeMark(selectedDataset.trouserWaistTapeMarkCm, selectedDataset.trouserWaistTapeMarkIn)} />
-            <DatasetStat label="Hips" value={selectedDataset.hipsCm > 0 ? `${selectedDataset.hipsCm} cm` : "—"} />
-            <DatasetStat label="Hip tape mark" value={formatDatasetTapeMark(selectedDataset.hipsTapeMarkCm, selectedDataset.hipsTapeMarkIn)} />
-            <DatasetStat label="Side waist" value={selectedDataset.waistSideDepthCm ? `${selectedDataset.waistSideDepthCm} cm` : "—"} />
-            <DatasetStat label="Side lower waist" value={selectedDataset.trouserWaistSideDepthCm ? `${selectedDataset.trouserWaistSideDepthCm} cm` : "—"} />
-            <DatasetStat label="Side hips" value={selectedDataset.hipsSideDepthCm ? `${selectedDataset.hipsSideDepthCm} cm` : "—"} />
-            <DatasetStat label="Chest" value={`${selectedDataset.chestCm} cm`} />
-            <DatasetStat label="Under chest" value={selectedDataset.underChestCm > 0 ? `${selectedDataset.underChestCm} cm` : "—"} />
-            <DatasetStat
-              label="Bra / cup"
-              value={selectedDataset.bra ? `${selectedDataset.bra.band}${selectedDataset.bra.cup}` : selectedDataset.cup ? `Cup ${selectedDataset.cup}` : "—"}
-            />
-          </div>
+          <>
+            <div className="mt-4 grid grid-cols-2 gap-3 text-xs md:grid-cols-4 lg:grid-cols-12">
+              <DatasetStat label="Height" value={selectedDataset.heightCm > 0 ? `${selectedDataset.heightCm} cm` : "missing"} />
+              <DatasetStat label="Weight" value={`${selectedDataset.weightKg} kg`} />
+              <DatasetStat label="Gender" value={selectedDataset.gender} />
+              <DatasetStat label="Natural waist" value={selectedDatasetNaturalWaistCm ? `${selectedDatasetNaturalWaistCm} cm` : "—"} />
+              <DatasetStat label="Natural waist tape mark" value={formatDatasetTapeMark(selectedDataset.waistTapeMarkCm, selectedDataset.waistTapeMarkIn)} />
+              <DatasetStat label="Lower waist" value={selectedDatasetTrouserWaistCm ? `${selectedDatasetTrouserWaistCm} cm` : "—"} />
+              <DatasetStat label="Lower waist tape mark" value={formatDatasetTapeMark(selectedDataset.trouserWaistTapeMarkCm, selectedDataset.trouserWaistTapeMarkIn)} />
+              <DatasetStat label="Hips" value={selectedDataset.hipsCm > 0 ? `${selectedDataset.hipsCm} cm` : "—"} />
+              <DatasetStat label="Hip tape mark" value={formatDatasetTapeMark(selectedDataset.hipsTapeMarkCm, selectedDataset.hipsTapeMarkIn)} />
+              <DatasetStat label="Side waist" value={selectedDataset.waistSideDepthCm ? `${selectedDataset.waistSideDepthCm} cm` : "—"} />
+              <DatasetStat label="Side lower waist" value={selectedDataset.trouserWaistSideDepthCm ? `${selectedDataset.trouserWaistSideDepthCm} cm` : "—"} />
+              <DatasetStat label="Side hips" value={selectedDataset.hipsSideDepthCm ? `${selectedDataset.hipsSideDepthCm} cm` : "—"} />
+              <DatasetStat label="Chest" value={`${selectedDataset.chestCm} cm`} />
+              <DatasetStat label="Under chest" value={selectedDataset.underChestCm > 0 ? `${selectedDataset.underChestCm} cm` : "—"} />
+              <DatasetStat
+                label="Bra / cup"
+                value={selectedDataset.bra ? `${selectedDataset.bra.band}${selectedDataset.bra.cup}` : selectedDataset.cup ? `Cup ${selectedDataset.cup}` : "—"}
+              />
+            </div>
+            {appleOnlyProofActive && selectedDataset.proofReferenceImageUrl ? (
+              <div className="mt-4">
+                <AppleOnlyProofReference
+                  imageUrl={selectedDataset.proofReferenceImageUrl}
+                  label={selectedDataset.proofReferenceLabel ?? "Real tape reference"}
+                />
+              </div>
+            ) : null}
+          </>
         ) : null}
       </section>
 
@@ -2479,7 +2518,7 @@ export function SizingLabPage() {
             </button>
           ))}
         </div>
-        {usesLocalMl ? (
+        {usesLocalMl && !appleOnlyProofActive ? (
           <LocalMlTrainingDiagram
             status={localMlRunStatus}
             checkpointReady={Boolean(localMlModelStatus?.checkpointReady)}
@@ -2488,6 +2527,13 @@ export function SizingLabPage() {
             activeStage={localMlModelStatus?.activeStage ?? null}
             message={displayedLocalMlMessage}
           />
+        ) : appleOnlyProofActive ? (
+          <div className="mt-4 rounded-xl border-2 border-blue-300 bg-blue-50 px-4 py-3 text-sm text-blue-950">
+            <div className="font-black">Apple-only proof mode</div>
+            <p className="mt-1 text-xs leading-5">
+              Run Local ML only to create movable red lines. The centimetre result comes only from Apple Vision. Depth Pro, tape OCR, WEAR depth and circumference are disabled for this proof.
+            </p>
+          </div>
         ) : null}
         {usesGemini ? (
           <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-xs text-blue-900">
@@ -2974,16 +3020,18 @@ export function SizingLabPage() {
             <>
               {usesCoordinateWorkbench ? (
                 <div className="space-y-4">
-                  <SimpleSizingFormulaGuide
-                    mode={usesLocalMl ? "local-ml" : "manual"}
-                    measurement={geminiGuideMeasurement}
-                    wearRowPredictions={usesLocalMl ? localMlPredictionRows : undefined}
-                    heightCm={metrics.heightCm}
-                    weightKg={metrics.weightKg}
-                    gender={metrics.gender}
-                    scaleEvidence={activeManualScaleEvidence}
-                  />
-                  {usesLocalMl ? (
+                  {!appleOnlyProofActive ? (
+                    <SimpleSizingFormulaGuide
+                      mode={usesLocalMl ? "local-ml" : "manual"}
+                      measurement={geminiGuideMeasurement}
+                      wearRowPredictions={usesLocalMl ? localMlPredictionRows : undefined}
+                      heightCm={metrics.heightCm}
+                      weightKg={metrics.weightKg}
+                      gender={metrics.gender}
+                      scaleEvidence={activeManualScaleEvidence}
+                    />
+                  ) : null}
+                  {usesLocalMl && !appleOnlyProofActive ? (
                     <LocalMlRowEvidencePanel
                       rows={localMlPredictionRows}
                       modelStage={localMlPredictionStage}
@@ -3062,7 +3110,14 @@ export function SizingLabPage() {
                     knownDepthRatioAnswers={selectedDataset?.depthRatioOverrides}
                     onDepthRatioOverrideChange={updateActiveDepthRatioOverride}
                     onAppleVisionBodyScaleChange={usesLocalMl ? setLocalMlAppleVisionBodyScale : setAppleVisionBodyScale}
-                    fullScreenPhotoComparison={usesShahnazPhotoPair && shahnazTapeImageUrl && shahnazSecondImageUrl && shahnazTapeGuideForDisplay && shahnazSecondGuideForDisplay ? (
+                    appleOnlyProof={appleOnlyProofActive}
+                    fullScreenPhotoComparison={appleOnlyProofActive && selectedDataset?.proofReferenceImageUrl ? (
+                      <AppleOnlyProofReference
+                        imageUrl={selectedDataset.proofReferenceImageUrl}
+                        label={selectedDataset.proofReferenceLabel ?? "Real tape reference"}
+                        large
+                      />
+                    ) : usesShahnazPhotoPair && shahnazTapeImageUrl && shahnazSecondImageUrl && shahnazTapeGuideForDisplay && shahnazSecondGuideForDisplay ? (
                       <ShahnazPhotoPairPanel
                         tapeImageUrl={shahnazTapeImageUrl}
                         secondImageUrl={shahnazSecondImageUrl}
@@ -3086,7 +3141,9 @@ export function SizingLabPage() {
                         large
                       />
                     ) : undefined}
-                    title={usesShahnazPhotoPair
+                    title={appleOnlyProofActive
+                      ? "Apple-only side-depth proof"
+                      : usesShahnazPhotoPair
                       ? `${usesLocalMl ? "Local ML · " : ""}Active calculation · ${shahnazActivePhoto === "tape" ? "tape photo" : "IMG_8444 tape-free photo"}`
                       : usesLocalMl
                         ? localMlReviewedCoordinatesActive
@@ -3096,9 +3153,11 @@ export function SizingLabPage() {
                     labelSuffix={usesLocalMl
                       ? localMlReviewedCoordinatesActive ? "saved review override" : "local ML prediction"
                       : undefined}
-                    description={usesLocalMl
+                    description={appleOnlyProofActive
+                      ? "Move a red line from the back edge to the front edge at the same body height as the tape photo. Apple Vision alone converts that pixel span to centimetres. Depth Pro, tape OCR and WEAR circumference are not part of this proof."
+                      : usesLocalMl
                       ? localMlReviewedCoordinatesActive
-                        ? "The active red rows and endpoints are Nadia's saved reviewed coordinates. Local ML still supplies the separate WEAR depth and shape evidence. The original ML row is comparison only, so this does not count as automatic line accuracy."
+                        ? `The active red rows and endpoints are ${selectedDataset?.label.split(" · ")[0] ?? "this person"}'s saved reviewed coordinates. Local ML still supplies the separate WEAR depth and shape evidence. The original ML row is comparison only, so this does not count as automatic line accuracy.`
                       : localMlUsesMeasuredSideDepth
                         ? "Local ML draws the front rows. Front red lines supply side-to-side width; the independently adjustable side red lines supply front-to-back depth at the same physical heights. The shape formula then produces circumference. WEAR depth and saved ratio sliders are not used while side depth is active."
                       : usesShahnazPhotoPair
@@ -3106,9 +3165,11 @@ export function SizingLabPage() {
                         : localMlUsesAbsoluteDepth
                         ? "Local ML draws the row positions and MediaPipe supplies temporary visible endpoints. Apple/Depth converts each red width to centimetres. A WEAR-only formula predicts front-to-back depth directly in centimetres from that width, BMI, height and sex. Saved ratios are untouched and inactive."
                         : localMlUsesDirectWearDepth
-                        ? "Local ML draws the row positions and MediaPipe supplies temporary visible endpoints. Apple/Depth converts each red width to centimetres. Body depth is the direct middle ratio measured among WEAR people in the matching gender, height, and BMI box—no regression and no saved answer. The ellipse calculator then produces circumference."
+                        ? localMlDirectWearDepthPartCount < 3
+                          ? `Local ML draws all three rows and Apple Vision converts each red width to centimetres. ${localMlDirectWearDepthPartCount} body parts have safe matching WEAR depth and calculate independently. A missing body part alone stays blocked—no fallback formula and no saved answer.`
+                          : "Local ML draws the row positions and MediaPipe supplies temporary visible endpoints. Apple Vision converts each red width to centimetres. Body depth is the direct middle ratio measured among WEAR people in the matching gender, height, and BMI box—no regression and no saved answer. The ellipse calculator then produces circumference."
                         : localMlUsesRowPrior
-                          ? "Local ML drew the rows, but the direct WEAR group is too small for at least one body part. The result is blocked instead of falling back to a formula or the saved person answer."
+                          ? "Local ML drew the rows, but no body part has a safe direct WEAR depth group. Results stay blocked instead of falling back to a formula or the saved person answer."
                           : "The full local checkpoint owns these red lines and initial depth ratios. Apple, tape proof, free ruler, full screen, sliders, and the final calculator are the same tools as Manual Coordinate. Manual saved coordinates are not loaded or changed."
                       : usesShahnazPhotoPair
                         ? "Open Full screen to compare both photos. The selected card alone feeds pixels to Apple Vision, Depth Pro and the circumference results."
@@ -4178,6 +4239,38 @@ function DatasetStat({ label, value }: { label: string; value: string }) {
     <div className="rounded-lg bg-gray-50 px-3 py-2">
       <div className="text-[10px] uppercase tracking-wider text-text-hint">{label}</div>
       <div className="mt-0.5 font-mono text-sm tabular-nums text-text-primary">{value}</div>
+    </div>
+  );
+}
+
+function AppleOnlyProofReference({
+  imageUrl,
+  label,
+  large = false,
+}: {
+  imageUrl: string;
+  label: string;
+  large?: boolean;
+}) {
+  return (
+    <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-blue-950">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="text-xs font-semibold">{label}</div>
+        <span className="rounded-full border border-blue-300 bg-white px-2 py-1 text-[10px] font-semibold text-blue-900">
+          Ground truth only · Apple cannot read these numbers
+        </span>
+      </div>
+      <Image
+        src={imageUrl}
+        alt="Delaram real tape depth reference"
+        width={2316}
+        height={1882}
+        sizes="(max-width: 1024px) 100vw, 720px"
+        className={`mt-2 w-full rounded-lg border border-blue-200 bg-white object-contain ${large ? "max-h-52" : "max-h-72"}`}
+      />
+      <p className="mt-2 text-[11px] leading-4 text-blue-800">
+        Draw the red line on the separate full side photo. Compare Apple&apos;s centimetres with this real tape photo only after Apple finishes.
+      </p>
     </div>
   );
 }

@@ -1,0 +1,12 @@
+{
+  "model": "gemini-omni-flash-preview",
+  "duration": "8s",
+  "resolution": "720p",
+  "aspectRatio": "16:9",
+  "maximumGenerationCostUsd": 0.8,
+  "interactionId": "v1_Chd2Z1ItYXRmdkNzbmluc0VQNlBHWDRBYxIXdmdSLWF0ZnZDc25pbnNFUDZQR1g0QWM",
+  "source": "public/media/partner-landing/merchant-network/merchant-network-people-logo-hero-v8-scattered-source.png",
+  "output": "public/media/partner-landing/merchant-network/merchant-network-people-logo-hero-v9-omni-flash-720p.mp4",
+  "createdAt": "2026-08-13T17:54:39.410Z",
+  "prompt": "[# Sources <FIRST_FRAME>@Image1] Use Image1 as the exact starting frame.\n\nCreate one continuous, unbroken, locked-camera 8-second shot with no cuts, pan, zoom, tilt, crop, or reframing. Animate only the adults and their carried objects. They walk naturally upward toward the two open entrances. Additional adults keep walking in from the bottom and far-right edges and join their matching colored groups, so scattered arrivals remain visible throughout.\n\nThe complete ivory floor INSIDE the blue building must stay perfectly empty in every frame. Nobody and nothing may cross either entrance threshold. Immediately before a person reaches an entrance, that person, their object, and their shadow smoothly disappear completely. Never show a person, head, body, prop, bag, cart, shadow, silhouette, or ghost inside the building. Never accumulate people at the top.\n\nKeep the blue building perfectly rigid and identical. Preserve the warm background, four role colors, props, realistic 3D style, right-weighted composition, and large empty left side. End with approximately the starting crowd positions for a seamless loop. No text, words, letters, brand name, sign, title, caption, visible watermark, dialogue, headscarf, hijab, veil, new architecture, or scene change."
+}

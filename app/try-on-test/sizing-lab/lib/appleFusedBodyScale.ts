@@ -1,4 +1,4 @@
-export type AppleFusedBodyRowName = "waist" | "trouserWaist" | "hips";
+export type AppleFusedBodyRowName = "neck" | "chest" | "underbust" | "waist" | "trouserWaist" | "hips";
 
 export interface AppleFusedBodyScaleRow {
   name: AppleFusedBodyRowName;
@@ -29,9 +29,11 @@ export interface AppleFusedBodyScaleModel {
   imageWidth: number;
   imageHeight: number;
   depthProFocalPx: number;
+  depthProFocalSource: string;
   knownHeightCm: number;
   absoluteScaleSource: string;
   relativeDepthSource: string;
+  measurementCameraSource: string;
   bodySupportSource: string;
   endpointSource: string;
   qualityRules: {

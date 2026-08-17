@@ -62,8 +62,8 @@ const PILOT_IMAGE_VIEWS = [
   },
   {
     view: "mask",
-    title: "Body mask",
-    detail: "The body pixels separated from the background for edge learning.",
+    title: "Old pilot mask",
+    detail: "Used only by the retired 100-body baseline. Current v6 learns WEAR edges from RGB without a runtime mask.",
   },
 ] as const;
 
@@ -276,7 +276,7 @@ export default async function Page() {
               ))}
             </div>
             <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
-              <span className="font-bold">Do not ship this model yet.</span> Clothing, camera angle, pose, and real-photo segmentation are not represented in this first test.
+              <span className="font-bold">Retired baseline only.</span> The current v6 adds fitted-clothing appearance, camera variation, and mask-free RGB learning. It still cannot ship until the separate real-photo test passes.
             </div>
           </section>
         ) : null}
@@ -483,10 +483,10 @@ export default async function Page() {
                   <h2 className="font-bold text-text-primary">AWS safety gate</h2>
                   <p className="mt-2 text-sm leading-6 text-text-secondary">
                     {paidComputeActive
-                      ? `The protected copy is verified. One ${snapshot.training.aws.instanceType ?? "AWS GPU"} worker is active and has a ${snapshot.training.aws.maxRuntimeHours}-hour hard stop.`
+                      ? `The protected copy is verified. One ${snapshot.training.aws.instanceType ?? "AWS"} worker is active and has a ${snapshot.training.aws.maxRuntimeHours}-hour hard stop.`
                       : snapshot.aws.uploadCompleted
                       ? "The protected S3 copy passed file-count and byte-count verification."
-                      : "The protected upload is running through a temporary bounded worker role. No paid GPU job is running."}
+                      : "The protected upload is running through a temporary bounded worker role. No paid worker is running."}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-2">
                     <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">Vault ready</span>
@@ -506,7 +506,9 @@ export default async function Page() {
                       "rounded-full px-2.5 py-1 text-xs font-semibold",
                       paidComputeActive ? "bg-blue-50 text-blue-700" : "bg-gray-100 text-gray-600",
                     )}>
-                      {paidComputeActive ? "1 capped GPU worker active" : "No GPU worker active"}
+                      {paidComputeActive
+                        ? `1 capped ${snapshot.training.aws.instanceType ?? "AWS"} worker active`
+                        : "No paid worker active"}
                     </span>
                   </div>
                   {snapshot.aws.uploadedBytes > 0 && !snapshot.aws.uploadCompleted ? (
@@ -528,11 +530,11 @@ export default async function Page() {
                 </div>
                 <div className="rounded-2xl bg-blue-50 p-4">
                   <p className="font-semibold text-blue-950">Model returns</p>
-                  <p className="mt-1 leading-6 text-blue-800">Chest · waist · hips · garment size · confidence or retake message</p>
+                  <p className="mt-1 leading-6 text-blue-800">WEAR rows · direct measurements · confidence or retake message</p>
                 </div>
               </div>
               <p className="mt-4 text-xs leading-5 text-text-secondary">
-                Neck, shoulder, sleeve, and inseam labels are kept for later testing. They are not promised from one front photo yet.
+                Neck, shoulder, sleeve, inseam, and every other eligible WEAR target are included in v6. The SDK will expose only targets that pass held-out and real-photo checks; garment size is then matched against each merchant&apos;s size chart.
               </p>
             </div>
           </aside>

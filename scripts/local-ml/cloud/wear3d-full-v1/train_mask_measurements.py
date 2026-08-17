@@ -10,6 +10,7 @@ raw-photo segmentation. Those are evaluated separately with real photos.
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import json
 import math
 import random
@@ -27,10 +28,74 @@ from torch.utils.data import DataLoader, Dataset
 
 
 ROW_NAMES = ("neck", "chest", "underbust", "waist", "hips")
-ROW_FIELDS = ("y_norm", "left_x_norm", "right_x_norm", "depth_ratio")
+ROW_DIRECT_FIELDS = ("y_norm", "left_x_norm", "right_x_norm", "depth_ratio")
+ROW_DERIVED_FIELDS = ("visible_width_cm", "depth_cm")
+ROW_FIELDS = ROW_DIRECT_FIELDS + ROW_DERIVED_FIELDS
 SEGMENT_NAMES = ("shoulders", "right_sleeve", "left_sleeve", "right_inseam", "left_inseam")
 IMAGE_WIDTH = 192
 IMAGE_HEIGHT = 256
+VALID_TRAINING_POSE = "standing_neutral"
+LANDMARK_MIN_TRAIN_COVERAGE = 0.95
+EXCLUDED_MEASUREMENT_TARGETS = {"stature_mm", "weight_kg"}
+CORE_MEASUREMENT_TARGETS = {
+    "measurements_mm.chest_circumference_mm",
+    "measurements_mm.underbust_circumference_mm",
+    "measurements_mm.waist_circumference_mm",
+    "measurements_mm.hip_circumference_mm",
+    "measurements_mm.neck_base_circumference_mm",
+    "measurements_mm.shoulder_breadth_mm",
+    "measurements_mm.arm_length_shoulder_to_wrist_mm",
+}
+CORE_ROW_TARGETS = {
+    f"row.{name}.{field}"
+    for name in ROW_NAMES
+    for field in ROW_FIELDS
+}
+SYNTHETIC_MAE_LIMITS_CM = {
+    "measurements_mm.chest_circumference_mm": 6.0,
+    "measurements_mm.underbust_circumference_mm": 6.0,
+    "measurements_mm.waist_circumference_mm": 6.0,
+    "measurements_mm.hip_circumference_mm": 6.0,
+    "measurements_mm.neck_base_circumference_mm": 4.0,
+    "measurements_mm.shoulder_breadth_mm": 4.0,
+    "measurements_mm.arm_length_shoulder_to_wrist_mm": 5.0,
+}
+ROW_Y_MAE_LIMIT = 0.035
+ROW_EDGE_MAE_LIMIT = 0.025
+ROW_DEPTH_RATIO_MAE_LIMIT = 0.15
+ROW_PHYSICAL_MAE_LIMIT_CM = 6.0
+LANDMARK_AGGREGATE_MAE_LIMIT = 0.03
+LANDMARK_BASELINE_WIN_RATE_MIN = 0.80
+
+
+def runtime_manifest_payload(
+    checkpoint: dict[str, Any],
+    metrics: dict[str, Any],
+) -> dict[str, Any]:
+    """Build the small manifest consumed by the local ONNX photo-test API."""
+
+    gate = metrics.get("evaluation_gate") or {}
+    return {
+        "schemaVersion": checkpoint["schema_version"],
+        "modelVersion": checkpoint["model_version"],
+        "targetKeys": checkpoint["target_keys"],
+        "structuredKeys": checkpoint["structured_keys"],
+        "structuredMean": checkpoint["structured_mean"],
+        "structuredStd": checkpoint["structured_std"],
+        "targetMean": checkpoint["target_mean"],
+        "targetStd": checkpoint["target_std"],
+        "imageSize": checkpoint["image_size"],
+        "trainingPose": checkpoint["training_pose"],
+        "maskCleanup": checkpoint["mask_cleanup"],
+        "syntheticCandidatePassed": bool(gate.get("synthetic_candidate_passed")),
+        "sdkReady": False,
+        "split": metrics["split"],
+        "keyMeasurements": metrics["key_measurements"],
+        "importantLimit": gate.get(
+            "note",
+            "Passing the synthetic gate still requires a separate paired real-photo test before SDK use.",
+        ),
+    }
 
 
 def parse_args() -> argparse.Namespace:
@@ -61,15 +126,31 @@ def flatten_targets(record: dict[str, Any]) -> dict[str, float]:
         row = rows.get(row_name) or {}
         if row.get("accepted") is not True:
             continue
-        for field in ROW_FIELDS:
+        for field in ROW_DIRECT_FIELDS:
             value = finite_number(row.get(field))
             if value is not None:
                 targets[f"row.{row_name}.{field}"] = value
+        visible_width_mm = finite_number(row.get("visible_width_mm"))
+        if visible_width_mm is not None:
+            targets[f"row.{row_name}.visible_width_cm"] = visible_width_mm / 10.0
+        depth_mm = finite_number(row.get("tape_calibrated_depth_mm"))
+        if depth_mm is None:
+            depth_mm = finite_number(row.get("mesh_depth_mm"))
+        if depth_mm is not None:
+            targets[f"row.{row_name}.depth_cm"] = depth_mm / 10.0
 
-    # C scans use A landmarks only for orientation. Their masks and tape/body
-    # measurements are still useful, but their projected landmark segments are
-    # not valid target coordinates for that exact scan.
+    # Only neutral standing-A scans pass load_records. Their projected
+    # landmark segments therefore belong to the exact rendered scan.
     if record.get("landmark_targets_valid") is True:
+        landmarks = record.get("landmarks_2d") or {}
+        for landmark_name, point in landmarks.items():
+            if not isinstance(point, dict) or point.get("visible") is not True:
+                continue
+            for axis in ("x", "y"):
+                value = finite_number(point.get(axis))
+                if value is not None:
+                    targets[f"landmark.{landmark_name}.{axis}"] = value
+
         segments = record.get("segments") or {}
         for segment_name in SEGMENT_NAMES:
             points = segments.get(segment_name) or []
@@ -84,6 +165,8 @@ def flatten_targets(record: dict[str, Any]) -> dict[str, float]:
     for namespace in ("measurements_mm", "extracted_standing_mm"):
         values = record.get(namespace) or {}
         for name, raw_value in values.items():
+            if namespace == "measurements_mm" and name in EXCLUDED_MEASUREMENT_TARGETS:
+                continue
             value = finite_number(raw_value)
             if value is not None:
                 # Centimeters are easier to read in the exported metrics and SDK.
@@ -93,24 +176,58 @@ def flatten_targets(record: dict[str, Any]) -> dict[str, float]:
 
 def load_records(manifest: Path) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
+    invalid_records: list[str] = []
+    missing_masks: list[str] = []
     with manifest.open("r", encoding="utf-8") as handle:
-        for line in handle:
+        for line_number, line in enumerate(handle, start=1):
             if not line.strip():
                 continue
             record = json.loads(line)
             if record.get("error"):
                 continue
+            scan_id = str(record.get("scan_id", ""))
+            reasons = []
+            if record.get("pose") != VALID_TRAINING_POSE:
+                reasons.append(f"pose={record.get('pose')!r}")
+            if record.get("training_pose_valid") is not True:
+                reasons.append("training_pose_valid is not true")
+            if not scan_id.endswith("-A"):
+                reasons.append(f"scan_id={scan_id!r} is not an A scan")
+            if record.get("landmark_targets_valid") is not True:
+                reasons.append("landmark targets are not exact for this scan")
+            if (record.get("mask_cleanup") or {}).get("method") != "largest-connected-silhouette":
+                reasons.append("mask was not cleaned with largest-connected-silhouette")
+            if reasons:
+                invalid_records.append(f"line {line_number} {scan_id}: {', '.join(reasons)}")
+                continue
             mask = Path(str(record.get("mask", "")))
             if not mask.exists():
+                missing_masks.append(f"line {line_number} {scan_id}: {mask}")
                 continue
             record["_mask_path"] = str(mask)
             record["_targets"] = flatten_targets(record)
             records.append(record)
+    if invalid_records:
+        raise RuntimeError(
+            f"Training manifest contains {len(invalid_records)} semantically invalid successful records; "
+            f"examples: {invalid_records[:5]}"
+        )
+    if missing_masks:
+        raise RuntimeError(
+            f"Training manifest is missing {len(missing_masks)} mask files; examples: {missing_masks[:5]}"
+        )
+    subject_ids = [str(record.get("subject_id", "")) for record in records]
+    if len(subject_ids) != len(set(subject_ids)):
+        raise RuntimeError("Training manifest contains more than one successful A scan for a subject")
     return records
 
 
 def target_unit(key: str) -> str:
-    if key.startswith("measurements_mm.") or key.startswith("extracted_standing_mm."):
+    if (
+        key.startswith("measurements_mm.")
+        or key.startswith("extracted_standing_mm.")
+        or key.endswith((".visible_width_cm", ".depth_cm"))
+    ):
         return "cm"
     return "normalized_image_or_ratio"
 
@@ -166,7 +283,7 @@ class WearMaskDataset(Dataset):
     def __getitem__(self, index: int):
         record = self.records[index]
         with Image.open(record["_mask_path"]) as image:
-            mask = image.convert("L").resize((IMAGE_WIDTH, IMAGE_HEIGHT), Image.Resampling.BILINEAR)
+            mask = image.convert("L").resize((IMAGE_WIDTH, IMAGE_HEIGHT), Image.Resampling.NEAREST)
             image_values = np.asarray(mask, dtype=np.float32) / 255.0
         image_tensor = torch.from_numpy(image_values).unsqueeze(0)
 
@@ -254,19 +371,42 @@ class StatusWriter:
             print(f"status_update_warning={type(error).__name__}: {error}", flush=True)
 
 
-def masked_loss(prediction: torch.Tensor, target: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+def target_loss_weights(target_keys: list[str]) -> torch.Tensor:
+    weights = []
+    for key in target_keys:
+        if key in CORE_MEASUREMENT_TARGETS:
+            weights.append(2.5)
+        elif key.startswith("row."):
+            weights.append(2.0)
+        else:
+            weights.append(1.0)
+    return torch.tensor(weights, dtype=torch.float32)
+
+
+def masked_loss(
+    prediction: torch.Tensor,
+    target: torch.Tensor,
+    mask: torch.Tensor,
+    weights: torch.Tensor,
+) -> torch.Tensor:
     per_value = F.smooth_l1_loss(prediction, target, reduction="none", beta=0.5)
-    return (per_value * mask).sum() / mask.sum().clamp_min(1.0)
+    weighted_mask = mask * weights.unsqueeze(0)
+    return (per_value * weighted_mask).sum() / weighted_mask.sum().clamp_min(1.0)
 
 
 @torch.no_grad()
-def evaluate_loss(model: nn.Module, loader: DataLoader, device: torch.device) -> float:
+def evaluate_loss(
+    model: nn.Module,
+    loader: DataLoader,
+    device: torch.device,
+    weights: torch.Tensor,
+) -> float:
     model.eval()
     total_loss = 0.0
     total_batches = 0
     for image, structured, target, mask in loader:
         prediction = model(image.to(device), structured.to(device))
-        loss = masked_loss(prediction, target.to(device), mask.to(device))
+        loss = masked_loss(prediction, target.to(device), mask.to(device), weights)
         total_loss += float(loss.item())
         total_batches += 1
     return total_loss / max(total_batches, 1)
@@ -282,6 +422,7 @@ def native_metrics(
 ) -> dict[str, Any]:
     model.eval()
     absolute_errors: list[list[float]] = [[] for _ in target_keys]
+    baseline_errors: list[list[float]] = [[] for _ in target_keys]
     target_mean = torch.from_numpy(normalization.target_mean).to(device)
     target_std = torch.from_numpy(normalization.target_std).to(device)
     for image, structured, target, mask in loader:
@@ -289,15 +430,29 @@ def native_metrics(
         prediction_native = prediction * target_std + target_mean
         target_native = target.to(device) * target_std + target_mean
         error = torch.abs(prediction_native - target_native).cpu().numpy()
+        baseline_error = torch.abs(target_native - target_mean.unsqueeze(0)).cpu().numpy()
         valid = mask.numpy() > 0.5
         for column in range(len(target_keys)):
             absolute_errors[column].extend(error[valid[:, column], column].tolist())
+            baseline_errors[column].extend(baseline_error[valid[:, column], column].tolist())
     per_target = {}
-    for key, values in zip(target_keys, absolute_errors):
+    for key, values, baseline_values in zip(target_keys, absolute_errors, baseline_errors):
+        model_mae = float(np.mean(values)) if values else None
+        baseline_mae = float(np.mean(baseline_values)) if baseline_values else None
+        improvement = (
+            (baseline_mae - model_mae) / baseline_mae * 100.0
+            if model_mae is not None and baseline_mae is not None and baseline_mae > 1e-8
+            else None
+        )
         per_target[key] = {
             "count": len(values),
-            "mae": round(float(np.mean(values)), 5) if values else None,
+            "mae": round(model_mae, 5) if model_mae is not None else None,
             "median_absolute_error": round(float(np.median(values)), 5) if values else None,
+            "train_mean_baseline_mae": round(baseline_mae, 5) if baseline_mae is not None else None,
+            "improvement_vs_train_mean_pct": round(improvement, 3) if improvement is not None else None,
+            "beats_train_mean_baseline": bool(
+                model_mae is not None and baseline_mae is not None and model_mae < baseline_mae
+            ),
             "unit": target_unit(key),
         }
     key_measurements = {
@@ -313,7 +468,87 @@ def native_metrics(
             "measurements_mm.arm_length_shoulder_to_wrist_mm",
         }
     }
-    return {"key_measurements": key_measurements, "all_targets": per_target}
+    landmark_results = {
+        key: result
+        for key, result in per_target.items()
+        if key.startswith("landmark.")
+    }
+    landmark_maes = [
+        float(result["mae"])
+        for result in landmark_results.values()
+        if result["mae"] is not None and result["count"] >= 20
+    ]
+    landmark_baseline_wins = [
+        bool(result["beats_train_mean_baseline"])
+        for result in landmark_results.values()
+        if result["mae"] is not None and result["count"] >= 20
+    ]
+    landmark_summary = {
+        "landmark_points": len(landmark_results) // 2,
+        "coordinate_targets": len(landmark_results),
+        "mean_coordinate_mae": round(float(np.mean(landmark_maes)), 5) if landmark_maes else None,
+        "baseline_win_rate": (
+            round(sum(landmark_baseline_wins) / len(landmark_baseline_wins), 4)
+            if landmark_baseline_wins
+            else None
+        ),
+    }
+    failures = []
+    for key in sorted(CORE_MEASUREMENT_TARGETS):
+        result = per_target.get(key)
+        if not result or result["count"] < 20:
+            failures.append(f"{key}: insufficient unseen-subject labels")
+            continue
+        if not result["beats_train_mean_baseline"]:
+            failures.append(f"{key}: did not beat the train-mean baseline")
+        if result["mae"] is None or result["mae"] > SYNTHETIC_MAE_LIMITS_CM[key]:
+            failures.append(
+                f"{key}: MAE {result['mae']} cm exceeds {SYNTHETIC_MAE_LIMITS_CM[key]} cm"
+            )
+    for key in sorted(CORE_ROW_TARGETS):
+        result = per_target.get(key)
+        if not result or result["count"] < 20:
+            failures.append(f"{key}: insufficient unseen-subject labels")
+            continue
+        if not result["beats_train_mean_baseline"]:
+            failures.append(f"{key}: did not beat the train-mean baseline")
+        field = key.rsplit(".", 1)[-1]
+        if field in {"left_x_norm", "right_x_norm"}:
+            limit = ROW_EDGE_MAE_LIMIT
+        elif field == "y_norm":
+            limit = ROW_Y_MAE_LIMIT
+        elif field == "depth_ratio":
+            limit = ROW_DEPTH_RATIO_MAE_LIMIT
+        else:
+            limit = ROW_PHYSICAL_MAE_LIMIT_CM
+        if result["mae"] is None or result["mae"] > limit:
+            failures.append(f"{key}: MAE {result['mae']} exceeds {limit} {target_unit(key)}")
+    if not landmark_maes:
+        failures.append("landmarks: no usable unseen-subject landmark labels")
+    elif landmark_summary["mean_coordinate_mae"] > LANDMARK_AGGREGATE_MAE_LIMIT:
+        failures.append(
+            "landmarks: mean normalized coordinate MAE "
+            f"{landmark_summary['mean_coordinate_mae']} exceeds {LANDMARK_AGGREGATE_MAE_LIMIT}"
+        )
+    if (
+        landmark_summary["baseline_win_rate"] is None
+        or landmark_summary["baseline_win_rate"] < LANDMARK_BASELINE_WIN_RATE_MIN
+    ):
+        failures.append(
+            "landmarks: baseline win rate "
+            f"{landmark_summary['baseline_win_rate']} is below {LANDMARK_BASELINE_WIN_RATE_MIN}"
+        )
+    return {
+        "key_measurements": key_measurements,
+        "landmarks": landmark_summary,
+        "all_targets": per_target,
+        "evaluation_gate": {
+            "synthetic_candidate_passed": not failures,
+            "sdk_ready": False,
+            "failures": failures,
+            "note": "Passing this gate still requires a separate paired real-photo test before SDK use.",
+        },
+    }
 
 
 def main() -> None:
@@ -332,8 +567,47 @@ def main() -> None:
     }
     if any(not split for split in by_role.values()):
         raise RuntimeError(f"Missing subject-level split: { {key: len(value) for key, value in by_role.items()} }")
+    role_subjects = {
+        role: {str(record["subject_id"]) for record in split}
+        for role, split in by_role.items()
+    }
+    overlap = {
+        f"{left}-{right}": sorted(role_subjects[left] & role_subjects[right])[:5]
+        for left, right in (("train", "validation"), ("train", "test"), ("validation", "test"))
+        if role_subjects[left] & role_subjects[right]
+    }
+    if overlap:
+        raise RuntimeError(f"Subject leakage across splits: {overlap}")
 
-    target_keys = sorted({key for record in by_role["train"] for key in record["_targets"]})
+    train_target_counts = Counter(
+        key
+        for record in by_role["train"]
+        for key in record["_targets"]
+    )
+    landmark_coverage_floor = math.ceil(len(by_role["train"]) * LANDMARK_MIN_TRAIN_COVERAGE)
+    landmark_prefixes = {
+        key.rsplit(".", 1)[0]
+        for key in train_target_counts
+        if key.startswith("landmark.")
+    }
+    selected_landmark_prefixes = {
+        prefix
+        for prefix in landmark_prefixes
+        if all(
+            train_target_counts.get(f"{prefix}.{axis}", 0) >= landmark_coverage_floor
+            for axis in ("x", "y")
+        )
+    }
+    dropped_landmark_prefixes = sorted(landmark_prefixes - selected_landmark_prefixes)
+    target_keys = sorted(
+        key
+        for key in train_target_counts
+        if not key.startswith("landmark.") or key.rsplit(".", 1)[0] in selected_landmark_prefixes
+    )
+    required_targets = CORE_MEASUREMENT_TARGETS | CORE_ROW_TARGETS
+    missing_targets = sorted(required_targets - set(target_keys))
+    if missing_targets:
+        raise RuntimeError(f"Core targets are missing from the training split: {missing_targets}")
     normalization = compute_normalization(by_role["train"], target_keys)
     datasets = {
         role: WearMaskDataset(split, target_keys, normalization)
@@ -354,6 +628,7 @@ def main() -> None:
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = MaskMeasurementModel(len(target_keys)).to(device)
+    loss_weights = target_loss_weights(target_keys).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=2e-3, weight_decay=2e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=max(args.epochs, 1), eta_min=1e-5)
     scaler = torch.amp.GradScaler("cuda", enabled=device.type == "cuda")
@@ -374,7 +649,7 @@ def main() -> None:
             optimizer.zero_grad(set_to_none=True)
             with torch.amp.autocast("cuda", enabled=device.type == "cuda"):
                 prediction = model(image, structured)
-                loss = masked_loss(prediction, target, mask)
+                loss = masked_loss(prediction, target, mask, loss_weights)
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
@@ -382,7 +657,7 @@ def main() -> None:
             batches += 1
         scheduler.step()
         train_loss = total / max(batches, 1)
-        validation_loss = evaluate_loss(model, loaders["validation"], device)
+        validation_loss = evaluate_loss(model, loaders["validation"], device, loss_weights)
         history.append(
             {
                 "epoch": epoch,
@@ -414,6 +689,14 @@ def main() -> None:
             "best_validation_loss": best_validation,
             "device": str(device),
             "synthetic_only": True,
+            "training_pose": VALID_TRAINING_POSE,
+            "target_schema": {
+                "target_count": len(target_keys),
+                "landmark_points": len(selected_landmark_prefixes),
+                "landmark_min_train_coverage": LANDMARK_MIN_TRAIN_COVERAGE,
+                "landmark_coverage_floor": landmark_coverage_floor,
+                "dropped_sparse_landmarks": dropped_landmark_prefixes,
+            },
         }
     )
 
@@ -428,10 +711,16 @@ def main() -> None:
         "target_mean": normalization.target_mean.tolist(),
         "target_std": normalization.target_std.tolist(),
         "image_size": [IMAGE_WIDTH, IMAGE_HEIGHT],
+        "training_pose": VALID_TRAINING_POSE,
+        "mask_cleanup": "largest-connected-silhouette",
     }
     torch.save(checkpoint, args.output_dir / "model.pt")
     (args.output_dir / "training-history.json").write_text(json.dumps(history, indent=2), encoding="utf-8")
     (args.output_dir / "test-metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
+    (args.output_dir / "runtime.json").write_text(
+        json.dumps(runtime_manifest_payload(checkpoint, metrics), indent=2),
+        encoding="utf-8",
+    )
     metadata = {
         "schema_version": 1,
         "model_version": args.pipeline_id,
@@ -440,6 +729,20 @@ def main() -> None:
         "output_targets": [{"key": key, "unit": target_unit(key)} for key in target_keys],
         "split": metrics["split"],
         "subject_split": metrics["subjects"],
+        "training_pose": "neutral standing A only",
+        "mask_cleanup": "largest connected human silhouette",
+        "row_output": "neck, chest, underbust, waist, and hip height, torso edges, depth ratio, width, and depth",
+        "row_edge_postprocess": "use trained WEAR torso edges for every row; retain MediaPipe torso isolation only as a safety fallback",
+        "full_target_training": {
+            "core_measurement_loss_weight": 2.5,
+            "row_loss_weight": 2.0,
+            "edge_labels": "closed WEAR torso-section bounds that exclude arms",
+            "landmark_points": len(selected_landmark_prefixes),
+            "segments": list(SEGMENT_NAMES),
+            "dropped_sparse_landmarks": dropped_landmark_prefixes,
+        },
+        "synthetic_candidate_passed": metrics["evaluation_gate"]["synthetic_candidate_passed"],
+        "sdk_ready": False,
         "important_limit": "WEAR provides 3D meshes, not paired consumer photos. Real-photo accuracy is not proven by this checkpoint.",
     }
     (args.output_dir / "model-metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")

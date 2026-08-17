@@ -23,6 +23,105 @@ export interface AiStylistGenderSegment {
   priceBands: Record<string, number>;
 }
 
+export interface AiStylistCjMensShoesProgress {
+  target: number;
+  imported: number;
+  withImages: number;
+  inventoryQualified: number;
+  sizeChartDetected: number;
+  lunaCandidates: number;
+  readyForLuna: number;
+  enriching: number;
+  ragReady: number;
+  needsReview: number;
+  rejected: number;
+  activeBatches: number;
+  lastProductUpdateAt: string | null;
+  remainingToImportTarget: number;
+  remainingToReadyTarget: number;
+  minimumOtherSupplierGap: number;
+  audit: {
+    generatedAt: string | null;
+    reportedTotalRecords: number;
+    scannedPages: number;
+    scannedProducts: number;
+    catalogQualified: number;
+    alreadyInShopify: number;
+    newCatalogQualified: number;
+    rejectedReasons: Record<string, number>;
+    qualityRejectedReasons: Record<string, number>;
+    qualifiedSubcategories: Record<string, number>;
+    verification: {
+      requested: number;
+      shippingAndVariantVerified: number;
+      failureCount: number;
+      reviewedProducts: number;
+      productsWithoutCjReviews: number;
+    };
+  } | null;
+}
+
+export interface AiStylistGarmentExtractionSample {
+  jobId: string;
+  productId: string;
+  styleRagId: string | null;
+  sourceProductId: string | null;
+  variantId: string | null;
+  color: string;
+  normalizedColor: string;
+  garmentCategory: string;
+  sourceImageUrl: string;
+  resultUrl: string;
+  modeUsed: "fast" | "full" | null;
+  processingStrategyUsed: "direct_alpha" | "generative_extract" | null;
+  pipelineVersion: string;
+  providerLatencyMs: number | null;
+  totalLatencyMs: number | null;
+  transparentPixelRatio: number | null;
+  completedAt: string | null;
+}
+
+export interface AiStylistGarmentExtractionProgress {
+  generatedAt: string;
+  pipelineVersion: string;
+  productionUseAllowed: boolean;
+  candidates: {
+    eligibleProducts: number;
+    distinctProductColors: number;
+    selected: number;
+    alreadySucceeded: number;
+  };
+  counts: {
+    total: number;
+    queued: number;
+    running: number;
+    succeeded: number;
+    needsReview: number;
+    failed: number;
+  };
+  performance: {
+    averageLatencyMs: number | null;
+    imagesPerHour: number | null;
+    estimatedRemainingSeconds: number | null;
+    estimatedRemainingCostUsd: number | null;
+  };
+  latestBatch: {
+    batchId: string;
+    status: string;
+    counts: {
+      total: number;
+      queued: number;
+      running: number;
+      succeeded: number;
+      needsReview: number;
+      failed: number;
+    };
+    createdAt: string | null;
+    updatedAt: string | null;
+  } | null;
+  samples: AiStylistGarmentExtractionSample[];
+}
+
 export interface AiStylistScenarioCoverageGroup {
   id: string;
   label: string;
@@ -55,6 +154,7 @@ export interface AiStylistScenarioCoverageRow {
 export interface AiStylistScenarioCoverage {
   definition: {
     source: string;
+    version: string;
     formula: string;
     totalScenarios: number;
     targetPerScenario: number;
@@ -62,6 +162,8 @@ export interface AiStylistScenarioCoverage {
   };
   snapshot: {
     generatedAt: string | null;
+    definitionVersion?: string | null;
+    catalogRevision?: string | null;
     method: string;
     summary: {
       ready: number;
@@ -72,6 +174,12 @@ export interface AiStylistScenarioCoverage {
       outfitReadinessPercent: number;
       scenarioReadinessPercent: number;
     };
+  };
+  freshness: {
+    catalogRevision: string | null;
+    snapshotRevision: string | null;
+    isCurrent: boolean;
+    pollingSeconds: number;
   };
   refresh: {
     status: "idle" | "running" | "complete" | "failed";
@@ -105,6 +213,14 @@ export interface AiStylistScenarioCoverage {
 
 export interface AiStylistLabStatus {
   generatedAt: string;
+  liveFreshness?: {
+    checkedAt: string;
+    intakeRevision: string | null;
+    liveRevision: string | null;
+    isCurrent: boolean;
+    refreshRunning: boolean;
+    pollingSeconds: number;
+  };
   scope: {
     database: string;
     provider: "trendsi";
@@ -122,6 +238,10 @@ export interface AiStylistLabStatus {
     lunaAutomationActive: boolean;
     activeBatches: number;
   };
+  supplierProgress?: {
+    cjMensShoes: AiStylistCjMensShoesProgress;
+  };
+  garmentExtraction?: AiStylistGarmentExtractionProgress;
   summary: {
     total: number;
     withImages: number;
@@ -180,4 +300,66 @@ export interface AiStylistScenarioCoverageResponse {
   scenarioCoverage?: AiStylistScenarioCoverage;
   error?: string;
   message?: string;
+}
+
+export interface AiStylistGeminiBatchSample {
+  key: string;
+  title: string;
+  scenarioId: string;
+  slot: string;
+  color: string;
+  imageUrl: string;
+}
+
+export interface AiStylistGeminiBatchProgress {
+  status: "preparing" | "running" | "post-processing" | "complete" | "partial" | "failed";
+  providerState: string;
+  model: string;
+  batchName: string | null;
+  submitted: number;
+  succeeded: number;
+  failed: number;
+  reused: number;
+  uniqueSources: number;
+  transparentSaved: number;
+  readySources: number;
+  duplicateRegenerations: number;
+  elapsedSeconds: number | null;
+  estimatedCostUsd: number | null;
+  finishedAt: string | null;
+  failureMessage: string | null;
+  samples: AiStylistGeminiBatchSample[];
+}
+
+export interface AiStylistLunaBatchProgress {
+  updatedAt: string | null;
+  phase: string;
+  status: string;
+  targetScenarios: number;
+  batchJobsTotal: number;
+  batchJobsSubmitted: number;
+  batchJobsRunning: number;
+  requestsTotal: number;
+  requestsCompleted: number;
+  requestsFailed: number;
+  scenariosCommitted: number;
+  scenariosBlocked: number;
+  uniqueProductsClaimed: number;
+  duplicateNonExemptProducts: number;
+  estimatedCostUsd: number | null;
+  message: string;
+  batchIds: string[];
+}
+
+export interface AiStylistBatchProgress {
+  generatedAt: string;
+  manualRefreshOnly: true;
+  gemini: AiStylistGeminiBatchProgress;
+  luna: AiStylistLunaBatchProgress;
+}
+
+export interface AiStylistBatchProgressResponse {
+  ok: boolean;
+  progress?: AiStylistBatchProgress;
+  error?: string;
 }

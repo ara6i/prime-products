@@ -73,6 +73,20 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "cdn.sanity.io" },
     ],
   },
+  async headers() {
+    return [
+      {
+        source:
+          "/media/global-shop/dressing-room/outfit-grid-gingham-79de5e5c.webp",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
+  },
   async redirects() {
     return [
       {

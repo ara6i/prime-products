@@ -1,13 +1,7 @@
 export type DressingRoomGender = "Women" | "Men";
 
 export type DressingRoomCategory =
-  | "All"
-  | "Tops"
-  | "Bottoms"
-  | "Outerwear"
-  | "Dresses"
-  | "Shoes"
-  | "Bags";
+  "All" | "Tops" | "Bottoms" | "Outerwear" | "Dresses" | "Shoes" | "Bags";
 
 export type DressingRoomCatalogItem = {
   id: string;
@@ -32,6 +26,58 @@ export type DressingRoomCanvasItem = {
   rotation: number;
   z: number;
 };
+
+export type DressingRoomBackgroundId =
+  "fine-grid" | "warm-gingham" | "plain-paper";
+
+export type DressingRoomBackgroundPreset = {
+  id: DressingRoomBackgroundId;
+  label: string;
+  description: string;
+  color: string;
+  imageUrl: string | null;
+  tileWidth: number;
+  tileHeight: number;
+  previewWidth: number;
+  previewHeight: number;
+};
+
+export const dressingRoomBackgrounds = [
+  {
+    id: "fine-grid",
+    label: "Fine grid",
+    description: "Small editorial squares",
+    color: "#f7f6f2",
+    imageUrl: "/media/global-shop/dressing-room/outfit-grid-paper.png",
+    tileWidth: 38,
+    tileHeight: 38,
+    previewWidth: 22,
+    previewHeight: 22,
+  },
+  {
+    id: "warm-gingham",
+    label: "Warm gingham",
+    description: "Beige woven checks",
+    color: "#f2eee4",
+    imageUrl:
+      "/media/global-shop/dressing-room/outfit-grid-gingham-79de5e5c.webp",
+    tileWidth: 168,
+    tileHeight: 168,
+    previewWidth: 84,
+    previewHeight: 84,
+  },
+  {
+    id: "plain-paper",
+    label: "Plain paper",
+    description: "Clean warm canvas",
+    color: "#f7f6f2",
+    imageUrl: null,
+    tileWidth: 1,
+    tileHeight: 1,
+    previewWidth: 1,
+    previewHeight: 1,
+  },
+] as const satisfies readonly DressingRoomBackgroundPreset[];
 
 export const dressingRoomCategories: DressingRoomCategory[] = [
   "All",

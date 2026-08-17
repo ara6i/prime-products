@@ -1,0 +1,12 @@
+{
+  "model": "veo-3.1-lite-generate-preview",
+  "durationSeconds": 8,
+  "resolution": "1080p",
+  "aspectRatio": "16:9",
+  "maximumGenerationCostUsd": 0.64,
+  "operation": "models/veo-3.1-lite-generate-preview/operations/cv1jvplk0u0z",
+  "source": "public/media/partner-landing/merchant-tryon-phone-model-landmarks-full-source.png",
+  "output": "public/media/partner-landing/merchant-tryon-phone-model-landmarks-veo-lite-1080p.mp4",
+  "createdAt": "2026-08-13T19:37:08.716Z",
+  "prompt": "Create a locked eight-second UI animation from this exact 16:9 retail artwork. Keep the camera and the complete artwork perfectly still.\n\nInside the large white Virtual Try-On interface on the far right, the upper product-preview area contains a small lime-green virtual mannequin. Add a subtle cyan technical sizing overlay only to that small mannequin: tiny glowing points at the head, neck, shoulders, elbows, wrists, center torso, waist, and hips, connected with thin translucent lines. Make only the cyan points pulse gently in sequence. The mannequin itself and every other pixel remain still.\n\nKeep the cyan overlay entirely inside the mannequin preview area. Do not place it on the large shopper, thumbnails, text, icons, button, product cards, or background. Return to the same glow state at the end for a seamless loop. No camera motion, no new text, no scene change, no watermark, and no other animation."
+}

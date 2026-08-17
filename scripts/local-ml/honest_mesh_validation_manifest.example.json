@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "suiteId": "private-visible-body-proof",
+  "methodReportPath": ".local-ml/wear-mesh-proof/method-run-report.json",
+  "references": [
+    {
+      "photoId": "photo-a",
+      "outlinePath": ".local-ml/wear-mesh-proof/references/photo-a-outline.json",
+      "regionMaskPath": ".local-ml/wear-mesh-proof/references/photo-a-regions.png",
+      "regionLabels": {
+        "torso": 1,
+        "arms": 2,
+        "hands": 3,
+        "hips": 4,
+        "thighs": 5,
+        "calves": 6,
+        "feet": 7
+      },
+      "keypointsPath": ".local-ml/wear-mesh-proof/references/photo-a-keypoints.json",
+      "evidenceId": "heldout-outline:photo-a:v1",
+      "regionEvidenceId": "heldout-regions:photo-a:v1",
+      "keypointEvidenceId": "heldout-keypoints:photo-a:v1",
+      "provenance": {
+        "heldOut": true,
+        "createdWithoutCandidate": true,
+        "hairExcluded": true,
+        "backgroundExcluded": true,
+        "visibleTightClothingTruth": true,
+        "annotator": "independent reviewer",
+        "reviewedAt": "YYYY-MM-DD"
+      }
+    },
+    {
+      "photoId": "photo-b",
+      "maskPath": ".local-ml/wear-mesh-proof/references/photo-b-outline.png",
+      "regionMaskPath": ".local-ml/wear-mesh-proof/references/photo-b-regions.png",
+      "regionLabels": {
+        "torso": 1,
+        "arms": 2,
+        "hands": 3,
+        "hips": 4,
+        "thighs": 5,
+        "calves": 6,
+        "feet": 7
+      },
+      "keypointsPath": ".local-ml/wear-mesh-proof/references/photo-b-keypoints.json",
+      "evidenceId": "heldout-outline:photo-b:v1",
+      "regionEvidenceId": "heldout-regions:photo-b:v1",
+      "keypointEvidenceId": "heldout-keypoints:photo-b:v1",
+      "provenance": {
+        "heldOut": true,
+        "createdWithoutCandidate": true,
+        "hairExcluded": true,
+        "backgroundExcluded": true,
+        "visibleTightClothingTruth": true,
+        "annotator": "independent reviewer",
+        "reviewedAt": "YYYY-MM-DD"
+      }
+    }
+  ],
+  "methods": [
+    {
+      "id": "method-id",
+      "label": "Method label",
+      "candidates": [
+        {
+          "photoId": "photo-a",
+          "meshPath": ".local-ml/wear-mesh-proof/methods/method-id/photo-a.json",
+          "canonicalMeshPath": ".local-ml/wear-mesh-proof/methods/method-id/photo-a-canonical.json",
+          "topologyBaselinePath": ".local-ml/wear-mesh-proof/methods/raw/photo-a.json",
+          "coordinateSpace": "normalized-image-xy",
+          "fitEvidenceIds": ["rgb:photo-a", "internal-fit-mask:photo-a"],
+          "fitEvidenceSha256": ["sha256-of-rgb", "sha256-of-internal-fit-mask"],
+          "keypointsPath": ".local-ml/wear-mesh-proof/methods/method-id/photo-a-keypoints.json",
+          "isTopologyBaseline": false
+        },
+        {
+          "photoId": "photo-b",
+          "meshPath": ".local-ml/wear-mesh-proof/methods/method-id/photo-b.json",
+          "canonicalMeshPath": ".local-ml/wear-mesh-proof/methods/method-id/photo-b-canonical.json",
+          "topologyBaselinePath": ".local-ml/wear-mesh-proof/methods/raw/photo-b.json",
+          "coordinateSpace": "normalized-image-xy",
+          "fitEvidenceIds": ["rgb:photo-b", "internal-fit-mask:photo-b"],
+          "fitEvidenceSha256": ["sha256-of-rgb", "sha256-of-internal-fit-mask"],
+          "keypointsPath": ".local-ml/wear-mesh-proof/methods/method-id/photo-b-keypoints.json",
+          "isTopologyBaseline": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "model_version": "wear3d-standing-rgb-v6r5-20260816",
+  "model_onnx_sha256": "REPLACE_AFTER_CANDIDATE_INSTALL",
+  "saved_answers_sent_to_model": false,
+  "runtime_mask_used": false,
+  "formula_used": false,
+  "visual_review_complete": false,
+  "contact_sheet": {
+    "path": "REPLACE_WITH_GENERATED_CONTACT_SHEET",
+    "sha256": "REPLACE_AFTER_GENERATION"
+  },
+  "cases": [
+    {
+      "person_id": "shahnaz-2",
+      "gender": "female",
+      "full_body_visible": true,
+      "camera_geometry": "pass",
+      "saved_answers_sent_to_model": false,
+      "manual_answer_used": false,
+      "edge_review": {
+        "neck": false,
+        "chest": false,
+        "underbust": false,
+        "waist": false,
+        "hips": false
+      },
+      "known_tape_cm": {
+        "chest": 106.0,
+        "waist": 99.0,
+        "hips": 113.0
+      },
+      "predicted_cm": {}
+    },
+    {
+      "person_id": "negar-2",
+      "gender": "female",
+      "full_body_visible": true,
+      "camera_geometry": "pass",
+      "saved_answers_sent_to_model": false,
+      "manual_answer_used": false,
+      "edge_review": {
+        "neck": false,
+        "chest": false,
+        "underbust": false,
+        "waist": false,
+        "hips": false
+      },
+      "known_tape_cm": {
+        "chest": 86.0,
+        "underbust": 70.0,
+        "waist": 69.0,
+        "hips": 89.0
+      },
+      "predicted_cm": {}
+    },
+    {
+      "person_id": "shane-2",
+      "gender": "male",
+      "full_body_visible": true,
+      "camera_geometry": "pass",
+      "saved_answers_sent_to_model": false,
+      "manual_answer_used": false,
+      "edge_review": {
+        "neck": false,
+        "chest": false,
+        "waist": false,
+        "hips": false
+      },
+      "known_tape_cm": {
+        "waist": 93.98,
+        "hips": 102.0
+      },
+      "predicted_cm": {}
+    }
+  ]
+}

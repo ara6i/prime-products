@@ -1,3 +1,408 @@
+# Dressing Room selectable high-resolution backgrounds — 2026-08-13
+
+## Evidence
+
+- Reference for the warm textile option: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-6fa17bab-a8e8-4b6a-8b81-084a7deba6f2.png`.
+- Final desktop captures: `.design-qa/background-picker/desktop-fine-grid.jpg`, `.design-qa/background-picker/desktop-picker.jpg`, `.design-qa/background-picker/desktop-gingham.jpg`, and `.design-qa/background-picker/desktop-gingham-max-zoom.jpg`.
+- Same-input comparison: `.design-qa/background-picker/reference-vs-mobile-gingham.jpg`.
+- Production texture: `public/media/global-shop/dressing-room/outfit-grid-gingham-79de5e5c.webp` (`1254 x 1254`, 489 KB, WebP quality 92), generated in the logged-in ImageGen session as a flat, exactly `8 x 8` warm ivory/beige woven gingham tile.
+
+## Findings and fixes
+
+- P2: the original `77px` paper-grid cell was visibly too large. The default Fine grid now uses a `38px` world-space cell and remains synchronized with canvas pan and zoom.
+- P2: a single fixed canvas background did not satisfy user selection. Added a compact, accessible `Canvas background` picker with Fine grid, Warm gingham, and Plain paper options.
+- P2: the initial cropped gingham source could not stay sharp at high zoom. Replaced it with the generated `1254px` texture, retained full source resolution, and verified the canvas at `220%` zoom.
+- The hashed WebP is preloaded at low priority and served with a one-year immutable cache header, preserving first-view speed without lowering visible quality.
+- Background configuration, picker UI, and selection state are separated into data, component, and hook modules.
+- Scoped ESLint, full TypeScript, and the focused Next.js production build passed. No unresolved P0, P1, or P2 issue remains in this scope.
+
+final result: passed
+
+## WEAR 3D v5 inside the exact Local ML editor shell — 2026-08-14
+
+### Source truth, implementation, and normalization
+
+- Compact source visual: `/Users/arashsn/Downloads/Screenshot - 2026-08-14T232732.376.png` (`1066 x 180`).
+- Full-screen source visual: `/Users/arashsn/Downloads/Screenshot - 2026-08-14T232742.287.png` (`1677 x 825`).
+- Compact browser implementation: `.design-qa/wear3d-local-ml-shell/implementation-normal-viewport-1677x825.png`, with the editor-focused crop at `.design-qa/wear3d-local-ml-shell/implementation-normal-focused-1104x178.png`.
+- Full-screen browser implementation: `.design-qa/wear3d-local-ml-shell/implementation-fullscreen-final-verified-1677x825.png` from a `1677 x 825` CSS viewport at DPR `1`.
+- Mobile browser implementation: `.design-qa/wear3d-local-ml-shell/implementation-fullscreen-mobile-390x844.png` from a `390 x 844` CSS viewport.
+- Compact same-input comparison: `.design-qa/wear3d-local-ml-shell/comparison-normal-source-top-implementation-bottom.png`; the supplied Local ML source is on top and the final WEAR component is below.
+- Full-screen same-input comparison: `.design-qa/wear3d-local-ml-shell/comparison-fullscreen-final-source-left-implementation-right.png`; the supplied Local ML source is on the left and the final WEAR component is on the right.
+- State: Shahnaz 2, women profile, trained WEAR 3D v5 result, saved red dataset lines hidden, bust/chest active, zoom `50%`.
+
+### Findings and comparison history
+
+- Initial P1 shell mismatch: the prior WEAR editor was a separate blue workbench with large cards and a different toolbar. Fix: replaced that presentation with the existing Local ML component language—compact pink/red normal card, thin red zoom/row toolbar, dark fixed full-screen canvas, Close action, and a `420px` white live-calculation rail.
+- Initial P1 source mixing: the prior advanced area still exposed an Apple Vision comparison. Fix: removed Apple controls and skeleton state from this editor. The active row positions, endpoints, landmarks, segments, visible width, trained depth, depth ratio, and direct circumference now come from the WEAR 3D v5 response only. The UI explicitly excludes QWEAR 2D, old WEAR 1D, Apple, Meta, and Gemini.
+- Initial P2 portrait framing: `100%` made the portrait test subject too large to review as a body. Fix: the Local ML-style toolbar now starts and resets at `50%`, showing nearly the full standing subject while preserving zoom up to `250%`.
+- Initial P2 control placement: zoom, row selection, and Full screen were separated across the old workbench. Fix: they now share the same single red toolbar shown in the source visual.
+- Intentional source difference: the source right rail contains Meta, Apple, and Depth Pro experiments. The final rail substitutes WEAR v5 evidence because the user explicitly restricted this pass to trained WEAR 3D tools. This is a product-data change, not visual drift.
+- Intentional content difference: the source uses another person's landscape photo while the verified implementation uses the selected Shahnaz 2 portrait. The `50%` zoom leaves black workspace beside the portrait by design and preserves the source editor's pan/zoom behavior.
+- Post-fix comparison shows no actionable P0, P1, or P2 mismatch for the requested shell and WEAR-only behavior.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the existing app font, compact `14px` heading, `11–12px` supporting copy, red toolbar labels, dark header hierarchy, and white-rail calculation typography match the source component's scale and weight.
+- Spacing and layout rhythm: the normal card keeps the source's `16px` inset, small radius, tight header-to-toolbar rhythm, and right-aligned clear action. Full screen preserves the dark/white split, `16px` canvas inset, `420px` rail, compact header, and scrollable calculation stack.
+- Colors and tokens: the pink/red card, red control borders and range accent, near-black full-screen workspace, white rail, green depth card, and blue WEAR evidence card retain the source hierarchy while clearly distinguishing trained WEAR from optional red references.
+- Image quality and assets: the browser uses the real selected dataset photo at its native `1200 x 1600` dimensions. No placeholder, recreated screenshot, CSS illustration, or fake body asset is used.
+- Copy and content: Local ML-specific claims were replaced with precise WEAR v5 language. The interface distinguishes the direct learned answer from the optional edited-line formula and states that dragging does not retrain the checkpoint.
+- Icons and affordances: the source component's existing Lucide-style zoom, reset, maximize, eye, lock, move, and close affordances remain aligned with visible hover/focus states and semantic buttons.
+- Responsiveness: at `390 x 844`, the header, toolbar, portrait viewport, and result rail stack vertically without horizontal overflow; the toolbar rows wrap while remaining usable.
+
+### Interaction, accessibility, and runtime checks
+
+- A real left-endpoint drag changed the live result from `113.8 cm` to `125.9 cm`, proving that the displayed calculation responds to the edited WEAR width.
+- A center-handle drag changed row Y from `0.339` to `0.313` and moved both X endpoints from `0.366/0.643` to `0.387/0.664`, proving simultaneous vertical and horizontal whole-row movement while preserving span.
+- Saved red references contained `0` red segments by default, `2` after enabling, and `0` after disabling again.
+- Women bust/chest visibility was enabled and could be hidden/restored. In the men profile, the chest visibility control was visible, disabled, and labelled `Chest line required for men`.
+- Unit conversion changed the same direct result from `113.8 cm` to `44.8 in`, then restored to centimetres.
+- Open/Close, row switching, zoom, red-reference visibility, landmarks, segments, height guide, line reset, full reset, depth method, and edited-line formula controls are functional.
+- Browser console check found no app errors. Two non-blocking MediaPipe/WebGL warnings remained: OpenGL error checking disabled and the existing normalized-rectangle projection advisory.
+- Page and WEAR model status routes returned `200`. Scoped ESLint and full TypeScript passed.
+
+final result: passed
+
+## WEAR two-source torso edge debugger — 2026-08-15
+
+### Source truth, implementation, and normalization
+
+- Bug evidence supplied by the user: `/Users/arashsn/Downloads/Screenshot - 2026-08-15T003246.389.png` (`361 x 336`).
+- Final no-dot bug evidence supplied by the user: `/Users/arashsn/Downloads/Screenshot - 2026-08-15T005242.787.png` (`621 x 136`).
+- Final browser implementation: `.design-qa/wear3d-edge-modes/visible-hip-final.png` (`662 x 857`) in the in-app browser, full-screen editor, narrow responsive layout, DPR 1.
+- WEAR learned-mode evidence: `.design-qa/wear3d-edge-modes/wear-learned-fullscreen.png` (`662 x 857`).
+- Focused same-state comparison: `.design-qa/wear3d-edge-modes/source-vs-corrected.png` (`722 x 336`). The supplied buggy crop is left; a normalized `361 x 336` crop of the corrected Shahnaz 2 torso/hip row is right.
+- Final no-dot browser evidence: `.design-qa/wear3d-no-dots/live-hip-selected-150-focused.png`; the selected hips row is shown at `150%` without endpoint or center dots.
+- Final always-visible measurement evidence: `.design-qa/wear3d-no-dots/live-summary-final.png`; waist and hips are shown together outside the collapsed calculation details.
+- Final same-input comparison: `.design-qa/wear3d-no-dots/reference-vs-final.png`; the supplied large-dot crop is left and the selected no-dot hip row is right.
+- State: Shahnaz 2, women profile, hips selected, zoom `50%`, saved red references hidden, visible-photo edge active.
+
+### Findings and comparison history
+
+- Initial P1 source ambiguity: one displayed endpoint set was presented as the edge truth, so the user could not compare the visible silhouette with the WEAR-trained body estimate. Fix: the API now returns both endpoint candidates for every body row and the editor exposes two explicit modes: `Visible photo edge` and `WEAR learned body edge`.
+- Initial P1 torso isolation concern: visible-photo rows could be confused with the full person silhouette. Fix: the visible path uses the central torso mask band with MediaPipe shoulder/hip centering and limb-capsule exclusion, while the WEAR path uses the v5 learned left/right row targets. Chest verification measured `291px` visible versus `333px` WEAR; hip verification measured `326px` visible versus `344px` WEAR. Both displayed rows stayed on the torso rather than extending to the hanging arms.
+- Initial P2 oversized handles: the selected endpoints used visible radius `10` plus `4px` white stroke. A first reduction to `5.5`/`4.5` still looked oversized at close zoom. Final fix: all visible endpoint and center circles are removed from active rows and saved red rows. Three transparent `20`-unit hit areas preserve left, whole-row, and right dragging without drawing any dot.
+- P1 hidden waist/hip values: the result existed only inside the active-row details, so reviewing hips required selecting hips and reviewing waist required selecting waist. Fix: a persistent `Waist + hips` pair now renders directly below the editor and updates live; the full-screen calculation rail keeps the same pair. Selecting another line does not hide either number.
+- Truthfulness correction: v5 was trained from WEAR 3D body labels but still receives a cleaned person mask. The interface explicitly labels this `mask-assisted` and states that a genuinely mask-free RGB v6 is a separate training job, preventing the visual tool from claiming training that does not exist.
+- Post-fix comparison shows no actionable P0, P1, or P2 issue in the requested edge-source, no-dot, and persistent waist/hip result scope.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the existing Local ML shell typography is preserved; the new edge selector uses the same compact `9–12px` rail hierarchy and readable active-state weight.
+- Spacing and layout rhythm: the selector fits the existing right-rail card stack, uses a two-column mode grid, and stacks correctly in the observed `662px` narrow full-screen capture without horizontal overflow.
+- Colors and tokens: cyan consistently identifies visible torso-mask edges, blue identifies WEAR learned edges, and optional saved dataset references remain red and off by default.
+- Image quality and assets: the real `1200 x 1600` Shahnaz 2 dataset photo remains the visual source. No placeholder, generated person, CSS illustration, or recreated body asset is used.
+- Copy and content: each mode says exactly what produces its endpoints. The side-by-side readout exposes both pixel spans, and the mask-free limitation is visible beside the controls.
+- Affordances and accessibility: both mode buttons expose `aria-pressed`; left, center, and right transparent hit areas have explicit drag-area labels and remain draggable with no visible dot; the active source is repeated in a live status block.
+
+### Interaction and runtime checks
+
+- Mode switching worked in the live full-screen editor and changed both color and row geometry while keeping the same body row active.
+- Shahnaz 2 chest and hip rows were checked in both modes. The visible path excluded arm pixels; the WEAR path remained a distinct learned estimate.
+- Waist selection and hips selection each produced `0` visible handle-dot elements and retained all `3` transparent drag zones. Women chest remains optional and red references remain hidden by default.
+- The persistent result panel remained present without opening calculations or selecting either row. On Shahnaz 2 it displayed Natural waist `100.1 cm` versus dataset `99.0 cm`, and Hips `109.9 cm` versus dataset `113.0 cm`.
+- Full TypeScript and scoped ESLint passed. The page and WEAR model status routes returned `200`; the status confirms v5, `286` outputs, synthetic pass, and `sdkReady: false`.
+
+final result: passed
+
+## Merchant AI fitting static mobile quality correction — 2026-08-14
+
+### Evidence and normalization
+
+- Selected visual target: `public/media/partner-landing/merchant-tryon-ai-sizing-mobile-static-4k.webp` (`2160 x 3840`), generated from the previous portrait composition as a sharp static still with no landmarks or motion.
+- Browser implementation: `.design-qa/merchant-ai-fitting/implementation-mobile-static-4k-focused-379x720.png` (`379 x 720` focused capture from a `390 x 844` CSS viewport, DPR 1).
+- Same-input comparison: `.design-qa/merchant-ai-fitting/comparison-mobile-static-4k-source-vs-implementation.png` (`758 x 720`), normalized source on the left and browser implementation on the right.
+- The browser selected the `828w` Next Image candidate at quality `100`, which decoded to `780 x 1386` for the `379px`-wide mobile slot and therefore provides roughly 2x display density.
+
+### Findings and comparison history
+
+- Initial P1 mobile-quality issue: the previous `1080 x 1920` asset was a crop enlarged from the landscape source and looked soft in the mobile section. The replacement is a purpose-generated portrait source with sharper face, jacket fabric, phone, hands, architectural detail, and garment-card edges, then stored as a `2160 x 3840` WebP.
+- Initial P1 unwanted-motion issue: the section previously mounted a Veo animation. The final section contains zero video elements and uses static Next Image assets on both desktop and mobile.
+- The mobile subject, teal phone, lime jacket, orange layer, cool atrium, and three product cards preserve the intended reference composition. The copy card intentionally overlays the lower portrait so the face, phone, and upper garment stay visible.
+- No actionable P0, P1, or P2 issue remains.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the live Manrope heading, body, labels, chips, and CTA retain their established mobile hierarchy and wrapping.
+- Spacing and layout rhythm: the `760px` section, full-bleed portrait, `14px` card gutters, and bottom-card placement match the prior accepted layout without horizontal overflow.
+- Colors and tokens: lime apparel, teal phone, blue atrium, off-white card, teal accent heading, and black CTA remain consistent.
+- Image quality and assets: mobile now uses the high-detail `2160 x 3840` static asset delivered at approximately 2x display density; desktop keeps the existing 4K landscape still.
+- Copy and content: virtual try-on, AI sizing, fit confidence, and CTA copy remain live and unchanged.
+
+### Interactions, accessibility, and runtime checks
+
+- At `390 x 844`, document/client width measured `379px` with no horizontal overflow. The AI-fitting section mounted zero video elements.
+- The mobile image decoded at `780 x 1386`; the desktop image remains separate and hidden in this breakpoint.
+- The existing merchant CTA remains a real button and the two static images have descriptive alternative text.
+- A fresh desktop check at `1440 x 900` mounted zero video elements, displayed the existing `1920w` landscape candidate, hid the mobile portrait, and reported no browser errors.
+- Scoped ESLint, TypeScript, Prettier, and `git diff --check` passed.
+
+final result: passed
+
+## Merchant hero hover feature explorer — 2026-08-13
+
+### Evidence and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-2c371342-9f14-4cd0-9a44-e1b525b370ea.png` for the clean editorial headline treatment with imagery beside, not beneath, the copy. The interaction behavior is the user's explicit feature-hover specification.
+- Approved feature assets: `public/media/partner-landing/merchant-network/merchant-hero-ai-try-on-chatgpt-pro.png` and `public/media/partner-landing/merchant-network/merchant-hero-creator-network-chatgpt-pro.png`, both `1122 x 1402` portrait masters from the logged-in ChatGPT session. PDP Studio, merchant dashboard, and supplier access use existing product assets from the same project.
+- Browser implementation evidence: `/merchants` at `1429 x 893` and `390 x 844` CSS viewports, DPR 1, tested in default, hovered, focused, and tapped states.
+- The source is an art-direction reference rather than an equal-size page mock, so comparison was normalized around the affected hero region: headline clearance, feature-list typography, image-panel position, image proportions, and interaction state.
+
+### Findings and comparison history
+
+- Initial P1 overlap: two floating image cards crossed the headline and sat underneath the copy. Fix: removed both absolute cards and created a dedicated two-column feature explorer below the headline, with the preview in its own track beside the five feature rows.
+- Initial P2 readability issue: the hero used a small paragraph. Fix: replaced it with five readable feature rows containing a title and concise benefit, with larger optical weight and clear dividers.
+- Initial P2 default-state clutter: the first image and highlight appeared before interaction. Fix: the default hero now shows no image, no pressed feature, and no feature highlight. The preview appears only on mouse hover, keyboard focus, or touch/click, then hides on pointer leave or focus exit.
+- Initial P2 image crop: the preview was a landscape slot while the approved assets are `4:5`. Fix: the panel now uses an exact `0.8` portrait aspect ratio and `object-fit: cover`; the AI try-on source ratio and rendered panel ratio both measure `0.8`, so the approved composition fills the card without trimming its intended frame.
+- Post-fix desktop measurements confirm zero headline/preview overlap, zero feature-row/preview overlap, five features, no horizontal overflow, and a hidden preview in the untouched state. Mobile measures `379px` document/client width inside the `390px` viewport, with the preview hidden by default and tap activation working.
+- No actionable P0, P1, or P2 issue remains in this scope.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the large existing headline hierarchy remains untouched; the paragraph is replaced by readable feature titles and benefit lines, with active lime emphasis matching the reference's editorial highlight.
+- Spacing and layout rhythm: headline, feature list, and preview occupy separate grid regions. The preview never sits under text or crosses the headline on desktop or mobile.
+- Colors and visual tokens: warm hero background, black type, purple interaction cues, and lime active highlight remain aligned with the merchant landing system.
+- Image quality and assets: the two approved ChatGPT portrait masters and existing project imagery are rendered through Next Image at quality `90`. The preview uses a matching portrait frame and cover behavior; no placeholder, CSS drawing, or stretched raster is used.
+- Copy and content: the small paragraph is removed. AI fit and try-on, influencer network, PDP Studio, merchant dashboard, and supplier access are all directly represented as interactive feature rows.
+
+### Interaction, accessibility, and runtime checks
+
+- Mouse hover changes the preview and leaving the explorer hides it. Keyboard focus shows the corresponding image and leaving the feature group hides it. Click/tap toggles the selected feature for touch devices.
+- Buttons expose `aria-pressed`, control the live preview, and retain visible focus styling. Hidden images have empty alternative text and `aria-hidden`; only the active image exposes its descriptive alternative text.
+- Scoped ESLint, full TypeScript, Prettier, and `git diff --check` passed. Browser logs contain no hero/runtime error; one existing non-blocking Next Image quality warning belongs to a later AI-sizing section and is outside this hero change.
+
+final result: passed
+
+## Merchant hero floating feature assets — 2026-08-13
+
+### Evidence
+
+- Visual references: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-0340fd6c-5bc6-4e44-b0bf-b11f1041a294.png` and `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-5fbf5f47-81b5-458b-b7c6-096661996721.png`.
+- Generated in the logged-in ChatGPT Pro session in the Codex in-app browser: `public/media/partner-landing/merchant-network/merchant-hero-ai-try-on-chatgpt-pro.png` and `public/media/partner-landing/merchant-network/merchant-hero-creator-network-chatgpt-pro.png`, both `1122 x 1402`.
+- Implementation: `/merchants` at a `1429 x 893` CSS viewport, DPR 1, default page-top state.
+
+### Comparison and findings
+
+- The first generation path produced clean studio photography that did not preserve the references' distinctive compositions. Those versions were rejected and are not used by the page.
+- The final try-on asset preserves the reference's top-down cobblestone, hand-held phone, visible shopper legs, and model-emerging-from-phone illusion while changing the model and outfit.
+- The final creator asset preserves the reference's full-body fashion creator surrounded from all edges by many phones while changing the model and outfit.
+- Both generated assets are enlarged, rotated around the headline as editorial objects, and served through Next Image at quality `90`. The removed eyebrow no longer appears in the rendered hero.
+- The network background, headline, copy, and header remain unchanged. No horizontal overflow is present. No actionable P0, P1, or P2 issue remains.
+
+### Runtime checks
+
+- Both assets load with positive intrinsic dimensions in the live route. Scoped ESLint, full TypeScript, Prettier, and `git diff --check` passed.
+
+final result: passed
+
+## Merchant hero reference restoration — 2026-08-13
+
+### Evidence and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-c1756640-fb86-44d3-9052-8614f2122030.png` (`1429 x 893`, DPR 1).
+- Implementation screenshot: `.design-qa/merchant-hero-restore/implementation-1429x893.png`, captured from `http://127.0.0.1:3001/merchants` at a `1429 x 893` CSS viewport, DPR 1.
+- State: merchant landing page top, desktop navigation visible, waitlist closed.
+- Density normalization: source and implementation are equal-size, same-state desktop captures, so no density conversion was required.
+
+### Findings and comparison
+
+- The previously selected scattered-arrivals image was a P1 mismatch because it added people outside the four network lanes and reduced the blue building's prominence.
+- Restored the exact earlier `merchant-network-people-logo-hero-v6-retail-right-4k.png` master shown in the reference. The subject placement, empty building interior, four profession-specific lines, left text space, fade, title, and header framing now match the supplied screenshot.
+- Full-view comparison was sufficient because the source and implementation have identical viewport dimensions and the affected scope is the single full-screen hero. The image also loads from the 4K master through Next Image at quality `90`; no focused crop was needed to judge this one-asset restoration.
+- No actionable P0, P1, or P2 mismatch remains. Typography, spacing, colors, and copy were preserved exactly; only the requested hero image was restored.
+
+### Runtime checks
+
+- The hero contains zero video elements. The restored image reports positive natural dimensions, and the page has no horizontal overflow.
+- Scoped ESLint, full TypeScript, Prettier, and `git diff --check` passed.
+
+final result: passed
+
+---
+
+# Dressing Room source-grid update — 2026-08-13
+
+## Evidence and comparison
+
+- Visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-8595b4c6-f8d8-40ab-962d-ad641e242e65.png` (`1080 x 1350`, DPR 1).
+- Final browser capture: `.design-qa/outfit-grid/desktop-1440x900.png` from `http://127.0.0.1:3001/shop/dressing-room` at a `1440 x 900` CSS viewport, DPR 1.
+- State: Women, View all, four-piece starter look, Form Trench selected, both rails expanded.
+- Full-view evidence confirms the canvas now uses the same off-white square-paper texture as the supplied visual while retaining the exact Dressing Room layout and controls. A separate focused crop was unnecessary because the full-view capture exposes the repeated grid tile and every functional region clearly.
+
+## Findings and fix
+
+- Initial P2 mismatch: the canvas used a flat warm-stone background, while the supplied target requires a visible square grid on both the Dressing Room and AI result canvases.
+- Fix: added a source-derived `77 x 77` raster grid tile and bound its size and position to the infinite-canvas camera. The grid now zooms and pans with the garment world rather than appearing as a detached page wallpaper.
+- No P0, P1, or P2 issue remains. Typography, spacing, product imagery, copy, controls, responsive rails, and real product data are otherwise unchanged from the already-passed Dressing Room implementation.
+- Scoped ESLint passed, the browser route loaded without console errors, and pan/zoom/item manipulation behavior remains available.
+
+final result: passed
+
+## Merchant network first-section hero — 2026-08-13
+
+### Evidence and normalization
+
+- Source visual truth: `public/media/partner-landing/merchant-network/merchant-network-people-logo-hero-chatgpt-pro-v4-logo-line-building.png` (`1672 x 941`, RGB PNG).
+- Implementation route: `http://127.0.0.1:3001/merchants`, first section, default state, waitlist closed.
+- Intended comparison viewports: desktop `1440 x 1000` CSS pixels and mobile `390 x 844` CSS pixels at DPR 1.
+- Implementation screenshot path: unavailable. The in-app browser rejected loopback navigation under its URL security policy before a browser-rendered screenshot could be captured.
+- Density normalization: unavailable because there is no implementation screenshot. The source is rendered through `next/image` at quality `90`, with its intrinsic `1672 x 941` ratio and responsive `sizes` preserved.
+
+### Findings and comparison history
+
+- [P0] Visual verification blocker. A same-input source/implementation comparison cannot be made without a browser-rendered screenshot, so typography, crop, first-viewport composition, responsive wrapping, and horizontal overflow cannot be honestly passed.
+- No visual fix iteration was performed because the current rendered state could not be opened by the permitted in-app browser surface.
+- Source-level implementation preserves the existing navy outer canvas, white rounded frame, Manrope display type, cobalt accent, and numbered section language used by the following merchant sections. These are implementation facts, not visual-pass evidence.
+
+### Required fidelity surfaces
+
+- Fonts and typography: implemented with the existing Manrope variable and established merchant display weights; browser-rendered line breaks remain unverified.
+- Spacing and layout rhythm: implemented as a centered `1440px` frame with responsive desktop, tablet, and mobile rules; rendered overflow and fold position remain unverified.
+- Colors and visual tokens: uses the existing merchant `--ink`, `--blue`, `--muted`, navy canvas, and white panel tokens; browser rendering remains unverified.
+- Image quality and asset fidelity: the exact ChatGPT Pro raster asset is used with no crop, a fixed intrinsic ratio, responsive sizes, and the highest configured Next.js quality (`90`). The source asset and its optimized route both return HTTP `200`.
+- Copy and content: server-rendered HTML contains the headline, both CTAs, and all five requested pillars: AI fit + try-on, Influencer network, PDP Studio, Merchant dashboard, and Supplier access.
+
+### Runtime checks
+
+- `/merchants` returns HTTP `200` on port `3001` after a clean development-server restart.
+- The optimized hero image returns HTTP `200` at `1672 x 941`; the direct PNG is `2,091,834` bytes.
+- Scoped ESLint, focused TypeScript, Prettier for the edited small files, and `git diff --check` passed.
+- Production compilation completed successfully. Repository-wide type checking remains blocked by stale pre-existing `.next/dev/types/app/qa-stylist-pdp/page.ts` references to a missing QA route.
+- Primary CTA wiring remains the existing merchant waitlist action; the secondary CTA targets `#influencer-network`. Neither interaction was browser-exercised because of the same loopback URL-policy block.
+
+### Full-view and focused comparison evidence
+
+- Full-view comparison: blocked; no permitted browser-rendered implementation capture.
+- Focused hero comparison: blocked for the same reason.
+
+final result: blocked
+
+## Merchant network centered full-screen hero — 2026-08-13
+
+### Evidence and normalization
+
+- Supersedes the blocked `v4` merchant-hero report above.
+- Desktop visual truth: `public/media/partner-landing/merchant-network/merchant-network-people-logo-hero-chatgpt-pro-v5-centered-wide.png` (`1672 x 941`, RGB PNG).
+- Mobile visual truth: `public/media/partner-landing/merchant-network/merchant-network-people-logo-hero-chatgpt-pro-v5-centered-mobile.png` (`941 x 1672`, RGB PNG).
+- Final desktop browser capture: `qa/merchant-hero/merchant-hero-centered-desktop-1440x900.png` (`1429 x 893` browser pixels) from a `1440 x 900` CSS viewport at DPR 1.
+- Final mobile browser capture: `qa/merchant-hero/merchant-hero-centered-mobile-390x844.png` (`379 x 820` browser pixels) from a `390 x 844` CSS viewport at DPR 1.
+- Hero-only crops: `qa/merchant-hero/merchant-hero-centered-desktop-section-1429x821.png` and `qa/merchant-hero/merchant-hero-centered-mobile-section-379x754.png`.
+- Same-input comparisons: `qa/merchant-hero/merchant-hero-source-vs-rendered-desktop.png` (`1440 x 410`) and `qa/merchant-hero/merchant-hero-source-vs-rendered-mobile.png` (`770 x 754`). Each comparison uses a centered cover crop at the implementation aspect ratio; source is left and browser rendering is right.
+- Route/state: `http://127.0.0.1:3001/merchants`, default state, waitlist closed. The first section contains no visible text or controls.
+
+### Findings and comparison history
+
+- Pass 1, P1 crop/composition mismatch: the earlier `v4` image was enlarged and translated right, cutting the scene and fighting the requested centered composition.
+- Fix: regenerated a dedicated wide `v5` asset with the complete PrimeStyleAI building and all four people groups smaller, centered, and surrounded by generous cream background. Removed every hero copy, button, caption, card, frame, and transform.
+- Pass 2, P2 mobile scale/seam mismatch: containing the wide image on a portrait viewport kept it complete but made the network too small and exposed a visible landscape-image band.
+- Fix: generated the matching `941 x 1672` portrait art-direction asset and switched the hero to Next.js `getImageProps()` plus `<picture>` so desktop and mobile receive purpose-built sources.
+- Pass 3, P2 loading warning: the above-the-fold image triggered a development LCP warning.
+- Fix: added eager loading and high fetch priority. Fresh desktop and mobile reloads produced no console errors or warnings.
+- Final comparison shows the complete centered mark, all people groups and shadows intact, no hero text, no horizontal overflow, and no substantive P0/P1/P2 mismatch.
+
+### Required fidelity surfaces
+
+- Fonts and typography: intentionally not applicable inside the hero because the approved first section contains zero visible text. Existing site navigation remains outside the hero.
+- Spacing and layout rhythm: the hero occupies exactly the remaining first viewport below the `72px` desktop or `66px` mobile header. The composition is centered with broad negative space on both sources.
+- Colors and visual tokens: the generated warm ivory ground fills the hero edge to edge; the blue building and light-blue, teal, orange, and pink network groups retain their intended roles.
+- Image quality and asset fidelity: separate high-resolution landscape and portrait PNGs are served through the Next image optimizer at quality `90`; desktop used the wide source and mobile used the portrait source, confirmed from each browser `currentSrc`.
+- Copy and content: hero `innerText` is empty at both tested viewports. No title, slogan, CTA, card, label, or caption is rendered over the artwork.
+- Interaction and accessibility: the hero has no interactive controls. It retains a descriptive section label and meaningful image alternative text; the global header and waitlist behavior are unchanged.
+
+### Runtime checks
+
+- `/merchants`, both direct assets, and both optimized browser sources returned HTTP `200` on port `3001`.
+- Desktop and mobile document widths matched their rendered body widths with no horizontal overflow.
+- Scoped ESLint, focused TypeScript, Prettier, and `git diff --check` passed.
+- Fresh final browser reloads reported no console errors or warnings.
+
+final result: passed
+
+---
+
+## Merchant network retail-role hero and reference title — 2026-08-13
+
+### Evidence and normalization
+
+- Supersedes the centered, image-only `v5` hero above.
+- Title-style reference: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-8b7631e8-6c2d-44dd-82ee-eabffcaa4aaf.png`.
+- Approved desktop generation master: `public/media/partner-landing/merchant-network/merchant-network-people-logo-hero-v6-retail-right-source.png` (`1672 x 941`).
+- Matching mobile generation master: `public/media/partner-landing/merchant-network/merchant-network-people-logo-hero-v6-retail-right-mobile-source.png` (`941 x 1672`).
+- Production delivery assets: `merchant-network-people-logo-hero-v6-retail-right-4k.png` (`3840 x 2160`) and `merchant-network-people-logo-hero-v6-retail-right-mobile-4k.png` (`2160 x 3840`), created from the generation masters with Lanczos enlargement and light sharpening.
+- Final desktop capture: `qa/merchant-hero/merchant-hero-v6-title-desktop-1440x900.png` (`1429 x 893` browser pixels) at a `1440 x 900` CSS viewport.
+- Final mobile capture: `qa/merchant-hero/merchant-hero-v6-title-mobile-390x844.png` (`379 x 820` browser pixels) at a `390 x 844` CSS viewport.
+- Route/state: `http://127.0.0.1:3001/merchants`, first viewport, waitlist closed.
+
+### Findings and fixes
+
+- P1 role mismatch fixed: teal merchants no longer read like pink customers. The merchant path now carries folded apparel, garment racks, retail display tables, tablets/POS tools, hangers, and clothing stock. Shopping bags remain visually concentrated in the pink customer path.
+- P1 representation correction fixed: the selected desktop and mobile masters contain no hijab, headscarf, veil, or covered-hair styling.
+- P1 composition mismatch fixed: the complete building and incoming network are right-weighted, leaving the left side available for the headline while preserving the directional movement into both building entrances.
+- P2 source softness fixed: people are fewer, larger, and more legible than the crowded prior generation. Separate 4K landscape and portrait delivery assets preserve clearer edges through the responsive image pipeline. The 4K files are high-quality enlargements, not native 4K model outputs.
+- P1 title-style mismatch fixed: the hero now uses the supplied reference's oversized black geometric type, compressed three-line rhythm, embedded circular brand badge, and lime hand-marker highlight. The title remains live HTML/CSS rather than baked raster text, preserving crisp responsive typography and accessibility.
+- Mobile art direction uses the dedicated portrait artwork, hides only the supporting paragraph, and retains the full title plus the people-to-building story within the first viewport.
+
+### Runtime checks
+
+- Desktop `currentSrc` resolves the `v6` landscape asset and mobile `currentSrc` resolves the dedicated `v6` portrait asset through the Next image optimizer at quality `90`.
+- The hero occupies the viewport below the `72px` desktop or `66px` mobile header. Desktop and mobile checks reported no positive horizontal overflow.
+- `/merchants` and `/api/health` returned HTTP `200` on port `3001`; the browser rendered the final state without a development error overlay.
+- Scoped ESLint, full TypeScript, Prettier, and `git diff --check` passed.
+- No unresolved P0, P1, or P2 issue remains in the approved first-hero scope.
+
+final result: passed
+
+---
+
+## Merchant network Veo Lite motion hero and crop correction — 2026-08-13
+
+### Evidence and normalization
+
+- Selected still source: `public/media/partner-landing/merchant-network/merchant-network-people-logo-hero-v6-retail-right-source.png` (`1672 x 941`).
+- User-reported cropped state: `/Users/arashsn/Downloads/Screenshot - 2026-08-13T205850.427.png` (`1904 x 822`).
+- Generated source video: `public/media/partner-landing/merchant-network/merchant-network-people-logo-hero-v7-veo-lite-720p.mp4` (`1280 x 720`, H.264 + AAC, 24 fps, 8 seconds).
+- Production loop asset: `public/media/partner-landing/merchant-network/merchant-network-people-logo-hero-v7-veo-lite-loop-720p.mp4` (`1280 x 720`, H.264 without audio, 8 seconds, fast-start MP4).
+- Final desktop delivery asset: `public/media/partner-landing/merchant-network/merchant-network-people-logo-hero-v7-veo-lite-loop-upscaled-1080p.mp4` (`1920 x 1080`, H.264 without audio, 8 seconds, fast-start MP4). It is a no-cost Lanczos upscale with restrained sharpening of the approved clip, not a second AI generation.
+- Motion contact sheet: `qa/merchant-hero/veo-lite-v7/merchant-network-veo-lite-contact-sheet.jpg`, showing one frame per second across the complete generation.
+- Focused full-resolution frame: `qa/merchant-hero/veo-lite-v7/merchant-network-veo-lite-frame-04s.png` (`1280 x 720`).
+- Final desktop browser capture: `qa/merchant-hero/veo-lite-v7/merchant-network-video-hero-desktop-1920x900.png` (`1909 x 895` browser pixels) at a `1920 x 900` CSS viewport, DPR 1.
+- Final entrance-fade and 1080p browser capture: `qa/merchant-hero/veo-lite-v7/merchant-network-video-faded-building-desktop-1920x900.png` (`1909 x 895` browser pixels) at a `1920 x 900` CSS viewport, DPR 1.
+- Mobile fallback capture: `qa/merchant-hero/veo-lite-v7/merchant-network-video-hero-mobile-fallback-390x844.png` (`379 x 820` browser pixels) at a `390 x 844` CSS viewport, DPR 1.
+- Same-input before/after comparison: `qa/merchant-hero/veo-lite-v7/merchant-network-video-before-after-head-crop.png`; user-reported state is left and the corrected hero-only desktop crop is right, normalized to `1200 x 518` per side.
+- Route/state: `http://127.0.0.1:3001/merchants`, first viewport, waitlist closed, desktop video playing at approximately 2.1 seconds.
+
+### Findings and comparison history
+
+- Pass 1, P1 crop failure: the desktop `cover` treatment enlarged the landscape source at very wide viewport ratios and cut off the pointed top of the PrimeStyleAI building. Fix: changed both image and video surfaces to right-anchored `contain`, and matched the surrounding hero canvas and gradient to the generated image's sampled ivory edge color. The complete building point is visible with safe space above it in the post-fix comparison.
+- Pass 1, P1 motion requirement: the image-only hero did not show the requested continuous network movement. Fix: generated exactly one approved 8-second 720p clip with `veo-3.1-lite-generate-preview`. The fixed camera preserves the four colored paths while adults walk forward, role props move with them, people enter from the outer edges, and people ahead continue into the two building entrances.
+- Pass 2, P2 unnecessary mobile transfer: the first responsive integration hid the video visually on mobile but still resolved its source URL. Fix: the client now attaches and plays the MP4 only when `(min-width: 561px)` matches and reduced motion is not requested. The final mobile browser state reports an empty video `currentSrc`, `readyState: 0`, and the dedicated 4K portrait still remains visible.
+- Pass 3, P2 building crowd and desktop softness: later video frames filled the building interior and the 720p surface softened when enlarged across a 1920px viewport. Fix: a vertical alpha mask now dissolves the motion layer between the approach and entrance, revealing the sharp 4K still for the complete building, while a locally upscaled 1080p delivery file improves the remaining moving area without another paid model call.
+- The production clip is intentionally muted and stripped of its generated audio. Browser state confirms `paused: false`, `muted: true`, `loop: true`, `readyState: 4`, and an 8-second duration. A timed check crossed the 8-second boundary and returned to `2.72s`, confirming continuous loop playback.
+- The video keeps the blue building rigid and complete, maintains the light-blue supplier, teal merchant, orange creator, and pink customer roles, adds incoming adults with corresponding role props, and shows no headscarf styling in the inspected contact sheet or focused frame.
+- Veo 3.1 Lite was the only paid model used. One successful 8-second 720p generation was submitted under the user-approved maximum list-price spend of `$0.40`; no mobile video or additional paid attempt was generated.
+
+### Required fidelity surfaces
+
+- Fonts and typography: unchanged from the passed live headline treatment; Manrope remains crisp above the motion layer with the same black hierarchy, purple brand badge, and lime marker highlight.
+- Spacing and layout rhythm: the right-anchored contained media creates intentional clean title space while keeping the entire building and primary paths visible. The hero remains exactly the first viewport below the desktop or mobile header.
+- Colors and visual tokens: the hero canvas now uses the sampled warm ivory edge color (`#f8e8d7`), removing the visible risk of a contain-mode seam. Role colors and the blue building remain legible throughout motion.
+- Image quality and asset fidelity: desktop uses the 1080p locally upscaled delivery asset over the 4K still, with the building zone fully resolved from the still and motion retained below the entrance fade. The 4K still remains the poster and failure fallback. Mobile retains its purpose-built portrait still.
+- Copy and content: headline and supporting copy are unchanged. The video contains no text, labels, captions, dialogue, or watermark.
+
+### Runtime checks
+
+- Desktop video loaded from the final 1080p loop MP4, reached `readyState: 4`, autoplayed muted, and looped without user input. Computed styles confirmed the entrance alpha mask is active.
+- Desktop at `1920 x 900` and mobile at `390 x 844` reported zero horizontal overflow. Mobile avoided loading the MP4 after the responsive-source fix.
+- Final in-app browser logs contained only React development and hot-reload information, with no warning or error entries.
+- `/merchants`, the MP4, and the image fallbacks resolve on port `3001`.
+- Scoped ESLint, full TypeScript, Prettier, and `git diff --check` passed.
+- No unresolved P0, P1, or P2 issue remains in the hero motion and framing scope.
+
+final result: passed
+
+---
+
 # Denim ten-product photography set — 2026-08-07
 
 ## Evidence
@@ -3541,3 +3946,250 @@ final result: passed
 - Scoped ESLint, full TypeScript, new-component Prettier, and `git diff --check` passed. Frontend `/influencers` and backend `/api/health` returned HTTP `200` on ports 3000 and 4000. The repo-wide production build remains blocked by unrelated, pre-existing imports of the missing `@primestyleai/tryon/react` package in demo and product-detail files; the influencer route itself compiles and responds successfully.
 
 final result: passed
+
+## Merchant virtual try-on and AI sizing section — 2026-08-13
+
+### Evidence and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-3c825c62-15d4-4194-b8b6-49ff6543430e.png` (`736 x 552`), supplied by the user as the composition reference.
+- Generated section master: `public/media/partner-landing/merchant-tryon-ai-sizing-section-chatgpt.png` (`1672 x 941`), created in the user's logged-in ChatGPT session from that reference and adapted from eyewear commerce to fashion try-on and fit matching.
+- Final desktop implementation: `.design-qa/merchant-ai-fitting/implementation-desktop-1440x900.png` (`1429 x 893` browser capture from a `1440 x 900` CSS viewport, DPR 1).
+- Final mobile implementation: `.design-qa/merchant-ai-fitting/implementation-mobile-390x844.png` (`379 x 820` browser capture from a `390 x 844` CSS viewport, DPR 1).
+- Same-input comparison: `.design-qa/merchant-ai-fitting/reference-vs-implementation.png` (`1440 x 500`), with the supplied reference on the left and the implemented section on the right.
+
+### Findings and comparison history
+
+- The new section sits directly after the merchant hero as section `01`, before the existing `02 / Influencer Network` story.
+- The generated master preserves the reference's glass-atrium setting, lime outerwear, green eyewear, teal phone, floating product cards, and dominant white commerce panel on the right. The product content intentionally changes to virtual try-on and AI size matching to reflect the requested merchant feature.
+- The desktop implementation uses the image as a full-bleed cover, keeps the shopper and product interface on the right, and uses the brighter left side for live HTML copy and the merchant CTA.
+- At `390 x 844`, the focal crop uses `86% 50%` object positioning so the shopper and try-on panel remain visible; the copy becomes a translucent bottom card without horizontal overflow.
+- No actionable P0, P1, or P2 visual mismatch remains.
+
+### Interactions, accessibility, and runtime checks
+
+- The CTA opened the existing merchant interest dialog, and the dialog closed successfully without submitting data.
+- The section is a labeled semantic region with an `h2`, descriptive image alternative text, real button controls, visible keyboard focus, and text kept outside the raster asset.
+- Desktop measured `1429px` document width inside a `1440px` viewport; mobile measured `379px` document width inside a `390px` viewport. Neither state has horizontal overflow.
+- The image loaded with positive intrinsic dimensions in both responsive states. A fresh desktop reload reported no browser console errors.
+- Scoped ESLint, full TypeScript, Prettier, and `git diff --check` passed.
+
+final result: passed
+
+## Merchant AI fitting HD and mobile landmark loop — 2026-08-13
+
+### Evidence and normalization
+
+- Original composition reference: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-3c825c62-15d4-4194-b8b6-49ff6543430e.png` (`736 x 552`).
+- Higher-detail desktop master: `public/media/partner-landing/merchant-tryon-ai-sizing-section-chatgpt-hd.webp` (`3840 x 2160`, 651 KB), generated from the locked composition and delivered through Next Image at quality `90`.
+- Veo source portrait: `public/media/partner-landing/merchant-tryon-ai-sizing-mobile-landmarks-source.png` (`1080 x 1920`).
+- Veo output: `public/media/partner-landing/merchant-tryon-ai-sizing-mobile-landmarks-veo-lite-1080p.mp4`, generated once with `veo-3.1-lite-generate-preview` at `1080 x 1920`, 24 fps, and eight seconds.
+- Web loop: `public/media/partner-landing/merchant-tryon-ai-sizing-mobile-landmarks-loop.mp4` (`1080 x 1920`, 7.25 seconds, H.264, 3.0 MB, no audio). It rebuilds every frame from the unchanged portrait source and composites only the bright cyan landmark pixels over the woman; the background and product cards remain the still source.
+- Final desktop capture: `.design-qa/merchant-ai-fitting/implementation-desktop-hd-1440x900.png` (`1429 x 893` browser pixels from a `1440 x 900` CSS viewport, DPR 1).
+- Final mobile capture: `.design-qa/merchant-ai-fitting/implementation-mobile-girl-only-final-379x720.png` (focused browser capture from a `390 x 844` CSS viewport, DPR 1).
+- Desktop same-input comparison: `.design-qa/merchant-ai-fitting/comparison-desktop-hd-reference-vs-implementation.png` (`1440 x 500`), original reference on the left and final implementation on the right.
+- Mobile same-input comparison: `.design-qa/merchant-ai-fitting/comparison-mobile-static-source-vs-girl-only-overlay.png` (`1080 x 960`), unchanged portrait source on the left and the final isolated landmark layer on the right.
+- Motion contact sheet: `.design-qa/merchant-ai-fitting/mobile-girl-only-contact-sheet-final.png` (`1080 x 960`), showing the same locked source frame across the loop while only landmarks pulse and change.
+
+### Findings and comparison history
+
+- Initial P1 image-quality issue: the `1672 x 941` image did not provide enough pixel density for the full-width section. The final desktop asset is a sharper `3840 x 2160` master, and the rendered page selects the `1920w` Next Image candidate without enlarging the old source.
+- Initial P1 whole-frame motion issue: the raw Veo output animated the entire portrait. The final asset discards that moving base, uses the original `1080 x 1920` portrait for every frame, color-isolates only the cyan landmarks, and applies a spatial woman-only mask so no animated points remain in the atrium, garment cards, or bag.
+- Initial P2 loop seam: the generated eight-second clip did not return closely enough to its first frame for a direct restart. The final 7.25-second web asset uses a circular crossfade; first/last-frame SSIM improved from `0.419` on the raw generation to `0.943` on the final boundary.
+- Initial P2 desktop bandwidth issue: the first responsive implementation still mounted the mobile video on desktop. The final component uses `matchMedia` to mount it only below `560px` and only when reduced motion is not requested; desktop renders no video element.
+- The active mobile frame keeps cyan landmarks attached to the foreground woman's face, neck, shoulders, elbows, wrists, phone hand, torso, and jacket. No animated point appears on the background, garment cards, card products, or bag.
+- The translucent copy card intentionally covers the lower body while leaving the face, phone, shoulders, and enough landmark motion visible to communicate AI analysis.
+- No actionable P0, P1, or P2 issue remains.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the existing Manrope hierarchy, weights, wrapping, and live HTML copy remain unchanged on desktop and mobile.
+- Spacing and layout rhythm: desktop keeps the reference's clean left copy field and right-aligned subject/UI. Mobile uses the portrait crop, a `760px` section, and the existing bottom content card without horizontal overflow.
+- Colors and tokens: lime apparel, teal phone, cyan tracking landmarks, cool atrium, white copy card, and black CTA retain the existing merchant section palette and contrast.
+- Image quality and assets: desktop uses the 4K master; mobile uses a native `1080 x 1920` still-plus-landmark composite. No placeholder, CSS drawing, inline SVG, or low-resolution enlargement is used.
+- Copy and content: try-on, AI sizing, fit confidence, and the merchant CTA remain live and unchanged; the video adds only the requested landmark-analysis story.
+
+### Interactions, accessibility, and runtime checks
+
+- Mobile playback measured `1080 x 1920`, `readyState=4`, `paused=false`, `muted=true`, and `loop=true` in the browser. The displayed source duration is 7.25 seconds.
+- At `390 x 844`, document and client width both measured `379px`; at `1440 x 900`, both measured `1429px`. Neither viewport has horizontal overflow.
+- The CTA opened the existing merchant-interest dialog and the close animation completed successfully without form submission.
+- `prefers-reduced-motion` and desktop users receive the sharp still image instead of autoplay video. The decorative video is muted, inline, hidden from assistive technology, and removed entirely outside the mobile motion query.
+- The corrected mobile reload measured `390 x 844`, `379px` client/document width, `1080 x 1920` decoded video, `readyState=4`, active muted playback, and no horizontal overflow. The desktop reload measured `1440 x 900`, selected the `1920w` still, and mounted zero video elements.
+- Opening the below-hero section directly by hash produces one non-blocking Next development LCP advisory suggesting eager image loading; no runtime error occurs, and normal page entry keeps the second-section asset lazy.
+- Fresh desktop and mobile reloads reported no browser console errors. Scoped ESLint, full TypeScript, Prettier, Node syntax validation, and `git diff --check` passed.
+
+final result: passed
+
+## WEAR 3D women line editor parity — 2026-08-14
+
+### Evidence and normalization
+
+- Existing Local ML full-screen reference: `.design-qa/local-ml-fullscreen-reference.png` (`1269 x 714`).
+- Final WEAR desktop implementation: `.design-qa/wear-sizing-fullscreen-women.png` (`1269 x 714`).
+- Same-input comparison: `.design-qa/local-ml-vs-wear-fullscreen.png` (`2538 x 714`), with Shahnaz 2 in both editors.
+- Final mobile implementation: `.design-qa/wear-sizing-fullscreen-women-mobile.png` (`379 x 820` from a `390 x 844` viewport).
+
+### Findings and fixes
+
+- P1 meaning confusion: the prior panel made Ramanujan look like the WEAR model. The final right rail separates the direct trained circumference, trained depth, visible width, and depth ratio from the optional post-model shape calculator.
+- P1 interaction gap: endpoints previously changed only horizontal width and the center changed only vertical position. Either endpoint now moves horizontally and vertically, while the center moves the complete line in both axes and preserves its span.
+- P2 reference clutter: saved red dataset lines previously appeared automatically. They now start hidden and can be shown or hidden from the editor toolbar.
+- P2 women-specific control: the female bust/chest tape answer is explicitly optional and never sent into the model. The bust/chest line has an independent eye toggle and is labelled optional for women.
+- The full-screen shell matches the existing Local ML structure: dark fixed canvas, compact header and close action, white tool rail, scrollable image viewport, and a `420px` live-calculation rail on desktop.
+- No actionable P0, P1, or P2 issue remains in this scope.
+
+### Interaction and runtime checks
+
+- With red references off, the SVG contained zero red reference segments; enabling them produced two saved reference segments for the active test and disabling them returned to zero.
+- Hiding and restoring the women bust/chest line worked through its independent visibility control.
+- A real endpoint drag changed the selected line from normalized `(365.7, 338.9)` to `(313.7, 306.4)`, proving simultaneous horizontal and vertical movement. A center drag then moved both endpoints by the same delta while preserving line width.
+- The WEAR v5 status endpoint returned `200` for `wear3d-standing-a-v5-all-targets-20260814`; the page returned `200` and the browser reported no console errors.
+- Scoped ESLint, full TypeScript, and `git diff --check` passed.
+
+final result: passed
+
+## Influencer legal footer transition and minimum-activity tone — 2026-08-14
+
+### Evidence and normalization
+
+- Source visual truth: `/Users/arashsn/Downloads/Screenshot - 2026-08-14T213251.798.png` (`1637 x 259`), with the user's explicit correction that the yellow strip must be removed and the legal page's blue/white fields must continue directly into the footer.
+- Desktop implementation: `/tmp/privacy-footer-flush-desktop.png` (`1626 x 894` browser capture from a `1637 x 900` CSS viewport, DPR 1) on `/privacy-policy`, scrolled to the main/footer boundary.
+- Same-input comparison: `/tmp/legal-transition-before-after.png` (`3252 x 259`). The supplied screenshot is normalized to `1626 x 259` on the left; the matching implementation boundary crop is `1626 x 259` on the right.
+- Mobile implementation: `/tmp/terms-footer-flush-mobile.png` (`379 x 820` browser capture from a `390 x 844` CSS viewport, DPR 1) on `/terms`, scrolled to the main/footer boundary.
+- Minimum-activity evidence: `/tmp/creator-access-kind-billing-desktop.png` (`1429 x 1191` from a `1440 x 1200` CSS viewport) and `/tmp/creator-access-kind-mobile.png` (`379 x 820` from a `390 x 844` CSS viewport), both on `/influencers#creator-access`.
+
+### Findings and comparison history
+
+- Initial P1 legal transition mismatch: the legal routes inherited the landing-page footer's yellow top field, creating a large yellow band and making the footer appear detached from the blue/white policy layout. Fix: added a legal-only footer variant with zero top padding and a blue/white split that follows the legal page columns. The main and footer rectangles now meet with a measured `0px` gap.
+- Initial P2 footer-logo clipping risk: removing the spacer could clip the overlapping circular logo. Fix: the legal variant permits visible overflow while retaining the established rounded dark footer frame. The logo remains fully visible on desktop and mobile.
+- Initial P2 activity-card tone mismatch: the fee notice used a black treatment and directive copy. Fix: changed it to a soft cobalt, lavender, and peach surface with dark readable text, and rewrote the explanation in a calmer, supportive tone while keeping the three required milestones and `$4.99` monthly continuation explicit.
+- Post-fix desktop Privacy and mobile Terms captures contain no yellow transition element, no horizontal overflow, no console errors, and no whitespace gap between `main` and `footer`.
+- No actionable P0, P1, or P2 issue remains in this scope.
+
+### Required fidelity surfaces
+
+- Fonts and typography: existing legal and creator-page type families, weights, hierarchy, and wrapping remain unchanged; the fee message uses readable desktop and mobile sizes rather than miniature utility text.
+- Spacing and layout rhythm: the blue/white legal layout meets the footer at `0px`; the rounded footer and overlapping logo retain their original proportions. The activity card stacks cleanly on mobile without clipping.
+- Colors and visual tokens: legal pages now continue cobalt and white to the dark footer with no yellow. The fee notice uses existing cobalt, lavender, peach, purple, ink, and muted-text tokens.
+- Image quality and assets: the existing PrimeStyleAI logo remains sharp and unobscured; no page imagery or media assets were changed.
+- Copy and content: all three monthly benchmarks are clearly joined as requirements. The `$4.99` monthly fee and first-qualified-impression-or-product-click start condition remain explicit, but the wording is less commanding.
+
+### Interactions, accessibility, and runtime checks
+
+- Desktop Privacy measured `1626px` document width inside a `1637px` viewport; mobile Terms measured `379px` inside `390px`. Neither state has horizontal overflow.
+- The shared legal footer remains linked through the same Privacy and Terms routes and preserves its normal navigation and CTA behavior.
+- Scoped ESLint, full TypeScript, translation JSON validation, and `git diff --check` passed. Browser console checks reported no errors on the tested routes.
+
+final result: passed
+
+## Private WEAR 3D v6r4 full-screen editor — 2026-08-16
+
+### Evidence and normalization
+
+- Local ML reference: `/Users/arashsn/Downloads/Screenshot - 2026-08-14T232742.287.png` (`1675 x 825`), using the Shane 2 height-proof photo at `150%`.
+- Final private WEAR implementation: `.design-qa/wear-v6r4-shane-fullscreen-final.png` (`1679 x 825`), using the same Shane 2 photo and `150%` state.
+- Same-input comparison: `.design-qa/local-ml-vs-wear-v6r4-shane-fullscreen.png` (`3358 x 825`), with the reference normalized by 4 pixels before the side-by-side review.
+
+### Visual and interaction findings
+
+- The WEAR shell now matches the Local ML full-screen structure: fixed dark image canvas, compact top toolbar, close control, `150%` zoom, and a fixed white live-results rail.
+- Saved red review lines are hidden by default. The final capture shows only the blue WEAR prediction and the selected natural-waist line's two small rectangular handles; the previous large endpoint dots are gone.
+- Neck, chest, waist, and hips remain visible in the right rail without selecting their image lines. Selecting a line is only an editing action.
+- The line editor supports horizontal and vertical movement, independent endpoint width editing, line reset, all-line reset, and separate WEAR RGB, mask-assisted, and Meta comparison modes.
+- The customer contract is reflected in the controls: chest is optional for women and required for men. The male profile value is validated by the UI/API but is not an ONNX input or a saved WEAR tape answer.
+- The right rail exposes Apple-corrected width, independently WEAR-trained depth, direct learned circumference, 32-point closed shape, camera confidence, row source, and explicit `No formula` status.
+- No actionable P0, P1, or P2 visual mismatch remains in the requested full-screen shell. Browser diagnostics contained development refresh logs only and no warning or error.
+
+### Model-quality boundary
+
+- Visual QA passed, but model approval did not. The subject-disjoint synthetic gate passed; the answer-free Shane, Shahnaz, and Negar real-photo gate failed at `5.32 cm` mean absolute error and `13.20 cm` maximum error, with failed waist/hip row reviews.
+- Test Lab shows `Private v6r4 blocked`. The candidate stays private, `sdkReady=false`, and no release, publication, deployment, or SDK promotion occurred.
+
+final visual result: passed
+
+private model result: failed and blocked
+
+## Private WEAR 3D v6r5 completed training and Test Lab — 2026-08-16
+
+### Audited training evidence
+
+- Apple-on-WEAR canonical anchors: `.local-ml/v6r5-apple-pose/apple-vision-front-anchors-v6r5.canonical.jsonl`; exactly `4,326/4,326` accepted standing people and zero invalid geometries.
+- Numerical audit: `.local-ml/v6r5-apple-pose/apple-vision-anchor-audit-v6r5.json`. Visual audit: `.local-ml/v6r5-apple-pose/apple-vision-anchor-contact-sheet-v6r5.png`, including every repaired/fallback case plus diverse subject examples.
+- Virginia-only v6r5 training completed for `38,934` RGB views with subject-disjoint `3,451` train, `427` validation, and `448` test people. The `g4dn.xlarge` worker `i-0e00a4d7f5627f02c` auto-terminated after artifact upload.
+- Synthetic evaluation preserved its original result. Core circumference MAEs were chest `2.817 cm`, hips `1.664 cm`, neck `1.777 cm`, under-bust `2.554 cm`, and waist `2.548 cm`. Official pass stayed false because `row.underbust.y_shoulder_hip_ratio` scored `0.02937` versus the train-mean baseline `0.02925`, a `0.00012` tie-sized gap despite passing the `0.06` hard limit.
+- The only permitted installation is the hash-locked private diagnostic recorded in `.local-ml/reports/wear3d-v6r5-synthetic-gate-review.json`. Runtime, metrics, review, and ONNX hashes are checked before inference. `releaseAuthorized=false`, `publishAuthorized=false`, `deployAuthorized=false`, and `sdkReady=false` are enforced.
+
+### Answer-free real-photo evidence
+
+- Same-runtime report: `.local-ml/reports/wear3d-v6r5-real-photo-pending-20260816.json`. Combined visual sheet: `.local-ml/reports/wear3d-v6r5-real-photo-contact-sheet-20260816.jpg`. Review: `.local-ml/reports/wear3d-v6r5-visual-review-pending-20260816.json`.
+- Saved tape answers were attached only after both model passes. The report proves `saved_answers_sent_to_model=false`, `runtime_mask_used=false`, and `formula_used=false`.
+- Shahnaz 2 errors: chest `2.81 cm`, waist `1.26 cm`, hips `6.99 cm`. Negar 2: chest `0.48 cm`, under-bust `2.80 cm`, waist `6.08 cm`, hips `10.72 cm`. Shane 2: waist `13.40 cm`, hips `10.11 cm`.
+- Final private result: `9` tape comparisons, `6.0722 cm` mean absolute error, and `13.40 cm` maximum error. Shahnaz and Shane hip endpoints also failed the visual tight-edge review. Full validator: `.local-ml/reports/wear3d-v6r5-private-validation-20260816.json`.
+
+### Full-screen Test Lab verification
+
+- The live in-app browser was reloaded on port `3001`, confirmed to be served by this checkout, and exercised with Shahnaz 2 using the installed v6r5 ONNX package.
+- The complete live run returned five mask-free WEAR rows, Apple camera geometry `check`, five direct learned measurements, `No formula`, 32-point closed WEAR shapes, and always-visible right-rail results.
+- The full-screen editor was inspected at both `150%` and `50%`. At `50%`, the complete person, all five lines, selected-line-only small handles, and the fixed live-results rail were visible together. Chest endpoints excluded the arms; the too-narrow hip line remained visible and failed rather than being hidden or auto-approved.
+- The separate full-screen process view shows `4,326` people, `38,934/38,934` views, all six stages at `100%`, the official synthetic failure, `6.07 cm` real-photo MAE, two failed hip-row reviews, and the explicit `Never released / never published / never deployed / SDK false` lock.
+- Scoped ESLint, full TypeScript, Python compilation, ONNX Node-runtime loading, API contract checks, and browser interaction checks passed.
+
+final visual result: passed
+
+private model result: failed and blocked; no release or publication occurred
+
+## WEAR v6 depth controls and movable saved lines — 2026-08-16
+
+### Evidence and state
+
+- Requested control reference: `/Users/arashsn/Downloads/Screenshot - 2026-08-16T163734.695.png` (`384 x 617`).
+- Same-input comparison: `.design-qa/wear-v6-depth-controls/source-vs-implementation.png` (`822 x 714`), with the Local ML reference on the left and the Delaram 2 WEAR implementation on the right.
+- Final full-screen implementation: `.design-qa/wear-v6-depth-controls/delaram2-final-no-endpoint-handles.png` (`1269 x 714` from a `1280 x 720` CSS viewport, DPR 1).
+- Tested state: Delaram 2, female, `168 cm`, `70.8 kg`, full-screen editor, `50%` image zoom, natural waist selected, waist and hips visible, optional upper-body cards collapsed.
+
+### Findings and comparison history
+
+- Initial P1 layout issue: placing the 32-point shape and depth controls side by side made the explanation collapse into one-word lines inside the `420px` rail. The final card is a true flex-column stack: shape, explanation, ratio/depth switch, slider, generated value, and live perimeter check.
+- The direct trained WEAR answer remains unchanged while the diagnostic slider scales the same learned 32-point cross-section. No ellipse or Ramanujan formula is introduced into this WEAR view.
+- Female waist and hips are the two default result cards and toolbar inputs. Neck, bust/chest, and under-bust start collapsed and can be expanded together. Male chest remains part of the mandatory default set.
+- Saved red review lines remain hidden by default. When enabled, each red line can move horizontally and vertically, and its invisible endpoint hit areas resize the width. Reset restores the source preset.
+- Final P2 handle issue: the selected blue line still showed a small filled square endpoint. Both filled squares were removed. The endpoint resize hit areas remain available but fully invisible; the SVG audit reported `0` visible endpoint shapes and `2` transparent endpoint hit areas.
+- No actionable P0, P1, or P2 visual issue remains in this requested scope.
+
+### Interaction, accessibility, and runtime checks
+
+- Default/expanded/collapsed result-card counts were exercised as `2 / 5 / 2`, preserving waist and hips at the top.
+- Ratio and depth-centimetre modes were switched in the live full-screen rail. The displayed generated WEAR ratio/depth stays separate from the editable diagnostic value.
+- An actual saved-red-line pointer drag changed its normalized horizontal and vertical coordinates; keyboard arrow movement also changed its row. `Reset red` restored the original preset coordinates.
+- The final line overlay has readable labels for its invisible left/right resize areas, and the visible instruction now states that endpoint areas stay invisible.
+- Browser console contained no errors. It contained only development refresh messages and non-blocking MediaPipe WebGL/projection warnings.
+- The route returned HTTP `200`; scoped ESLint and full TypeScript checks passed.
+
+final result: passed
+
+## Blind body-width proof in full-screen Sizing Lab — 2026-08-16
+
+### Tested interaction
+
+- Route/state: `localhost:3001/try-on-test/sizing-lab`, Delaram 2, Local ML, full screen, waist selected.
+- The proof now keeps three different claims separate: Apple body width, independent Depth Pro body-surface width for the original red endpoints, and printed-tape camera/depth controls.
+- The same-pixel clone and the optional projected tape-plane line are explicitly labeled as visual diagnostics that cannot prove the body width.
+- A caller-supplied frozen body width can be projected onto the tape depth path without sending printed tape values to the projection process. Printed values are joined only afterward for the visual tape-plane comparison.
+
+### Live result
+
+- Apple waist proposal: `409 px → 30.63 cm`.
+- Independent high-confidence Depth Pro body-surface result: `26.56 cm`.
+- Body-method difference: `-4.07 cm / -13.30%`; tape controls: `2/4` within 2%.
+- The main verdict correctly remains `REJECTED · DO NOT TRUST 30.63 cm`.
+- Optional visual-only projection resized the line to `515 px`; the printed tape read `30.43 cm`, a `-0.20 cm / -0.67%` tape-plane match. The UI explicitly states that this does not change the rejected body-width verdict.
+
+### Checks
+
+- Python compilation, scoped ESLint, and full TypeScript checks passed.
+- Live in-app browser interaction and screenshot inspection passed at the requested full-screen state.
+- No release, publication, deployment, or SDK promotion occurred.
+
+final visual result: passed
+
+body-width result: rejected and unproven

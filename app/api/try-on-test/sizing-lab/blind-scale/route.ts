@@ -14,9 +14,9 @@ export const runtime = "nodejs";
 
 const execFileAsync = promisify(execFile);
 const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
-const MODEL_VERSION = "height-depth-pro-dense-field-v7";
-const MODEL_DIRECTORY = path.join(tmpdir(), "primestyle-blind-scale-v7");
-const DEPTH_DIRECTORY = path.join(tmpdir(), "primestyle-depth-pro-cache");
+const MODEL_VERSION = "height-depth-pro-dense-field-v8";
+const MODEL_DIRECTORY = path.join(tmpdir(), "primestyle-blind-scale-v8");
+const DEPTH_DIRECTORY = path.join(tmpdir(), "primestyle-depth-pro-cache-v3");
 
 interface Point { x: number; y: number }
 interface CameraInput {

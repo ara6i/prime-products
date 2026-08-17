@@ -33,6 +33,7 @@ function formatUpdatedAt(value: string) {
 export function TrainingProgressPanel({ initialStatus }: { initialStatus: ModelForgeTrainingStatus }) {
   const [status, setStatus] = useState(initialStatus);
   const [connected, setConnected] = useState(true);
+  const [clockMs, setClockMs] = useState(() => new Date(initialStatus.updatedAt).valueOf());
 
   useEffect(() => {
     let cancelled = false;
@@ -44,9 +45,13 @@ export function TrainingProgressPanel({ initialStatus }: { initialStatus: ModelF
         if (!cancelled) {
           setStatus(next);
           setConnected(true);
+          setClockMs(Date.now());
         }
       } catch {
-        if (!cancelled) setConnected(false);
+        if (!cancelled) {
+          setConnected(false);
+          setClockMs(Date.now());
+        }
       }
     };
     void refresh();
@@ -62,6 +67,12 @@ export function TrainingProgressPanel({ initialStatus }: { initialStatus: ModelF
     `${status.dataset.completedExamples.toLocaleString("en-US")} / ${status.dataset.targetExamples.toLocaleString("en-US")}`
   ), [status.dataset.completedExamples, status.dataset.targetExamples]);
   const isProblem = status.state === "failed" || status.state === "blocked";
+  const estimatedComputeCap = status.aws.estimatedHourlyUsd == null
+    ? null
+    : status.aws.estimatedHourlyUsd * status.aws.maxRuntimeHours;
+  const updatedAtMs = new Date(status.updatedAt).valueOf();
+  const cloudReportFresh = Number.isFinite(updatedAtMs) && clockMs - updatedAtMs <= 90_000;
+  const live = connected && cloudReportFresh;
 
   return (
     <section
@@ -82,25 +93,38 @@ export function TrainingProgressPanel({ initialStatus }: { initialStatus: ModelF
                 ? <LoaderCircle className="size-3.5 animate-spin" aria-hidden="true" />
                 : status.state === "complete"
                   ? <Check className="size-3.5" aria-hidden="true" />
-                  : status.state === "waiting"
+                  : status.state === "waiting" || status.state === "awaiting_real_photo_validation"
                     ? <CircleDashed className="size-3.5" aria-hidden="true" />
                     : <TriangleAlert className="size-3.5" aria-hidden="true" />}
               {status.state === "complete"
                 ? "Synthetic training complete"
                 : status.state === "waiting"
                   ? "Preprocessing saved safely"
+                  : status.state === "awaiting_real_photo_validation"
+                    ? "Real-photo validation running"
                   : isProblem ? "Needs attention" : "Full pipeline running"}
             </span>
             <span className={cn(
               "inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold",
-              connected ? "text-gray-600" : "text-amber-700",
+              live ? "text-gray-600" : "text-amber-700",
             )}>
               <Cloud className="size-3.5" aria-hidden="true" />
-              {connected ? "Live update every 5 seconds" : "Reconnecting to status"}
+              {!connected
+                ? "Reconnecting to local status"
+                : cloudReportFresh
+                  ? "Cloud report refreshed"
+                  : "Cloud report paused; worker checkpoints continue"}
             </span>
           </div>
           <h2 className="mt-4 text-2xl font-bold tracking-tight text-text-primary">{status.currentStageLabel}</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-text-secondary">{status.detail}</p>
+          {status.aws.instanceType ? (
+            <p className="mt-2 text-xs font-semibold text-slate-500">
+              {status.aws.region ?? "Virginia"} · {status.aws.instanceType}
+              {status.aws.estimatedHourlyUsd == null ? "" : ` · configured estimate $${status.aws.estimatedHourlyUsd.toFixed(3)}/hour`}
+              {estimatedComputeCap == null ? "" : ` · ${status.aws.maxRuntimeHours}h safety cap ≈ $${estimatedComputeCap.toFixed(2)} maximum compute`}
+            </p>
+          ) : null}
         </div>
         <div className="min-w-32 rounded-2xl bg-slate-950 px-5 py-4 text-center text-white">
           <p className="text-3xl font-bold tabular-nums">{percent.toFixed(1)}%</p>
@@ -124,7 +148,10 @@ export function TrainingProgressPanel({ initialStatus }: { initialStatus: ModelF
         </div>
         <div className="mt-3 flex flex-wrap justify-between gap-2 text-xs font-semibold text-text-secondary">
           <span>{processedLabel} labeled examples processed</span>
-          <span>{status.dataset.failedExamples.toLocaleString("en-US")} errors · updated {formatUpdatedAt(status.updatedAt)}</span>
+          <span>
+            {status.dataset.failedExamples.toLocaleString("en-US")} errors · updated {formatUpdatedAt(status.updatedAt)}
+            {cloudReportFresh ? "" : " · report is stale"}
+          </span>
         </div>
       </div>
 

@@ -99,13 +99,23 @@ def main():
         precision = torch.float16 if device.type == "mps" else torch.float32
         model, transform = create_model_and_transforms(device=device, precision=precision)
         model.eval()
-        image, _, _ = load_rgb(args.image)
-        prediction = model.infer(transform(image), f_px=None)
+        image, _, metadata_focal_px = load_rgb(args.image)
+        prediction = model.infer(transform(image), f_px=metadata_focal_px)
         depth = prediction["depth"].detach().float().cpu().numpy()
-        focal = float(prediction["focallength_px"].detach().float().cpu())
+        focal_value = prediction["focallength_px"]
+        focal = float(focal_value.detach().float().cpu()) if hasattr(focal_value, "detach") else float(focal_value)
+        focal_source = "photo-metadata" if metadata_focal_px is not None else "depth-pro-estimate"
         if cache_path:
             cache_path.parent.mkdir(parents=True, exist_ok=True)
-            np.savez_compressed(cache_path, depth=depth.astype(np.float16), focal=np.float32(focal))
+            np.savez_compressed(
+                cache_path,
+                depth=depth.astype(np.float16),
+                focal=np.float32(focal),
+                focal_source=np.asarray(focal_source),
+            )
+
+    if cache_hit:
+        focal_source = str(cached["focal_source"]) if "focal_source" in cached else "legacy-unknown"
 
     top = point_3d(depth, focal, *args.top, args.patch_radius)
     bottom = point_3d(depth, focal, *args.bottom, args.patch_radius)
@@ -163,6 +173,7 @@ def main():
         "elapsedMs": round((time.perf_counter() - started) * 1000),
         "imageSize": [depth.shape[1], depth.shape[0]],
         "estimatedFocalPx": focal,
+        "focalSource": focal_source,
         "estimatedVfovDeg": math.degrees(2 * math.atan(depth.shape[0] / (2 * focal))),
         "rawPredictedHeightCm": raw_height,
         "rawProofCm": raw_proof,

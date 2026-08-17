@@ -9,8 +9,8 @@ set -Eeuo pipefail
 install -d -m 0750 /opt/primestyle/code /opt/primestyle/wear3d
 exec > >(tee -a /var/log/primestyle-wear3d.log) 2>&1
 
-# Six-hour CPU-only cap. The instance terminates automatically at completion,
-# failure, or this deadline. It never consumes a G-family GPU quota.
+# Six-hour CPU-only cap. The instance verifies the full S3 vault but downloads
+# only the standing-A working set, and never consumes G-family GPU quota.
 shutdown -h +360
 
 pipeline_started=0

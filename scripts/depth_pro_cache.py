@@ -31,13 +31,26 @@ def main():
         precision = torch.float16 if device.type == "mps" else torch.float32
         model, transform = create_model_and_transforms(device=device, precision=precision)
         model.eval()
-        image, _, _ = load_rgb(args.image)
-        prediction = model.infer(transform(image), f_px=None)
+        image, _, metadata_focal_px = load_rgb(args.image)
+        # Depth Pro's official path uses EXIF focal length when it exists.
+        # Discarding it made the model guess a different camera and corrupted
+        # every later pixel-to-centimetre measurement.
+        prediction = model.infer(transform(image), f_px=metadata_focal_px)
         depth = prediction["depth"].detach().float().cpu().numpy()
-        focal = float(prediction["focallength_px"].detach().float().cpu())
+        focal_value = prediction["focallength_px"]
+        focal = float(focal_value.detach().float().cpu()) if hasattr(focal_value, "detach") else float(focal_value)
+        focal_source = "photo-metadata" if metadata_focal_px is not None else "depth-pro-estimate"
         cache_path.parent.mkdir(parents=True, exist_ok=True)
-        np.savez_compressed(cache_path, depth=depth.astype(np.float16), focal=np.float32(focal))
+        np.savez_compressed(
+            cache_path,
+            depth=depth.astype(np.float16),
+            focal=np.float32(focal),
+            focal_source=np.asarray(focal_source),
+        )
         cache_hit = False
+
+    if cache_hit:
+        focal_source = str(cached["focal_source"]) if "focal_source" in cached else "legacy-unknown"
 
     print(json.dumps({
         "cacheHit": cache_hit,
@@ -45,6 +58,7 @@ def main():
         "imageWidth": int(depth.shape[1]),
         "imageHeight": int(depth.shape[0]),
         "focalPx": focal,
+        "focalSource": focal_source,
         "elapsedMs": round((time.perf_counter() - started) * 1000),
         "inputs": "image-only-no-height-no-tape-no-expected-length",
     }, separators=(",", ":")))

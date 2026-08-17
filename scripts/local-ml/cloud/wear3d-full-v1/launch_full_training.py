@@ -17,9 +17,10 @@ from typing import Any
 BUCKET = "primestyleai-wear3d-921049726279-us-east-1"
 REGION = "us-east-1"
 PROFILE = "primestyle-wear"
-PIPELINE_ID = "wear3d-full-v1-20260813"
+PIPELINE_ID = "wear3d-standing-a-v5-all-targets-20260814"
+PROCESSED_SOURCE_PIPELINE_ID = "wear3d-standing-a-v3-20260813"
 STATUS_KEY = "jobs/wear3d-full-v1/status.json"
-CODE_PREFIX = "code/wear3d-full-v1"
+CODE_PREFIX = "code/wear3d-standing-a-v5-all-targets"
 ROLE_NAME = "PrimeStyleAIWearTrainingEC2Role"
 INSTANCE_PROFILE_NAME = "PrimeStyleAIWearTrainingEC2Profile"
 SECURITY_GROUP_NAME = "primestyle-wear3d-training-egress-only"
@@ -252,9 +253,9 @@ def initial_status(
     )
     status["dataset"].update(
         {
-            "subjects": 4_323,
+            "subjects": 4_326,
             "sourceScans": 13_209,
-            "targetExamples": 13_209,
+            "targetExamples": 4_326,
             "completedExamples": 0,
             "failedExamples": 0,
         }
@@ -296,8 +297,8 @@ def active_pipeline_instances() -> list[dict[str, Any]]:
         "ec2",
         "describe-instances",
         "--filters",
-        f"Name=tag:PipelineId,Values={PIPELINE_ID}",
-        "Name=instance-state-name,Values=pending,running,stopping,stopped",
+        "Name=tag:Workload,Values=WEAR3DTraining",
+        "Name=instance-state-name,Values=pending,running,stopping",
     )
     return [instance for reservation in response["Reservations"] for instance in reservation["Instances"]]
 
@@ -310,6 +311,7 @@ def make_user_data(bootstrap_name: str) -> str:
         f"export WEAR_PIPELINE_ID={PIPELINE_ID!r}",
         f"export WEAR_STATUS_KEY={STATUS_KEY!r}",
         f"export WEAR_CODE_PREFIX={CODE_PREFIX!r}",
+        f"export WEAR_PROCESSED_SOURCE_PIPELINE_ID={PROCESSED_SOURCE_PIPELINE_ID!r}",
         "export AWS_REGION='us-east-1'",
         "export AWS_DEFAULT_REGION='us-east-1'",
         "export AWS_PAGER=''",
@@ -400,10 +402,16 @@ def launch_instance(
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--project-root", type=Path, default=Path.cwd())
-    parser.add_argument(
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument(
         "--preprocess-only",
         action="store_true",
-        help="Use a separate CPU worker and stop after all 3D meshes are converted and saved.",
+        help="Use a separate CPU worker for the neutral standing-A meshes and stop after approved labels are saved.",
+    )
+    mode.add_argument(
+        "--train-only",
+        action="store_true",
+        help="Use a GPU only after CPU preprocessing passed; do not download the raw 33.50 GB again.",
     )
     args = parser.parse_args()
     project_root = args.project_root.resolve()
@@ -422,17 +430,17 @@ def main() -> None:
         hourly_usd = 1.428
         image = latest_ubuntu_ami()
         stage_label = "Faster AWS CPU worker is being created"
-        detail = "The 32-vCPU worker will convert all 3D meshes without using or touching the shared GPU quota."
-    else:
+        detail = "The 32-vCPU worker will verify the full vault, then convert the 12.58 GB standing-A set without touching GPU quota."
+    elif args.train_only:
         instance_type = INSTANCE_TYPE
-        max_runtime_hours = MAX_RUNTIME_HOURS
-        volume_gb = VOLUME_GB
-        bootstrap_name = "ec2_bootstrap.sh"
-        instance_name = "PrimeStyleAI-WEAR3D-Full-Training"
+        max_runtime_hours = 4
+        volume_gb = 120
+        bootstrap_name = "ec2_train_bootstrap.sh"
+        instance_name = "PrimeStyleAI-WEAR3D-GPU-Train-Only"
         hourly_usd = 0.526
         image = latest_dlami()
-        stage_label = "AWS GPU worker is being created"
-        detail = "The full 33.50 GB source is safe in S3. AWS is starting an encrypted, capped worker."
+        stage_label = "AWS train-only GPU worker is being created"
+        detail = "This GPU will download only approved masks and labels, not the raw 33.50 GB vault."
     upload_code(project_root)
     status = initial_status(
         project_root,
@@ -441,6 +449,23 @@ def main() -> None:
         stage_label=stage_label,
         detail=detail,
     )
+    if args.train_only:
+        status["overallPercent"] = 70
+        status["currentStage"] = "train"
+        status["dataset"].update(
+            {
+                "targetExamples": 4_326,
+                "completedExamples": 4_324,
+                "failedExamples": 2,
+            }
+        )
+        for stage in status["stages"]:
+            if stage["key"] in {"inventory", "manifest", "render"}:
+                stage.update({"state": "complete", "percent": 100})
+            elif stage["key"] == "train":
+                stage.update({"state": "running", "percent": 1})
+            else:
+                stage.update({"state": "queued", "percent": 0})
     upload_status(project_root, status)
 
     with tempfile.NamedTemporaryFile("w", prefix="wear3d-user-data-", suffix=".sh", delete=False) as handle:
@@ -459,12 +484,12 @@ def main() -> None:
         user_data_path.unlink(missing_ok=True)
 
     status["state"] = "running"
-    status["overallPercent"] = 1.5
+    status["overallPercent"] = 70.5 if args.train_only else 1.5
     status["currentStageLabel"] = f"AWS {instance_type} worker is booting"
     status["detail"] = (
         "The separate encrypted CPU worker launched. It does not use the shared GPU quota."
         if args.preprocess_only
-        else "The encrypted GPU worker launched. It will download and verify all 33.50 GB before rendering begins."
+        else "The encrypted GPU worker launched. It will use saved labels and will not repeat the raw-data download or rendering."
     )
     status["updatedAt"] = now_iso()
     status["aws"].update(
@@ -485,7 +510,7 @@ def main() -> None:
                 "statusS3Uri": f"s3://{BUCKET}/{STATUS_KEY}",
                 "maxRuntimeHours": max_runtime_hours,
                 "maxComputeUsd": round(hourly_usd * max_runtime_hours, 2),
-                "mode": "preprocess-only" if args.preprocess_only else "full",
+                "mode": "preprocess-only" if args.preprocess_only else "train-only",
             },
             indent=2,
         )

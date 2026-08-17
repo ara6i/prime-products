@@ -10,7 +10,6 @@ import {
   Tabs,
   TabsList,
   TabsTrigger,
-  PaginationBar,
 } from "@/app/shared/components/ui";
 import { FilterDrawer } from "@/app/shared/components/filter-drawer";
 import { ProductCard } from "./ProductCard";
@@ -97,10 +96,6 @@ export function CatalogPanel({
     outfitModalProducts,
     outfitModalProductIds,
     sentinelRef,
-    showPagination,
-    paginationPage,
-    paginationTotalPages,
-    onPaginationChange,
     filterSections,
   } = useCatalogPanel({ tryOnProductIds });
 
@@ -311,15 +306,6 @@ export function CatalogPanel({
 
             {!isCatalogOverride && (
               <div ref={sentinelRef} className="h-[0.052vw] shrink-0" />
-            )}
-
-            {!isCatalogOverride && showPagination && (
-              <PaginationBar
-                currentPage={paginationPage}
-                totalPages={paginationTotalPages}
-                onPageChange={onPaginationChange}
-                className="py-[0.417vw]"
-              />
             )}
           </>
         )}

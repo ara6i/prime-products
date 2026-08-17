@@ -9,6 +9,7 @@ import { isTestLabAvailableForHost } from "@/app/try-on-test/lib/access";
 import {
   meshShapeProviderLabel,
   type MeshShapePreview,
+  type MeshProjectedPhotoEdge,
   type MeshShapePredictionResponse,
   type MeshShapePredictionRow,
   type MeshShapeProviderId,
@@ -24,16 +25,19 @@ const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
 const MAX_MASK_BYTES = 4 * 1024 * 1024;
 const VALID_PROVIDERS = new Set<MeshShapeProviderId>(["sam-3d-body", "shapy"]);
 const VALID_ROWS = new Set(["waist", "trouserWaist", "hips"]);
+const VALID_EDGE_ROWS = new Set(["neck", "chest", "underbust", "waist", "hips"]);
 
 interface ShapeModelRequestRow {
   kind?: string;
   yNorm?: number;
   leftXNorm?: number;
   rightXNorm?: number;
+  centerXNorm?: number;
   heightFromFloorCm?: number | null;
 }
 
 interface ShapeModelRequest {
+  mode?: "shape" | "photo-edges";
   provider?: string;
   imageDataUrl?: string;
   maskDataUrl?: string | null;
@@ -49,6 +53,8 @@ interface ShapeModelRequest {
   sourceImageKey?: string;
   geometryKey?: string;
   rows?: ShapeModelRequestRow[];
+  edgeRows?: ShapeModelRequestRow[];
+  personBoxPx?: [number, number, number, number];
 }
 
 export async function POST(request: Request) {
@@ -70,7 +76,12 @@ export async function POST(request: Request) {
     : null;
   if (!providerId || !validRequest(body)) {
     return NextResponse.json(
-      { ok: false, error: "A provider, source image, known height, and all three saved body rows are required." },
+      {
+        ok: false,
+        error: body.mode === "photo-edges"
+          ? "A provider, source image, known height, and valid photo edge rows are required."
+          : "A provider, source image, known height, and all three saved body rows are required.",
+      },
       { status: 400 },
     );
   }
@@ -104,13 +115,13 @@ export async function POST(request: Request) {
   const started = performance.now();
   try {
     const imageHash = createHash("sha256").update(imageBuffer).digest("hex");
-    const depthProCachePath = path.join(tmpdir(), "primestyle-depth-pro-cache", `${imageHash}.npz`);
+    const depthProCachePath = path.join(tmpdir(), "primestyle-depth-pro-cache-v3", `${imageHash}.npz`);
     const depthProCacheStat = await stat(depthProCachePath).catch(() => null);
     const depthProCacheFingerprint = depthProCacheStat
       ? `${depthProCacheStat.size}-${Math.round(depthProCacheStat.mtimeMs)}`
       : "no-depth-profile";
     const inferenceKey = createHash("sha256")
-      .update("shape-model-v5-depth-profile")
+      .update("shape-model-v6-projected-photo-edges")
       .update(providerId)
       .update(imageMatch[1]!)
       .update(body.maskDataUrl ?? "")
@@ -120,11 +131,15 @@ export async function POST(request: Request) {
         imageHeight: body.imageHeight,
         heightCm: body.heightCm,
         cameraIntrinsics: body.cameraIntrinsics,
+        mode: body.mode,
         rows: body.rows,
+        edgeRows: body.edgeRows,
+        personBoxPx: body.personBoxPx,
       }))
       .digest("hex");
     const inference = await runCachedLocalInference<{
       rows?: MeshShapePredictionRow[];
+      projectedEdgeRows?: MeshProjectedPhotoEdge[];
       meshPreview?: unknown;
       personBoxPx?: unknown;
       maskConditioned?: unknown;
@@ -157,6 +172,7 @@ export async function POST(request: Request) {
           );
           return JSON.parse(stdout.trim()) as {
             rows?: MeshShapePredictionRow[];
+            projectedEdgeRows?: MeshProjectedPhotoEdge[];
             meshPreview?: unknown;
             personBoxPx?: unknown;
             maskConditioned?: unknown;
@@ -171,8 +187,13 @@ export async function POST(request: Request) {
       },
     });
     const parsed = inference.value;
-    const rows = validatePredictionRows(parsed.rows);
+    const edgeOnly = body.mode === "photo-edges";
+    const rows = edgeOnly ? [] : validatePredictionRows(parsed.rows);
     if (!rows) throw new Error("The shape runner did not return one valid waist, trouser-waist, and hip slice.");
+    const projectedEdgeRows = validateProjectedEdgeRows(parsed.projectedEdgeRows);
+    if (edgeOnly && !projectedEdgeRows) {
+      throw new Error("Meta did not return valid projected body edges for this photo.");
+    }
     const personBoxPx = validatePersonBox(parsed.personBoxPx);
     const meshPreview = validateMeshPreview(parsed.meshPreview);
     const response: MeshShapePredictionResponse = {
@@ -184,6 +205,7 @@ export async function POST(request: Request) {
       elapsedMs: Math.round(performance.now() - started),
       rows,
       meshPreview: meshPreview ?? undefined,
+      projectedEdgeRows: projectedEdgeRows ?? undefined,
       personBoxPx: personBoxPx ?? undefined,
       maskConditioned: parsed.maskConditioned === true,
       depthProfileConditioned: parsed.depthProfileConditioned === true,
@@ -246,7 +268,8 @@ function validRequest(body: ShapeModelRequest): boolean {
   if (!Number.isFinite(body.heightCm) || Number(body.heightCm) < 100 || Number(body.heightCm) > 250) return false;
   if (!body.sourceImageKey || body.sourceImageKey.length > 4_000) return false;
   if (!body.geometryKey || body.geometryKey.length > 20_000) return false;
-  if (!Array.isArray(body.rows) || body.rows.length !== 3) return false;
+  if (body.mode != null && body.mode !== "shape" && body.mode !== "photo-edges") return false;
+  if (body.personBoxPx != null && !validatePersonBox(body.personBoxPx)) return false;
   if (body.cameraIntrinsics != null) {
     const camera = body.cameraIntrinsics;
     if (
@@ -258,6 +281,21 @@ function validRequest(body: ShapeModelRequest): boolean {
       || Number(camera.focalYPx) <= 0
     ) return false;
   }
+  if (body.mode === "photo-edges") {
+    if (!Array.isArray(body.edgeRows) || body.edgeRows.length < 2 || body.edgeRows.length > 5) return false;
+    const edgeKinds = new Set<string>();
+    for (const row of body.edgeRows) {
+      if (!row.kind || !VALID_EDGE_ROWS.has(row.kind) || edgeKinds.has(row.kind)) return false;
+      if (!Number.isFinite(row.yNorm) || Number(row.yNorm) < 0 || Number(row.yNorm) > 1) return false;
+      if (!Number.isFinite(row.leftXNorm) || Number(row.leftXNorm) < 0 || Number(row.leftXNorm) > 1) return false;
+      if (!Number.isFinite(row.rightXNorm) || Number(row.rightXNorm) < 0 || Number(row.rightXNorm) > 1) return false;
+      if (Number(row.rightXNorm) <= Number(row.leftXNorm)) return false;
+      if (row.centerXNorm != null && (!Number.isFinite(row.centerXNorm) || Number(row.centerXNorm) < 0 || Number(row.centerXNorm) > 1)) return false;
+      edgeKinds.add(row.kind);
+    }
+    return edgeKinds.size === body.edgeRows.length;
+  }
+  if (!Array.isArray(body.rows) || body.rows.length !== 3) return false;
   const kinds = new Set<string>();
   for (const row of body.rows) {
     if (!row.kind || !VALID_ROWS.has(row.kind) || kinds.has(row.kind)) return false;
@@ -269,6 +307,24 @@ function validRequest(body: ShapeModelRequest): boolean {
     kinds.add(row.kind);
   }
   return kinds.size === 3;
+}
+
+function validateProjectedEdgeRows(rows: MeshProjectedPhotoEdge[] | undefined): MeshProjectedPhotoEdge[] | null {
+  if (rows == null) return null;
+  if (!Array.isArray(rows) || rows.length < 2 || rows.length > 5) return null;
+  const seen = new Set<string>();
+  for (const row of rows) {
+    if (!VALID_EDGE_ROWS.has(row.kind) || seen.has(row.kind)) return null;
+    if (row.source !== "meta-sam-3d-body-mesh") return null;
+    if (!Number.isFinite(row.yNorm) || row.yNorm < 0 || row.yNorm > 1) return null;
+    if (!Number.isFinite(row.leftXNorm) || row.leftXNorm < 0 || row.leftXNorm > 1) return null;
+    if (!Number.isFinite(row.rightXNorm) || row.rightXNorm < 0 || row.rightXNorm > 1) return null;
+    if (row.rightXNorm <= row.leftXNorm) return null;
+    if (!Number.isInteger(row.slicePointCount) || row.slicePointCount < 8 || row.slicePointCount > 2_000) return null;
+    if (!Number.isFinite(row.alignmentErrorPx) || Math.abs(row.alignmentErrorPx) > 500) return null;
+    seen.add(row.kind);
+  }
+  return rows;
 }
 
 function validatePredictionRows(rows: MeshShapePredictionRow[] | undefined): MeshShapePredictionRow[] | null {

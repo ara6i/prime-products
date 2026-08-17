@@ -16,18 +16,20 @@ import {
   Shirt,
   Sparkles,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import type {
   AiStylistLabStatus,
-  AiStylistLabStatusResponse,
+  AiStylistBatchProgress,
+  AiStylistCjMensShoesProgress,
   AiStylistGenderSegment,
   AiStylistProductPreview,
   AiStylistScenarioCoverage,
-  AiStylistScenarioCoverageResponse,
 } from "./types";
+import { AiStylistBatchProgressPanel } from "./components/AiStylistBatchProgressPanel";
+import { useAiStylistBatchProgress } from "./hooks/useAiStylistBatchProgress";
+import { useAiStylistLabStatus } from "./hooks/useAiStylistLabStatus";
+import { useAiStylistScenarioCoverage } from "./hooks/useAiStylistScenarioCoverage";
 import { ScenarioCoveragePanel } from "./ScenarioCoveragePanel";
-
-const POLL_INTERVAL_MS = 10_000;
 
 function number(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);
@@ -117,6 +119,188 @@ function MetricCard({
         </div>
         <div className={`rounded-xl p-2.5 ${tones[tone]}`}>{icon}</div>
       </div>
+    </section>
+  );
+}
+
+function TargetProgress({
+  label,
+  value,
+  target,
+  detail,
+  tone,
+}: {
+  label: string;
+  value: number;
+  target: number;
+  detail: string;
+  tone: "blue" | "emerald" | "violet";
+}) {
+  const progress = percent(value, target);
+  const tones = {
+    blue: "from-blue-600 to-cyan-400",
+    emerald: "from-emerald-600 to-emerald-400",
+    violet: "from-violet-600 to-fuchsia-400",
+  };
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-5">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-slate-900">{label}</p>
+          <p className="mt-1 text-xs text-slate-500">{detail}</p>
+        </div>
+        <p className="text-xl font-semibold tabular-nums text-slate-950">
+          {progress}%
+        </p>
+      </div>
+      <div className="mt-4 h-3 overflow-hidden rounded-full bg-slate-100 ring-1 ring-slate-200/70">
+        <div
+          className={`h-full rounded-full bg-gradient-to-r transition-[width] duration-500 ${tones[tone]}`}
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+      <p className="mt-3 text-xs font-medium tabular-nums text-slate-600">
+        {number(value)} / {number(target)}
+      </p>
+    </div>
+  );
+}
+
+function CjMensShoesProgressPanel({
+  progress,
+  automationActive,
+}: {
+  progress: AiStylistCjMensShoesProgress | null;
+  automationActive: boolean;
+}) {
+  const audit = progress?.audit ?? null;
+  const target = progress?.target ?? 3_000;
+
+  return (
+    <section className="mt-6 overflow-hidden rounded-3xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-violet-50 p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-base font-semibold text-slate-950">
+              CJ men&apos;s shoes · 3,000 target
+            </h2>
+            <span className="rounded-full bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white">
+              Live supplier progress
+            </span>
+          </div>
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">
+            Shopify intake, Luna enrichment, and the full CJ catalog audit are
+            tracked separately from Trendsi. Shopify products stay Draft; only
+            products that pass the AI Stylist gate enter the curated catalog.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <StatusPill active={automationActive}>
+            Luna automation {automationActive ? "running" : "not running"}
+          </StatusPill>
+          <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">
+            {number(progress?.activeBatches ?? 0)} active CJ batch
+            {(progress?.activeBatches ?? 0) === 1 ? "" : "es"}
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-6 grid gap-4 lg:grid-cols-3">
+        <TargetProgress
+          label="Shopify → backend intake"
+          value={progress?.imported ?? 0}
+          target={target}
+          detail={`${number(progress?.remainingToImportTarget ?? target)} products still needed`}
+          tone="blue"
+        />
+        <TargetProgress
+          label="AI Stylist ready"
+          value={progress?.ragReady ?? 0}
+          target={target}
+          detail={`${number(progress?.remainingToReadyTarget ?? target)} still need to pass Luna and RAG`}
+          tone="emerald"
+        />
+        <TargetProgress
+          label="Qualified CJ supply"
+          value={audit?.catalogQualified ?? 0}
+          target={target}
+          detail="Men + image + inventory + size-guide catalog gate"
+          tone="violet"
+        />
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+        {[
+          ["CJ catalog", audit?.scannedProducts ?? 0],
+          ["Basic qualified", audit?.catalogQualified ?? 0],
+          ["New candidates", audit?.newCatalogQualified ?? 0],
+          ["Images present", progress?.withImages ?? 0],
+          ["Inventory ≥ 10", progress?.inventoryQualified ?? 0],
+          ["Chart evidence", progress?.sizeChartDetected ?? 0],
+          ["Ready for Luna", progress?.readyForLuna ?? 0],
+          ["Needs review", progress?.needsReview ?? 0],
+        ].map(([label, value]) => (
+          <div
+            key={String(label)}
+            className="rounded-xl bg-white/80 px-3 py-3 ring-1 ring-slate-200/70"
+          >
+            <p className="text-lg font-semibold tabular-nums text-slate-950">
+              {number(Number(value))}
+            </p>
+            <p className="mt-1 text-[10px] leading-4 text-slate-500">{label}</p>
+          </div>
+        ))}
+      </div>
+
+      {audit ? (
+        <div className="mt-5 grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
+              <div>
+                <p className="text-sm font-semibold text-amber-950">
+                  CJ alone is short by{" "}
+                  {number(progress?.minimumOtherSupplierGap ?? 0)} products
+                  before Luna.
+                </p>
+                <p className="mt-1 text-xs leading-5 text-amber-800/80">
+                  {number(audit.catalogQualified)} of{" "}
+                  {number(audit.reportedTotalRecords)} catalog products passed
+                  the basic source gate. A second supplier is required to reach
+                  3,000 qualified men&apos;s shoes.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+              Live-detail sample
+            </p>
+            <p className="mt-2 text-xl font-semibold tabular-nums text-slate-950">
+              {number(audit.verification.shippingAndVariantVerified)} /{" "}
+              {number(audit.verification.requested)} passed
+            </p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              Variants, inventory, size evidence, and US shipping. Only{" "}
+              {number(audit.verification.reviewedProducts)} sampled product had
+              CJ customer reviews.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          The full CJ catalog audit has not been persisted yet. Live Shopify and
+          Luna counts remain available above.
+        </div>
+      )}
+
+      <p className="mt-4 text-[11px] text-slate-500">
+        Last CJ product sync{" "}
+        {relativeTime(progress?.lastProductUpdateAt ?? null)}
+        {audit?.generatedAt
+          ? ` · Full catalog audit ${relativeTime(audit.generatedAt)}`
+          : ""}
+      </p>
     </section>
   );
 }
@@ -304,129 +488,45 @@ function ProductRow({ product }: { product: AiStylistProductPreview }) {
   );
 }
 
-export function AiStylistLabPage() {
-  const [status, setStatus] = useState<AiStylistLabStatus | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [scenarioRefreshPending, setScenarioRefreshPending] = useState(false);
-  const [scenarioCoverage, setScenarioCoverage] =
-    useState<AiStylistScenarioCoverage | null>(null);
-  const [scenarioError, setScenarioError] = useState<string | null>(null);
-  const refreshInFlightRef = useRef(false);
-  const scenarioRefreshInFlightRef = useRef(false);
+interface AiStylistLabPageProps {
+  initialStatus: AiStylistLabStatus | null;
+  initialStatusError: string | null;
+  initialScenarioCoverage: AiStylistScenarioCoverage | null;
+  initialScenarioError: string | null;
+  initialBatchProgress: AiStylistBatchProgress | null;
+  initialBatchProgressError: string | null;
+}
 
-  const refresh = useCallback(async (quiet = false) => {
-    if (refreshInFlightRef.current) return;
-    refreshInFlightRef.current = true;
-    if (!quiet) setLoading(true);
-    try {
-      const response = await fetch("/api/try-on-test/ai-stylist/status", {
-        cache: "no-store",
-      });
-      const payload = (await response.json()) as AiStylistLabStatusResponse;
-      if (!response.ok || !payload.ok || !payload.status) {
-        throw new Error(
-          payload.message || payload.error || "Pipeline status request failed.",
-        );
-      }
-      setStatus(payload.status);
-      setError(null);
-    } catch (requestError) {
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Pipeline status request failed.",
-      );
-    } finally {
-      refreshInFlightRef.current = false;
-      setLoading(false);
-    }
-  }, []);
-
-  const refreshScenarioCoverage = useCallback(async () => {
-    if (scenarioRefreshInFlightRef.current) return;
-    scenarioRefreshInFlightRef.current = true;
-    try {
-      const response = await fetch(
-        "/api/try-on-test/ai-stylist/scenario-coverage",
-        { cache: "no-store" },
-      );
-      const payload =
-        (await response.json()) as AiStylistScenarioCoverageResponse;
-      if (!response.ok || !payload.ok || !payload.scenarioCoverage) {
-        throw new Error(
-          payload.message || payload.error || "Scenario status request failed.",
-        );
-      }
-      setScenarioCoverage(payload.scenarioCoverage);
-      setScenarioError(null);
-    } catch (requestError) {
-      setScenarioError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Scenario status request failed.",
-      );
-    } finally {
-      scenarioRefreshInFlightRef.current = false;
-    }
-  }, []);
-
-  const refreshScenarios = useCallback(async () => {
-    setScenarioRefreshPending(true);
-    try {
-      const response = await fetch(
-        "/api/try-on-test/ai-stylist/scenario-coverage/refresh",
-        { method: "POST", cache: "no-store" },
-      );
-      const payload = (await response.json()) as {
-        ok?: boolean;
-        error?: string;
-        message?: string;
-      };
-      if (!response.ok || !payload.ok) {
-        throw new Error(
-          payload.message || payload.error || "Scenario refresh failed.",
-        );
-      }
-      await refreshScenarioCoverage();
-      setScenarioError(null);
-    } catch (requestError) {
-      setScenarioError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Scenario refresh failed.",
-      );
-    } finally {
-      setScenarioRefreshPending(false);
-    }
-  }, [refreshScenarioCoverage]);
-
-  useEffect(() => {
-    const firstRefresh = window.setTimeout(() => void refresh(), 0);
-    const interval = window.setInterval(
-      () => void refresh(true),
-      POLL_INTERVAL_MS,
-    );
-    return () => {
-      window.clearTimeout(firstRefresh);
-      window.clearInterval(interval);
-    };
-  }, [refresh]);
-
-  useEffect(() => {
-    const firstRefresh = window.setTimeout(
-      () => void refreshScenarioCoverage(),
-      0,
-    );
-    const interval = window.setInterval(
-      () => void refreshScenarioCoverage(),
-      POLL_INTERVAL_MS,
-    );
-    return () => {
-      window.clearTimeout(firstRefresh);
-      window.clearInterval(interval);
-    };
-  }, [refreshScenarioCoverage]);
+export function AiStylistLabPage({
+  initialStatus,
+  initialStatusError,
+  initialScenarioCoverage,
+  initialScenarioError,
+  initialBatchProgress,
+  initialBatchProgressError,
+}: AiStylistLabPageProps) {
+  const { status, error, loading, refresh } = useAiStylistLabStatus({
+    initialStatus,
+    initialError: initialStatusError,
+  });
+  const {
+    coverage: scenarioCoverage,
+    error: scenarioError,
+    refreshPending: scenarioRefreshPending,
+    startRefresh: refreshScenarios,
+  } = useAiStylistScenarioCoverage({
+    initialCoverage: initialScenarioCoverage,
+    initialError: initialScenarioError,
+  });
+  const {
+    progress: batchProgress,
+    error: batchProgressError,
+    loading: batchProgressLoading,
+    refresh: refreshBatchProgress,
+  } = useAiStylistBatchProgress(
+    initialBatchProgress,
+    initialBatchProgressError,
+  );
 
   const total = status?.summary.total ?? 0;
 
@@ -444,6 +544,11 @@ export function AiStylistLabPage() {
                   ? "Backend connected"
                   : "Waiting for intake"}
               </StatusPill>
+              <StatusPill active={status?.liveFreshness?.isCurrent ?? false}>
+                {status?.liveFreshness?.isCurrent
+                  ? "Saved catalog snapshot"
+                  : "Read saved snapshot"}
+              </StatusPill>
             </div>
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               AI Stylist pipeline
@@ -456,9 +561,13 @@ export function AiStylistLabPage() {
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right text-xs text-slate-400">
-              <p>Auto-refreshes every 10 seconds</p>
+              <p>Manual refresh only</p>
               <p className="mt-1 text-slate-300">
-                {status ? relativeTime(status.generatedAt) : "Connecting…"}
+                {status?.liveFreshness?.refreshRunning
+                  ? "Backend recount finishing…"
+                  : status?.liveFreshness?.checkedAt
+                    ? `Last refreshed ${relativeTime(status.liveFreshness.checkedAt)}`
+                    : "Not refreshed yet"}
               </p>
             </div>
             <button
@@ -470,7 +579,7 @@ export function AiStylistLabPage() {
               <RefreshCw
                 className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
               />
-              Refresh
+              Refresh snapshot
             </button>
           </div>
         </div>
@@ -570,6 +679,18 @@ export function AiStylistLabPage() {
             ))}
         </div>
       </section>
+
+      <CjMensShoesProgressPanel
+        progress={status?.supplierProgress?.cjMensShoes ?? null}
+        automationActive={Boolean(status?.sync.lunaAutomationActive)}
+      />
+
+      <AiStylistBatchProgressPanel
+        progress={batchProgress}
+        error={batchProgressError}
+        loading={batchProgressLoading}
+        onRefresh={() => void refreshBatchProgress()}
+      />
 
       <ScenarioCoveragePanel
         coverage={scenarioCoverage}

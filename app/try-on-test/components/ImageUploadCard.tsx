@@ -66,13 +66,16 @@ export function ImageUploadCard({
           // Glassy substrate: shows through behind the contained image AND
           // through the empty-state placeholder so both share one visual.
           "bg-gradient-to-br from-brand-blue-pale/40 via-white/30 to-brand-blue-pale/20 backdrop-blur-md",
-          "shadow-[0_1px_2px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.5)]",
           dragOver
             ? "border-brand-blue ring-2 ring-brand-blue/30"
             : previewUrl
               ? "border-white/60"
               : "border-dashed border-gray-300/70 hover:border-brand-blue/70 hover:from-brand-blue-pale/60 hover:to-brand-blue-pale/30",
         )}
+        style={{
+          boxShadow:
+            "0 1px 2px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.5)",
+        }}
       >
         {previewUrl ? (
           <>
@@ -116,7 +119,9 @@ export function ImageUploadCard({
       </div>
 
       <div className="text-xs text-text-hint h-4">
-        {previewUrl && !isCompressing && bytes > 0 && <span>{(bytes / 1024).toFixed(0)} KB ready</span>}
+        {previewUrl && !isCompressing && bytes > 0 && (
+          <span>{(bytes / 1024).toFixed(0)} KB ready</span>
+        )}
       </div>
     </div>
   );

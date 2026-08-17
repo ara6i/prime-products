@@ -53,6 +53,12 @@ interface Props {
   tapeVisionError: string | null;
   tapeVisionElapsedMs: number;
   tapeVisionModel: string | null;
+  appleOnlyCm: number | null;
+  appleOnlyAssumedDepthM: number | null;
+  appleOnlyStartDepthM: number | null;
+  appleOnlyEndDepthM: number | null;
+  appleOnlyBodyPlaneTiltDeg: number | null;
+  appleGeometryQuality: "pass" | "check" | "reject" | null;
   canSnapToTape: boolean;
   onSnapToTape: () => void;
   onRetryTapeVision: () => void;
@@ -100,6 +106,12 @@ export function FullScreenGreenRulerComparison({
   tapeVisionError,
   tapeVisionElapsedMs,
   tapeVisionModel,
+  appleOnlyCm,
+  appleOnlyAssumedDepthM,
+  appleOnlyStartDepthM,
+  appleOnlyEndDepthM,
+  appleOnlyBodyPlaneTiltDeg,
+  appleGeometryQuality,
   canSnapToTape,
   onSnapToTape,
   onRetryTapeVision,
@@ -112,6 +124,7 @@ export function FullScreenGreenRulerComparison({
   onApplyAppleCorrectionChange,
 }: Props) {
   const [samples, setSamples] = useState<SavedSample[]>([]);
+  const [confirmedManualSignature, setConfirmedManualSignature] = useState<string | null>(null);
   const tapeJudgeReady = tapeVisionCm != null
     && expectedCm > 0
     && Math.abs(tapeVisionCm - expectedCm) <= expectedCm * 0.005;
@@ -119,6 +132,23 @@ export function FullScreenGreenRulerComparison({
     && flatCm != null
     && (!applyAppleCorrection || fusedCm != null);
   const intervalLabel = `${formatInputValue(Math.abs(intervalValue))} ${unit}`;
+  const manualSignature = `${proofKey}:${start.x.toFixed(2)}:${start.y.toFixed(2)}:${end.x.toFixed(2)}:${end.y.toFixed(2)}`;
+  const manualIntervalConfirmed = confirmedManualSignature === manualSignature;
+  const appleOnlyErrorCm = appleOnlyCm == null ? null : appleOnlyCm - expectedCm;
+  const appleOnlyErrorPct = appleOnlyErrorCm == null || expectedCm <= 0
+    ? null
+    : appleOnlyErrorCm / expectedCm * 100;
+  const appleOnlyPass = manualIntervalConfirmed
+    && appleGeometryQuality === "pass"
+    && appleOnlyErrorPct != null
+    && Math.abs(appleOnlyErrorPct) <= 2;
+  const appleOnlyVerdict = !manualIntervalConfirmed || appleOnlyCm == null
+    ? "WAITING"
+    : appleGeometryQuality === "reject"
+      ? "INVALID"
+      : appleOnlyErrorPct != null && Math.abs(appleOnlyErrorPct) <= 2
+        ? appleGeometryQuality === "pass" ? "PASS" : "CHECK"
+        : "FAIL";
   const freeIntervalLabel = `${formatInputValue(toDisplayUnit(freeExpectedCm, freeUnit))} ${freeUnit}`;
   const floorAnchorDeltaPx = floorReferenceY == null ? null : freeEnd.y - floorReferenceY;
   const floorAnchorReady = freeRulerPurpose !== "floor-height"
@@ -176,92 +206,173 @@ export function FullScreenGreenRulerComparison({
 
   return (
     <section data-testid="full-screen-green-ruler-comparison" className="mb-3 rounded-xl border border-slate-200 bg-white p-3 text-slate-900">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="flex flex-wrap items-start gap-3">
         <div>
-          <h3 className="text-sm font-medium">Green ruler · {intervalLabel} tape check</h3>
-          <p className="mt-1 text-[11px] leading-4 text-slate-600">
-            Move A and B yourself. Snap only when you want exact printed tape marks.
+          <h3 className="text-sm font-black">Manual Apple-only · {intervalLabel} tape check</h3>
+          <p className="mt-1 text-[11px] font-semibold leading-4 text-blue-900">
+            Drag A and B yourself. Apple camera correction is automatic. Tape OCR and Depth Pro do not enter the Apple-only answer.
           </p>
         </div>
-        <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 text-[11px] text-slate-700">
+      </div>
+
+      <details className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-2.5">
+        <summary className="cursor-pointer text-[10px] font-semibold text-slate-600">
+          Optional automatic tape reader · not used by Apple-only
+        </summary>
+        <button
+          type="button"
+          disabled={tapeVisionStatus === "loading" || (tapeVisionStatus === "ready" && !canSnapToTape)}
+          onClick={tapeVisionStatus === "ready" ? onSnapToTape : onRetryTapeVision}
+          className="mt-3 w-full rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-45"
+        >
+          {snapLabel}
+        </button>
+        <div className={`mt-2 text-[10px] leading-4 ${tapeVisionStatus === "error" ? "text-rose-700" : "text-slate-500"}`}>
+          {snapStatus}
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-2" data-testid="tape-handle-closeups">
+          <TapeHandleCloseup
+            label="A"
+            imageUrl={imageUrl}
+            imageWidth={imageWidth}
+            imageHeight={imageHeight}
+            point={start}
+            tapeValue={tapeVisionStartValue}
+            tapeUnit={tapeVisionUnit}
+          />
+          <TapeHandleCloseup
+            label="B"
+            imageUrl={imageUrl}
+            imageWidth={imageWidth}
+            imageHeight={imageHeight}
+            point={end}
+            tapeValue={tapeVisionEndValue}
+            tapeUnit={tapeVisionUnit}
+          />
+        </div>
+
+        {tapeJudgeReady && tapeVisionCm != null ? (
+          <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] text-emerald-900">
+            Tape snap confirmed: {formatTapeValue(tapeVisionStartValue)} → {formatTapeValue(tapeVisionEndValue)} {tapeVisionUnit} = {formatDistance(tapeVisionCm, unit)}.
+            The scale results below are separate predictions and may still be wrong.
+          </div>
+        ) : tapeVisionCm != null ? (
+          <div className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-[11px] text-amber-900">
+            Current printed span is {formatDistance(tapeVisionCm, unit)}. Snap exact {intervalLabel} before judging or saving the result.
+          </div>
+        ) : null}
+      </details>
+
+      <section
+        data-testid="apple-only-blind-tape-result"
+        className={`mt-3 rounded-xl border-2 p-3 ${appleOnlyPass
+          ? "border-emerald-400 bg-emerald-50"
+          : appleOnlyVerdict === "WAITING"
+            ? "border-slate-300 bg-slate-50"
+            : appleOnlyVerdict === "CHECK"
+              ? "border-amber-400 bg-amber-50"
+              : "border-red-400 bg-red-50"}`}
+      >
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <h4 className="text-sm font-black text-slate-950">Blind Apple-only tape test</h4>
+            <p className="mt-1 text-[10px] leading-4 text-slate-700">
+              Apple receives only this {pixelSpan.toFixed(0)} px line, known height, and Apple camera/body geometry. It does not receive 10 cm, printed tape numbers, Depth Pro, or WEAR.
+            </p>
+          </div>
+          <span className={`rounded-full px-2 py-1 text-[10px] font-black ${appleOnlyPass
+            ? "bg-emerald-600 text-white"
+            : appleOnlyVerdict === "WAITING"
+              ? "bg-slate-300 text-slate-700"
+              : appleOnlyVerdict === "CHECK"
+                ? "bg-amber-400 text-amber-950"
+                : "bg-red-600 text-white"}`}
+          >
+            {appleOnlyVerdict}
+          </span>
+        </div>
+        <div className="mt-3 rounded-lg border border-blue-300 bg-blue-50 p-2.5">
+          <p className="text-[10px] font-semibold leading-4 text-blue-950">
+            First drag A and B onto two printed marks exactly {intervalLabel} apart. You read the tape with your eyes; Apple does not.
+          </p>
+          <button
+            type="button"
+            onClick={() => setConfirmedManualSignature(manualSignature)}
+            className="mt-2 w-full rounded-lg bg-blue-700 px-3 py-2 text-[11px] font-black text-white hover:bg-blue-800"
+          >
+            I placed A and B exactly {intervalLabel} apart
+          </button>
+          {manualIntervalConfirmed ? (
+            <div className="mt-2 text-center text-[10px] font-black text-emerald-700">Manual 10 cm position confirmed</div>
+          ) : (
+            <div className="mt-2 text-center text-[10px] font-semibold text-slate-600">Waiting for your confirmation</div>
+          )}
+        </div>
+        <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+          <div className="rounded-lg bg-white p-2">
+            <div className="text-[9px] text-slate-500">Your tape truth</div>
+            <div className="font-mono text-base font-black text-slate-950">{manualIntervalConfirmed ? `${expectedCm.toFixed(2)} cm` : "not scored"}</div>
+          </div>
+          <div className="rounded-lg bg-white p-2">
+            <div className="text-[9px] text-slate-500">Apple-only answer</div>
+            <div className="font-mono text-base font-black text-slate-950">{appleOnlyCm == null ? "—" : `${appleOnlyCm.toFixed(2)} cm`}</div>
+          </div>
+          <div className="rounded-lg bg-white p-2">
+            <div className="text-[9px] text-slate-500">Error</div>
+            <div className="font-mono text-base font-black text-slate-950">
+              {!manualIntervalConfirmed || appleOnlyErrorCm == null ? "not scored" : `${appleOnlyErrorCm >= 0 ? "+" : ""}${appleOnlyErrorCm.toFixed(2)} cm`}
+            </div>
+          </div>
+        </div>
+        <p className="mt-2 text-[10px] font-semibold leading-4 text-slate-800">
+          Camera check: {appleGeometryQuality ?? "waiting"}. Full Apple ray/plane correction is applied to both endpoints
+          {appleOnlyStartDepthM == null || appleOnlyEndDepthM == null
+            ? ""
+            : ` at ${appleOnlyStartDepthM.toFixed(3)} m → ${appleOnlyEndDepthM.toFixed(3)} m`}
+          {appleOnlyBodyPlaneTiltDeg == null ? "" : ` on a ${appleOnlyBodyPlaneTiltDeg.toFixed(1)}° body plane`}.
+          {appleOnlyAssumedDepthM == null ? "" : ` Average depth ${appleOnlyAssumedDepthM.toFixed(3)} m.`}
+        </p>
+      </section>
+
+      <details className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-2.5">
+        <summary className="cursor-pointer text-[10px] font-semibold text-slate-600">
+          Optional old comparison · includes Depth Pro when enabled
+        </summary>
+        <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[11px] text-slate-700">
           <input
             type="checkbox"
             checked={applyAppleCorrection}
             onChange={(event) => onApplyAppleCorrectionChange(event.currentTarget.checked)}
-            aria-label="Apply Apple correction"
+            aria-label="Apply legacy Apple and Depth Pro correction"
           />
-          Apply Apple correction
+          Add old Apple + Depth Pro comparison
         </label>
-      </div>
-
-      <button
-        type="button"
-        disabled={tapeVisionStatus === "loading" || (tapeVisionStatus === "ready" && !canSnapToTape)}
-        onClick={tapeVisionStatus === "ready" ? onSnapToTape : onRetryTapeVision}
-        className="mt-3 w-full rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-45"
-      >
-        {snapLabel}
-      </button>
-      <div className={`mt-2 text-[10px] leading-4 ${tapeVisionStatus === "error" ? "text-rose-700" : "text-slate-500"}`}>
-        {snapStatus}
-      </div>
-
-      <div className="mt-3 grid grid-cols-2 gap-2" data-testid="tape-handle-closeups">
-        <TapeHandleCloseup
-          label="A"
-          imageUrl={imageUrl}
-          imageWidth={imageWidth}
-          imageHeight={imageHeight}
-          point={start}
-          tapeValue={tapeVisionStartValue}
-          tapeUnit={tapeVisionUnit}
-        />
-        <TapeHandleCloseup
-          label="B"
-          imageUrl={imageUrl}
-          imageWidth={imageWidth}
-          imageHeight={imageHeight}
-          point={end}
-          tapeValue={tapeVisionEndValue}
-          tapeUnit={tapeVisionUnit}
-        />
-      </div>
-
-      {tapeJudgeReady && tapeVisionCm != null ? (
-        <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] text-emerald-900">
-          Tape snap confirmed: {formatTapeValue(tapeVisionStartValue)} → {formatTapeValue(tapeVisionEndValue)} {tapeVisionUnit} = {formatDistance(tapeVisionCm, unit)}.
-          The scale results below are separate predictions and may still be wrong.
-        </div>
-      ) : tapeVisionCm != null ? (
-        <div className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-[11px] text-amber-900">
-          Current printed span is {formatDistance(tapeVisionCm, unit)}. Snap exact {intervalLabel} before judging or saving the result.
-        </div>
-      ) : null}
-
-      <div className={`mt-3 grid gap-2 ${applyAppleCorrection ? "sm:grid-cols-2" : "grid-cols-1"}`}>
-        <RulerModelResultCard
-          title="Without Apple"
-          description="One flat scale from the person’s height"
-          valueCm={flatCm}
-          expectedCm={expectedCm}
-          unit={unit}
-          judgeReady={tapeJudgeReady}
-        />
-        {applyAppleCorrection ? (
+        <div className={`mt-3 grid gap-2 ${applyAppleCorrection ? "sm:grid-cols-2" : "grid-cols-1"}`}>
           <RulerModelResultCard
-            title="With Apple"
-            description="Known height + Apple 3D + Depth Pro; printed tape values excluded"
-            valueCm={fusedCm}
+            title="Without Apple"
+            description="One flat scale from the person’s height"
+            valueCm={flatCm}
             expectedCm={expectedCm}
             unit={unit}
             judgeReady={tapeJudgeReady}
-            status={fusedStatus}
-            error={fusedError}
-            elapsedMs={fusedElapsedMs}
-            onRetry={onRetryFused}
           />
-        ) : null}
-      </div>
+          {applyAppleCorrection ? (
+            <RulerModelResultCard
+              title="Apple + Depth Pro · not Apple-only"
+              description="Known height + Apple 3D + Depth Pro; printed tape values excluded"
+              valueCm={fusedCm}
+              expectedCm={expectedCm}
+              unit={unit}
+              judgeReady={tapeJudgeReady}
+              status={fusedStatus}
+              error={fusedError}
+              elapsedMs={fusedElapsedMs}
+              onRetry={onRetryFused}
+            />
+          ) : null}
+        </div>
+      </details>
 
       <section data-testid="free-ruler-result" className="mt-3 rounded-lg border border-sky-200 bg-sky-50/60 p-3">
         <div className="flex flex-wrap items-start justify-between gap-2">

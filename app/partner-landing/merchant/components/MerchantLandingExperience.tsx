@@ -2,9 +2,11 @@
 
 import { useMerchantLandingPage } from "../hooks/useMerchantLandingPage";
 import { MerchantHeader } from "./MerchantHeader";
+import { MerchantHero } from "./MerchantHero";
 import { MerchantInterestDialog } from "./MerchantInterestDialog";
 import { MerchantLandingFooter } from "./MerchantLandingFooter";
 import { MerchantNetworkJourney } from "./MerchantNetworkJourney";
+import { MerchantTryOnSizingSection } from "./MerchantTryOnSizingSection";
 import styles from "./merchantLanding.module.css";
 
 export function MerchantLandingExperience() {
@@ -19,6 +21,8 @@ export function MerchantLandingExperience() {
         onSectionSelect={navigation.scrollToSection}
       />
       <main>
+        <MerchantHero viewModel={viewModel} />
+        <MerchantTryOnSizingSection onPrimaryAction={interest.open} />
         <MerchantNetworkJourney onPrimaryAction={interest.open} />
       </main>
       <MerchantLandingFooter

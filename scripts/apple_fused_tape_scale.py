@@ -423,6 +423,70 @@ def query_segment(segment, geometry, focal_px, width, height, scale_factor):
     )
 
 
+def project_target_segment(raw, geometry, focal_px, width, height, scale_factor):
+    """Find the image endpoint that represents a caller-supplied physical length.
+
+    The target is a frozen body-width result. Tape numbers, OCR values, and
+    expected tape intervals are not available here. The detected tape support
+    supplies only the camera/depth path on which the blind line is drawn.
+    """
+    target_id, anchor_x, anchor_y, target_cm, direction = raw
+    if not all(math.isfinite(value) for value in (anchor_x, anchor_y, target_cm, direction)):
+        raise ValueError(f"Blind target {target_id} has invalid values.")
+    if target_cm <= 0:
+        raise ValueError(f"Blind target {target_id} must be positive.")
+    direction = 1 if direction >= 0 else -1
+    minimum_y = float(geometry["visibleTopYPx"])
+    maximum_y = float(geometry["visibleBottomYPx"])
+    if anchor_y < minimum_y - 2 or anchor_y > maximum_y + 2:
+        raise ValueError(f"Blind target {target_id} starts outside the visible tape path.")
+
+    boundary_y = maximum_y if direction > 0 else minimum_y
+    maximum_span = abs(boundary_y - anchor_y)
+    if maximum_span < 8:
+        raise ValueError(f"Blind target {target_id} has no visible room in that direction.")
+
+    def result_for_span(span):
+        end_y = anchor_y + (direction * span)
+        return query_segment(
+            (target_id, anchor_x, anchor_y, anchor_x, end_y),
+            geometry,
+            focal_px,
+            width,
+            height,
+            scale_factor,
+        )
+
+    maximum_result = result_for_span(maximum_span)
+    if maximum_result["predictedCm"] + 1e-6 < target_cm:
+        raise ValueError(
+            f"Blind target {target_id} needs {target_cm:.2f} cm but only "
+            f"{maximum_result['predictedCm']:.2f} cm is visible in that direction."
+        )
+
+    low_span = 0.0
+    high_span = maximum_span
+    for _ in range(60):
+        middle_span = (low_span + high_span) / 2
+        if middle_span < 8:
+            low_span = middle_span
+            continue
+        middle_result = result_for_span(middle_span)
+        if middle_result["predictedCm"] < target_cm:
+            low_span = middle_span
+        else:
+            high_span = middle_span
+
+    result = result_for_span((low_span + high_span) / 2)
+    return {
+        **result,
+        "targetCm": target_cm,
+        "projectionErrorCm": result["predictedCm"] - target_cm,
+        "direction": direction,
+        "inputPolicy": "frozen body width plus camera/depth geometry; printed tape values excluded",
+    }
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--depth-cache", required=True)
@@ -430,6 +494,7 @@ def main():
     parser.add_argument("--visual-path", required=True)
     parser.add_argument("--height-cm", required=True, type=float)
     parser.add_argument("--segment", nargs=5, action="append", default=[])
+    parser.add_argument("--target", nargs=5, action="append", default=[])
     args = parser.parse_args()
 
     started = time.perf_counter()
@@ -445,12 +510,37 @@ def main():
     )
     geometry = build_tape_geometry(depth, focal_px, visual)
     segments = []
+    segment_errors = []
     for raw in args.segment:
         segment_id = raw[0]
         coordinates = [float(value) for value in raw[1:]]
-        segments.append(query_segment(
-            (segment_id, *coordinates), geometry, focal_px, width, height, scale_factor
-        ))
+        try:
+            segments.append(query_segment(
+                (segment_id, *coordinates), geometry, focal_px, width, height, scale_factor
+            ))
+        except ValueError as error:
+            # Each ruler is an independent diagnostic. A free ruler can extend
+            # beyond the detected tape path without preventing a valid active,
+            # red-copy, or hidden interval from being calculated.
+            segment_errors.append({
+                "id": segment_id,
+                "error": str(error),
+            })
+
+    target_projections = []
+    target_errors = []
+    for raw in args.target:
+        target_id = raw[0]
+        values = [float(value) for value in raw[1:]]
+        try:
+            target_projections.append(project_target_segment(
+                (target_id, *values), geometry, focal_px, width, height, scale_factor
+            ))
+        except ValueError as error:
+            target_errors.append({
+                "id": target_id,
+                "error": str(error),
+            })
 
     private_keys = {
         "origin", "direction", "curveRows", "curveCenterX", "curveDepth",
@@ -486,6 +576,9 @@ def main():
             "tapePlane": public_geometry,
         },
         "segments": segments,
+        "segmentErrors": segment_errors,
+        "targetProjections": target_projections,
+        "targetErrors": target_errors,
         "elapsedMs": round((time.perf_counter() - started) * 1000),
     }, separators=(",", ":")))
 

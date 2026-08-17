@@ -28,7 +28,6 @@ import type {
 import type { FilterFacetCounts, FilterState } from "@/app/shared/types";
 
 const PRODUCTS_PER_PAGE = 20;
-const INFINITE_SCROLL_PAGES = 5;
 
 interface UseCatalogPanelParams {
   tryOnProductIds: string[];
@@ -39,10 +38,8 @@ export function useCatalogPanel({ tryOnProductIds }: UseCatalogPanelParams) {
   const [searchQuery, setSearchQuery] = useState("");
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [totalProducts, setTotalProducts] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [infiniteScrollDone, setInfiniteScrollDone] = useState(false);
-  const [paginationPage, setPaginationPage] = useState(INFINITE_SCROLL_PAGES + 1);
   const [savedOutfits, setSavedOutfits] = useState<SavedOutfit[]>([]);
   const [closetItems, setClosetItems] = useState<ClosetItem[]>([]);
   const [closetProducts, setClosetProducts] = useState<CatalogProduct[]>([]);
@@ -85,7 +82,6 @@ export function useCatalogPanel({ tryOnProductIds }: UseCatalogPanelParams) {
     setProducts([]);
     setCurrentPage(1);
     setInfiniteScrollDone(false);
-    setPaginationPage(INFINITE_SCROLL_PAGES + 1);
   }, []);
 
   // Load a specific page (used for both initial, infinite scroll, and pagination)
@@ -94,7 +90,7 @@ export function useCatalogPanel({ tryOnProductIds }: UseCatalogPanelParams) {
     search?: string,
     filters?: FilterState | null,
     append = false,
-  ) => {
+  ): Promise<boolean | null> => {
     if (append) {
       setIsLoadingMore(true);
     } else {
@@ -119,10 +115,13 @@ export function useCatalogPanel({ tryOnProductIds }: UseCatalogPanelParams) {
         setProducts(mapped);
       }
       setTotalProducts(response.total);
-      setTotalPages(response.totalPages);
+      const hasMore = response.hasMore ?? page < response.totalPages;
+      setInfiniteScrollDone(!hasMore);
       if (!append && response.facets) setFilterFacets(response.facets);
+      return hasMore;
     } catch {
       // Keep existing products on error
+      return null;
     } finally {
       setIsLoading(false);
       setIsLoadingMore(false);
@@ -130,23 +129,25 @@ export function useCatalogPanel({ tryOnProductIds }: UseCatalogPanelParams) {
   }, []);
 
   // Load next page for infinite scroll
-  const loadNextPage = useCallback(() => {
-    if (isLoadingMore || isLoading) return;
+  const loadNextPage = useCallback(async () => {
+    if (isLoadingMore || isLoading || infiniteScrollDone) return;
     const nextPage = currentPage + 1;
-    if (nextPage > INFINITE_SCROLL_PAGES || nextPage > totalPages) {
-      setInfiniteScrollDone(true);
-      return;
-    }
-    setCurrentPage(nextPage);
-    loadPage(nextPage, searchQuery, appliedFilters, true);
-  }, [currentPage, totalPages, isLoadingMore, isLoading, searchQuery, appliedFilters, loadPage]);
-
-  // Handle pagination page change (after infinite scroll pages)
-  const handlePaginationChange = useCallback((page: number) => {
-    const actualPage = page + INFINITE_SCROLL_PAGES;
-    setPaginationPage(actualPage);
-    loadPage(actualPage, searchQuery, appliedFilters, false);
-  }, [searchQuery, appliedFilters, loadPage]);
+    const hasMore = await loadPage(
+      nextPage,
+      searchQuery,
+      appliedFilters,
+      true,
+    );
+    if (hasMore !== null) setCurrentPage(nextPage);
+  }, [
+    appliedFilters,
+    currentPage,
+    infiniteScrollDone,
+    isLoading,
+    isLoadingMore,
+    loadPage,
+    searchQuery,
+  ]);
 
   // Intersection Observer for infinite scroll sentinel
   useEffect(() => {
@@ -185,12 +186,10 @@ export function useCatalogPanel({ tryOnProductIds }: UseCatalogPanelParams) {
       const mapped = mapProductsToFrontend(response.items);
       setProducts(mapped);
       setTotalProducts(response.total);
-      setTotalPages(response.totalPages);
       setFilterFacets(response.facets);
       setCurrentPage(1);
-      if (response.totalPages <= 1) {
-        setInfiniteScrollDone(true);
-      }
+      const hasMore = response.hasMore ?? response.page < response.totalPages;
+      setInfiniteScrollDone(!hasMore);
     } catch {
       // Keep empty on error
     } finally {
@@ -350,7 +349,6 @@ export function useCatalogPanel({ tryOnProductIds }: UseCatalogPanelParams) {
     ? viewingOutfit.products.map((p) => p.id)
     : tryOnProductIds;
 
-  const showPagination = infiniteScrollDone && totalPages > INFINITE_SCROLL_PAGES;
   const filterSections = filterSectionsWithCounts(filterFacets);
 
   return {
@@ -384,10 +382,6 @@ export function useCatalogPanel({ tryOnProductIds }: UseCatalogPanelParams) {
     outfitModalProductIds,
     // Pagination
     sentinelRef,
-    showPagination,
-    paginationPage: paginationPage - INFINITE_SCROLL_PAGES,
-    paginationTotalPages: totalPages - INFINITE_SCROLL_PAGES,
-    onPaginationChange: handlePaginationChange,
     filterSections,
   };
 }

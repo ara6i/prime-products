@@ -20,7 +20,7 @@ import numpy as np
 from apple_fused_tape_scale import torso_scale, unproject
 
 
-MODEL_VERSION = "apple-vision-depth-pro-person-surface-v2"
+MODEL_VERSION = "apple-vision-depth-pro-person-surface-v3"
 
 MIN_EDGE_SAMPLES = 25
 MIN_MASK_COVERAGE_PCT = 40.0
@@ -189,6 +189,9 @@ def measure_row(depth, focal_px, scale_factor, raw, support):
             "valid": False,
         }
 
+    # The cache focal is the iPhone photo's EXIF focal when available; Depth
+    # Pro predicts it only when the file has no camera metadata. The matching
+    # depth/focal pair must stay together for metric 3D reconstruction.
     left_point = unproject(left_x, y, left_depth_m, focal_px, width, height)
     right_point = unproject(right_x, y, right_depth_m, focal_px, width, height)
     raw_width_cm = float(np.linalg.norm(right_point - left_point) * 100)
@@ -231,6 +234,7 @@ def main():
     cached = np.load(Path(args.depth_cache))
     depth = cached["depth"].astype(np.float32)
     focal_px = float(cached["focal"])
+    focal_source = str(cached["focal_source"]) if "focal_source" in cached else "legacy-unknown"
     vision = json.loads(Path(args.pose_cache).read_text())
     support_rows = json.loads(args.body_support_json)
     support_by_name = {
@@ -238,7 +242,6 @@ def main():
         if isinstance(item, dict) and isinstance(item.get("name"), str)
     }
     image_height, image_width = depth.shape
-
     scale_factor, dense_torso_m, apple_torso_m = torso_scale(
         vision, depth, focal_px, args.height_cm
     )
@@ -263,9 +266,11 @@ def main():
             "imageWidth": image_width,
             "imageHeight": image_height,
             "depthProFocalPx": focal_px,
+            "depthProFocalSource": focal_source,
             "knownHeightCm": args.height_cm,
             "absoluteScaleSource": "Apple Vision shoulder-to-spine torso rescaled by known height",
             "relativeDepthSource": "Apple Depth Pro person-mask-only left/right body surface for each red row",
+            "measurementCameraSource": "iPhone photo focal metadata with Depth Pro endpoint distance",
             "bodySupportSource": "Google MediaPipe person segmentation mask",
             "endpointSource": "manual red-row visible body endpoints",
             "qualityRules": {
