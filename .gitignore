@@ -48,10 +48,13 @@ next-env.d.ts
 
 # local Codex/editor/runtime artifacts
 /.codex/
+/.codex-tmp/
+/.codex-discarded-assets/
 /.cursor/
 /.mcp.json
 /.codex-frontend-3000.log
 /outputs/
+/output/
 /artifacts/
 /.artifacts/
 /reports/
@@ -59,3 +62,15 @@ next-env.d.ts
 /.agents/
 /skills-lock.json
 __pycache__/
+
+# local build and visual QA artifacts
+/.next-*/
+/.design-qa/
+/qa/
+/design-audit/
+/audits/
+/.qa-*
+/design-qa-*
+/merchant-network-*
+/merchant-dashboard-feature-map.html
+/9ff20e8058750e29132d70b409b952f8.gif
