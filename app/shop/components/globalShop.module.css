@@ -1408,6 +1408,14 @@
   filter: brightness(0) invert(1);
   transition: filter 180ms ease;
 }
+
+.brandRail button strong {
+  max-width: 12ch;
+  font-size: clamp(14px, 1.55vw, 23px);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+}
 .brandRail button:hover img,
 .brandRail button:focus-visible img {
   filter: none;

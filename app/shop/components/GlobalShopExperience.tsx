@@ -17,6 +17,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { InfluencerFooter } from "../../partner-landing/influencer/components/InfluencerFooter";
+import { shopBrandProfiles } from "../brand/data/brandProfiles.data";
 import { useShopNavigation } from "../hooks/useShopNavigation";
 import { ShopRunwayExperience } from "../runway/components/ShopRunwayExperience";
 import type {
@@ -116,38 +117,7 @@ const categories: GlobalShopCategoryFilter[] = [
   "Accessories",
 ];
 
-const featuredBrands = [
-  {
-    id: "bloomingdales",
-    label: "Bloomingdale's",
-    logo: "/images/landing/brand-bloomingdales.svg",
-  },
-  {
-    id: "ymi-jeans",
-    label: "YMI Jeans",
-    logo: "https://ymijeans.com/cdn/shop/files/black-logo_100x@2x.png?v=1701906525",
-  },
-  {
-    id: "shop-simon",
-    label: "ShopSimon",
-    logo: "/images/landing/brand-shopsimon.svg",
-  },
-  {
-    id: "davids-bridal",
-    label: "David's Bridal",
-    logo: "/images/landing/brand-davids-bridal.svg",
-  },
-  {
-    id: "mens-wearhouse",
-    label: "Men's Wearhouse",
-    logo: "/images/landing/brand-mens-wearhouse.svg",
-  },
-  {
-    id: "patbo",
-    label: "PatBO",
-    logo: "/images/landing/brand-patbo.svg",
-  },
-] as const;
+const featuredBrands = shopBrandProfiles.slice(0, 6);
 
 const bagLooks = [
   {
@@ -725,7 +695,7 @@ export function GlobalShopExperience() {
         aria-labelledby="brands-title"
       >
         <div className={styles.brandsTop}>
-          <span>03 · Rakuten partners</span>
+          <span>03 · Imported brand collections</span>
           <h2 id="brands-title">
             THE NAMES
             <br />
@@ -738,58 +708,61 @@ export function GlobalShopExperience() {
             </i>
           </h2>
           <p>
-            One global shop for approved retail partners and their fashion
-            collections—all ready for personalized discovery.
+            Real brand names from products already imported through Trendsi,
+            organized for clean and personalized discovery.
           </p>
         </div>
-        <div className={styles.brandRail} aria-label="Featured retail partners">
+        <div className={styles.brandRail} aria-label="Featured imported brands">
           {featuredBrands.map((brand) => (
             <button
               key={brand.id}
               type="button"
-              aria-label={`Shop ${brand.label}`}
+              aria-label={`Shop ${brand.name}`}
               onClick={() => openBrandPage(brand.id)}
             >
-              <Image
-                src={brand.logo}
-                alt=""
-                width={180}
-                height={58}
-                unoptimized
-              />
+              {brand.logo ? (
+                <Image
+                  src={brand.logo}
+                  alt={`${brand.name} logo`}
+                  width={180}
+                  height={58}
+                  unoptimized
+                />
+              ) : (
+                <strong>{brand.shortName}</strong>
+              )}
             </button>
           ))}
         </div>
         <div className={styles.brandStories}>
           <article>
             <Image
-              src="/media/global-shop/product-cobalt-3d.webp"
-              alt="Bloomingdale's seasonal fashion edit"
+              src="https://cdn.shopify.com/s/files/1/0710/8231/1725/files/57493c55-52fc-4272-aa84-21d1f810322b-Max.webp?v=1786034036"
+              alt="Judy Blue high-waist straight jeans imported through Trendsi"
               fill
               sizes="50vw"
+              unoptimized
             />
             <div>
-              <span>Bloomingdale&apos;s</span>
-              <h3>The new luxury edit.</h3>
-              <button
-                type="button"
-                onClick={() => openBrandPage("bloomingdales")}
-              >
+              <span>Judy Blue</span>
+              <h3>Denim made for every body.</h3>
+              <button type="button" onClick={() => openBrandPage("judy-blue")}>
                 Explore brand <ArrowUpRight size={15} />
               </button>
             </div>
           </article>
           <article>
             <Image
-              src="/media/global-shop/product-denim-blonde-3d.webp"
-              alt="YMI Jeans dimensional denim collection"
+              src="https://cdn.shopify.com/s/files/1/0710/8231/1725/files/d7639556cd4d490682fee979728e19b9-Max-Origin.webp?v=1786159893"
+              alt="Zenana fleece boyfriend sweatshirt imported through Trendsi"
               fill
               sizes="50vw"
+              unoptimized
             />
             <div>
-              <span>YMI Jeans</span>
-              <h3>Denim built around fit.</h3>
-              <button type="button" onClick={() => openBrandPage("ymi-jeans")}>
+              <span>Zenana</span>
+              <h3>Everyday comfort, refined.</h3>
+              <button type="button" onClick={() => openBrandPage("zenana")}>
                 Explore brand <ArrowUpRight size={15} />
               </button>
             </div>

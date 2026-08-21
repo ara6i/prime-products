@@ -1,18 +1,12 @@
 export const SHOP_BRAND_IDS = [
-  "bloomingdales",
-  "ymi-jeans",
-  "shop-simon",
-  "davids-bridal",
-  "mens-wearhouse",
-  "patbo",
-  "nike",
-  "adidas",
-  "ganni",
-  "new-balance",
-  "reiss",
-  "aritzia",
-  "assembly-01",
-  "northline",
+  "judy-blue",
+  "zenana",
+  "bibi",
+  "umgee",
+  "hyfve",
+  "heimish",
+  "bombom",
+  "davi-dani",
 ] as const;
 
 export type ShopBrandId = (typeof SHOP_BRAND_IDS)[number];
