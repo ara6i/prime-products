@@ -37,6 +37,7 @@ const PUBLIC_SITE_AUTH_PATH_PREFIXES = [
   "/suppliers",
   "/shop",
   "/influencers/dashboard",
+  "/pdp-studio",
 ] as const;
 
 export function isPublicSiteAuthPath(pathname: string): boolean {
