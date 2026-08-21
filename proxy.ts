@@ -32,6 +32,18 @@ const CREATOR_PUBLIC_API_PATHS = new Set([
 const CREATOR_LEGAL_PATHS = new Set(["/privacy-policy", "/terms"]);
 const CREATOR_PUBLIC_URL =
   process.env.CREATOR_PUBLIC_URL || "https://creators.primestyleai.com";
+const PUBLIC_SITE_AUTH_PATH_PREFIXES = [
+  "/merchants",
+  "/suppliers",
+  "/shop",
+  "/influencers/dashboard",
+] as const;
+
+export function isPublicSiteAuthPath(pathname: string): boolean {
+  return PUBLIC_SITE_AUTH_PATH_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
 
 function getConfiguredHosts(
   environmentValue: string | undefined,
@@ -119,10 +131,15 @@ export async function proxy(req: NextRequest) {
     return new NextResponse("Not found", { status: 404 });
   }
 
-  // ── Local/staging whole-site gate ──
-  // Enabled only by env. Keeps the public site, admin screens, demo routes,
-  // and local API routes behind a signed HTTP-only session cookie.
-  if (siteAuthEnabled && !isSiteLoginPath) {
+  // ── Local/staging protected-route gate ──
+  // Enabled only by env. Merchant, supplier, Shop, and creator-dashboard
+  // surfaces stay public; every other matched page/API requires the signed,
+  // HTTP-only staging session cookie.
+  if (
+    siteAuthEnabled &&
+    !isSiteLoginPath &&
+    !isPublicSiteAuthPath(pathname)
+  ) {
     const token = req.cookies.get(SITE_AUTH_COOKIE_NAME)?.value || "";
     const payload = token ? await verifySiteSessionToken(token) : null;
 
