@@ -500,6 +500,9 @@ def main() -> None:
         "landmark_contract": landmark_contract,
         "existing_rows": {
             name: {
+                # `row_present` only means an anatomical candidate was found.
+                # It must never be confused with teacher acceptance.
+                "row_present": name not in masked,
                 "accepted": name not in masked,
                 "width_mm": round(float(value["width_mm"]), 3),
                 "depth_mm": round(float(value["depth_mm"]), 3),
@@ -508,6 +511,30 @@ def main() -> None:
                 "tape_used_to_select_geometry": False,
                 "geometry_certified": bool(value.get("geometry_target_valid")),
                 "circumference_teacher_accepted": bool(value.get("tape_target_valid")),
+                "contour_source": value.get("contour_source"),
+                "raw_slice_closed": bool(value.get("raw_slice_closed")),
+                "closure_gap_mm": value.get("closure_gap_mm"),
+                "closure_ratio": value.get("closure_ratio"),
+                "anatomy_bounds_width_mm": value.get("anatomy_bounds_width_mm"),
+                "edge_within_anatomy_bounds": value.get("edge_within_anatomy_bounds"),
+                "stitch_evidence": value.get("stitch_evidence"),
+                "geometry_rejection_reasons": (
+                    []
+                    if value.get("geometry_target_valid") is True
+                    else [
+                        reason
+                        for reason in (
+                            "raw-PLY-section-is-open" if value.get("raw_slice_closed") is not True else None,
+                            "certified-landmark-bounded-stitch-failed"
+                            if not (value.get("stitch_evidence") or {}).get("certified")
+                            else None,
+                            "fallback-hull-is-diagnostic-only"
+                            if "fallback" in str(value.get("contour_source") or "")
+                            else None,
+                        )
+                        if reason
+                    ]
+                ),
             }
             for name, value in existing.items()
         },
