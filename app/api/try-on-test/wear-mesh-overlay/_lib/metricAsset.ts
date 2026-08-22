@@ -20,6 +20,7 @@ interface MetricIndexEntry {
 
 let manifestPromise: Promise<Map<string, ManifestRecord>> | null = null;
 const buildPromises = new Map<string, Promise<{ metricPath: string; directory: string }>>();
+const sourcePromises = new Map<string, Promise<{ meshPath: string; landmarkPath: string }>>();
 
 async function exists(filePath: string) {
   try {
@@ -57,14 +58,20 @@ function s3Key(sourcePath: string) {
 }
 
 async function canonicalAsset(scanId: string) {
-  const directory = path.join(process.cwd(), ".local-ml", "wear-mesh-overlay", "metric-lines");
-  const indexPath = path.join(directory, "index.json");
-  if (!(await exists(indexPath))) return null;
-  const index = JSON.parse(await readFile(indexPath, "utf8")) as { scans?: MetricIndexEntry[] };
-  const entry = (index.scans ?? []).find((item) => item.scanId === scanId);
-  if (!entry || path.basename(entry.path) !== entry.path) return null;
-  const metricPath = path.join(directory, entry.path);
-  return (await exists(metricPath)) ? { metricPath, directory } : null;
+  const directories = [
+    path.join(process.cwd(), ".local-ml", "wear-mesh-overlay", "metric-lines"),
+    path.join(process.cwd(), ".local-ml", "wear-mesh-overlay", "all-search-metric-lines"),
+  ];
+  for (const directory of directories) {
+    const indexPath = path.join(directory, "index.json");
+    if (!(await exists(indexPath))) continue;
+    const index = JSON.parse(await readFile(indexPath, "utf8")) as { scans?: MetricIndexEntry[] };
+    const entry = (index.scans ?? []).find((item) => item.scanId === scanId);
+    if (!entry || path.basename(entry.path) !== entry.path) continue;
+    const metricPath = path.join(directory, entry.path);
+    if (await exists(metricPath)) return { metricPath, directory };
+  }
+  return null;
 }
 
 async function buildDynamicAsset(scanId: string) {
@@ -73,6 +80,35 @@ async function buildDynamicAsset(scanId: string) {
   const readyMetricPath = path.join(outputDirectory, `${scanId.toLowerCase()}.json`);
   if (await exists(readyMetricPath)) return { metricPath: readyMetricPath, directory: outputDirectory };
 
+  const source = await loadWearSourcePair(scanId);
+  await mkdir(outputDirectory, { recursive: true });
+
+  const python = path.join(root, ".local-ml", "venvs", "sam-3d-body", "bin", "python");
+  const script = path.join(root, "scripts", "local-ml", "build_wear_metric_line_assets.py");
+  const manifest = path.join(root, ".local-ml", "wear3d-v6-audit", "source-manifest-standing-a.jsonl");
+  await execFileAsync(
+    python,
+    [
+      script,
+      "--source-dir",
+      path.dirname(source.meshPath),
+      "--manifest",
+      manifest,
+      "--output-dir",
+      outputDirectory,
+      "--scan-id",
+      scanId,
+    ],
+    { cwd: root, timeout: 300_000, maxBuffer: 4 * 1024 * 1024 },
+  );
+
+  const metricPath = readyMetricPath;
+  if (!(await exists(metricPath))) throw new Error("The exact WEAR metric asset was not created.");
+  return { metricPath, directory: outputDirectory };
+}
+
+async function ensureWearSourcePair(scanId: string) {
+  const root = process.cwd();
   const records = await manifestRecords();
   const record = records.get(scanId);
   if (!record?.source?.mesh || !record.source.landmarks) {
@@ -81,12 +117,8 @@ async function buildDynamicAsset(scanId: string) {
 
   const sourceDirectory = path.join(root, ".local-ml", "wear-mesh-overlay", "dynamic-sources", scanId.toLowerCase());
   await mkdir(sourceDirectory, { recursive: true });
-  await mkdir(outputDirectory, { recursive: true });
-
-  const meshName = path.basename(record.source.mesh);
-  const landmarkName = path.basename(record.source.landmarks);
-  const meshPath = path.join(sourceDirectory, meshName);
-  const landmarkPath = path.join(sourceDirectory, landmarkName);
+  const meshPath = path.join(sourceDirectory, path.basename(record.source.mesh));
+  const landmarkPath = path.join(sourceDirectory, path.basename(record.source.landmarks));
   for (const [sourcePath, targetPath] of [
     [record.source.mesh, meshPath],
     [record.source.landmarks, landmarkPath],
@@ -106,29 +138,19 @@ async function buildDynamicAsset(scanId: string) {
       { cwd: root, timeout: 240_000, maxBuffer: 2 * 1024 * 1024 },
     );
   }
+  return { meshPath, landmarkPath };
+}
 
-  const python = path.join(root, ".local-ml", "venvs", "sam-3d-body", "bin", "python");
-  const script = path.join(root, "scripts", "local-ml", "build_wear_metric_line_assets.py");
-  const manifest = path.join(root, ".local-ml", "wear3d-v6-audit", "source-manifest-standing-a.jsonl");
-  await execFileAsync(
-    python,
-    [
-      script,
-      "--source-dir",
-      sourceDirectory,
-      "--manifest",
-      manifest,
-      "--output-dir",
-      outputDirectory,
-      "--scan-id",
-      scanId,
-    ],
-    { cwd: root, timeout: 300_000, maxBuffer: 4 * 1024 * 1024 },
-  );
-
-  const metricPath = readyMetricPath;
-  if (!(await exists(metricPath))) throw new Error("The exact WEAR metric asset was not created.");
-  return { metricPath, directory: outputDirectory };
+export async function loadWearSourcePair(scanId: string) {
+  if (!SAFE_SCAN_ID.test(scanId)) throw new Error("Unknown WEAR scan.");
+  const cached = sourcePromises.get(scanId);
+  if (cached) return cached;
+  const promise = ensureWearSourcePair(scanId).catch((error) => {
+    sourcePromises.delete(scanId);
+    throw error;
+  });
+  sourcePromises.set(scanId, promise);
+  return promise;
 }
 
 export async function loadMetricAsset(scanId: string) {
@@ -153,5 +175,10 @@ export async function loadMetricAsset(scanId: string) {
     throw new Error("The browser-safe WEAR projection is unavailable.");
   }
   const mesh2d = JSON.parse(await readFile(path.join(asset.directory, browserName), "utf8")) as Record<string, unknown>;
-  return { metric, mesh2d };
+  return {
+    metric,
+    mesh2d,
+    assetDirectory: asset.directory,
+    metricPath: asset.metricPath,
+  };
 }

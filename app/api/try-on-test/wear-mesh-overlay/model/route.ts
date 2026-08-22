@@ -111,17 +111,21 @@ export async function GET(request: Request) {
     && isSafeDynamicPhotoId(photoId)
     && photoPose == null
     && method === "blender-2d";
+  const isWearAngleCorrectedMesh = scanId == null
+    && isSafeDynamicPhotoId(photoId)
+    && photoPose == null
+    && method === "wear-angle-corrected";
   const isPhotoModel = scanId == null
     && isPhotoId(photoId)
     && isPhotoPose(photoPose)
     && method == null;
-  if (!isWearModel && !isPhotoModel && !isSpecialistModel && !isMaskMesh && !isBlenderMesh) {
+  if (!isWearModel && !isPhotoModel && !isSpecialistModel && !isMaskMesh && !isBlenderMesh && !isWearAngleCorrectedMesh) {
     return NextResponse.json({ error: "Unknown mesh asset." }, { status: 400 });
   }
 
   try {
     let fileName: string;
-    let modelDirectory: "models" | "photo-models" | "anatomical" | "specialist" | "mask-mesh" | "blender-mesh";
+    let modelDirectory: "models" | "photo-models" | "anatomical" | "specialist" | "mask-mesh" | "blender-mesh" | "camera-corrected";
     if (isScanId(scanId)) {
       fileName = MODEL_FILES[scanId];
       modelDirectory = "models";
@@ -136,6 +140,9 @@ export async function GET(request: Request) {
         ? BLENDER_MESH_FILES[photoId as keyof typeof BLENDER_MESH_FILES]
         : `${photoId}.json`;
       modelDirectory = "blender-mesh";
+    } else if (isWearAngleCorrectedMesh && isSafeDynamicPhotoId(photoId)) {
+      fileName = `${photoId}.json`;
+      modelDirectory = "camera-corrected";
     } else if (isPhotoId(photoId) && isPhotoPose(photoPose)) {
       fileName = PHOTO_MODEL_FILES[photoId][photoPose];
       modelDirectory = photoPose === "anatomical" ? "anatomical" : "photo-models";
@@ -150,7 +157,7 @@ export async function GET(request: Request) {
         "delaram-specialist",
         fileName,
       )
-      : modelDirectory === "mask-mesh" || modelDirectory === "blender-mesh"
+      : modelDirectory === "mask-mesh" || modelDirectory === "blender-mesh" || modelDirectory === "camera-corrected"
         ? path.join(
           /* turbopackIgnore: true */ process.cwd(),
           ".local-ml",

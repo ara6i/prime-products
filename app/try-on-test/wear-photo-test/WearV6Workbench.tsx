@@ -1032,7 +1032,7 @@ export function WearV6Workbench({
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-black text-slate-900">{rowLabel(kind, prediction.profile.gender)}</p>
-                  <p className="mt-1 text-[11px] text-slate-500">{measurement ? `${formatLength(measurement.appleCorrectedWidthCm, resultUnit)} ${measurement.widthSource === "apple-depth" ? "Apple + Depth Pro width" : "Apple Vision width"} · ${formatLength(measurement.rawMeshDepthCm, resultUnit)} WEAR-trained depth` : "Waiting for camera-corrected width"}</p>
+                  <p className="mt-1 text-[11px] text-slate-500">{measurement ? `${formatLength(measurement.appleCorrectedWidthCm, resultUnit)} ${measurement.widthSource === "wear-v7-direct" ? "WEAR-predicted breadth" : measurement.widthSource === "apple-depth" ? "Apple + Depth Pro width" : "Apple Vision width"} · ${formatLength(measurement.rawMeshDepthCm, resultUnit)} WEAR-trained depth` : "Waiting for body-row geometry"}</p>
                   {predictedRow ? <p className="mt-1 text-[10px] leading-4 text-slate-400">{predictedRow.targetSource}</p> : null}
                 </div>
                 <div className="text-right">

@@ -34,7 +34,9 @@ export interface WearV6Row {
     | "wear-v6r4-pose-relative"
     | "wear-v6r4-pose-relative-rgb-snap"
     | "wear-v6r5-apple-teacher-pose-relative"
-    | "wear-v6r5-apple-teacher-pose-relative-rgb-snap";
+    | "wear-v6r5-apple-teacher-pose-relative-rgb-snap"
+    | "wear-v7-rgb-row-head"
+    | "wear-heldout-exact-mesh-projection";
   targetSource: string;
   canonical: { left: WearV6Point; right: WearV6Point };
   photo: { left: WearV6Point; right: WearV6Point };
@@ -51,11 +53,19 @@ export interface WearV6Measurement {
   valueCm: number;
   rawMeshDepthCm: number | null;
   appleCorrectedWidthCm: number;
-  widthSource: WearV6WidthMethod | "manual-tape" | "manual-width";
+  widthSource: WearV6WidthMethod | "manual-tape" | "manual-width" | "wear-v7-direct";
   confidence: WearV6WidthConfidence;
   syntheticMaeCm: number | null;
   syntheticTestCount: number | null;
   formulaUsed: false;
+}
+
+export interface WearV6HeldoutGeometry {
+  frontWidthCm: number | null;
+  depthCm: number | null;
+  contour32Normalized: Array<{ breadthNorm: number; depthNorm: number }>;
+  tapeCm: number | null;
+  geometryPerimeterCm: number | null;
 }
 
 export interface WearV6Segment {
@@ -111,7 +121,8 @@ export interface WearV6Prediction {
     crop: { left: number; top: number; width: number; height: number };
     cropSource: string;
     poseAnchorSource: string;
-    poseAnchorsCanonical: Record<WearV6PoseAnchorName, WearV6Point>;
+    poseAnchorsCanonical: Partial<Record<WearV6PoseAnchorName, WearV6Point>>;
+    rowGeometryAccepted?: Partial<Record<WearV6RowKind, WearV6Line>>;
     poseGeometryGuard: Array<{
       kind: WearV6RowKind;
       priorBucket: string;
@@ -143,9 +154,31 @@ export interface WearV6Prediction {
     quality: "good" | "review";
   };
   calibration: {
-    status: "camera-widths-applied" | "rows-only-awaiting-widths";
+    status:
+      | "camera-widths-applied"
+      | "mesh-front-widths-applied"
+      | "wear-row-geometry-applied"
+      | "wear-rgb-predicted"
+      | "rows-only-awaiting-widths";
     acceptedWidthsCm: Partial<Record<WearV6RowKind, number>>;
   };
+  heldoutEvaluation?: {
+    scanId: string;
+    subjectId: string;
+    role: "test";
+    includedInTraining: false;
+    onnxMeasurementsOnly: true;
+    displayRowsSource: "model-prediction-and-exact-heldout-wear-mesh-projection";
+    appleVisionUsed: false;
+    depthProUsed: false;
+    rgbEdgeSnapUsed: false;
+    geometryGuardsUsed: false;
+    inputs: string[];
+    actuals: Partial<Record<WearV6RowKind, number | null>>;
+    predictedRows: WearV6Row[];
+    realRows: WearV6Row[];
+    realGeometry: Partial<Record<WearV6RowKind, WearV6HeldoutGeometry>>;
+  } | null;
   rows: WearV6Row[];
   crossSections: WearV6CrossSection[];
   measurements: WearV6Measurement[];

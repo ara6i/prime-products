@@ -30,6 +30,7 @@ OUTPUT_DIR = REPO_ROOT / ".local-ml/wear-mesh-overlay/anatomical"
 PHOTOS = {
     "delaram": REPO_ROOT / "public/try-on-test/sizing-lab/delaram-front.jpg",
     "delaram-2": REPO_ROOT / "public/try-on-test/sizing-lab/delaram-2-front.jpg",
+    "delaram-side": REPO_ROOT / "public/try-on-test/sizing-lab/delaram-side.jpg",
 }
 
 MHR70_NAMES = [
@@ -71,6 +72,23 @@ def load_crop(photo_id: str, image: Image.Image) -> list[float]:
                 x1, y1, x2, y2 = [float(value) for value in box]
                 if x2 > x1 and y2 > y1:
                     return [x1, y1, x2 - x1, y2 - y1]
+    # Side-photo fixtures do not have an RGB-MHR index entry.  Reuse only the
+    # visible-outline bounds as a person detector/crop; the outline is never
+    # passed to Sapiens and cannot alter any pose keypoint.
+    mesh_path = REPO_ROOT / ".local-ml/wear-mesh-overlay/blender-mesh" / f"{photo_id}.json"
+    if mesh_path.is_file():
+        mesh = json.loads(mesh_path.read_text())
+        outline = np.asarray(mesh.get("outline", []), dtype=np.float64).reshape(-1, 2)
+        if outline.shape[0] >= 3:
+            minimum = outline.min(axis=0)
+            maximum = outline.max(axis=0)
+            padding = np.asarray([0.04, 0.025], dtype=np.float64)
+            minimum = np.maximum(0.0, minimum - padding)
+            maximum = np.minimum(1.0, maximum + padding)
+            x1, y1 = minimum * np.asarray([image.width, image.height])
+            x2, y2 = maximum * np.asarray([image.width, image.height])
+            if x2 > x1 and y2 > y1:
+                return [float(x1), float(y1), float(x2 - x1), float(y2 - y1)]
     return [0.0, 0.0, float(image.width), float(image.height)]
 
 

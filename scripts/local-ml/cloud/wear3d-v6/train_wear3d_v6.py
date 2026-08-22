@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""Train the mask-free, WEAR-only RGB sizing model.
+"""Train the WEAR-only Blender 2D-mesh sizing model.
 
-The customer contract is one front photo plus height, weight, gender, and
-optional hand-corrected row lines.  A line is supplied only as normalized
-photo coordinates; no Apple/Depth/px-to-cm value is an input.
+The runtime contract is one standardized Blender 2D body-mesh card plus
+height, weight, BMI, and gender. No true anatomical row, tape, depth, RGB
+photo, Apple/Depth estimate, or px-to-cm value is an input.
 
 The model learns three paths directly from standing WEAR teachers:
-1. RGB + profile -> anatomical rows, landmarks, and body-guide segments.
-2. RGB body shape + profile + one normalized row line -> that row's true mesh
-   breadth, raw-mesh depth, normalized 32-point cross-section, and recorded
-   tape circumference.
-3. RGB + profile -> all other usable WEAR standing measurements.
+1. Blender 2D mesh + profile -> anatomical rows, landmarks, and body segments.
+2. Mesh shape + profile + the model's own predicted row -> that certified
+   row's A-B, C-D, and normalized 32-point PLY cross-section.
+3. Circumference is calculated by walking the predicted 32-point shape; the
+   recorded tape supervises this connected path and is never a separate head.
+4. Mesh + profile -> all other usable non-circumference standing measurements.
 
 No ellipse, superellipse, nearest-person answer, tape OCR, Apple scale, or
 tape-derived depth is used.
@@ -30,10 +31,13 @@ import sys
 import tempfile
 from typing import Any
 
-import boto3
+try:
+    import boto3
+except ModuleNotFoundError:  # Local startup smoke has no AWS dependency.
+    boto3 = None
 import numpy as np
 import onnx
-from PIL import Image, ImageEnhance, ImageFilter
+from PIL import Image
 import torch
 from torch import nn
 from torch.nn import functional as F
@@ -54,11 +58,6 @@ POSE_VALUE_KEYS = tuple(
     for axis in ("x_norm", "y_norm")
 )
 ROW_GEOMETRY_FIELDS = ("y_norm", "left_x_norm", "right_x_norm")
-ROW_GEOMETRY_VALUE_KEYS = tuple(
-    f"{name}_{field}"
-    for name in ROW_NAMES
-    for field in ROW_GEOMETRY_FIELDS
-)
 CONTOUR_POINTS = 32
 SEGMENT_NAMES = ("shoulders", "right_sleeve", "left_sleeve", "right_inseam", "left_inseam")
 SEGMENT_POINT_COUNTS = {
@@ -70,8 +69,8 @@ SEGMENT_POINT_COUNTS = {
 }
 IMAGE_WIDTH = 192
 IMAGE_HEIGHT = 256
-RGB_MEAN = np.asarray((0.485, 0.456, 0.406), dtype=np.float32)[:, None, None]
-RGB_STD = np.asarray((0.229, 0.224, 0.225), dtype=np.float32)[:, None, None]
+MESH_CHANNEL_MEAN = np.asarray((0.5, 0.5, 0.5), dtype=np.float32)[:, None, None]
+MESH_CHANNEL_STD = np.asarray((0.5, 0.5, 0.5), dtype=np.float32)[:, None, None]
 MIN_TARGET_COUNT = 20
 REQUIRED_FRONT_SUBJECTS = 4_326
 LANDMARK_MIN_COVERAGE = 0.80
@@ -92,6 +91,9 @@ CORE_SHAPE_KEYS = {
 CORE_CIRCUMFERENCE_LIMIT_CM = {key: 4.0 for key in CORE_CIRCUMFERENCE_KEYS}
 CORE_BREADTH_LIMIT_CM = {key: 2.5 for key in CORE_BREADTH_KEYS}
 CORE_DEPTH_LIMIT_CM = {key: 4.0 for key in CORE_DEPTH_KEYS}
+HALF_INCH_CM = 1.27
+REQUIRED_HELD_OUT_HALF_INCH_RATE = 0.97
+ROW_PIXEL_GATE_NORMALIZED = 0.01
 # Held-out MAE is rounded to five decimals and Apple/body-row coordinates are
 # normalized ratios. Treat differences below 0.001 as a numerical tie with the
 # train-mean baseline; the absolute anatomical error limit must still pass.
@@ -135,6 +137,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--status-bucket")
     parser.add_argument("--status-key")
     parser.add_argument("--minimum-records", type=int, default=1_000)
+    parser.add_argument("--source-contract-report", type=Path)
+    parser.add_argument("--teacher-audit-report", type=Path)
     return parser.parse_args()
 
 
@@ -144,6 +148,25 @@ def finite(value: Any) -> float | None:
     except (TypeError, ValueError):
         return None
     return result if math.isfinite(result) else None
+
+
+def require_full_contract_reports(
+    source_contract_path: Path | None,
+    teacher_audit_path: Path | None,
+) -> None:
+    """Refuse GPU training unless source and rendered-teacher gates passed."""
+    if source_contract_path is None or teacher_audit_path is None:
+        raise RuntimeError(
+            "--source-contract-report and --teacher-audit-report are required; "
+            "WEAR training is fail-closed"
+        )
+    source = json.loads(source_contract_path.read_text(encoding="utf-8"))
+    if source.get("status") != "ready-for-visual-canary" or source.get("blockers"):
+        raise RuntimeError("WEAR source contract is not ready for rendered teachers")
+    teacher = json.loads(teacher_audit_path.read_text(encoding="utf-8"))
+    summary = teacher.get("summary") or {}
+    if summary.get("trainingAllowed") is not True or summary.get("fullContractCoverage") is not True:
+        raise RuntimeError("Rendered WEAR teacher audit did not pass the full contract")
 
 
 def profile_values(record: dict[str, Any]) -> np.ndarray:
@@ -159,39 +182,6 @@ def profile_values(record: dict[str, Any]) -> np.ndarray:
         ],
         dtype=np.float32,
     )
-
-
-def row_geometry_values(record: dict[str, Any]) -> tuple[np.ndarray, np.ndarray]:
-    """Return normalized y/left/right coordinates for each anatomical row."""
-    compact_values = record.get("_row_geometry_values")
-    compact_mask = record.get("_row_geometry_mask")
-    if compact_values is not None and compact_mask is not None:
-        # Augmentation can hide rows, so never return the stored arrays by
-        # reference even if a future compact representation uses numpy arrays.
-        return (
-            np.asarray(compact_values, dtype=np.float32).copy(),
-            np.asarray(compact_mask, dtype=np.float32).copy(),
-        )
-    values = np.zeros(len(ROW_GEOMETRY_VALUE_KEYS), dtype=np.float32)
-    mask = np.zeros(len(ROW_NAMES), dtype=np.float32)
-    rows = record.get("rows") or {}
-    for index, name in enumerate(ROW_NAMES):
-        row = rows.get(name) or {}
-        y = finite(row.get("y_norm"))
-        left = finite(row.get("wear_edge_left_x_norm"))
-        right = finite(row.get("wear_edge_right_x_norm"))
-        if (
-            row.get("accepted") is True
-            and y is not None
-            and left is not None
-            and right is not None
-            and 0.0 <= y <= 1.0
-            and 0.0 <= left < right <= 1.0
-        ):
-            offset = index * len(ROW_GEOMETRY_FIELDS)
-            values[offset : offset + len(ROW_GEOMETRY_FIELDS)] = (y, left, right)
-            mask[index] = 1.0
-    return values, mask
 
 
 def pose_values(record: dict[str, Any]) -> tuple[np.ndarray, np.ndarray]:
@@ -279,7 +269,11 @@ def flatten_targets(record: dict[str, Any]) -> tuple[dict[str, float], dict[str,
                 edges[f"row.{name}.{field}"] = value
         breadth_mm = finite(row.get("mesh_width_mm")) if row.get("geometry_target_valid") else None
         depth_mm = finite(row.get("mesh_depth_mm")) if row.get("geometry_target_valid") else None
-        circumference_mm = finite(row.get("measurement_circumference_mm"))
+        circumference_mm = (
+            finite(row.get("measurement_circumference_mm"))
+            if row.get("tape_target_valid") is True
+            else None
+        )
         if breadth_mm is not None:
             measurements[f"row.{name}.breadth_cm"] = breadth_mm / 10.0
         if depth_mm is not None:
@@ -295,25 +289,6 @@ def flatten_targets(record: dict[str, Any]) -> tuple[dict[str, float], dict[str,
                     value = finite(raw_value)
                     if value is not None:
                         measurements[f"row.{name}.shape.{point_index:02d}.{axis}"] = value
-
-    # Tape values are independent WEAR observations. Preserve them even when
-    # an exact mesh-plane height is unavailable and that row's edge/depth/shape
-    # must be masked rather than guessed.
-    source_measurements = {
-        **record.get("measurements_mm", {}),
-        **record.get("extracted_standing_mm", {}),
-    }
-    circumference_sources = {
-        "neck": "neck_base_circumference_mm",
-        "chest": "chest_circumference_mm",
-        "underbust": "underbust_circumference_mm",
-        "waist": "waist_circumference_mm",
-        "hips": "hip_circumference_mm",
-    }
-    for name, source_key in circumference_sources.items():
-        circumference_mm = finite(source_measurements.get(source_key))
-        if circumference_mm is not None:
-            measurements[f"row.{name}.circumference_cm"] = circumference_mm / 10.0
 
     if record.get("landmark_targets_valid") is True:
         for landmark_name, point in (record.get("landmarks_2d") or {}).items():
@@ -338,10 +313,16 @@ def flatten_targets(record: dict[str, Any]) -> tuple[dict[str, float], dict[str,
             # sitting-protocol answers even when the same subject's spreadsheet
             # happens to carry those values; all other usable standing WEAR
             # measurements remain supervised.
-            if namespace == "measurements_mm" and (
-                name in EXCLUDED_MEASUREMENTS
-                or name in SITTING_MEASUREMENTS
-                or "sitting" in name.lower()
+            if (
+                (namespace == "measurements_mm" and (
+                    name in EXCLUDED_MEASUREMENTS
+                    or name in SITTING_MEASUREMENTS
+                    or "sitting" in name.lower()
+                ))
+                # Never create a second direct circumference head. Every tape
+                # circumference must be mapped to a certified row/path and
+                # computed by walking that row's predicted geometry.
+                or "circumference" in name.lower()
             ):
                 continue
             value = finite(raw_value)
@@ -422,26 +403,25 @@ def load_records(manifest: Path) -> list[dict[str, Any]]:
             if reasons:
                 invalid.append(f"line {line_number}: {', '.join(reasons)}")
                 continue
-            image_path = Path(str(record.get("image", "")))
+            mesh_path = Path(str(record.get("mesh_image", "")))
             mask_path = Path(str(record.get("mask", "")))
-            if not image_path.exists() or not mask_path.exists():
-                missing_images.append(f"line {line_number}: image={image_path} mask={mask_path}")
+            if not mesh_path.exists() or not mask_path.exists():
+                missing_images.append(
+                    f"line {line_number}: mesh_image={mesh_path} mask={mask_path}"
+                )
                 continue
             view_id = str(record.get("view_id") or (record.get("camera") or {}).get("view_id") or "")
             edge_targets, measurement_targets = flatten_targets(record)
             profile = profile_values(record)
-            row_geometry, row_geometry_mask = row_geometry_values(record)
             # Keep only fields used during training. Raw rows, contours,
             # landmarks, segments and measurement dictionaries have already
             # been flattened into exact supervised targets above.
             records.append({
                 "subject_id": str(record["subject_id"]),
                 "role": sys.intern(str(record["role"])),
-                "_image_path": str(image_path),
+                "_mesh_path": str(mesh_path),
                 "_mask_path": str(mask_path),
                 "_profile_values": tuple(float(value) for value in profile),
-                "_row_geometry_values": tuple(float(value) for value in row_geometry),
-                "_row_geometry_mask": tuple(float(value) for value in row_geometry_mask),
                 "_view_id": sys.intern(view_id),
                 "_edge_targets": edge_targets,
                 "_measurement_targets": measurement_targets,
@@ -449,7 +429,7 @@ def load_records(manifest: Path) -> list[dict[str, Any]]:
     if invalid:
         raise RuntimeError(f"Manifest contains {len(invalid)} invalid successful rows: {invalid[:5]}")
     if missing_images:
-        raise RuntimeError(f"Manifest is missing {len(missing_images)} RGB images: {missing_images[:5]}")
+        raise RuntimeError(f"Manifest is missing {len(missing_images)} Blender mesh cards: {missing_images[:5]}")
     front_subject_ids = {
         str(record["subject_id"])
         for record in records
@@ -473,8 +453,6 @@ def load_records(manifest: Path) -> list[dict[str, Any]]:
 class Normalization:
     profile_mean: np.ndarray
     profile_std: np.ndarray
-    row_geometry_mean: np.ndarray
-    row_geometry_std: np.ndarray
     edge_mean: np.ndarray
     edge_std: np.ndarray
     measurement_mean: np.ndarray
@@ -486,12 +464,6 @@ def masked_stats(records: list[dict[str, Any]], keys: list[str], namespace: str)
     target_field = "_edge_targets" if namespace == "edge" else "_measurement_targets"
     for row_index, record in enumerate(records):
         for column_index, key in enumerate(keys):
-            is_core_edge = namespace == "edge" and key in CORE_EDGE_KEYS
-            is_core_measurement = namespace == "measurement" and key.startswith(
-                tuple(f"row.{name}." for name in ROW_NAMES)
-            )
-            if (is_core_edge or is_core_measurement) and record.get("_view_id") != "front-50":
-                continue
             value = record[target_field].get(key)
             if value is not None:
                 values[row_index, column_index] = value
@@ -502,22 +474,11 @@ def masked_stats(records: list[dict[str, Any]], keys: list[str], namespace: str)
 
 def compute_normalization(records: list[dict[str, Any]], edge_keys: list[str], measurement_keys: list[str]) -> Normalization:
     profiles = np.stack([profile_values(record) for record in records])
-    geometries = np.stack([row_geometry_values(record)[0] for record in records])
-    geometry_masks = np.stack([row_geometry_values(record)[1] for record in records])
-    expanded_geometry_masks = np.repeat(geometry_masks, len(ROW_GEOMETRY_FIELDS), axis=1) > 0.5
-    masked_geometries = np.where(expanded_geometry_masks, geometries, np.nan)
-    row_geometry_mean = np.nan_to_num(np.nanmean(masked_geometries, axis=0), nan=0.5)
-    row_geometry_std = np.maximum(
-        np.nan_to_num(np.nanstd(masked_geometries, axis=0), nan=1.0),
-        1e-4,
-    )
     edge_mean, edge_std = masked_stats(records, edge_keys, "edge")
     measurement_mean, measurement_std = masked_stats(records, measurement_keys, "measurement")
     return Normalization(
         profiles.mean(axis=0),
         np.maximum(profiles.std(axis=0), 1e-5),
-        row_geometry_mean,
-        row_geometry_std,
         edge_mean,
         edge_std,
         measurement_mean,
@@ -572,13 +533,48 @@ def compute_row_geometry_priors(records: list[dict[str, Any]]) -> dict[str, Any]
         raise RuntimeError(f"Front-view WEAR geometry priors are missing targets: {missing}")
     return {
         "source": "audited-front-50-WEAR-projected-3D-row-coordinates",
-        "anchor": "canonical full-person RGB crop; no Apple or metric width input",
+        "anchor": "canonical full-person Blender 2D mesh projection; no Apple or metric width input",
         "cohort_key": "gender:BMI-band",
         "buckets": summarized,
     }
 
 
-class WearRgbDataset(Dataset):
+def load_mesh_channels(mesh_path: str | Path, mask_path: str | Path) -> np.ndarray:
+    """Build the same topology-safe Blender channels used at runtime."""
+    with Image.open(mesh_path) as source_mesh:
+        mesh_image = source_mesh.convert("RGB").resize(
+            (IMAGE_WIDTH, IMAGE_HEIGHT), Image.Resampling.BILINEAR
+        )
+    with Image.open(mask_path) as source_mask:
+        mask_image = source_mask.convert("RGBA").resize(
+            (IMAGE_WIDTH, IMAGE_HEIGHT), Image.Resampling.NEAREST
+        )
+    mask_array = np.asarray(mask_image, dtype=np.uint8)
+    silhouette = (
+        (mask_array[..., 3] > 127)
+        & (mask_array[..., :3].max(axis=2) > 127)
+    ).astype(np.float32)
+    padded = np.pad(silhouette, 1, mode="constant")
+    neighbors = [
+        padded[dy : dy + IMAGE_HEIGHT, dx : dx + IMAGE_WIDTH]
+        for dy in range(3)
+        for dx in range(3)
+    ]
+    boundary = np.maximum.reduce(neighbors) - np.minimum.reduce(neighbors)
+    mesh_luma = np.asarray(mesh_image, dtype=np.float32).max(axis=2) / 255.0
+    background_values = mesh_luma[silhouette < 0.5]
+    background = float(np.median(background_values)) if background_values.size else 0.0
+    mesh_lines = np.clip((mesh_luma - background) / max(1.0 - background, 1e-6), 0.0, 1.0)
+    mesh_lines *= silhouette
+    # Standardized topology-safe Blender geometry channels. The network
+    # cannot identify WEAR by its original PLY triangle density: fill and
+    # boundary own two channels, while visible triangles are only one
+    # supporting channel. A normal-user Blender mesh can produce these exact
+    # same channels without RGB, tape, depth, or true rows.
+    return np.stack((silhouette, boundary, mesh_lines), axis=0)
+
+
+class WearMeshDataset(Dataset):
     def __init__(self, records, edge_keys, measurement_keys, normalization, augment=False):
         self.records = records
         self.edge_keys = edge_keys
@@ -589,144 +585,35 @@ class WearRgbDataset(Dataset):
     def __len__(self):
         return len(self.records)
 
-    @staticmethod
-    def tight_clothing_appearance(foreground: Image.Image, alpha_image: Image.Image) -> Image.Image:
-        """Randomize fitted clothing while preserving the exact WEAR silhouette.
-
-        The teacher mask only constructs an RGB training image. It never enters
-        the network and never defines an edge or measurement target; those stay
-        projected from the closed 3D torso and recorded WEAR measurements.
-        """
-        pixels = np.asarray(foreground, dtype=np.float32).copy()
-        body = np.asarray(alpha_image, dtype=np.float32) >= 96.0
-        y_grid = np.linspace(0.0, 1.0, IMAGE_HEIGHT, dtype=np.float32)[:, None]
-        x_grid = np.linspace(0.0, 1.0, IMAGE_WIDTH, dtype=np.float32)[None, :]
-
-        def apply_garment(y_start: float, y_end: float, probability: float) -> None:
-            nonlocal pixels
-            if random.random() > probability:
-                return
-            garment = body & (y_grid >= y_start) & (y_grid <= y_end)
-            if not garment.any():
-                return
-            base = np.asarray([random.uniform(18.0, 238.0) for _ in range(3)], dtype=np.float32)
-            pattern_mode = random.choice(("plain", "horizontal", "vertical", "soft-noise"))
-            if pattern_mode == "horizontal":
-                pattern = np.sin(y_grid * random.uniform(35.0, 85.0)) * random.uniform(6.0, 28.0)
-            elif pattern_mode == "vertical":
-                pattern = np.sin(x_grid * random.uniform(35.0, 85.0)) * random.uniform(6.0, 28.0)
-            elif pattern_mode == "soft-noise":
-                small = Image.fromarray(np.random.randint(0, 256, size=(16, 12), dtype=np.uint8))
-                pattern = (
-                    np.asarray(
-                        small.resize((IMAGE_WIDTH, IMAGE_HEIGHT), Image.Resampling.BICUBIC),
-                        dtype=np.float32,
-                    )
-                    - 127.5
-                ) * random.uniform(0.08, 0.24)
-            else:
-                pattern = np.zeros((IMAGE_HEIGHT, IMAGE_WIDTH), dtype=np.float32)
-            texture = np.clip(base[None, None, :] + pattern[..., None], 0.0, 255.0)
-            original_mix = random.uniform(0.12, 0.34)
-            recolored = texture * (1.0 - original_mix) + pixels * original_mix
-            pixels[garment] = recolored[garment]
-
-        # Fitted top and fitted bottoms change appearance, never geometry.
-        apply_garment(random.uniform(0.16, 0.23), random.uniform(0.48, 0.62), 0.92)
-        apply_garment(random.uniform(0.47, 0.58), random.uniform(0.82, 0.97), 0.88)
-        return Image.fromarray(np.clip(pixels, 0, 255).astype(np.uint8), mode="RGB")
-
     def __getitem__(self, index):
         record = self.records[index]
-        with Image.open(record["_image_path"]) as image:
-            image = image.convert("RGB").resize((IMAGE_WIDTH, IMAGE_HEIGHT), Image.Resampling.BILINEAR)
-        if self.augment:
-            # The mask is a training-only teacher used to vary RGB appearance.
-            # It is never an input or label source for the exported network.
-            with Image.open(record["_mask_path"]) as source_mask:
-                alpha_image = source_mask.convert("L").resize((IMAGE_WIDTH, IMAGE_HEIGHT), Image.Resampling.BILINEAR)
-            alpha_image = alpha_image.filter(ImageFilter.GaussianBlur(radius=random.uniform(0.0, 0.8)))
-            foreground = ImageEnhance.Color(image).enhance(random.uniform(0.45, 1.55))
-            foreground = ImageEnhance.Brightness(foreground).enhance(random.uniform(0.72, 1.28))
-            foreground = self.tight_clothing_appearance(foreground, alpha_image)
-            top = np.random.randint(0, 256, size=(1, 1, 3), dtype=np.uint8)
-            bottom = np.random.randint(0, 256, size=(1, 1, 3), dtype=np.uint8)
-            blend = np.linspace(0.0, 1.0, IMAGE_HEIGHT, dtype=np.float32)[:, None, None]
-            gradient = top * (1.0 - blend) + bottom * blend
-            gradient = np.broadcast_to(gradient, (IMAGE_HEIGHT, IMAGE_WIDTH, 3)).copy()
-            noise_small = Image.fromarray(np.random.randint(0, 256, size=(12, 9, 3), dtype=np.uint8))
-            noise = np.asarray(noise_small.resize((IMAGE_WIDTH, IMAGE_HEIGHT), Image.Resampling.BICUBIC), dtype=np.float32)
-            background = Image.fromarray(np.clip(gradient * 0.72 + noise * 0.28, 0, 255).astype(np.uint8))
-            image = Image.composite(foreground, background, alpha_image)
-            image = ImageEnhance.Contrast(image).enhance(random.uniform(0.70, 1.35))
-        rgb = np.asarray(image, dtype=np.float32).transpose(2, 0, 1) / 255.0
-        rgb = (rgb - RGB_MEAN) / RGB_STD
+        mesh_channels = load_mesh_channels(record["_mesh_path"], record["_mask_path"])
+        mesh_channels = (mesh_channels - MESH_CHANNEL_MEAN) / MESH_CHANNEL_STD
         profile = (profile_values(record) - self.normalization.profile_mean) / self.normalization.profile_std
-        row_geometry, row_geometry_mask = row_geometry_values(record)
-        if self.augment:
-            # Manual lines are photo geometry, never centimetres.  Jitter them
-            # like careful hand edits and sometimes hide them so the first RGB
-            # pass can still produce useful rows before the user corrects one.
-            shared_x = float(np.random.normal(0.0, 0.004))
-            shared_y = float(np.random.normal(0.0, 0.004))
-            for row_index in range(len(ROW_NAMES)):
-                if row_geometry_mask[row_index] <= 0.5:
-                    continue
-                offset = row_index * len(ROW_GEOMETRY_FIELDS)
-                y, left, right = row_geometry[offset : offset + len(ROW_GEOMETRY_FIELDS)]
-                y = float(np.clip(y + shared_y + np.random.normal(0.0, 0.004), 0.0, 1.0))
-                left = float(np.clip(left + shared_x + np.random.normal(0.0, 0.005), 0.0, 0.97))
-                right = float(np.clip(right + shared_x + np.random.normal(0.0, 0.005), 0.03, 1.0))
-                if right - left < 0.03:
-                    center = (left + right) * 0.5
-                    left = max(0.0, center - 0.015)
-                    right = min(1.0, center + 0.015)
-                row_geometry[offset : offset + len(ROW_GEOMETRY_FIELDS)] = (y, left, right)
-            if random.random() < 0.25:
-                row_geometry_mask[:] = 0.0
-            else:
-                for row_index in np.flatnonzero(row_geometry_mask > 0.5):
-                    if random.random() < 0.15:
-                        row_geometry_mask[int(row_index)] = 0.0
-        expanded_geometry_mask = np.repeat(row_geometry_mask, len(ROW_GEOMETRY_FIELDS)) > 0.5
-        row_geometry = np.where(
-            expanded_geometry_mask,
-            row_geometry,
-            self.normalization.row_geometry_mean,
-        )
-        row_geometry = (
-            row_geometry - self.normalization.row_geometry_mean
-        ) / self.normalization.row_geometry_std
-
         edge_values = np.zeros(len(self.edge_keys), dtype=np.float32)
         edge_mask = np.zeros(len(self.edge_keys), dtype=np.float32)
         for target_index, key in enumerate(self.edge_keys):
             value = record["_edge_targets"].get(key)
             if value is not None:
                 edge_values[target_index] = (value - self.normalization.edge_mean[target_index]) / self.normalization.edge_std[target_index]
-                # Customer inference is a front photo. Core anatomical rows
-                # are therefore supervised only by the exact front-50 teacher
-                # projected from the true WEAR mesh. Angled views still teach every
-                # non-core landmark, sleeve, shoulder and inseam target.
-                is_core_edge = key in CORE_EDGE_KEYS
-                if not is_core_edge or record.get("_view_id") == "front-50":
-                    edge_mask[target_index] = 1.0
+                # Every deterministic Blender view owns an exact projection of
+                # the same certified PLY row. Learning all views is the camera-
+                # angle correction; no wall, door, or tape is involved.
+                edge_mask[target_index] = 1.0
         measurement_values = np.zeros(len(self.measurement_keys), dtype=np.float32)
         measurement_mask = np.zeros(len(self.measurement_keys), dtype=np.float32)
         for target_index, key in enumerate(self.measurement_keys):
             value = record["_measurement_targets"].get(key)
             if value is not None:
                 measurement_values[target_index] = (value - self.normalization.measurement_mean[target_index]) / self.normalization.measurement_std[target_index]
-                # The product accepts one front photo. Core row shape/depth/
-                # circumference heads therefore learn only from the exact
-                # front-50 teacher for each person. All nine views still teach
-                # RGB edges, landmarks, segments, and non-core measurements.
-                is_core_row_target = key.startswith(tuple(f"row.{name}." for name in ROW_NAMES))
-                if not is_core_row_target or record.get("_view_id") == "front-50":
-                    measurement_mask[target_index] = 1.0
+                # All camera views must predict the same canonical A-B, C-D,
+                # shape, and connected circumference for this subject.
+                measurement_mask[target_index] = 1.0
+        # Row geometry is a target, never a runtime input. Returning the true
+        # y/left/right values here would let the measurement heads peek at the
+        # answer during training and then fail on a normal unseen user.
         return tuple(torch.from_numpy(value.astype(np.float32)) for value in (
-            rgb, profile, row_geometry, row_geometry_mask,
-            edge_values, edge_mask, measurement_values, measurement_mask
+            mesh_channels, profile, edge_values, edge_mask, measurement_values, measurement_mask
         ))
 
 
@@ -737,8 +624,29 @@ def seed_worker(_: int) -> None:
     np.random.seed(seed)
 
 
-class WearV7Model(nn.Module):
-    def __init__(self, edge_keys: list[str], measurement_keys: list[str]) -> None:
+def walk_resized_closed_shape_cm(shape_x, shape_y, breadth_cm, depth_cm):
+    """Resize one normalized closed shape to exact A-B/C-D and walk its edges."""
+    x_center = (shape_x.amax(dim=1) + shape_x.amin(dim=1)) * 0.5
+    y_center = (shape_y.amax(dim=1) + shape_y.amin(dim=1)) * 0.5
+    x_half = ((shape_x.amax(dim=1) - shape_x.amin(dim=1)) * 0.5).clamp_min(1e-4)
+    y_half = ((shape_y.amax(dim=1) - shape_y.amin(dim=1)) * 0.5).clamp_min(1e-4)
+    x_cm = (shape_x - x_center.unsqueeze(1)) / x_half.unsqueeze(1) * breadth_cm.unsqueeze(1) * 0.5
+    y_cm = (shape_y - y_center.unsqueeze(1)) / y_half.unsqueeze(1) * depth_cm.unsqueeze(1) * 0.5
+    x_next = torch.roll(x_cm, shifts=-1, dims=1)
+    y_next = torch.roll(y_cm, shifts=-1, dims=1)
+    return torch.sqrt((x_next - x_cm).square() + (y_next - y_cm).square() + 1e-8).sum(dim=1)
+
+
+class WearV8Model(nn.Module):
+    def __init__(
+        self,
+        edge_keys: list[str],
+        measurement_keys: list[str],
+        edge_mean: np.ndarray | None = None,
+        edge_std: np.ndarray | None = None,
+        measurement_mean: np.ndarray | None = None,
+        measurement_std: np.ndarray | None = None,
+    ) -> None:
         super().__init__()
         backbone = mobilenet_v3_small(weights=MobileNet_V3_Small_Weights.DEFAULT)
         # Preserve early ImageNet features that already understand real-photo
@@ -770,6 +678,16 @@ class WearV7Model(nn.Module):
             for name in ROW_NAMES
         })
         edge_index = {key: index for index, key in enumerate(edge_keys)}
+        if edge_mean is None:
+            edge_mean = np.zeros(len(edge_keys), dtype=np.float32)
+        if edge_std is None:
+            edge_std = np.ones(len(edge_keys), dtype=np.float32)
+        self.register_buffer("edge_native_mean", torch.as_tensor(edge_mean, dtype=torch.float32))
+        self.register_buffer("edge_native_std", torch.as_tensor(edge_std, dtype=torch.float32))
+        self.row_edge_input_indices = [
+            [edge_index[f"row.{name}.{field}"] for field in ROW_GEOMETRY_FIELDS]
+            for name in ROW_NAMES
+        ]
         core_edge_indices = [
             edge_index[f"row.{name}.{field}"]
             for name in ROW_NAMES
@@ -777,7 +695,7 @@ class WearV7Model(nn.Module):
         ]
         self.register_buffer("core_edge_indices", torch.tensor(core_edge_indices, dtype=torch.long))
 
-        # Non-core standing targets retain the global RGB path so sleeves,
+        # Non-core standing targets retain the global mesh path so sleeves,
         # shoulders, inseams, landmarks and every usable WEAR value remain
         # learned. Core body geometry is replaced below by independent heads.
         self.measurement_head = nn.Sequential(
@@ -786,7 +704,7 @@ class WearV7Model(nn.Module):
             nn.Dropout(0.15),
             nn.Linear(384, len(measurement_keys)),
         )
-        # Every row receives RGB evidence, the product profile, and only its
+        # Every row receives mesh evidence, the product profile, and only its
         # own normalized y/left/right line plus a validity bit.  No centimetre
         # measurement is allowed into the model.
         self.measurement_visual = nn.Sequential(
@@ -797,6 +715,12 @@ class WearV7Model(nn.Module):
             nn.SiLU(),
         )
         measurement_index = {key: index for index, key in enumerate(measurement_keys)}
+        if measurement_mean is None:
+            measurement_mean = np.zeros(len(measurement_keys), dtype=np.float32)
+        if measurement_std is None:
+            measurement_std = np.ones(len(measurement_keys), dtype=np.float32)
+        self.register_buffer("measurement_native_mean", torch.as_tensor(measurement_mean, dtype=torch.float32))
+        self.register_buffer("measurement_native_std", torch.as_tensor(measurement_std, dtype=torch.float32))
         self.row_measurement_heads = nn.ModuleDict()
         core_measurement_indices: list[int] = []
         for name in ROW_NAMES:
@@ -804,12 +728,13 @@ class WearV7Model(nn.Module):
                 measurement_index[key]
                 for key in measurement_keys
                 if key.startswith(f"row.{name}.")
+                and key != f"row.{name}.circumference_cm"
             ]
             if not indices:
                 raise RuntimeError(f"No independent measurement targets for {name}")
             core_measurement_indices.extend(indices)
             self.row_measurement_heads[name] = nn.Sequential(
-                nn.Linear(136, 192),
+                nn.Linear(135, 192),
                 nn.SiLU(),
                 nn.Dropout(0.08),
                 nn.Linear(192, 128),
@@ -821,9 +746,18 @@ class WearV7Model(nn.Module):
             "core_measurement_indices",
             torch.tensor(core_measurement_indices, dtype=torch.long),
         )
+        self.connected_rows: list[dict[str, Any]] = []
+        for name in ROW_NAMES:
+            self.connected_rows.append({
+                "breadth": measurement_index[f"row.{name}.breadth_cm"],
+                "depth": measurement_index[f"row.{name}.depth_cm"],
+                "circumference": measurement_index[f"row.{name}.circumference_cm"],
+                "shape_x": [measurement_index[f"row.{name}.shape.{index:02d}.x"] for index in range(CONTOUR_POINTS)],
+                "shape_y": [measurement_index[f"row.{name}.shape.{index:02d}.y"] for index in range(CONTOUR_POINTS)],
+            })
 
-    def forward(self, rgb, profile, row_geometry, row_geometry_mask):
-        vision = self.vision_pool(self.vision_features(rgb)).flatten(1)
+    def forward(self, mesh_channels, profile):
+        vision = self.vision_pool(self.vision_features(mesh_channels)).flatten(1)
         profile_features = self.profile(profile)
         shared_visual = torch.cat((vision, profile_features), dim=1)
         core_visual = shared_visual
@@ -835,21 +769,24 @@ class WearV7Model(nn.Module):
         )
         edge_values = edge_values.scatter(
             1,
-            self.core_edge_indices.unsqueeze(0).expand(rgb.shape[0], -1),
+            self.core_edge_indices.unsqueeze(0).expand(mesh_channels.shape[0], -1),
             core_edges,
+        )
+        native_edges = (
+            edge_values * self.edge_native_std.unsqueeze(0)
+            + self.edge_native_mean.unsqueeze(0)
         )
 
         measurements = self.measurement_head(shared_visual)
         measurement_visual = self.measurement_visual(core_visual)
         independent_rows = []
         for index, name in enumerate(ROW_NAMES):
-            geometry_offset = index * len(ROW_GEOMETRY_FIELDS)
+            predicted_row_geometry = native_edges[:, self.row_edge_input_indices[index]].clamp(0.0, 1.0)
             row_input = torch.cat(
                 (
                     measurement_visual,
                     profile,
-                    row_geometry[:, geometry_offset : geometry_offset + len(ROW_GEOMETRY_FIELDS)],
-                    row_geometry_mask[:, index : index + 1],
+                    predicted_row_geometry,
                 ),
                 dim=1,
             )
@@ -857,9 +794,34 @@ class WearV7Model(nn.Module):
         core_measurements = torch.cat(independent_rows, dim=1)
         measurements = measurements.scatter(
             1,
-            self.core_measurement_indices.unsqueeze(0).expand(rgb.shape[0], -1),
+            self.core_measurement_indices.unsqueeze(0).expand(mesh_channels.shape[0], -1),
             core_measurements,
         )
+        # Circumference is not a free prediction. Convert the predicted A-B,
+        # C-D, and 32 normalized points back to centimetres, resize the closed
+        # shape to that exact breadth/depth, and walk all 32 edges. Tape loss
+        # therefore back-propagates through the same geometry shown in Test Lab.
+        native = measurements * self.measurement_native_std.unsqueeze(0) + self.measurement_native_mean.unsqueeze(0)
+        for row in self.connected_rows:
+            breadth = native[:, row["breadth"]].clamp_min(1.0)
+            depth = native[:, row["depth"]].clamp_min(1.0)
+            shape_x = native[:, row["shape_x"]]
+            shape_y = native[:, row["shape_y"]]
+            circumference_cm = walk_resized_closed_shape_cm(shape_x, shape_y, breadth, depth)
+            circumference_index = row["circumference"]
+            normalized_circumference = (
+                circumference_cm - self.measurement_native_mean[circumference_index]
+            ) / self.measurement_native_std[circumference_index]
+            measurements = measurements.scatter(
+                1,
+                torch.full(
+                    (mesh_channels.shape[0], 1),
+                    circumference_index,
+                    dtype=torch.long,
+                    device=mesh_channels.device,
+                ),
+                normalized_circumference.unsqueeze(1),
+            )
         return edge_values, measurements
 
 
@@ -870,19 +832,23 @@ def startup_smoke() -> None:
         CORE_CIRCUMFERENCE_KEYS
         | CORE_BREADTH_KEYS
         | CORE_DEPTH_KEYS
-        | {
-            f"row.{name}.shape.00.{axis}"
-            for name in ROW_NAMES
-            for axis in ("x", "y")
-        }
+        | CORE_SHAPE_KEYS
         | {"extracted_standing_mm.sleeve_outseam_left_mm"}
     )
-    model = WearV7Model(edge_keys, measurement_keys).cpu().eval()
+    model = WearV8Model(edge_keys, measurement_keys).cpu().eval()
+    rectangle = torch.tensor([[-1.0, 1.0, 1.0, -1.0]], dtype=torch.float32)
+    rectangle_y = torch.tensor([[-1.0, -1.0, 1.0, 1.0]], dtype=torch.float32)
+    walked = walk_resized_closed_shape_cm(
+        rectangle,
+        rectangle_y,
+        torch.tensor([40.0]),
+        torch.tensor([20.0]),
+    )
+    if not torch.allclose(walked, torch.tensor([120.0]), atol=1e-3):
+        raise RuntimeError(f"Connected circumference smoke failed: {walked.tolist()}")
     examples = (
         torch.zeros(2, 3, IMAGE_HEIGHT, IMAGE_WIDTH),
         torch.zeros(2, 4),
-        torch.zeros(2, len(ROW_GEOMETRY_VALUE_KEYS)),
-        torch.ones(2, len(ROW_NAMES)),
     )
     with torch.no_grad():
         edges, measurements = model(*examples)
@@ -896,10 +862,10 @@ def startup_smoke() -> None:
             model,
             examples,
             model_path,
-            input_names=["rgb", "profile", "row_geometry", "row_geometry_mask"],
+            input_names=["mesh_channels", "profile"],
             output_names=["edges", "measurements"],
             dynamic_axes={name: {0: "batch"} for name in (
-                "rgb", "profile", "row_geometry", "row_geometry_mask",
+                "mesh_channels", "profile",
                 "edges", "measurements"
             )},
             opset_version=18,
@@ -908,7 +874,7 @@ def startup_smoke() -> None:
         onnx.checker.check_model(onnx.load(str(model_path)))
     print(json.dumps({
         "startupSmokePassed": True,
-        "inputs": ["rgb", "profile", "row_geometry", "row_geometry_mask"],
+        "inputs": ["mesh_channels", "profile"],
         "outputs": ["edges", "measurements"],
     }), flush=True)
 
@@ -1053,7 +1019,9 @@ def pose_geometry_loss(
 class StatusWriter:
     def __init__(self, bucket: str | None, key: str | None):
         self.bucket, self.key = bucket, key
-        self.s3 = boto3.client("s3") if bucket and key else None
+        if bucket and key and boto3 is None:
+            raise RuntimeError("boto3 is required only when S3 status output is enabled")
+        self.s3 = boto3.client("s3") if bucket and key and boto3 is not None else None
 
     def update(self, epoch: int, epochs: int, detail: str) -> None:
         if self.s3 is None:
@@ -1065,13 +1033,13 @@ class StatusWriter:
             status.update({
                 "state": "running",
                 "overallPercent": round(76.0 + percent * 20.0, 2),
-                "currentStage": "train-v6",
-                "currentStageLabel": f"Training WEAR RGB v6: epoch {epoch}/{epochs}",
+                "currentStage": "train-v8",
+                "currentStageLabel": f"Training WEAR Blender-mesh v8: epoch {epoch}/{epochs}",
                 "detail": detail,
                 "updatedAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             })
             for item in status.get("stages", []):
-                if item.get("key") == "train-v6":
+                if item.get("key") == "train-v8":
                     item.update({"state": "running", "percent": round(percent * 100.0, 2)})
             self.s3.put_object(
                 Bucket=self.bucket,
@@ -1098,10 +1066,8 @@ def evaluate_loss(
 ):
     model.eval()
     values = []
-    for rgb, profile, row_geometry, row_geometry_mask, edge_target, edge_mask, measurement_target, measurement_mask in loader:
-        edge_prediction, measurement_prediction = model(
-            rgb.to(device), profile.to(device), row_geometry.to(device), row_geometry_mask.to(device)
-        )
+    for mesh_channels, profile, edge_target, edge_mask, measurement_target, measurement_mask in loader:
+        edge_prediction, measurement_prediction = model(mesh_channels.to(device), profile.to(device))
         loss = masked_loss(edge_prediction, edge_target.to(device), edge_mask.to(device), edge_loss_weights)
         loss += 0.50 * masked_loss(
             edge_prediction,
@@ -1125,9 +1091,9 @@ def metrics(model, loader, device, keys, mean, std, output_index):
     mean_tensor = torch.from_numpy(mean).to(device)
     std_tensor = torch.from_numpy(std).to(device)
     for batch in loader:
-        rgb, profile, row_geometry, row_geometry_mask = [value.to(device) for value in batch[:4]]
-        target, mask = batch[4 + output_index * 2 : 6 + output_index * 2]
-        prediction = model(rgb, profile, row_geometry, row_geometry_mask)[output_index]
+        mesh_channels, profile = [value.to(device) for value in batch[:2]]
+        target, mask = batch[2 + output_index * 2 : 4 + output_index * 2]
+        prediction = model(mesh_channels, profile)[output_index]
         native_prediction = prediction * std_tensor + mean_tensor
         native_target = target.to(device) * std_tensor + mean_tensor
         error = torch.abs(native_prediction - native_target).cpu().numpy()
@@ -1156,12 +1122,20 @@ def metrics(model, loader, device, keys, mean, std, output_index):
             "beats_train_mean_baseline": bool(mae is not None and baseline_mae is not None and mae < baseline_mae),
             "unit": unit,
         }
+        if values and unit == "cm":
+            result[key]["within_half_inch_rate"] = round(
+                float(np.mean(np.asarray(values) <= HALF_INCH_CM)), 6
+            )
+        if values and unit == "normalized_image":
+            result[key]["within_one_percent_image_rate"] = round(
+                float(np.mean(np.asarray(values) <= ROW_PIXEL_GATE_NORMALIZED)), 6
+            )
     return result
 
 
 @torch.no_grad()
 def edge_structure_metrics(model, loader, device, keys, mean, std):
-    """Check that RGB-only WEAR rows remain ordered with valid photo spans."""
+    """Check that mesh-predicted WEAR rows remain ordered with valid spans."""
     model.eval()
     index = {key: position for position, key in enumerate(keys)}
     mean_tensor = torch.from_numpy(mean).to(device)
@@ -1170,9 +1144,9 @@ def edge_structure_metrics(model, loader, device, keys, mean, std):
     ordered = 0
     valid_spans = 0
     for batch in loader:
-        rgb, profile, row_geometry, row_geometry_mask = [value.to(device) for value in batch[:4]]
-        edge_mask = batch[5].to(device)
-        prediction = model(rgb, profile, row_geometry, row_geometry_mask)[0]
+        mesh_channels, profile = [value.to(device) for value in batch[:2]]
+        edge_mask = batch[3].to(device)
+        prediction = model(mesh_channels, profile)[0]
         native = prediction * std_tensor.unsqueeze(0) + mean_tensor.unsqueeze(0)
         row_y = torch.stack([
             native[:, index[f"row.{name}.y_norm"]]
@@ -1186,7 +1160,7 @@ def edge_structure_metrics(model, loader, device, keys, mean, std):
             native[:, index[f"row.{name}.right_x_norm"]]
             for name in ROW_NAMES
         ], dim=1)
-        front_valid = torch.ones(rgb.shape[0], dtype=torch.bool, device=device)
+        front_valid = torch.ones(mesh_channels.shape[0], dtype=torch.bool, device=device)
         for name in ROW_NAMES:
             front_valid &= edge_mask[:, index[f"row.{name}.y_norm"]] > 0.5
             front_valid &= edge_mask[:, index[f"row.{name}.left_x_norm"]] > 0.5
@@ -1209,13 +1183,14 @@ def main() -> None:
         return
     if args.manifest is None or args.output_dir is None or not args.pipeline_id:
         raise RuntimeError("--manifest, --output-dir, and --pipeline-id are required for training")
+    require_full_contract_reports(args.source_contract_report, args.teacher_audit_report)
     random.seed(20260816)
     np.random.seed(20260816)
     torch.manual_seed(20260816)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     records = load_records(args.manifest)
     if len(records) < args.minimum_records:
-        raise RuntimeError(f"Only {len(records)} valid RGB views; need {args.minimum_records}")
+        raise RuntimeError(f"Only {len(records)} valid Blender mesh views; need {args.minimum_records}")
     by_role = {role: [record for record in records if record.get("role") == role] for role in ("train", "validation", "test")}
     if any(not split for split in by_role.values()):
         raise RuntimeError(f"Missing subject-level split: { {role: len(split) for role, split in by_role.items()} }")
@@ -1242,7 +1217,7 @@ def main() -> None:
     normalization = compute_normalization(by_role["train"], edge_keys, measurement_keys)
     row_geometry_priors = compute_row_geometry_priors(by_role["train"])
     datasets = {
-        role: WearRgbDataset(split, edge_keys, measurement_keys, normalization, augment=role == "train")
+        role: WearMeshDataset(split, edge_keys, measurement_keys, normalization, augment=role == "train")
         for role, split in by_role.items()
     }
     train_generator = torch.Generator().manual_seed(20260816)
@@ -1278,7 +1253,14 @@ def main() -> None:
         ),
     }
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = WearV7Model(edge_keys, measurement_keys).to(device)
+    model = WearV8Model(
+        edge_keys,
+        measurement_keys,
+        normalization.edge_mean,
+        normalization.edge_std,
+        normalization.measurement_mean,
+        normalization.measurement_std,
+    ).to(device)
     edge_loss_weights = edge_weights(edge_keys).to(device)
     core_edge_loss_weights = core_edge_weights(edge_keys).to(device)
     measurement_loss_weights = measurement_weights(measurement_keys).to(device)
@@ -1311,18 +1293,16 @@ def main() -> None:
         model.train()
         total_loss = 0.0
         batches = 0
-        for rgb, profile, row_geometry, row_geometry_mask, edge_target, edge_mask, measurement_target, measurement_mask in loaders["train"]:
-            rgb, profile, row_geometry, row_geometry_mask = [
+        for mesh_channels, profile, edge_target, edge_mask, measurement_target, measurement_mask in loaders["train"]:
+            mesh_channels, profile = [
                 value.to(device, non_blocking=True)
-                for value in (rgb, profile, row_geometry, row_geometry_mask)
+                for value in (mesh_channels, profile)
             ]
             edge_target, edge_mask = edge_target.to(device), edge_mask.to(device)
             measurement_target, measurement_mask = measurement_target.to(device), measurement_mask.to(device)
             optimizer.zero_grad(set_to_none=True)
             with torch.amp.autocast("cuda", enabled=device.type == "cuda"):
-                edge_prediction, measurement_prediction = model(
-                    rgb, profile, row_geometry, row_geometry_mask
-                )
+                edge_prediction, measurement_prediction = model(mesh_channels, profile)
                 loss = masked_loss(edge_prediction, edge_target, edge_mask, edge_loss_weights)
                 loss += 0.50 * masked_loss(
                     edge_prediction,
@@ -1396,6 +1376,11 @@ def main() -> None:
             failures.append(
                 f"{key}: MAE={value['mae']} cm limit={limit} baseline_win={value['beats_train_mean_baseline']}"
             )
+        if float(value.get("within_half_inch_rate") or 0.0) < REQUIRED_HELD_OUT_HALF_INCH_RATE:
+            failures.append(
+                f"{key}: only {float(value.get('within_half_inch_rate') or 0.0):.2%} of held-out views "
+                f"are within {HALF_INCH_CM:.2f} cm; need {REQUIRED_HELD_OUT_HALF_INCH_RATE:.0%}"
+            )
     for key in sorted(CORE_BREADTH_KEYS):
         value = measurement_metrics[key]
         limit = CORE_BREADTH_LIMIT_CM[key]
@@ -1404,6 +1389,11 @@ def main() -> None:
                 f"{key}: raw-mesh breadth MAE={value['mae']} cm limit={limit} "
                 f"baseline_win={value['beats_train_mean_baseline']}"
             )
+        if float(value.get("within_half_inch_rate") or 0.0) < REQUIRED_HELD_OUT_HALF_INCH_RATE:
+            failures.append(
+                f"{key}: only {float(value.get('within_half_inch_rate') or 0.0):.2%} of held-out views "
+                f"are within {HALF_INCH_CM:.2f} cm; need {REQUIRED_HELD_OUT_HALF_INCH_RATE:.0%}"
+            )
     for key in sorted(CORE_DEPTH_KEYS):
         value = measurement_metrics[key]
         limit = CORE_DEPTH_LIMIT_CM[key]
@@ -1411,6 +1401,11 @@ def main() -> None:
             failures.append(
                 f"{key}: raw-mesh depth MAE={value['mae']} cm limit={limit} "
                 f"baseline_win={value['beats_train_mean_baseline']}"
+            )
+        if float(value.get("within_half_inch_rate") or 0.0) < REQUIRED_HELD_OUT_HALF_INCH_RATE:
+            failures.append(
+                f"{key}: only {float(value.get('within_half_inch_rate') or 0.0):.2%} of held-out views "
+                f"are within {HALF_INCH_CM:.2f} cm; need {REQUIRED_HELD_OUT_HALF_INCH_RATE:.0%}"
             )
     for key in sorted(CORE_EDGE_KEYS):
         value = edge_metrics[key]
@@ -1427,6 +1422,15 @@ def main() -> None:
                 f"{key}: MAE={value['mae']} limit={limit} "
                 f"baseline={value.get('train_mean_baseline_mae')} "
                 f"tie_tolerance={EDGE_BASELINE_TIE_TOLERANCE}"
+            )
+        if (
+            key in CORE_ABSOLUTE_EDGE_KEYS
+            and float(value.get("within_one_percent_image_rate") or 0.0)
+            < REQUIRED_HELD_OUT_HALF_INCH_RATE
+        ):
+            failures.append(
+                f"{key}: only {float(value.get('within_one_percent_image_rate') or 0.0):.2%} of held-out views "
+                f"are within 1% of image size; need {REQUIRED_HELD_OUT_HALF_INCH_RATE:.0%}"
             )
     for key in sorted(CORE_SEGMENT_KEYS):
         value = edge_metrics[key]
@@ -1477,6 +1481,10 @@ def main() -> None:
         )
 
     subject_counts = {role: len({record["subject_id"] for record in split}) for role, split in by_role.items()}
+    if subject_counts.get("test") != 448:
+        failures.append(
+            f"held-out subject count is {subject_counts.get('test')}; exactly 448 unseen people are required"
+        )
     report = {
         "schema_version": 1,
         "model_version": args.pipeline_id,
@@ -1509,39 +1517,46 @@ def main() -> None:
         },
         "best_validation_loss": best_validation,
         "edge_baseline_tie_tolerance": EDGE_BASELINE_TIE_TOLERANCE,
+        "held_out_acceptance": {
+            "required_people": 448,
+            "half_inch_cm": HALF_INCH_CM,
+            "required_core_width_depth_circumference_pass_rate": REQUIRED_HELD_OUT_HALF_INCH_RATE,
+            "row_position_endpoint_tolerance_normalized": ROW_PIXEL_GATE_NORMALIZED,
+            "required_row_position_endpoint_pass_rate": REQUIRED_HELD_OUT_HALF_INCH_RATE,
+        },
         "synthetic_candidate_passed": not failures,
         "sdk_ready": False,
         "failures": failures,
         "important_limit": "Real-photo accuracy requires the separate paired-photo acceptance suite; this private candidate may not be released or published.",
     }
     checkpoint = {
-        "schema_version": 7,
+        "schema_version": 8,
         "model_version": args.pipeline_id,
         "state_dict": best_state,
         "edge_keys": edge_keys,
         "measurement_keys": measurement_keys,
         "profile_keys": ["height_cm", "weight_kg", "bmi", "gender_female"],
-        "row_geometry_keys": list(ROW_GEOMETRY_VALUE_KEYS),
-        "row_geometry_mask_keys": list(ROW_NAMES),
+        "row_geometry_runtime_input": "forbidden-model-predicts-own-lines",
         "normalization": {name: getattr(normalization, name).tolist() for name in normalization.__dataclass_fields__},
         "image_size": [IMAGE_WIDTH, IMAGE_HEIGHT],
-        "rgb_mean": RGB_MEAN[:, 0, 0].tolist(),
-        "rgb_std": RGB_STD[:, 0, 0].tolist(),
-        "vision_backbone": "torchvision-mobilenet-v3-small-imagenet-WEAR-only-partial-finetune",
+        "mesh_channel_mean": MESH_CHANNEL_MEAN[:, 0, 0].tolist(),
+        "mesh_channel_std": MESH_CHANNEL_STD[:, 0, 0].tolist(),
+        "mesh_channels": ["filled_visible_body", "outer_boundary", "visible_triangle_lines"],
+        "vision_backbone": "torchvision-mobilenet-v3-small-Blender-2D-mesh-partial-finetune",
         "runtime_mask_required": False,
-        "training_mask_use": "WEAR-RGB-background-and-tight-clothing-appearance-only",
-        "pose_input_method": "none-WEAR-RGB-only",
-        "core_edge_method": "independent-front-only-WEAR-RGB-row-heads",
-        "core_measurement_method": "independent-mask-free-RGB-profile-plus-own-normalized-row-geometry-front-50-only",
-        "non_core_measurement_method": "global-RGB-profile-head-all-nine-views",
+        "training_mask_use": "internal-only-to-build-filled-body-and-boundary-channels-never-returned-as-output",
+        "pose_input_method": "Blender-2D-mesh-camera-view",
+        "core_edge_method": "independent-certified-PLY-projected-row-heads-all-camera-views",
+        "core_measurement_method": "Blender-2D-mesh-profile-plus-model-predicted-row-geometry-all-camera-views",
+        "non_core_measurement_method": "global-Blender-2D-mesh-profile-head-all-nine-views",
         "row_geometry_priors": row_geometry_priors,
-        "row_geometry_augmentation": "normalized-line-jitter-with-partial-and-all-row-dropout",
+        "row_geometry_augmentation": "none-ground-truth-rows-are-targets-never-inputs",
         "metric_width_input": "forbidden",
         "breadth_method": "direct-raw-WEAR-mesh-supervision",
-        "circumference_method": "direct-learned-WEAR-label",
-        "depth_method": "raw-WEAR-mesh-supervision",
-        "shape_method": "32-point-normalized-closed-WEAR-cross-section-supervision",
-        "pose_scope": "standing-A-only; core edges and measurements supervised on front-50 projected WEAR geometry; angled views teach non-core standing outputs; sitting-protocol measurements excluded",
+        "circumference_method": "walked-predicted-32-point-shape-supervised-by-WEAR-tape",
+        "depth_method": "same-certified-PLY-ring-C-D-supervision",
+        "shape_method": "32-point-normalized-certified-WEAR-cross-section-supervision",
+        "pose_scope": "standing-A-only; nine deterministic Blender camera views teach angle correction against one canonical certified PLY geometry; sitting measurements excluded",
     }
     torch.save(checkpoint, args.output_dir / "model.pt")
     (args.output_dir / "test-metrics.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
@@ -1554,8 +1569,6 @@ def main() -> None:
     examples = (
         torch.zeros(1, 3, IMAGE_HEIGHT, IMAGE_WIDTH),
         torch.zeros(1, 4),
-        torch.zeros(1, len(ROW_GEOMETRY_VALUE_KEYS)),
-        torch.ones(1, len(ROW_NAMES)),
     )
     torch.jit.trace(cpu_model, examples).save(str(args.output_dir / "model.ts"))
     onnx_path = args.output_dir / "model.onnx"
@@ -1563,10 +1576,10 @@ def main() -> None:
         cpu_model,
         examples,
         onnx_path,
-        input_names=["rgb", "profile", "row_geometry", "row_geometry_mask"],
+        input_names=["mesh_channels", "profile"],
         output_names=["edges", "measurements"],
         dynamic_axes={name: {0: "batch"} for name in (
-            "rgb", "profile", "row_geometry", "row_geometry_mask",
+            "mesh_channels", "profile",
             "edges", "measurements"
         )},
         opset_version=18,

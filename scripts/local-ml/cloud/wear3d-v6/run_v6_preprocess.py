@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render and audit the complete standing WEAR v6 set on a CPU worker."""
+"""Render and hard-audit the complete standing WEAR v8 mesh-teacher set."""
 
 from __future__ import annotations
 
@@ -35,8 +35,8 @@ VIEW_IDS = (
     "left-tele",
     "right-tele",
 )
-LEGACY_RENDERER_REVISION = "protocol-aware-closed-torso-xvfb-v6-192x256-16x4"
-RENDERER_REVISION = "protocol-aware-closed-torso-xvfb-v6-source-height-sparse-landmarks-r5"
+LEGACY_RENDERER_REVISION = "not-reusable-for-mesh-v8"
+RENDERER_REVISION = "certified-ply-lnd-connected-shape-mesh-card-v8-r2-blender-5.2.0-lts"
 MIN_UNDERBUST_CHEST_SEPARATION_MM = 10.0
 SOURCE_ROW_HEIGHT_EPSILON_MM = 0.01
 VERTICAL_ALIGNMENT_ANCHORS = (
@@ -265,8 +265,8 @@ def failure_records(record: dict[str, Any], views_per_subject: int, detail: str)
         view_ids = (*view_ids, *(f"extra-{index:02d}" for index in range(len(view_ids), views_per_subject)))
     return [
         {
-            "schema_version": 2,
-            "pipeline_id": "wear3d-standing-multiview-v6",
+            "schema_version": 3,
+            "pipeline_id": "wear3d-standing-mesh-teacher-v8",
             "sample_id": f"{scan_id}-{view_id}",
             "subject_id": record.get("subject_id"),
             "scan_id": scan_id,
@@ -310,7 +310,7 @@ def main() -> None:
     }
     status.update(
         overall=progress["inventory_start"],
-        stage="render-v6" if args.recovery else "inventory-v6",
+        stage="render-v8" if args.recovery else "inventory-v8",
         label="Checking saved shards before label recovery" if args.recovery else "Checking all 33.5 GB in S3",
         detail="Only failed shards and the few legacy shards that discarded valid mesh geometry will be regenerated." if args.recovery else "Counting every protected WEAR object before rendering.",
         stage_index=2 if args.recovery else 0,
@@ -319,11 +319,11 @@ def main() -> None:
     object_count, byte_count = inventory(s3, args.bucket)
     if object_count != EXPECTED_RAW_OBJECTS or byte_count != EXPECTED_RAW_BYTES:
         raise RuntimeError(f"Protected vault mismatch: objects={object_count} bytes={byte_count}")
-    status.update(overall=progress["inventory_done"], stage="render-v6" if args.recovery else "inventory-v6", label="Protected WEAR vault verified", detail=f"Verified {object_count:,} objects and {byte_count / 1e9:.2f} GB.", stage_index=2 if args.recovery else 0, stage_percent=97 if args.recovery else 100)
+    status.update(overall=progress["inventory_done"], stage="render-v8" if args.recovery else "inventory-v8", label="Protected WEAR vault verified", detail=f"Verified {object_count:,} objects and {byte_count / 1e9:.2f} GB.", stage_index=2 if args.recovery else 0, stage_percent=97 if args.recovery else 100)
 
     raw_root = args.root.parent / "wear3d" / "raw"
     raw_root.mkdir(parents=True, exist_ok=True)
-    status.update(overall=progress["manifest_start"], stage="render-v6" if args.recovery else "manifest-v6", label="Downloading standing meshes for recovery" if args.recovery else "Downloading standing meshes", detail="Copying the protected vault to encrypted temporary storage on this Virginia worker.", stage_index=2 if args.recovery else 1, stage_percent=97 if args.recovery else 10)
+    status.update(overall=progress["manifest_start"], stage="render-v8" if args.recovery else "manifest-v8", label="Downloading standing meshes for recovery" if args.recovery else "Downloading standing meshes", detail="Copying the protected vault to encrypted temporary storage on this Virginia worker.", stage_index=2 if args.recovery else 1, stage_percent=97 if args.recovery else 10)
     run("aws", "s3", "sync", f"s3://{args.bucket}/raw/", str(raw_root), "--only-show-errors")
     source_manifest = args.root / "source-manifest-standing-a.jsonl"
     run("aws", "s3", "cp", f"s3://{args.bucket}/{args.source_manifest_key}", str(source_manifest), "--only-show-errors")
@@ -339,7 +339,7 @@ def main() -> None:
     }
     if not args.recovery:
         manifest_dataset.update({"completedExamples": 0, "failedExamples": 0})
-    status.update(overall=progress["manifest_done"], stage="render-v6" if args.recovery else "manifest-v6", label="4,326 standing people paired", detail=f"Subject-disjoint roles: {roles}.", stage_index=2 if args.recovery else 1, stage_percent=98 if args.recovery else 100, dataset=manifest_dataset)
+    status.update(overall=progress["manifest_done"], stage="render-v8" if args.recovery else "manifest-v8", label="4,326 standing people paired", detail=f"Subject-disjoint roles: {roles}.", stage_index=2 if args.recovery else 1, stage_percent=98 if args.recovery else 100, dataset=manifest_dataset)
 
     chunks_root = args.root / "chunks"
     rendered_root = args.root / "rendered"
@@ -387,9 +387,9 @@ def main() -> None:
     renderer = args.code_root / "render_wear3d_multiview.py"
     status.update(
         overall=progress["render_start"],
-        stage="render-v6",
-        label="Recovering failed WEAR labels" if args.recovery else "Rendering camera-aware RGB teachers",
-        detail=("Clean S3 shards are reused; only failed or missing-source-geometry shards are rendered again." if args.recovery else f"Using {args.workers} isolated Blender workers. Every finished shard is checkpointed to S3."),
+        stage="render-v8",
+        label="Recovering failed WEAR mesh teachers" if args.recovery else "Rendering certified Blender mesh teachers",
+        detail=("Only current v8 certified shards are reusable." if args.recovery else f"Using {args.workers} isolated Blender workers. RGB is not a training input; every mesh-card shard is checkpointed to S3."),
         stage_index=2,
         stage_percent=98 if args.recovery else 1,
     )
@@ -427,6 +427,7 @@ def main() -> None:
                         "blender", "--background", "--factory-startup", "--python", str(renderer), "--",
                         "--manifest", str(input_path), "--output-dir", str(attempt_dir),
                         "--views-per-subject", str(args.views_per_subject),
+                        "--mask-only",
                     ],
                     check=False,
                     stdout=log,
@@ -509,7 +510,7 @@ def main() -> None:
                 marker = None
         if (
             marker
-            and marker.get("digest") in {digest, legacy_digest}
+            and marker.get("digest") == digest
             and int(marker.get("subjects", 0)) == len(chunk_records)
             and int(marker.get("successfulExamples", 0)) > 0
             # A follow-up recovery worker must revisit only shards that contain
@@ -525,10 +526,7 @@ def main() -> None:
             # absent, even though the 3D mesh still provided a true edge, depth,
             # and shape. Rerender only those few affected legacy shards; all
             # unrelated clean shards remain immutable.
-            and (
-                marker.get("rendererRevision") == RENDERER_REVISION
-                or not requires_legacy_geometry_recovery(chunk_records)
-            )
+            and marker.get("rendererRevision") == RENDERER_REVISION
         ):
             completed_subjects += len(chunk_records)
             completed_examples += int(marker.get("successfulExamples", 0))
@@ -552,7 +550,7 @@ def main() -> None:
             fraction = completed_subjects / len(source_records)
             status.update(
                 overall=progress["render_start"] + fraction * progress["render_span"],
-                stage="render-v6",
+                stage="render-v8",
                 label=f"Processed {completed_subjects:,} / {len(source_records):,} people",
                 detail=(
                     "Finished shards are safe in S3. Failed Blender scans are retried, isolated, "
@@ -577,7 +575,7 @@ def main() -> None:
     failed_subjects = len({str(record.get("subject_id")) for record in failures})
     status.update(
         overall=progress["audit_start"],
-        stage="render-v6",
+        stage="render-v8",
         label="Auditing every generated label",
         detail=(
             f"Rendered {len(merged) - len(failures):,} views; "
@@ -588,11 +586,11 @@ def main() -> None:
         dataset={"completedExamples": len(merged) - len(failures), "failedExamples": len(failures)},
     )
 
-    # The numerical audit reads only manifest data. Download a bounded visual
-    # sample when its completed shard was resumed from S3 on this worker.
+    # The hard audit reads exact manifest geometry and renders a bounded visual
+    # contact sheet from deterministic Blender mesh cards.
     visual_records = diverse_visual_records(merged, 24)
     for record in visual_records:
-        image_path = Path(str(record["image"]))
+        image_path = Path(str(record["mesh_image"]))
         if image_path.exists():
             continue
         relative = image_path.relative_to(rendered_root)
@@ -604,27 +602,31 @@ def main() -> None:
         )
 
     audit_dir = args.root / "audit"
-    expected_source_masks = expected_source_row_mask_subjects(source_records)
     audit_result = subprocess.run(
         [
             "python3",
-            str(args.code_root / "audit_wear3d_labels_cloud.py"),
-            "--manifest",
+            str(args.code_root / "audit_wear_teacher_cards.py"),
+            "--render-manifest",
             str(merged_manifest),
-            "--output-dir",
-            str(audit_dir),
-            "--expected-underbust-mask-subjects",
-            str(expected_source_masks["underbust"]),
-            "--expected-waist-mask-subjects",
-            str(expected_source_masks["waist"]),
-            "--strict",
+            "--source-manifest",
+            str(source_manifest),
+            "--output",
+            str(audit_dir / "audit-summary.json"),
+            "--contact-sheet",
+            str(audit_dir / "label-contact-sheet.jpg"),
+            "--expected-people",
+            "4326",
+            "--expected-views",
+            str(args.views_per_subject),
+            "--contact-sheet-samples",
+            "24",
         ],
         check=False,
     )
     audit_summary = audit_dir / "audit-summary.json"
     contact_sheet = audit_dir / "label-contact-sheet.jpg"
     if not audit_summary.is_file() or not contact_sheet.is_file():
-        raise RuntimeError(f"Full v6 label audit exited {audit_result.returncode} without preserving its evidence")
+        raise RuntimeError(f"Full v8 teacher audit exited {audit_result.returncode} without preserving its evidence")
     audit = json.loads(audit_summary.read_text(encoding="utf-8"))
     # Save both success and failure evidence before the ephemeral CPU worker
     # exits. A failed audit must remain diagnosable without rerendering 33.5 GB.
@@ -638,13 +640,20 @@ def main() -> None:
             "aws", "s3", "cp", str(local_path), f"s3://{args.bucket}/{key}",
             "--sse", "AES256", "--only-show-errors",
         )
-    if audit_result.returncode != 0 or audit.get("passed") is not True:
-        failed_gates = [name for name, passed in (audit.get("gates") or {}).items() if passed is not True]
-        raise RuntimeError(f"Full v6 label audit failed: {failed_gates}")
-    status.update(overall=72, stage="render-v6", label="Automated v6 label audit passed", detail=f"{audit['subjects']:,} standing people passed mandatory-row, optional-row coverage, torso-edge, cross-section, raw-depth, camera, and split gates.", stage_index=2, stage_percent=100)
+    if audit_result.returncode != 0 or (audit.get("summary") or {}).get("trainingAllowed") is not True:
+        failing_rows = {
+            name: {
+                "geometry": row.get("geometryPassRate"),
+                "tape": row.get("connectedTapePassRate"),
+            }
+            for name, row in (audit.get("rows") or {}).items()
+            if row.get("geometryPassRate", 0) < 0.90 or row.get("connectedTapePassRate", 0) < 0.90
+        }
+        raise RuntimeError(f"Full v8 teacher audit failed; GPU remains blocked: {failing_rows}")
+    status.update(overall=72, stage="render-v8", label="Automated v8 teacher audit passed", detail="All five core rows met the certified PLY geometry and connected-tape coverage gates across 4,326 people and nine cameras.", stage_index=2, stage_percent=100)
 
-    status.update(overall=74, stage="render-v6", label="Awaiting diverse contact-sheet review", detail="CPU preprocessing is complete and evidence is safe in S3. GPU launch stays blocked until the generated lines are visually approved.", stage_index=2, stage_percent=100, state="waiting")
-    print(json.dumps({"subjects": audit["subjects"], "records": audit["records"], "failures": len(failures), "passed": True}))
+    status.update(overall=74, stage="render-v8", label="Awaiting diverse teacher-card review", detail="CPU preprocessing is complete and evidence is safe in S3. GPU launch stays blocked until the generated lines are visually approved.", stage_index=2, stage_percent=100, state="waiting")
+    print(json.dumps({"subjects": (audit.get("inputs") or {}).get("people"), "records": (audit.get("inputs") or {}).get("renderCards"), "failures": len(failures), "passed": True}))
 
 
 if __name__ == "__main__":

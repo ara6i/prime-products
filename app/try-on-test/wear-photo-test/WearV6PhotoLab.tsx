@@ -10,6 +10,7 @@ import {
   Maximize2,
   Ruler,
   ScanLine,
+  Search,
   Sparkles,
   Upload,
   X,
@@ -25,6 +26,7 @@ import type {
   MeshShapeStatusResponse,
 } from "../sizing-lab/lib/meshShapeProviders";
 import { WearV6Workbench } from "./WearV6Workbench";
+import { HeldoutOnnxTrainingVisual } from "./HeldoutOnnxTrainingVisual";
 import type {
   WearV6AppleResult,
   WearV6Line,
@@ -39,6 +41,27 @@ import type {
 
 type RunState = "idle" | "pose" | "wear-edges" | "apple" | "wear-measurements" | "ready" | "error";
 type AppleState = "idle" | "loading" | "ready" | "error";
+type TestMode = "heldout-onnx" | "photo-pipeline";
+
+interface HeldoutWearModel {
+  scanId: string;
+  subjectId: string;
+  gender: Gender;
+  heightCm: number;
+  weightKg: number;
+  imageUrl: string;
+}
+
+interface HeldoutWearListResponse {
+  ok: boolean;
+  personCount?: number;
+  expectedPersonCount?: number;
+  split?: "test-only";
+  includedInTraining?: false;
+  tapeIncluded?: false;
+  models?: HeldoutWearModel[];
+  error?: string;
+}
 
 interface DatasetRow {
   setId: string;
@@ -112,6 +135,14 @@ const EMPTY_ACTUALS: ActualMeasurements = {
   underbust: null,
   waist: null,
   hips: null,
+};
+
+const HELDOUT_PART_LABELS: Record<WearV6RowKind, string> = {
+  neck: "Neck",
+  chest: "Chest",
+  underbust: "Under-bust",
+  waist: "Natural waist",
+  hips: "Hips",
 };
 
 const APPLE_POSE_JOINTS: Record<WearV6PoseAnchorName, string> = {
@@ -338,25 +369,180 @@ function NumberField({
   value,
   onChange,
   required = false,
+  disabled = false,
 }: {
   label: string;
   value: number | null;
   onChange: (value: number | null) => void;
   required?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-xs font-black uppercase tracking-[0.12em] text-slate-500">{label}{required ? " · required" : ""}</span>
-      <span className="flex items-center rounded-xl border border-slate-200 bg-white px-3 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100">
-        <input className="min-w-0 flex-1 bg-transparent py-2.5 text-sm font-bold outline-none" min="1" onChange={(event) => onChange(event.target.value ? Number(event.target.value) : null)} step="0.1" type="number" value={value ?? ""} />
+      <span className={cn("flex items-center rounded-xl border border-slate-200 bg-white px-3 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100", disabled && "bg-slate-100 text-slate-500")}>
+        <input className="min-w-0 flex-1 bg-transparent py-2.5 text-sm font-bold outline-none disabled:cursor-not-allowed" disabled={disabled} min="1" onChange={(event) => onChange(event.target.value ? Number(event.target.value) : null)} step="0.1" type="number" value={value ?? ""} />
         <span className="text-xs font-bold text-slate-400">cm</span>
       </span>
     </label>
   );
 }
 
+export function LegacyHeldoutOnnxResult({
+  actuals,
+  imageSize,
+  imageUrl,
+  model,
+  prediction,
+}: {
+  actuals: ActualMeasurements;
+  imageSize: { width: number; height: number };
+  imageUrl: string;
+  model: HeldoutWearModel;
+  prediction: WearV6Prediction;
+}) {
+  const parts = (["neck", "chest", "underbust", "waist", "hips"] as WearV6RowKind[])
+    .filter((part) => part !== "underbust" || model.gender === "female");
+  const [activePart, setActivePart] = useState<WearV6RowKind>("waist");
+  const heldout = prediction.heldoutEvaluation;
+  const predictedRows = heldout?.predictedRows ?? prediction.rows;
+  const realRows = heldout?.realRows ?? [];
+  const predictedRow = predictedRows.find((row) => row.kind === activePart);
+  const realRow = realRows.find((row) => row.kind === activePart);
+  const measurement = prediction.measurements.find((item) => item.kind === activePart);
+  const predictedShape = prediction.crossSections.find((item) => item.kind === activePart);
+  const realGeometry = heldout?.realGeometry[activePart];
+  const realTape = actuals[activePart];
+  const predictedPhysicalPoints = (predictedShape?.points ?? []).map((point) => ({
+    x: point.breadthNorm * (measurement?.appleCorrectedWidthCm ?? 0) / 2,
+    y: point.depthNorm * (measurement?.rawMeshDepthCm ?? 0) / 2,
+  }));
+  const realPhysicalPoints = (realGeometry?.contour32Normalized ?? []).map((point) => ({
+    x: point.breadthNorm * (realGeometry?.frontWidthCm ?? 0) / 2,
+    y: point.depthNorm * (realGeometry?.depthCm ?? 0) / 2,
+  }));
+  const maxShapeRadius = Math.max(
+    1,
+    ...predictedPhysicalPoints.flatMap((point) => [Math.abs(point.x), Math.abs(point.y)]),
+    ...realPhysicalPoints.flatMap((point) => [Math.abs(point.x), Math.abs(point.y)]),
+  );
+  const shapeScale = 120 / maxShapeRadius;
+  const svgPoints = (points: Array<{ x: number; y: number }>) => points
+    .map((point) => `${(170 + point.x * shapeScale).toFixed(2)},${(150 + point.y * shapeScale).toFixed(2)}`)
+    .join(" ");
+  return (
+    <section className="rounded-3xl border border-emerald-200 bg-white p-5 shadow-sm" data-testid="heldout-onnx-result">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.14em] text-emerald-700">ONNX-only held-out result</p>
+          <h2 className="mt-1 text-2xl font-black text-slate-950">{model.scanId}</h2>
+          <p className="mt-1 text-sm text-slate-600">Choose any of the 448 test-only people. Cyan is ONNX. Orange is real WEAR truth.</p>
+        </div>
+        <div className="flex flex-wrap gap-2 text-xs font-black">
+          <span className="rounded-full bg-emerald-100 px-3 py-1.5 text-emerald-800">ONNX only</span>
+          <span className="rounded-full bg-cyan-100 px-3 py-1.5 text-cyan-900">Cyan · ONNX prediction</span>
+          <span className="rounded-full bg-orange-100 px-3 py-1.5 text-orange-900">Orange · real WEAR</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1.5 text-slate-700">Apple Vision: not used</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1.5 text-slate-700">Depth Pro: not used</span>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(300px,0.72fr)_minmax(0,1.28fr)]">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-950">
+          <div className="relative">
+            {/* This private API image is dynamic and is not compatible with next/image optimization. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img alt={`${model.scanId} held-out WEAR render`} className="max-h-[620px] w-full object-contain" src={imageUrl} />
+            <svg aria-label="ONNX predicted rows compared with real WEAR rows" className="pointer-events-none absolute inset-0 size-full" preserveAspectRatio="none" viewBox="0 0 1000 1000">
+              {realRows.map((row) => (
+                <g key={row.kind}>
+                  <line x1={row.photo.left.x * 1000} x2={row.photo.right.x * 1000} y1={row.photo.left.y * 1000} y2={row.photo.right.y * 1000} stroke="rgba(15,23,42,0.85)" strokeWidth="9" vectorEffect="non-scaling-stroke" />
+                  <line x1={row.photo.left.x * 1000} x2={row.photo.right.x * 1000} y1={row.photo.left.y * 1000} y2={row.photo.right.y * 1000} stroke="#fb923c" strokeDasharray="10 7" strokeWidth="5" vectorEffect="non-scaling-stroke" />
+                </g>
+              ))}
+              {predictedRows.map((row) => (
+                <line key={row.kind} x1={row.photo.left.x * 1000} x2={row.photo.right.x * 1000} y1={row.photo.left.y * 1000} y2={row.photo.right.y * 1000} stroke="#06b6d4" strokeWidth="4" vectorEffect="non-scaling-stroke" />
+              ))}
+            </svg>
+          </div>
+          <div className="flex justify-between gap-3 border-t border-white/10 px-3 py-2 text-xs font-bold text-slate-300">
+            <span>Cyan ONNX lines · dashed orange real lines</span>
+            <span>{imageSize.width.toLocaleString()} × {imageSize.height.toLocaleString()} px</span>
+          </div>
+        </div>
+
+        <div className="min-w-0">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Profile input</p><p className="mt-1 text-sm font-black">{model.gender} · {model.heightCm.toFixed(1)} cm · {model.weightKg.toFixed(1)} kg</p></div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Automatic pipeline</p><p className="mt-1 text-sm font-black">RGB predicts lines → those lines predict depth, shape and circumference</p></div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Inference</p><p className="mt-1 text-sm font-black">{prediction.timing.inferenceMs.toFixed(1)} ms</p></div>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {parts.map((part) => <button className={cn("rounded-xl border px-3 py-2 text-sm font-black", activePart === part ? "border-blue-700 bg-blue-700 text-white" : "border-slate-200 bg-white text-slate-700")} key={part} onClick={() => setActivePart(part)} type="button">{HELDOUT_PART_LABELS[part]}</button>)}
+          </div>
+
+          <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(300px,0.9fr)_minmax(0,1.1fr)]">
+            <div className="rounded-2xl border border-slate-200 bg-slate-950 p-4 text-white">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-300">{HELDOUT_PART_LABELS[activePart]} · 32-point shape</p>
+              <svg aria-label={`${HELDOUT_PART_LABELS[activePart]} predicted and real cross-sections`} className="mt-2 h-[300px] w-full" viewBox="0 0 340 300">
+                <line stroke="#334155" x1="170" x2="170" y1="15" y2="285" />
+                <line stroke="#334155" x1="25" x2="315" y1="150" y2="150" />
+                {realPhysicalPoints.length >= 3 ? <polygon fill="rgba(251,146,60,0.08)" points={svgPoints(realPhysicalPoints)} stroke="#fb923c" strokeDasharray="8 6" strokeWidth="3" /> : null}
+                {predictedPhysicalPoints.length >= 3 ? <polygon fill="rgba(6,182,212,0.12)" points={svgPoints(predictedPhysicalPoints)} stroke="#06b6d4" strokeWidth="3" /> : null}
+              </svg>
+              <div className="flex flex-wrap gap-4 text-xs font-bold"><span className="text-cyan-300">Solid cyan · ONNX</span><span className="text-orange-300">Dashed orange · real WEAR</span></div>
+            </div>
+
+            <div className="grid content-start gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-cyan-200 bg-cyan-50 p-4"><p className="text-xs font-black uppercase tracking-[0.12em] text-cyan-800">ONNX predicted</p><p className="mt-3 text-sm font-bold text-slate-700">Front width <strong className="float-right text-slate-950">{measurement ? `${measurement.appleCorrectedWidthCm.toFixed(2)} cm` : "—"}</strong></p><p className="mt-2 text-sm font-bold text-slate-700">Depth <strong className="float-right text-slate-950">{measurement?.rawMeshDepthCm == null ? "—" : `${measurement.rawMeshDepthCm.toFixed(2)} cm`}</strong></p><p className="mt-2 text-sm font-bold text-slate-700">Circumference <strong className="float-right text-slate-950">{measurement ? `${measurement.valueCm.toFixed(1)} cm` : "—"}</strong></p></div>
+              <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4"><p className="text-xs font-black uppercase tracking-[0.12em] text-orange-800">Real WEAR truth</p><p className="mt-3 text-sm font-bold text-slate-700">Front width <strong className="float-right text-slate-950">{realGeometry?.frontWidthCm == null ? "—" : `${realGeometry.frontWidthCm.toFixed(2)} cm`}</strong></p><p className="mt-2 text-sm font-bold text-slate-700">Depth <strong className="float-right text-slate-950">{realGeometry?.depthCm == null ? "—" : `${realGeometry.depthCm.toFixed(2)} cm`}</strong></p><p className="mt-2 text-sm font-bold text-slate-700">Tape <strong className="float-right text-slate-950">{realTape == null ? "—" : `${realTape.toFixed(1)} cm`}</strong></p></div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:col-span-2"><p className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">Errors for this part</p><div className="mt-3 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4"><p>Row height<br /><strong>{predictedRow && realRow ? `${(Math.abs(predictedRow.photo.left.y - realRow.photo.left.y) * imageSize.height).toFixed(1)} px` : "—"}</strong></p><p>Left edge<br /><strong>{predictedRow && realRow ? `${(Math.abs(predictedRow.photo.left.x - realRow.photo.left.x) * imageSize.width).toFixed(1)} px` : "—"}</strong></p><p>Right edge<br /><strong>{predictedRow && realRow ? `${(Math.abs(predictedRow.photo.right.x - realRow.photo.right.x) * imageSize.width).toFixed(1)} px` : "—"}</strong></p><p>Circumference<br /><strong>{measurement && realTape != null ? `${measurement.valueCm - realTape >= 0 ? "+" : ""}${(measurement.valueCm - realTape).toFixed(1)} cm` : "—"}</strong></p></div></div>
+            </div>
+          </div>
+
+          <div className="mt-4 overflow-x-auto rounded-2xl border border-slate-200">
+            <table className="w-full min-w-[900px] text-left text-sm">
+              <thead className="bg-slate-100 text-xs uppercase tracking-[0.08em] text-slate-600">
+                <tr><th className="px-4 py-3">Body part</th><th className="px-4 py-3">ONNX width</th><th className="px-4 py-3">Real width</th><th className="px-4 py-3">ONNX depth</th><th className="px-4 py-3">Real depth</th><th className="px-4 py-3">ONNX circumference</th><th className="px-4 py-3">Real tape</th><th className="px-4 py-3">Error</th></tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {parts.map((part) => {
+                  const measurement = prediction.measurements.find((item) => item.kind === part);
+                  const geometry = heldout?.realGeometry[part];
+                  const tape = actuals[part];
+                  const difference = measurement && tape != null ? measurement.valueCm - tape : null;
+                  return (
+                    <tr className={cn("cursor-pointer", activePart === part && "bg-blue-50")} key={part} onClick={() => setActivePart(part)}>
+                      <td className="px-4 py-3 font-black text-slate-900">{HELDOUT_PART_LABELS[part]}</td>
+                      <td className="px-4 py-3 font-black text-cyan-800">{measurement ? `${measurement.appleCorrectedWidthCm.toFixed(2)} cm` : "—"}</td>
+                      <td className="px-4 py-3 font-black text-orange-800">{geometry?.frontWidthCm == null ? "—" : `${geometry.frontWidthCm.toFixed(2)} cm`}</td>
+                      <td className="px-4 py-3 font-black text-cyan-800">{measurement?.rawMeshDepthCm == null ? "—" : `${measurement.rawMeshDepthCm.toFixed(2)} cm`}</td>
+                      <td className="px-4 py-3 font-black text-orange-800">{geometry?.depthCm == null ? "—" : `${geometry.depthCm.toFixed(2)} cm`}</td>
+                      <td className="px-4 py-3 font-black text-cyan-800">{measurement ? `${measurement.valueCm.toFixed(1)} cm` : "—"}</td>
+                      <td className="px-4 py-3 font-black text-orange-800">{tape == null ? "—" : `${tape.toFixed(1)} cm`}</td>
+                      <td className={cn("px-4 py-3 font-black", difference != null && Math.abs(difference) <= 1.27 ? "text-emerald-700" : "text-red-700")}>{difference == null ? "—" : `${difference >= 0 ? "+" : ""}${difference.toFixed(1)} cm`}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-xs leading-5 text-slate-500">The automatic v7 path receives RGB, height, weight and gender. It predicts the cyan line first, then uses that predicted line to produce width, depth, 32-point shape and circumference. Orange WEAR geometry and tape are revealed only for checking.</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function WearV6PhotoLab() {
+  const [testMode, setTestMode] = useState<TestMode>("heldout-onnx");
   const [datasets, setDatasets] = useState<DatasetRow[]>([]);
+  const [heldoutModels, setHeldoutModels] = useState<HeldoutWearModel[]>([]);
+  const [heldoutPersonCount, setHeldoutPersonCount] = useState(0);
+  const [heldoutSearch, setHeldoutSearch] = useState("");
+  const [heldoutLoadError, setHeldoutLoadError] = useState<string | null>(null);
+  const [selectedHeldoutScanId, setSelectedHeldoutScanId] = useState("");
   const [selectedDatasetId, setSelectedDatasetId] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
@@ -382,6 +568,8 @@ export function WearV6PhotoLab() {
   const [appleDepthWidths, setAppleDepthWidths] = useState<Partial<Record<WearV6RowKind, number>>>({});
   const [appleDepthState, setAppleDepthState] = useState<AppleState>("idle");
   const [appleDepthDetail, setAppleDepthDetail] = useState("Apple + Depth Pro has not run yet");
+  const v7ModelActive = modelStatus?.modelVersion?.includes("-v7-") === true;
+  const poseAnchorsRequired = modelStatus?.poseAnchorsRequired !== false;
   const uploadRef = useRef<HTMLInputElement>(null);
   const uploadedObjectUrlRef = useRef<string | null>(null);
   const activeRunRef = useRef(0);
@@ -430,6 +618,7 @@ export function WearV6PhotoLab() {
       uploadedObjectUrlRef.current = null;
     }
     const source = datasetImage(row);
+    setSelectedHeldoutScanId("");
     setSelectedDatasetId(row.setId);
     setImageUrl(source);
     setImageSize(await imageDimensions(source));
@@ -447,6 +636,24 @@ export function WearV6PhotoLab() {
     resetResult();
   }, [resetResult]);
 
+  const applyHeldoutModel = useCallback(async (model: HeldoutWearModel) => {
+    if (uploadedObjectUrlRef.current) {
+      URL.revokeObjectURL(uploadedObjectUrlRef.current);
+      uploadedObjectUrlRef.current = null;
+    }
+    setTestMode("heldout-onnx");
+    setSelectedHeldoutScanId(model.scanId);
+    setSelectedDatasetId(`heldout:${model.scanId}`);
+    setImageUrl(model.imageUrl);
+    setImageSize(await imageDimensions(model.imageUrl));
+    setHeightCm(model.heightCm);
+    setWeightKg(model.weightKg);
+    setGender(model.gender);
+    setReportedChestCm(null);
+    setActuals(EMPTY_ACTUALS);
+    resetResult();
+  }, [resetResult]);
+
   const refreshStatus = useCallback(async () => {
     const [modelResponse, forgeResponse] = await Promise.all([
       fetch("/api/try-on-test/wear-photo-test/v6", { cache: "no-store" }),
@@ -461,16 +668,24 @@ export function WearV6PhotoLab() {
     let active = true;
     void Promise.all([
       fetch("/api/try-on-test/sizing-lab/dataset", { cache: "no-store" }).then((response) => response.json()),
+      fetch("/api/try-on-test/wear-photo-test/heldout", { cache: "no-store" }).then((response) => response.json() as Promise<HeldoutWearListResponse>),
       fetch("/api/try-on-test/wear-photo-test/v6", { cache: "no-store" }).then((response) => response.json() as Promise<WearV6ModelStatus>),
       fetch("/api/try-on-test/model-forge/status", { cache: "no-store" }).then((response) => response.json() as Promise<{ status?: ForgeStatus } & ForgeStatus>),
-    ]).then(([datasetPayload, modelPayload, forgePayload]) => {
+    ]).then(([datasetPayload, heldoutPayload, modelPayload, forgePayload]) => {
       if (!active) return;
       setModelStatus(modelPayload);
       setForgeStatus(forgePayload.status ?? forgePayload);
       const rows = ((datasetPayload.rows ?? []) as DatasetRow[]).filter((row) => row.frontImageUrl);
       setDatasets(rows);
-      const initial = rows.find((row) => row.setId === "shahnaz-2") ?? rows[0];
-      if (initial) void applyDataset(initial);
+      const heldout = heldoutPayload.models ?? [];
+      if (!heldoutPayload.ok || heldoutPayload.personCount !== 448 || heldout.length !== 448 || heldoutPayload.includedInTraining !== false) {
+        setHeldoutLoadError(heldoutPayload.error ?? "The 448-person test-only cohort failed its integrity check.");
+        return;
+      }
+      setHeldoutModels(heldout);
+      setHeldoutPersonCount(heldoutPayload.personCount);
+      setHeldoutLoadError(null);
+      if (heldout[0]) void applyHeldoutModel(heldout[0]);
     }).catch((error) => {
       if (active) setRunError(error instanceof Error ? error.message : "Could not load the v6 photo lab.");
     });
@@ -480,7 +695,7 @@ export function WearV6PhotoLab() {
       window.clearInterval(timer);
       if (uploadedObjectUrlRef.current) URL.revokeObjectURL(uploadedObjectUrlRef.current);
     };
-  }, [applyDataset, refreshStatus]);
+  }, [applyHeldoutModel, refreshStatus]);
 
   useEffect(() => {
     if (!trainingExpanded) return;
@@ -502,6 +717,8 @@ export function WearV6PhotoLab() {
     if (uploadedObjectUrlRef.current) URL.revokeObjectURL(uploadedObjectUrlRef.current);
     const source = URL.createObjectURL(file);
     uploadedObjectUrlRef.current = source;
+    setTestMode("photo-pipeline");
+    setSelectedHeldoutScanId("");
     setSelectedDatasetId("upload");
     setImageUrl(source);
     setImageSize(await imageDimensions(source));
@@ -542,9 +759,12 @@ export function WearV6PhotoLab() {
     rowWidthsCm?: Partial<Record<WearV6RowKind, number>>,
     rowWidthSources?: Partial<Record<WearV6RowKind, WearV6WidthMethod>>,
     rowWidthConfidences?: Partial<Record<WearV6RowKind, WearV6WidthConfidence>>,
+    rowLines?: Partial<Record<WearV6RowKind, WearV6Line>>,
   ) => {
     if (!heightCm || !weightKg) throw new Error("Height and weight are required.");
-    if (!poseAnchorsRef.current) throw new Error("Apple shoulder/hip anchors are required before WEAR inference.");
+    if (!poseAnchorsRef.current && poseAnchorsRequired) {
+      throw new Error("Apple shoulder/hip anchors are required before WEAR inference.");
+    }
     const resolvedWidthSources = rowWidthsCm
       ? rowWidthSources ?? Object.fromEntries(Object.keys(rowWidthsCm).map((key) => [key, "apple-vision"]))
       : undefined;
@@ -565,12 +785,13 @@ export function WearV6PhotoLab() {
         rowWidthsCm,
         rowWidthSources: resolvedWidthSources,
         rowWidthConfidences: resolvedWidthConfidences,
+        rowGeometry: rowLines,
       }),
     });
     const payload = await response.json() as WearV6Prediction | { ok: false; error?: string };
     if (!response.ok || !payload.ok) throw new Error("error" in payload && payload.error ? payload.error : "WEAR v6 inference failed.");
     return payload;
-  }, [gender, heightCm, reportedChestCm, weightKg]);
+  }, [gender, heightCm, poseAnchorsRequired, reportedChestCm, weightKg]);
 
   const appleWidthsForLines = useCallback(async (
     lines: Partial<Record<WearV6RowKind, WearV6Line>>,
@@ -672,7 +893,61 @@ export function WearV6PhotoLab() {
     return { widths, confidences };
   }, [heightCm, imageSize.height, imageSize.width]);
 
+  const runHeldoutOnnxOnly = useCallback(async () => {
+    if (!selectedHeldoutScanId) {
+      setRunError("Choose one of the 448 held-out WEAR models.");
+      return;
+    }
+    const runId = activeRunRef.current + 1;
+    activeRunRef.current = runId;
+    setRunError(null);
+    setPrediction(null);
+    setActuals(EMPTY_ACTUALS);
+    setMaskLines({});
+    setMetaLines({});
+    setMetaStatus(EMPTY_META_STATUS);
+    setAppleState("idle");
+    setAppleDetail("Not used in held-out WEAR mesh evaluation");
+    setAppleResult(null);
+    setAppleVisionWidths({});
+    setAppleDepthWidths({});
+    setAppleDepthState("idle");
+    setAppleDepthDetail("Not used in held-out WEAR mesh evaluation");
+    setRunState("wear-measurements");
+    try {
+      const response = await fetch("/api/try-on-test/wear-photo-test/v6", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ heldoutScanId: selectedHeldoutScanId }),
+      });
+      const payload = await response.json() as WearV6Prediction | { ok: false; error?: string };
+      if (!response.ok || !payload.ok) {
+        throw new Error("error" in payload && payload.error ? payload.error : "Held-out ONNX inference failed.");
+      }
+      if (activeRunRef.current !== runId) return;
+      if (
+        !payload.heldoutEvaluation?.onnxMeasurementsOnly
+        || payload.heldoutEvaluation.appleVisionUsed
+        || payload.heldoutEvaluation.rgbEdgeSnapUsed
+        || payload.heldoutEvaluation.geometryGuardsUsed
+      ) {
+        throw new Error("The server did not confirm the isolated ONNX prediction-versus-WEAR-truth test.");
+      }
+      setActuals({ ...EMPTY_ACTUALS, ...payload.heldoutEvaluation.actuals });
+      setPrediction(payload);
+      setRunState("ready");
+    } catch (error) {
+      if (activeRunRef.current !== runId) return;
+      setRunError(error instanceof Error ? error.message : "Held-out ONNX inference failed.");
+      setRunState("error");
+    }
+  }, [selectedHeldoutScanId]);
+
   const runFullTest = useCallback(async () => {
+    if (testMode === "heldout-onnx") {
+      await runHeldoutOnnxOnly();
+      return;
+    }
     if (!imageUrl || !heightCm || !weightKg) {
       setRunError("Choose one full-body photo and enter height and weight.");
       return;
@@ -698,6 +973,35 @@ export function WearV6PhotoLab() {
       const sourceDataUrl = await imageUrlToDataUrl(imageUrl);
       sourceDataUrlRef.current = sourceDataUrl;
       setRunState("pose");
+      if (v7ModelActive) {
+        setAppleState("idle");
+        setAppleDetail("Not used by WEAR v7");
+        const pose = await detectPoseAndMask(imageUrl, { includeMask: false });
+        if (activeRunRef.current !== runId) return;
+        if (!pose || pose.landmarks.length !== 33) throw new Error("Could not find one complete standing person.");
+        requireCompleteStandingPose(pose);
+        poseRef.current = pose;
+        personBoxRef.current = posePersonBox(pose);
+        poseAnchorsRef.current = null;
+        setRunState("wear-edges");
+        const edgePrediction = await callV6(sourceDataUrl);
+        if (activeRunRef.current !== runId) return;
+        const rowLines = lineMapFromPrediction(edgePrediction);
+        setPrediction(edgePrediction);
+        setMaskLines(buildMaskLines(pose, edgePrediction));
+        setRunState("wear-measurements");
+        const measuredPrediction = await callV6(
+          sourceDataUrl,
+          undefined,
+          undefined,
+          undefined,
+          rowLines,
+        );
+        if (activeRunRef.current !== runId) return;
+        setPrediction({ ...measuredPrediction, rows: edgePrediction.rows });
+        setRunState("ready");
+        return;
+      }
       setAppleState("loading");
       setAppleDetail("Apple Vision is finding shoulder and hip anchors");
       const [pose, appleSeed] = await Promise.all([
@@ -736,7 +1040,13 @@ export function WearV6PhotoLab() {
 
       setRunState("wear-measurements");
       const sources = Object.fromEntries(Object.keys(calibrated.widths).map((key) => [key, "apple-vision"])) as Partial<Record<WearV6RowKind, WearV6WidthMethod>>;
-      const calibratedPrediction = await callV6(sourceDataUrl, calibrated.widths, sources, calibrated.confidences);
+      const calibratedPrediction = await callV6(
+        sourceDataUrl,
+        calibrated.widths,
+        sources,
+        calibrated.confidences,
+        lineMapFromPrediction(edgePrediction),
+      );
       if (activeRunRef.current !== runId) return;
       setPrediction(calibratedPrediction);
       setMaskLines(buildMaskLines(pose, calibratedPrediction));
@@ -749,7 +1059,7 @@ export function WearV6PhotoLab() {
       setAppleState("error");
       setAppleDetail(message);
     }
-  }, [appleSeedForPhoto, appleWidthsForLines, callV6, heightCm, imageSize.height, imageSize.width, imageUrl, weightKg]);
+  }, [appleSeedForPhoto, appleWidthsForLines, callV6, heightCm, imageSize.height, imageSize.width, imageUrl, runHeldoutOnnxOnly, testMode, v7ModelActive, weightKg]);
 
   const changeWidthMethod = useCallback(async (
     nextMethod: WearV6WidthMethod,
@@ -781,7 +1091,7 @@ export function WearV6PhotoLab() {
           appleDepthWidthsRef.current[key as WearV6RowKind] != null ? "apple-depth" : "apple-vision",
         ])) as Partial<Record<WearV6RowKind, WearV6WidthMethod>>;
       }
-      const updated = await callV6(sourceDataUrl, activeWidths, sources, activeConfidences);
+      const updated = await callV6(sourceDataUrl, activeWidths, sources, activeConfidences, lines);
       setPrediction((current) => current ? { ...updated, rows: current.rows } : updated);
       setWidthMethod(nextMethod);
       setAppleDetail(nextMethod === "apple-depth"
@@ -800,6 +1110,13 @@ export function WearV6PhotoLab() {
   const recalculateLines = useCallback(async (lines: Partial<Record<WearV6RowKind, WearV6Line>>) => {
     const sourceDataUrl = sourceDataUrlRef.current;
     if (!sourceDataUrl) throw new Error("Run the photo once before editing lines.");
+    if (v7ModelActive) {
+      setAppleState("idle");
+      setAppleDetail("Not used by WEAR v7");
+      const updated = await callV6(sourceDataUrl, undefined, undefined, undefined, lines);
+      setPrediction((current) => current ? { ...updated, rows: current.rows } : updated);
+      return;
+    }
     setAppleState("loading");
     setAppleDetail("Apple Vision is recalculating the moved line widths");
     try {
@@ -829,7 +1146,7 @@ export function WearV6PhotoLab() {
           depthCalibrated.widths[key as WearV6RowKind] != null ? "apple-depth" : "apple-vision",
         ])) as Partial<Record<WearV6RowKind, WearV6WidthMethod>>;
       }
-      const updated = await callV6(sourceDataUrl, activeWidths, sources, activeConfidences);
+      const updated = await callV6(sourceDataUrl, activeWidths, sources, activeConfidences, lines);
       setPrediction((current) => current ? { ...updated, rows: current.rows } : updated);
       setAppleState("ready");
       setAppleDetail(`Moved lines recalculated · ${widthMethod === "apple-depth" ? "Apple + Depth Pro" : "Apple Vision"} active`);
@@ -839,7 +1156,7 @@ export function WearV6PhotoLab() {
       setAppleDetail(message);
       throw error;
     }
-  }, [appleDepthWidthsForLines, appleWidthsForLines, callV6, widthMethod]);
+  }, [appleDepthWidthsForLines, appleWidthsForLines, callV6, v7ModelActive, widthMethod]);
 
   const runMetaEdges = useCallback(async (lines: Partial<Record<WearV6RowKind, WearV6Line>>) => {
     const sourceDataUrl = sourceDataUrlRef.current;
@@ -929,13 +1246,28 @@ export function WearV6PhotoLab() {
   }, [appleResult, heightCm, imageSize.height, imageSize.width, imageUrl]);
 
   const selectedDataset = datasets.find((row) => row.setId === selectedDatasetId);
+  const selectedHeldoutModel = heldoutModels.find((model) => model.scanId === selectedHeldoutScanId);
+  const filteredHeldoutModels = useMemo(() => {
+    const query = heldoutSearch.trim().toLowerCase();
+    if (!query) return heldoutModels;
+    return heldoutModels.filter((model) => [
+      model.scanId,
+      model.subjectId,
+      model.gender,
+      model.heightCm.toFixed(1),
+      model.weightKg.toFixed(1),
+    ].some((value) => value.toLowerCase().includes(query)));
+  }, [heldoutModels, heldoutSearch]);
+  const selectedLabel = selectedHeldoutModel
+    ? `${selectedHeldoutModel.scanId} · ${selectedHeldoutModel.gender} · H ${selectedHeldoutModel.heightCm.toFixed(1)} · W ${selectedHeldoutModel.weightKg.toFixed(1)} kg`
+    : selectedDataset?.label ?? "Uploaded photo";
   const running = ["pose", "wear-edges", "apple", "wear-measurements"].includes(runState);
   const forgeCandidateVisible = Boolean(
     forgeStatus?.pipelineId?.includes("v6r5")
     && forgeStatus.state !== "complete",
   );
   const forgeCandidateBlocked = forgeStatus?.state === "blocked" || forgeStatus?.state === "failed";
-  const profileReady = Boolean(heightCm && weightKg && (gender === "female" || reportedChestCm));
+  const profileReady = Boolean(heightCm && weightKg && (testMode === "heldout-onnx" || gender === "female" || reportedChestCm));
   const knownComparisons = useMemo(() => prediction?.measurements.flatMap((measurement) => {
     const actual = actuals[measurement.kind];
     return actual == null ? [] : [{ kind: measurement.kind, error: measurement.valueCm - actual }];
@@ -950,14 +1282,14 @@ export function WearV6PhotoLab() {
         <div className="grid gap-6 px-6 py-7 lg:grid-cols-[1fr_420px] lg:px-9">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-400/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.16em] text-blue-200">
-              <Sparkles className="size-3.5" /> Formula-free WEAR v6
+              <Sparkles className="size-3.5" /> {testMode === "heldout-onnx" ? "ONNX only · 448 held-out" : "Formula-free WEAR v6"}
             </div>
-            <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">WEAR 3D Photo Lab</h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">One standing RGB photo → Apple shoulder/hip anchors → independent WEAR body rows → Apple camera-corrected widths → independent learned tape measurements. MediaPipe and Meta stay separate comparison views.</p>
+            <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">{testMode === "heldout-onnx" ? "WEAR ONNX Held-out Test" : "WEAR 3D Photo Lab"}</h1>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">{testMode === "heldout-onnx" ? v7ModelActive ? "Choose any test-only WEAR person. V7 sees only the front RGB render, height, weight and gender. It predicts the lines first, then uses those predicted lines to produce width, depth, 32-point shape and circumference. Real WEAR truth is revealed only afterward." : "Choose one test-only WEAR model and run the ONNX package directly. Tape is revealed only for the score. No Apple Vision, MediaPipe, Depth Pro, or nearest-person matching." : "One standing RGB photo → Apple shoulder/hip anchors → independent WEAR body rows → Apple camera-corrected widths → independent learned tape measurements. MediaPipe and Meta stay separate comparison views."}</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">Current v6 truth</p>
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">Current private ONNX</p>
               {forgeCandidateVisible
                 ? <span className={`rounded-full px-2.5 py-1 text-xs font-black ${forgeCandidateBlocked ? "bg-rose-400/15 text-rose-200" : "bg-blue-400/15 text-blue-200"}`}>{forgeCandidateBlocked ? "Private v6r5 blocked" : "Private v6r5 process"}</span>
                 : modelStatus?.ok
@@ -979,70 +1311,106 @@ export function WearV6PhotoLab() {
         </div>
       </section>
 
+      <section className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm sm:grid-cols-2">
+        <button className={cn("rounded-xl px-4 py-3 text-left", testMode === "heldout-onnx" ? "bg-emerald-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("heldout-onnx"); resetResult(); const initial = selectedHeldoutModel ?? heldoutModels[0]; if (initial) void applyHeldoutModel(initial); }} type="button"><span className="block text-sm font-black">448 held-out models · ONNX only</span><span className={cn("mt-1 block text-xs", testMode === "heldout-onnx" ? "text-emerald-100" : "text-slate-500")}>No Apple Vision or camera pipeline</span></button>
+        <button className={cn("rounded-xl px-4 py-3 text-left", testMode === "photo-pipeline" ? "bg-blue-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("photo-pipeline"); setSelectedHeldoutScanId(""); resetResult(); const initial = selectedDataset ?? datasets.find((row) => row.setId === "shahnaz-2") ?? datasets[0]; if (initial) void applyDataset(initial); }} type="button"><span className="block text-sm font-black">Own photo · full camera pipeline</span><span className={cn("mt-1 block text-xs", testMode === "photo-pipeline" ? "text-blue-100" : "text-slate-500")}>Existing upload and Apple-assisted workflow</span></button>
+      </section>
+
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
         <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between gap-3">
-            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">1 · Photo</p><h2 className="mt-1 text-xl font-black">Choose a complete standing person</h2></div>
+            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">1 · {testMode === "heldout-onnx" ? "Held-out model" : "Photo"}</p><h2 className="mt-1 text-xl font-black">{testMode === "heldout-onnx" ? "Choose one of the 448 unseen WEAR models" : "Choose a complete standing person"}</h2></div>
             <ImageIcon className="size-6 text-blue-700" />
           </div>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <select className="min-w-56 flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold" onChange={(event) => { const row = datasets.find((item) => item.setId === event.target.value); if (row) void applyDataset(row); }} value={selectedDatasetId === "upload" ? "" : selectedDatasetId}>
-              <option value="">Choose saved photo</option>
-              {datasets.map((row) => <option key={row.setId} value={row.setId}>{row.label}</option>)}
-            </select>
-            <input accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadPhoto(file); }} ref={uploadRef} type="file" />
-            <button className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-black text-blue-800" onClick={() => uploadRef.current?.click()} type="button"><Upload className="size-4" /> Upload</button>
-          </div>
+          {testMode === "heldout-onnx" ? (
+            <div className="mt-4">
+              <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-100">
+                <Search className="size-4 text-slate-400" />
+                <input className="min-w-0 flex-1 py-2.5 text-sm font-bold outline-none" onChange={(event) => setHeldoutSearch(event.target.value)} placeholder="Search model ID, gender, height, or weight" type="search" value={heldoutSearch} />
+              </label>
+              <select className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold" onChange={(event) => { const model = heldoutModels.find((item) => item.scanId === event.target.value); if (model) void applyHeldoutModel(model); }} value={selectedHeldoutScanId}>
+                <option value="">Choose held-out model</option>
+                {filteredHeldoutModels.map((model) => <option key={model.scanId} value={model.scanId}>{model.scanId} · {model.gender} · H {model.heightCm.toFixed(1)} · W {model.weightKg.toFixed(1)} kg</option>)}
+              </select>
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
+                <span className="text-emerald-700">{heldoutPersonCount || "—"} test-only models · 0 training models</span>
+                <span className="text-slate-500">Showing {filteredHeldoutModels.length}</span>
+              </div>
+              {heldoutLoadError ? <p className="mt-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-bold text-red-800">{heldoutLoadError}</p> : null}
+            </div>
+          ) : (
+            <div className="mt-4 flex flex-wrap gap-2">
+              <select className="min-w-56 flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold" onChange={(event) => { const row = datasets.find((item) => item.setId === event.target.value); if (row) void applyDataset(row); }} value={selectedDatasetId === "upload" ? "" : selectedDatasetId}>
+                <option value="">Choose saved photo</option>
+                {datasets.map((row) => <option key={row.setId} value={row.setId}>{row.label}</option>)}
+              </select>
+              <input accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadPhoto(file); }} ref={uploadRef} type="file" />
+              <button className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-black text-blue-800" onClick={() => uploadRef.current?.click()} type="button"><Upload className="size-4" /> Upload</button>
+            </div>
+          )}
           {imageUrl ? (
             <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-950">
               {/* Local uploads and data URLs require a normal image element. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt={selectedDataset?.label ?? "Uploaded standing person"} className="max-h-[520px] w-full object-contain" src={imageUrl} />
-              <div className="flex justify-between gap-3 border-t border-white/10 px-3 py-2 text-xs font-bold text-slate-300"><span>{selectedDataset?.label ?? "Uploaded photo"}</span><span>{imageSize.width.toLocaleString()} × {imageSize.height.toLocaleString()} px</span></div>
+              <img alt={selectedLabel} className="max-h-[520px] w-full object-contain" src={imageUrl} />
+              <div className="flex justify-between gap-3 border-t border-white/10 px-3 py-2 text-xs font-bold text-slate-300"><span>{selectedLabel}</span><span>{imageSize.width.toLocaleString()} × {imageSize.height.toLocaleString()} px</span></div>
             </div>
           ) : null}
         </div>
 
         <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between gap-3">
-            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">2 · Inputs</p><h2 className="mt-1 text-xl font-black">Customer profile and private checks</h2></div>
+            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">2 · Inputs</p><h2 className="mt-1 text-xl font-black">{testMode === "heldout-onnx" ? "Direct ONNX input" : "Customer profile and private checks"}</h2></div>
             <Ruler className="size-6 text-blue-700" />
           </div>
-          <p className="mt-2 text-xs leading-5 text-slate-500">Tape answers are never sent to v6. They appear only after prediction to show the error.</p>
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <NumberField label="Height" onChange={(value) => { setHeightCm(value); resetResult(); }} required value={heightCm} />
-            <label className="block"><span className="mb-1.5 block text-xs font-black uppercase tracking-[0.12em] text-slate-500">Weight · required</span><span className="flex items-center rounded-xl border border-slate-200 px-3 focus-within:border-blue-500"><input className="min-w-0 flex-1 py-2.5 text-sm font-bold outline-none" min="25" onChange={(event) => { setWeightKg(event.target.value ? Number(event.target.value) : null); resetResult(); }} step="0.1" type="number" value={weightKg ?? ""} /><span className="text-xs font-bold text-slate-400">kg</span></span></label>
-          </div>
-          <div className="mt-3 grid grid-cols-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
-            {(["female", "male"] as const).map((value) => <button className={cn("rounded-lg px-3 py-2 text-sm font-black capitalize", gender === value ? "bg-blue-700 text-white" : "text-slate-500")} key={value} onClick={() => { setGender(value); resetResult(); }} type="button">{value}</button>)}
-          </div>
-          <div className="mt-4 rounded-2xl border border-blue-200 bg-blue-50 p-3">
-            <NumberField
-              label={gender === "male" ? "Customer chest" : "Customer bust / chest"}
-              onChange={(value) => { setReportedChestCm(value); resetResult(); }}
-              required={gender === "male"}
-              value={reportedChestCm}
-            />
-            <p className="mt-2 text-[11px] leading-4 text-blue-800">{gender === "male" ? "Required by the product profile." : "Optional for women."} It is shown in the contract but never used as a saved WEAR training answer.</p>
-          </div>
-          <p className="mt-4 text-sm font-black text-slate-900">Private tape checks · answer-free validation only</p>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <NumberField label={gender === "female" ? "Tape bust / chest" : "Tape chest"} onChange={(value) => setActuals((current) => ({ ...current, chest: value }))} value={actuals.chest} />
-            {gender === "female" ? <NumberField label="Under-bust" onChange={(value) => setActuals((current) => ({ ...current, underbust: value }))} value={actuals.underbust} /> : null}
-            <NumberField label="Natural waist" onChange={(value) => setActuals((current) => ({ ...current, waist: value }))} value={actuals.waist} />
-            <NumberField label="Hips" onChange={(value) => setActuals((current) => ({ ...current, hips: value }))} value={actuals.hips} />
-          </div>
-          <button className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 text-sm font-black text-white shadow-lg shadow-blue-200 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none" disabled={!modelStatus?.ok || !imageUrl || !profileReady || running} onClick={() => void runFullTest()} type="button">
+          {testMode === "heldout-onnx" ? (
+            <>
+              <p className="mt-2 text-xs leading-5 text-slate-500">No Apple or photo preprocessing endpoints run. Tape answers stay out of the request and return only after ONNX finishes.</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Selected model</p><p className="mt-1 text-lg font-black text-slate-950">{selectedHeldoutModel?.scanId ?? "Choose a model"}</p><p className="mt-1 text-xs font-bold text-slate-600">{selectedHeldoutModel ? `${selectedHeldoutModel.gender} · ${selectedHeldoutModel.heightCm.toFixed(1)} cm · ${selectedHeldoutModel.weightKg.toFixed(1)} kg` : "—"}</p></div>
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-emerald-700">Automatic ONNX pipeline</p><p className="mt-1 text-sm font-black text-emerald-950">{v7ModelActive ? "RGB predicts rows → predicted rows drive each body-part head" : "WEAR landmarks + per-part mesh front widths"}</p><p className="mt-1 text-xs text-emerald-800">No real line, depth, perimeter or tape enters matching</p></div>
+              </div>
+              <div className="mt-3 rounded-2xl border border-slate-200 p-4 text-xs leading-5 text-slate-600">
+                <p className="font-black text-slate-900">Exactly what runs</p>
+                <p className="mt-1">{v7ModelActive ? "Held-out RGB + height + weight + gender → predicted lines → predicted width/depth/shape/circumference → reveal real WEAR lines, depth, shape and tape for comparison." : "Held-out RGB render + height + weight + gender + WEAR landmarks + mesh front widths → ONNX → predicted tape values → reveal saved tape for difference."}</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="mt-2 text-xs leading-5 text-slate-500">Tape answers are never sent to v6. They appear only after prediction to show the error.</p>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <NumberField label="Height" onChange={(value) => { setHeightCm(value); resetResult(); }} required value={heightCm} />
+                <label className="block"><span className="mb-1.5 block text-xs font-black uppercase tracking-[0.12em] text-slate-500">Weight · required</span><span className="flex items-center rounded-xl border border-slate-200 px-3 focus-within:border-blue-500"><input className="min-w-0 flex-1 py-2.5 text-sm font-bold outline-none" min="25" onChange={(event) => { setWeightKg(event.target.value ? Number(event.target.value) : null); resetResult(); }} step="0.1" type="number" value={weightKg ?? ""} /><span className="text-xs font-bold text-slate-400">kg</span></span></label>
+              </div>
+              <div className="mt-3 grid grid-cols-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
+                {(["female", "male"] as const).map((value) => <button className={cn("rounded-lg px-3 py-2 text-sm font-black capitalize", gender === value ? "bg-blue-700 text-white" : "text-slate-500")} key={value} onClick={() => { setGender(value); resetResult(); }} type="button">{value}</button>)}
+              </div>
+              <div className="mt-4 rounded-2xl border border-blue-200 bg-blue-50 p-3">
+                <NumberField label={gender === "male" ? "Customer chest" : "Customer bust / chest"} onChange={(value) => { setReportedChestCm(value); resetResult(); }} required={gender === "male"} value={reportedChestCm} />
+                <p className="mt-2 text-[11px] leading-4 text-blue-800">{gender === "male" ? "Required by the product profile." : "Optional for women."} It is shown in the contract but never used as a saved WEAR training answer.</p>
+              </div>
+              <p className="mt-4 text-sm font-black text-slate-900">Private tape checks · answer-free validation only</p>
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <NumberField label={gender === "female" ? "Tape bust / chest" : "Tape chest"} onChange={(value) => setActuals((current) => ({ ...current, chest: value }))} value={actuals.chest} />
+                {gender === "female" ? <NumberField label="Under-bust" onChange={(value) => setActuals((current) => ({ ...current, underbust: value }))} value={actuals.underbust} /> : null}
+                <NumberField label="Natural waist" onChange={(value) => setActuals((current) => ({ ...current, waist: value }))} value={actuals.waist} />
+                <NumberField label="Hips" onChange={(value) => setActuals((current) => ({ ...current, hips: value }))} value={actuals.hips} />
+              </div>
+            </>
+          )}
+          <button className={cn("mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none", testMode === "heldout-onnx" ? "bg-emerald-700 shadow-lg shadow-emerald-200" : "bg-blue-700 shadow-lg shadow-blue-200")} disabled={!modelStatus?.ok || !imageUrl || !profileReady || running || (testMode === "heldout-onnx" && !selectedHeldoutScanId)} onClick={() => void runFullTest()} type="button">
             {running ? <Loader2 className="size-4 animate-spin" /> : <BrainCircuit className="size-4" />}
-            {stageLabel(runState)}
+            {testMode === "heldout-onnx" ? running ? "Running ONNX only…" : prediction ? "Run ONNX again" : "Run ONNX only" : stageLabel(runState)}
           </button>
-          {!modelStatus?.ok ? <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold leading-5 text-amber-800">The full v6 artifact is still training. This button unlocks automatically after the audited model is installed.</p> : null}
+          {!modelStatus?.ok ? <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold leading-5 text-amber-800">The audited ONNX artifact is unavailable. This button unlocks automatically after a private model is installed.</p> : null}
           {runError ? <p className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-bold leading-5 text-red-800"><AlertTriangle className="mr-1 inline size-3.5" />{runError}</p> : null}
         </div>
       </section>
 
       {prediction && imageUrl && runState === "ready" ? (
-        <>
+        testMode === "heldout-onnx" && selectedHeldoutModel ? (
+          <HeldoutOnnxTrainingVisual key={selectedHeldoutModel.scanId} actuals={actuals} imageSize={imageSize} imageUrl={imageUrl} model={selectedHeldoutModel} prediction={prediction} />
+        ) : <>
           <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4"><Check className="size-5 text-emerald-700" /><p className="mt-2 text-sm font-black text-emerald-950">WEAR RGB rows</p><p className="mt-1 text-xs text-emerald-700">{prediction.rows.length} lines from RGB</p></div>
             <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4"><ScanLine className="size-5 text-blue-700" /><p className="mt-2 text-sm font-black text-blue-950">Apple correction</p><p className="mt-1 text-xs text-blue-700">{appleResult?.geometryQuality ?? "waiting"}</p></div>
@@ -1076,8 +1444,8 @@ export function WearV6PhotoLab() {
       ) : (
         <section className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
           {running ? <Loader2 className="mx-auto size-8 animate-spin text-blue-700" /> : <ScanLine className="mx-auto size-8 text-slate-400" />}
-          <h2 className="mt-3 text-xl font-black text-slate-900">{stageLabel(runState)}</h2>
-          <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-500">The editor will show WEAR RGB lines, separate mask and Meta comparisons, hidden-by-default saved red lines, live camera-corrected measurements, raw WEAR-trained depth, 32-point body shapes, and no ellipse controls.</p>
+          <h2 className="mt-3 text-xl font-black text-slate-900">{testMode === "heldout-onnx" ? running ? "ONNX is running" : "Choose a held-out model and run ONNX" : stageLabel(runState)}</h2>
+          <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-500">{testMode === "heldout-onnx" ? "The result shows predicted versus real lines, front width, depth, 32-point shape and circumference for the selected held-out person. Apple Vision is not part of this path." : "The editor will show WEAR RGB lines, separate mask and Meta comparisons, hidden-by-default saved red lines, live camera-corrected measurements, raw WEAR-trained depth, 32-point body shapes, and no ellipse controls."}</p>
         </section>
       )}
 

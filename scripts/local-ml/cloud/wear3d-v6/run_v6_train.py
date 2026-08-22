@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Download validated v6 teachers, train private v6r5, and preserve artifacts."""
+"""Download validated v8 mesh teachers, train privately, and preserve artifacts."""
 
 from __future__ import annotations
 
@@ -69,7 +69,7 @@ def main() -> None:
     s3 = boto3.client("s3")
     update_status(
         s3, args.bucket, args.status_key,
-        state="running", overallPercent=76, currentStage="train-v6",
+        state="running", overallPercent=76, currentStage="train-v8",
         currentStageLabel="Verifying the approved WEAR teacher set",
         detail="The GPU independently checks the exact audit, manifest hash, and visual-review hash before downloading training images.",
     )
@@ -83,39 +83,39 @@ def main() -> None:
     audit = json.loads(audit_path.read_text(encoding="utf-8"))
     review = json.loads(review_path.read_text(encoding="utf-8"))
     manifest_hash = sha256(manifest)
+    audit_inputs = audit.get("inputs") or {}
     audit_counts = {
-        "subjects": int(audit.get("subjects", 0)),
-        "records": int(audit.get("records", 0)),
-        "successful": int(audit.get("successful", 0)),
-        "failed_records": int(audit.get("failed_records", -1)),
+        "subjects": int(audit_inputs.get("people", 0)),
+        "records": int(audit_inputs.get("renderCards", 0)),
+        "canonical": int(audit_inputs.get("peopleWithCanonicalFrontCard", 0)),
     }
     if (
-        audit.get("passed") is not True
+        audit.get("schemaVersion") != "wear-teacher-card-audit/v2"
+        or (audit.get("summary") or {}).get("trainingAllowed") is not True
         or audit_counts != {
             "subjects": REQUIRED_SUBJECTS,
             "records": REQUIRED_RECORDS,
-            "successful": REQUIRED_RECORDS,
-            "failed_records": 0,
+            "canonical": REQUIRED_SUBJECTS,
         }
-        or audit.get("manifest_sha256") != manifest_hash
+        or (audit.get("summary") or {}).get("renderManifestSha256") != manifest_hash
     ):
         raise RuntimeError(
             "Refusing GPU training because the exact full label audit does not match "
-            f"the downloaded manifest: counts={audit_counts} hash_match={audit.get('manifest_sha256') == manifest_hash}"
+            f"the downloaded manifest: counts={audit_counts} hash_match={(audit.get('summary') or {}).get('renderManifestSha256') == manifest_hash}"
         )
     if (
         review.get("schemaVersion") != 1
         or review.get("pipelineId") != args.teacher_pipeline_id
         or review.get("approved") is not True
         or review.get("manifestSha256") != manifest_hash
-        or review.get("contactSheetSha256") != audit.get("contact_sheet_sha256")
+        or review.get("contactSheetSha256") != (audit.get("summary") or {}).get("contactSheetSha256")
     ):
         raise RuntimeError("Refusing GPU training because the visual review does not match the exact audited teacher set")
     update_status(
         s3, args.bucket, args.status_key,
-        state="running", overallPercent=76, currentStage="train-v6",
-        currentStageLabel="Downloading validated RGB teachers to the GPU",
-        detail="All 38,934 audited WEAR RGB views and their projected 3D labels match the approved hash. No Apple measurements are downloaded or used.",
+        state="running", overallPercent=76, currentStage="train-v8",
+        currentStageLabel="Downloading validated Blender mesh teachers to the GPU",
+        detail="All 38,934 audited mesh cards and their certified PLY/LND labels match the approved hash. No RGB photo, Apple value, or tape pixel is used as model input.",
     )
     rendered_root = args.root / "rendered"
     run("aws", "s3", "sync", f"s3://{args.bucket}/{processed}/rendered/", str(rendered_root), "--only-show-errors")
@@ -148,7 +148,7 @@ def main() -> None:
         payload.update({
             "state": "failed",
             "overallPercent": 96,
-            "currentStage": "evaluate-v6",
+            "currentStage": "evaluate-v8",
             "currentStageLabel": "Synthetic candidate failed; correction required",
             "detail": "Artifacts and metrics were preserved for diagnosis. Private real-photo testing is blocked until every core synthetic gate passes.",
             "updatedAt": now(),

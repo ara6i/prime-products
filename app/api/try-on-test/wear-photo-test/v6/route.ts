@@ -3,16 +3,19 @@ import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
 import sharp from "sharp";
+import { heldoutWearPerson } from "@/app/api/try-on-test/sizing-lab/sdk-wear/_lib/heldout";
 import { isTestLabAvailableForHost } from "@/app/try-on-test/lib/access";
 import { getModelForgeTrainingStatus } from "@/app/try-on-test/model-forge/lib/modelForgeProgress";
+import type { SdkWearPerson } from "@/app/try-on-test/sizing-lab/sdkWearMatcher";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const PREFERRED_PIPELINE_ID = "wear3d-standing-rgb-v6r5-20260816";
+const PREFERRED_PIPELINE_ID = "wear3d-standing-rgb-v7-20260816";
+const V6R5_PIPELINE_ID = "wear3d-standing-rgb-v6r5-20260816";
 const V6R4_PIPELINE_ID = "wear3d-standing-rgb-v6r4-20260816";
 const V6R3_PIPELINE_ID = "wear3d-standing-rgb-v6r3-20260816";
-const PIPELINE_IDS = [PREFERRED_PIPELINE_ID, V6R4_PIPELINE_ID, V6R3_PIPELINE_ID] as const;
+const PIPELINE_IDS = [PREFERRED_PIPELINE_ID, V6R5_PIPELINE_ID, V6R4_PIPELINE_ID, V6R3_PIPELINE_ID] as const;
 const IMAGE_WIDTH = 192;
 const IMAGE_HEIGHT = 256;
 const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
@@ -48,10 +51,12 @@ type Gender = "female" | "male";
 interface NormalizationManifest {
   profile_mean: number[];
   profile_std: number[];
-  pose_mean: number[];
-  pose_std: number[];
-  width_mean: number[];
-  width_std: number[];
+  pose_mean?: number[];
+  pose_std?: number[];
+  width_mean?: number[];
+  width_std?: number[];
+  row_geometry_mean?: number[];
+  row_geometry_std?: number[];
   edge_mean: number[];
   edge_std: number[];
   measurement_mean: number[];
@@ -77,9 +82,11 @@ interface RuntimeManifest {
   edge_keys: string[];
   measurement_keys: string[];
   profile_keys: string[];
-  pose_keys: string[];
-  pose_mask_keys: string[];
-  row_width_keys: string[];
+  pose_keys?: string[];
+  pose_mask_keys?: string[];
+  row_width_keys?: string[];
+  row_geometry_keys?: string[];
+  row_geometry_mask_keys?: string[];
   normalization: NormalizationManifest;
   image_size: [number, number];
   rgb_mean: number[];
@@ -93,9 +100,12 @@ interface RuntimeManifest {
   pose_input_method: string;
   core_edge_method: string;
   core_measurement_method: string;
+  metric_width_input?: string;
+  breadth_method?: string;
+  row_geometry_augmentation?: string;
   apple_anchor_training_coverage?: number;
   core_pose_method?: string;
-  row_geometry_priors: {
+  row_geometry_priors?: {
     source: string;
     anchor: string;
     cohort_key: string;
@@ -137,6 +147,7 @@ interface NormalizedBox {
 }
 
 interface PredictBody {
+  heldoutScanId?: string;
   imageDataUrl?: string;
   heightCm?: number;
   weightKg?: number;
@@ -147,7 +158,56 @@ interface PredictBody {
   rowWidthsCm?: Partial<Record<RowName, number>>;
   rowWidthSources?: Partial<Record<RowName, "apple-vision" | "apple-depth" | "manual-tape" | "manual-width">>;
   rowWidthConfidences?: Partial<Record<RowName, "high" | "medium" | "low">>;
+  rowGeometry?: Partial<Record<RowName, { y: number; leftX: number; rightX: number }>>;
   evaluationMode?: "answer-free-real-photo-suite";
+}
+
+function heldoutPoint(person: SdkWearPerson, name: string) {
+  const point = person.landmarks2d[name];
+  if (!point || !finite(point.x) || !finite(point.y)) {
+    throw new Error(`${person.scanId} is missing its WEAR ${name} landmark.`);
+  }
+  return { x: point.x, y: point.y };
+}
+
+function heldoutInferenceBody(person: SdkWearPerson): PredictBody {
+  const rowWidthsCm = Object.fromEntries(ROW_NAMES.flatMap((name) => {
+    const width = person.rows[name]?.frontWidthCm;
+    return finite(width) ? [[name, width]] : [];
+  })) as Partial<Record<RowName, number>>;
+  const rowWidthSources = Object.fromEntries(
+    Object.keys(rowWidthsCm).map((name) => [name, "manual-width"]),
+  ) as Partial<Record<RowName, "manual-width">>;
+  const rowWidthConfidences = Object.fromEntries(
+    Object.keys(rowWidthsCm).map((name) => [name, "high"]),
+  ) as Partial<Record<RowName, "high">>;
+  const rowGeometry = Object.fromEntries(ROW_NAMES.flatMap((name) => {
+    const row = person.rows[name];
+    return row
+      && finite(row.yNorm)
+      && finite(row.leftXNorm)
+      && finite(row.rightXNorm)
+      ? [[name, { y: row.yNorm, leftX: row.leftXNorm, rightX: row.rightXNorm }]]
+      : [];
+  })) as Partial<Record<RowName, { y: number; leftX: number; rightX: number }>>;
+  return {
+    heldoutScanId: person.scanId,
+    heightCm: person.heightCm,
+    weightKg: person.weightKg,
+    gender: person.gender,
+    reportedChestCm: null,
+    poseAnchors: {
+      leftShoulder: heldoutPoint(person, "Lt. Acromion"),
+      rightShoulder: heldoutPoint(person, "Rt. Acromion"),
+      leftHip: heldoutPoint(person, "Lt. Trochanterion"),
+      rightHip: heldoutPoint(person, "Rt. Trochanterion"),
+    },
+    rowWidthsCm,
+    rowWidthSources,
+    rowWidthConfidences,
+    rowGeometry,
+    evaluationMode: "answer-free-real-photo-suite",
+  };
 }
 
 interface SourceImage {
@@ -252,7 +312,7 @@ async function privateDiagnosticAuthorization(
   metrics: MetricsManifest,
 ) {
   if (
-    runtimeManifest.model_version !== PREFERRED_PIPELINE_ID
+    runtimeManifest.model_version !== V6R5_PIPELINE_ID
     || runtimeManifest.syntheticCandidatePassed !== false
     || metrics.synthetic_candidate_passed !== false
   ) return false;
@@ -264,7 +324,7 @@ async function privateDiagnosticAuthorization(
     const install = JSON.parse(installText) as CandidateInstallManifest;
     const review = JSON.parse(reviewText) as SyntheticGateReview;
     const hardChecks = Object.values(review.hardChecks ?? {});
-    return install.pipelineId === PREFERRED_PIPELINE_ID
+    return install.pipelineId === V6R5_PIPELINE_ID
       && install.syntheticCandidatePassed === false
       && install.syntheticTieReviewedForPrivateDiagnostic === true
       && install.syntheticGateReviewSha256 === sha256(reviewText)
@@ -275,7 +335,7 @@ async function privateDiagnosticAuthorization(
       && install.artifacts?.["runtime.json"]?.sha256 === sha256(runtimeText)
       && install.artifacts?.["test-metrics.json"]?.sha256 === sha256(metricsText)
       && review.schemaVersion === 1
-      && review.pipelineId === PREFERRED_PIPELINE_ID
+      && review.pipelineId === V6R5_PIPELINE_ID
       && review.officialSyntheticPass === false
       && review.acceptedForPrivateDiagnostic === true
       && review.privateTestLabOnly === true
@@ -348,7 +408,15 @@ async function loadPackage(): Promise<LoadedPackage> {
     runtimeManifest,
     metrics,
   );
-  const compatibleV6r5 = runtimeManifest.model_version === PREFERRED_PIPELINE_ID
+  const compatibleV7 = runtimeManifest.model_version === PREFERRED_PIPELINE_ID
+    && runtimeManifest.schema_version === 7
+    && runtimeManifest.pose_input_method === "none-WEAR-RGB-only"
+    && runtimeManifest.core_edge_method === "independent-front-only-WEAR-RGB-row-heads"
+    && runtimeManifest.core_measurement_method
+      === "independent-mask-free-RGB-profile-plus-own-normalized-row-geometry-front-50-only"
+    && runtimeManifest.metric_width_input === "forbidden"
+    && runtimeManifest.breadth_method === "direct-raw-WEAR-mesh-supervision";
+  const compatibleV6r5 = runtimeManifest.model_version === V6R5_PIPELINE_ID
     && runtimeManifest.schema_version === 6
     && runtimeManifest.apple_anchor_training_coverage === 4_326
     && runtimeManifest.core_pose_method === "separate-Apple-on-WEAR-front-pose-projection"
@@ -371,7 +439,7 @@ async function loadPackage(): Promise<LoadedPackage> {
     && runtimeManifest.core_measurement_method
       === "independent-profile-plus-own-row-width-heads-front-50-only";
   if (
-    (!compatibleV6r5 && !compatibleV6r4 && !compatibleV6r3)
+    (!compatibleV7 && !compatibleV6r5 && !compatibleV6r4 && !compatibleV6r3)
     || runtimeManifest.runtime_mask_required !== false
     || runtimeManifest.circumference_method !== "direct-learned-WEAR-label"
     || runtimeManifest.depth_method !== "raw-WEAR-mesh-supervision"
@@ -399,44 +467,63 @@ async function loadPackage(): Promise<LoadedPackage> {
   }
   assertVector(runtimeManifest.normalization.profile_mean, 4, "profile mean");
   assertVector(runtimeManifest.normalization.profile_std, 4, "profile standard deviation");
-  assertVector(runtimeManifest.normalization.pose_mean, 8, "pose mean");
-  assertVector(runtimeManifest.normalization.pose_std, 8, "pose standard deviation");
-  assertVector(runtimeManifest.normalization.width_mean, ROW_NAMES.length, "width mean");
-  assertVector(runtimeManifest.normalization.width_std, ROW_NAMES.length, "width standard deviation");
   assertVector(runtimeManifest.normalization.edge_mean, runtimeManifest.edge_keys.length, "edge mean");
   assertVector(runtimeManifest.normalization.edge_std, runtimeManifest.edge_keys.length, "edge standard deviation");
   assertVector(runtimeManifest.normalization.measurement_mean, runtimeManifest.measurement_keys.length, "measurement mean");
   assertVector(runtimeManifest.normalization.measurement_std, runtimeManifest.measurement_keys.length, "measurement standard deviation");
   assertVector(runtimeManifest.rgb_mean, 3, "RGB mean");
   assertVector(runtimeManifest.rgb_std, 3, "RGB standard deviation");
-  if (
-    runtimeManifest.pose_keys?.length !== 8
-    || runtimeManifest.pose_mask_keys?.length !== POSE_ANCHOR_NAMES.length
-    || runtimeManifest.pose_mask_keys.some((name, index) => name !== ["left_shoulder", "right_shoulder", "left_hip", "right_hip"][index])
-  ) {
-    throw new Error("The WEAR v6 pose input contract is incomplete.");
-  }
-  const requiredRelativeEdges = ROW_NAMES.flatMap((name) => (
-    RELATIVE_ROW_FIELDS.map((field) => `row.${name}.${field}`)
-  ));
-  if (requiredRelativeEdges.some((key) => !runtimeManifest.edge_keys.includes(key))) {
-    throw new Error("The WEAR v6 shoulder/hip-relative row outputs are incomplete.");
-  }
-  const globalPriors = runtimeManifest.row_geometry_priors?.buckets?.global;
-  if (
-    !globalPriors
-    || ROW_NAMES.some((name) => {
-      const prior = globalPriors[name];
-      return !prior
-        || !finite(prior.y_shoulder_hip_ratio?.p01)
-        || !finite(prior.span_shoulder_ratio?.p99)
-        || !finite(prior.center_anchor_offset_ratio?.p50);
-    })
-  ) {
-    throw new Error("The WEAR v6 shoulder/hip-relative row guard is incomplete.");
-  }
-  if (runtimeManifest.vision_backbone !== "torchvision-mobilenet-v3-small-imagenet-pose-aware-partial-finetune-WEAR") {
-    throw new Error("The WEAR v6 visual backbone is incompatible.");
+  if (compatibleV7) {
+    const expectedGeometryKeys = ROW_NAMES.flatMap((name) => (
+      ["y_norm", "left_x_norm", "right_x_norm"].map((field) => `${name}_${field}`)
+    ));
+    assertVector(runtimeManifest.normalization.row_geometry_mean, expectedGeometryKeys.length, "row geometry mean");
+    assertVector(runtimeManifest.normalization.row_geometry_std, expectedGeometryKeys.length, "row geometry standard deviation");
+    if (
+      runtimeManifest.row_geometry_keys?.length !== expectedGeometryKeys.length
+      || runtimeManifest.row_geometry_keys.some((key, index) => key !== expectedGeometryKeys[index])
+      || runtimeManifest.row_geometry_mask_keys?.length !== ROW_NAMES.length
+      || runtimeManifest.row_geometry_mask_keys.some((key, index) => key !== ROW_NAMES[index])
+    ) {
+      throw new Error("The WEAR v7 normalized row-geometry input contract is incomplete.");
+    }
+    if (runtimeManifest.vision_backbone !== "torchvision-mobilenet-v3-small-imagenet-WEAR-only-partial-finetune") {
+      throw new Error("The WEAR v7 visual backbone is incompatible.");
+    }
+  } else {
+    assertVector(runtimeManifest.normalization.pose_mean, 8, "pose mean");
+    assertVector(runtimeManifest.normalization.pose_std, 8, "pose standard deviation");
+    assertVector(runtimeManifest.normalization.width_mean, ROW_NAMES.length, "width mean");
+    assertVector(runtimeManifest.normalization.width_std, ROW_NAMES.length, "width standard deviation");
+    if (
+      runtimeManifest.pose_keys?.length !== 8
+      || runtimeManifest.pose_mask_keys?.length !== POSE_ANCHOR_NAMES.length
+      || runtimeManifest.pose_mask_keys.some((name, index) => name !== ["left_shoulder", "right_shoulder", "left_hip", "right_hip"][index])
+    ) {
+      throw new Error("The WEAR v6 pose input contract is incomplete.");
+    }
+    const requiredRelativeEdges = ROW_NAMES.flatMap((name) => (
+      RELATIVE_ROW_FIELDS.map((field) => `row.${name}.${field}`)
+    ));
+    if (requiredRelativeEdges.some((key) => !runtimeManifest.edge_keys.includes(key))) {
+      throw new Error("The WEAR v6 shoulder/hip-relative row outputs are incomplete.");
+    }
+    const globalPriors = runtimeManifest.row_geometry_priors?.buckets?.global;
+    if (
+      !globalPriors
+      || ROW_NAMES.some((name) => {
+        const prior = globalPriors[name];
+        return !prior
+          || !finite(prior.y_shoulder_hip_ratio?.p01)
+          || !finite(prior.span_shoulder_ratio?.p99)
+          || !finite(prior.center_anchor_offset_ratio?.p50);
+      })
+    ) {
+      throw new Error("The WEAR v6 shoulder/hip-relative row guard is incomplete.");
+    }
+    if (runtimeManifest.vision_backbone !== "torchvision-mobilenet-v3-small-imagenet-pose-aware-partial-finetune-WEAR") {
+      throw new Error("The WEAR v6 visual backbone is incompatible.");
+    }
   }
   cachedPackage = {
     root,
@@ -488,7 +575,14 @@ function profileInput(body: PredictBody, manifest: RuntimeManifest) {
   return { bmi, normalized };
 }
 
+function isV7Manifest(manifest: RuntimeManifest) {
+  return manifest.schema_version === 7 && manifest.model_version === PREFERRED_PIPELINE_ID;
+}
+
 function widthInput(body: PredictBody, manifest: RuntimeManifest) {
+  const mean = manifest.normalization.width_mean;
+  const std = manifest.normalization.width_std;
+  if (!mean || !std) throw new Error("The WEAR v6 width normalization is unavailable.");
   const values = new Float32Array(ROW_NAMES.length);
   const mask = new Float32Array(ROW_NAMES.length);
   const accepted: Partial<Record<RowName, number>> = {};
@@ -497,11 +591,45 @@ function widthInput(body: PredictBody, manifest: RuntimeManifest) {
     const supplied = body.rowWidthsCm?.[name];
     const isExpected = name !== "underbust" || body.gender === "female";
     const valid = isExpected && finite(supplied) && supplied >= 5 && supplied <= 100;
-    const native = valid ? supplied : manifest.normalization.width_mean[index]!;
+    const native = valid ? supplied : mean[index]!;
     values[index] = (
-      native - manifest.normalization.width_mean[index]!
-    ) / Math.max(manifest.normalization.width_std[index]!, 1e-6);
+      native - mean[index]!
+    ) / Math.max(std[index]!, 1e-6);
     mask[index] = valid ? 1 : 0;
+    if (valid) accepted[name] = supplied;
+  }
+  return { values, mask, accepted };
+}
+
+function v7RowGeometryInput(body: PredictBody, manifest: RuntimeManifest) {
+  const keys = manifest.row_geometry_keys;
+  const mean = manifest.normalization.row_geometry_mean;
+  const std = manifest.normalization.row_geometry_std;
+  if (!keys || !mean || !std) throw new Error("The WEAR v7 row-geometry normalization is unavailable.");
+  const values = new Float32Array(keys.length);
+  const mask = new Float32Array(ROW_NAMES.length);
+  const accepted: Partial<Record<RowName, { y: number; leftX: number; rightX: number }>> = {};
+  for (let rowIndex = 0; rowIndex < ROW_NAMES.length; rowIndex += 1) {
+    const name = ROW_NAMES[rowIndex]!;
+    const supplied = body.rowGeometry?.[name];
+    const expected = name !== "underbust" || body.gender === "female";
+    const valid = expected
+      && finite(supplied?.y)
+      && finite(supplied?.leftX)
+      && finite(supplied?.rightX)
+      && supplied.y >= 0
+      && supplied.y <= 1
+      && supplied.leftX >= 0
+      && supplied.rightX <= 1
+      && supplied.rightX - supplied.leftX >= 0.02;
+    const native = valid
+      ? [supplied.y, supplied.leftX, supplied.rightX]
+      : [mean[rowIndex * 3]!, mean[rowIndex * 3 + 1]!, mean[rowIndex * 3 + 2]!];
+    for (let fieldIndex = 0; fieldIndex < 3; fieldIndex += 1) {
+      const index = rowIndex * 3 + fieldIndex;
+      values[index] = (native[fieldIndex]! - mean[index]!) / Math.max(std[index]!, 1e-6);
+    }
+    mask[rowIndex] = valid ? 1 : 0;
     if (valid) accepted[name] = supplied;
   }
   return { values, mask, accepted };
@@ -556,6 +684,9 @@ function poseInput(
   crop: CropBox,
   manifest: RuntimeManifest,
 ) {
+  const mean = manifest.normalization.pose_mean;
+  const std = manifest.normalization.pose_std;
+  if (!mean || !std) throw new Error("The WEAR v6 pose normalization is unavailable.");
   const native = new Float32Array(POSE_ANCHOR_NAMES.length * 2);
   const mask = new Float32Array(POSE_ANCHOR_NAMES.length);
   const canonical = {} as Record<PoseAnchorName, NormalizedPoint>;
@@ -571,11 +702,11 @@ function poseInput(
     };
     canonical[name] = point;
     native[index * 2] = (
-      point.x - manifest.normalization.pose_mean[index * 2]!
-    ) / Math.max(manifest.normalization.pose_std[index * 2]!, 1e-6);
+      point.x - mean[index * 2]!
+    ) / Math.max(std[index * 2]!, 1e-6);
     native[index * 2 + 1] = (
-      point.y - manifest.normalization.pose_mean[index * 2 + 1]!
-    ) / Math.max(manifest.normalization.pose_std[index * 2 + 1]!, 1e-6);
+      point.y - mean[index * 2 + 1]!
+    ) / Math.max(std[index * 2 + 1]!, 1e-6);
     mask[index] = 1;
   }
   const shoulderSpan = Math.abs(canonical.rightShoulder.x - canonical.leftShoulder.x);
@@ -606,7 +737,8 @@ function geometryPriorFor(
 ) {
   const bmi = body.weightKg! / ((body.heightCm! / 100) ** 2);
   const cohort = `${body.gender}:${bmiBand(bmi)}`;
-  const buckets = manifest.row_geometry_priors.buckets;
+  const buckets = manifest.row_geometry_priors?.buckets;
+  if (!buckets) throw new Error("The WEAR v6 row-geometry priors are unavailable.");
   const selectedBucket = buckets[cohort]?.[name]
     ? cohort
     : buckets[body.gender!]?.[name]
@@ -1045,6 +1177,8 @@ function buildRows(
       label: gender === "female" && name === "chest" ? "Bust / chest" : ROW_LABELS[name],
       color: ROW_COLORS[name],
       edgeSource: modelVersion === PREFERRED_PIPELINE_ID
+        ? "wear-v7-rgb-row-head" as const
+        : modelVersion === V6R5_PIPELINE_ID
         ? snappedKinds.has(name)
           ? "wear-v6r5-apple-teacher-pose-relative-rgb-snap" as const
           : "wear-v6r5-apple-teacher-pose-relative" as const
@@ -1068,6 +1202,83 @@ function buildRows(
       },
     }];
   });
+}
+
+function buildHeldoutRows(
+  person: SdkWearPerson,
+  crop: CropBox,
+  image: SourceImage,
+  metrics: MetricsManifest,
+) {
+  return ROW_NAMES.flatMap((name) => {
+    if (name === "underbust" && person.gender !== "female") return [];
+    const source = person.rows[name];
+    if (
+      !source
+      || !finite(source.yNorm)
+      || !finite(source.leftXNorm)
+      || !finite(source.rightXNorm)
+      || source.rightXNorm - source.leftXNorm < 0.02
+    ) return [];
+    const canonical = {
+      left: { x: clamp(source.leftXNorm), y: clamp(source.yNorm) },
+      right: { x: clamp(source.rightXNorm), y: clamp(source.yNorm) },
+    };
+    return [{
+      kind: name,
+      label: person.gender === "female" && name === "chest" ? "Bust / chest" : ROW_LABELS[name],
+      color: ROW_COLORS[name],
+      edgeSource: "wear-heldout-exact-mesh-projection" as const,
+      targetSource: ROW_TARGET_SOURCES[name],
+      canonical,
+      photo: {
+        left: pointToPhoto(crop, image, canonical.left.x, canonical.left.y),
+        right: pointToPhoto(crop, image, canonical.right.x, canonical.right.y),
+      },
+      syntheticEdgeMae: {
+        yNorm: metricFor(metrics, "edge", `row.${name}.y_norm`)?.mae ?? null,
+        leftXNorm: metricFor(metrics, "edge", `row.${name}.left_x_norm`)?.mae ?? null,
+        rightXNorm: metricFor(metrics, "edge", `row.${name}.right_x_norm`)?.mae ?? null,
+      },
+    }];
+  });
+}
+
+function predictedRowGeometryFromEdges(edges: Map<string, number>, gender: Gender) {
+  return Object.fromEntries(ROW_NAMES.flatMap((name) => {
+    if (name === "underbust" && gender !== "female") return [];
+    const y = edges.get(`row.${name}.y_norm`);
+    const leftX = edges.get(`row.${name}.left_x_norm`);
+    const rightX = edges.get(`row.${name}.right_x_norm`);
+    if (!finite(y) || !finite(leftX) || !finite(rightX)) return [];
+    const normalized = {
+      y: clamp(y),
+      leftX: clamp(leftX),
+      rightX: clamp(rightX),
+    };
+    return normalized.rightX - normalized.leftX >= 0.02 ? [[name, normalized]] : [];
+  })) as Partial<Record<RowName, { y: number; leftX: number; rightX: number }>>;
+}
+
+function buildHeldoutRealGeometry(person: SdkWearPerson) {
+  return Object.fromEntries(ROW_NAMES.flatMap((name) => {
+    if (name === "underbust" && person.gender !== "female") return [];
+    const row = person.rows[name];
+    if (!row) return [];
+    const reveal = person.revealOnly.rowTapeAndCircumferenceCm[name];
+    const contour32Normalized = (row.contour32Normalized ?? []).flatMap((point) => (
+      Array.isArray(point) && finite(point[0]) && finite(point[1])
+        ? [{ breadthNorm: point[0], depthNorm: point[1] }]
+        : []
+    ));
+    return [[name, {
+      frontWidthCm: finite(row.frontWidthCm) ? row.frontWidthCm : null,
+      depthCm: finite(row.depthCm) ? row.depthCm : null,
+      contour32Normalized,
+      tapeCm: finite(reveal?.tape) ? reveal.tape : null,
+      geometryPerimeterCm: finite(reveal?.geometryPerimeter) ? reveal.geometryPerimeter : null,
+    }]];
+  }));
 }
 
 function buildSegments(edges: Map<string, number>, crop: CropBox, image: SourceImage) {
@@ -1111,10 +1322,13 @@ function buildMeasurements(
   body: PredictBody,
   metrics: MetricsManifest,
   profileOutOfRange: boolean,
+  useDirectWearBreadth = false,
 ) {
   return ROW_NAMES.flatMap((name) => {
     if (name === "underbust" && body.gender !== "female") return [];
-    const widthCm = widths.accepted[name];
+    const widthCm = useDirectWearBreadth
+      ? values.get(`row.${name}.breadth_cm`)
+      : widths.accepted[name];
     const circumferenceCm = values.get(`row.${name}.circumference_cm`);
     const depthCm = values.get(`row.${name}.depth_cm`);
     if (
@@ -1125,7 +1339,9 @@ function buildMeasurements(
       || (finite(depthCm) && (depthCm < 3 || depthCm > 100))
     ) return [];
     const metric = metricFor(metrics, "measurement", `row.${name}.circumference_cm`);
-    const cameraConfidence = body.rowWidthConfidences?.[name] ?? "low";
+    const cameraConfidence = useDirectWearBreadth
+      ? body.rowGeometry?.[name] ? "high" : "low"
+      : body.rowWidthConfidences?.[name] ?? "low";
     const hasTestEvidence = finite(metric?.mae) && Number(metric?.count ?? 0) >= 100;
     const confidence = !hasTestEvidence || profileOutOfRange || Number(metric?.mae) > 4
       ? "low"
@@ -1138,7 +1354,9 @@ function buildMeasurements(
       valueCm: Number(circumferenceCm.toFixed(2)),
       rawMeshDepthCm: finite(depthCm) ? Number(depthCm.toFixed(2)) : null,
       appleCorrectedWidthCm: Number(widthCm.toFixed(2)),
-      widthSource: body.rowWidthSources?.[name] ?? "manual-width",
+      widthSource: useDirectWearBreadth
+        ? "wear-v7-direct"
+        : body.rowWidthSources?.[name] ?? "manual-width",
       confidence,
       syntheticMaeCm: metric?.mae ?? null,
       syntheticTestCount: metric?.count ?? null,
@@ -1185,14 +1403,19 @@ function buildCrossSections(values: Map<string, number>, metrics: MetricsManifes
   });
 }
 
-function profileWarnings(body: PredictBody, manifest: RuntimeManifest, widths: ReturnType<typeof widthInput>) {
+function profileWarnings(
+  body: PredictBody,
+  manifest: RuntimeManifest,
+  widths: ReturnType<typeof widthInput>,
+  directWearBreadth = false,
+) {
   const warnings: string[] = [];
   const outOfRange = profileOutsideTrainingRange(body, manifest);
   if (outOfRange) warnings.push("Profile is outside the main WEAR training range; treat the result as low confidence.");
-  if (!Object.keys(widths.accepted).length) {
+  if (!directWearBreadth && !Object.keys(widths.accepted).length) {
     warnings.push("Rows are predicted, but circumference is withheld until Apple Vision or a manual tape scale supplies corrected widths.");
   }
-  for (const name of Object.keys(widths.accepted) as RowName[]) {
+  for (const name of directWearBreadth ? [] : Object.keys(widths.accepted) as RowName[]) {
     if ((body.rowWidthConfidences?.[name] ?? "low") === "low") {
       warnings.push(`${ROW_LABELS[name]} width has low camera-scale confidence.`);
     }
@@ -1215,7 +1438,7 @@ export async function GET(request: Request) {
       measurementTargetCount: manifest.measurement_keys.length,
       targetCount: manifest.edge_keys.length + manifest.measurement_keys.length,
       runtimeMaskRequired: false,
-      poseAnchorsRequired: true,
+      poseAnchorsRequired: !isV7Manifest(manifest),
       circumferenceMethod: "direct learned WEAR target",
       shapeMethod: manifest.shape_method,
       syntheticCandidatePassed: metrics.synthetic_candidate_passed === true,
@@ -1252,8 +1475,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "This model test is available only inside Test Lab." }, { status: 403 });
   }
   try {
-    const body = await request.json() as PredictBody;
-    if (!body.imageDataUrl) throw new Error("A full-body RGB photo is required.");
+    const requestBody = await request.json() as PredictBody;
+    const heldoutPerson = requestBody.heldoutScanId
+      ? await heldoutWearPerson(requestBody.heldoutScanId)
+      : null;
+    if (requestBody.heldoutScanId && !heldoutPerson) throw new Error("Choose a valid held-out WEAR test model.");
+    const body = heldoutPerson ? heldoutInferenceBody(heldoutPerson) : requestBody;
+    if (!heldoutPerson && !body.imageDataUrl) throw new Error("A full-body RGB photo is required.");
     const loaded = await loadPackage();
     const { runtime: manifest, metrics } = loaded;
     const officialSyntheticPass = manifest.syntheticCandidatePassed === true
@@ -1266,19 +1494,36 @@ export async function POST(request: Request) {
       }, { status: 409, headers: { "Cache-Control": "no-store" } });
     }
     const session = await loadSession(loaded.root);
+    const v7 = isV7Manifest(manifest);
     const profile = profileInput(body, manifest);
-    const widths = widthInput(body, manifest);
-    const image = await sourceImage(parseDataUrl(body.imageDataUrl));
+    const widths = v7
+      ? { values: new Float32Array(ROW_NAMES.length), mask: new Float32Array(ROW_NAMES.length), accepted: {} as Partial<Record<RowName, number>> }
+      : widthInput(body, manifest);
+    // Held-out v7 must first predict its rows from RGB. Exact WEAR row geometry
+    // is truth for comparison only and must not enter the automatic pipeline.
+    const rowGeometry = v7
+      ? v7RowGeometryInput(heldoutPerson ? { ...body, rowGeometry: {} } : body, manifest)
+      : null;
+    const image = heldoutPerson?.imagePath
+      ? await sourceImage(await readFile(path.join(process.cwd(), heldoutPerson.imagePath)))
+      : await sourceImage(parseDataUrl(body.imageDataUrl!));
     const crop = canonicalCrop(image, safePersonBox(body.personBox));
-    const pose = poseInput(body, image, crop, manifest);
+    const pose = v7 ? null : poseInput(body, image, crop, manifest);
     const rgb = await rgbInput(image, crop, manifest);
     const ort = await import("onnxruntime-node");
     const inferenceStartedAt = performance.now();
-    const output = await session.run({
+    const sharedInputs = {
       rgb: new ort.Tensor("float32", rgb, [1, 3, IMAGE_HEIGHT, IMAGE_WIDTH]),
       profile: new ort.Tensor("float32", Float32Array.from(profile.normalized), [1, 4]),
-      pose: new ort.Tensor("float32", pose.values, [1, POSE_ANCHOR_NAMES.length * 2]),
-      pose_mask: new ort.Tensor("float32", pose.mask, [1, POSE_ANCHOR_NAMES.length]),
+    };
+    let output = await session.run(v7 ? {
+      ...sharedInputs,
+      row_geometry: new ort.Tensor("float32", rowGeometry!.values, [1, ROW_NAMES.length * 3]),
+      row_geometry_mask: new ort.Tensor("float32", rowGeometry!.mask, [1, ROW_NAMES.length]),
+    } : {
+      ...sharedInputs,
+      pose: new ort.Tensor("float32", pose!.values, [1, POSE_ANCHOR_NAMES.length * 2]),
+      pose_mask: new ort.Tensor("float32", pose!.mask, [1, POSE_ANCHOR_NAMES.length]),
       row_widths: new ort.Tensor("float32", widths.values, [1, ROW_NAMES.length]),
       row_width_mask: new ort.Tensor("float32", widths.mask, [1, ROW_NAMES.length]),
     });
@@ -1294,6 +1539,20 @@ export async function POST(request: Request) {
       manifest.normalization.edge_mean,
       manifest.normalization.edge_std,
     );
+    const predictedRowGeometry = v7
+      ? predictedRowGeometryFromEdges(edgeValues, body.gender!)
+      : null;
+    if (heldoutPerson && v7) {
+      const automaticGeometry = v7RowGeometryInput({ ...body, rowGeometry: predictedRowGeometry ?? {} }, manifest);
+      output = await session.run({
+        ...sharedInputs,
+        row_geometry: new ort.Tensor("float32", automaticGeometry.values, [1, ROW_NAMES.length * 3]),
+        row_geometry_mask: new ort.Tensor("float32", automaticGeometry.mask, [1, ROW_NAMES.length]),
+      });
+      if (!output.measurements || output.measurements.data.length !== manifest.measurement_keys.length) {
+        throw new Error("The v7 automatic measurement output is incompatible with its runtime manifest.");
+      }
+    }
     const rawCoreRows = ROW_NAMES.map((kind) => ({
       kind,
       yNorm: edgeValues.get(`row.${kind}.y_norm`) ?? null,
@@ -1303,10 +1562,13 @@ export async function POST(request: Request) {
       spanShoulderRatio: edgeValues.get(`row.${kind}.span_shoulder_ratio`) ?? null,
       centerAnchorOffsetRatio: edgeValues.get(`row.${kind}.center_anchor_offset_ratio`) ?? null,
     }));
-    const poseGeometryGuard = constrainCoreRows(edgeValues, pose, body, manifest);
-    const rgbEdgeSnap = await snapCoreRowsToVisibleRgb(
+    // The held-out evaluator is intentionally the raw ONNX path. Applying the
+    // photo RGB snap here can lock chest/under-bust endpoints onto A-pose arms,
+    // which makes the displayed torso rows wider than the ONNX prediction.
+    const poseGeometryGuard = heldoutPerson || v7 ? [] : constrainCoreRows(edgeValues, pose!, body, manifest);
+    const rgbEdgeSnap = heldoutPerson || v7 ? [] : await snapCoreRowsToVisibleRgb(
       edgeValues,
-      pose,
+      pose!,
       crop,
       image,
       body,
@@ -1319,23 +1581,28 @@ export async function POST(request: Request) {
       manifest.normalization.measurement_mean,
       manifest.normalization.measurement_std,
     );
-    const rows = buildRows(
-      edgeValues,
-      crop,
-      image,
-      metrics,
-      body.gender!,
-      rgbEdgeSnap,
-      manifest.model_version,
-    );
+    const predictedRows = buildRows(
+        edgeValues,
+        crop,
+        image,
+        metrics,
+        body.gender!,
+        rgbEdgeSnap,
+        manifest.model_version,
+      );
+    const realRows = heldoutPerson
+      ? buildHeldoutRows(heldoutPerson, crop, image, metrics)
+      : [];
+    const rows = predictedRows;
     const measurements = buildMeasurements(
       measurementValues,
       widths,
       body,
       metrics,
       profileOutsideTrainingRange(body, manifest),
+      v7,
     );
-    const warnings = profileWarnings(body, manifest, widths);
+    const warnings = profileWarnings(body, manifest, widths, v7);
     const allPredictions = [
       ...[...edgeValues.entries()].map(([key, value]) => ({ key, value: Number(value.toFixed(6)), unit: "normalized" as const })),
       ...[...measurementValues.entries()].map(([key, value]) => ({
@@ -1366,18 +1633,38 @@ export async function POST(request: Request) {
         importantLimit: metrics.important_limit ?? "Private Test Lab candidate only. Release and publishing are disabled.",
       },
       inputContract: {
-        usedByRgbModel: ["RGB photo", "height", "weight", "BMI", "gender", "Apple shoulder/hip anchors", "mask-free local RGB edge contrast"],
-        usedByMeasurementHead: manifest.schema_version >= 5
-          ? ["mask-free RGB body shape", "Apple shoulder/hip pose", "profile", "exactly one Apple-corrected width for that body part"]
-          : ["profile", "exactly one Apple-corrected width for that body part"],
+        usedByRgbModel: v7
+          ? [heldoutPerson ? "held-out WEAR front render" : "RGB photo", "height", "weight", "BMI", "gender"]
+          : heldoutPerson
+          ? ["held-out WEAR front render", "height", "weight", "BMI", "gender", "WEAR shoulder/hip landmarks"]
+          : ["RGB photo", "height", "weight", "BMI", "gender", "Apple shoulder/hip anchors", "mask-free local RGB edge contrast"],
+        usedByMeasurementHead: v7
+          ? [
+            "mask-free RGB body shape",
+            "height, weight, BMI, and gender profile",
+            heldoutPerson ? "the model's own predicted row y/left/right coordinates" : "this row's normalized y/left/right photo coordinates when supplied",
+            "no centimetre width input",
+          ]
+          : manifest.schema_version >= 5
+          ? ["mask-free RGB body shape", heldoutPerson ? "WEAR shoulder/hip landmarks" : "Apple shoulder/hip pose", "profile", heldoutPerson ? "exact WEAR mesh front width for that body part" : "exactly one Apple-corrected width for that body part"]
+          : ["profile", heldoutPerson ? "exact WEAR mesh front width for that body part" : "exactly one Apple-corrected width for that body part"],
         usedByProductProfile: [
-          body.evaluationMode === "answer-free-real-photo-suite"
+          heldoutPerson || body.evaluationMode === "answer-free-real-photo-suite"
             ? "product-only chest field intentionally omitted during answer-free model evaluation"
             : body.gender === "male"
               ? "reported chest (required)"
               : "reported bust / chest (optional)",
         ],
-        neverUsed: ["MediaPipe silhouette mask", "saved tape answers", "ellipse formula", "nearest-person lookup", "another body part's width inside a core row head"],
+        neverUsed: [
+          "MediaPipe silhouette mask",
+          ...(heldoutPerson || v7 ? ["Apple Vision", "Depth Pro"] : []),
+          ...(heldoutPerson || v7 ? ["post-ONNX RGB edge snap", "post-ONNX geometry guards"] : []),
+          ...(v7 ? ["px-to-cm conversion", "metric front-width input"] : []),
+          "saved tape answers",
+          "ellipse formula",
+          "nearest-person lookup",
+          "another body part's width inside a core row head",
+        ],
       },
       profile: {
         heightCm: body.heightCm,
@@ -1390,9 +1677,10 @@ export async function POST(request: Request) {
         sourceImageSize: [image.width, image.height],
         modelImageSize: [IMAGE_WIDTH, IMAGE_HEIGHT],
         crop,
-        cropSource: safePersonBox(body.personBox) ? "person box only; no silhouette pixels enter v6" : "full photo",
-        poseAnchorSource: "Apple Vision shoulder/hip joints; no silhouette mask",
-        poseAnchorsCanonical: pose.canonical,
+        cropSource: heldoutPerson ? "complete held-out WEAR render" : safePersonBox(body.personBox) ? "person box only; no silhouette pixels enter the model" : "full photo",
+        poseAnchorSource: v7 ? "not used by WEAR v7" : heldoutPerson ? "held-out WEAR acromion/trochanterion landmarks" : "Apple Vision shoulder/hip joints; no silhouette mask",
+        poseAnchorsCanonical: pose?.canonical ?? {},
+        rowGeometryAccepted: heldoutPerson && v7 ? predictedRowGeometry ?? {} : rowGeometry?.accepted ?? {},
         rawCoreRows,
         poseGeometryGuard,
         rgbEdgeSnap,
@@ -1400,9 +1688,44 @@ export async function POST(request: Request) {
         quality: warnings.length ? "review" : "good",
       },
       calibration: {
-        status: measurements.length ? "camera-widths-applied" : "rows-only-awaiting-widths",
-        acceptedWidthsCm: widths.accepted,
+        status: measurements.length
+          ? v7
+            ? Object.keys(rowGeometry?.accepted ?? {}).length
+              ? "wear-row-geometry-applied"
+              : "wear-rgb-predicted"
+            : heldoutPerson ? "mesh-front-widths-applied" : "camera-widths-applied"
+          : "rows-only-awaiting-widths",
+        acceptedWidthsCm: v7
+          ? Object.fromEntries(measurements.map((measurement) => [measurement.kind, measurement.appleCorrectedWidthCm]))
+          : widths.accepted,
       },
+      heldoutEvaluation: heldoutPerson ? {
+        scanId: heldoutPerson.scanId,
+        subjectId: heldoutPerson.subjectId,
+        role: "test",
+        includedInTraining: false,
+        onnxMeasurementsOnly: true,
+        displayRowsSource: "model-prediction-and-exact-heldout-wear-mesh-projection",
+        appleVisionUsed: false,
+        depthProUsed: false,
+        rgbEdgeSnapUsed: false,
+        geometryGuardsUsed: false,
+        inputs: v7
+          ? ["front-50 RGB render", "height", "weight", "gender", "model-predicted row coordinates"]
+          : ["front-50 RGB render", "height", "weight", "gender", "WEAR shoulder/hip landmarks", "WEAR mesh front widths"],
+        actuals: {
+          neck: heldoutPerson.revealOnly.rowTapeAndCircumferenceCm.neck?.tape ?? null,
+          chest: heldoutPerson.revealOnly.rowTapeAndCircumferenceCm.chest?.tape ?? null,
+          underbust: heldoutPerson.gender === "female"
+            ? heldoutPerson.revealOnly.rowTapeAndCircumferenceCm.underbust?.tape ?? null
+            : null,
+          waist: heldoutPerson.revealOnly.rowTapeAndCircumferenceCm.waist?.tape ?? null,
+          hips: heldoutPerson.revealOnly.rowTapeAndCircumferenceCm.hips?.tape ?? null,
+        },
+        predictedRows,
+        realRows,
+        realGeometry: buildHeldoutRealGeometry(heldoutPerson),
+      } : null,
       rows,
       crossSections: buildCrossSections(measurementValues, metrics, body.gender!),
       measurements,

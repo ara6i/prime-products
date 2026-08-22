@@ -75,6 +75,34 @@ class WearMetricLineAssetsTest(unittest.TestCase):
         ).sum()
         self.assertAlmostEqual(float(perimeter), 1.30, places=5)
 
+    def test_open_torso_arcs_are_joined_without_lateral_arm_arcs(self) -> None:
+        components = [
+            {
+                "points": np.asarray([[-0.15, -0.01], [0.0, -0.13], [0.15, -0.01]]),
+                "closed": False,
+            },
+            {
+                "points": np.asarray([[-0.14, 0.01], [0.0, 0.12], [0.14, 0.01]]),
+                "closed": False,
+            },
+            {
+                "points": np.asarray([[-0.31, -0.05], [-0.27, 0.0], [-0.30, 0.05]]),
+                "closed": False,
+            },
+            {
+                "points": np.asarray([[0.27, -0.05], [0.31, 0.0], [0.30, 0.05]]),
+                "closed": False,
+            },
+        ]
+        ring, evidence = METRIC.certified_central_torso_arc_ring(components, -0.18, 0.18)
+        self.assertEqual(evidence["centralArcCount"], 2)
+        self.assertTrue(evidence["certified"])
+        self.assertIsNotNone(ring)
+        assert ring is not None
+        self.assertAlmostEqual(float(ring[:, 0].min()), -0.15, places=5)
+        self.assertAlmostEqual(float(ring[:, 0].max()), 0.15, places=5)
+        self.assertLess(evidence["bridgePerimeterRatio"], 0.08)
+
     def test_browser_projection_is_decimated_and_depth_free(self) -> None:
         mesh = trimesh.creation.icosphere(subdivisions=4, radius=0.5)
         vertices = np.asarray(mesh.vertices)

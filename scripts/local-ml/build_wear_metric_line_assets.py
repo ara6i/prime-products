@@ -1087,6 +1087,87 @@ def choose_torso_component(components: list[dict[str, Any]], low_x: float, high_
     return max(candidates, key=lambda item: item[0])[1] if candidates else None
 
 
+def certified_central_torso_arc_ring(
+    components: list[dict[str, Any]],
+    low_x: float,
+    high_x: float,
+) -> tuple[np.ndarray | None, dict[str, Any]]:
+    """Close the real front/back torso arcs without pulling in arm components.
+
+    Many WEAR scans contain a narrow scanner seam at the left/right torso
+    sides.  The horizontal mesh intersection is therefore two open arcs even
+    though both arcs are real body surface.  A convex hull hides that evidence
+    and can alter the chest shape.  This routine instead joins the two real
+    arcs only at their anatomical side endpoints and certifies the join when
+    the overlap and bridge gaps are small.
+    """
+    central_arcs = []
+    for component in components:
+        points = component["points"]
+        minimum = points.min(axis=0)
+        maximum = points.max(axis=0)
+        crosses_midline = minimum[0] <= 0.0 <= maximum[0]
+        inside_torso_bounds = minimum[0] >= low_x - 0.012 and maximum[0] <= high_x + 0.012
+        if not component["closed"] and crosses_midline and inside_torso_bounds:
+            central_arcs.append(points)
+    evidence: dict[str, Any] = {
+        "method": "WEAR-LND-bounded-front-back-arc-stitch",
+        "centralArcCount": len(central_arcs),
+        "certified": False,
+    }
+    if len(central_arcs) < 2:
+        return None, {**evidence, "reason": "fewer-than-two-central-torso-arcs"}
+
+    # The two most depth-separated arcs are the posterior and anterior body
+    # surfaces. Lateral arm fragments never cross the canonical midline and
+    # were removed above.
+    ordered_by_depth = sorted(central_arcs, key=lambda points: float(points[:, 1].mean()))
+    back = ordered_by_depth[0]
+    front = ordered_by_depth[-1]
+
+    def left_to_right(points: np.ndarray) -> np.ndarray:
+        return points if points[0, 0] <= points[-1, 0] else points[::-1]
+
+    back = left_to_right(back)
+    front = left_to_right(front)
+    back_range = (float(back[:, 0].min()), float(back[:, 0].max()))
+    front_range = (float(front[:, 0].min()), float(front[:, 0].max()))
+    overlap = max(0.0, min(back_range[1], front_range[1]) - max(back_range[0], front_range[0]))
+    union = max(back_range[1], front_range[1]) - min(back_range[0], front_range[0])
+    overlap_ratio = overlap / max(union, 1e-9)
+    left_bridge_m = float(np.linalg.norm(front[0] - back[0]))
+    right_bridge_m = float(np.linalg.norm(back[-1] - front[-1]))
+    back_path_m = float(np.linalg.norm(np.diff(back, axis=0), axis=1).sum())
+    front_path_m = float(np.linalg.norm(np.diff(front, axis=0), axis=1).sum())
+    perimeter_m = back_path_m + front_path_m + left_bridge_m + right_bridge_m
+    bridge_ratio = (left_bridge_m + right_bridge_m) / max(perimeter_m, 1e-9)
+    depth_separation_m = float(front[:, 1].mean() - back[:, 1].mean())
+    contour = np.vstack((back, front[::-1]))
+    area_m2 = abs(polygon_area(contour))
+    failures = []
+    if overlap_ratio < 0.80:
+        failures.append("front-back-lateral-overlap-under-80pct")
+    if max(left_bridge_m, right_bridge_m) > 0.040:
+        failures.append("side-seam-bridge-over-40mm")
+    if bridge_ratio > 0.08:
+        failures.append("side-seam-bridges-over-8pct-perimeter")
+    if depth_separation_m < 0.045:
+        failures.append("front-back-depth-separation-under-45mm")
+    if area_m2 < 0.005:
+        failures.append("stitched-ring-area-too-small")
+    evidence.update({
+        "frontBackOverlapRatio": round_float(overlap_ratio, 6),
+        "leftBridgeMm": round_float(left_bridge_m * 1000.0, 3),
+        "rightBridgeMm": round_float(right_bridge_m * 1000.0, 3),
+        "bridgePerimeterRatio": round_float(bridge_ratio, 6),
+        "depthSeparationMm": round_float(depth_separation_m * 1000.0, 3),
+        "areaCm2": round_float(area_m2 * 10_000.0, 3),
+        "certified": not failures,
+        "failures": failures,
+    })
+    return (contour if not failures else None), evidence
+
+
 def slab_hull(vertices: np.ndarray, plane: Plane, low_x: float, high_x: float) -> tuple[np.ndarray | None, float | None]:
     relative = vertices - plane.origin
     distance = relative @ plane.normal
@@ -1172,7 +1253,7 @@ def row_geometry(
         "recordedTape": {
             "valueCm": round_float(tape_mm / 10.0) if tape_mm is not None else None,
             "sourceKey": spec["tapeKey"],
-            "role": "independent comparison only; never used to create geometry",
+            "role": "never creates geometry; eligible rows use it only to supervise circumference walked from predicted A-B, depth, and shape",
         },
     }
     if plane is None:
@@ -1182,9 +1263,17 @@ def row_geometry(
     selected = choose_torso_component(components, low_x, high_x)
     raw_closed = bool(selected and selected["closed"])
     reconstructed = False
+    reconstruction_source = None
+    stitch_evidence: dict[str, Any] | None = None
     slab_m = None
     if selected is None or not raw_closed:
-        points, slab_m = slab_hull(vertices, plane, low_x, high_x)
+        points, stitch_evidence = certified_central_torso_arc_ring(components, low_x, high_x)
+        if points is not None:
+            reconstruction_source = "certified-central-torso-open-arcs"
+        else:
+            points, slab_m = slab_hull(vertices, plane, low_x, high_x)
+            if points is not None:
+                reconstruction_source = "bounded-slab-hull"
         if points is None:
             return {
                 **base,
@@ -1216,6 +1305,14 @@ def row_geometry(
     quality = []
     if reconstructed:
         quality.extend(["reconstructed-slab-hull", "closed-loop-circumference-not-certified"])
+        if reconstruction_source == "certified-central-torso-open-arcs":
+            quality.remove("reconstructed-slab-hull")
+            quality.remove("closed-loop-circumference-not-certified")
+            quality.extend(["certified-central-torso-arc-ring", "arms-excluded-by-WEAR-LND-bounds"])
+        if row_name in {"chest", "underbust"}:
+            quality.append("arm-exclusion-not-proven")
+            if reconstruction_source == "certified-central-torso-open-arcs":
+                quality.remove("arm-exclusion-not-proven")
     else:
         quality.append("raw-central-closed-loop")
     if minimum[0] < low_x - 0.012 or maximum[0] > high_x + 0.012:
@@ -1226,21 +1323,38 @@ def row_geometry(
             quality.append("mesh-loop-vs-recorded-tape-over-12pct")
     else:
         difference_pct = None
+    certified_section = bool(raw_closed or (stitch_evidence and stitch_evidence.get("certified") is True))
+    tape_training_eligible = bool(
+        certified_section
+        and tape_mm is not None
+        and difference_pct is not None
+        and difference_pct <= 5.0
+    )
     return {
         **base,
         "geometryAvailable": True,
-        "sourceGeometry": "raw WEAR PLY plane intersection" if not reconstructed else "raw WEAR PLY slab convex hull diagnostic fallback",
+        "sourceGeometry": "raw WEAR PLY plane intersection" if not reconstructed else (
+            "raw WEAR PLY central front/back torso arcs; arm components excluded"
+            if reconstruction_source == "certified-central-torso-open-arcs"
+            else "raw WEAR PLY bounded slab convex hull diagnostic fallback"
+        ),
         "torsoBoundsCm": [round_float(low_x * 100.0), round_float(high_x * 100.0)],
         "torsoBoundsEvidence": bounds_info,
         "sectionComponentCount": len(components),
+        "centralTorsoArcCount": (stitch_evidence or {}).get("centralArcCount", 0),
+        "stitchEvidence": stitch_evidence,
         "rawCentralLoopClosed": raw_closed,
+        "certifiedSection": certified_section,
+        "geometryTrainingEligible": certified_section,
+        "tapeTrainingEligible": tape_training_eligible,
         "reconstructed": reconstructed,
+        "reconstructionSource": reconstruction_source,
         "slabMm": round_float((slab_m or 0.0) * 1000.0, 3),
         "breadthCm": round_float(width_m * 100.0),
         "depthCm": round_float(depth_m * 100.0),
-        "closedLoopCircumferenceCm": round_float(perimeter_m * 100.0) if not reconstructed and raw_closed else None,
-        "diagnosticReconstructedPerimeterCm": round_float(perimeter_m * 100.0) if reconstructed else None,
-        "meshVsTapeDifferencePercent": round_float(difference_pct, 3) if difference_pct is not None and not reconstructed else None,
+        "closedLoopCircumferenceCm": round_float(perimeter_m * 100.0) if certified_section else None,
+        "diagnosticReconstructedPerimeterCm": round_float(perimeter_m * 100.0) if reconstructed and not certified_section else None,
+        "meshVsTapeDifferencePercent": round_float(difference_pct, 3) if difference_pct is not None and certified_section else None,
         "abBreadth": {
             "valueCm": round_float(width_m * 100.0),
             "aCanonicalCm": points_json(world(a2)[None, :] * 100.0)[0],

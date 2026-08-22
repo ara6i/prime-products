@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Launch the bounded Virginia CPU or GPU stage for private WEAR v7.
+"""Launch the bounded Virginia CPU or GPU stage for private WEAR v8.
 
-The v7 learner consumes only WEAR RGB/profile data and normalized row geometry.
-It never downloads Apple anchors or accepts a metric photo-width input.
+The v8 learner consumes deterministic Blender mesh cards plus profile data.
+Every row target must first pass the certified PLY/LND teacher audit. GPU launch
+is impossible until that exact audit and its visual contact sheet are approved.
 """
 
 from __future__ import annotations
@@ -20,14 +21,15 @@ from typing import Any
 BUCKET = "primestyleai-wear3d-921049726279-us-east-1"
 REGION = "us-east-1"
 PROFILE = "primestyle-wear"
-PIPELINE_ID = "wear3d-standing-rgb-v7-20260816"
-TEACHER_PIPELINE_ID = "wear3d-standing-rgb-v6-20260815"
-STATUS_KEY = "jobs/wear3d-v7/status.json"
+PIPELINE_ID = "wear3d-standing-mesh-v8-20260821"
+TEACHER_PIPELINE_ID = "wear3d-standing-mesh-teacher-v8-20260821"
+STATUS_KEY = "jobs/wear3d-v8/status.json"
 REQUIRED_SUBJECTS = 4_326
 REQUIRED_RECORDS = 38_934
 CODE_PREFIX = f"code/{PIPELINE_ID}"
 SOURCE_MANIFEST_KEY = "manifests/wear3d-standing-a-v3-20260813/source-manifest-standing-a.jsonl"
 VISUAL_REVIEW_KEY = f"reports/{TEACHER_PIPELINE_ID}/label-visual-review.json"
+BLENDER_ARCHIVE_KEY = "runtime/blender/blender-5.2.0-linux-x64.tar.xz"
 INSTANCE_PROFILE_NAME = "PrimeStyleAIWearTrainingEC2Profile"
 SECURITY_GROUP_NAME = "primestyle-wear3d-training-egress-only"
 
@@ -94,6 +96,7 @@ def gpu_ami() -> dict[str, Any]:
 def upload_code(project_root: Path) -> None:
     files = [
         project_root / ".local-ml/tools/render_wear3d_pilot.py",
+        project_root / "scripts/local-ml/audit_wear_teacher_cards.py",
         Path(__file__).with_name("render_wear3d_multiview.py"),
         Path(__file__).with_name("audit_wear3d_labels_cloud.py"),
         Path(__file__).with_name("run_v6_preprocess.py"),
@@ -107,11 +110,11 @@ def upload_code(project_root: Path) -> None:
 def status_payload(mode: str, instance_type: str, max_hours: int) -> dict[str, Any]:
     started = now()
     stages = [
-        ("inventory-v6", "Verify all protected WEAR data", "Count every S3 object and byte before use."),
-        ("manifest-v6", "Keep standing people separate", "Use only standing A scans and subject-disjoint train, validation, and test roles."),
-        ("render-v6", "Build WEAR 3D teachers", "Use the audited WEAR renders with projected row positions, raw-mesh breadth and depth, 32-point cross-sections, and recorded tape labels."),
-        ("train-v7", "Train the WEAR-only photo model", "Learn each body row from RGB, height, weight, gender, and that row's normalized pixel position and endpoints. No Apple value and no px-to-cm value enters training."),
-        ("evaluate-v6", "Test unseen WEAR people", "Score held-out people and compare with the train-mean baseline."),
+        ("inventory-v8", "Verify all protected WEAR data", "Count every S3 object and byte before use."),
+        ("manifest-v8", "Keep standing people separate", "Use only standing A scans and subject-disjoint train, validation, and test roles."),
+        ("render-v8", "Build certified PLY teachers", "Use Blender mesh cards plus exact PLY/LND row position, A-B, C-D and 32-point cross-sections. Bad rows are masked."),
+        ("train-v8", "Train one connected geometry model", "Predict row, A-B, C-D and shape from the mesh card; circumference is walked from that same shape and supervised by tape only when the pair is certified."),
+        ("evaluate-v8", "Test unseen WEAR people", "Require the connected predictions to pass the 448-person held-out gates."),
         ("real_photos", "Prove real photos privately", "Test Shane, Shahnaz, Negar, confidence, and manual edits without releasing or publishing the candidate."),
     ]
     completed_before = 0 if mode == "preprocess" else 3
@@ -148,6 +151,7 @@ def user_data(bootstrap: Path, *, recovery: bool = False, max_runtime_minutes: i
         f"export WEAR_TEACHER_PIPELINE_ID={TEACHER_PIPELINE_ID!r}",
         f"export WEAR_STATUS_KEY={STATUS_KEY!r}", f"export WEAR_CODE_PREFIX={CODE_PREFIX!r}",
         f"export WEAR_SOURCE_MANIFEST_KEY={SOURCE_MANIFEST_KEY!r}",
+        f"export WEAR_BLENDER_ARCHIVE_KEY={BLENDER_ARCHIVE_KEY!r}",
         f"export AWS_REGION={REGION!r}", f"export AWS_DEFAULT_REGION={REGION!r}", "export AWS_PAGER=''",
     ]
     if recovery:
@@ -202,22 +206,25 @@ def main() -> None:
                 check=False,
             )
             if result.returncode != 0:
-                raise RuntimeError("Validated v6 labels are not saved yet; refusing GPU launch")
+                raise RuntimeError("Validated v8 mesh teachers are not saved yet; refusing GPU launch")
             audit = json.loads(Path(handle.name).read_text(encoding="utf-8"))
+        audit_inputs = audit.get("inputs") or {}
         audit_counts = {
-            "subjects": int(audit.get("subjects", 0)),
-            "records": int(audit.get("records", 0)),
-            "successful": int(audit.get("successful", 0)),
-            "failed_records": int(audit.get("failed_records", -1)),
+            "people": int(audit_inputs.get("people", 0)),
+            "renderCards": int(audit_inputs.get("renderCards", 0)),
+            "canonicalCards": int(audit_inputs.get("peopleWithCanonicalFrontCard", 0)),
         }
-        if audit.get("passed") is not True or audit_counts != {
-            "subjects": REQUIRED_SUBJECTS,
-            "records": REQUIRED_RECORDS,
-            "successful": REQUIRED_RECORDS,
-            "failed_records": 0,
-        }:
+        if (
+            audit.get("schemaVersion") != "wear-teacher-card-audit/v2"
+            or (audit.get("summary") or {}).get("trainingAllowed") is not True
+            or audit_counts != {
+                "people": REQUIRED_SUBJECTS,
+                "renderCards": REQUIRED_RECORDS,
+                "canonicalCards": REQUIRED_SUBJECTS,
+            }
+        ):
             raise RuntimeError(
-                "The saved v6 label audit is not the exact full 4,326-person / 38,934-view set; "
+                "The saved v8 teacher audit is not the exact passing 4,326-person / 38,934-card set; "
                 f"refusing GPU launch: {audit_counts}"
             )
         with tempfile.NamedTemporaryFile(suffix=".json") as handle:
@@ -228,16 +235,16 @@ def main() -> None:
                 check=False,
             )
             if result.returncode != 0:
-                raise RuntimeError("The diverse v6 contact sheet has not been visually approved; refusing GPU launch")
+                raise RuntimeError("The diverse v8 teacher sheet has not been visually approved; refusing GPU launch")
             review = json.loads(Path(handle.name).read_text(encoding="utf-8"))
         if (
             review.get("schemaVersion") != 1
             or review.get("pipelineId") != TEACHER_PIPELINE_ID
             or review.get("approved") is not True
-            or review.get("contactSheetSha256") != audit.get("contact_sheet_sha256")
-            or review.get("manifestSha256") != audit.get("manifest_sha256")
+            or review.get("contactSheetSha256") != (audit.get("summary") or {}).get("contactSheetSha256")
+            or review.get("manifestSha256") != (audit.get("summary") or {}).get("renderManifestSha256")
         ):
-            raise RuntimeError("The v6 visual review does not match the current audited labels; refusing GPU launch")
+            raise RuntimeError("The v8 visual review does not match the current audited teachers; refusing GPU launch")
     upload_code(project_root)
     _, security_group = infrastructure()
     if args.mode in ("preprocess", "recover"):
@@ -246,11 +253,11 @@ def main() -> None:
         # an eight-hour termination cap for the complete protocol-aware set.
         image, instance_type, volume_gb, max_hours = ubuntu_ami(), "c7i.8xlarge", 120, 2 if args.mode == "recover" else 8
         bootstrap = Path(__file__).with_name("ec2_preprocess_bootstrap.sh")
-        name = "PrimeStyleAI-WEAR3D-V6-CPU"
+        name = "PrimeStyleAI-WEAR3D-V8-CPU"
     else:
-        image, instance_type, volume_gb, max_hours = gpu_ami(), "g4dn.xlarge", 80, 4
+        image, instance_type, volume_gb, max_hours = gpu_ami(), "g4dn.xlarge", 80, 8
         bootstrap = Path(__file__).with_name("ec2_train_bootstrap.sh")
-        name = "PrimeStyleAI-WEAR3D-V7-GPU"
+        name = "PrimeStyleAI-WEAR3D-V8-GPU"
     if args.mode == "recover":
         with tempfile.NamedTemporaryFile(suffix=".json") as handle:
             aws("s3api", "get-object", "--bucket", BUCKET, "--key", STATUS_KEY, handle.name)
@@ -258,7 +265,7 @@ def main() -> None:
         status.update({
             "state": "preparing",
             "overallPercent": max(70.0, float(status.get("overallPercent", 0))),
-            "currentStage": "render-v6",
+            "currentStage": "render-v8",
             "currentStageLabel": "Preparing targeted label recovery",
             "detail": "Clean shards stay saved; only failed shards and the few legacy shards that discarded valid mesh geometry will be regenerated.",
             "updatedAt": now(),
@@ -267,10 +274,11 @@ def main() -> None:
     else:
         status = status_payload(args.mode, instance_type, max_hours)
     if audit is not None:
+        audit_inputs = audit.get("inputs") or {}
         status["dataset"].update({
-            "subjects": int(audit.get("subjects", status["dataset"]["subjects"])),
-            "completedExamples": int(audit.get("successful", 0)),
-            "failedExamples": int(audit.get("failed_records", 0)),
+            "subjects": int(audit_inputs.get("people", status["dataset"]["subjects"])),
+            "completedExamples": int(audit_inputs.get("renderCards", 0)),
+            "failedExamples": 0,
         })
     upload_status(project_root, status)
     with tempfile.NamedTemporaryFile("w", suffix=".sh", delete=False) as handle:
@@ -278,7 +286,7 @@ def main() -> None:
             user_data(
                 bootstrap,
                 recovery=args.mode == "recover",
-                max_runtime_minutes=max_hours * 60 if args.mode in ("preprocess", "recover") else None,
+                max_runtime_minutes=max_hours * 60,
             )
         )
         user_data_path = Path(handle.name)

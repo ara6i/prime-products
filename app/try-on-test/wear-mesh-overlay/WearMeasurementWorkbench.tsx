@@ -21,6 +21,7 @@ import {
   type Point2,
 } from "./geometry";
 import styles from "./wearMeshOverlay.module.css";
+import { WaistOnlyProofPanel } from "./WaistOnlyProofPanel";
 
 type PhotoId = string;
 type RowId = "waist" | "hips" | "neck" | "chest" | "underbust";
@@ -407,6 +408,154 @@ export function OverlayMeshCanvas({ photo, photoMesh, wearMesh, metric, fitVisib
   return <canvas ref={canvasRef} className={styles.workbenchCanvas} aria-label={`${photo.label} and selected WEAR 2D meshes overlaid`} />;
 }
 
+function MeshLineComparisonCanvas({
+  photo,
+  photoMesh,
+  wearMesh,
+  metric,
+  photoLine,
+  rowId,
+}: {
+  photo: PhotoDefinition;
+  photoMesh: FlatMesh;
+  wearMesh: WearBrowserMesh;
+  metric: WearMetric;
+  photoLine: NormalizedLine;
+  rowId: RowId;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const render = () => {
+      const rect = canvas.getBoundingClientRect();
+      const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = Math.max(1, Math.round(rect.width * ratio));
+      canvas.height = Math.max(1, Math.round(rect.height * ratio));
+      const context = canvas.getContext("2d");
+      if (!context) return;
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      const photoOutline = pairsFromFlat(photoMesh.outline);
+      const photoBounds = outlineBounds(photoOutline);
+      if (!photoBounds) return;
+      const sourceBodyWidth = (photoBounds.maximumX - photoBounds.minimumX) * photo.width;
+      const sourceBodyHeight = (photoBounds.maximumY - photoBounds.minimumY) * photo.height;
+      const padding = Math.max(28 * ratio, Math.min(canvas.width, canvas.height) * 0.065);
+      const visibleBodyScale = Math.min(
+        (canvas.width - padding * 2) / Math.max(1, sourceBodyWidth),
+        (canvas.height - padding * 2) / Math.max(1, sourceBodyHeight),
+      );
+      const bodyLeft = (canvas.width - sourceBodyWidth * visibleBodyScale) / 2;
+      const bodyTop = (canvas.height - sourceBodyHeight * visibleBodyScale) / 2;
+      const mapPhotoPoint = (x: number, y: number): readonly [number, number] => [
+        bodyLeft + (x - photoBounds.minimumX) * photo.width * visibleBodyScale,
+        bodyTop + (y - photoBounds.minimumY) * photo.height * visibleBodyScale,
+      ];
+      const mapPhotoVertex = (index: number): readonly [number, number] => mapPhotoPoint(
+        photoMesh.vertices[index * 2]!,
+        photoMesh.vertices[index * 2 + 1]!,
+      );
+
+      const wearBounds = metric.frontProjection.boundsCm;
+      const targetBodyHeightPx = sourceBodyHeight * visibleBodyScale;
+      const wearHeightCm = Math.max(1, wearBounds.maxZ - wearBounds.minZ);
+      const pxPerCm = targetBodyHeightPx / wearHeightCm;
+      const photoCentrePx = mapPhotoPoint(
+        (photoBounds.minimumX + photoBounds.maximumX) / 2,
+        photoBounds.maximumY,
+      )[0];
+      const photoBottomPx = mapPhotoPoint(
+        (photoBounds.minimumX + photoBounds.maximumX) / 2,
+        photoBounds.maximumY,
+      )[1];
+      const wearCentreCm = (wearBounds.minX + wearBounds.maxX) / 2;
+      const mapWearPoint = ([x, z]: Point2): readonly [number, number] => [
+        photoCentrePx + (x - wearCentreCm) * pxPerCm,
+        photoBottomPx - (z - wearBounds.minZ) * pxPerCm,
+      ];
+
+      drawTriangleMesh(
+        context,
+        wearMesh.triangles,
+        (index) => mapWearPoint(wearMesh.verticesCm[index]!),
+        "rgba(251, 146, 60, 1)",
+        0.22,
+        0.42 * ratio,
+      );
+      drawTriangleMesh(
+        context,
+        photoMesh.triangles,
+        mapPhotoVertex,
+        "rgba(34, 211, 238, 1)",
+        0.24,
+        0.42 * ratio,
+      );
+      drawMeshOutline(
+        context,
+        metric.frontProjection.outline.pointsCm,
+        mapWearPoint,
+        "#fb923c",
+        2.2 * ratio,
+        [7 * ratio, 4 * ratio],
+      );
+      drawMeshOutline(
+        context,
+        photoOutline,
+        ([x, y]) => mapPhotoPoint(x, y),
+        "#22d3ee",
+        2.7 * ratio,
+      );
+
+      const drawRowLine = (
+        a: readonly [number, number],
+        b: readonly [number, number],
+        color: string,
+        dash: number[] = [],
+        width = 5,
+      ) => {
+        context.save();
+        context.beginPath();
+        context.moveTo(a[0], a[1]);
+        context.lineTo(b[0], b[1]);
+        context.strokeStyle = color;
+        context.lineWidth = width * ratio;
+        context.lineCap = "round";
+        context.setLineDash(dash);
+        context.shadowColor = "rgba(2, 6, 23, 0.95)";
+        context.shadowBlur = 5 * ratio;
+        context.stroke();
+        context.restore();
+      };
+
+      const photoA = mapPhotoPoint(photoLine.left, photoLine.y);
+      const photoB = mapPhotoPoint(photoLine.right, photoLine.y);
+      const wearRow = metric.rows[rowId];
+      const wearA = mapWearPoint(wearRow.abBreadth.frontProjectionCm[0]);
+      const wearB = mapWearPoint(wearRow.abBreadth.frontProjectionCm[1]);
+      drawRowLine(photoA, photoB, "#f43f5e", [], 9);
+      drawRowLine(wearA, wearB, "#facc15", [10 * ratio, 6 * ratio], 4);
+    };
+    render();
+    const resizeObserver = new ResizeObserver(render);
+    resizeObserver.observe(canvas);
+    window.addEventListener("resize", render);
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", render);
+    };
+  }, [metric, photo, photoLine, photoMesh, rowId, wearMesh]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className={styles.meshLineProofCanvas}
+      aria-label={`${photo.label} and ${metric.scanId} meshes with ${rowId} lines`}
+    />
+  );
+}
+
 export function WearCanonicalCanvas({ mesh, metric }: { mesh: WearBrowserMesh; metric: WearMetric }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -781,6 +930,10 @@ export function WearMeasurementWorkbench({
   const photoRulerCm = photoRuler && photoBounds
     ? heightScaledDistanceCm(photoRuler.a, photoRuler.b, photo.width, photo.height, photoBounds, photo.profile.heightCm)
     : null;
+  const proofDefinition = ROWS.find((definition) => definition.id === activeRow)!;
+  const proofWearRow = payload.metric.rows[activeRow];
+  const proofPhotoWidth = lineWidths[activeRow];
+  const proofDifference = proofPhotoWidth == null ? null : proofPhotoWidth - proofWearRow.breadthCm;
 
   return (
     <section ref={workbenchRef} className={styles.measurementWorkbench} data-fullscreen={isFullscreen}>
@@ -792,6 +945,16 @@ export function WearMeasurementWorkbench({
         </div>
         <button type="button" onClick={toggleFullscreen}>{isFullscreen ? "Close full screen" : "Open full screen"}</button>
       </header>
+
+      {photo.profile.gender && photo.profile.measurementsCm?.waist ? (
+        <WaistOnlyProofPanel
+          photoId={photoId}
+          gender={photo.profile.gender}
+          heightCm={photo.profile.heightCm}
+          weightKg={photo.profile.weightKg}
+          savedWaistCm={photo.profile.measurementsCm.waist}
+        />
+      ) : null}
 
       <div className={styles.rankRail} aria-label="Visible-shape ranked WEAR candidates">
         {payload.match.photo.candidates.map((ranked) => {
@@ -815,6 +978,56 @@ export function WearMeasurementWorkbench({
           );
         })}
       </div>
+
+      <section className={styles.meshLineProof} aria-label="Delaram and selected WEAR mesh line comparison">
+        <header className={styles.meshLineProofHeader}>
+          <div>
+            <span>New · line-on-mesh proof</span>
+            <h3>{photo.label.split(" · ")[0]} line ↔ exact WEAR line</h3>
+          </div>
+          <div className={styles.meshLineProofTabs} aria-label="Select the compared body line">
+            {(["waist", "hips"] as const).map((rowId) => (
+              <button
+                key={rowId}
+                type="button"
+                data-active={activeRow === rowId}
+                onClick={() => setActiveRow(rowId)}
+              >
+                {rowId === "waist" ? "Natural waist" : "Hips"}
+              </button>
+            ))}
+          </div>
+        </header>
+
+        <div className={styles.meshLineProofStage}>
+          <MeshLineComparisonCanvas
+            photo={photo}
+            photoMesh={photoMesh}
+            wearMesh={payload.mesh2d}
+            metric={payload.metric}
+            photoLine={lines[activeRow]}
+            rowId={activeRow}
+          />
+        </div>
+
+        <div className={styles.meshLineProofResults}>
+          <div data-source="photo">
+            <span><i />Solid pink · {photo.label.split(" · ")[0]} mesh line</span>
+            <strong>{proofPhotoWidth?.toFixed(2) ?? "–"} cm</strong>
+            <small>The movable line currently placed on the photo mesh</small>
+          </div>
+          <div data-source="wear">
+            <span><i />Dashed yellow · {payload.scanId} WEAR line</span>
+            <strong>{proofWearRow.breadthCm.toFixed(2)} cm</strong>
+            <small>Exact PLY {proofDefinition.label.toLowerCase()} A-B line</small>
+          </div>
+          <div data-source="difference">
+            <span>Visible A-B difference</span>
+            <strong>{proofDifference == null ? "–" : signedDifferenceLabel(proofDifference)}</strong>
+            <small>{proofDifference == null ? "Waiting for both lines" : proofDifference > 0 ? `${photo.label.split(" · ")[0]} line is wider` : proofDifference < 0 ? `${photo.label.split(" · ")[0]} line is narrower` : "The two lines are equal"}</small>
+          </div>
+        </div>
+      </section>
 
       <div className={styles.workbenchMain}>
         <div className={styles.visualColumn}>

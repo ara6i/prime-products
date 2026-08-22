@@ -76,6 +76,10 @@ export const STYLIST_OCCASIONS: StylistOccasionOption[] = [
   },
 ];
 
+export function occasionSkipsSeasonStep(occasionId: string): boolean {
+  return occasionId === "wedding" || occasionId === "wedding-guest";
+}
+
 const ORIGINAL_OCCASION_ASSETS: Partial<Record<string, string>> = {
   "casual-everyday":
     "/images/ai-stylist/onboarding/occasion-casual.png",

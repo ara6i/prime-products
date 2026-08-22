@@ -19,6 +19,7 @@ import { ShahnazPhotoPairPanel } from "./components/ShahnazPhotoPairPanel";
 import { LocalMlTrainingDiagram } from "./components/LocalMlTrainingDiagram";
 import { LocalMlRowEvidencePanel } from "./components/LocalMlRowEvidencePanel";
 import { SimpleSizingFormulaGuide } from "./components/SimpleSizingFormulaGuide";
+import { buildQueryFromMask, type SdkWearPartResult, type SdkWearQuery } from "./sdkWearMatcher";
 import {
   ManualCoordinateGuidePanel,
   type ManualHeightScaleOverride,
@@ -126,7 +127,7 @@ const DEFAULT_METRICS: MetricsInput = {
   cup: null,
 };
 
-type AnalysisPath = "raw" | "landmark" | "mask-guide" | "manual-guide" | "local-ml" | "segmenter" | "backend-sdk" | "gemini" | "gemini-calibrated" | "gemini-guide" | "gemini-guide-side" | "third-party";
+type AnalysisPath = "raw" | "landmark" | "mask-guide" | "manual-guide" | "local-ml" | "segmenter" | "backend-sdk" | "sdk-wear" | "gemini" | "gemini-calibrated" | "gemini-guide" | "gemini-guide-side" | "third-party";
 type PoseSource = "original-raw" | "original-segmenter" | "gemini" | "gemini-calibrated" | "gemini-guide" | "gemini-guide-side" | "manual-guide" | "local-ml";
 type ShahnazPhotoKey = "tape" | "second";
 type ManualGuideRowKind = "waist" | "trouserWaist" | "hips";
@@ -635,6 +636,10 @@ export function SizingLabPage() {
   const [backendSdkStatus, setBackendSdkStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [backendSdkError, setBackendSdkError] = useState<string | null>(null);
   const [backendSdkTrace, setBackendSdkTrace] = useState<SdkBackendTrace | null>(null);
+  const [sdkWearStatus, setSdkWearStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const [sdkWearError, setSdkWearError] = useState<string | null>(null);
+  const [sdkWearQuery, setSdkWearQuery] = useState<SdkWearQuery | null>(null);
+  const [sdkWearResults, setSdkWearResults] = useState<SdkWearPartResult[] | null>(null);
   const [thirdPartyStatus, setThirdPartyStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [thirdPartyMode, setThirdPartyMode] = useState<"photo" | "stats-only">("photo");
   const [thirdPartyError, setThirdPartyError] = useState<string | null>(null);
@@ -689,6 +694,7 @@ export function SizingLabPage() {
       ? selectedDataset.waistCm
       : undefined;
   const usesBackendSdk = analysisPath === "backend-sdk";
+  const usesSdkWear = analysisPath === "sdk-wear";
   const usesThirdParty = analysisPath === "third-party";
   const usesGeminiCalibration = analysisPath === "gemini-calibrated";
   const usesGeminiGuide = analysisPath === "gemini-guide";
@@ -699,7 +705,7 @@ export function SizingLabPage() {
   const usesManualCameraCalibration = usesManualGuide && manualCameraCalibrationEnabled;
   const usesModelCoordinateGuide = usesGeminiGuide || usesGeminiGuideWithSide;
   const usesCoordinateGuide = usesModelCoordinateGuide || usesCoordinateWorkbench;
-  const activeUseSidePhoto = (useSidePhoto || usesGeminiGuideWithSide || usesThirdParty) && !usesBackendSdk;
+  const activeUseSidePhoto = (useSidePhoto || usesGeminiGuideWithSide || usesThirdParty) && !usesBackendSdk && !usesSdkWear;
   const usesMaskGuide = analysisPath === "mask-guide";
   const usesGemini = analysisPath === "gemini" || usesGeminiCalibration;
   const usesSegmenter = analysisPath === "segmenter";
@@ -718,10 +724,10 @@ export function SizingLabPage() {
     : usesSegmenter
       ? "original-segmenter"
       : "original-raw";
-  const maskMode: MeasurementMaskMode = analysisPath === "landmark" || usesMaskGuide || usesSegmenter || usesCoordinateGuide ? "ignore-arms" : "raw";
+  const maskMode: MeasurementMaskMode = analysisPath === "landmark" || usesMaskGuide || usesSegmenter || usesCoordinateGuide || usesSdkWear ? "ignore-arms" : "raw";
   const poseMatchesPath = poseSource === selectedPoseSource;
   const displayPose = poseMatchesPath && pose.pose
-    ? usesBackendSdk
+    ? usesBackendSdk || usesSdkWear
       ? { ...pose.pose, mask: null, maskWidth: 0, maskHeight: 0 }
       : pose.pose
     : null;
@@ -843,6 +849,10 @@ export function SizingLabPage() {
     setBackendSdkTrace(null);
     setBackendSdkStatus("idle");
     setBackendSdkError(null);
+    setSdkWearStatus("idle");
+    setSdkWearError(null);
+    setSdkWearQuery(null);
+    setSdkWearResults(null);
   };
 
   const clearLocalMlPrediction = (
@@ -1702,6 +1712,33 @@ export function SizingLabPage() {
         }
       }
     }
+    if (usesSdkWear) {
+      setSdkWearStatus("loading");
+      setSdkWearError(null);
+      setSdkWearResults(null);
+      if (!frontPoseResult) {
+        setSdkWearStatus("error");
+        setSdkWearError("MediaPipe could not build a visible front mesh.");
+      } else {
+        try {
+          const query = buildQueryFromMask(frontPoseResult.mask, frontPoseResult.maskWidth, frontPoseResult.maskHeight, metrics.heightCm);
+          if (!query) throw new Error("The front photo has no usable visible silhouette mask.");
+          setSdkWearQuery(query);
+          const response = await fetch("/api/try-on-test/sizing-lab/sdk-wear/match", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ metrics, query }),
+          });
+          const data = await response.json().catch(() => ({ ok: false, error: `SDK WEAR route returned ${response.status}` }));
+          if (!response.ok || !data.ok) throw new Error(data.error || `SDK WEAR route returned ${response.status}`);
+          setSdkWearResults(data.results as SdkWearPartResult[]);
+          setSdkWearStatus("ready");
+        } catch (error) {
+          setSdkWearStatus("error");
+          setSdkWearError(error instanceof Error ? error.message : "SDK WEAR matching failed");
+        }
+      }
+    }
     if (usesBackendSdk) {
       if (!frontPoseResult) {
         setBackendSdkStatus("error");
@@ -2353,6 +2390,7 @@ export function SizingLabPage() {
     && localMlRunStatus !== "predicting"
     && geminiGuideStatus !== "loading"
     && backendSdkStatus !== "loading"
+    && sdkWearStatus !== "loading"
     && segmenterStatus !== "loading"
     && (!activeUseSidePhoto || sidePose.status !== "loading");
 
@@ -2884,7 +2922,7 @@ export function SizingLabPage() {
           disabled={!canAnalyze}
           className="inline-flex items-center gap-2"
         >
-          {pose.status === "loading" || localMlRunStatus === "predicting" || geminiStatus === "loading" || manualCameraCalibrationStatus === "loading" || geminiBgStatus === "loading" || calibrationStatus === "loading" || geminiGuideStatus === "loading" || backendSdkStatus === "loading" || thirdPartyStatus === "loading" || segmenterStatus === "loading" || (activeUseSidePhoto && sidePose.status === "loading") ? (
+          {pose.status === "loading" || localMlRunStatus === "predicting" || geminiStatus === "loading" || manualCameraCalibrationStatus === "loading" || geminiBgStatus === "loading" || calibrationStatus === "loading" || geminiGuideStatus === "loading" || backendSdkStatus === "loading" || sdkWearStatus === "loading" || thirdPartyStatus === "loading" || segmenterStatus === "loading" || (activeUseSidePhoto && sidePose.status === "loading") ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
               {geminiBgStatus === "loading"
@@ -2901,6 +2939,8 @@ export function SizingLabPage() {
                 ? "Calling Bodygram…"
                 : backendSdkStatus === "loading"
                 ? "Calling backend sizing…"
+                : sdkWearStatus === "loading"
+                ? "Searching held-out WEAR meshes…"
                 : localMlRunStatus === "predicting"
                 ? "Running local ML…"
                 : segmenterStatus === "loading"
@@ -2935,6 +2975,7 @@ export function SizingLabPage() {
             {usesLocalMl ? ` Local ML ${localMlRunStatus}${localMlElapsedMs != null ? ` ${localMlElapsedMs} ms` : ""} ·` : ""}
             {usesSegmenter ? ` Segmenter ${segmenterMs ?? "—"} ms ·` : ""}
             {usesBackendSdk ? " SDK/backend formulas ·" : ""}
+            {usesSdkWear ? " SDK · WEAR mesh ·" : ""}
             MediaPipe {pose.elapsedMs + (activeUseSidePhoto && sidePose.status === "ready" ? sidePose.elapsedMs : 0)} ms ·
             Total {displayedElapsedMs ?? "—"} ms ·
             {usesBackendSdk ? (
@@ -2978,6 +3019,9 @@ export function SizingLabPage() {
         )}
         {backendSdkStatus === "error" && (
           <span className="text-xs text-red-600">Backend SDK error: {backendSdkError ?? "Backend SDK sizing failed"}</span>
+        )}
+        {sdkWearStatus === "error" && (
+          <span className="text-xs text-red-600">SDK WEAR error: {sdkWearError ?? "SDK WEAR matching failed"}</span>
         )}
         {geminiCorrectionStatus === "error" && (
           <span className="text-xs text-red-600">Gemini correction error: {geminiCorrectionError ?? "Gemini correction failed"}</span>
@@ -3194,7 +3238,7 @@ export function SizingLabPage() {
                         imageWidth={activeImageState.width}
                         imageHeight={activeImageState.height}
                         pose={displayPose}
-                        showMask={usesBackendSdk ? false : showMask}
+                        showMask={usesBackendSdk || usesSdkWear ? false : showMask}
                         showLandmarks={showLandmarks}
                         maskMode={maskMode}
                         heightAudit={trace?.frontHeightScaleAudit ?? null}
@@ -3275,7 +3319,7 @@ export function SizingLabPage() {
                       imageWidth={normalizedImage.state.width}
                       imageHeight={normalizedImage.state.height}
                       pose={displayPose}
-                      showMask={usesBackendSdk ? false : showMask}
+                      showMask={usesBackendSdk || usesSdkWear ? false : showMask}
                       showLandmarks={showLandmarks}
                       maskMode={maskMode}
                       heightAudit={trace?.frontHeightScaleAudit ?? null}
@@ -3292,7 +3336,7 @@ export function SizingLabPage() {
                     imageWidth={image.state.width}
                     imageHeight={image.state.height}
                     pose={displayPose}
-                    showMask={usesBackendSdk ? false : showMask}
+                    showMask={usesBackendSdk || usesSdkWear ? false : showMask}
                     showLandmarks={showLandmarks}
                     maskMode={maskMode}
                     heightAudit={trace?.frontHeightScaleAudit ?? null}

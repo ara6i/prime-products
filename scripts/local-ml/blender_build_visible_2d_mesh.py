@@ -147,19 +147,28 @@ def build_blender_mesh(
 
     vertices_screen = [(float(vertex.co.x), float(1.0 - vertex.co.y)) for vertex in bm.verts]
     triangles: list[int] = []
-    outside_centers = 0
+    outside_faces = []
     for face in bm.faces:
         if len(face.verts) != 3:
             bm.free()
             raise RuntimeError("Blender left a non-triangle face in the final mesh.")
         indices = [vertex.index for vertex in face.verts]
-        triangles.extend(indices)
         center = (
             sum(vertices_screen[index][0] for index in indices) / 3.0,
             sum(vertices_screen[index][1] for index in indices) / 3.0,
         )
         if not point_in_polygon(center, outline_screen):
-            outside_centers += 1
+            outside_faces.append(face)
+        else:
+            triangles.extend(indices)
+
+    # Blender's constrained triangulator can leave a tiny numerical sliver
+    # outside a highly concave photo outline. Remove that face from both the
+    # saved .blend and browser mesh instead of rejecting an otherwise exact
+    # silhouette or returning geometry beyond the visible person.
+    if outside_faces:
+        bmesh.ops.delete(bm, geom=outside_faces, context="FACES_ONLY")
+    outside_centers = 0
 
     bm.to_mesh(mesh)
     bm.free()

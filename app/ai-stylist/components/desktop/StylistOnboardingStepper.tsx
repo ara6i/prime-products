@@ -15,6 +15,7 @@ import type {
 } from "@/app/ai-stylist/types";
 import {
   occasionAsset,
+  occasionSkipsSeasonStep,
   STYLIST_OCCASIONS,
   STYLIST_STEP_LABELS,
   type StylistGender,
@@ -201,6 +202,12 @@ export function StylistOnboardingStepper({
     sizingPhoto.sizingChoice === "generated" &&
     sizingPhoto.status !== "idle";
 
+  const skipsSeasonStep = occasionSkipsSeasonStep(occasionId);
+  const visibleSteps: WizardStep[] = skipsSeasonStep
+    ? [1, 3, 4]
+    : [1, 2, 3, 4];
+  const visibleStepIndex = Math.max(0, visibleSteps.indexOf(step));
+
   const handleStylingGenderChange = (gender: StylistGender) => {
     setStylingGender(gender);
     setSelectedModelId(
@@ -219,16 +226,16 @@ export function StylistOnboardingStepper({
 
   const handlePrevious = () => {
     if (isSubmitting) return;
-    if (step === 1) {
+    if (visibleStepIndex === 0) {
       onCancel();
       return;
     }
-    setStep((current) => (current - 1) as WizardStep);
+    setStep(visibleSteps[visibleStepIndex - 1] as WizardStep);
   };
 
   const handleNext = () => {
     if (!canContinue || isSubmitting || step === 4) return;
-    setStep((current) => (current + 1) as WizardStep);
+    setStep(visibleSteps[visibleStepIndex + 1] as WizardStep);
   };
 
   const handleGenerate = async () => {
@@ -240,7 +247,7 @@ export function StylistOnboardingStepper({
     const season = seasons.find((option) => option.id === seasonId);
     const budget = BUDGET_OPTIONS.find((option) => option.id === budgetId);
 
-    if (!occasion || !season || !budget) return;
+    if (!occasion || (!skipsSeasonStep && !season) || !budget) return;
 
     const temperature =
       typeof weatherContext?.temperature === "number"
@@ -286,7 +293,9 @@ export function StylistOnboardingStepper({
             gender: stylingGender,
             occasion: occasion.api,
             styleVibes: occasion.vibes,
-            season: season.id as OutfitIntelligenceRequest["onboarding"]["season"],
+            season: skipsSeasonStep
+              ? "all-season"
+              : (season!.id as OutfitIntelligenceRequest["onboarding"]["season"]),
             budget: {
               min: budget.min,
               max: budget.max,
@@ -300,7 +309,7 @@ export function StylistOnboardingStepper({
             favoriteBrands: [],
             ...(structuredWeather ? { weather: structuredWeather } : {}),
           },
-          requestedOutfits: 20,
+          requestedOutfits: 10,
         },
       });
     } catch (generationError) {
@@ -322,13 +331,15 @@ export function StylistOnboardingStepper({
             {STYLIST_STEP_LABELS[step - 1]}
           </span>
           <span className="text-[0.729vw] font-normal leading-[1.146vw] text-text-muted">
-            Step {step} of 4
+            Step {visibleStepIndex + 1} of {visibleSteps.length}
           </span>
         </div>
         <div className="mt-[0.625vw] h-[0.208vw] overflow-hidden rounded-full bg-[#e8e6ed]">
           <div
             className="h-full rounded-full bg-[#7258fa] transition-[width] duration-300"
-            style={{ width: `${step * 25}%` }}
+            style={{
+              width: `${((visibleStepIndex + 1) / visibleSteps.length) * 100}%`,
+            }}
           />
         </div>
       </div>
@@ -414,7 +425,7 @@ export function StylistOnboardingStepper({
           </section>
         )}
 
-        {step === 2 && (
+        {step === 2 && !skipsSeasonStep && (
           <section aria-labelledby="season-heading">
             <h2
               id="season-heading"

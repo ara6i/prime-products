@@ -104,11 +104,21 @@ export async function POST(request: Request) {
   try {
     await access(imagePath);
     await access(pythonBinary);
-    await execFileAsync(
-      pythonBinary,
-      [maskScriptPath, "--photo-id", photoId, "--photo-path", imagePath],
-      { cwd: root, timeout: 240_000, maxBuffer: 2 * 1024 * 1024 },
-    );
+    try {
+      await execFileAsync(
+        pythonBinary,
+        [maskScriptPath, "--photo-id", photoId, "--photo-path", imagePath],
+        { cwd: root, timeout: 240_000, maxBuffer: 2 * 1024 * 1024 },
+      );
+    } catch {
+      // Small subjects in wide side photos can disappear at 512 px. Retry the
+      // same local model at higher resolution before reporting a real failure.
+      await execFileAsync(
+        pythonBinary,
+        [maskScriptPath, "--photo-id", photoId, "--photo-path", imagePath, "--inference-size", "1024"],
+        { cwd: root, timeout: 300_000, maxBuffer: 2 * 1024 * 1024 },
+      );
+    }
     await execFileAsync(
       pythonBinary,
       [

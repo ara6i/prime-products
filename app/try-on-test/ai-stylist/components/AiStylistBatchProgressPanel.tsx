@@ -62,7 +62,14 @@ export function AiStylistBatchProgressPanel({
   const luna = progress?.luna;
   const geminiReadyPercent = percent(gemini?.readySources ?? 0, gemini?.uniqueSources ?? 0);
   const lunaJobPercent = percent(luna?.batchJobsSubmitted ?? 0, luna?.batchJobsTotal ?? 20);
-  const lunaScenarioPercent = percent(luna?.scenariosCommitted ?? 0, luna?.targetScenarios ?? 0);
+  const lunaScenarioPercent = percent(
+    luna?.scenariosWithQualifiedProducts ?? 0,
+    luna?.targetScenarios ?? 0,
+  );
+  const scenariosComplete = luna?.scenariosComplete ?? luna?.scenariosCommitted ?? 0;
+  const scenariosTotal = luna?.scenarioUniverse ?? luna?.targetScenarios ?? 264;
+  const scenariosRemaining = luna?.scenariosRemaining
+    ?? Math.max(0, scenariosTotal - scenariosComplete);
 
   return (
     <section className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
@@ -70,15 +77,15 @@ export function AiStylistBatchProgressPanel({
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="text-xl font-semibold text-slate-950">
-              Luna + Gemini Batch work
+              Current AI Stylist work
             </h2>
             <span className="rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-700 ring-1 ring-blue-200">
               Manual refresh only
             </span>
           </div>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            Reads small saved progress files only. It does not recount MongoDB,
-            submit a paid job, or poll automatically.
+          <p className="mt-2 max-w-3xl text-base leading-6 text-slate-600">
+            Complete means all 10 outfits are assembled and saved—not only that
+            garments were found.
           </p>
         </div>
         <button
@@ -99,7 +106,56 @@ export function AiStylistBatchProgressPanel({
         </div>
       )}
 
-      <div className="mt-6 grid gap-5 xl:grid-cols-2">
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          {
+            label: "Scenarios complete",
+            value: number(scenariosComplete),
+            note: `of ${number(scenariosTotal)}`,
+            icon: CheckCircle2,
+            tone: "border-emerald-200 bg-emerald-50 text-emerald-700",
+          },
+          {
+            label: "Scenarios remaining",
+            value: number(scenariosRemaining),
+            note: (luna?.scenariosReservedOnly ?? 0) > 0
+              ? `${number(luna?.targetScenarios ?? 79)} unfinished · ${number(luna?.scenariosReservedOnly ?? 0)} reserved only`
+              : "still need 10/10 outfits",
+            icon: Clock3,
+            tone: "border-amber-200 bg-amber-50 text-amber-700",
+          },
+          {
+            label: "Gemini images fixed",
+            value: number(gemini?.succeeded ?? 0),
+            note: `${number(gemini?.reused ?? 0)} reused · ${number(gemini?.failed ?? 0)} missing`,
+            icon: ImageIcon,
+            tone: "border-blue-200 bg-blue-50 text-blue-700",
+          },
+          {
+            label: "Qualified garments saved",
+            value: number(luna?.qualifiedProductsSaved ?? 0),
+            note: `across ${number(luna?.scenariosWithQualifiedProducts ?? 0)} scenarios`,
+            icon: DatabaseZap,
+            tone: "border-violet-200 bg-violet-50 text-violet-700",
+          },
+        ].map(({ label, value, note, icon: Icon, tone }) => (
+          <article key={label} className={`rounded-2xl border p-5 ${tone}`}>
+            <div className="flex items-center gap-2 text-base font-semibold">
+              <Icon className="h-5 w-5" />
+              {label}
+            </div>
+            <p className="mt-4 text-4xl font-bold tabular-nums text-slate-950">{value}</p>
+            <p className="mt-1 text-base font-medium text-slate-600">{note}</p>
+          </article>
+        ))}
+      </div>
+
+      <details className="mt-5 rounded-2xl border border-slate-200 bg-slate-50/70">
+        <summary className="cursor-pointer px-5 py-4 text-base font-semibold text-slate-800">
+          Show technical details and sample images
+        </summary>
+        <div className="border-t border-slate-200 p-5">
+      <div className="grid gap-5 xl:grid-cols-2">
         <article className="rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50/80 via-white to-white p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -153,10 +209,14 @@ export function AiStylistBatchProgressPanel({
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.12em] text-violet-700">
-                Luna outfit scenarios
+                Luna outfit drafts
               </p>
               <h3 className="mt-2 text-2xl font-semibold text-slate-950">
-                {luna?.status === "building" ? "Preparing the no-repeat gate" : luna?.status ?? "Loading"}
+                {luna?.qualifiedProductsSaved
+                  ? "Saving Luna drafts immediately"
+                  : luna?.status === "building"
+                    ? "Preparing the no-repeat gate"
+                    : luna?.status ?? "Loading"}
               </h3>
             </div>
             <div className="rounded-2xl bg-violet-600 p-3 text-white">
@@ -176,9 +236,9 @@ export function AiStylistBatchProgressPanel({
             </div>
             <div>
               <div className="mb-2 flex items-center justify-between text-sm">
-                <span className="font-medium text-slate-600">New scenarios committed</span>
+                <span className="font-medium text-slate-600">Scenarios with saved garments</span>
                 <span className="font-semibold tabular-nums text-slate-950">
-                  {number(luna?.scenariosCommitted ?? 0)} / {number(luna?.targetScenarios ?? 0)}
+                  {number(luna?.scenariosWithQualifiedProducts ?? 0)} / {number(luna?.targetScenarios ?? 0)}
                 </span>
               </div>
               <ProgressBar value={lunaScenarioPercent} tone="violet" />
@@ -188,18 +248,18 @@ export function AiStylistBatchProgressPanel({
           <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div className="rounded-2xl border border-violet-100 bg-white p-3">
               <Clock3 className="h-4 w-4 text-violet-600" />
-              <p className="mt-2 text-xs font-medium text-slate-500">Running now</p>
-              <p className="mt-1 text-lg font-semibold text-slate-950">{number(luna?.batchJobsRunning ?? 0)}</p>
+              <p className="mt-2 text-xs font-medium text-slate-500">Provider jobs running</p>
+              <p className="mt-1 text-lg font-semibold text-slate-950">{number(luna?.providerJobsRunning ?? 0)}</p>
             </div>
             <div className="rounded-2xl border border-violet-100 bg-white p-3">
               <DatabaseZap className="h-4 w-4 text-violet-600" />
-              <p className="mt-2 text-xs font-medium text-slate-500">Products claimed</p>
-              <p className="mt-1 text-lg font-semibold text-slate-950">{number(luna?.uniqueProductsClaimed ?? 0)}</p>
+              <p className="mt-2 text-xs font-medium text-slate-500">Qualified saved</p>
+              <p className="mt-1 text-lg font-semibold text-slate-950">{number(luna?.qualifiedProductsSaved ?? 0)}</p>
             </div>
             <div className="rounded-2xl border border-violet-100 bg-white p-3">
               <ShieldCheck className="h-4 w-4 text-emerald-600" />
-              <p className="mt-2 text-xs font-medium text-slate-500">Illegal repeats</p>
-              <p className="mt-1 text-lg font-semibold text-emerald-700">{number(luna?.duplicateNonExemptProducts ?? 0)}</p>
+              <p className="mt-2 text-xs font-medium text-slate-500">Visual reports saved</p>
+              <p className="mt-1 text-lg font-semibold text-emerald-700">{number(luna?.visualReportsRecovered ?? 0)}</p>
             </div>
             <div className="rounded-2xl border border-violet-100 bg-white p-3">
               <CheckCircle2 className="h-4 w-4 text-violet-600" />
@@ -209,7 +269,7 @@ export function AiStylistBatchProgressPanel({
           </div>
 
           <p className="mt-4 text-sm leading-6 text-slate-600">
-            {luna?.message ?? "Waiting for the saved Luna status."}
+            {luna?.message ?? "Waiting for the saved Luna Batch status."}
           </p>
         </article>
       </div>
@@ -249,6 +309,8 @@ export function AiStylistBatchProgressPanel({
           </div>
         </div>
       )}
+        </div>
+      </details>
     </section>
   );
 }

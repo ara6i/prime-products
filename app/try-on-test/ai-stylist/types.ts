@@ -335,6 +335,10 @@ export interface AiStylistLunaBatchProgress {
   updatedAt: string | null;
   phase: string;
   status: string;
+  scenarioUniverse: number;
+  scenariosComplete: number;
+  scenariosRemaining: number;
+  scenariosReservedOnly: number;
   targetScenarios: number;
   batchJobsTotal: number;
   batchJobsSubmitted: number;
@@ -345,6 +349,11 @@ export interface AiStylistLunaBatchProgress {
   scenariosCommitted: number;
   scenariosBlocked: number;
   uniqueProductsClaimed: number;
+  qualifiedProductsSaved: number;
+  scenariosWithQualifiedProducts: number;
+  visualReportsRecovered: number;
+  providerResponsesRecovered: number;
+  providerJobsRunning: number;
   duplicateNonExemptProducts: number;
   estimatedCostUsd: number | null;
   message: string;

@@ -9,7 +9,8 @@ set -Eeuo pipefail
 
 install -d -m 0750 /opt/primestyle/code /opt/primestyle/v6
 exec > >(tee -a /var/log/primestyle-wear3d-v6-train.log) 2>&1
-shutdown -h +240
+shutdown_minutes="${WEAR_SHUTDOWN_MINUTES:-480}"
+shutdown -h "+${shutdown_minutes}"
 
 # The compact loader should stay in RAM. This bounded temporary swap is only a
 # final guard against the Linux OOM killer while a checkpoint is being copied.

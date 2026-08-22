@@ -7,6 +7,7 @@ import {
   Gauge,
   PanelsTopLeft,
   Ruler,
+  ScanSearch,
   Sparkles,
 } from "lucide-react";
 import { isTestLabAvailableForHost } from "@/app/try-on-test/lib/access";
@@ -29,6 +30,13 @@ const LABS = [
       "Debug size-chart parsing, measurements, and recommendation output.",
     href: "/try-on-test/sizing-lab",
     icon: Ruler,
+  },
+  {
+    title: "SDK · WEAR Mesh",
+    description:
+      "Test any of the 448 held-out WEAR meshes and inspect nearest matches by body part.",
+    href: "/try-on-test/sdk-wear-mesh",
+    icon: ScanSearch,
   },
   {
     title: "Capacity Lab",

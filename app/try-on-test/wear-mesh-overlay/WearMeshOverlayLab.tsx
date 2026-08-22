@@ -91,6 +91,32 @@ interface MaskMeshPayload {
   };
 }
 
+const DELARAM_REFERENCE_ROWS = [
+  { id: "waist", heightFractionFromFeet: 0.632 },
+  { id: "hips", heightFractionFromFeet: 0.49228944 },
+] as const;
+
+function widestOutlineSpanAtY(outline: readonly number[], y: number) {
+  const intersections: number[] = [];
+  const pointCount = Math.floor(outline.length / 2);
+  for (let index = 0; index < pointCount; index += 1) {
+    const next = (index + 1) % pointCount;
+    const ax = outline[index * 2]!;
+    const ay = outline[index * 2 + 1]!;
+    const bx = outline[next * 2]!;
+    const by = outline[next * 2 + 1]!;
+    if (!((ay <= y && by > y) || (by <= y && ay > y))) continue;
+    intersections.push(ax + ((y - ay) / (by - ay)) * (bx - ax));
+  }
+  intersections.sort((left, right) => left - right);
+  let widest: readonly [number, number] | null = null;
+  for (let index = 0; index + 1 < intersections.length; index += 2) {
+    const span = [intersections[index]!, intersections[index + 1]!] as const;
+    if (!widest || span[1] - span[0] > widest[1] - widest[0]) widest = span;
+  }
+  return widest;
+}
+
 interface ExactWearPayload {
   error?: string;
   scanId: string;
@@ -108,7 +134,7 @@ const DEFAULT_PHOTOS: Record<string, PhotoDefinition> = {
       gender: "female",
       heightCm: 168,
       weightKg: 70.8,
-      measurementsCm: { chest: 102, underbust: 0, waist: 79, hips: 113 },
+      measurementsCm: { chest: 102, underbust: 0, waist: 79, hips: 102 },
     },
   },
   "delaram-2": {
@@ -120,7 +146,7 @@ const DEFAULT_PHOTOS: Record<string, PhotoDefinition> = {
       gender: "female",
       heightCm: 168,
       weightKg: 70.8,
-      measurementsCm: { chest: 102, underbust: 0, waist: 79, hips: 113 },
+      measurementsCm: { chest: 102, underbust: 0, waist: 79, hips: 102 },
     },
   },
 };
@@ -176,6 +202,7 @@ function VisibleMaskMeshCanvas({
   opacity,
   standalone = false,
   revision,
+  showDelaramReferenceRows = false,
   onStats,
   onPayload,
 }: {
@@ -184,6 +211,7 @@ function VisibleMaskMeshCanvas({
   opacity: number;
   standalone?: boolean;
   revision: number;
+  showDelaramReferenceRows?: boolean;
   onStats?: (stats: MeshStats | null) => void;
   onPayload?: (payload: MaskMeshPayload | null) => void;
 }) {
@@ -295,6 +323,28 @@ function VisibleMaskMeshCanvas({
         context.shadowBlur = 3 * ratio;
         context.stroke();
       }
+
+      if (showDelaramReferenceRows && outline.length >= 4) {
+        const ys = outline.filter((_, index) => index % 2 === 1);
+        const minimumY = Math.min(...ys);
+        const maximumY = Math.max(...ys);
+        context.shadowColor = "rgba(239, 68, 68, 0.72)";
+        context.shadowBlur = 3 * ratio;
+        context.lineCap = "round";
+        for (const row of DELARAM_REFERENCE_ROWS) {
+          const y = maximumY - row.heightFractionFromFeet * (maximumY - minimumY);
+          const span = widestOutlineSpanAtY(outline, y);
+          if (!span) continue;
+          context.beginPath();
+          context.moveTo(mapX(span[0]), mapY(y));
+          context.lineTo(mapX(span[1]), mapY(y));
+          context.strokeStyle = row.id === "waist" ? "#ef4444" : "#fb7185";
+          context.lineWidth = Math.max(2.2, 2.6 * ratio);
+          context.stroke();
+        }
+        context.lineCap = "butt";
+        context.shadowBlur = 0;
+      }
     }
 
     draw();
@@ -305,7 +355,7 @@ function VisibleMaskMeshCanvas({
       resizeObserver.disconnect();
       window.removeEventListener("resize", draw);
     };
-  }, [mesh, opacity, photo, photoId, standalone]);
+  }, [mesh, opacity, photo, photoId, showDelaramReferenceRows, standalone]);
 
   return (
     <canvas
@@ -388,6 +438,7 @@ export function WearMeshOverlayLab() {
   const [photos, setPhotos] = useState<Record<string, PhotoDefinition>>(DEFAULT_PHOTOS);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [scanId, setScanId] = useState("");
+  const [candidateSearch, setCandidateSearch] = useState("");
   const [cohortError, setCohortError] = useState<string | null>(null);
   const [opacity, setOpacity] = useState(0.78);
   const [comparisonZoom, setComparisonZoom] = useState(1);
@@ -395,11 +446,17 @@ export function WearMeshOverlayLab() {
   const [meshStats, setMeshStats] = useState<MeshStats | null>(null);
   const [meshPayload, setMeshPayload] = useState<MaskMeshPayload | null>(null);
   const [meshRevision, setMeshRevision] = useState(1);
+  const [showDelaramReferenceRows, setShowDelaramReferenceRows] = useState(true);
   const [isBuilding, setIsBuilding] = useState(false);
   const [buildMessage, setBuildMessage] = useState<string | null>(null);
 
   const photo = photos[photoId] ?? DEFAULT_PHOTOS.delaram!;
   const selected = candidates.find((candidate) => candidate.scanId === scanId) ?? candidates[0] ?? null;
+  const visibleCandidates = useMemo(() => {
+    const query = candidateSearch.trim().toLowerCase();
+    if (!query) return candidates;
+    return candidates.filter((candidate) => candidate.scanId.toLowerCase().includes(query));
+  }, [candidateSearch, candidates]);
 
   const photoOptions = useMemo(
     () => Object.entries(photos).sort((left, right) => left[1].label.localeCompare(right[1].label)),
@@ -444,6 +501,7 @@ export function WearMeshOverlayLab() {
 
   function selectPhoto(nextPhotoId: string) {
     setPhotoId(nextPhotoId);
+    setCandidateSearch("");
     setMeshPayload(null);
     setMeshStats(null);
     setBuildMessage(null);
@@ -552,6 +610,16 @@ export function WearMeshOverlayLab() {
             ? `${meshPayload?.generator?.version ?? "Blender"} · ${meshStats.vertexCount.toLocaleString()} points · ${meshStats.triangleCount.toLocaleString()} triangles`
             : "Loading Blender mesh…"}
         </div>
+        <button
+          type="button"
+          data-active={photoId === "delaram" || photoId === "delaram-2" ? showDelaramReferenceRows : false}
+          disabled={photoId !== "delaram" && photoId !== "delaram-2"}
+          onClick={() => setShowDelaramReferenceRows((value) => !value)}
+        >
+          {photoId === "delaram" || photoId === "delaram-2"
+            ? showDelaramReferenceRows ? "Hide Delaram waist + hips" : "Show Delaram waist + hips"
+            : "No saved waist/hip lines"}
+        </button>
         <button type="button" onClick={rebuildWithBlender} disabled={isBuilding}>
           {isBuilding ? "Blender is building…" : meshPayload ? "Rebuild this person" : "Build this person with Blender"}
         </button>
@@ -577,8 +645,17 @@ export function WearMeshOverlayLab() {
         <div className={styles.filterSummary}>
           <strong>{cohortError ? "Cohort unavailable" : `${candidates.length} eligible WEAR bodies`}</strong>
           <span>{cohortError ?? "All shown meshes pass the hard profile filter"}</span>
+          <label className={styles.candidateSearchLabel}>
+            <span>Search model number</span>
+            <input
+              value={candidateSearch}
+              onChange={(event) => setCandidateSearch(event.target.value)}
+              placeholder="e.g. NA-1591-A"
+              aria-label="Search WEAR model number"
+            />
+          </label>
         </div>
-        {candidates.map((candidate) => (
+        {visibleCandidates.map((candidate) => (
           <button
             type="button"
             key={candidate.scanId}
@@ -594,6 +671,9 @@ export function WearMeshOverlayLab() {
             </small>
           </button>
         ))}
+        {!cohortError && candidateSearch.trim() && visibleCandidates.length === 0 ? (
+          <p className={styles.noCandidateMatch}>No model number in this eligible WEAR list.</p>
+        ) : null}
       </section>
 
       <section className={`${styles.viewerGrid} ${comparisonMode === "split" ? styles.viewerGridSplit : ""}`}>
@@ -616,6 +696,7 @@ export function WearMeshOverlayLab() {
                 photo={photo}
                 opacity={opacity}
                 revision={meshRevision}
+                showDelaramReferenceRows={(photoId === "delaram" || photoId === "delaram-2") && showDelaramReferenceRows}
                 onStats={setMeshStats}
                 onPayload={setMeshPayload}
               />

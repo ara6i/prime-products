@@ -7,8 +7,12 @@ import { cn } from "@/app/shared/lib/utils";
 const TABS = [
   { href: "/try-on-test", label: "Try-On" },
   { href: "/try-on-test/sizing-lab", label: "AI Sizing Lab" },
+  { href: "/try-on-test/sdk-wear-mesh", label: "SDK · WEAR Mesh" },
   { href: "/try-on-test/wear-photo-test", label: "WEAR Sizing Lab" },
+  { href: "/try-on-test/wear-cpu-progress", label: "WEAR CPU Progress" },
+  { href: "/try-on-test/wear-everything", label: "WEAR Everything" },
   { href: "/try-on-test/wear-mesh-overlay", label: "WEAR Mesh Match" },
+  { href: "/try-on-test/wear-front-side-proof", label: "Front + Side Proof" },
   { href: "/try-on-test/model-forge", label: "Model Forge" },
   { href: "/try-on-test/capacity-lab", label: "Capacity Lab" },
   { href: "/try-on-test/ai-stylist", label: "AI Stylist" },

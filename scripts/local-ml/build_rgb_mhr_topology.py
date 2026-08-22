@@ -35,6 +35,11 @@ PHOTOS = {
         "heightCm": 168.0,
         "weightKg": 70.8,
     },
+    "delaram-side": {
+        "path": REPO_ROOT / "public/try-on-test/sizing-lab/delaram-side.jpg",
+        "heightCm": 168.0,
+        "weightKg": 70.8,
+    },
 }
 
 
@@ -71,6 +76,20 @@ def load_box(photo_id: str) -> list[float]:
             box = record.get("personBoxPx")
             if isinstance(box, list) and len(box) == 4:
                 return [float(value) for value in box]
+    mesh_path = REPO_ROOT / ".local-ml/wear-mesh-overlay/blender-mesh" / f"{photo_id}.json"
+    if mesh_path.is_file():
+        mesh = json.loads(mesh_path.read_text())
+        outline = np.asarray(mesh.get("outline", []), dtype=np.float64).reshape(-1, 2)
+        image_width, image_height = mesh.get("imageSize", [0, 0])
+        if outline.shape[0] >= 3 and image_width > 0 and image_height > 0:
+            minimum = np.maximum(0.0, outline.min(axis=0) - np.asarray([0.04, 0.025]))
+            maximum = np.minimum(1.0, outline.max(axis=0) + np.asarray([0.04, 0.025]))
+            return [
+                float(minimum[0] * image_width),
+                float(minimum[1] * image_height),
+                float(maximum[0] * image_width),
+                float(maximum[1] * image_height),
+            ]
     raise RuntimeError(f"No automatic person crop is available for {photo_id}.")
 
 
@@ -125,8 +144,11 @@ def run(photo_id: str) -> dict:
         image_height,
     )
     keypoints = np.asarray(diagnostics.get("pred_keypoints_2d", []), dtype=np.float64)
+    keypoints_3d = np.asarray(diagnostics.get("pred_keypoints_3d", []), dtype=np.float64)
     if keypoints.shape != (70, 2):
         raise RuntimeError(f"Unexpected Meta MHR70 keypoints: {keypoints.shape}")
+    if keypoints_3d.shape != (70, 3):
+        raise RuntimeError(f"Unexpected Meta MHR70 3D keypoints: {keypoints_3d.shape}")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     output_path = OUTPUT_DIR / f"{photo_id}-mhr-rgb.json"
@@ -146,6 +168,7 @@ def run(photo_id: str) -> dict:
         "vertices": np.round(normalized_xy, 7).reshape(-1).tolist(),
         "triangles": np.asarray(display_faces, dtype=np.int64).reshape(-1).tolist(),
         "mhr70": np.round(keypoints, 4).tolist(),
+        "mhr70Camera3d": np.round(keypoints_3d, 7).tolist(),
         "cameraProjection": {
             key: round(float(value), 5) for key, value in camera_projection.items()
         },

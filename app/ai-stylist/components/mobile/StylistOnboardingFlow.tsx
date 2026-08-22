@@ -14,6 +14,7 @@ import type { WizardGenerationRequest } from "@/app/ai-stylist/components/deskto
 import { FULL_BODY_MODELS } from "@/app/ai-stylist/components/desktop/ModelPreviewCard";
 import {
   occasionAsset,
+  occasionSkipsSeasonStep,
   STYLIST_OCCASIONS,
   STYLIST_STEP_LABELS,
   type StylistGender,
@@ -166,6 +167,10 @@ export function StylistOnboardingFlow({
     sizingPhoto.sizingChoice === "generated" &&
     sizingPhoto.status !== "idle";
 
+  const skipsSeasonStep = occasionSkipsSeasonStep(occasionId);
+  const visibleSteps = skipsSeasonStep ? [0, 2, 3] : [0, 1, 2, 3];
+  const visibleStepIndex = Math.max(0, visibleSteps.indexOf(step));
+
   const handleStylingGenderChange = (gender: StylistGender) => {
     setStylingGender(gender);
     setModelId(
@@ -214,7 +219,7 @@ export function StylistOnboardingFlow({
           gender: stylingGender,
           occasion: occasion.api,
           styleVibes: occasion.vibes,
-          season: seasonId,
+          season: skipsSeasonStep ? "all-season" : seasonId,
           budget: { min: budget.min, max: budget.max, currency: "USD" },
           preferredColors: profileColors,
           avoidColors: [],
@@ -232,7 +237,7 @@ export function StylistOnboardingFlow({
               }
             : {}),
         },
-        requestedOutfits: 20,
+        requestedOutfits: 10,
       };
       await onGenerate({ imageDataUrl, request });
     } catch (generationError) {
@@ -251,12 +256,16 @@ export function StylistOnboardingFlow({
       <div className="shrink-0 px-4 pt-4">
         <div className="flex items-center justify-between text-xs text-[#77737f]">
           <span className="font-medium">{STYLIST_STEP_LABELS[step]}</span>
-          <span>Step {step + 1} of 4</span>
+          <span>
+            Step {visibleStepIndex + 1} of {visibleSteps.length}
+          </span>
         </div>
         <div className="mt-2 h-1 overflow-hidden rounded-full bg-[#eceaf0]">
           <div
             className="h-full rounded-full bg-[#7258fa] transition-all"
-            style={{ width: `${(step + 1) * 25}%` }}
+            style={{
+              width: `${((visibleStepIndex + 1) / visibleSteps.length) * 100}%`,
+            }}
           />
         </div>
       </div>
@@ -320,7 +329,7 @@ export function StylistOnboardingFlow({
           </>
         )}
 
-        {step === 1 && (
+        {step === 1 && !skipsSeasonStep && (
           <>
             <h2 className="text-center text-lg font-semibold">
               What weather are you dressing for?
@@ -472,19 +481,22 @@ export function StylistOnboardingFlow({
       <div className="flex shrink-0 items-center justify-between border-t border-[#e4e2e8] p-4">
         <button
           type="button"
-          onClick={() =>
-            step === 0 ? onCancel() : setStep((current) => current - 1)
-          }
+          onClick={() => {
+            if (visibleStepIndex === 0) onCancel();
+            else setStep(visibleSteps[visibleStepIndex - 1] ?? 0);
+          }}
           disabled={preparing}
           className="flex items-center gap-1.5 rounded-full border border-[#c7c3cd] px-4 py-2 text-sm"
         >
           <ArrowLeft className="h-4 w-4" />
           Previous
         </button>
-        {step < 3 ? (
+        {visibleStepIndex < visibleSteps.length - 1 ? (
           <button
             type="button"
-            onClick={() => setStep((current) => current + 1)}
+            onClick={() =>
+              setStep(visibleSteps[visibleStepIndex + 1] ?? 3)
+            }
             className="flex items-center gap-1.5 rounded-full bg-[#7258fa] px-5 py-2 text-sm font-medium text-white"
           >
             Next
