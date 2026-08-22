@@ -59,12 +59,12 @@ export function ToolControlPanel({ tool, ui }: ToolControlPanelProps) {
       {tool.promptLabel ? (
         <label className="grid gap-[var(--space-pdp-xs)]">
           <span className="text-[var(--text-pdp-xs)] font-semibold text-[var(--color-pdp-ink-soft)]">
-            {tool.promptLabel}
+            {tool.promptLabel} <span className="font-normal text-[var(--color-pdp-muted)]">(optional)</span>
           </span>
           <textarea
             value={ui.prompt}
             onChange={(event) => ui.setPrompt(event.target.value)}
-            placeholder={tool.promptLabel}
+            placeholder="Leave blank to use the recommended default"
             className="min-h-[7rem] resize-y rounded-[var(--radius-pdp-sm)] border border-[var(--color-pdp-rule)] bg-[var(--color-pdp-paper)] p-[var(--space-pdp-sm)] text-[var(--text-pdp-sm)] text-[var(--color-pdp-ink)] outline outline-2 outline-transparent placeholder:text-[var(--color-pdp-muted)] focus-visible:outline-[var(--color-pdp-focus)]"
           />
         </label>
