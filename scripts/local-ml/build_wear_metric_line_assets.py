@@ -25,7 +25,7 @@ from typing import Any, Iterable
 import cv2
 import numpy as np
 import trimesh
-from scipy.spatial import ConvexHull, cKDTree
+from scipy.spatial import cKDTree
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -1092,14 +1092,17 @@ def certified_central_torso_arc_ring(
     low_x: float,
     high_x: float,
 ) -> tuple[np.ndarray | None, dict[str, Any]]:
-    """Close the real front/back torso arcs without pulling in arm components.
+    """Inspect the real front/back torso arcs without pulling in arm components.
 
     Many WEAR scans contain a narrow scanner seam at the left/right torso
     sides.  The horizontal mesh intersection is therefore two open arcs even
     though both arcs are real body surface.  A convex hull hides that evidence
     and can alter the chest shape.  This routine instead joins the two real
     arcs only at their anatomical side endpoints and certifies the join when
-    the overlap and bridge gaps are small.
+    the overlap and bridge gaps are small. When the side gaps are too large,
+    the observed arcs are still returned for exact breadth/depth teaching, but
+    the evidence remains uncertified so they can never become a closed-shape
+    or circumference teacher.
     """
     central_arcs = []
     for component in components:
@@ -1144,6 +1147,8 @@ def certified_central_torso_arc_ring(
     depth_separation_m = float(front[:, 1].mean() - back[:, 1].mean())
     contour = np.vstack((back, front[::-1]))
     area_m2 = abs(polygon_area(contour))
+    minimum = contour.min(axis=0)
+    maximum = contour.max(axis=0)
     failures = []
     if overlap_ratio < 0.80:
         failures.append("front-back-lateral-overlap-under-80pct")
@@ -1162,30 +1167,15 @@ def certified_central_torso_arc_ring(
         "bridgePerimeterRatio": round_float(bridge_ratio, 6),
         "depthSeparationMm": round_float(depth_separation_m * 1000.0, 3),
         "areaCm2": round_float(area_m2 * 10_000.0, 3),
+        "observedWidthMm": round_float((maximum[0] - minimum[0]) * 1000.0, 3),
+        "observedDepthMm": round_float((maximum[1] - minimum[1]) * 1000.0, 3),
+        "diagnosticBridgeClosedPerimeterMm": round_float(perimeter_m * 1000.0, 3),
+        "backPointCount": len(back),
+        "frontPointCount": len(front),
         "certified": not failures,
         "failures": failures,
     })
-    return (contour if not failures else None), evidence
-
-
-def slab_hull(vertices: np.ndarray, plane: Plane, low_x: float, high_x: float) -> tuple[np.ndarray | None, float | None]:
-    relative = vertices - plane.origin
-    distance = relative @ plane.normal
-    u = relative @ plane.lateral
-    v = relative @ plane.depth
-    for slab_m in (0.003, 0.005, 0.008, 0.012, 0.018):
-        keep = (np.abs(distance) <= slab_m) & (u >= low_x - 0.008) & (u <= high_x + 0.008)
-        cloud = np.column_stack((u[keep], v[keep]))
-        if len(cloud) < 80:
-            continue
-        low_v, high_v = np.quantile(cloud[:, 1], [0.005, 0.995])
-        cloud = cloud[(cloud[:, 1] >= low_v) & (cloud[:, 1] <= high_v)]
-        try:
-            hull = ConvexHull(cloud)
-        except Exception:
-            continue
-        return cloud[hull.vertices], slab_m
-    return None, None
+    return contour, evidence
 
 
 def row_plane(row_name: str, record: dict[str, Any], landmarks: dict[str, np.ndarray]) -> tuple[Plane | None, dict[str, Any]]:
@@ -1265,15 +1255,14 @@ def row_geometry(
     reconstructed = False
     reconstruction_source = None
     stitch_evidence: dict[str, Any] | None = None
-    slab_m = None
     if selected is None or not raw_closed:
         points, stitch_evidence = certified_central_torso_arc_ring(components, low_x, high_x)
         if points is not None:
-            reconstruction_source = "certified-central-torso-open-arcs"
-        else:
-            points, slab_m = slab_hull(vertices, plane, low_x, high_x)
-            if points is not None:
-                reconstruction_source = "bounded-slab-hull"
+            reconstruction_source = (
+                "certified-central-torso-open-arcs"
+                if stitch_evidence.get("certified") is True
+                else "observed-central-torso-open-arcs"
+            )
         if points is None:
             return {
                 **base,
@@ -1304,26 +1293,40 @@ def row_geometry(
     contour_world = np.asarray([world(point) for point in contour])
     quality = []
     if reconstructed:
-        quality.extend(["reconstructed-slab-hull", "closed-loop-circumference-not-certified"])
         if reconstruction_source == "certified-central-torso-open-arcs":
-            quality.remove("reconstructed-slab-hull")
-            quality.remove("closed-loop-circumference-not-certified")
             quality.extend(["certified-central-torso-arc-ring", "arms-excluded-by-WEAR-LND-bounds"])
+        elif reconstruction_source == "observed-central-torso-open-arcs":
+            quality.extend([
+                "observed-central-torso-open-arcs",
+                "closed-loop-circumference-not-certified",
+                "side-surface-missing-shape-blocked",
+                "arms-excluded-by-WEAR-LND-bounds",
+            ])
         if row_name in {"chest", "underbust"}:
             quality.append("arm-exclusion-not-proven")
-            if reconstruction_source == "certified-central-torso-open-arcs":
+            if reconstruction_source in {
+                "certified-central-torso-open-arcs",
+                "observed-central-torso-open-arcs",
+            }:
                 quality.remove("arm-exclusion-not-proven")
     else:
         quality.append("raw-central-closed-loop")
     if minimum[0] < low_x - 0.012 or maximum[0] > high_x + 0.012:
         quality.append("edge-outside-LND-torso-bounds")
-    if tape_mm is not None:
+    certified_section = bool(raw_closed or (stitch_evidence and stitch_evidence.get("certified") is True))
+    observed_arc_geometry = reconstruction_source == "observed-central-torso-open-arcs"
+    edge_training_eligible = bool(raw_closed or reconstruction_source in {
+        "certified-central-torso-open-arcs",
+        "observed-central-torso-open-arcs",
+    })
+    depth_training_eligible = edge_training_eligible
+    shape_training_eligible = certified_section
+    if tape_mm is not None and certified_section:
         difference_pct = abs(perimeter_m * 1000.0 - tape_mm) / tape_mm * 100.0
         if difference_pct > 12.0:
             quality.append("mesh-loop-vs-recorded-tape-over-12pct")
     else:
         difference_pct = None
-    certified_section = bool(raw_closed or (stitch_evidence and stitch_evidence.get("certified") is True))
     tape_training_eligible = bool(
         certified_section
         and tape_mm is not None
@@ -1335,8 +1338,6 @@ def row_geometry(
         "geometryAvailable": True,
         "sourceGeometry": "raw WEAR PLY plane intersection" if not reconstructed else (
             "raw WEAR PLY central front/back torso arcs; arm components excluded"
-            if reconstruction_source == "certified-central-torso-open-arcs"
-            else "raw WEAR PLY bounded slab convex hull diagnostic fallback"
         ),
         "torsoBoundsCm": [round_float(low_x * 100.0), round_float(high_x * 100.0)],
         "torsoBoundsEvidence": bounds_info,
@@ -1346,14 +1347,18 @@ def row_geometry(
         "rawCentralLoopClosed": raw_closed,
         "certifiedSection": certified_section,
         "geometryTrainingEligible": certified_section,
+        "edgeTrainingEligible": edge_training_eligible,
+        "depthTrainingEligible": depth_training_eligible,
+        "shapeTrainingEligible": shape_training_eligible,
         "tapeTrainingEligible": tape_training_eligible,
         "reconstructed": reconstructed,
         "reconstructionSource": reconstruction_source,
-        "slabMm": round_float((slab_m or 0.0) * 1000.0, 3),
+        "slabMm": None,
         "breadthCm": round_float(width_m * 100.0),
         "depthCm": round_float(depth_m * 100.0),
         "closedLoopCircumferenceCm": round_float(perimeter_m * 100.0) if certified_section else None,
-        "diagnosticReconstructedPerimeterCm": round_float(perimeter_m * 100.0) if reconstructed and not certified_section else None,
+        "diagnosticReconstructedPerimeterCm": None,
+        "diagnosticObservedArcBridgeClosureCm": round_float(perimeter_m * 100.0) if observed_arc_geometry else None,
         "meshVsTapeDifferencePercent": round_float(difference_pct, 3) if difference_pct is not None and certified_section else None,
         "abBreadth": {
             "valueCm": round_float(width_m * 100.0),
@@ -1370,8 +1375,8 @@ def row_geometry(
         "contour": {
             "basis": "plane lateral/depth",
             "units": "centimetres",
-            "pointsCm": points_json(contour * 100.0),
-            "canonical3dPointsCm": points_json(contour_world * 100.0),
+            "pointsCm": points_json(contour * 100.0) if shape_training_eligible else [],
+            "canonical3dPointsCm": points_json(contour_world * 100.0) if shape_training_eligible else [],
         },
         "qualityFlags": quality,
     }

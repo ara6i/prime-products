@@ -19,9 +19,6 @@ from typing import Any
 
 import boto3
 
-from audit_wear3d_labels_cloud import diverse_visual_records, record_errors
-
-
 EXPECTED_RAW_OBJECTS = 22_150
 EXPECTED_RAW_BYTES = 33_497_610_937
 VIEW_IDS = (
@@ -36,7 +33,7 @@ VIEW_IDS = (
     "right-tele",
 )
 LEGACY_RENDERER_REVISION = "not-reusable-for-mesh-v8"
-RENDERER_REVISION = "certified-ply-lnd-connected-shape-mesh-card-v8-r2-blender-5.2.0-lts"
+RENDERER_REVISION = "wear-waist-hips-front50-tape-only-v1-blender-5.2.0-lts"
 MIN_UNDERBUST_CHEST_SEPARATION_MM = 10.0
 SOURCE_ROW_HEIGHT_EPSILON_MM = 0.01
 VERTICAL_ALIGNMENT_ANCHORS = (
@@ -74,6 +71,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--chunk-size", type=int, default=12)
     parser.add_argument("--views-per-subject", type=int, default=9)
+    parser.add_argument(
+        "--target-row",
+        action="append",
+        choices=("neck", "chest", "underbust", "waist", "hips"),
+        default=[],
+    )
     parser.add_argument("--render-retries", type=int, default=1)
     parser.add_argument(
         "--recovery",
@@ -124,10 +127,16 @@ def run_with_retries(*arguments: str, attempts: int = 3) -> None:
         raise last_error
 
 
-def chunk_digest(records: list[dict[str, Any]], views_per_subject: int, renderer_revision: str = RENDERER_REVISION) -> str:
+def chunk_digest(
+    records: list[dict[str, Any]],
+    views_per_subject: int,
+    target_rows: tuple[str, ...],
+    renderer_revision: str = RENDERER_REVISION,
+) -> str:
     payload = {
         "records": [record.get("scan_id", record.get("subject_id")) for record in records],
         "views_per_subject": views_per_subject,
+        "target_rows": target_rows,
         "renderer_revision": renderer_revision,
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
@@ -218,7 +227,7 @@ def requires_legacy_geometry_recovery(records: list[dict[str, Any]]) -> bool:
     return False
 
 
-def manifest_requires_label_recovery(path: Path) -> bool:
+def manifest_requires_label_recovery(path: Path, target_rows: tuple[str, ...]) -> bool:
     """Revisit a completed legacy shard only when its saved labels fail v6.
 
     This makes recovery content-addressed and targeted: clean RGB/mask shards
@@ -236,25 +245,21 @@ def manifest_requires_label_recovery(path: Path) -> bool:
     if not records:
         return True
     for record in records:
-        if record_errors(record):
+        if record.get("error"):
             return True
         rows = record.get("rows") or {}
-        chest_height = (rows.get("chest") or {}).get("slice_height_mm")
-        underbust_height = (rows.get("underbust") or {}).get("slice_height_mm")
-        waist_height = (rows.get("waist") or {}).get("slice_height_mm")
-        hip_height = (rows.get("hips") or {}).get("slice_height_mm")
-        try:
+        masked = record.get("masked_rows") or {}
+        for row_name in target_rows:
+            row = rows.get(row_name) or {}
+            if row_name in masked:
+                continue
             if (
-                chest_height is not None
-                and underbust_height is not None
-                and float(underbust_height) + SOURCE_ROW_HEIGHT_EPSILON_MM
-                >= float(chest_height) - MIN_UNDERBUST_CHEST_SEPARATION_MM
+                row.get("accepted") is not True
+                or row.get("geometry_target_valid") is not True
+                or row.get("shape_target_valid") is not True
+                or len(row.get("contour_points_normalized") or []) != 32
             ):
                 return True
-            if waist_height is not None and hip_height is not None and float(waist_height) <= float(hip_height):
-                return True
-        except (TypeError, ValueError):
-            return True
     return False
 
 
@@ -296,6 +301,7 @@ def write_jsonl(path: Path, records: list[dict[str, Any]]) -> None:
 
 def main() -> None:
     args = parse_args()
+    target_rows = tuple(dict.fromkeys(args.target_row or ("neck", "chest", "underbust", "waist", "hips")))
     args.root.mkdir(parents=True, exist_ok=True)
     s3 = boto3.client("s3")
     status = Status(args.bucket, args.status_key)
@@ -380,8 +386,8 @@ def main() -> None:
             chunk_records,
             chunk_path,
             output_dir,
-            chunk_digest(chunk_records, args.views_per_subject),
-            chunk_digest(chunk_records, args.views_per_subject, LEGACY_RENDERER_REVISION),
+            chunk_digest(chunk_records, args.views_per_subject, target_rows),
+            chunk_digest(chunk_records, args.views_per_subject, target_rows, LEGACY_RENDERER_REVISION),
         ))
 
     renderer = args.code_root / "render_wear3d_multiview.py"
@@ -420,15 +426,18 @@ def main() -> None:
                 "NUMEXPR_NUM_THREADS": "1",
             })
             with log_path.open("w", encoding="utf-8") as log:
-                result = subprocess.run(
-                    [
+                command = [
                         "xvfb-run", "--auto-servernum",
                         "--server-args=-screen 0 1280x1024x24 -nolisten tcp",
                         "blender", "--background", "--factory-startup", "--python", str(renderer), "--",
                         "--manifest", str(input_path), "--output-dir", str(attempt_dir),
                         "--views-per-subject", str(args.views_per_subject),
                         "--mask-only",
-                    ],
+                    ]
+                for row_name in target_rows:
+                    command.extend(("--target-row", row_name))
+                result = subprocess.run(
+                    command,
                     check=False,
                     stdout=log,
                     stderr=subprocess.STDOUT,
@@ -482,6 +491,7 @@ def main() -> None:
             "digest": digest,
             "subjects": len(chunk_records),
             "viewsPerSubject": args.views_per_subject,
+            "targetRows": list(target_rows),
             "rendererRevision": RENDERER_REVISION,
             "state": "complete" if counts["successfulExamples"] > 0 else "failed",
             **counts,
@@ -521,7 +531,7 @@ def main() -> None:
             # anatomical label passed.  Revisit only saved shards whose exact
             # manifest still contains a strict v6 label error or a source row
             # too close to/inverted against its anatomical neighbour.
-            and not manifest_requires_label_recovery(manifest_path)
+            and not manifest_requires_label_recovery(manifest_path, target_rows)
             # The first full render skipped a whole row when its tape value was
             # absent, even though the 3D mesh still provided a true edge, depth,
             # and shape. Rerender only those few affected legacy shards; all
@@ -588,7 +598,25 @@ def main() -> None:
 
     # The hard audit reads exact manifest geometry and renders a bounded visual
     # contact sheet from deterministic Blender mesh cards.
-    visual_records = diverse_visual_records(merged, 24)
+    # Match the audit's deterministic ordering exactly so the 24 images fetched
+    # during checkpoint recovery are the same 24 used by the contact sheet.
+    canonical_records = sorted(
+        (
+            record
+            for record in merged
+            if record.get("view_id") == "front-50" and not record.get("error")
+        ),
+        key=lambda record: (
+            str(record.get("region")),
+            str(record.get("gender")),
+            str(record.get("scan_id")),
+        ),
+    )
+    if len(canonical_records) <= 24:
+        visual_records = canonical_records
+    else:
+        indexes = [round(index * (len(canonical_records) - 1) / 23) for index in range(24)]
+        visual_records = [canonical_records[index] for index in indexes]
     for record in visual_records:
         image_path = Path(str(record["mesh_image"]))
         if image_path.exists():
@@ -602,8 +630,7 @@ def main() -> None:
         )
 
     audit_dir = args.root / "audit"
-    audit_result = subprocess.run(
-        [
+    audit_command = [
             "python3",
             str(args.code_root / "audit_wear_teacher_cards.py"),
             "--render-manifest",
@@ -620,7 +647,11 @@ def main() -> None:
             str(args.views_per_subject),
             "--contact-sheet-samples",
             "24",
-        ],
+        ]
+    for row_name in target_rows:
+        audit_command.extend(("--row", row_name))
+    audit_result = subprocess.run(
+        audit_command,
         check=False,
     )
     audit_summary = audit_dir / "audit-summary.json"
@@ -644,13 +675,13 @@ def main() -> None:
         failing_rows = {
             name: {
                 "geometry": row.get("geometryPassRate"),
-                "tape": row.get("connectedTapePassRate"),
+                "tape": row.get("tapeTargetPassRate"),
             }
             for name, row in (audit.get("rows") or {}).items()
-            if row.get("geometryPassRate", 0) < 0.90 or row.get("connectedTapePassRate", 0) < 0.90
+            if row.get("geometryPassRate", 0) < 0.90 or row.get("tapeTargetPassRate", 0) < 0.90
         }
-        raise RuntimeError(f"Full v8 teacher audit failed; GPU remains blocked: {failing_rows}")
-    status.update(overall=72, stage="render-v8", label="Automated v8 teacher audit passed", detail="All five core rows met the certified PLY geometry and connected-tape coverage gates across 4,326 people and nine cameras.", stage_index=2, stage_percent=100)
+        raise RuntimeError(f"Waist/hips teacher audit failed; GPU remains off: {failing_rows}")
+    status.update(overall=72, stage="render-v8", label="Waist/hips CPU teacher audit passed", detail="Waist and hips use exact front-50 PLY/LND geometry; recorded WEAR tape is retained only as the circumference target.", stage_index=2, stage_percent=100)
 
     status.update(overall=74, stage="render-v8", label="Awaiting diverse teacher-card review", detail="CPU preprocessing is complete and evidence is safe in S3. GPU launch stays blocked until the generated lines are visually approved.", stage_index=2, stage_percent=100, state="waiting")
     print(json.dumps({"subjects": (audit.get("inputs") or {}).get("people"), "records": (audit.get("inputs") or {}).get("renderCards"), "failures": len(failures), "passed": True}))

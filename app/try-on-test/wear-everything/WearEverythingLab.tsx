@@ -1,11 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import type {
   WearEverythingModel,
   WearEverythingRow,
   WearEverythingValue,
+  WearPlaneSweep,
+  WearPlaneSweepCandidate,
 } from "./wearEverything.server";
 import styles from "./wearEverything.module.css";
 
@@ -82,12 +85,13 @@ function SourcePill({ value }: { value: WearEverythingValue }) {
   return <span className={`${styles.sourcePill} ${styles[value.visualStatus]}`}>{copy}</span>;
 }
 
-export function WearEverythingLab({ model }: { model: WearEverythingModel }) {
+export function WearEverythingLab({ model, canaryIds }: { model: WearEverythingModel; canaryIds: string[] }) {
+  const router = useRouter();
   const [panel, setPanel] = useState<Panel>("rows");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Set<string>>(() => new Set([
-    ...model.rows.map((row) => rowId(row.id)),
-    ...model.segments.map((segment) => pathId(segment.id)),
+    rowId("waist"),
+    rowId("hips"),
   ]));
   const [showLabels, setShowLabels] = useState(false);
 
@@ -181,6 +185,33 @@ export function WearEverythingLab({ model }: { model: WearEverythingModel }) {
           <span>{model.role} split · {model.region} · {model.viewId}</span>
         </div>
       </header>
+
+      <section className={styles.approvalBar} aria-label="Waist and hips CPU canary approval">
+        <div>
+          <p className={styles.eyebrow}>Bulk CPU is off · waiting for your approval</p>
+          <strong>Inspect any random waist/hip teacher</strong>
+          <span>PLY supplies the row, A–B, C–D, and shape. WEAR tape is the only circumference target.</span>
+        </div>
+        <label>
+          <span>Canary person</span>
+          <select
+            value={model.scanId}
+            onChange={(event) => router.push(`/try-on-test/wear-everything?scan=${encodeURIComponent(event.target.value)}`)}
+          >
+            {canaryIds.map((scanId) => <option key={scanId} value={scanId}>{scanId}</option>)}
+          </select>
+        </label>
+        <button
+          type="button"
+          onClick={() => {
+            const alternatives = canaryIds.filter((scanId) => scanId !== model.scanId);
+            const next = alternatives[Math.floor(Math.random() * alternatives.length)] ?? model.scanId;
+            router.push(`/try-on-test/wear-everything?scan=${encodeURIComponent(next)}`);
+          }}
+        >
+          Show random person
+        </button>
+      </section>
 
       <section className={styles.countGrid} aria-label="Exact source inventory">
         <Count value={model.recorded.length} label="recorded values" expected={45} />
@@ -402,7 +433,165 @@ export function WearEverythingLab({ model }: { model: WearEverythingModel }) {
           </div>
         </section>
       </div>
+
+      {model.planeSweep ? (
+        <PlaneSweepProof sweep={model.planeSweep} model={model} />
+      ) : null}
     </main>
+  );
+}
+
+function absoluteContourPath(candidate: WearPlaneSweepCandidate | null) {
+  if (!candidate || candidate.contour.length < 3 || candidate.widthCm === null || candidate.depthCm === null) return "";
+  const widthCm = candidate.widthCm;
+  const depthCm = candidate.depthCm;
+  return candidate.contour.map(([x, y], index) => {
+    const px = 210 + x * widthCm * 5.4;
+    const py = 145 + y * depthCm * 5.4;
+    return `${index === 0 ? "M" : "L"}${px.toFixed(2)},${py.toFixed(2)}`;
+  }).join(" ") + " Z";
+}
+
+function signed(value: number | null, digits = 2) {
+  if (value === null) return "—";
+  return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}`;
+}
+
+function PlaneSweepProof({ sweep, model }: { sweep: WearPlaneSweep; model: WearEverythingModel }) {
+  const valid = sweep.candidates.filter((candidate) => candidate.valid && candidate.certified);
+  const defaultIndex = Math.max(0, valid.findIndex((candidate) => candidate.offsetMm === sweep.oracle?.offsetMm));
+  const [index, setIndex] = useState(defaultIndex);
+  const candidate = valid[Math.min(index, Math.max(valid.length - 1, 0))] ?? sweep.current;
+  const currentPath = absoluteContourPath(sweep.current);
+  const candidatePath = absoluteContourPath(candidate);
+  const lineY = candidate?.yNorm === null || candidate?.yNorm === undefined
+    ? null
+    : candidate.yNorm * model.render.height;
+  const lineLeft = candidate?.leftXNorm === null || candidate?.leftXNorm === undefined
+    ? null
+    : candidate.leftXNorm * model.render.width;
+  const lineRight = candidate?.rightXNorm === null || candidate?.rightXNorm === undefined
+    ? null
+    : candidate.rightXNorm * model.render.width;
+
+  return (
+    <section className={styles.sweepCard} aria-label="PLY waist plane diagnosis">
+      <div className={styles.sweepHeader}>
+        <div>
+          <p className={styles.eyebrow}>Exact PLY plane diagnosis · tape hidden during geometry</p>
+          <h2>Why the current waist misses 73.00 cm</h2>
+          <p>
+            The source row is measured first at every nearby PLY plane. The recorded tape is revealed only afterward.
+          </p>
+        </div>
+        <div className={styles.sweepAnswer}>
+          <span>Closest real PLY plane</span>
+          <strong>{format(sweep.oracle?.walkedCm ?? null, 3)} cm</strong>
+          <b>{signed(sweep.oracle?.tapeDifferenceCm ?? null, 3)} cm from tape</b>
+        </div>
+      </div>
+
+      <div className={styles.sweepTruthGrid}>
+        <SweepMetric
+          label="Current source plane"
+          value={`${format(sweep.current?.walkedCm ?? null, 3)} cm`}
+          detail={`${signed(sweep.current?.tapeDifferenceCm ?? null, 3)} cm · ${signed((sweep.current?.offsetMm ?? 0) / 10, 1)} cm vertical`}
+          tone="bad"
+        />
+        <SweepMetric
+          label="Closest PLY plane"
+          value={`${format(sweep.oracle?.walkedCm ?? null, 3)} cm`}
+          detail={`${signed(sweep.oracle?.tapeDifferenceCm ?? null, 3)} cm · ${signed((sweep.oracle?.offsetMm ?? 0) / 10, 1)} cm vertical`}
+          tone="good"
+        />
+        <SweepMetric
+          label="Recorded WEAR tape"
+          value={`${format(sweep.tapeCm, 2)} cm`}
+          detail="Reveal-only truth; never used to draw a slice"
+          tone="neutral"
+        />
+      </div>
+
+      <div className={styles.sweepWorkspace}>
+        <div className={styles.sweepBodyViewer}>
+          <Image
+            src={`/api/try-on-test/wear-cpu-progress/card?key=${encodeURIComponent(model.imageKey)}`}
+            alt={`${model.scanId} waist plane sweep on exact Blender mesh`}
+            fill
+            sizes="(max-width: 900px) 92vw, 460px"
+            className={styles.meshImage}
+            unoptimized
+          />
+          <svg className={styles.overlay} viewBox={`0 0 ${model.render.width} ${model.render.height}`}>
+            {lineY !== null && lineLeft !== null && lineRight !== null ? (
+              <line
+                x1={lineLeft}
+                x2={lineRight}
+                y1={lineY}
+                y2={lineY}
+                stroke="#fb923c"
+                strokeWidth="3"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+              />
+            ) : null}
+          </svg>
+        </div>
+
+        <div className={styles.sweepShapePanel}>
+          <div className={styles.sweepShapeTitle}>
+            <div><span className={styles.currentLegend} />Current source plane</div>
+            <div><span className={styles.selectedLegend} />Selected PLY plane</div>
+          </div>
+          <svg viewBox="0 0 420 290" role="img" aria-label="Current and selected exact PLY waist contours" className={styles.sweepShapeSvg}>
+            <line x1="22" y1="145" x2="398" y2="145" />
+            <line x1="210" y1="20" x2="210" y2="270" />
+            {currentPath ? <path d={currentPath} className={styles.currentContour} /> : null}
+            {candidatePath ? <path d={candidatePath} className={styles.selectedContour} /> : null}
+          </svg>
+
+          <label className={styles.sweepSlider}>
+            <span>Move the exact PLY plane</span>
+            <input
+              type="range"
+              min={0}
+              max={Math.max(valid.length - 1, 0)}
+              value={Math.min(index, Math.max(valid.length - 1, 0))}
+              onChange={(event) => setIndex(Number(event.target.value))}
+            />
+          </label>
+
+          <dl className={styles.sweepValues}>
+            <div><dt>Vertical move</dt><dd>{signed((candidate?.offsetMm ?? 0) / 10, 1)} cm</dd></div>
+            <div><dt>A–B width</dt><dd>{format(candidate?.widthCm ?? null, 2)} cm</dd></div>
+            <div><dt>C–D depth</dt><dd>{format(candidate?.depthCm ?? null, 2)} cm</dd></div>
+            <div><dt>32-point walk</dt><dd>{format(candidate?.walkedCm ?? null, 3)} cm</dd></div>
+            <div><dt>Raw PLY walk</dt><dd>{format(candidate?.rawPerimeterCm ?? null, 3)} cm</dd></div>
+            <div><dt>Difference</dt><dd>{signed(candidate?.tapeDifferenceCm ?? null, 3)} cm</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <p className={styles.sweepWarning}>
+        The +{((sweep.oracle?.offsetMm ?? 0) / 10).toFixed(1)} cm plane proves plane selection explains this person’s error.
+        It is diagnostic only until one tape-blind anatomical rule passes held-out people. The “smallest waist” rule failed here and is not accepted.
+      </p>
+    </section>
+  );
+}
+
+function SweepMetric({ label, value, detail, tone }: {
+  label: string;
+  value: string;
+  detail: string;
+  tone: "bad" | "good" | "neutral";
+}) {
+  return (
+    <article className={`${styles.sweepMetric} ${styles[`sweepMetric_${tone}`]}`}>
+      <span>{label}</span>
+      <strong>{value}</strong>
+      <small>{detail}</small>
+    </article>
   );
 }
 
@@ -429,7 +618,7 @@ function Count({ value, label, expected }: { value: number; label: string; expec
 }
 
 function panelHelp(panel: Panel) {
-  if (panel === "rows") return "Closed 32-point PLY sections with A–B, C–D, walked shape, and recorded tape.";
+  if (panel === "rows") return "PLY/LND teaches row position, A–B, C–D, and normalized 32-point shape. Recorded WEAR tape is the only circumference target.";
   if (panel === "paths") return "Exact front-view polylines built from WEAR landmark chains.";
   if (panel === "recorded") return "All 45 WEAR measurement-table values. Only source-certified geometry is drawn.";
   if (panel === "extracted") return "All 43 standing values computed from the named 3D landmarks.";
@@ -443,15 +632,15 @@ function RowCard({ row, checked, onToggle }: { row: WearEverythingRow; checked: 
         <input type="checkbox" checked={checked} onChange={onToggle} />
         <span style={{ background: ROW_COLORS[row.id] }} />
         <strong>{row.label}</strong>
-        <em>{row.accepted ? "Certified" : "Rejected"}</em>
+        <em>{row.accepted ? "Certified" : "Not safe for training yet"}</em>
       </label>
       <div className={styles.rowContent}>
         <ShapePreview row={row} />
         <dl>
           <div><dt>A–B width</dt><dd>{format(row.widthCm)} cm</dd></div>
           <div><dt>C–D depth</dt><dd>{format(row.depthCm)} cm</dd></div>
-          <div><dt>Walked shape</dt><dd>{format(row.walkedCm)} cm</dd></div>
-          <div><dt>WEAR tape</dt><dd>{format(row.tapeCm)} cm</dd></div>
+          <div><dt>Shape points</dt><dd>{row.contour.length}/32</dd></div>
+          <div><dt>WEAR tape target</dt><dd>{format(row.tapeCm)} cm</dd></div>
         </dl>
       </div>
       <details>

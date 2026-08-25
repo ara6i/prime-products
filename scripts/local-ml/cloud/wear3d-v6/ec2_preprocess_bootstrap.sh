@@ -9,6 +9,10 @@ set -Eeuo pipefail
 : "${WEAR_SOURCE_MANIFEST_KEY:?WEAR_SOURCE_MANIFEST_KEY is required}"
 : "${WEAR_BLENDER_ARCHIVE_KEY:?WEAR_BLENDER_ARCHIVE_KEY is required}"
 : "${WEAR_SHUTDOWN_MINUTES:=480}"
+: "${WEAR_WORKERS:=16}"
+: "${WEAR_CHUNK_SIZE:=4}"
+: "${WEAR_VIEWS_PER_SUBJECT:=9}"
+: "${WEAR_TARGET_ROWS:=}"
 
 case "$WEAR_SHUTDOWN_MINUTES" in
   ''|*[!0-9]*)
@@ -131,13 +135,19 @@ if [[ "${WEAR_RECOVERY:-0}" == "1" ]]; then
   recovery_args+=(--recovery)
 fi
 
+target_row_args=()
+for row_name in $WEAR_TARGET_ROWS; do
+  target_row_args+=(--target-row "$row_name")
+done
+
 python3 /opt/primestyle/code/run_v6_preprocess.py \
   --bucket "$WEAR_BUCKET" \
   --pipeline-id "$WEAR_TEACHER_PIPELINE_ID" \
   --status-key "$WEAR_STATUS_KEY" \
   --source-manifest-key "$WEAR_SOURCE_MANIFEST_KEY" \
-  --workers 16 \
-  --chunk-size 4 \
-  --views-per-subject 9 \
+  --workers "$WEAR_WORKERS" \
+  --chunk-size "$WEAR_CHUNK_SIZE" \
+  --views-per-subject "$WEAR_VIEWS_PER_SUBJECT" \
   --render-retries 1 \
+  "${target_row_args[@]}" \
   "${recovery_args[@]}"

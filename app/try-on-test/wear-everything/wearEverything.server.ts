@@ -34,7 +34,6 @@ export interface WearEverythingRow {
   y: number;
   widthCm: number | null;
   depthCm: number | null;
-  walkedCm: number | null;
   tapeCm: number | null;
   contour: Array<[number, number]>;
   protocol: string;
@@ -45,6 +44,34 @@ export interface WearEverythingSegment {
   id: string;
   label: string;
   points: WearEverythingPoint[];
+}
+
+export interface WearPlaneSweepCandidate {
+  offsetMm: number;
+  heightMm: number;
+  valid: boolean;
+  certified: boolean;
+  source: string | null;
+  rawPerimeterCm: number | null;
+  walkedCm: number | null;
+  tapeDifferenceCm: number | null;
+  widthCm: number | null;
+  depthCm: number | null;
+  yNorm: number | null;
+  leftXNorm: number | null;
+  rightXNorm: number | null;
+  contour: Array<[number, number]>;
+}
+
+export interface WearPlaneSweep {
+  row: string;
+  sourceHeightCm: number;
+  tapeCm: number | null;
+  current: WearPlaneSweepCandidate | null;
+  tapeBlind: WearPlaneSweepCandidate | null;
+  oracle: WearPlaneSweepCandidate | null;
+  candidates: WearPlaneSweepCandidate[];
+  warning: string;
 }
 
 export interface WearEverythingModel {
@@ -95,6 +122,7 @@ export interface WearEverythingModel {
   } & WearEverythingPoint>;
   recorded: WearEverythingValue[];
   extracted: WearEverythingValue[];
+  planeSweep: WearPlaneSweep | null;
 }
 
 export const WEAR_EVERYTHING_COUNTS = {
@@ -264,13 +292,25 @@ function values(group: "recorded" | "extracted", value: unknown): WearEverything
 }
 
 function imageKey(meshImage: string, chunkId: string) {
+  if (meshImage.includes("/.local-ml/wear3d-v8-teacher-canary/")) {
+    return `local-canary/${path.basename(meshImage)}`;
+  }
+  if (meshImage.startsWith(".local-ml/wear3d-v8-teacher-canary/")) {
+    return `local-canary/${path.basename(meshImage)}`;
+  }
   const marker = `/rendered/${chunkId}/`;
   const offset = meshImage.indexOf(marker);
   if (offset < 0) return "";
   return `${WEAR_V8_RENDER_PREFIX}/${chunkId}/${meshImage.slice(offset + marker.length)}`;
 }
 
-function buildModel(source: JsonRecord, chunkId: string, sourceTruth: JsonRecord, viewIds: string[]): WearEverythingModel {
+function buildModel(
+  source: JsonRecord,
+  chunkId: string,
+  sourceTruth: JsonRecord,
+  viewIds: string[],
+  planeSweep: WearPlaneSweep | null,
+): WearEverythingModel {
   const rawRows = record(source.rows);
   const rows = Object.entries(ROW_LABELS).map(([id, label]) => {
     const row = record(rawRows[id]);
@@ -283,7 +323,6 @@ function buildModel(source: JsonRecord, chunkId: string, sourceTruth: JsonRecord
       y: number(row.y_norm),
       widthCm: nullableNumber(row.mesh_width_mm) === null ? null : number(row.mesh_width_mm) / 10,
       depthCm: nullableNumber(row.mesh_depth_mm) === null ? null : number(row.mesh_depth_mm) / 10,
-      walkedCm: nullableNumber(row.shape_walk_circumference_mm) === null ? null : number(row.shape_walk_circumference_mm) / 10,
       tapeCm: nullableNumber(row.measurement_circumference_mm) === null ? null : number(row.measurement_circumference_mm) / 10,
       contour: contour(row.contour_points_normalized),
       protocol: string(row.measurement_protocol, "Not documented in this card"),
@@ -355,7 +394,66 @@ function buildModel(source: JsonRecord, chunkId: string, sourceTruth: JsonRecord
     landmarks,
     recorded: values("recorded", source.measurements_mm),
     extracted: values("extracted", source.extracted_standing_mm),
+    planeSweep,
   };
+}
+
+function planeSweepCandidate(value: unknown): WearPlaneSweepCandidate | null {
+  const candidate = record(value);
+  const offsetMm = nullableNumber(candidate.offset_mm);
+  const heightMm = nullableNumber(candidate.height_mm);
+  if (offsetMm === null || heightMm === null) return null;
+  const convertMm = (raw: unknown) => {
+    const valueMm = nullableNumber(raw);
+    return valueMm === null ? null : valueMm / 10;
+  };
+  return {
+    offsetMm,
+    heightMm,
+    valid: candidate.valid === true,
+    certified: candidate.certified === true,
+    source: string(candidate.source) || null,
+    rawPerimeterCm: convertMm(candidate.raw_perimeter_mm),
+    walkedCm: convertMm(candidate.walked_perimeter_mm),
+    tapeDifferenceCm: convertMm(candidate.tape_difference_mm),
+    widthCm: convertMm(candidate.width_mm),
+    depthCm: convertMm(candidate.depth_mm),
+    yNorm: nullableNumber(candidate.y_norm),
+    leftXNorm: nullableNumber(candidate.left_x_norm),
+    rightXNorm: nullableNumber(candidate.right_x_norm),
+    contour: contour(candidate.contour),
+  };
+}
+
+async function readPlaneSweep(root: string, scanId: string, row = "waist"): Promise<WearPlaneSweep | null> {
+  const reportPath = path.join(
+    root,
+    ".local-ml/reports/wear-plane-sweeps",
+    `${scanId.toLowerCase()}-${row}.json`,
+  );
+  try {
+    const source = record(JSON.parse(await readFile(reportPath, "utf8")));
+    const candidates = Array.isArray(source.candidates)
+      ? source.candidates.flatMap((candidate) => {
+          const parsed = planeSweepCandidate(candidate);
+          return parsed ? [parsed] : [];
+        })
+      : [];
+    return {
+      row: string(source.row, row),
+      sourceHeightCm: number(source.source_height_mm) / 10,
+      tapeCm: nullableNumber(source.recorded_tape_mm_reveal_only) === null
+        ? null
+        : number(source.recorded_tape_mm_reveal_only) / 10,
+      current: planeSweepCandidate(source.current_source_plane),
+      tapeBlind: planeSweepCandidate(source.tape_blind_candidate),
+      oracle: planeSweepCandidate(source.tape_oracle_diagnostic_only),
+      candidates,
+      warning: string(source.warning),
+    };
+  } catch {
+    return null;
+  }
 }
 
 async function readSourceTruth(root: string, scanId: string) {
@@ -373,10 +471,40 @@ async function readSourceTruth(root: string, scanId: string) {
   return {};
 }
 
+const CANARY_DIRECTORY = ".local-ml/wear3d-v8-teacher-canary/ten-final-v2";
+
+async function readCanaryRecords(projectRoot: string) {
+  const manifestPath = path.join(projectRoot, CANARY_DIRECTORY, "render-manifest.jsonl");
+  try {
+    return (await readFile(manifestPath, "utf8")).split(/\r?\n/u).flatMap((line) => {
+      if (!line.trim()) return [];
+      try {
+        return [record(JSON.parse(line))];
+      } catch {
+        return [];
+      }
+    }).filter((source) => string(source.view_id) === "front-50" && !string(source.error));
+  } catch {
+    return [];
+  }
+}
+
+export async function getWearEverythingCanaryIds() {
+  const records = await readCanaryRecords(process.cwd());
+  return [...new Set(records.map((source) => string(source.scan_id)).filter(Boolean))].sort();
+}
+
 export async function getWearEverythingModel(scanId = "IT-4028-A") {
   const projectRoot = process.cwd();
+  const canaryRecords = await readCanaryRecords(projectRoot);
+  const canarySource = canaryRecords.find((source) => string(source.scan_id) === scanId);
+  if (canarySource) {
+    const sourceTruth = await readSourceTruth(projectRoot, scanId);
+    return buildModel(canarySource, "local-canary", sourceTruth, ["front-50"], null);
+  }
   const root = path.join(projectRoot, ".local-ml/wear3d-v8-cloud-status/card-check");
   const sourceTruth = await readSourceTruth(projectRoot, scanId);
+  const planeSweep = await readPlaneSweep(projectRoot, scanId);
   const files = (await readdir(root)).filter((name) => /^chunk-\d+-manifest\.jsonl$/u.test(name));
   for (const file of files) {
     const chunkId = file.replace(/-manifest\.jsonl$/u, "");
@@ -389,7 +517,7 @@ export async function getWearEverythingModel(scanId = "IT-4028-A") {
     const viewIds = records.map((source) => string(source.view_id)).filter(Boolean).sort();
     for (const source of records) {
       if (source.view_id !== "front-50") continue;
-      return buildModel(source, chunkId, sourceTruth, viewIds);
+      return buildModel(source, chunkId, sourceTruth, viewIds, planeSweep);
     }
   }
   throw new Error(`${scanId} front-50 WEAR card is not available locally.`);

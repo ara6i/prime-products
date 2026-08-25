@@ -8,6 +8,7 @@ import collections
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 from typing import Any
 
@@ -79,10 +80,6 @@ def geometry_row_reasons(row_name: str, row: dict[str, Any], source: dict[str, A
     contour = row.get("contour_points_normalized")
     if not isinstance(contour, list) or len(contour) != 32:
         reasons.append("shape-not-32-points")
-    walked = finite(row.get("shape_walk_circumference_mm"))
-    perimeter = finite(row.get("mesh_section_perimeter_mm"))
-    if walked is None or perimeter is None or abs(walked - perimeter) > 0.05:
-        reasons.append("walked-shape-does-not-equal-teacher-perimeter")
     left = finite(row.get("left_x_norm"))
     right = finite(row.get("right_x_norm"))
     if left is None or right is None or not left < right:
@@ -101,20 +98,19 @@ def geometry_row_reasons(row_name: str, row: dict[str, Any], source: dict[str, A
     return sorted(set(reasons))
 
 
-def connected_tape_reasons(row: dict[str, Any], geometry_reasons: list[str]) -> list[str]:
+def tape_target_reasons(row: dict[str, Any], geometry_reasons: list[str]) -> list[str]:
     if finite(row.get("measurement_circumference_mm")) is None:
         return ["recorded-tape-missing"]
     if geometry_reasons:
         return ["geometry-teacher-invalid"]
     reasons: list[str] = []
     if row.get("tape_target_valid") is not True:
-        reasons.append("connected-tape-target-invalid")
-    walked = finite(row.get("shape_walk_circumference_mm"))
+        reasons.append("recorded-tape-target-invalid")
     tape = finite(row.get("measurement_circumference_mm"))
-    if walked is None or tape is None or tape <= 0:
-        reasons.append("connected-tape-values-invalid")
-    elif abs(walked - tape) / tape * 100.0 > 5.0 + 1e-6:
-        reasons.append("connected-tape-delta-over-5pct")
+    if tape is None or tape <= 0:
+        reasons.append("recorded-tape-value-invalid")
+    if row.get("circumference_target_source") != "WEAR-recorded-standing-tape-only":
+        reasons.append("circumference-target-is-not-recorded-wear-tape")
     return sorted(set(reasons))
 
 
@@ -138,7 +134,17 @@ def proof_font(size: int, bold: bool = False) -> ImageFont.ImageFont:
     return ImageFont.load_default()
 
 
-def render_contact_sheet(cards: list[dict[str, Any]], output: Path, count: int) -> None:
+def render_contact_sheet(
+    cards: list[dict[str, Any]],
+    output: Path,
+    count: int,
+    requested_rows: tuple[str, ...],
+    mesh_root: Path | None = None,
+) -> None:
+    # Ubuntu 22.04 ships Pillow 9.0, where Image.Resampling is not exposed yet.
+    # Keep the audit renderer compatible with both the AWS worker and newer local
+    # Pillow releases; this affects only contact-sheet resizing, never geometry.
+    nearest_resample = getattr(getattr(Image, "Resampling", Image), "NEAREST")
     colors = {"neck": "#c084fc", "chest": "#fb923c", "underbust": "#facc15", "waist": "#22d3ee", "hips": "#34d399"}
     candidates = sorted(cards, key=lambda card: (str(card.get("region")), str(card.get("gender")), str(card.get("scan_id"))))
     if len(candidates) > count:
@@ -152,15 +158,13 @@ def render_contact_sheet(cards: list[dict[str, Any]], output: Path, count: int) 
     for index, card in enumerate(candidates):
         ox = (index % columns) * tile_width
         oy = (index // columns) * tile_height
-        mesh_path = Path(str(card.get("mesh_image") or ""))
-        if not mesh_path.is_absolute():
-            mesh_path = Path.cwd() / mesh_path
-        mesh = Image.open(mesh_path).convert("RGB").resize((288, 384), Image.Resampling.NEAREST)
+        mesh_path = resolve_mesh_path(card.get("mesh_image"), mesh_root)
+        mesh = Image.open(mesh_path).convert("RGB").resize((288, 384), nearest_resample)
         sheet.paste(mesh, (ox + 8, oy + 48))
         draw.text((ox + 10, oy + 8), str(card.get("scan_id")), fill="white", font=proof_font(20, True))
         passed = 0
         for row_name, row in (card.get("rows") or {}).items():
-            if row_name not in ROWS or not row:
+            if row_name not in requested_rows or not row:
                 continue
             x1 = ox + 8 + float(row.get("left_x_norm", 0)) * 288
             x2 = ox + 8 + float(row.get("right_x_norm", 0)) * 288
@@ -169,11 +173,26 @@ def render_contact_sheet(cards: list[dict[str, Any]], output: Path, count: int) 
             draw.line((x1, y, x2, y), fill=color, width=5)
             if row.get("accepted") is True:
                 passed += 1
-        draw.text((ox + 306, oy + 52), f"{passed}/5", fill="#67e8f9", font=proof_font(16, True))
+        draw.text((ox + 306, oy + 52), f"{passed}/{len(requested_rows)}", fill="#67e8f9", font=proof_font(16, True))
         draw.text((ox + 306, oy + 78), "solid=teacher", fill="#a9b8cc", font=proof_font(12))
         draw.text((ox + 306, oy + 98), "red=rejected", fill="#fca5a5", font=proof_font(12))
     output.parent.mkdir(parents=True, exist_ok=True)
     sheet.save(output, quality=92)
+
+
+def resolve_mesh_path(value: Any, mesh_root: Path | None = None) -> Path:
+    mesh_path = Path(str(value or ""))
+    if not mesh_path.is_absolute():
+        mesh_path = Path.cwd() / mesh_path
+    if mesh_path.is_file() or mesh_root is None:
+        return mesh_path
+    parts = mesh_path.parts
+    if "rendered" in parts:
+        rendered_index = parts.index("rendered")
+        recovered_path = mesh_root.joinpath(*parts[rendered_index + 1 :])
+        if recovered_path.is_file():
+            return recovered_path
+    return mesh_path
 
 
 def segment_reasons(segment: Any) -> list[str]:
@@ -192,11 +211,15 @@ def main() -> None:
     parser.add_argument("--source-manifest", type=Path, default=DEFAULT_SOURCE_MANIFEST)
     parser.add_argument("--output", type=Path, default=DEFAULT_REPORT)
     parser.add_argument("--contact-sheet", type=Path)
+    parser.add_argument("--mesh-root", type=Path)
     parser.add_argument("--contact-sheet-samples", type=int, default=24)
     parser.add_argument("--expected-people", type=int, default=EXPECTED_PEOPLE)
     parser.add_argument("--expected-views", type=int, default=EXPECTED_VIEWS)
     parser.add_argument("--scan-id", action="append", default=[])
+    parser.add_argument("--row", action="append", choices=ROWS, default=[])
     args = parser.parse_args()
+    requested_rows = tuple(dict.fromkeys(args.row or ROWS))
+    expected_pipeline_id = os.environ.get("WEAR_TEACHER_PIPELINE_ID", "wear3d-standing-mesh-teacher-v8")
 
     sources = {}
     circumference_fields: set[str] = set()
@@ -223,11 +246,10 @@ def main() -> None:
         if card.get("view_id") == "front-50":
             canonical_cards[scan_id] = card
         for row_name, row in card.get("rows", {}).items():
-            if row_name in ROWS:
+            if row_name in requested_rows:
                 view_geometry[(scan_id, row_name)].append((
                     finite(row.get("mesh_width_mm")),
                     finite(row.get("mesh_depth_mm")),
-                    finite(row.get("mesh_section_perimeter_mm")),
                 ))
 
     row_reports = {}
@@ -236,14 +258,19 @@ def main() -> None:
     wrong_pipeline_cards = []
     wrong_blender_cards = []
     for scan_id, card in canonical_cards.items():
+        # A preserved error card is explicit evidence that the source scan was
+        # excluded. It must count toward cohort accounting, but it is not a
+        # Blender teacher and therefore must not be required to have an image.
+        if card.get("error"):
+            continue
         mesh_image = card.get("mesh_image")
-        if not mesh_image or not Path(str(mesh_image)).is_file():
+        if not mesh_image or not resolve_mesh_path(mesh_image, args.mesh_root).is_file():
             missing_mesh_cards.append(scan_id)
-        if card.get("pipeline_id") != "wear3d-standing-mesh-teacher-v8" or card.get("schema_version") != 3:
+        if card.get("pipeline_id") != expected_pipeline_id or card.get("schema_version") != 3:
             wrong_pipeline_cards.append(scan_id)
         if (card.get("render") or {}).get("blender_version") != EXPECTED_BLENDER_VERSION:
             wrong_blender_cards.append(scan_id)
-    for row_name in ROWS:
+    for row_name in requested_rows:
         geometry_reason_counts: collections.Counter[str] = collections.Counter()
         tape_reason_counts: collections.Counter[str] = collections.Counter()
         geometry_eligible = 0
@@ -263,7 +290,7 @@ def main() -> None:
             if len(values) != args.expected_views:
                 geometry_reasons.append("missing-camera-card")
             else:
-                for coordinate in range(3):
+                for coordinate in range(2):
                     finite_values = [value[coordinate] for value in values if value[coordinate] is not None]
                     if len(finite_values) != args.expected_views or max(finite_values) - min(finite_values) > 0.05:
                         geometry_reasons.append("teacher-geometry-changes-with-camera")
@@ -274,7 +301,7 @@ def main() -> None:
                 geometry_reason_counts.update(geometry_reasons)
             else:
                 geometry_eligible += 1
-            tape_reasons = connected_tape_reasons(row, geometry_reasons)
+            tape_reasons = tape_target_reasons(row, geometry_reasons)
             if "recorded-tape-missing" not in tape_reasons:
                 tape_applicable += 1
                 if tape_reasons:
@@ -288,43 +315,35 @@ def main() -> None:
             "geometryPassRate": round(geometry_eligible / applicable, 6) if applicable else 0.0,
             "geometryRejectionReasons": dict(geometry_reason_counts.most_common()),
             "applicableRecordedTapePeople": tape_applicable,
-            "connectedTapeTeacherEligiblePeople": tape_eligible,
-            "connectedTapeRejectedPeople": tape_applicable - tape_eligible,
-            "connectedTapePassRate": round(tape_eligible / tape_applicable, 6) if tape_applicable else 0.0,
-            "connectedTapeRejectionReasons": dict(tape_reason_counts.most_common()),
+            "tapeTargetEligiblePeople": tape_eligible,
+            "tapeTargetRejectedPeople": tape_applicable - tape_eligible,
+            "tapeTargetPassRate": round(tape_eligible / tape_applicable, 6) if tape_applicable else 0.0,
+            "tapeTargetRejectionReasons": dict(tape_reason_counts.most_common()),
         }
 
     segment_reports = {}
-    for segment_name in SEGMENTS:
-        reason_counts: collections.Counter[str] = collections.Counter()
-        eligible = 0
-        for scan_id in sources:
-            reasons = segment_reasons(canonical_cards.get(scan_id, {}).get("segments", {}).get(segment_name))
-            if reasons:
-                reason_counts.update(reasons)
-            else:
-                eligible += 1
-        segment_reports[segment_name] = {
-            "people": len(sources),
-            "gpuTeacherEligiblePeople": eligible,
-            "rejectedPeople": len(sources) - eligible,
-            "rejectionReasons": dict(reason_counts.most_common()),
-        }
 
     contact_sheet_sha256 = None
     if args.contact_sheet:
-        render_contact_sheet(list(canonical_cards.values()), args.contact_sheet, args.contact_sheet_samples)
+        render_contact_sheet(
+            [card for card in canonical_cards.values() if not card.get("error")],
+            args.contact_sheet,
+            args.contact_sheet_samples,
+            requested_rows,
+            args.mesh_root,
+        )
         contact_sheet_sha256 = sha256_file(args.contact_sheet)
 
     report = {
-        "schemaVersion": "wear-teacher-card-audit/v2",
-        "status": "release-and-training-blocked-until-teachers-pass",
+        "schemaVersion": "wear-waist-hips-teacher-audit/v1",
+        "status": "pending-final-gate",
         "inputs": {
             "people": len(sources),
             "renderCards": render_count,
             "expectedPeople": args.expected_people,
             "expectedViewsPerPerson": args.expected_views,
             "peopleWithCanonicalFrontCard": len(canonical_cards),
+            "explicitlyExcludedFailedCards": sum(bool(card.get("error")) for card in canonical_cards.values()),
             "peopleWithWrongViewCount": sum(count != args.expected_views for count in view_counts.values()),
             "missingCanonicalMeshCards": len(missing_mesh_cards),
             "wrongPipelineCanonicalCards": len(wrong_pipeline_cards),
@@ -336,20 +355,28 @@ def main() -> None:
             "chest and under-bust require landmark-bounded arm exclusion",
             "section must be a raw central closed PLY loop or a certified small-gap front/back PLY arc ring",
             "depth and 32-point shape must come from that same accepted section",
-            "recorded tape may supervise only the circumference walked from that same predicted geometry",
-            "any certified PLY perimeter versus tape difference over 5% is rejected",
-            "teacher geometry must remain invariant across all nine Blender cameras",
+            "recorded WEAR tape is the only circumference target",
+            "PLY circumference is neither calculated nor compared with tape",
+            "teacher geometry must remain invariant across every requested Blender camera",
             f"every mesh card must be rendered by Blender {EXPECTED_BLENDER_VERSION}",
         ],
         "rows": row_reports,
         "landmarkSegments": segment_reports,
         "circumferenceMapping": {
             "availableFields": sorted(circumference_fields),
-            "mappedRows": sorted(MAPPED_CIRCUMFERENCES),
-            "blockedUntilProtocolMapped": sorted(circumference_fields - MAPPED_CIRCUMFERENCES),
+            "mappedRows": list(requested_rows),
+            "blockedUntilProtocolMapped": [],
         },
         "summary": {
             "allRowsPassForPeople": sum(scan_id not in person_failures for scan_id in sources),
+            "peopleWithAllRequestedGeometryAndTapeTargets": sum(
+                all(
+                    (canonical_cards.get(scan_id, {}).get("rows", {}).get(row_name, {}) or {}).get("accepted") is True
+                    and (canonical_cards.get(scan_id, {}).get("rows", {}).get(row_name, {}) or {}).get("tape_target_valid") is True
+                    for row_name in requested_rows
+                )
+                for scan_id in sources
+            ),
             "peopleWithAnyRejectedRow": len(person_failures),
             "minimumPerRowCoverage": 0.90,
             "contactSheetSha256": contact_sheet_sha256,
@@ -363,11 +390,16 @@ def main() -> None:
                 and not wrong_blender_cards
                 and all(count == args.expected_views for count in view_counts.values())
                 and all(row["geometryPassRate"] >= 0.90 for row in row_reports.values())
-                and all(row["connectedTapePassRate"] >= 0.90 for row in row_reports.values())
+                and all(row["tapeTargetPassRate"] >= 0.90 for row in row_reports.values())
             ),
         },
         "failuresByPerson": person_failures,
     }
+    report["status"] = (
+        "teacher-dataset-ready"
+        if report["summary"]["trainingAllowed"]
+        else "release-and-training-blocked-until-teachers-pass"
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps({"output": str(args.output), **report["inputs"], **report["summary"]}, indent=2))

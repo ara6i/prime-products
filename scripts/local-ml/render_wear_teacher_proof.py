@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render a human-reviewable proof board for one certified WEAR mesh teacher."""
+"""Render a human-reviewable waist/hip approval board before bulk CPU work."""
 
 from __future__ import annotations
 
@@ -10,7 +10,14 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 
-ROWS = ("neck", "chest", "underbust", "waist", "hips")
+ROWS = ("waist", "hips")
+TAPE_KEYS = {
+    "neck": "neck_base_circumference_mm",
+    "chest": "chest_circumference_mm",
+    "underbust": "underbust_circumference_mm",
+    "waist": "waist_circumference_mm",
+    "hips": "hip_circumference_mm",
+}
 COLORS = {
     "neck": "#c084fc",
     "chest": "#fb923c",
@@ -73,11 +80,16 @@ def main() -> None:
     board = Image.new("RGB", (1680, 1080), "#06101f")
     board.paste(mesh, (56, 184))
     draw = ImageDraw.Draw(board)
-    draw.text((56, 42), "CERTIFIED WEAR TEACHER CHECK", fill="#67e8f9", font=font(22, True))
+    draw.text((56, 42), "WAIST + HIPS · VISUAL APPROVAL CARD", fill="#67e8f9", font=font(22, True))
     draw.text((56, 82), str(record["scan_id"]), fill="white", font=font(36, True))
     draw.text((56, 132), "Blender 2D mesh card · exact PLY/LND rows · no RGB", fill="#a9b8cc", font=font(20))
 
     rows = record.get("rows") or {}
+    masked_rows = record.get("masked_rows") or {}
+    source_values = {
+        **(record.get("measurements_mm") or {}),
+        **(record.get("extracted_standing_mm") or {}),
+    }
     for row_name in ROWS:
         row = rows.get(row_name)
         if not row:
@@ -86,59 +98,87 @@ def main() -> None:
         x1 = 56 + float(row["left_x_norm"]) * 576
         x2 = 56 + float(row["right_x_norm"]) * 576
         color = COLORS[row_name]
-        if row.get("accepted") is True:
+        edge_ok = row.get("edge_teacher_accepted", row.get("accepted")) is True
+        if edge_ok:
             draw.line((x1, y, x2, y), fill=color, width=8)
         else:
             dashed_line(draw, (x1, y, x2, y), "#ef4444", 8)
         draw.text((x2 + 10, y - 12), row_name.upper(), fill=color, font=font(16, True))
 
     panel_x = 700
-    draw.text((panel_x, 42), "ONE CONNECTED TARGET", fill="#67e8f9", font=font(20, True))
-    draw.text((panel_x, 78), "row → A–B + C–D + 32-point shape → walked circumference → tape loss", fill="white", font=font(21, True))
-    draw.text((panel_x, 116), "Rejected geometry never enters GPU training.", fill="#fbbf24", font=font(19))
+    draw.text((panel_x, 42), "WHAT CPU PREPARES", fill="#67e8f9", font=font(20, True))
+    draw.text((panel_x, 78), "row position → A–B width → C–D depth → normalized 32-point shape", fill="white", font=font(20, True))
+    draw.text((panel_x, 116), "Recorded WEAR tape is the only circumference target. No PLY circumference.", fill="#fbbf24", font=font(18, True))
 
-    card_w, card_h = 450, 265
+    card_w, card_h = 450, 330
     for index, row_name in enumerate(ROWS):
         row = rows.get(row_name) or {}
         col = index % 2
         line = index // 2
         x = panel_x + col * (card_w + 20)
         y = 168 + line * (card_h + 18)
-        accepted = row.get("accepted") is True
+        blocked = masked_rows.get(row_name) or {}
+        not_applicable = bool(
+            not row
+            and row_name == "underbust"
+            and str(record.get("gender") or "").lower() != "female"
+        )
+        edge_ok = row.get("edge_teacher_accepted", row.get("accepted")) is True
+        depth_ok = row.get("depth_teacher_accepted", row.get("accepted")) is True
+        shape_ok = row.get("shape_teacher_accepted", row.get("accepted")) is True
+        accepted = edge_ok and depth_ok and shape_ok
         tape_ok = row.get("tape_target_valid") is True
-        border = "#22c55e" if accepted else "#ef4444"
+        partial = edge_ok and depth_ok and not shape_ok
+        border = "#64748b" if not_applicable else "#22c55e" if accepted else "#f59e0b" if partial else "#ef4444"
         draw.rounded_rectangle((x, y, x + card_w, y + card_h), radius=18, fill="#0d1a2d", outline=border, width=3)
         draw.text((x + 18, y + 14), row_name.upper(), fill=COLORS[row_name], font=font(20, True))
-        geometry_label = "GEOMETRY PASS" if accepted else "GEOMETRY REJECTED"
+        geometry_label = (
+            "NOT APPLICABLE"
+            if not_applicable
+            else "GEOMETRY PASS"
+            if accepted
+            else "A–B/C–D PASS · SHAPE BLOCKED"
+            if partial
+            else "NOT SAFE FOR TRAINING YET"
+        )
         draw.text((x + 190, y + 16), geometry_label, fill=border, font=font(15, True))
+        if not_applicable:
+            draw.text((x + 18, y + 64), "WEAR does not provide male under-bust tape.", fill="#cbd5e1", font=font(17))
+            draw.text((x + 18, y + 98), "This is not a failed teacher.", fill="#94a3b8", font=font(16))
+            continue
+        if not row:
+            tape = blocked.get("measurement_circumference_mm")
+            if tape is None:
+                tape = source_values.get(TAPE_KEYS[row_name])
+            draw.text((x + 18, y + 58), "A–B / C–D / shape not certified", fill="#fca5a5", font=font(17, True))
+            draw.text((x + 18, y + 96), f"Recorded tape  {fmt_cm(tape)}", fill="#facc15", font=font(17))
+            draw.text((x + 18, y + 134), "Tape retained for audit only", fill="#94a3b8", font=font(16))
+            reason = str(blocked.get("reason") or "source PLY row unavailable").replace("-", " ")
+            draw.text((x + 18, y + 180), reason[:45], fill="#fca5a5", font=font(13))
+            continue
         draw.text((x + 18, y + 52), f"A–B width  {fmt_cm(row.get('mesh_width_mm'))}", fill="white", font=font(17))
         draw.text((x + 18, y + 82), f"C–D depth  {fmt_cm(row.get('mesh_depth_mm'))}", fill="white", font=font(17))
-        draw.text((x + 18, y + 112), f"Walked shape  {fmt_cm(row.get('shape_walk_circumference_mm'))}", fill="white", font=font(17))
-        draw.text((x + 18, y + 142), f"Recorded tape  {fmt_cm(row.get('measurement_circumference_mm'))}", fill="#facc15", font=font(17))
-        perimeter = row.get("mesh_section_perimeter_mm")
-        tape = row.get("measurement_circumference_mm")
-        delta = None
-        if perimeter is not None and tape not in (None, 0):
-            delta = abs(float(perimeter) - float(tape)) / float(tape) * 100.0
-        tape_label = "TAPE LOSS CONNECTED" if tape_ok else "TAPE LOSS BLOCKED"
+        draw.text((x + 18, y + 112), "32-point shape  shown below", fill="white", font=font(17))
+        draw.text((x + 18, y + 142), f"Recorded tape target  {fmt_cm(row.get('measurement_circumference_mm'))}", fill="#facc15", font=font(17))
+        tape_label = "TAPE TARGET READY" if tape_ok else "TAPE TARGET NOT READY"
         tape_color = "#22c55e" if tape_ok else "#f59e0b"
         draw.text((x + 18, y + 176), tape_label, fill=tape_color, font=font(15, True))
-        if delta is not None:
-            draw.text((x + 230, y + 176), f"mesh/tape Δ {delta:.2f}%", fill="#cbd5e1", font=font(15))
+        draw.text((x + 230, y + 176), "PLY never judges the tape", fill="#cbd5e1", font=font(15))
 
         shape = row.get("contour_points_normalized") or []
-        if len(shape) == 32:
-            cx, cy, rx, ry = x + 350, y + 225, 70, 35
+        if shape_ok and len(shape) == 32:
+            cx, cy, rx, ry = x + 335, y + 260, 82, 48
             points = [(cx + float(px) * rx, cy - float(py) * ry) for px, py in shape]
             draw.line(points + [points[0]], fill="#a78bfa", width=3)
             draw.line((cx - rx, cy, cx + rx, cy), fill="#334155", width=1)
             draw.line((cx, cy - ry, cx, cy + ry), fill="#334155", width=1)
         reasons = row.get("teacher_rejection_reasons") or []
         if reasons:
-            draw.text((x + 18, y + 212), str(reasons[0]).replace("-", " ")[:42], fill="#fca5a5", font=font(13))
+            draw.text((x + 18, y + 222), str(reasons[0]).replace("-", " ")[:42], fill="#fca5a5", font=font(13))
 
-    draw.text((56, 982), "Solid row = certified exact PLY section. Red dashed row = diagnostic only, never a teacher.", fill="#cbd5e1", font=font(18))
-    draw.text((56, 1018), "Tape is separate recorded truth, but it can train only the circumference walked from the same certified shape.", fill="#facc15", font=font(18, True))
+    draw.text((panel_x, 540), "Approve only when both rows touch the correct PLY body edges", fill="#cbd5e1", font=font(18))
+    draw.text((panel_x, 570), "and both 32-point shapes look closed and anatomical.", fill="#cbd5e1", font=font(18))
+    draw.text((panel_x, 620), "Bulk CPU generation stays off until you approve these random cards.", fill="#facc15", font=font(18, True))
     args.output.parent.mkdir(parents=True, exist_ok=True)
     board.save(args.output)
     print(args.output)

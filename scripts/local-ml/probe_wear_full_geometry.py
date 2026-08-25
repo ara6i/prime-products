@@ -508,6 +508,28 @@ def main() -> None:
                 "depth_mm": round(float(value["depth_mm"]), 3),
                 "walked_mm": round(float(value["perimeter_mm"]), 3),
                 "recorded_tape_mm": value.get("measurement_circumference_mm"),
+                "walked_minus_tape_mm": (
+                    round(
+                        float(value["perimeter_mm"])
+                        - float(value["measurement_circumference_mm"]),
+                        3,
+                    )
+                    if value.get("measurement_circumference_mm") is not None
+                    else None
+                ),
+                "walked_minus_tape_pct": (
+                    round(
+                        (
+                            float(value["perimeter_mm"])
+                            - float(value["measurement_circumference_mm"])
+                        )
+                        / float(value["measurement_circumference_mm"])
+                        * 100.0,
+                        3,
+                    )
+                    if value.get("measurement_circumference_mm") not in (None, 0)
+                    else None
+                ),
                 "tape_used_to_select_geometry": False,
                 "geometry_certified": bool(value.get("geometry_target_valid")),
                 "circumference_teacher_accepted": bool(value.get("tape_target_valid")),
@@ -530,6 +552,34 @@ def main() -> None:
                             else None,
                             "fallback-hull-is-diagnostic-only"
                             if "fallback" in str(value.get("contour_source") or "")
+                            else None,
+                        )
+                        if reason
+                    ]
+                ),
+                "circumference_rejection_reasons": (
+                    []
+                    if value.get("tape_target_valid") is True
+                    else [
+                        reason
+                        for reason in (
+                            "geometry-not-certified"
+                            if value.get("geometry_target_valid") is not True
+                            else None,
+                            "recorded-WEAR-tape-missing"
+                            if value.get("measurement_circumference_mm") is None
+                            else None,
+                            "walked-certified-shape-differs-from-WEAR-tape-by-over-5pct"
+                            if value.get("measurement_circumference_mm") not in (None, 0)
+                            and abs(
+                                (
+                                    float(value["perimeter_mm"])
+                                    - float(value["measurement_circumference_mm"])
+                                )
+                                / float(value["measurement_circumference_mm"])
+                                * 100.0
+                            )
+                            > 5.0
                             else None,
                         )
                         if reason

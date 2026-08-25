@@ -335,7 +335,7 @@ function AllWearTargetsInspector({ activePart, mesh }: { activePart: WearV6RowKi
         </div>
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="rounded-xl bg-emerald-400/15 px-4 py-3"><strong className="block text-2xl text-emerald-300">{mesh.trainingTargetSummary.geometryReady}</strong><span className="text-xs text-slate-300">GPU-ready geometry</span></div>
-          <div className="rounded-xl bg-red-400/15 px-4 py-3"><strong className="block text-2xl text-red-300">{mesh.trainingTargetSummary.geometryRejected + mesh.trainingTargetSummary.recordedScalarOnly}</strong><span className="text-xs text-slate-300">blocked or rejected</span></div>
+          <div className="rounded-xl bg-red-400/15 px-4 py-3"><strong className="block text-2xl text-red-300">{mesh.trainingTargetSummary.geometryRejected + mesh.trainingTargetSummary.recordedScalarOnly}</strong><span className="text-xs text-slate-300">not safe for training yet</span></div>
         </div>
       </div>
 
@@ -702,7 +702,7 @@ function MeshTrainingBlueprint({
             <div><strong className="block text-xl">427</strong><span className="text-xs text-slate-400">validation</span></div>
             <div><strong className="block text-xl">448</strong><span className="text-xs text-slate-400">unseen test</span></div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-slate-300">The current five-card CPU proof would create 17,255 train, 2,135 validation and 2,240 unseen test candidates. We expand the camera matrix only after these cards pass. Rejected geometry rows are masked, not silently taught. Release stays blocked until the unseen 448 pass row position, A–B, C–D, shape and derived-circumference gates.</p>
+          <p className="mt-4 text-sm leading-6 text-slate-300">The current five-card CPU proof would create 17,255 train, 2,135 validation and 2,240 unseen test candidates. We expand the camera matrix only after these cards pass. Geometry that is not safe for training yet is masked, not silently taught. Release stays blocked until the unseen 448 pass row position, A–B, C–D, shape and derived-circumference gates.</p>
         </div>
       </div>
 

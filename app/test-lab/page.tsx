@@ -7,6 +7,7 @@ import {
   Gauge,
   PanelsTopLeft,
   Ruler,
+  ScanLine,
   ScanSearch,
   Sparkles,
 } from "lucide-react";
@@ -37,6 +38,13 @@ const LABS = [
       "Test any of the 448 held-out WEAR meshes and inspect nearest matches by body part.",
     href: "/try-on-test/sdk-wear-mesh",
     icon: ScanSearch,
+  },
+  {
+    title: "3D Teacher Proof · 10",
+    description:
+      "Inspect ten real WEAR scans, exact body sections, depth, contours, ratios, and teacher pass/fail gates in Blender-style 3D.",
+    href: "/try-on-test/wear-teacher-proof",
+    icon: ScanLine,
   },
   {
     title: "Capacity Lab",

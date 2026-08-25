@@ -9,8 +9,9 @@ The model learns three paths directly from standing WEAR teachers:
 1. Blender 2D mesh + profile -> anatomical rows, landmarks, and body segments.
 2. Mesh shape + profile + the model's own predicted row -> that certified
    row's A-B, C-D, and normalized 32-point PLY cross-section.
-3. Circumference is calculated by walking the predicted 32-point shape; the
-   recorded tape supervises this connected path and is never a separate head.
+3. A geometry-conditioned tape head learns the recorded WEAR circumference
+   from the model's own predicted row/shape features. PLY path length remains
+   diagnostic and is never forced to equal the human tape.
 4. Mesh + profile -> all other usable non-circumference standing measurements.
 
 No ellipse, superellipse, nearest-person answer, tape OCR, Apple scale, or
@@ -79,7 +80,14 @@ EXCLUDED_MEASUREMENTS = {"stature_mm", "weight_kg"}
 # "sitting" in our normalized field names; these two do not, so exclude them
 # explicitly from a model whose customer input is one standing photo.
 SITTING_MEASUREMENTS = {"buttock_knee_length_mm", "knee_height_mm"}
-CORE_CIRCUMFERENCE_KEYS = {f"row.{name}.circumference_cm" for name in ROW_NAMES}
+ROW_TAPE_KEYS = {
+    "neck": "measurements_mm.neck_base_circumference_mm",
+    "chest": "measurements_mm.chest_circumference_mm",
+    "underbust": "measurements_mm.underbust_circumference_mm",
+    "waist": "measurements_mm.waist_circumference_mm",
+    "hips": "measurements_mm.hip_circumference_mm",
+}
+CORE_CIRCUMFERENCE_KEYS = set(ROW_TAPE_KEYS.values())
 CORE_BREADTH_KEYS = {f"row.{name}.breadth_cm" for name in ROW_NAMES}
 CORE_DEPTH_KEYS = {f"row.{name}.depth_cm" for name in ROW_NAMES}
 CORE_SHAPE_KEYS = {
@@ -259,29 +267,40 @@ def flatten_targets(record: dict[str, Any]) -> tuple[dict[str, float], dict[str,
     measurements: dict[str, float] = {}
     for name in ROW_NAMES:
         row = (record.get("rows") or {}).get(name) or {}
-        if row.get("accepted") is not True:
-            continue
+        accepted = row.get("accepted") is True
+        edge_valid = bool(
+            row.get("edge_target_valid") is not False
+            and (
+                row.get("edge_teacher_accepted") is True
+                or ("edge_teacher_accepted" not in row and accepted and row.get("geometry_target_valid") is True)
+            )
+        )
+        depth_valid = bool(
+            row.get("depth_target_valid") is not False
+            and (
+                row.get("depth_teacher_accepted") is True
+                or ("depth_teacher_accepted" not in row and accepted and row.get("geometry_target_valid") is True)
+            )
+        )
+        shape_valid = bool(
+            row.get("shape_target_valid") is True
+            and (row.get("shape_teacher_accepted") is True or ("shape_teacher_accepted" not in row and accepted))
+        )
         y = finite(row.get("y_norm"))
         left = finite(row.get("wear_edge_left_x_norm"))
         right = finite(row.get("wear_edge_right_x_norm"))
-        for field, value in (("y_norm", y), ("left_x_norm", left), ("right_x_norm", right)):
-            if value is not None:
-                edges[f"row.{name}.{field}"] = value
-        breadth_mm = finite(row.get("mesh_width_mm")) if row.get("geometry_target_valid") else None
-        depth_mm = finite(row.get("mesh_depth_mm")) if row.get("geometry_target_valid") else None
-        circumference_mm = (
-            finite(row.get("measurement_circumference_mm"))
-            if row.get("tape_target_valid") is True
-            else None
-        )
+        if edge_valid:
+            for field, value in (("y_norm", y), ("left_x_norm", left), ("right_x_norm", right)):
+                if value is not None:
+                    edges[f"row.{name}.{field}"] = value
+        breadth_mm = finite(row.get("mesh_width_mm")) if edge_valid else None
+        depth_mm = finite(row.get("mesh_depth_mm")) if depth_valid else None
         if breadth_mm is not None:
             measurements[f"row.{name}.breadth_cm"] = breadth_mm / 10.0
         if depth_mm is not None:
             measurements[f"row.{name}.depth_cm"] = depth_mm / 10.0
-        if circumference_mm is not None:
-            measurements[f"row.{name}.circumference_cm"] = circumference_mm / 10.0
         contour = row.get("contour_points_normalized")
-        if row.get("shape_target_valid") is True and isinstance(contour, list) and len(contour) == CONTOUR_POINTS:
+        if shape_valid and isinstance(contour, list) and len(contour) == CONTOUR_POINTS:
             for point_index, point in enumerate(contour):
                 if not isinstance(point, list) or len(point) != 2:
                     continue
@@ -319,10 +338,6 @@ def flatten_targets(record: dict[str, Any]) -> tuple[dict[str, float], dict[str,
                     or name in SITTING_MEASUREMENTS
                     or "sitting" in name.lower()
                 ))
-                # Never create a second direct circumference head. Every tape
-                # circumference must be mapped to a certified row/path and
-                # computed by walking that row's predicted geometry.
-                or "circumference" in name.lower()
             ):
                 continue
             value = finite(raw_value)
@@ -607,7 +622,7 @@ class WearMeshDataset(Dataset):
             if value is not None:
                 measurement_values[target_index] = (value - self.normalization.measurement_mean[target_index]) / self.normalization.measurement_std[target_index]
                 # All camera views must predict the same canonical A-B, C-D,
-                # shape, and connected circumference for this subject.
+                # shape, and independently recorded tape for this subject.
                 measurement_mask[target_index] = 1.0
         # Row geometry is a target, never a runtime input. Returning the true
         # y/left/right values here would let the measurement heads peek at the
@@ -722,13 +737,14 @@ class WearV8Model(nn.Module):
         self.register_buffer("measurement_native_mean", torch.as_tensor(measurement_mean, dtype=torch.float32))
         self.register_buffer("measurement_native_std", torch.as_tensor(measurement_std, dtype=torch.float32))
         self.row_measurement_heads = nn.ModuleDict()
+        self.tape_calibration_heads = nn.ModuleDict()
         core_measurement_indices: list[int] = []
+        tape_measurement_indices: list[int] = []
         for name in ROW_NAMES:
             indices = [
                 measurement_index[key]
                 for key in measurement_keys
                 if key.startswith(f"row.{name}.")
-                and key != f"row.{name}.circumference_cm"
             ]
             if not indices:
                 raise RuntimeError(f"No independent measurement targets for {name}")
@@ -742,19 +758,28 @@ class WearV8Model(nn.Module):
                 nn.Dropout(0.08),
                 nn.Linear(128, len(indices)),
             )
+            # This is the learned "special formula": the tape head receives
+            # the front mesh/profile, the model's own row position, and every
+            # predicted row geometry value (breadth, depth, and shape). The
+            # recorded tape remains an independent target and is never forced
+            # to equal a walked PLY perimeter.
+            self.tape_calibration_heads[name] = nn.Sequential(
+                nn.Linear(135 + len(indices), 160),
+                nn.SiLU(),
+                nn.Dropout(0.08),
+                nn.Linear(160, 96),
+                nn.SiLU(),
+                nn.Linear(96, 1),
+            )
+            tape_measurement_indices.append(measurement_index[ROW_TAPE_KEYS[name]])
         self.register_buffer(
             "core_measurement_indices",
             torch.tensor(core_measurement_indices, dtype=torch.long),
         )
-        self.connected_rows: list[dict[str, Any]] = []
-        for name in ROW_NAMES:
-            self.connected_rows.append({
-                "breadth": measurement_index[f"row.{name}.breadth_cm"],
-                "depth": measurement_index[f"row.{name}.depth_cm"],
-                "circumference": measurement_index[f"row.{name}.circumference_cm"],
-                "shape_x": [measurement_index[f"row.{name}.shape.{index:02d}.x"] for index in range(CONTOUR_POINTS)],
-                "shape_y": [measurement_index[f"row.{name}.shape.{index:02d}.y"] for index in range(CONTOUR_POINTS)],
-            })
+        self.register_buffer(
+            "tape_measurement_indices",
+            torch.tensor(tape_measurement_indices, dtype=torch.long),
+        )
 
     def forward(self, mesh_channels, profile):
         vision = self.vision_pool(self.vision_features(mesh_channels)).flatten(1)
@@ -780,6 +805,7 @@ class WearV8Model(nn.Module):
         measurements = self.measurement_head(shared_visual)
         measurement_visual = self.measurement_visual(core_visual)
         independent_rows = []
+        tape_predictions = []
         for index, name in enumerate(ROW_NAMES):
             predicted_row_geometry = native_edges[:, self.row_edge_input_indices[index]].clamp(0.0, 1.0)
             row_input = torch.cat(
@@ -790,38 +816,22 @@ class WearV8Model(nn.Module):
                 ),
                 dim=1,
             )
-            independent_rows.append(self.row_measurement_heads[name](row_input))
+            predicted_row = self.row_measurement_heads[name](row_input)
+            independent_rows.append(predicted_row)
+            tape_predictions.append(
+                self.tape_calibration_heads[name](torch.cat((row_input, predicted_row), dim=1))
+            )
         core_measurements = torch.cat(independent_rows, dim=1)
         measurements = measurements.scatter(
             1,
             self.core_measurement_indices.unsqueeze(0).expand(mesh_channels.shape[0], -1),
             core_measurements,
         )
-        # Circumference is not a free prediction. Convert the predicted A-B,
-        # C-D, and 32 normalized points back to centimetres, resize the closed
-        # shape to that exact breadth/depth, and walk all 32 edges. Tape loss
-        # therefore back-propagates through the same geometry shown in Test Lab.
-        native = measurements * self.measurement_native_std.unsqueeze(0) + self.measurement_native_mean.unsqueeze(0)
-        for row in self.connected_rows:
-            breadth = native[:, row["breadth"]].clamp_min(1.0)
-            depth = native[:, row["depth"]].clamp_min(1.0)
-            shape_x = native[:, row["shape_x"]]
-            shape_y = native[:, row["shape_y"]]
-            circumference_cm = walk_resized_closed_shape_cm(shape_x, shape_y, breadth, depth)
-            circumference_index = row["circumference"]
-            normalized_circumference = (
-                circumference_cm - self.measurement_native_mean[circumference_index]
-            ) / self.measurement_native_std[circumference_index]
-            measurements = measurements.scatter(
-                1,
-                torch.full(
-                    (mesh_channels.shape[0], 1),
-                    circumference_index,
-                    dtype=torch.long,
-                    device=mesh_channels.device,
-                ),
-                normalized_circumference.unsqueeze(1),
-            )
+        measurements = measurements.scatter(
+            1,
+            self.tape_measurement_indices.unsqueeze(0).expand(mesh_channels.shape[0], -1),
+            torch.cat(tape_predictions, dim=1),
+        )
         return edge_values, measurements
 
 
@@ -1553,7 +1563,7 @@ def main() -> None:
         "row_geometry_augmentation": "none-ground-truth-rows-are-targets-never-inputs",
         "metric_width_input": "forbidden",
         "breadth_method": "direct-raw-WEAR-mesh-supervision",
-        "circumference_method": "walked-predicted-32-point-shape-supervised-by-WEAR-tape",
+        "circumference_method": "geometry-conditioned-direct-WEAR-tape-head-using-model-predicted-row-and-shape-features",
         "depth_method": "same-certified-PLY-ring-C-D-supervision",
         "shape_method": "32-point-normalized-certified-WEAR-cross-section-supervision",
         "pose_scope": "standing-A-only; nine deterministic Blender camera views teach angle correction against one canonical certified PLY geometry; sitting measurements excluded",

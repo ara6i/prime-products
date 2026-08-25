@@ -103,6 +103,35 @@ class WearMetricLineAssetsTest(unittest.TestCase):
         self.assertAlmostEqual(float(ring[:, 0].max()), 0.15, places=5)
         self.assertLess(evidence["bridgePerimeterRatio"], 0.08)
 
+    def test_large_side_gaps_keep_observed_width_but_block_closed_shape(self) -> None:
+        components = [
+            {
+                "points": np.asarray([[-0.15, -0.09], [0.0, -0.14], [0.15, -0.09]]),
+                "closed": False,
+            },
+            {
+                "points": np.asarray([[-0.15, 0.02], [0.0, 0.13], [0.15, 0.02]]),
+                "closed": False,
+            },
+            {
+                "points": np.asarray([[-0.31, -0.05], [-0.27, 0.0], [-0.30, 0.05]]),
+                "closed": False,
+            },
+            {
+                "points": np.asarray([[0.27, -0.05], [0.31, 0.0], [0.30, 0.05]]),
+                "closed": False,
+            },
+        ]
+        observed, evidence = METRIC.certified_central_torso_arc_ring(components, -0.18, 0.18)
+        self.assertIsNotNone(observed)
+        self.assertFalse(evidence["certified"])
+        self.assertIn("side-seam-bridge-over-40mm", evidence["failures"])
+        self.assertAlmostEqual(evidence["observedWidthMm"], 300.0, places=3)
+        self.assertGreater(evidence["observedDepthMm"], 200.0)
+        assert observed is not None
+        self.assertAlmostEqual(float(observed[:, 0].min()), -0.15, places=5)
+        self.assertAlmostEqual(float(observed[:, 0].max()), 0.15, places=5)
+
     def test_browser_projection_is_decimated_and_depth_free(self) -> None:
         mesh = trimesh.creation.icosphere(subdivisions=4, radius=0.5)
         vertices = np.asarray(mesh.vertices)

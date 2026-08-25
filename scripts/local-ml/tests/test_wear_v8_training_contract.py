@@ -130,14 +130,30 @@ class WearV8TrainingContractTest(unittest.TestCase):
             self.assertGreater(float(channels[2].sum()), 0.0)
             self.assertTrue(np.all(channels[2][channels[0] < 0.5] == 0.0))
 
-    def test_rejected_teacher_contributes_no_row_or_tape_target(self) -> None:
+    def test_rejected_geometry_keeps_independent_recorded_tape_target(self) -> None:
         edges, measurements = TRAINER.flatten_targets({
             "rows": {"waist": self.row(accepted=False, geometry=False, shape=False, tape=False)},
             "measurements_mm": {"waist_circumference_mm": 920.0},
         })
         self.assertNotIn("row.waist.y_norm", edges)
         self.assertNotIn("row.waist.circumference_cm", measurements)
-        self.assertNotIn("measurements_mm.waist_circumference_mm", measurements)
+        self.assertEqual(measurements["measurements_mm.waist_circumference_mm"], 92.0)
+
+    def test_observed_torso_arcs_keep_edges_and_depth_but_mask_shape_and_tape(self) -> None:
+        row = self.row(accepted=False, geometry=False, shape=False, tape=False)
+        row.update({
+            "edge_teacher_accepted": True,
+            "depth_teacher_accepted": True,
+            "shape_teacher_accepted": False,
+            "edge_target_valid": True,
+            "depth_target_valid": True,
+        })
+        edges, measurements = TRAINER.flatten_targets({"rows": {"chest": row}})
+        self.assertEqual(edges["row.chest.y_norm"], 0.4)
+        self.assertEqual(measurements["row.chest.breadth_cm"], 40.0)
+        self.assertEqual(measurements["row.chest.depth_cm"], 20.0)
+        self.assertFalse(any(key.startswith("row.chest.shape.") for key in measurements))
+        self.assertNotIn("row.chest.circumference_cm", measurements)
 
     def test_tape_target_exists_only_for_certified_connected_row(self) -> None:
         record = {
@@ -148,8 +164,24 @@ class WearV8TrainingContractTest(unittest.TestCase):
         self.assertEqual(edges["row.waist.y_norm"], 0.4)
         self.assertEqual(measurements["row.waist.breadth_cm"], 40.0)
         self.assertEqual(measurements["row.waist.depth_cm"], 20.0)
-        self.assertEqual(measurements["row.waist.circumference_cm"], 92.0)
-        self.assertNotIn("measurements_mm.waist_circumference_mm", measurements)
+        self.assertEqual(measurements["measurements_mm.waist_circumference_mm"], 92.0)
+        self.assertNotIn("row.waist.circumference_cm", measurements)
+
+    def test_ply_perimeter_fields_cannot_change_the_tape_target(self) -> None:
+        row = self.row(accepted=True, geometry=True, shape=True, tape=True)
+        row.update({
+            "mesh_section_perimeter_mm": 1.0,
+            "shape_walk_circumference_mm": 9999.0,
+            "perimeter_delta_to_measurement_pct": 999.0,
+            "perimeter_consistent_with_tape": False,
+        })
+        _, measurements = TRAINER.flatten_targets({
+            "rows": {"waist": row},
+            "measurements_mm": {"waist_circumference_mm": 920.0},
+        })
+        self.assertEqual(measurements["measurements_mm.waist_circumference_mm"], 92.0)
+        self.assertNotIn("row.waist.circumference_cm", measurements)
+        self.assertFalse(any("perimeter" in key for key in measurements))
 
 
 if __name__ == "__main__":

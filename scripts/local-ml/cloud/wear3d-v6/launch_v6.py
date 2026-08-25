@@ -97,6 +97,7 @@ def upload_code(project_root: Path) -> None:
     files = [
         project_root / ".local-ml/tools/render_wear3d_pilot.py",
         project_root / "scripts/local-ml/audit_wear_teacher_cards.py",
+        project_root / "scripts/local-ml/wear_full_contract.py",
         Path(__file__).with_name("render_wear3d_multiview.py"),
         Path(__file__).with_name("audit_wear3d_labels_cloud.py"),
         Path(__file__).with_name("run_v6_preprocess.py"),

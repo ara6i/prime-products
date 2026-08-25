@@ -362,13 +362,21 @@ export async function getRandomWearTeacherCards(count = 4) {
 }
 
 export function isAllowedTeacherImageKey(key: string) {
-  return key.startsWith(`${WEAR_V8_RENDER_PREFIX}/chunk-`)
-    && /\/attempts\/[a-z0-9-]+\/mesh-cards\/[A-Z0-9-]+-front-50\.png$/u.test(key);
+  return /^local-canary\/[A-Z0-9-]+-front-50\.png$/u.test(key)
+    || (key.startsWith(`${WEAR_V8_RENDER_PREFIX}/chunk-`)
+      && /\/attempts\/[a-z0-9-]+\/mesh-cards\/[A-Z0-9-]+-front-50\.png$/u.test(key));
 }
 
 export async function readTeacherImage(key: string) {
   if (!isAllowedTeacherImageKey(key)) throw new Error("Invalid teacher image key");
   const fileName = key.split("/").at(-1) ?? "";
+  if (key.startsWith("local-canary/")) {
+    return readFile(path.join(
+      /* turbopackIgnore: true */ process.cwd(),
+      ".local-ml/wear3d-v8-teacher-canary/ten-final-v2/mesh-cards",
+      fileName,
+    ));
+  }
   const localPath = path.join(
     /* turbopackIgnore: true */ process.cwd(),
     ".local-ml/wear3d-v8-cloud-status/card-check",

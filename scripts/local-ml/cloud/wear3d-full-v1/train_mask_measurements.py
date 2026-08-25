@@ -26,6 +26,8 @@ from torch import nn
 from torch.nn import functional as F
 from torch.utils.data import DataLoader, Dataset
 
+from teacher_target_contract import build_ratio_targets, include_measurement_target
+
 
 ROW_NAMES = ("neck", "chest", "underbust", "waist", "hips")
 ROW_DIRECT_FIELDS = ("y_norm", "left_x_norm", "right_x_norm", "depth_ratio")
@@ -124,18 +126,44 @@ def flatten_targets(record: dict[str, Any]) -> dict[str, float]:
     rows = record.get("rows") or {}
     for row_name in ROW_NAMES:
         row = rows.get(row_name) or {}
-        if row.get("accepted") is not True:
-            continue
-        for field in ROW_DIRECT_FIELDS:
+        accepted = row.get("accepted") is True
+        edge_valid = bool(
+            row.get("edge_target_valid") is not False
+            and (
+                row.get("edge_teacher_accepted") is True
+                or (
+                    "edge_teacher_accepted" not in row
+                    and accepted
+                    and row.get("geometry_target_valid") is True
+                )
+            )
+        )
+        depth_valid = bool(
+            row.get("depth_target_valid") is not False
+            and (
+                row.get("depth_teacher_accepted") is True
+                or (
+                    "depth_teacher_accepted" not in row
+                    and accepted
+                    and row.get("geometry_target_valid") is True
+                )
+            )
+        )
+        for field in ("y_norm", "left_x_norm", "right_x_norm"):
+            if not edge_valid:
+                continue
             value = finite_number(row.get(field))
             if value is not None:
                 targets[f"row.{row_name}.{field}"] = value
-        visible_width_mm = finite_number(row.get("visible_width_mm"))
+        depth_ratio = finite_number(row.get("depth_ratio")) if edge_valid and depth_valid else None
+        if depth_ratio is not None:
+            targets[f"row.{row_name}.depth_ratio"] = depth_ratio
+        visible_width_mm = finite_number(row.get("visible_width_mm")) if edge_valid else None
         if visible_width_mm is not None:
             targets[f"row.{row_name}.visible_width_cm"] = visible_width_mm / 10.0
-        depth_mm = finite_number(row.get("tape_calibrated_depth_mm"))
+        depth_mm = finite_number(row.get("tape_calibrated_depth_mm")) if depth_valid else None
         if depth_mm is None:
-            depth_mm = finite_number(row.get("mesh_depth_mm"))
+            depth_mm = finite_number(row.get("mesh_depth_mm")) if depth_valid else None
         if depth_mm is not None:
             targets[f"row.{row_name}.depth_cm"] = depth_mm / 10.0
 
@@ -167,10 +195,17 @@ def flatten_targets(record: dict[str, Any]) -> dict[str, float]:
         for name, raw_value in values.items():
             if namespace == "measurements_mm" and name in EXCLUDED_MEASUREMENT_TARGETS:
                 continue
+            if not include_measurement_target(namespace, name, rows):
+                # Namespace-level source contract; geometry validity is
+                # handled independently by each row target mask.
+                continue
             value = finite_number(raw_value)
             if value is not None:
                 # Centimeters are easier to read in the exported metrics and SDK.
                 targets[f"{namespace}.{name}"] = value / 10.0
+    # Ratios are auxiliary prediction targets, never structured inputs. They
+    # share the same per-value target mask as every other multi-task output.
+    targets.update(build_ratio_targets(record))
     return targets
 
 
@@ -378,6 +413,8 @@ def target_loss_weights(target_keys: list[str]) -> torch.Tensor:
             weights.append(2.5)
         elif key.startswith("row."):
             weights.append(2.0)
+        elif key.startswith("ratio."):
+            weights.append(1.5)
         else:
             weights.append(1.0)
     return torch.tensor(weights, dtype=torch.float32)
@@ -731,11 +768,14 @@ def main() -> None:
         "subject_split": metrics["subjects"],
         "training_pose": "neutral standing A only",
         "mask_cleanup": "largest connected human silhouette",
-        "row_output": "neck, chest, underbust, waist, and hip height, torso edges, depth ratio, width, and depth",
+        "row_output": "neck, chest, underbust, waist, and hip height, torso edges, depth ratio, width, depth, and certified-width ratios",
         "row_edge_postprocess": "use trained WEAR torso edges for every row; retain MediaPipe torso isolation only as a safety fallback",
         "full_target_training": {
             "core_measurement_loss_weight": 2.5,
             "row_loss_weight": 2.0,
+            "ratio_loss_weight": 1.5,
+            "recorded_tape_target": "independent-direct-head-kept-when-PLY-shape-is-missing",
+            "ratio_contract": "auxiliary outputs derived only from certified front-observable widths; never model inputs",
             "edge_labels": "closed WEAR torso-section bounds that exclude arms",
             "landmark_points": len(selected_landmark_prefixes),
             "segments": list(SEGMENT_NAMES),

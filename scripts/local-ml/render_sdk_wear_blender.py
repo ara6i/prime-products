@@ -7,8 +7,10 @@ import argparse
 import bmesh
 import bpy
 import gzip
+import importlib.util
 import json
 import math
+import numpy as np
 import shutil
 import sys
 import tempfile
@@ -17,8 +19,7 @@ from pathlib import Path
 from mathutils import Vector
 
 
-TARGET_FACE_COUNT = 70_000
-RENDER_SCHEMA_VERSION = 3
+RENDER_SCHEMA_VERSION = 4
 CAMERA_CARDS = (
     {"id": "canonical", "yawDeg": 0.0, "pitchDeg": 0.0, "rollDeg": 0.0, "lensMm": 55.0},
     {"id": "yaw-left-12", "yawDeg": -12.0, "pitchDeg": 0.0, "rollDeg": 0.0, "lensMm": 55.0},
@@ -34,10 +35,26 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--scan-id", required=True)
     parser.add_argument("--mesh-gz", type=Path, required=True)
     parser.add_argument("--landmarks", type=Path, required=True)
+    parser.add_argument("--teacher-record", type=Path, required=True)
     parser.add_argument("--height-cm", type=float, required=True)
     parser.add_argument("--weight-kg", type=float, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     return parser.parse_args(raw)
+
+
+def load_base_renderer():
+    source = Path.cwd() / ".local-ml/tools/render_wear3d_pilot.py"
+    if not source.is_file():
+        raise RuntimeError(f"Canonical WEAR renderer is unavailable: {source}")
+    spec = importlib.util.spec_from_file_location("teacher_proof_base_renderer", source)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Could not import canonical WEAR renderer: {source}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+BASE = load_base_renderer()
 
 
 def clear_scene() -> None:
@@ -173,32 +190,36 @@ def prepare_body(args: argparse.Namespace, temp_dir: Path) -> tuple[bpy.types.Ob
         raise RuntimeError(f"Expected one WEAR mesh, found {len(imported)}.")
     body = imported[0]
     body.name = f"REAL_WEAR_{args.scan_id}"
-    cleanup = keep_largest_component(body)
+    teacher_record = json.loads(args.teacher_record.read_text())
+    if teacher_record.get("scan_id") != args.scan_id:
+        raise RuntimeError("Teacher record does not match the requested scan.")
 
-    raw_low, raw_high = world_bounds(body)
-    raw_height = raw_high.z - raw_low.z
-    if raw_height <= 0:
-        raise RuntimeError("The WEAR mesh has no usable height.")
-    target_height_m = args.height_cm / 100.0
-    uniform_scale = target_height_m / raw_height
-    body.scale = Vector((uniform_scale, uniform_scale, uniform_scale))
-    body.rotation_euler.z = front_yaw(parse_landmarks(args.landmarks))
+    # Use the exact same unit, anatomical-axis, centering, and vertical-offset
+    # contract as render_wear3d_multiview.py. The browser body and exported
+    # contour_world_points_mm then occupy one coordinate system.
+    unit_scale = 0.001 if body.dimensions.z > 10.0 else 1.0
+    body.scale = Vector((unit_scale, unit_scale, unit_scale))
     bpy.context.view_layer.objects.active = body
     body.select_set(True)
-    bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-
-    low, high = world_bounds(body)
-    body.location += Vector((-(low.x + high.x) / 2.0, -(low.y + high.y) / 2.0, -low.z))
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    raw_points = np.empty(len(body.data.vertices) * 3, dtype=np.float64)
+    body.data.vertices.foreach_get("co", raw_points)
+    raw_points = raw_points.reshape((-1, 3))
+    transform = BASE.anatomical_transform(teacher_record, raw_points[:, :2])
+    body.data.transform(transform)
+    body.data.update()
+    canonical_points = np.empty(len(body.data.vertices) * 3, dtype=np.float64)
+    body.data.vertices.foreach_get("co", canonical_points)
+    canonical_points = canonical_points.reshape((-1, 3))
+    minimum = canonical_points.min(axis=0)
+    maximum = canonical_points.max(axis=0)
+    center = (minimum + maximum) / 2.0
+    source_z_offset, vertical_method = BASE.source_vertical_alignment(teacher_record)
+    vertical_offset = source_z_offset if source_z_offset is not None else -float(minimum[2])
+    body.location = Vector((-float(center[0]), -float(center[1]), float(vertical_offset)))
     bpy.ops.object.transform_apply(location=True, rotation=False, scale=False)
 
     original_faces = len(body.data.polygons)
-    if original_faces > TARGET_FACE_COUNT:
-        modifier = body.modifiers.new(name="Browser decimation", type="DECIMATE")
-        modifier.decimate_type = "COLLAPSE"
-        modifier.ratio = TARGET_FACE_COUNT / original_faces
-        modifier.use_collapse_triangulate = True
-        bpy.context.view_layer.objects.active = body
-        bpy.ops.object.modifier_apply(modifier=modifier.name)
     for polygon in body.data.polygons:
         polygon.use_smooth = True
     body.data.materials.clear()
@@ -208,7 +229,8 @@ def prepare_body(args: argparse.Namespace, temp_dir: Path) -> tuple[bpy.types.Ob
     body["source_landmarks"] = "exact verified AWS WEAR LND"
     body["height_cm"] = args.height_cm
     body["weight_kg"] = args.weight_kg
-    body["uniform_scale_to_recorded_stature"] = uniform_scale
+    body["uniform_scale_to_recorded_stature"] = 1.0
+    body["wear_vertical_alignment_method"] = vertical_method
 
     low, high = world_bounds(body)
     metadata = {
@@ -226,14 +248,16 @@ def prepare_body(args: argparse.Namespace, temp_dir: Path) -> tuple[bpy.types.Ob
             "originalFaces": original_faces,
             "browserFaces": len(body.data.polygons),
             "browserVertices": len(body.data.vertices),
-            "cleanup": cleanup,
-            "uniformScaleToRecordedStature": uniform_scale,
+            "cleanup": {"removedVertices": 0, "removedFaces": 0},
+            "uniformScaleToRecordedStature": 1.0,
+            "verticalAlignmentMethod": vertical_method,
             "boundsMeters": {
                 "minimum": [low.x, low.z, -high.y],
                 "maximum": [high.x, high.z, -low.y],
             },
         },
-        "truthBoundary": "The surface is the real WEAR scan. Blender only orients, uniformly scales to recorded stature, removes disconnected scan debris, and decimates the browser copy.",
+        "truthBoundary": "The browser surface is the full real WEAR PLY in the exact same canonical transform as the exported teacher paths; no decimation, scaling-to-tape, or decorative ring reconstruction is used.",
+        "canonicalTransformContract": "render_wear3d_pilot.anatomical_transform+source_vertical_alignment",
     }
     return body, metadata
 

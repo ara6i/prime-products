@@ -10,6 +10,7 @@ const TABS = [
   { href: "/try-on-test/sdk-wear-mesh", label: "SDK · WEAR Mesh" },
   { href: "/try-on-test/wear-photo-test", label: "WEAR Sizing Lab" },
   { href: "/try-on-test/wear-cpu-progress", label: "WEAR CPU Progress" },
+  { href: "/try-on-test/wear-teacher-proof", label: "3D Teacher Proof · 10" },
   { href: "/try-on-test/wear-everything", label: "WEAR Everything" },
   { href: "/try-on-test/wear-mesh-overlay", label: "WEAR Mesh Match" },
   { href: "/try-on-test/wear-front-side-proof", label: "Front + Side Proof" },
