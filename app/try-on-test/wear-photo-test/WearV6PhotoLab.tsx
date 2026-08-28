@@ -29,6 +29,7 @@ import { WearV6Workbench } from "./WearV6Workbench";
 import { HeldoutOnnxTrainingVisual } from "./HeldoutOnnxTrainingVisual";
 import { FreshGeometryResult } from "./FreshGeometryResult";
 import { FreshSealed448Lab } from "./FreshSealed448Lab";
+import { V8Benchmark448Lab } from "./V8Benchmark448Lab";
 import type {
   FreshCameraFusion,
   FreshGeometryLineOverrideMap,
@@ -49,7 +50,7 @@ import type {
 
 type RunState = "idle" | "pose" | "wear-edges" | "apple" | "wear-measurements" | "ready" | "error";
 type AppleState = "idle" | "loading" | "ready" | "error";
-type TestMode = "heldout-onnx" | "photo-pipeline" | "fresh-photo" | "fresh-448";
+type TestMode = "heldout-onnx" | "photo-pipeline" | "fresh-photo" | "v8-photo" | "fresh-448" | "v8-448";
 
 interface HeldoutWearModel {
   scanId: string;
@@ -194,6 +195,16 @@ async function imageUrlToDataUrl(source: string): Promise<string> {
       : reject(new Error("Could not encode the selected photo."));
     reader.onerror = () => reject(new Error("Could not encode the selected photo."));
     reader.readAsDataURL(blob);
+  });
+}
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(message)), timeoutMs);
+  });
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timeoutId) clearTimeout(timeoutId);
   });
 }
 
@@ -778,7 +789,7 @@ export function LegacyHeldoutOnnxResult({
 }
 
 export function WearV6PhotoLab() {
-  const [testMode, setTestMode] = useState<TestMode>("fresh-photo");
+  const [testMode, setTestMode] = useState<TestMode>("v8-448");
   const [datasets, setDatasets] = useState<DatasetRow[]>([]);
   const [heldoutModels, setHeldoutModels] = useState<HeldoutWearModel[]>([]);
   const [heldoutPersonCount, setHeldoutPersonCount] = useState(0);
@@ -795,6 +806,7 @@ export function WearV6PhotoLab() {
   const [actuals, setActuals] = useState<ActualMeasurements>(EMPTY_ACTUALS);
   const [modelStatus, setModelStatus] = useState<WearV6ModelStatus | null>(null);
   const [freshStatus, setFreshStatus] = useState<FreshGeometryStatus | null>(null);
+  const [v8Status, setV8Status] = useState<FreshGeometryStatus | null>(null);
   const [forgeStatus, setForgeStatus] = useState<ForgeStatus | null>(null);
   const [trainingExpanded, setTrainingExpanded] = useState(false);
   const [runState, setRunState] = useState<RunState>("idle");
@@ -907,6 +919,9 @@ export function WearV6PhotoLab() {
     const freshRequest = fetch("/api/try-on-test/wear-photo-test/fresh", { cache: "no-store" })
       .then((response) => response.json() as Promise<FreshGeometryStatus>)
       .then(setFreshStatus);
+    const v8Request = fetch("/api/try-on-test/wear-photo-test/v8", { cache: "no-store" })
+      .then((response) => response.json() as Promise<FreshGeometryStatus>)
+      .then(setV8Status);
     const legacyRequest = Promise.all([
       fetch("/api/try-on-test/wear-photo-test/v6", { cache: "no-store" }).then((response) => response.json() as Promise<WearV6ModelStatus>),
       fetch("/api/try-on-test/model-forge/status", { cache: "no-store" }).then((response) => response.json() as Promise<{ status?: ForgeStatus } & ForgeStatus>),
@@ -914,7 +929,7 @@ export function WearV6PhotoLab() {
       setModelStatus(modelPayload);
       setForgeStatus(forgePayload.status ?? forgePayload);
     });
-    await Promise.allSettled([freshRequest, legacyRequest]);
+    await Promise.allSettled([freshRequest, v8Request, legacyRequest]);
   }, []);
 
   useEffect(() => {
@@ -974,7 +989,7 @@ export function WearV6PhotoLab() {
     if (uploadedObjectUrlRef.current) URL.revokeObjectURL(uploadedObjectUrlRef.current);
     const source = URL.createObjectURL(file);
     uploadedObjectUrlRef.current = source;
-    setTestMode((current) => current === "fresh-photo" ? current : "photo-pipeline");
+    setTestMode((current) => current === "fresh-photo" || current === "v8-photo" ? current : "photo-pipeline");
     setSelectedHeldoutScanId("");
     setSelectedDatasetId("upload");
     setImageUrl(source);
@@ -1217,7 +1232,7 @@ export function WearV6PhotoLab() {
     setMetaStatus(EMPTY_META_STATUS);
     setAppleResult(null);
     setAppleState("idle");
-    setAppleDetail("Waiting for fresh ONNX to predict the five body rows");
+    setAppleDetail(`Waiting for ${testMode === "v8-photo" ? "V8 ONNX to predict waist and hips" : "fresh ONNX to predict the five body rows"}`);
     setAppleDepthState("idle");
     setAppleDepthDetail("Waiting for Apple Vision camera geometry");
     setWidthMethod("apple-depth");
@@ -1232,9 +1247,17 @@ export function WearV6PhotoLab() {
     setRunState("pose");
     let rawPrediction: FreshGeometryPrediction | null = null;
     try {
-      const sourceDataUrl = await imageUrlToDataUrl(imageUrl);
+      const sourceDataUrl = await withTimeout(
+        imageUrlToDataUrl(imageUrl),
+        15_000,
+        "The selected photo took too long to load.",
+      );
       sourceDataUrlRef.current = sourceDataUrl;
-      const pose = await detectPoseAndMask(imageUrl, { includeMask: true });
+      const pose = await withTimeout(
+        detectPoseAndMask(imageUrl, { includeMask: true }),
+        45_000,
+        "Body segmentation timed out. Reload the page and try the photo again.",
+      );
       if (activeRunRef.current !== runId) return;
       if (!pose || pose.landmarks.length !== 33) {
         throw new Error("Could not find one complete standing person.");
@@ -1245,24 +1268,35 @@ export function WearV6PhotoLab() {
       poseRef.current = pose;
       personBoxRef.current = posePersonBox(pose);
       setRunState("wear-measurements");
-      const response = await fetch("/api/try-on-test/wear-photo-test/fresh", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          maskDataUrl: encodedMask,
-          heightCm,
-          weightKg,
-          gender,
-          landmarks: pose.landmarks.map((landmark) => ({
-            x: landmark.x,
-            y: landmark.y,
-            visibility: landmark.visibility,
-          })),
+      const v8Run = testMode === "v8-photo";
+      const response = await withTimeout(
+        fetch(v8Run
+          ? "/api/try-on-test/wear-photo-test/v8"
+          : "/api/try-on-test/wear-photo-test/fresh", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            maskDataUrl: encodedMask,
+            heightCm,
+            weightKg,
+            gender,
+            landmarks: pose.landmarks.map((landmark) => ({
+              x: landmark.x,
+              y: landmark.y,
+              visibility: landmark.visibility,
+            })),
+          }),
         }),
-      });
-      const payload = await response.json() as FreshGeometryPrediction | { ok: false; error?: string };
+        30_000,
+        `${v8Run ? "V8" : "Fresh"} ONNX inference timed out.`,
+      );
+      const payload = await withTimeout(
+        response.json() as Promise<FreshGeometryPrediction | { ok: false; error?: string }>,
+        10_000,
+        `${v8Run ? "V8" : "Fresh"} ONNX returned an incomplete response.`,
+      );
       if (!response.ok || !payload.ok) {
-        throw new Error("error" in payload && payload.error ? payload.error : "Fresh ONNX inference failed.");
+        throw new Error("error" in payload && payload.error ? payload.error : `${v8Run ? "V8" : "Fresh"} ONNX inference failed.`);
       }
       if (activeRunRef.current !== runId) return;
       if (
@@ -1270,16 +1304,22 @@ export function WearV6PhotoLab() {
         || payload.model.sdkReady
         || payload.inputContract.notUsedByOnnx.includes("old V6/V7 predictions") === false
       ) {
-        throw new Error("The server did not confirm the isolated fresh-model contract.");
+        throw new Error(`The server did not confirm the isolated ${v8Run ? "V8" : "fresh-model"} contract.`);
       }
       rawPrediction = payload;
       setFreshPrediction(payload);
+      // Camera fusion is optional enrichment. Expose the complete raw ONNX
+      // result now so Apple or Depth Pro can never trap it behind a spinner.
+      setRunState("ready");
 
-      setRunState("apple");
       setAppleState("loading");
       setAppleDetail("Apple Vision is estimating camera geometry at the fresh ONNX rows");
       const lines = lineMapFromFreshPrediction(payload);
-      const appleCalibration = await appleWidthsForLines(lines, sourceDataUrl);
+      const appleCalibration = await withTimeout(
+        appleWidthsForLines(lines, sourceDataUrl),
+        30_000,
+        "Apple Vision camera correction timed out.",
+      );
       if (activeRunRef.current !== runId) return;
       appleCacheKeyRef.current = appleCalibration.result.cacheKey;
       appleVisionWidthsRef.current = appleCalibration.widths;
@@ -1292,7 +1332,11 @@ export function WearV6PhotoLab() {
       let depthCalibration: WidthCalibration | null = null;
       let depthError: string | null = null;
       try {
-        depthCalibration = await appleDepthWidthsForLines(lines, sourceDataUrl);
+        depthCalibration = await withTimeout(
+          appleDepthWidthsForLines(lines, sourceDataUrl),
+          45_000,
+          "Depth Pro body-width fusion timed out.",
+        );
         if (activeRunRef.current !== runId) return;
         appleDepthWidthsRef.current = depthCalibration.widths;
         appleDepthConfidencesRef.current = depthCalibration.confidences;
@@ -1324,14 +1368,14 @@ export function WearV6PhotoLab() {
         setAppleDetail(message);
         setAppleDepthState("error");
         setAppleDepthDetail("Depth Pro did not run because Apple camera geometry failed.");
-        setRunError(`Fresh ONNX finished, but Apple + Depth Pro fusion failed: ${message}`);
+        setRunError(`${testMode === "v8-photo" ? "V8" : "Fresh"} ONNX finished, but Apple + Depth Pro fusion failed: ${message}`);
         setRunState("ready");
       } else {
         setRunError(message);
         setRunState("error");
       }
     }
-  }, [appleDepthWidthsForLines, appleWidthsForLines, gender, heightCm, imageUrl, weightKg]);
+  }, [appleDepthWidthsForLines, appleWidthsForLines, gender, heightCm, imageUrl, testMode, weightKg]);
 
   const recalculateFreshLines = useCallback(async (overrides: FreshGeometryLineOverrideMap) => {
     if (!freshPrediction || !sourceDataUrlRef.current || !poseRef.current) {
@@ -1352,7 +1396,11 @@ export function WearV6PhotoLab() {
     setAppleDetail("Recalculating Apple camera width at the manually edited rows");
     setAppleDepthDetail("Reusing the Depth Pro surface map at the edited endpoints");
     try {
-      const appleCalibration = await appleWidthsForLines(lines, sourceDataUrlRef.current);
+      const appleCalibration = await withTimeout(
+        appleWidthsForLines(lines, sourceDataUrlRef.current),
+        30_000,
+        "Apple Vision row recalculation timed out.",
+      );
       if (activeRunRef.current !== runId) return;
       appleCacheKeyRef.current = appleCalibration.result.cacheKey;
       appleVisionWidthsRef.current = appleCalibration.widths;
@@ -1365,7 +1413,11 @@ export function WearV6PhotoLab() {
       let depthCalibration: WidthCalibration | null = null;
       let depthError: string | null = null;
       try {
-        depthCalibration = await appleDepthWidthsForLines(lines, sourceDataUrlRef.current);
+        depthCalibration = await withTimeout(
+          appleDepthWidthsForLines(lines, sourceDataUrlRef.current),
+          45_000,
+          "Depth Pro row recalculation timed out.",
+        );
         if (activeRunRef.current !== runId) return;
         appleDepthWidthsRef.current = depthCalibration.widths;
         appleDepthConfidencesRef.current = depthCalibration.confidences;
@@ -1405,7 +1457,7 @@ export function WearV6PhotoLab() {
       await runHeldoutOnnxOnly();
       return;
     }
-    if (testMode === "fresh-photo") {
+    if (testMode === "fresh-photo" || testMode === "v8-photo") {
       await runFreshPhoto();
       return;
     }
@@ -1722,19 +1774,27 @@ export function WearV6PhotoLab() {
   const selectedLabel = selectedHeldoutModel
     ? `${selectedHeldoutModel.scanId} · ${selectedHeldoutModel.gender} · H ${selectedHeldoutModel.heightCm.toFixed(1)} · W ${selectedHeldoutModel.weightKg.toFixed(1)} kg`
     : selectedDataset?.label ?? "Uploaded photo";
-  const running = ["pose", "wear-edges", "apple", "wear-measurements"].includes(runState);
   const forgeCandidateVisible = Boolean(
     forgeStatus?.pipelineId?.includes("v6r5")
     && forgeStatus.state !== "complete",
   );
   const forgeCandidateBlocked = forgeStatus?.state === "blocked" || forgeStatus?.state === "failed";
   const freshMode = testMode === "fresh-photo";
+  const v8Mode = testMode === "v8-photo";
+  const v8BenchmarkMode = testMode === "v8-448";
+  const v8FamilyMode = v8Mode || v8BenchmarkMode;
+  const photoStudentMode = freshMode || v8Mode;
   const fresh448Mode = testMode === "fresh-448";
-  const freshFamilyMode = freshMode || fresh448Mode;
-  const activeModelAvailable = freshMode ? freshStatus?.ok === true : modelStatus?.ok === true;
+  const any448Mode = fresh448Mode || v8BenchmarkMode;
+  const freshFamilyMode = photoStudentMode || any448Mode;
+  const cameraFusionRunning = photoStudentMode && (appleState === "loading" || appleDepthState === "loading");
+  const running = ["pose", "wear-edges", "apple", "wear-measurements"].includes(runState) || cameraFusionRunning;
+  const activeStudentStatus = v8FamilyMode ? v8Status : freshStatus;
+  const activeFamilyStatus = fresh448Mode ? freshStatus : activeStudentStatus;
+  const activeModelAvailable = photoStudentMode ? activeStudentStatus?.ok === true : modelStatus?.ok === true;
   const profileReady = Boolean(heightCm && weightKg && (
     testMode === "heldout-onnx"
-    || freshMode
+    || photoStudentMode
     || gender === "female"
     || reportedChestCm
   ));
@@ -1745,6 +1805,41 @@ export function WearV6PhotoLab() {
   const realPhotoMae = knownComparisons.length
     ? knownComparisons.reduce((sum, row) => sum + Math.abs(row.error), 0) / knownComparisons.length
     : null;
+  const heroEyebrow = testMode === "heldout-onnx"
+    ? "ONNX only · 448 held-out"
+    : v8BenchmarkMode
+      ? "V8 ONNX · fixed 448 benchmark"
+    : fresh448Mode
+      ? "Fresh ONNX · final 448"
+      : v8Mode
+        ? "V8 waist + hips · private"
+        : freshMode
+          ? "Fresh H100 ONNX · normal photo"
+          : "Formula-free WEAR v6";
+  const heroTitle = testMode === "heldout-onnx"
+    ? "WEAR ONNX Held-out Test"
+    : v8BenchmarkMode
+      ? "V8 All-448 Benchmark"
+    : fresh448Mode
+      ? "Fresh ONNX Final 448 Test"
+      : v8Mode
+        ? "Private V8 Waist + Hip Photo Test"
+        : freshMode
+          ? "Fresh 3D Teacher Photo Test"
+          : "WEAR 3D Photo Lab";
+  const heroDescription = testMode === "heldout-onnx"
+    ? v7ModelActive
+      ? "Choose any test-only WEAR person. V7 sees only the front RGB render, height, weight and gender. It predicts the lines first, then uses those predicted lines to produce width, depth, 32-point shape and circumference. Real WEAR truth is revealed only afterward."
+      : "Choose one test-only WEAR model and run the ONNX package directly. Tape is revealed only for the score. No Apple Vision, MediaPipe, Depth Pro, or nearest-person matching."
+    : v8BenchmarkMode
+      ? "V8 was frozen and evaluated on all 448 fixed benchmark people. Inspect aggregate failures and every predicted waist/hip row, A-to-B width, depth, tape and 32-point shape against WEAR truth. These people were excluded from V8 training, but the answers were opened during older model testing, so this is not a pristine final test."
+    : fresh448Mode
+      ? "The frozen fresh ONNX ran once on all 448 test-only WEAR people. Choose any person to compare predicted lines, A-to-B width, depth, tape and 32-point shape against hidden WEAR truth."
+      : v8Mode
+        ? "One normal standing photo becomes a cleaned front silhouette for the fresh V8 student. V8 predicts only waist and hips: row position, A-to-B width, depth, 32-point shape, direct WEAR-tape circumference and ratios. The completed 448-person benchmark failed, so this remains private diagnostic research."
+        : freshMode
+          ? "One normal standing photo → body segmentation and canonical framing → the newly trained fresh ONNX → five row positions, A-to-B widths, depth, 32-point shapes, direct tape, ratios and learned camera corrections. This is the first real-photo transfer test, not a proven result."
+          : "One standing RGB photo → Apple shoulder/hip anchors → independent WEAR body rows → Apple camera-corrected widths → independent learned tape measurements. MediaPipe and Meta stay separate comparison views.";
 
   return (
     <main className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 px-4 py-6 sm:px-6" data-testid="wear-v6-photo-lab">
@@ -1752,48 +1847,50 @@ export function WearV6PhotoLab() {
         <div className="grid gap-6 px-6 py-7 lg:grid-cols-[1fr_420px] lg:px-9">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-400/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.16em] text-blue-200">
-              <Sparkles className="size-3.5" /> {testMode === "heldout-onnx" ? "ONNX only · 448 held-out" : fresh448Mode ? "Fresh ONNX · final 448" : freshMode ? "Fresh H100 ONNX · normal photo" : "Formula-free WEAR v6"}
+              <Sparkles className="size-3.5" /> {heroEyebrow}
             </div>
-            <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">{testMode === "heldout-onnx" ? "WEAR ONNX Held-out Test" : fresh448Mode ? "Fresh ONNX Final 448 Test" : freshMode ? "Fresh 3D Teacher Photo Test" : "WEAR 3D Photo Lab"}</h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">{testMode === "heldout-onnx" ? v7ModelActive ? "Choose any test-only WEAR person. V7 sees only the front RGB render, height, weight and gender. It predicts the lines first, then uses those predicted lines to produce width, depth, 32-point shape and circumference. Real WEAR truth is revealed only afterward." : "Choose one test-only WEAR model and run the ONNX package directly. Tape is revealed only for the score. No Apple Vision, MediaPipe, Depth Pro, or nearest-person matching." : fresh448Mode ? "The frozen fresh ONNX ran once on all 448 test-only WEAR people. Choose any person to compare predicted lines, A-to-B width, depth, tape and 32-point shape against hidden WEAR truth." : freshMode ? "One normal standing photo → body segmentation and canonical framing → the newly trained fresh ONNX → five row positions, A-to-B widths, depth, 32-point shapes, direct tape, ratios and learned camera corrections. This is the first real-photo transfer test, not a proven result." : "One standing RGB photo → Apple shoulder/hip anchors → independent WEAR body rows → Apple camera-corrected widths → independent learned tape measurements. MediaPipe and Meta stay separate comparison views."}</p>
+            <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">{heroTitle}</h1>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">{heroDescription}</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">Current private ONNX</p>
               {freshFamilyMode
-                ? freshStatus?.ok
-                  ? <span className="rounded-full bg-cyan-400/15 px-2.5 py-1 text-xs font-black text-cyan-200">Fresh model installed</span>
-                  : <span className="rounded-full bg-amber-400/15 px-2.5 py-1 text-xs font-black text-amber-300">Fresh model unavailable</span>
+                ? activeFamilyStatus?.ok
+                  ? <span className="rounded-full bg-cyan-400/15 px-2.5 py-1 text-xs font-black text-cyan-200">{v8FamilyMode ? "Private V8 installed" : "Fresh model installed"}</span>
+                  : <span className="rounded-full bg-amber-400/15 px-2.5 py-1 text-xs font-black text-amber-300">{v8FamilyMode ? "Private V8 unavailable" : "Fresh model unavailable"}</span>
                 : forgeCandidateVisible
                 ? <span className={`rounded-full px-2.5 py-1 text-xs font-black ${forgeCandidateBlocked ? "bg-rose-400/15 text-rose-200" : "bg-blue-400/15 text-blue-200"}`}>{forgeCandidateBlocked ? "Private v6r5 blocked" : "Private v6r5 process"}</span>
                 : modelStatus?.ok
                 ? <span className="rounded-full bg-emerald-400/15 px-2.5 py-1 text-xs font-black text-emerald-300">Installed</span>
                 : <span className="rounded-full bg-amber-400/15 px-2.5 py-1 text-xs font-black text-amber-300">{modelStatus?.training === false ? "Waiting for review" : "Training"}</span>}
             </div>
-            <p className="mt-3 text-lg font-black">{freshFamilyMode ? freshStatus?.ok ? freshStatus.modelVersion : freshStatus?.error ?? "Fresh ONNX not installed" : forgeCandidateVisible ? forgeStatus?.currentStageLabel : modelStatus?.ok ? modelStatus.modelVersion : modelStatus?.trainingStageLabel ?? forgeStatus?.currentStageLabel ?? "Preparing full v6 data"}</p>
-            {freshFamilyMode && freshStatus?.importantLimit ? <p className="mt-2 text-xs leading-5 text-amber-200">{freshStatus.importantLimit}</p> : null}
+            <p className="mt-3 text-lg font-black">{freshFamilyMode ? activeFamilyStatus?.ok ? activeFamilyStatus.modelVersion : activeFamilyStatus?.error ?? `${v8FamilyMode ? "V8" : "Fresh"} ONNX not installed` : forgeCandidateVisible ? forgeStatus?.currentStageLabel : modelStatus?.ok ? modelStatus.modelVersion : modelStatus?.trainingStageLabel ?? forgeStatus?.currentStageLabel ?? "Preparing full v6 data"}</p>
+            {freshFamilyMode && activeFamilyStatus?.importantLimit ? <p className="mt-2 text-xs leading-5 text-amber-200">{activeFamilyStatus.importantLimit}</p> : null}
             {!freshFamilyMode && forgeCandidateVisible && forgeStatus?.detail ? <p className="mt-2 text-xs leading-5 text-slate-300">{forgeStatus.detail}</p> : null}
             {!freshFamilyMode && !forgeCandidateVisible && !modelStatus?.ok && (modelStatus?.trainingDetail || forgeStatus?.detail) ? <p className="mt-2 text-xs leading-5 text-slate-300">{modelStatus?.trainingDetail ?? forgeStatus?.detail}</p> : null}
             {!freshFamilyMode && forgeCandidateVisible && modelStatus?.ok ? <p className="mt-2 text-[11px] font-bold text-slate-400">Private Test Lab candidate installed: {modelStatus.modelVersion}. {modelStatus.privateDiagnosticOnly ? "Official synthetic pass is false; hash-locked diagnostic inference only." : "Synthetic gate passed."} Release, publish, deploy, and SDK remain blocked.</p> : null}
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10"><div className={`h-full rounded-full transition-all ${freshFamilyMode ? "bg-cyan-400" : forgeCandidateBlocked ? "bg-rose-400" : "bg-blue-400"}`} style={{ width: `${freshFamilyMode ? freshStatus?.ok ? 100 : 1 : forgeCandidateVisible ? forgeStatus?.overallPercent ?? 1 : modelStatus?.ok ? 100 : forgeStatus?.overallPercent ?? 1}%` }} /></div>
+            <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10"><div className={`h-full rounded-full transition-all ${freshFamilyMode ? "bg-cyan-400" : forgeCandidateBlocked ? "bg-rose-400" : "bg-blue-400"}`} style={{ width: `${freshFamilyMode ? activeFamilyStatus?.ok ? 100 : 1 : forgeCandidateVisible ? forgeStatus?.overallPercent ?? 1 : modelStatus?.ok ? 100 : forgeStatus?.overallPercent ?? 1}%` }} /></div>
             <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
-              <div className="rounded-lg bg-white/5 p-2"><p className="font-black text-white">{fresh448Mode ? "448" : freshMode ? freshStatus?.train?.subjects.toLocaleString() ?? "3,451" : "4,326"}</p><p className="text-slate-400">{fresh448Mode ? "final people" : "people"}</p></div>
-              <div className="rounded-lg bg-white/5 p-2"><p className="font-black text-white">{fresh448Mode ? "448" : freshMode ? freshStatus?.train?.records.toLocaleString() ?? "31,059" : "38,934"}</p><p className="text-slate-400">{fresh448Mode ? "front views" : freshMode ? "silhouette views" : "RGB views"}</p></div>
-              <div className="rounded-lg bg-white/5 p-2"><p className="font-black text-white">{fresh448Mode ? "1×" : freshMode ? freshStatus?.targetCount ?? 371 : 0}</p><p className="text-slate-400">{fresh448Mode ? "frozen test" : freshMode ? "outputs" : "formulas"}</p></div>
+              <div className="rounded-lg bg-white/5 p-2"><p className="font-black text-white">{any448Mode ? "448" : photoStudentMode ? activeStudentStatus?.train?.subjects.toLocaleString() ?? "3,451" : "4,326"}</p><p className="text-slate-400">{any448Mode ? "benchmark people" : "people"}</p></div>
+              <div className="rounded-lg bg-white/5 p-2"><p className="font-black text-white">{any448Mode ? "448" : photoStudentMode ? activeStudentStatus?.train?.records.toLocaleString() ?? "31,059" : "38,934"}</p><p className="text-slate-400">{any448Mode ? "front views" : photoStudentMode ? "silhouette views" : "RGB views"}</p></div>
+              <div className="rounded-lg bg-white/5 p-2"><p className="font-black text-white">{any448Mode ? "1×" : photoStudentMode ? activeStudentStatus?.targetCount ?? (v8Mode ? 150 : 371) : 0}</p><p className="text-slate-400">{any448Mode ? "frozen run" : photoStudentMode ? "outputs" : "formulas"}</p></div>
             </div>
-            {!freshFamilyMode ? <button className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue-300/30 bg-blue-400/10 px-3 py-2 text-xs font-black text-blue-100 hover:bg-blue-400/20" onClick={() => setTrainingExpanded(true)} type="button"><Maximize2 className="size-3.5" /> Full-screen process</button> : <p className="mt-4 text-[11px] font-black uppercase tracking-[0.12em] text-rose-200">{fresh448Mode ? "Final test opened once · tuning forbidden · canonical WEAR views" : "Private test only · real-photo validation pending · SDK false"}</p>}
+            {!freshFamilyMode ? <button className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue-300/30 bg-blue-400/10 px-3 py-2 text-xs font-black text-blue-100 hover:bg-blue-400/20" onClick={() => setTrainingExpanded(true)} type="button"><Maximize2 className="size-3.5" /> Full-screen process</button> : <p className="mt-4 text-[11px] font-black uppercase tracking-[0.12em] text-rose-200">{v8BenchmarkMode ? "448 completed · waist failed · hips failed · SDK false" : fresh448Mode ? "Final test opened once · tuning forbidden · canonical WEAR views" : v8Mode ? "448 benchmark failed · private diagnostic only · SDK false" : "Private test only · real-photo validation pending · SDK false"}</p>}
           </div>
         </div>
       </section>
 
-      <section className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm xl:grid-cols-4">
+      <section className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm xl:grid-cols-6">
         <button className={cn("rounded-xl px-4 py-3 text-left", testMode === "heldout-onnx" ? "bg-emerald-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("heldout-onnx"); resetResult(); const initial = selectedHeldoutModel ?? heldoutModels[0]; if (initial) void applyHeldoutModel(initial); }} type="button"><span className="block text-sm font-black">448 held-out models · ONNX only</span><span className={cn("mt-1 block text-xs", testMode === "heldout-onnx" ? "text-emerald-100" : "text-slate-500")}>No Apple Vision or camera pipeline</span></button>
         <button className={cn("rounded-xl px-4 py-3 text-left", testMode === "photo-pipeline" ? "bg-blue-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("photo-pipeline"); setSelectedHeldoutScanId(""); resetResult(); const initial = selectedDataset ?? datasets.find((row) => row.setId === "shahnaz-2") ?? datasets[0]; if (initial) void applyDataset(initial); }} type="button"><span className="block text-sm font-black">Own photo · full camera pipeline</span><span className={cn("mt-1 block text-xs", testMode === "photo-pipeline" ? "text-blue-100" : "text-slate-500")}>Existing upload and Apple-assisted workflow</span></button>
         <button className={cn("rounded-xl px-4 py-3 text-left", freshMode ? "bg-cyan-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("fresh-photo"); setTrainingExpanded(false); setSelectedHeldoutScanId(""); resetResult(); const initial = selectedDataset ?? datasets.find((row) => row.setId === "shahnaz-2") ?? datasets[0]; if (initial) void applyDataset(initial); }} type="button"><span className="block text-sm font-black">Fresh 3D ONNX · normal photo</span><span className={cn("mt-1 block text-xs", freshMode ? "text-cyan-100" : "text-slate-500")}>New H100 model · isolated from every previous model</span></button>
+        <button className={cn("rounded-xl px-4 py-3 text-left", v8Mode ? "bg-orange-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("v8-photo"); setTrainingExpanded(false); setSelectedHeldoutScanId(""); resetResult(); const initial = selectedDataset ?? datasets.find((row) => row.setId === "shahnaz-2") ?? datasets[0]; if (initial) void applyDataset(initial); }} type="button"><span className="block text-sm font-black">V8 waist + hips · normal photo</span><span className={cn("mt-1 block text-xs", v8Mode ? "text-orange-100" : "text-slate-500")}>Fresh student · private · bounded camera stages</span></button>
+        <button className={cn("rounded-xl px-4 py-3 text-left", v8BenchmarkMode ? "bg-red-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("v8-448"); setTrainingExpanded(false); resetResult(); }} type="button"><span className="block text-sm font-black">V8 · all 448 benchmark</span><span className={cn("mt-1 block text-xs", v8BenchmarkMode ? "text-red-100" : "text-slate-500")}>Completed · prediction versus WEAR truth</span></button>
         <button className={cn("rounded-xl px-4 py-3 text-left", fresh448Mode ? "bg-violet-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("fresh-448"); setTrainingExpanded(false); resetResult(); }} type="button"><span className="block text-sm font-black">Fresh ONNX · all 448 results</span><span className={cn("mt-1 block text-xs", fresh448Mode ? "text-violet-100" : "text-slate-500")}>Frozen final test · prediction versus WEAR truth</span></button>
       </section>
 
-      {fresh448Mode ? <FreshSealed448Lab /> : <>
+      {v8BenchmarkMode ? <V8Benchmark448Lab /> : fresh448Mode ? <FreshSealed448Lab /> : <>
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
         <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between gap-3">
@@ -1855,7 +1952,7 @@ export function WearV6PhotoLab() {
             </>
           ) : (
             <>
-              <p className="mt-2 text-xs leading-5 text-slate-500">{freshMode ? "The fresh ONNX receives only the cleaned silhouette, height, weight, calculated BMI and gender flags. Tape checks appear only after prediction." : "Tape answers are never sent to v6. They appear only after prediction to show the error."}</p>
+              <p className="mt-2 text-xs leading-5 text-slate-500">{photoStudentMode ? `The ${v8Mode ? "V8" : "fresh"} ONNX receives only the cleaned silhouette, height, weight, calculated BMI and gender flags. Tape checks appear only after prediction.` : "Tape answers are never sent to v6. They appear only after prediction to show the error."}</p>
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <NumberField label="Height" onChange={(value) => { setHeightCm(value); resetResult(); }} required value={heightCm} />
                 <label className="block"><span className="mb-1.5 block text-xs font-black uppercase tracking-[0.12em] text-slate-500">Weight · required</span><span className="flex items-center rounded-xl border border-slate-200 px-3 focus-within:border-blue-500"><input className="min-w-0 flex-1 py-2.5 text-sm font-bold outline-none" min="25" onChange={(event) => { setWeightKg(event.target.value ? Number(event.target.value) : null); resetResult(); }} step="0.1" type="number" value={weightKg ?? ""} /><span className="text-xs font-bold text-slate-400">kg</span></span></label>
@@ -1863,9 +1960,9 @@ export function WearV6PhotoLab() {
               <div className="mt-3 grid grid-cols-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
                 {(["female", "male"] as const).map((value) => <button className={cn("rounded-lg px-3 py-2 text-sm font-black capitalize", gender === value ? "bg-blue-700 text-white" : "text-slate-500")} key={value} onClick={() => { setGender(value); resetResult(); }} type="button">{value}</button>)}
               </div>
-              {freshMode ? <div className="mt-4 rounded-2xl border border-cyan-200 bg-cyan-50 p-3">
-                <p className="text-xs font-black uppercase tracking-[0.12em] text-cyan-800">Fresh input contract</p>
-                <p className="mt-2 text-[11px] leading-5 text-cyan-900">Chest, waist, hips, depth and tape are outputs—not inputs. The fresh ONNX stays isolated from Apple, Depth Pro, old V6/V7 and saved WEAR answers. After ONNX predicts its rows, Apple + Depth Pro measure those same visible endpoints for the clearly labeled fusion stage.</p>
+              {photoStudentMode ? <div className="mt-4 rounded-2xl border border-cyan-200 bg-cyan-50 p-3">
+                <p className="text-xs font-black uppercase tracking-[0.12em] text-cyan-800">{v8Mode ? "V8 input contract" : "Fresh input contract"}</p>
+                <p className="mt-2 text-[11px] leading-5 text-cyan-900">{v8Mode ? "Waist, hips, A-to-B width, depth, shape and tape are outputs—not inputs. V8 receives only the cleaned front silhouette, height, weight, BMI and gender. Apple + Depth Pro run afterward as a clearly labeled comparison; they do not change the direct tape head." : "Chest, waist, hips, depth and tape are outputs—not inputs. The fresh ONNX stays isolated from Apple, Depth Pro, old V6/V7 and saved WEAR answers. After ONNX predicts its rows, Apple + Depth Pro measure those same visible endpoints for the clearly labeled fusion stage."}</p>
               </div> : <div className="mt-4 rounded-2xl border border-blue-200 bg-blue-50 p-3">
                 <NumberField label={gender === "male" ? "Customer chest" : "Customer bust / chest"} onChange={(value) => { setReportedChestCm(value); resetResult(); }} required={gender === "male"} value={reportedChestCm} />
                 <p className="mt-2 text-[11px] leading-4 text-blue-800">{gender === "male" ? "Required by the product profile." : "Optional for women."} It is shown in the contract but never used as a saved WEAR training answer.</p>
@@ -1880,16 +1977,16 @@ export function WearV6PhotoLab() {
               </div>
             </>
           )}
-          <button className={cn("mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none", testMode === "heldout-onnx" ? "bg-emerald-700 shadow-lg shadow-emerald-200" : freshMode ? "bg-cyan-700 shadow-lg shadow-cyan-200" : "bg-blue-700 shadow-lg shadow-blue-200")} disabled={!activeModelAvailable || !imageUrl || !profileReady || running || (testMode === "heldout-onnx" && !selectedHeldoutScanId)} onClick={() => void runFullTest()} type="button">
+          <button className={cn("mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none", testMode === "heldout-onnx" ? "bg-emerald-700 shadow-lg shadow-emerald-200" : v8Mode ? "bg-orange-700 shadow-lg shadow-orange-200" : freshMode ? "bg-cyan-700 shadow-lg shadow-cyan-200" : "bg-blue-700 shadow-lg shadow-blue-200")} disabled={!activeModelAvailable || !imageUrl || !profileReady || running || (testMode === "heldout-onnx" && !selectedHeldoutScanId)} onClick={() => void runFullTest()} type="button">
             {running ? <Loader2 className="size-4 animate-spin" /> : <BrainCircuit className="size-4" />}
-            {testMode === "heldout-onnx" ? running ? "Running ONNX only…" : prediction ? "Run ONNX again" : "Run ONNX only" : freshMode ? running ? runState === "apple" ? "Applying Apple + Depth Pro…" : "Running fresh ONNX…" : freshPrediction ? "Run fresh ONNX again" : "Run fresh ONNX on this photo" : stageLabel(runState)}
+            {testMode === "heldout-onnx" ? running ? "Running ONNX only…" : prediction ? "Run ONNX again" : "Run ONNX only" : photoStudentMode ? running ? cameraFusionRunning ? `${v8Mode ? "V8" : "Fresh"} result ready · applying Apple + Depth Pro…` : `Running ${v8Mode ? "V8" : "fresh"} ONNX…` : freshPrediction ? `Run ${v8Mode ? "V8" : "fresh"} ONNX again` : `Run ${v8Mode ? "V8" : "fresh"} ONNX on this photo` : stageLabel(runState)}
           </button>
-          {!activeModelAvailable ? <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold leading-5 text-amber-800">{freshMode ? freshStatus?.error ?? "The fresh ONNX package is unavailable." : "The audited ONNX artifact is unavailable. This button unlocks automatically after a private model is installed."}</p> : null}
+          {!activeModelAvailable ? <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold leading-5 text-amber-800">{photoStudentMode ? activeStudentStatus?.error ?? `The ${v8Mode ? "V8" : "fresh"} ONNX package is unavailable.` : "The audited ONNX artifact is unavailable. This button unlocks automatically after a private model is installed."}</p> : null}
           {runError ? <p className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-bold leading-5 text-red-800"><AlertTriangle className="mr-1 inline size-3.5" />{runError}</p> : null}
         </div>
       </section>
 
-      {freshMode && freshPrediction && imageUrl && runState === "ready" ? (
+      {photoStudentMode && freshPrediction && imageUrl && runState === "ready" ? (
         <FreshGeometryResult
           actuals={actuals}
           imageUrl={imageUrl}
@@ -1936,8 +2033,8 @@ export function WearV6PhotoLab() {
       ) : (
         <section className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
           {running ? <Loader2 className="mx-auto size-8 animate-spin text-blue-700" /> : <ScanLine className="mx-auto size-8 text-slate-400" />}
-          <h2 className="mt-3 text-xl font-black text-slate-900">{testMode === "heldout-onnx" ? running ? "ONNX is running" : "Choose a held-out model and run ONNX" : freshMode ? running ? "Fresh ONNX is running" : "Choose Shahnaz, Shane, or upload a photo" : stageLabel(runState)}</h2>
-          <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-500">{testMode === "heldout-onnx" ? "The result shows predicted versus real lines, front width, depth, 32-point shape and circumference for the selected held-out person. Apple Vision is not part of this path." : freshMode ? "The fresh result will show the exact canonical silhouette, five predicted row overlays, A-to-B widths, depth, direct tape heads, all 32-point cross-sections, ratios and learned camera outputs. Normal-photo accuracy is still unproven." : "The editor will show WEAR RGB lines, separate mask and Meta comparisons, hidden-by-default saved red lines, live camera-corrected measurements, raw WEAR-trained depth, 32-point body shapes, and no ellipse controls."}</p>
+          <h2 className="mt-3 text-xl font-black text-slate-900">{testMode === "heldout-onnx" ? running ? "ONNX is running" : "Choose a held-out model and run ONNX" : photoStudentMode ? running ? `${v8Mode ? "V8" : "Fresh"} ONNX is running` : "Choose Shahnaz, Shane, or upload a photo" : stageLabel(runState)}</h2>
+          <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-500">{testMode === "heldout-onnx" ? "The result shows predicted versus real lines, front width, depth, 32-point shape and circumference for the selected held-out person. Apple Vision is not part of this path." : v8Mode ? "The V8 result shows the canonical silhouette, waist and hip row overlays, A-to-B width, depth, direct WEAR-tape heads, 32-point cross-sections and ratios. It is private research output, not an accuracy claim." : freshMode ? "The fresh result will show the exact canonical silhouette, five predicted row overlays, A-to-B widths, depth, direct tape heads, all 32-point cross-sections, ratios and learned camera outputs. Normal-photo accuracy is still unproven." : "The editor will show WEAR RGB lines, separate mask and Meta comparisons, hidden-by-default saved red lines, live camera-corrected measurements, raw WEAR-trained depth, 32-point body shapes, and no ellipse controls."}</p>
         </section>
       )}
       </>}

@@ -12,23 +12,23 @@ import {
 import { CameraIcon, CloudUploadIcon } from "@/app/shared/components/icons";
 import type { BodyType } from "@/app/try-on/types";
 
-/** Models with Cloudinary URLs — these are the actual images the backend uses for VTO */
+/** CDN model URLs used by the backend for VTO. */
 export const FULL_BODY_MODELS = [
-  { id: "model-noah", name: "Noah", image: "https://res.cloudinary.com/dgvtynla7/image/upload/v1759158291/uploads/models/Gemini_Generated_Image_6dl5ms6dl5ms6dl5_qixku9.png", preview: "/images/models/model-1.png", gender: "male" },
-  { id: "model-aria", name: "Alex", image: "https://res.cloudinary.com/dgvtynla7/image/upload/v1759158294/uploads/models/Gemini_Generated_Image_ggglo3ggglo3gggl_j8t2n7.png", preview: "/images/models/model-2.png", gender: "male" },
-  { id: "model-jade", name: "Jordan", image: "https://res.cloudinary.com/dgvtynla7/image/upload/v1759158297/uploads/models/Gemini_Generated_Image_mqofyzmqofyzmqof_kexvft.png", preview: "/images/models/model-3.png", gender: "male" },
-  { id: "model-ryan", name: "Ryan", image: "https://res.cloudinary.com/dgvtynla7/image/upload/v1759158300/uploads/models/Gemini_Generated_Image_mvog7tmvog7tmvog_twstkb.png", preview: "/images/models/model-4.png", gender: "female" },
-  { id: "model-luna", name: "Luna", image: "https://res.cloudinary.com/dgvtynla7/image/upload/v1759158303/uploads/models/Gemini_Generated_Image_qd9vd1qd9vd1qd9v_fv9sxk.png", preview: "/images/models/model-5.png", gender: "female" },
-  { id: "model-leo", name: "Sophia", image: "https://res.cloudinary.com/dgvtynla7/image/upload/v1759158306/uploads/models/Gemini_Generated_Image_wxdd66wxdd66wxdd_synj3e.png", preview: "/images/models/model-6.png", gender: "female" },
-  { id: "model-zoe", name: "Zoe", image: "https://res.cloudinary.com/dgvtynla7/image/upload/v1759158309/uploads/models/Gemini_Generated_Image_z4wksnz4wksnz4wk_pbbbmf.png", preview: "/images/models/model-7.png", gender: "female" },
-  { id: "model-evelyn", name: "Evelyn", image: "https://res.cloudinary.com/dgvtynla7/image/upload/v1759158313/uploads/models/GeneratedImage_ttcflg.png", preview: "/images/models/model-8.png", gender: "female" },
+  { id: "model-noah", name: "Noah", image: "https://d3u1mcyz6rhw9o.cloudfront.net/runtime/legacy/source-url/726c7df49860de8d36229e3c65979743e497778e88c346721ea05406ac6136a5.png", preview: "/images/models/model-1.png", gender: "male" },
+  { id: "model-aria", name: "Alex", image: "https://d3u1mcyz6rhw9o.cloudfront.net/runtime/legacy/source-url/7477a2217b6b09fd808d8610a04ceaf1655d981eaa1392811097aec4f4c0a1b4.png", preview: "/images/models/model-2.png", gender: "male" },
+  { id: "model-jade", name: "Jordan", image: "https://d3u1mcyz6rhw9o.cloudfront.net/runtime/legacy/source-url/06faed0b9b6a4c0fa16206a250eda4c30f205684c579949eb7cfa55dc5063451.png", preview: "/images/models/model-3.png", gender: "male" },
+  { id: "model-ryan", name: "Ryan", image: "https://d3u1mcyz6rhw9o.cloudfront.net/runtime/legacy/source-url/422f2456bdb8485b5eb59c825df777ea08c87755fef0e8ad271dddb482f64e56.png", preview: "/images/models/model-4.png", gender: "female" },
+  { id: "model-luna", name: "Luna", image: "https://d3u1mcyz6rhw9o.cloudfront.net/runtime/legacy/source-url/9781016f449a65d9c43f245d3bdfc3c5e82e1aa6ef99860563cfff4b502e5847.png", preview: "/images/models/model-5.png", gender: "female" },
+  { id: "model-leo", name: "Sophia", image: "https://d3u1mcyz6rhw9o.cloudfront.net/runtime/legacy/source-url/f578df53ab4129ed032dda892b41e7f68e927ce865c8deb000a7ae6da51ccfac.png", preview: "/images/models/model-6.png", gender: "female" },
+  { id: "model-zoe", name: "Zoe", image: "https://d3u1mcyz6rhw9o.cloudfront.net/runtime/legacy/source-url/1256470b035b08ffa60b2c66de34ce3afedb5c71ebff05a8a74cf3e89d7b100f.png", preview: "/images/models/model-7.png", gender: "female" },
+  { id: "model-evelyn", name: "Evelyn", image: "https://d3u1mcyz6rhw9o.cloudfront.net/runtime/legacy/source-url/0569ed0de03a8ec9eb4eba928a83b0ce5246c3d5b0df7ddfdcb6962068c44bbb.png", preview: "/images/models/model-8.png", gender: "female" },
 ];
 
 export const CLOSE_UP_MODELS = [
-  { id: "closeup-1", name: "Emma", image: "https://res.cloudinary.com/dgvtynla7/image/upload/v1759827295/Gemini_Generated_Image_p2ryawp2ryawp2ry_dbzyk1.png", preview: "/images/models/closeup-1.png", gender: "female" },
-  { id: "closeup-2", name: "Olivia", image: "https://res.cloudinary.com/dgvtynla7/image/upload/v1759827295/Gemini_Generated_Image_jdaof3jdaof3jdao_dc7cty.png", preview: "/images/models/closeup-2.png", gender: "female" },
-  { id: "closeup-3", name: "Ava", image: "https://res.cloudinary.com/dgvtynla7/image/upload/v1759827292/Gemini_Generated_Image_fa3il5fa3il5fa3i_rita3y.png", preview: "/images/models/closeup-3.png", gender: "female" },
-  { id: "closeup-4", name: "Mia", image: "https://res.cloudinary.com/dgvtynla7/image/upload/v1759827285/model-1_rbgx6s.webp", preview: "/images/models/closeup-4.png", gender: "female" },
+  { id: "closeup-1", name: "Emma", image: "https://d3u1mcyz6rhw9o.cloudfront.net/runtime/legacy/source-url/8ddabaf88245d2367948252e98696779f74d0f5539f47249c47fc20fdae0b87b.png", preview: "/images/models/closeup-1.png", gender: "female" },
+  { id: "closeup-2", name: "Olivia", image: "https://d3u1mcyz6rhw9o.cloudfront.net/runtime/legacy/source-url/eec552380ba895704cc5686215423c80f3d632a0b98e2d68f870d57a420e2d49.png", preview: "/images/models/closeup-2.png", gender: "female" },
+  { id: "closeup-3", name: "Ava", image: "https://d3u1mcyz6rhw9o.cloudfront.net/runtime/legacy/source-url/5bebadf4973332c5192c1b4c311d48c0218877957f9b1dc1ed94b48c84bd36f6.png", preview: "/images/models/closeup-3.png", gender: "female" },
+  { id: "closeup-4", name: "Mia", image: "https://d3u1mcyz6rhw9o.cloudfront.net/runtime/legacy/source-url/0edc381847baca65b60ac71e3ba5714854f52c0125c0d8f2f525c5f18102ac76.webp", preview: "/images/models/closeup-4.png", gender: "female" },
 ];
 
 interface ModelPreviewCardProps {

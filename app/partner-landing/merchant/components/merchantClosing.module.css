@@ -1,0 +1,406 @@
+.section {
+  position: relative;
+  z-index: 50;
+  scroll-margin-top: 0 !important;
+  padding: clamp(30px, 4vw, 58px);
+  background: #fbfdff;
+  color: #0c1222;
+}
+
+.frame {
+  width: min(100%, 1436px);
+  margin: 0 auto;
+  padding: clamp(80px, 7.7vw, 110px) 12px 12px;
+  overflow: hidden;
+  border-radius: clamp(20px, 2vw, 28px);
+  background: #ffffff;
+  box-shadow: 0 28px 70px rgba(13, 18, 34, 0.13);
+}
+
+.hero {
+  position: relative;
+  display: grid;
+  min-height: clamp(400px, 39vw, 520px);
+  place-items: center;
+  padding: 10px clamp(20px, 6vw, 88px) clamp(44px, 5vw, 72px);
+}
+
+.copy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  width: min(100%, 880px);
+  text-align: center;
+}
+
+.copy h2 {
+  display: grid;
+  margin: 0;
+  font-size: clamp(56px, 6.35vw, 98px);
+  font-weight: 850;
+  letter-spacing: -0.075em;
+  line-height: 0.92;
+}
+
+.copy h2 span {
+  white-space: nowrap;
+}
+
+.copy p {
+  max-width: 590px;
+  margin: clamp(24px, 2.6vw, 36px) 0 0;
+  font-size: clamp(17px, 1.55vw, 23px);
+  letter-spacing: -0.025em;
+  line-height: 1.45;
+}
+
+.copy button,
+.networkCard button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 0;
+  background: #101522;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.copy button {
+  min-width: 184px;
+  min-height: 62px;
+  margin-top: clamp(28px, 3vw, 42px);
+  padding: 0 24px;
+  border-radius: 14px;
+  font-size: 15px;
+}
+
+.copy button:hover,
+.copy button:focus-visible,
+.networkCard button:hover,
+.networkCard button:focus-visible {
+  background: #3155f4;
+  transform: translateY(-2px);
+}
+
+.copy button:focus-visible,
+.networkCard button:focus-visible {
+  outline: 3px solid rgba(49, 85, 244, 0.25);
+  outline-offset: 3px;
+}
+
+.motif {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  grid-auto-rows: 44px;
+  gap: 8px;
+}
+
+.motifLeft {
+  top: 52%;
+  left: clamp(18px, 4vw, 62px);
+  transform: translateY(-8%);
+}
+
+.motifRight {
+  top: 50%;
+  right: clamp(18px, 4vw, 62px);
+  transform: translateY(-6%);
+}
+
+.motifTile {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid #deddd5;
+  border-radius: 9px;
+  background: #faf9f5;
+  box-shadow: 0 4px 10px rgba(17, 21, 34, 0.035);
+  color: #c2c1ba;
+}
+
+.motifLeft .motifTile:nth-child(1) {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.motifLeft .motifTile:nth-child(2) {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.motifLeft .motifTile:nth-child(3) {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.motifLeft .motifTile:nth-child(4) {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.motifRight .motifTile:nth-child(1) {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.motifRight .motifTile:nth-child(2) {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.motifRight .motifTile:nth-child(3) {
+  grid-column: 1;
+  grid-row: 3;
+}
+
+.motifRight .motifTile:nth-child(4) {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.motifRight .motifTile:nth-child(5) {
+  grid-column: 3;
+  grid-row: 3;
+}
+
+.motifTilemint {
+  border-color: #28e6ad;
+  background: #28e6ad;
+  color: #0b6856;
+}
+
+.motifTileyellow {
+  border-color: #ffd43d;
+  background: #ffd43d;
+  color: #9c7100;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  height: clamp(230px, 19vw, 260px);
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.card h3 {
+  margin: 0;
+  font-size: clamp(24px, 2.2vw, 35px);
+  font-weight: 700;
+  letter-spacing: -0.055em;
+  line-height: 1.05;
+}
+
+.card h3 span {
+  display: block;
+}
+
+.performanceCard {
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(20px, 1.8vw, 26px);
+  background: #28e6ad;
+}
+
+.performanceMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.performanceMeta strong {
+  font-size: clamp(22px, 2vw, 31px);
+  letter-spacing: -0.05em;
+}
+
+.performanceMeta span {
+  font-size: 13px;
+}
+
+.performanceMeta svg {
+  margin-left: auto;
+}
+
+.performanceArtwork {
+  width: 100%;
+  max-height: 76px;
+  height: auto;
+  margin: 4px 0;
+  object-fit: contain;
+}
+
+.performanceCard h3 {
+  max-width: 14ch;
+}
+
+.storefrontCard {
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(16px, 1.5vw, 22px);
+  padding: clamp(20px, 1.8vw, 26px);
+  background: #101522;
+  color: #ffffff;
+  text-align: center;
+}
+
+.storefrontCard h3 {
+  max-width: 16ch;
+}
+
+.productPillsArtwork {
+  width: min(82%, 250px);
+  height: auto;
+  object-fit: contain;
+}
+
+.networkCard {
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(17px, 1.5vw, 22px);
+  background: #ffd43d;
+  text-align: center;
+}
+
+.networkCard h3 {
+  max-width: 16ch;
+}
+
+.networkArtwork {
+  width: min(72%, 220px);
+  height: auto;
+  margin-top: 10px;
+  object-fit: contain;
+}
+
+.networkCard button {
+  min-height: 38px;
+  margin-top: 10px;
+  padding: 0 17px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #101522;
+  font-size: 12px;
+}
+
+@media (max-width: 1040px) {
+  .motif {
+    opacity: 0.7;
+    transform: scale(0.84);
+  }
+
+  .motifLeft {
+    left: 4px;
+  }
+
+  .motifRight {
+    right: 4px;
+  }
+}
+
+@media (max-width: 850px) {
+  .section {
+    padding: 24px 16px;
+  }
+
+  .frame {
+    padding: 58px 10px 10px;
+  }
+
+  .hero {
+    min-height: 440px;
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .motif {
+    display: none;
+  }
+
+  .copy h2 {
+    font-size: clamp(47px, 11vw, 72px);
+  }
+
+  .copy h2 span {
+    white-space: normal;
+  }
+
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    height: auto;
+    min-height: 300px;
+  }
+
+  .performanceArtwork {
+    max-height: 106px;
+  }
+}
+
+@media (max-width: 520px) {
+  .section {
+    padding: 14px 8px;
+  }
+
+  .frame {
+    padding: 50px 8px 8px;
+    border-radius: 19px;
+  }
+
+  .hero {
+    min-height: 420px;
+    padding-bottom: 50px;
+  }
+
+  .copy h2 {
+    font-size: clamp(43px, 13.4vw, 61px);
+    line-height: 0.94;
+  }
+
+  .copy p {
+    max-width: 31ch;
+    font-size: 16px;
+  }
+
+  .copy button {
+    min-width: 170px;
+    min-height: 55px;
+  }
+
+  .card {
+    height: auto;
+    min-height: 278px;
+  }
+
+  .card h3 {
+    font-size: 29px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copy button,
+  .networkCard button {
+    transition: none;
+  }
+}

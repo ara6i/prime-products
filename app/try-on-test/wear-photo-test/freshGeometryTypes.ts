@@ -1,3 +1,9 @@
+export interface FreshQualityGates {
+  [key: string]: unknown;
+  rows?: Partial<Record<"waist" | "hips", boolean>>;
+  validationReadyFor448Benchmark?: boolean;
+}
+
 export interface FreshGeometryStatus {
   ok: boolean;
   modelVersion?: string;
@@ -7,7 +13,7 @@ export interface FreshGeometryStatus {
   bestValidationLoss?: number;
   train?: { subjects: number; records: number };
   validation?: { subjects: number; records: number };
-  qualityGates?: Record<string, boolean>;
+  qualityGates?: FreshQualityGates;
   syntheticWearValidated?: boolean;
   realPhotoValidated?: boolean;
   sdkReady?: boolean;
@@ -44,6 +50,9 @@ export interface FreshGeometryRow {
     widthCmMae?: number;
     depthCmMae?: number;
     tapeCmMae?: number;
+    tapeP95Cm?: number;
+    tapeWorstCm?: number;
+    shapeRSquared?: number;
   } | null;
 }
 
@@ -107,7 +116,7 @@ export interface FreshGeometryPrediction {
     bestValidationLoss: number;
     train: { subjects: number; records: number };
     validation: { subjects: number; records: number };
-    qualityGates: Record<string, boolean>;
+    qualityGates: FreshQualityGates;
     syntheticWearValidated: boolean;
     realPhotoValidated: boolean;
     sealedTestSubjectsUsed: number;

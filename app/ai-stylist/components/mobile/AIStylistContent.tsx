@@ -31,7 +31,7 @@ export function AIStylistContent({
   isWeatherLoading = false,
 }: AIStylistContentProps = {}) {
   const [wizardActive, setWizardActive] = useState(false);
-  const [wizardInitialStep, setWizardInitialStep] = useState<0 | 3>(0);
+  const [wizardInitialStep, setWizardInitialStep] = useState<0 | 4>(0);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [reopenedSession, setReopenedSession] =
     useState<StylistHistorySession | null>(null);
@@ -77,7 +77,7 @@ export function AIStylistContent({
 
   const editModel = useCallback(() => {
     reset();
-    setWizardInitialStep(3);
+    setWizardInitialStep(4);
     setWizardActive(true);
   }, [reset]);
 

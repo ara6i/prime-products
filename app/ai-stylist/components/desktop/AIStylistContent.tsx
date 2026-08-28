@@ -33,7 +33,7 @@ export function AIStylistContent({
   weatherContext = null,
 }: AIStylistContentProps = {}) {
   const [wizardActive, setWizardActive] = useState(false);
-  const [wizardInitialStep, setWizardInitialStep] = useState<1 | 4>(1);
+  const [wizardInitialStep, setWizardInitialStep] = useState<1 | 5>(1);
   const [diskOutfits, setDiskOutfits] = useState<OutfitSuggestion[]>([]);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [reopenedSession, setReopenedSession] =
@@ -93,7 +93,7 @@ export function AIStylistContent({
     reset();
     setDiskOutfits([]);
     setReopenedSession(null);
-    setWizardInitialStep(4);
+    setWizardInitialStep(5);
     setWizardActive(true);
   }, [reset]);
 

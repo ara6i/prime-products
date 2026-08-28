@@ -18,6 +18,285 @@
 
 final result: passed
 
+## Merchant supplier-catalog clean dense loop — 2026-08-29
+
+### Source truth and implementation evidence
+
+- Source visual truth remains `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-b07004d0-40e7-4f16-9036-b840ff0f92c0.png`, with the user's later corrections taking precedence: remove the visible blue/purple field, increase the number of cards, reduce card size, and use brighter polished products.
+- Final desktop capture: `.design-qa/supplier-catalog-clean-line-more-cards-1440x900.png` (`1440 x 900`, CSS viewport `1440 x 900`, DPR `1`).
+- Final mobile capture: `.design-qa/supplier-catalog-clean-line-more-cards-mobile.png` (`390 x 844`, CSS viewport `390 x 844`, DPR `1`).
+- Combined comparison: `.design-qa/supplier-catalog-reference-vs-clean-dense-loop.png` (`1440 x 1710`). The source was normalized to `1440 x 810` and stacked above the final `1440 x 900` browser capture for a single visual judgment.
+
+### Findings and corrections
+
+- P1 cheesy field: the previous implementation rendered the complete 4K field twice, so pale blue and purple ribbons visibly tinted the entire section. Fix: removed both full-canvas field instances. The animation now sits on a clean white canvas and uses only `supplier-catalog-line-only-v1.png`, a real transparent raster extracted from the source line.
+- P1 insufficient density: the prior loop had four logical cards per lane. Fix: increased the loop to exactly six logical cards in each of the three lanes (`18` total), evenly phased across the same seamless `14.4s` cycle.
+- P2 oversized cards: desktop cards previously reached `290px` and mobile cards reached `168px`. Fix: reduced them to `clamp(168px, 14vw, 220px)` on desktop and `clamp(104px, 29vw, 128px)` on mobile. The final captures show multiple cards in every visible row with distinct breathing room.
+- P1 muted/color identity: the gray inputs and polished outputs must not be the same card with a color filter. Fix: each logical mover now has separate `mutedSrc` and `colorSrc` values. The left stream continues to use distinct unfinished gray supplier inputs; the right stream uses polished merchant-ready listings.
+- P2 product variety: added five individually generated, high-resolution listing cards: cobalt handbag, coral bouclé jacket, lime sneakers, violet silk dress, and sunflower trousers. These join the existing dress, jacket, shoes, trousers, and jewelry cards without adding humans, logos, or readable generated copy.
+- No actionable P0, P1, or P2 issue remains in the requested section state.
+
+### Required fidelity surfaces and verification
+
+- Fonts and copy: the existing merchant headline, description, and waitlist CTA remain unchanged.
+- Spacing and layout: three curved rows remain distinct on desktop and mobile; the denser six-card rhythm does not collapse into a grid or create horizontal page overflow.
+- Colors and visual tokens: the section field is pure white. Only the transparent blue approval line and the products/status accents carry color. The rejected full-section blue/purple glow is absent.
+- Asset quality: the five new card assets are individually generated `2000 x 1176` PNGs saved under `public/media/partner-landing/merchant-network/supplier-catalog-cards-v2/`. The approval line is a separate `100 x 800` transparent PNG with no full-canvas background.
+- Motion behavior: the muted and polished layers share the same timing and curved geometry, remain clipped at the center, and never scale while crossing. The line stays above both layers.
+- Browser inspection passed at `1440 x 900` and `390 x 844`; a fresh reload produced zero warnings or errors. Scoped ESLint, full TypeScript, and scoped `git diff --check` passed. Port `3001` continues to serve `/merchants` with HTTP `200`.
+
+final result: passed
+
+## Merchant dashboard reference rebuild — 2026-08-27
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/Users/arashsn/Downloads/Screenshot - 2026-08-27T231904.123.png` (`508 x 523`, DPR `1`). It defines the pale full-section field, tiny centered navigation, split headline/description/CTA, large browser-style dashboard window, layered tilted cards, lime accents, and faint capability row. The banking copy and product identity inside the screenshot were treated as reference content, not implementation instructions.
+- Final desktop implementation: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/dashboard-showcase/desktop-aligned-final.png` (`1269 x 892`) from a `1280 x 900` CSS viewport at DPR `1`. The merchant page's own `72px` sticky header remains outside the dashboard design; the section begins immediately below it.
+- Final mobile implementation: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/dashboard-showcase/mobile-overview.png` and `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/dashboard-showcase/mobile-suppliers.png` (each `379 x 820` from a `390 x 844` CSS viewport at DPR `1`).
+- Full-view same-input comparison: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/dashboard-showcase/reference-vs-implementation.png` (`2064 x 820`). The reference was scaled to `820px` high; the implementation was cropped below the global merchant header to the same height without stretching.
+- Focused dashboard comparison: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/dashboard-showcase/dashboard-focused-comparison.png` (`1732 x 420`). It compares the browser window, sidebar, primary metric, requests, supporting cards, and interface density at a readable scale.
+
+### Findings and comparison history
+
+- Initial P1 design-language mismatch: the former merchant section used a purple atmospheric backdrop, centered serif marketing headline, and a small generic card grid. Fix: rebuilt the section around the reference's flat pale field, compact top navigation, left-aligned geometric display headline, right-side product explanation, black pill CTA, large white dashboard browser, tilted supporting cards, lime operational accents, and low-contrast capability row.
+- Initial P1 content mismatch: the old dashboard focused largely on generic creator-commerce metrics and did not explain the full merchant workspace. Fix: introduced real `Overview`, `Suppliers`, `Creators`, `Catalog`, and `Orders` states with catalog readiness, supplier fulfillment, creator collaborations, product publishing, customer demand, and network-order data.
+- First rendered pass P2 vertical crop: the dashboard body and scene were tall enough that the lime product card and capability row fell below the desktop viewport. Evidence: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/dashboard-showcase/desktop-first-pass-cut.png`. Fix: reduced the browser body from `440px` to `380px`, tightened workspace spacing and metric cards, and repositioned the floating cards. The final viewport contains the complete browser, all three floating cards, and all five capability labels.
+- Intentional source overrides: the viewer's large close and overflow controls are not part of the product design and were omitted. Banking labels, financial-institution branding, external platform logos, and cash-management actions were replaced by PrimeStyleAI merchant content. The composition, density, shape language, and visual hierarchy remain faithful.
+- No actionable P0, P1, or P2 issue remains after the final same-input comparison.
+
+### Required fidelity surfaces
+
+- Fonts and typography: existing Manrope replaces the source's geometric sans with a close weight and width match. The heading uses a medium optical weight, tight negative tracking, and two-line desktop wrap; compact uppercase eyebrow, tiny navigation, micro dashboard labels, and muted supporting copy preserve the reference hierarchy.
+- Spacing and layout rhythm: the final section keeps the reference's wide breathing room above the dashboard, split hero copy, central `1006 x 420` browser window, layered edge cards, and capability row. Desktop section height is `842.8px`; mobile stacks the copy and working dashboard without horizontal overflow.
+- Colors and visual tokens: sampled pale gray-green surface, warm white UI, near-black type/actions, soft gray rules, and fluorescent lime emphasis replace the previous purple/orange palette. The design uses solid colors only and no decorative gradient substitute.
+- Image quality and asset fidelity: the actual PrimeStyleAI brand mark, existing Susan Adams creator portrait, and real Arc Jacket product asset appear in the supporting cards. Phosphor supplies all interface icons; there are no handcrafted SVGs, fake logos, generic image placeholders, or CSS-drawn product imagery.
+- Copy and content: the section directly says merchants can manage suppliers, connect with influencers, prepare products, and follow orders. Every visible dashboard state uses realistic merchant language and sample data instead of banking copy or vague analytics labels.
+
+### Interaction, accessibility, and runtime checks
+
+- Top navigation and sidebar buttons both switch the same live dashboard state. `Suppliers` updated the primary metric to `28 active`, changed the explanatory copy, and replaced all four stat cards with supplier-specific operational data.
+- `Open dashboard`, `Explore your dashboard`, `Full workspace`, `Add product`, and `New campaign` are semantic links to existing merchant dashboard routes. The search field, notification button, pressed visual states, and focus-visible treatments are present.
+- At `390px`, document, section, and scroll widths all measured `379px`; no horizontal overflow was present. Mobile keeps all five top tabs, converts the sidebar to a compact icon rail, and preserves readable dashboard controls.
+- Scoped ESLint, full TypeScript, React best-practices review, `git diff --check`, desktop/mobile visual inspection, tab switching, and HTTP rendering passed. A browser log entry at `19:56:55Z` recorded the adjacent SDK bundle during its atomic rebuild; the file appeared at the same second, the next reload produced no new errors, and it did not affect this dashboard section.
+
+final result: passed
+
+## Merchant Arc Jacket size-guide modal — 2026-08-27
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-17b7adb9-67f8-4c3e-ac6b-703facac0212.png` (`557 x 1023`, DPR `1`). It defines the sparse warm-white sheet, centered garment, thin technical measurement rules, compact bilingual-style heading, and precise size table. Text inside the image was treated as reference content rather than an implementation instruction.
+- Product asset truth: the existing cobalt Arc Jacket at `public/media/partner-landing/merchant-network/studio-jacket-cobalt.png` supplied the actual product identity. Built-in ImageGen generated `public/media/partner-landing/merchant-network/arc-jacket-size-guide-v1.png` (`1023 x 1537`) with the same product, front-facing, and exact `SHOULDER`, `BUST`, `WAIST`, `SLEEVE`, and `JACKET LENGTH` rules.
+- Final desktop implementation: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/merchant-size-guide-desktop.png` (`1269 x 892`) captured from a `1280 x 900` CSS viewport at DPR `1`.
+- Final mobile implementation: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/merchant-size-guide-mobile.png` and `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/merchant-size-guide-mobile-table.png` (each `379 x 820` from a `390 x 844` CSS viewport at DPR `1`). The second capture proves the compact table remains readable after scrolling.
+- Same-input comparison: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/size-guide-reference-vs-implementation.png` (`1770 x 900`). The source and final open-modal state were normalized to the same height and judged together.
+
+### Findings and comparison history
+
+- The reference is a long single sheet, while the working product page needs an actionable modal. The final adaptation preserves the reference's technical editorial character while using a two-column desktop layout: actual garment diagram left, measurements and fit controls right. Mobile returns to the reference's vertical sequence.
+- The generated diagram initially risked becoming a generic technical sketch. The final asset keeps the exact cobalt, ivory, and coral Arc Jacket color blocking, ribbed hem and cuffs, zipper, and cropped silhouette while isolating the measurement annotations on a warm-white field.
+- The desktop modal intentionally scrolls inside its bounded panel so it never extends beyond the viewport. On mobile it becomes a true full-screen sheet with a fixed-height header and one contained scroll surface.
+- No actionable P0, P1, or P2 issue remains in the final combined comparison.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the existing merchant Manrope family reproduces the source's compact uppercase micro-labels and airy table while adding a strong product-size heading for the active commerce task.
+- Spacing and layout rhythm: generous warm-white space, hairline dividers, a centered measurement image, restrained four-pixel panel radius, and a two-column desktop composition preserve the sparse editorial rhythm. The mobile stack keeps the complete diagram ahead of the size table.
+- Colors and visual tokens: warm white, black technical rules, subtle gray dividers, and the exact cobalt/ivory/coral jacket palette replace decorative color. The page behind the modal is softened by a neutral translucent blur.
+- Image quality and asset fidelity: the actual Arc Jacket is rendered as a real raster product asset rather than CSS art, a placeholder, or an inline SVG. Every line and label remains within the image safe area at desktop and mobile widths.
+- Copy and content: the guide explains the needed body inputs (`Bust`, `Waist`, `Shoulder breadth`, `Arm length`, and `Height`), differentiates garment measurements from recommended body ranges, and states the flat-measurement method and production tolerance.
+
+### Interaction, accessibility, and runtime checks
+
+- `Size guide` opens the modal, focuses the close control, prevents background scrolling, and reports `aria-expanded=true`. Closing via the round button, the footer action, or Escape restores the trigger state and body scrolling.
+- Open and close use coordinated backdrop opacity plus panel opacity/translation/scale transitions; reduced-motion users receive no transitions. The dialog traps Tab focus and restores the prior focus on close.
+- Switching from centimeters to inches updated all five garment rows and the selected body range. Choosing `L` inside the table updated the main product's selected-size pressed state, the body-range label, and the footer action.
+- Mobile browser measurements showed document, dialog, and content widths all at `379px`, with no horizontal overflow. The contained content surface scrolls from the diagram through the full fit table and footer.
+- Scoped ESLint, full TypeScript, visual desktop/mobile inspection, keyboard close, unit conversion, size selection, and current-route browser diagnostics passed. Two older browser-log entries recorded a temporary missing SDK build artifact at `19:46:26Z`; the artifact was present afterward, subsequent reloads produced no new errors, and the final rendered flow remained operational.
+
+final result: passed
+
+## Merchant Outfit Builder and enlarged network centerpiece — 2026-08-27
+
+### Source truth and implementation evidence
+
+- Outfit visual source: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-c0cbc630-e1b6-4be5-827b-7c2f39e78f3a.png` (`768 x 1280`). It defines the warm fibrous paper, four colorful fashion cutouts, red hand-painted title, red handwritten captions, and sketchy doodle/arrow density.
+- Network correction source: `/Users/arashsn/Downloads/Screenshot - 2026-08-27T231748.613.png` (`1906 x 874`). It shows the prior center copy as too small and too low.
+- Generated production asset: `public/media/partner-landing/merchant-network/outfit-builder/outfit-builder-scrapbook-v1.png` (`1003 x 1568`, 2.2 MB). It uses four lively shirt colorways—white/coral, blue/black, hot pink, and butter yellow—with the exact `BUILD A LOOK / around one product` scrapbook treatment.
+- Desktop Outfit Builder capture: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/merchant-outfit-builder-desktop.png` (`1269 x 1074`) from a `1280 x 720` CSS viewport at DPR `1`, cropped from the browser-rendered full page.
+- Desktop Meet the network capture: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/merchant-meet-network-desktop.png` (`1269 x 795`) from the same `1280 x 720` CSS viewport and DPR `1`.
+- Mobile evidence: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/merchant-outfit-builder-mobile.png` from a `390 x 844` CSS viewport at DPR `1`.
+- Same-input comparisons: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/outfit-reference-vs-implementation.png` (`1874 x 1074`) and `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/network-before-vs-after.png` (`3004 x 795`). Each source and implementation is normalized to the same comparison height.
+- State: interest dialog and SDK closed for visual comparisons. The Outfit Builder cue was tested separately through the live SDK handoff.
+
+### Findings and comparison history
+
+- Initial P1 color mismatch: the first generated Outfit Builder asset used the same blue shirt in all four cutouts, which did not match the colorful source. Fix: regenerated it with the reference's white/coral, sky blue, hot pink, and butter-yellow balance before implementation. The final asset preserves the same paper texture, torn edges, red typography, captions, arrows, hearts, and sparkles.
+- P1 missing commerce story: the page moved directly from one-photo sizing to the SDK and did not explain outfit suggestions or network promotion. Fix: added a standalone `#outfit-builder` section between sizing and `#ai-fitting`, with complete-look building, complementary product suggestions, cross-merchant matching, network promotion, larger-basket value, and more-sales opportunity copy.
+- P2 misplaced SDK cue: `See how customers land on your PDP, find their right size and try it on.` previously sat inside the one-photo sizing section. Fix: moved the complete cue to the bottom of Outfit Builder, paired it with a large curved red icon-library arrow, and placed the live SDK immediately after it.
+- P2 network centerpiece hierarchy: `Meet the network` was too low and visually undersized in the supplied screenshot. Fix: moved the center group upward, increased its maximum width and heading scale, strengthened the role and explanation copy, and added `Source · Match · Story · Sale` as a concise detail line. The before/after comparison shows the corrected central hierarchy without colliding with any of the four role groups.
+- No actionable P0, P1, or P2 issue remains.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the generated red hand-painted asset text closely matches the reference's irregular fashion-scrapbook lettering. Existing Manrope provides the surrounding editorial hierarchy, compact uppercase labels, and readable benefit copy. The enlarged network heading retains the established coral, violet, and green stacked treatment.
+- Spacing and layout rhythm: desktop uses a balanced image/copy split and preserves the complete poster without crop or stretch. Benefit rows and the final cue create a clear top-to-bottom sales story. Mobile stacks the full poster before the copy and keeps the SDK as the next section.
+- Colors and visual tokens: warm paper and page neutrals, deep red ink, hot pink, blue, coral, and butter yellow reproduce the supplied reference's colorful energy. The network section keeps the existing merchant palette and adds no unrelated theme.
+- Image quality and asset fidelity: the generated source is `1003 x 1568`; Next Image serves a `614 x 960` quality-90 candidate for the observed `560px` desktop slot and a `358 x 560` candidate for the observed `332px` mobile slot. The poster is sharp, complete, and free of watermark, logo, stretch, crop, placeholder, CSS drawing, or inline-SVG artwork.
+- Copy and content: customers can build outfits, receive product suggestions, discover complementary items, and see a merchant product promoted across the PrimeStyleAI network when it is the right match. The copy connects more relevant suggestions to more product discovery and more chances to sell without claiming every product will always be promoted.
+
+### Interaction, accessibility, responsiveness, and runtime checks
+
+- The cue is a visible semantic link with `href="#ai-fitting"`. Clicking it updated the URL to `#ai-fitting` and placed the live `ARC JACKET` SDK product panel in view.
+- The colorful poster has descriptive alternative text. The section uses `aria-labelledby`, benefit content remains real text, and the large cue has an explicit accessible name.
+- Desktop document, Outfit Builder, and viewport widths all measured `1280px` with no horizontal overflow. Mobile document and Outfit Builder widths both measured `379px` inside the `390px` viewport, also with no horizontal overflow.
+- The final browser console reported zero warnings and zero errors. Page and image requests returned HTTP `200`; section source order is `commerce-together`, `one-photo-fit`, `outfit-builder`, then `ai-fitting`.
+- Scoped ESLint, full TypeScript, and `git diff --check` passed. Port `3001` is served by this checkout.
+
+final result: passed
+
+## Merchant SDK joyful jacket colorways and one-photo promise — 2026-08-27
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-30a2ab44-55d4-4f8f-945d-efcc84343126.png` (`1000 x 750`, DPR `1`). It defines the white three-column product stage, circular color controls, dominant central product, right-side description/action, and lower PREV/NEXT plus bag-action rhythm.
+- User overrides are authoritative: no yellow outer canvas, no internal product header or social controls, a more joyful but not rainbow-like jacket, one generated product image for every color, PREV/NEXT must change color, and the section must explain that customers can get size and try-on from one front photo without a side photo or visible 3D mesh.
+- Baseline evidence: `.design-qa/merchant-pdp-sdk-colorways/baseline-1440x900.png` (`1429 x 893`) showed one muddy neutral jacket image, neutral swatches with no matching product images, and static PREV/NEXT controls.
+- Final desktop evidence: `.design-qa/merchant-pdp-sdk-colorways/implementation-cobalt-1440x900.png` (`1429 x 893`) from a `1440 x 900` CSS viewport at DPR `1`; alternate coral state: `.design-qa/merchant-pdp-sdk-colorways/implementation-coral-1440x900.png`.
+- Mobile evidence: `.design-qa/merchant-pdp-sdk-colorways/implementation-lilac-mobile-top-final-390x844.png` (`379 x 820`) and `.design-qa/merchant-pdp-sdk-colorways/implementation-lilac-mobile-390x844.png` from a `390 x 844` CSS viewport at DPR `1`.
+- Full-view comparison: `.design-qa/merchant-pdp-sdk-colorways/comparison-reference-vs-cobalt.png` (`2200 x 750`). The `1000 x 750` source remains at native height; the desktop implementation is scaled proportionally to the same `750px` comparison height.
+- Focused product-panel comparison: `.design-qa/merchant-pdp-sdk-colorways/comparison-panel-focused.png` (`2318 x 620`). The source's inner white panel and the implementation's content area are both normalized to `620px` height so selectors, product scale, copy, CTA, and footer treatment remain directly legible.
+- State for the primary comparison: Cobalt colorway, size M, bag not yet added, SDK closed. Alternate coral/lilac and SDK-open states were captured separately.
+
+### Findings and comparison history
+
+- P1 product-asset mismatch: the baseline jacket was visibly dull and used a generic ivory/taupe/charcoal/oxblood panel design. Fix: generated a new sculpted `Arc Jacket` silhouette and five consistent transparent product cutouts—Cobalt, Coral, Butter, Mint, and Lilac—with one dominant joyful hue, restrained warm-ivory panels, and one small accent. Post-fix evidence is the desktop Cobalt/Coral and mobile Lilac captures.
+- P1 false color-selection affordance: five swatches and PREV/NEXT existed, but every state showed the same single jacket. Fix: all swatches, PREV, and NEXT now share the same color index and update the actual product asset, active swatch, visible color name/counter, button colors, SDK product ID, SDK garment reference, and accessibility copy. NEXT cycled through all five assets and returned to Cobalt; PREV returned Butter to Coral in the tested reverse path.
+- P2 fitting-value message missing: the baseline did not tell merchants that their customers can complete sizing and try-on from one front photo. Fix: added a compact color-linked promise block: `One front full-body photo is all they need.` followed by `Your customers can see their size and try it on—no side photo, no visible 3D mesh. Simple and accurate.`
+- P2 selected-product state leakage: the baseline bag confirmation could remain after a product-color change. Fix: changing color now resets `Added to bag` back to `Add to bag — $148` because it is a different product variant.
+- Post-fix source/implementation comparisons show no actionable P0, P1, or P2 difference in the requested scope. The source's yellow surround, internal navigation, social icons, and video action remain intentionally omitted under the user's prior explicit direction.
+
+### Required fidelity surfaces
+
+- Fonts and typography: existing Manrope maintains the source's compact uppercase selectors, oversized product title, short editorial description, and small footer navigation. The one-photo promise adds one clear bold line and one compact supporting line without competing with `ARC JACKET`.
+- Spacing and layout rhythm: desktop retains the source's selector/product/details three-column split and full-width lower action bar. The jacket is dominant but fully contained. Mobile becomes a natural vertical product flow with the promise and SDK action before the product, then selectors and the two-row footer.
+- Colors and visual tokens: the selected size, promise rail/icon, SDK action, add-to-bag action, and active color name now inherit the chosen product hue. Cobalt, coral, butter, mint, and lilac are bright but restrained by ivory panels and the neutral canvas. There is no yellow outer frame or decorative gradient.
+- Image quality and asset fidelity: all five product images are real `1254 x 1254` RGBA raster assets with matching silhouette, crop, seam geometry, lighting, and transparent background. Browser-rendered Cobalt/Coral decode at `720 x 720` for the desktop slot and Lilac at `358 x 358` for mobile; no checkerboard, halo, stretch, crop, CSS product drawing, logo, or watermark is visible.
+- Copy and content: `Arc Jacket`, the joyful-but-restrained product description, active color name and `01 / 05` counter, one-front-photo sizing/try-on promise, SDK CTA, PREV/NEXT, and bag action are all present. No `Happy Jacket` name is used.
+
+### Interaction, accessibility, and runtime checks
+
+- All five swatches changed the jacket image and kept accessible pressed states. NEXT visited Coral, Butter, Mint, Lilac, and Cobalt with all images complete; PREV returned to the correct prior color. Every state exposed the matching descriptive alt text.
+- `Add to bag — $148` changed to `Added to bag`; moving to the next color reset the action correctly.
+- `Find my size & try it on` opened the real local SDK. `.design-qa/merchant-pdp-sdk-colorways/sdk-open-coral-1440x900.png` shows the upload experience with `Full-body photo`, photo guide, upload action, body details, Profile, and History; closing returned to the PDP without an error.
+- Desktop measured `1429px` body/client width in the `1440px` viewport. Mobile measured `379px` body/document/client width in the `390px` viewport. Neither had horizontal overflow.
+- Browser diagnostics reported zero warnings and zero errors. Scoped ESLint, full TypeScript, `git diff --check`, and HTTP `200` passed. Port `3001` remains served by this checkout.
+
+final result: passed
+
+## Merchant PDP full-screen theme and local-SDK correction — 2026-08-25
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-16e1af87-401c-465c-8195-c0cf3597f968.png` (`736 x 552`, DPR `1`). The user's later explicit corrections override its green outer canvas: the PDP must be edge-to-edge, use the merchant-page theme, and load the local SDK checkout.
+- Final implementation: `.design-qa/merchant-pdp-sdk/final-fullscreen-theme-local-sdk-hash-736x552.png` (`736 x 552`, CSS viewport `736 x 552`, DPR `1`).
+- Full-view comparison: `.design-qa/merchant-pdp-sdk/reference-vs-fullscreen-theme-local-sdk.png` (`1484 x 552`), with the original structural reference on the left and the corrected implementation on the right.
+- Desktop evidence: `.design-qa/merchant-pdp-sdk/full-screen-theme-local-sdk-897x871.png` (`897 x 871`, CSS viewport `897 x 871`, DPR `1`). The PDP section, shell, and content viewport each measure the full `886px` document width and exactly fill the `799px` viewport height below the `72px` merchant header.
+- Mobile evidence: `.design-qa/merchant-pdp-sdk/final-fullscreen-theme-local-sdk-mobile-section-390x844.png` (`390 x 844`, CSS viewport `390 x 844`, DPR `1`). The white PDP begins directly below the `66px` sticky mobile header, spans the full document width, shows all five gallery thumbnails, and has no horizontal overflow.
+- Focused comparison was not required because the exact-size full-view comparison keeps the full gallery, title, sizing controls, purchase buttons, local-SDK action, and delivery cards legible. The opened SDK state is separately captured at `.design-qa/merchant-pdp-sdk/full-screen-local-sdk-open-897x871.png`.
+
+### Findings and comparison history
+
+- Initial P1 theme mismatch: the previous version used a deep-green outer frame and green purchase controls despite the merchant landing page having no green primary theme. Fix: removed all outer padding/frame color, made the section/shell/content viewport full-width white, mapped Buy Now to `--ink` (`#0a1b39`), and mapped the SDK outline/action and delivery icons to `--blue` (`#3155f4`). Post-fix browser styles report white section/shell backgrounds, navy Buy Now, and blue SDK border/text.
+- Initial P1 full-screen mismatch: the PDP was centered inside a `1160px` white card with green gutters. Fix: removed the shell max-width, set section and shell to `width: 100%`, and set section, shell, and product viewport to a minimum height of `calc(100svh - 72px)`. The `897 x 871` post-fix capture shows the PDP occupying the complete viewport below the sticky header.
+- Initial P2 SDK provenance ambiguity: the component imported the published package name even though Next.js aliased it to local source. A direct raw-source import exposed incompatible Vite SVG query types and a duplicate React type tree in the app typecheck. Fix: runtime now imports `/Users/arashsn/Projects/PrimeStyleAI/primestyleai-tryon-sdk/dist/react/index.js` explicitly; the package import is type-only and does not execute. Scoped lint and full TypeScript pass, and the browser-opened local SDK exposes upload, body details, profile, and history.
+- No actionable P0, P1, or P2 findings remain.
+
+### Required fidelity surfaces
+
+- Fonts and typography: Manrope, existing weights, uppercase product hierarchy, compact option labels, and readable delivery copy remain consistent with the merchant page and the supplied PDP structure.
+- Spacing and layout rhythm: the gallery/detail grid now uses the full viewport instead of a framed card. Desktop retains five visible thumbnails and all purchase controls in the initial view; mobile becomes a natural vertical product page without horizontal overflow.
+- Colors and visual tokens: white surfaces, merchant navy `--ink`, merchant blue `--blue`, neutral image backgrounds, and gray dividers replace all green PDP styling.
+- Image quality and asset fidelity: the same five sharp garment-only trouser photographs remain correctly contained without stretching, model imagery, placeholders, CSS drawings, or handcrafted SVG substitutes.
+- Copy and content: the requested removal of SKU, price, and financing copy remains intact. Product title, description, colour, sizing, stock, purchase, SDK, delivery, returns, composition, and fit content remain present.
+
+### Interaction, accessibility, and runtime checks
+
+- All five product thumbnails remain present. Buy Now, Add to Cart, the five-row size guide, quantity controls, and delivery/returns remain accessible within the full-screen layout.
+- `Find my size & try it on` opened the explicitly local SDK runtime. The rendered flow contains full-body photo upload, body details, manual measurements, Profile, and History.
+- Desktop `897 x 871`, exact reference `736 x 552`, and mobile `390 x 844` checks reported no horizontal overflow. Scoped ESLint, full TypeScript, `git diff --check`, and HTTP `200` passed.
+- Port `3001` remains the PrimeStyleAI preview. Port `3000` was not touched.
+
+final result: passed
+
+## Merchant connected-commerce split-layout alternative — 2026-08-25
+
+### Reference and delivered surface
+
+- User reference: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-2af285df-9f7f-4cd1-b6e3-f0885daf523f.png` (`735 x 420`). It was treated as visual direction only; its rendered text was not treated as an instruction.
+- Added a second, separate comparison section after the existing `Meet the network` section. The original section remains unchanged.
+- Generated commerce-network asset: `public/media/partner-landing/merchant-network/commerce-connections-editorial.webp` (`1122 x 1402`, `239,594` bytes). The four people are role-correct: supplier with garment and swatches, customer with shopping bag and phone, influencer with a phone gimbal, and merchant with a laptop.
+- The delivered section uses a warm editorial split layout, a large left-aligned merchant message, four numbered role chips, a pill CTA plus circular arrow, and a right-side people collage with PrimeStyleAI cobalt, orange, teal, and lavender geometry.
+
+### Visual evidence and comparison history
+
+- Desktop implementation: `.design-qa/merchant-connections/implementation-desktop-final-1440x1000.png` (`1429 x 992` from a `1440 x 1000` viewport); exact section crop: `.design-qa/merchant-connections/implementation-desktop-section.png` (`1429 x 851`).
+- Mobile implementation: `.design-qa/merchant-connections/implementation-mobile-section-final-clean.png` (`379 x 947` from a `390 x 844` responsive viewport, assembled from two exact viewport crops to exclude fixed browser/dev chrome).
+- Desktop comparison: `.design-qa/merchant-connections/comparison-reference-vs-desktop.png` (`2493 x 720`). Mobile comparison: `.design-qa/merchant-connections/comparison-reference-vs-mobile-clean.png` (`1424 x 720`).
+- Standalone-section correction evidence: `.design-qa/merchant-connections/implementation-section-boundary-final.jpg` (`886 x 860`) and `.design-qa/merchant-connections/comparison-reference-vs-section-boundary-final.jpg` (`1796 x 860`). The final block has its own warm background, top and bottom rules, and visible transition into the following storefront section.
+- Initial desktop review found the section too tall at roughly `1015px` because the portrait image and vertical padding were oversized. The visual was capped at `570px` and the vertical padding at `64px`, producing the final `851px` desktop section while preserving the reference's balance.
+- Final desktop and mobile comparisons show no remaining P0, P1, or P2 fidelity issue. The mobile stack preserves the same message, role order, CTA hierarchy, and full four-person visual without horizontal overflow.
+
+### Interaction, accessibility, and runtime checks
+
+- `Connect your network` opens the existing `Join the PrimeStyleAI network.` dialog, and `Close form` dismisses it. The adjacent circular arrow has a descriptive accessible label and shares the same action.
+- The section is labelled by its heading. The generated collage has meaningful alternative text, and role labels remain text rather than baked into the image.
+- Fresh desktop measurements: section `1429 x 851`, document/client width `1429px` in a `1440px` viewport, no horizontal overflow, image loaded at natural size `1122 x 1402`, and no dialog left open.
+- Semantic boundary verification: `#connected-commerce` is a direct child `<section>` of `<main>`, with separate `<section>` siblings before and after it, `72px` anchor scroll offset on desktop (`66px` mobile), and independent top and bottom borders.
+- Fresh browser logs contain no errors and no warning from the new section. Unrelated existing Next Image warnings remain for quality values `100`, `94`, and `88` while the app currently configures `[75, 90]`.
+- Scoped ESLint, full TypeScript, and `git diff --check` passed. Port `3001` remains the merchant preview for this checkout; port `3000` was not touched.
+
+final result: passed
+
+## Merchant commerce-together editorial section — 2026-08-25
+
+### Source truth, implementation, and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-3be308a7-b82c-4f69-a525-02c5d6279a5b.png` (`736 x 920`). It defines the warm-white editorial field, scattered full-body people, long directional shadows, central stacked multicolor type, and generous negative space.
+- Final desktop implementation: `.design-qa/merchant-together/implementation-desktop-final-1440x1000.png` (`1429 x 992` browser capture from a `1440 x 1000` CSS viewport, DPR `1`), with the new section aligned below the sticky merchant header.
+- Final mobile implementation: `.design-qa/merchant-together/implementation-mobile-verified-390x844.png` (`379 x 820` browser capture from a `390 x 844` CSS viewport, DPR `1`). The section measured `379 x 474.58` CSS pixels at `y=73`.
+- Same-input full-view comparisons: `.design-qa/merchant-together/comparison-reference-vs-desktop.png` (`2169 x 895`) and `.design-qa/merchant-together/comparison-reference-vs-mobile.png` (`783 x 475`). The supplied reference is on the left and the browser-rendered section is on the right.
+- Generated responsive assets: `public/media/partner-landing/merchant-network/commerce-together-editorial-wide.webp` (`1586 x 992`) and `public/media/partner-landing/merchant-network/commerce-together-editorial-mobile.webp` (`1122 x 1402`). The desktop and mobile crops are art-directed separately but preserve the same people, role props, palette, lighting, and shadow direction.
+- Density normalization: comparisons scale the `736 x 920` source proportionally to the implementation crop height. Browser screenshots and CSS viewports use DPR `1`; the source assets decode above their rendered slot dimensions.
+- State: interest dialog closed for visual comparison. The primary CTA was tested separately in its open and closed states.
+
+### Findings and comparison history
+
+- Initial P1 mobile asset failure: the first responsive-image path produced an empty `currentSrc` in the in-app browser, leaving only live copy and role labels visible. Fix: switched the generated artwork to a native art-directed `picture` with direct WebP sources. Final mobile and desktop images both report complete loads with the intended crop.
+- Initial P2 mobile content collision: the first portrait artwork left too little central negative space, so the lower role groups competed with the role line and CTA. Fix: regenerated the portrait crop with smaller corner groups and a taller protected center, then moved the top role labels below their people.
+- Intentional product adaptation: generic team members become four accurate commerce groups—merchants with a tablet and garment rack, customers shopping and browsing, apparel suppliers with samples and a shipment carton, and influencers filming product content. The reference composition is preserved without copying its brand, people, or issue copy.
+- No actionable P0, P1, or P2 difference remains in the requested section.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the existing Manrope variable carries the compact editorial sans feel. The stacked `Meet / the / network` hierarchy, heavy optical weight, tight line height, and coral/violet/green color sequence closely track the source at both breakpoints.
+- Spacing and layout rhythm: the full-bleed section uses the source's airy field, four corner clusters, central safe area, and long-shadow rhythm. Desktop and mobile maintain clear separation between people, role labels, copy, and CTA.
+- Colors and visual tokens: warm ivory, coral, violet, green, cobalt, teal, and dark navy reproduce the source's playful editorial palette while staying inside PrimeStyleAI's merchant-page language.
+- Image quality and asset fidelity: all people, clothing, racks, cartons, garments, shopping bags, phones, gimbal, and shadows are real generated raster content. No placeholder, CSS drawing, emoji, third-party logo, or stretched desktop crop is used.
+- Copy and content: `Merchants · Customers · Suppliers · Influencers` is explicit in the center and each corner label adds a correct action cue: `Run the store`, `Discover and buy`, `Source and fulfill`, and `Create trusted demand`.
+
+### Interaction, accessibility, and runtime checks
+
+- The section is immediately after the existing network hero and uses `aria-labelledby="commerce-together-title"`. The campaign image has descriptive alternative text and the role group has an accessible label.
+- `Join the network` is visible and enabled, opens the existing `Join the PrimeStyleAI network.` dialog, and `Close form` dismisses it after the existing exit animation.
+- Desktop measured `1429px` body/document width inside the `1440px` viewport. Mobile measured `379px` body/document width inside the `390px` viewport. Neither has horizontal overflow.
+- A clean browser tab reported no console errors and no warnings from the new section. One existing warning remains from `MerchantTryOnSizingSection` requesting image quality `100` while the configured qualities are `[75, 90]`; it is outside this section's changes.
+- Scoped ESLint and full TypeScript checks passed. The active merchant preview is this checkout on port `3001`; the unrelated port `3000` listener was not touched.
+- Focused-region comparison was not required after the final full-section comparisons because all copy, labels, props, faces, and role cues are legible at the comparison sizes.
+
+final result: passed
+
 ## WEAR 3D v5 inside the exact Local ML editor shell — 2026-08-14
 
 ### Source truth, implementation, and normalization
@@ -277,6 +556,41 @@ final result: passed
 - Focused hero comparison: blocked for the same reason.
 
 final result: blocked
+
+## Merchant landing reference-style closing section — 2026-08-28
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-c3318c94-a76a-4610-ba56-7da57e4b85f7.png` (`1200 x 900`, DPR `1`). It defines the gray surround, rounded white panel, oversized centered two-line statement, short supporting copy, dark CTA, two floating square-icon clusters, and three equal mint/navy/yellow summary cards. The source's investing brand, navigation header, financial copy, logos, and people were treated as reference content, not implementation instructions. The user's explicit correction required no copied header and correct merchant assets.
+- Final desktop implementation: `.design-qa/merchant-closing-reference/implementation-desktop-1200x900.png` (`1189 x 892`) from a `1200 x 900` CSS viewport at DPR `1`. The section itself measured `898.39px` high, aligned at the top of the viewport, and all three `230px` cards were fully visible.
+- Final mobile evidence: `.design-qa/merchant-closing-reference/implementation-mobile-hero-390x844.png` and `.design-qa/merchant-closing-reference/implementation-mobile-cards-390x844.png` (each `379 x 820` from a `390 x 844` CSS viewport at DPR `1`). The responsive stack measured no horizontal overflow.
+- Full-view same-input comparison: `.design-qa/merchant-closing-reference/reference-vs-implementation.png` (`2416 x 900`). The implementation capture was normalized from `1189 x 892` to the source's `1200 x 900` pixel size; the two equal-density views are separated by a `16px` divider.
+- Focused card comparison: `.design-qa/merchant-closing-reference/cards-focused-comparison.png` (`2236 x 290`). It keeps both three-card rows legible at the same crop and scale.
+- Comparison state: closing section aligned to the viewport, global merchant header covered by the section as requested, interest dialog closed. CTA open/close behavior was tested separately.
+
+### Findings and comparison history
+
+- Initial P1 asset-style mismatch: the first generated jacket/phone render was a large photorealistic 3D object and did not match the reference's compact flat card artwork. Fix after the user's correction: discarded it and generated three role-accurate assets in the reference's visual density—a fashion performance line, two storefront product pills, and four overlapping no-people commerce-network badges. Post-fix evidence is the full-view and focused-card comparison above.
+- Initial P2 viewport crop: the first desktop composition measured about `965px`, so the bottom card corners and gray lower margin were not both visible in a `1200 x 900` comparison. Fix: retained the headline's reference-aligned vertical position, reduced the desktop card block to `230px`, and tightened only the card interiors. The final section measures `898.39px` and shows the complete panel and gray surround.
+- Intentional source overrides: the Uninvest header, investing brand, financial figures, company logos, and human avatars were omitted. PrimeStyleAI merchant content replaces them while preserving the source's composition, hierarchy, color-block rhythm, CTA placement, and card proportions.
+- No actionable P0, P1, or P2 visual issue remains after the final same-input comparison.
+
+### Required fidelity surfaces
+
+- Fonts and typography: existing Manrope reproduces the heavy geometric display feel, tight negative tracking, two-line desktop wrap, compact supporting copy, and bold card headings. Mobile wraps to four short lines without clipping.
+- Spacing and layout rhythm: the gray surround, rounded white frame, large negative-space hero, centered CTA, bilateral icon clusters, `10px` card gaps, equal card tracks, and fully visible lower corners closely match the source. Desktop section height is under the `900px` viewport; mobile stacks the cards naturally.
+- Colors and visual tokens: white, near-black navy, vivid mint, warm yellow, and muted gray match the source's dominant palette. PrimeStyleAI cobalt/coral appear only inside the adapted product assets.
+- Image quality and asset fidelity: the three generated transparent RGBA sources were saved as optimized project WebP files at `1200 x 400`, `1100 x 402`, and `1100 x 397`. They remain sharp at their rendered slots, use correct fashion-commerce objects, and contain no humans, logos, text, watermark, checkerboard, CSS product drawings, or handcrafted SVG substitutes. Phosphor supplies the decorative commerce icons.
+- Copy and content: the final statement summarizes the actual merchant story—one product photo, fit, storefront/PDP quality, and shopping-network reach. Both `Join the waitlist` actions invoke the existing merchant application dialog.
+
+### Interaction, responsiveness, and runtime checks
+
+- The primary closing CTA opened the existing merchant waitlist dialog; `Close form` dismissed it. No form data was entered or submitted.
+- Fresh deliverable-tab diagnostics at `http://127.0.0.1:3001/merchants#merchant-closing` reported the section aligned at `0.61px`, `1269px` document width inside the default `1280px` viewport, and zero console errors.
+- Mobile measured `379px` document/body width in a `390px` viewport, with no horizontal overflow. The hero and all three cards were browser-captured.
+- Scoped ESLint, full TypeScript, and scoped `git diff --check` passed. The full Next production build remains blocked by an unrelated existing Turbopack filesystem panic: `tmp/pdfs/venv/bin/python` is an invalid symlink outside the project root. This does not originate in or touch the merchant closing section.
+
+final result: passed
 
 ## Merchant network centered full-screen hero — 2026-08-13
 
@@ -4193,3 +4507,554 @@ final result: passed
 final visual result: passed
 
 body-width result: rejected and unproven
+
+## Merchant storefront inside the shopping network — 2026-08-25
+
+### Source truth, implementation, and normalization
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-d61a6953-94cf-4a0b-bec5-e7d77c4f65ec.png` (`1199 x 853`). It defines the full-screen rounded canvas, dotted field, centered SaaS headline stack, edge-mounted interface panels, CTA, and lower icon row.
+- Final desktop implementation: `.design-qa/merchant-storefront-network/desktop-1440x1000.png` (`1429 x 992` browser capture from a `1440 x 1000` CSS viewport, DPR `1`) on `/merchants`, scrolled with the `Your store` header action, interest dialog closed.
+- Final mobile implementation: `.design-qa/merchant-storefront-network/mobile-390x844.png` (`379 x 820` browser capture from a `390 x 844` CSS viewport, DPR `1`) with the mobile menu closed.
+- Same-input full-view comparison: `.design-qa/merchant-storefront-network/reference-vs-implementation.png` (`1800 x 720`), with the supplied reference on the left and final browser implementation on the right.
+- Generated background asset: `public/media/partner-landing/merchant-network/merchant-storefront-shopping-network-hero.webp` (`1672 x 941`, 151 KB). It was created in the logged-in ImageGen session from the supplied reference and contains the dotted field plus PrimeStyleAI fashion-store/catalog panels around an empty center safe area.
+- Density normalization: the reference and implementation were scaled onto equal `900 x 720` canvases for the same-input comparison. The final background decoded at `1630 x 917` for a `1399 x 898` desktop slot and `1188 x 668` for a `357 x 756` mobile slot, both at DPR `1`.
+
+### Findings and comparison history
+
+- Initial P1 concept mismatch: the first pass used a generated ribbon-cutting laptop photo in a split text/image section. The user rejected that direction because the target is a centered full-screen SaaS hero. Fix: removed the ribbon asset from the project and rebuilt the section around one generated reference-matched background with live centered content.
+- Initial P2 vertical-rhythm issue: the first centered pass placed the note too close to the generated lower icon row. Fix: top-aligned the content within the hero and tightened the mark, heading, body, proof, CTA, and note spacing to match the source hierarchy.
+- Initial P2 image-density issue: default responsive sizing decoded a `390 x 219` mobile candidate and a `1254 x 705` desktop candidate while the cover slot was much taller. Fix: updated responsive `sizes` so the final browser selects near-source-resolution candidates at both breakpoints.
+- Initial P2 sequence duplication: adding the new `02` storefront section left the merchant workspace and creator section sharing `03`. Fix: creator remains `03`, merchant workspace is `04`, and PDP Studio is `05`.
+- Intentional content adaptation: Quso branding, social-media panels, and social icons are replaced with the PrimeStyleAI mark, merchant storefront/catalog panels, global-Shop commerce UI, and shopping/fashion symbols. The source layout, scale, dotted visual field, centered hierarchy, rotations, and edge framing are preserved.
+- No actionable P0, P1, or P2 difference remains in the requested section.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the existing Manrope variable is retained. The large dark first line, purple second line, compact body, proof row, rectangular purple CTA, and small note reproduce the source's optical hierarchy and wrapping.
+- Spacing and layout rhythm: the hero fills the viewport beneath the sticky header with a `14px` inset, thin border, `26px` radius, centered safe area, floating panels at the edges, and a lower icon row. Desktop and mobile have no horizontal overflow.
+- Colors and visual tokens: white, cool gray, lavender, cobalt dots, dark navy type, and saturated purple CTA/accent match the source while using PrimeStyleAI's existing brand colors.
+- Image quality and asset fidelity: every peripheral interface panel, dotted wave, fashion thumbnail, and lower shopping symbol is part of the generated high-resolution raster background. No ribbon photo, placeholder, CSS drawing, gradient, or third-party logo remains.
+- Copy and content: the live heading says `Your own store. In our shopping network.` The body states that merchants can have a branded PrimeStyleAI storefront while eligible products remain discoverable in the global Shop.
+
+### Interaction, accessibility, and runtime checks
+
+- The desktop `Your store` navigation action scrolls to the section. The mobile menu opens, its `Your storefront` action scrolls to the section, and the menu closes afterward.
+- `Join the shopping network` opens the existing `Join the PrimeStyleAI network.` dialog, and `Close form` dismisses it.
+- The generated background is decorative with empty alternative text; the PrimeStyleAI mark has meaningful alternative text; the section has an accessible heading relationship.
+- Desktop measured `1429px` document/client width inside the `1440px` viewport. Mobile measured `379px` document/client width inside the `390px` viewport. Neither has horizontal overflow.
+- Browser console checks reported no errors. Scoped ESLint, full TypeScript, and `git diff --check` passed. Port `3001` is served by this checkout; port `3000` remained untouched.
+
+final result: passed
+
+## Merchant storefront full-bleed and Retina-quality correction — 2026-08-25
+
+### User correction and final delivery
+
+- The explicit user correction overrides the reference's inset rounded canvas: the merchant visual now runs edge to edge with zero section padding, zero frame border, and zero frame radius.
+- The generated shopping-network background was remastered through the logged-in ImageGen session, then exported as a `3840 x 2160` WebP at quality `96` (`798 KB`) for a sharper full-screen delivery asset.
+- The decorative hero image is served directly with Next Image optimization disabled for this asset, avoiding an additional responsive recompression pass.
+- The fixed `760px` tablet cap was removed. The hero now uses the actual viewport height below the `72px` desktop header or `66px` mobile header.
+
+### Visual evidence
+
+- Desktop full-bleed capture: `.design-qa/merchant-storefront-network/retina-full-bleed/desktop-1440x1000.jpg` (`1429 x 992` from a `1440 x 1000` CSS viewport).
+- Mobile full-bleed capture: `.design-qa/merchant-storefront-network/retina-full-bleed/mobile-390x844.jpg` (`379 x 820` from a `390 x 844` CSS viewport).
+- Exact-size implementation capture: `.design-qa/merchant-storefront-network/retina-full-bleed/implementation-1199x853.jpg` (`1199 x 853`), matching the supplied reference's pixel dimensions.
+- Same-input comparison: `.design-qa/merchant-storefront-network/retina-full-bleed/reference-vs-full-bleed.jpg` (`2398 x 853`), with the supplied reference on the left and the final full-bleed implementation on the right.
+- Browser measurements at desktop: zero section padding, `0px` frame radius, `1429 x 928` rendered hero, and a direct image decode of `2873 x 1616`. The static file and HTTP response hashes match the `3840 x 2160` source asset.
+
+### Interaction and runtime checks
+
+- `Join the shopping network` still opens the existing PrimeStyleAI shopping-network dialog, and the dialog closes successfully.
+- Scoped ESLint, full TypeScript, `git diff --check`, and HTTP `200` checks passed.
+- Port `3001` remains the merchant preview for this checkout. The existing listener on port `3000` was not touched.
+
+### Full-artwork expansion correction
+
+- Latest user finding: the `3840 x 2160` storefront artwork was clipped because a landscape asset used `object-fit: cover` inside a viewport-height frame. At the observed `886 x 799` desktop slot, this cropped both left and right interface groups.
+- Fix: the desktop/tablet artwork now uses `object-fit: contain`, preserving the complete 16:9 composition and every edge-mounted interface panel. The section background fills the remaining vertical area seamlessly.
+- Mobile fix: below `560px`, the live content and full-width artwork are stacked instead of overlaid. The copy remains readable, the complete `379 x 213` artwork renders directly beneath it, and the section expands to `379 x 816` rather than clipping the image.
+- Final desktop evidence: `.design-qa/merchant-storefront-network/expand-full-desktop-final.jpg` (`1429 x 992`, viewport `1440 x 1000`, DPR `1`). Final mobile evidence: `.design-qa/merchant-storefront-network/expand-full-mobile-final-top.jpg` and `.design-qa/merchant-storefront-network/expand-full-mobile-final-bottom.jpg` (`379 x 820`, viewport `390 x 844`, DPR `1`).
+- Same-input comparison: `.design-qa/merchant-storefront-network/reference-vs-expand-full-final.jpg` (`2398 x 853`), with the supplied source on the left and the unclipped PrimeStyleAI implementation on the right. A focused crop was unnecessary because the visible correction affects the complete edge composition.
+- Final measurements show no horizontal overflow. Desktop renders the full source inside the `1429 x 928` frame; mobile preserves the source's `16:9` ratio and places it below the copy without overlap.
+
+final result: passed
+
+## Full-screen merchant PDP with MyAIFitting SDK — 2026-08-25
+
+### Source truth and implementation evidence
+
+- Selected visual source: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-42678f70-dd9d-4dea-9cbe-765ddc5996bc.png` (`736 x 552`). It defines the dark green screen frame, white store canvas, compact commerce header, large left product gallery, right purchase panel, swatches, quantity controls, delivery cards, and lower thumbnail row.
+- The supplied MyAIFitting PDP URL on port `3000` was inspected read-only and redirected the available in-app Browser session to `/auth`. SDK integration truth was therefore taken from the active port-3000 checkout's `ProductTryOnButton.tsx`, while visual truth remained the supplied screenshot.
+- Final desktop browser capture: `.design-qa/merchant-pdp-sdk/final-desktop-1210x980.jpg` (`1199 x 971` from a `1210 x 980` CSS viewport, DPR `1`). The PDP section measured `1199 x 908` below the `72px` merchant header and reached the viewport bottom.
+- Final mobile browser capture: `.design-qa/merchant-pdp-sdk/final-mobile-390x844.jpg` (`379 x 820` from a `390 x 844` CSS viewport, DPR `1`). The PDP becomes a scrollable single-column product page with no horizontal overflow.
+- Exact-size normalized implementation: `.design-qa/merchant-pdp-sdk/final-implementation-section-736x552.jpg` (`736 x 552`). Same-input comparison: `.design-qa/merchant-pdp-sdk/final-reference-vs-implementation.jpg` (`1472 x 552`), with the supplied reference on the left and implementation on the right.
+- A separate focused crop was not required because the selected source is one self-contained PDP screen and the exact-size comparison preserves its complete gallery, purchase controls, thumbnails, and delivery surface. The interactive size-guide table and SDK drawer were verified separately at readable browser scale.
+
+### Findings and comparison history
+
+- Initial P1 product mismatch: the prior section was a full-bleed lifestyle hero headed `See the look. Know the size.` with no PDP controls. Fix: removed that rendered section and replaced it with a complete women's tailored-set product page matching the selected commerce layout.
+- Initial P2 SDK parity gap: this checkout used `@primestyleai/tryon@5.10.241`, while the active MyAIFitting PDP uses `5.10.243`. Fix: upgraded the dependency and both lockfiles to `5.10.243`; the browser-loaded SDK drawer exposes upload, body details, profile, and history.
+- Initial P2 image diagnostics: the first PDP pass requested unsupported Next Image quality values `94` and `88`, and changed only one logo dimension. Fix: aligned all PDP images to configured quality `90` and preserved the logo's intrinsic aspect ratio. A fresh browser tab reported zero warnings and zero errors.
+- Intentional content adaptation: the reference's AirPods product is replaced with PrimeStyleAI's existing high-resolution women’s navy blazer and stone trouser campaign. Headphone color controls become apparel colours, and the quantity area is joined by real size selection, a five-row body-measurement guide, and the connected AI fitting SDK.
+- No actionable P0, P1, or P2 issue remains in the requested section.
+
+### Required fidelity surfaces
+
+- Fonts and typography: existing Manrope is retained with the source's compact store navigation, bold product-title hierarchy, dense option labels, strong price, and small delivery copy.
+- Spacing and layout rhythm: the section fills the viewport below the merchant header. A restrained green frame surrounds the white store canvas; desktop preserves the reference's gallery/detail split and mobile stacks the full gallery before product details.
+- Colors and visual tokens: the source's deep commerce green, white canvas, pale product background, subtle gray dividers, green rating stars, outlined AI action, and solid purchase action are preserved.
+- Image quality and asset fidelity: four existing `1600 x 2000` PrimeStyleAI merchant campaign assets provide the worn look, alternate fit, blazer detail, and trouser detail. No placeholder, CSS illustration, handcrafted SVG, or generated substitute is used.
+- Copy and content: the page clearly presents `The Modern Tailored Set`, women-specific product metadata, material details, price, stock/fit guidance, five sizes, returns, delivery, and PrimeStyleAI fit confidence.
+
+### Interaction, accessibility, and runtime checks
+
+- Selecting size `L`, increasing quantity to `2`, and adding to bag updated the bag label to `Shopping bag with 2 items` and announced `2 sets added · Size L` through a status region.
+- `Size guide` opened an accessible modal with five rows for bust, waist, hips, and inseam; `Close size guide` dismissed it.
+- `Find my size & try it on` opened the real `@primestyleai/tryon@5.10.243` experience. The verified drawer contained upload, body-details, profile, and history controls and closed successfully.
+- Scoped ESLint, full TypeScript, `git diff --check`, backend health, HTTP `200`, and fresh-browser diagnostics passed. Port `3001` is the implementation preview; port `3000` remained untouched.
+
+final result: passed
+
+## Merchant example storefront — men and women only — 2026-08-25
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-6b3adaff-52eb-4cd3-9ee9-9cd327cac2e5.png` (`736 x 736`, DPR `1`). Text and branding inside the supplied image were treated as reference content, not as implementation instructions.
+- The user's explicit correction overrides the source's third category: the implementation contains exactly two categories, `Men's` and `Women's`, and no kids or children's category.
+- Desktop implementation: `.design-qa/merchant-store-example/desktop-aligned-1440x1000.jpg` (`1429 x 992` captured from a `1440 x 1000` CSS viewport, DPR `1`). The new section starts below the `72px` sticky merchant header and has no horizontal overflow.
+- Mobile implementation top: `.design-qa/merchant-store-example/mobile-first-pass-390x844.jpg` (`379 x 820` captured from a `390 x 844` CSS viewport, DPR `1`). Mobile category evidence: `.design-qa/merchant-store-example/mobile-cards-390x844.jpg` (`379 x 820`), showing both final cards and the following section boundary.
+- Same-input comparison: `.design-qa/merchant-store-example/reference-vs-desktop-final.jpg` (`1536 x 768`). The `736 x 736` source was contained in a `768 x 768` panel; the implementation capture was cropped below the sticky header and contained in a matching `768 x 768` panel. The source's external design-services header/footer are intentionally not reproduced.
+- A separate focused crop was not needed because the central storefront, display headline, hero subject, navigation, CTA, and both final collection labels remain readable in the normalized comparison. The separate mobile category capture provides readable proof of the complete two-card row.
+
+### Findings and comparison history
+
+- Initial P1 content-scope conflict: the supplied reference included a Kids' category, but the product supports only men and women. Fix: removed the generated kids asset from the project, kept exactly two category records, and verified no kids/children text or asset reference remains in the section.
+- Initial P2 responsive hierarchy drift: the store navigation disappeared at the first `897px` desktop check, making the header sparser than the reference. Fix: moved the navigation-hiding breakpoint from `980px` to `720px`. The final `1440px` capture shows the complete store navigation.
+- Intentional adaptation: the external reference logo, site-design-services title, contact footer, and copied identity are replaced with the existing PrimeStyleAI mark and commerce-ready copy. This keeps the composition and art direction without reproducing third-party branding.
+- No actionable P0, P1, or P2 issue remains.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the existing Manrope family carries the reference's bold/light editorial contrast. `Fresh &` is heavy and black; `Styled` is thin and muted gray. Small navigation and eyebrow copy preserve the compact storefront hierarchy without cramped wrapping.
+- Spacing and layout rhythm: the light-gray section contains a large rounded white store frame, compact header, left editorial copy, center-right hero, and a two-card collection strip at the bottom. Desktop and mobile remain separated from adjacent sections without clipping or overlap.
+- Colors and visual tokens: off-white surfaces, near-black display text, warm gray secondary text, black actions, pale neutral imagery, coral women's styling, and the dark men's card preserve the reference's restrained fashion-editorial balance.
+- Image quality and asset fidelity: built-in ImageGen produced an original `1024 x 1536` male hero, `640 x 960` men's tailoring image, and `640 x 960` women's coral-dress image. They are stored as optimized WebP files under `public/media/partner-landing/merchant-network/store-example/`; there are no placeholders, copied logos, CSS-drawn people, or handcrafted SVG image substitutes.
+- Copy and content: the live section uses coherent PrimeStyleAI storefront copy and exactly `Men's Collection` and `Women's Collection`. The reference's Kids' copy is not present.
+- Icons and controls: Phosphor icons provide consistent search, heart, bag, arrows, storefront, and lightning treatments with accessible labels where the icon is the sole visible control.
+
+### Interaction, accessibility, and runtime checks
+
+- The dashed yellow `See an example / of your store` flash link appears at the bottom of the preceding storefront section. Browser interaction moved the URL to `#store-example` and aligned the target approximately `72px` below the sticky header.
+- Store CTAs use semantic anchors with visible hover/focus treatments. The generated images have descriptive alt text, the section is labelled by its heading, and mobile controls/cards retain practical touch sizes.
+- Desktop and `390px` mobile views showed no horizontal overflow. The full men/women card set is visible before the next section begins.
+- Scoped ESLint, full TypeScript, and scoped `git diff --check` passed. The rendered route is `http://127.0.0.1:3001/merchants#store-example`.
+- Residual test gap: the plain `Shop the edit` and collection-card anchors were visually inspected but not re-clicked after the browser automation session disconnected. Their targets are existing in-page anchors, and this does not create an actionable visual-fidelity issue.
+
+final result: passed
+
+## Merchant storefront full-background correction — 2026-08-25
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/Users/arashsn/Downloads/Screenshot - 2026-08-25T232044.447.png` (`1661 x 218`, DPR `1`). The screenshot shows the storefront artwork ending with left/right gutters and a separate white band beneath it around the `See an example` link.
+- Final desktop top capture: `.design-qa/merchant-storefront-network/full-background-no-crop-top-1661x844.jpg` (`1650 x 838` from a `1661 x 844` CSS viewport, DPR `1`). The storefront frame measures `1650 x 928.125` and preserves the artwork's native `16:9` proportion.
+- Final desktop transition capture: `.design-qa/merchant-storefront-network/full-background-transition-1661x844.jpg` (`1650 x 838`, same viewport and density). It shows the complete lower artwork edge, the flash link over that artwork, and the next section beginning immediately afterward.
+- Final mobile captures: `.design-qa/merchant-storefront-network/full-background-no-crop-mobile-top-390x844.jpg` and `.design-qa/merchant-storefront-network/full-background-no-crop-mobile-bottom-390x844.jpg` (each `379 x 820` from a `390 x 844` CSS viewport, DPR `1`). The image measures `379 x 213.1875`, exactly its `16:9` ratio, and the section has no horizontal overflow.
+- Same-input comparison: `.design-qa/merchant-storefront-network/reference-vs-full-background-final.png` (`3322 x 218`). The source is on the left. The right side is a normalized `218px`-high crop from the final desktop transition, padded only for the browser scrollbar width. This makes the removed side gutters and removed white CTA band directly comparable.
+- A separate focused crop is unnecessary because the supplied source is itself a focused transition crop and the normalized comparison keeps the complete issue region readable.
+
+### Findings and comparison history
+
+- Initial P1 full-bleed failure: `object-fit: contain` was applied inside a viewport-height frame. At a wide, short viewport, the 16:9 artwork filled the height but left visible white gutters at both sides. Fix: the wide layout now derives its frame height from the artwork's native `16 / 9` ratio, allowing `contain` to preserve the complete image while filling the full section width.
+- Initial P1 disconnected section ending: the flash link was outside the artwork frame and therefore sat in a separate white strip. Fix: moved the semantic link inside the storefront frame, positioned it over the lower artwork, and changed the section fallback surface from white to the artwork's pale background token.
+- Crop-prevention correction: a temporary `cover` direction would have removed gutters by cropping the artwork. It was rejected before final QA in response to the user's explicit `shouldn't be cutted` requirement. The final implementation uses native-ratio sizing on wide screens and a full-width, in-flow `16:9` image on tablet/mobile, both with `object-fit: contain`.
+- Post-fix evidence at `1661px` shows image and frame both measuring `1650 x 928.125`, with no side gutter, no crop, and no horizontal overflow. The final mobile evidence preserves the complete `16:9` image and its bottom edge.
+- No actionable P0, P1, or P2 issue remains.
+
+### Required fidelity surfaces
+
+- Fonts and typography: no typography was changed. Manrope weights, headline wrapping, proof line, CTA, and note retain the accepted hierarchy on desktop and mobile.
+- Spacing and layout rhythm: wide screens now use the asset ratio rather than viewport height; tablet/mobile stack copy above the full image. The flash link is inset `20–24px` from the artwork's bottom edge, and the following section starts directly after the image frame without a white spacer.
+- Colors and visual tokens: the storefront section fallback is the same pale `#f8f9ff` family as the supplied artwork, preventing a white seam while the image loads. The yellow flash, purple border, and orange/purple icons remain unchanged.
+- Image quality and asset fidelity: the existing `3840 x 2160` WebP is rendered at its native `16:9` ratio with `object-fit: contain`; it is neither cropped nor stretched. All edge cards, shopping panels, dotted field, and lower icons remain part of the original image asset.
+- Copy and content: all storefront copy and the `See an example / of your store` wording remain unchanged.
+- Icons and controls: the existing Phosphor lightning and arrow icons remain aligned inside the real anchor, with hover and keyboard focus treatments preserved.
+
+### Interaction, accessibility, and runtime checks
+
+- Clicking `See an example of your store` changed the hash to `#store-example` and aligned the example section below the sticky header. The anchor remains keyboard reachable and has a visible focus state.
+- Browser measurements at `1661 x 844` and `390 x 844` reported zero horizontal overflow. The wide image and frame had identical dimensions; the mobile image retained its exact `16:9` dimensions.
+- Fresh browser diagnostics reported zero console errors. Scoped ESLint, full TypeScript, scoped `git diff --check`, HTTP `200`, and desktop/mobile rendered inspection passed.
+
+final result: passed
+
+## Merchant SDK reference section — restrained panel jacket — 2026-08-27
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-30a2ab44-55d4-4f8f-945d-efcc84343126.png` (`1000 x 750`, DPR `1`). The source defines the mustard full-section field, inset white `16:9` product stage, left circular size/colour selectors, dominant central product, compact right description, and white lower navigation strip.
+- The user's explicit content overrides are part of the target state: no internal shop header, social icons, play-video control, or cart CTA; the real SDK button sits directly under the description. The later correction replaces the loud multicolour bomber and `Happy Jacket` name with a restrained multi-tone fashion jacket named `Panel Jacket`.
+- Final desktop implementation: `.design-qa/merchant-sdk-section-989x750-final.png` (`988 x 750`) captured from a `1000 x 750` CSS viewport at DPR `1`; the browser's `11px` scrollbar leaves a `989px` document/client width. The section measured `989 x 750`, the inset stage measured `885 x 497.8125`, and document/client widths were both `989px`.
+- Same-input comparison: `.design-qa/merchant-sdk-comparison-final.png` (`2000 x 750`). The implementation was normalized from `988 x 750` to `1000 x 750` and placed beside the unchanged `1000 x 750` source.
+- Final mobile implementation: `.design-qa/merchant-sdk-mobile-390x844-pass2.png` (`378 x 1116`) from a `390 x 844` CSS viewport at DPR `1`. The section expands in flow, shows the complete jacket and all controls, and has equal `379px` document/client widths with no horizontal overflow.
+- A separate focused crop was unnecessary because the full-view comparison keeps the selectors, jacket edges, product copy, SDK button, and footer navigation readable at the source's native height.
+
+### Findings and comparison history
+
+- Pass 1 P1 art-direction mismatch: the first generated bomber used saturated yellow, coral, cobalt, and lilac and was explicitly rejected as too colourful. Fix: generated a new transparent `1303 x 1207` product asset in warm ivory, stone, charcoal, and a small oxblood accent; replaced all visible product naming and SDK metadata with `Panel Jacket`; removed the rejected `sdk-happy-jacket.png` draft and verified no `Happy Jacket` or `sdk-happy` reference remains under `app` or `public`.
+- Pass 1 P2 proportion mismatch: the first inset stage measured about `932 x 600`, leaving too little mustard breathing room compared with the source's roughly `890 x 500` stage. Fix: restored the desktop `16:9` ratio, increased side inset to `52px` at the comparison viewport, and centered the final `885 x 497.8125` stage inside a `750px`-high section.
+- Mobile P2 crop: the inherited desktop aspect ratio collapsed the stacked mobile canvas to approximately `257px`, clipping the jacket and controls. Fix: reset `aspect-ratio: auto` below `760px`; the final mobile section measures `1115.140625px` high and displays every element before the next section.
+- Intentional deviations: the source sneaker becomes an original neutral multi-tone jacket, and its cart action becomes the functioning PrimeStyleAI sizing/try-on SDK action. The source's internal navigation, socials, video, and purchase UI are omitted exactly as requested.
+- No actionable P0, P1, or P2 issue remains.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the existing merchant Manrope family reproduces the source's small uppercase option labels, dense selector text, bold uppercase product title, compact editorial description, and restrained footer labels. `Panel Jacket` stays on one line at the comparison viewport.
+- Spacing and layout rhythm: the final frame width, `16:9` ratio, outer mustard margins, three-column product grid, central product dominance, and white lower strip closely track the source. Mobile deliberately stacks details, SDK action, product, and selectors to preserve legibility and avoid cropping.
+- Colors and visual tokens: `#f8d574` supplies the solid mustard field and SDK button; `#f7f7f5` supplies the inset canvas; near-black type, muted gray copy, purple selected-size state, and low-saturation stone/ivory/charcoal/oxblood swatches preserve the source while following the user's restrained-fashion correction.
+- Image quality and asset fidelity: built-in ImageGen produced the transparent `1303 x 1207` PNG at `public/media/partner-landing/merchant-network/sdk-panelled-jacket.png`. The entire jacket remains visible and sharp on desktop and mobile with no CSS-drawn product substitute, logo, text, watermark, or transparency halo visible in the rendered comparison.
+- Copy and content: the live product is `Panel Jacket`; the description identifies the muted palette and invites fit checking. No `Happy Jacket` wording, social label, play-video copy, cart copy, or internal store header remains in the SDK section.
+
+### Interaction, accessibility, and runtime checks
+
+- Selecting size `L` changed its `aria-pressed` state to `true`. Selecting `Oxblood` changed both its pressed state and the visible selected-colour label.
+- `Find my size & try it on` opened the real local PrimeStyleAI fitting SDK with photo upload, body details, profile, history, metric/imperial, and manual-measurement controls. No photo was uploaded and no generation was started.
+- The section uses a labelled region, semantic fieldsets, pressed states, descriptive jacket alt text, keyboard focus treatments, and practical mobile control sizes.
+- Fresh desktop diagnostics after the final reload reported zero warnings and zero errors. Scoped ESLint, full TypeScript, `git diff --check`, desktop comparison, and mobile rendered inspection passed. Port `3001` is served by this checkout.
+
+final result: passed
+
+## Merchant SDK full-screen and footer-control correction — 2026-08-27
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-30a2ab44-55d4-4f8f-945d-efcc84343126.png` (`1000 x 750`, DPR `1`). The source remains the visual truth for left-side selectors, the central product, right-side copy, and the lower PREV/NEXT arrow treatment.
+- User overrides in this iteration are authoritative: remove the yellow outer canvas and inset treatment, make the product stage full-screen, keep swatches perfectly circular, add a visible `Add to bag` action, and reproduce the reference's directional arrow lines beneath PREV and NEXT.
+- Final desktop implementation: `.design-qa/merchant-sdk-fullscreen-989x678-final.png` (`988 x 678`) from a `1000 x 750` CSS viewport at DPR `1`. The merchant header occupies `72px`; the SDK section fills the remaining `989 x 678` viewport with no outer padding, yellow field, frame shadow, or horizontal overflow.
+- Full-view same-input comparison: `.design-qa/merchant-sdk-fullscreen-comparison-final.png` (`2000 x 750`). The `988 x 678` section was scaled proportionally to `1000px` wide and padded only to the source's `750px` comparison height; no section content was stretched.
+- Focused footer comparison: `.design-qa/merchant-sdk-footer-controls-comparison-final.png` (`2000 x 170`). It shows the source footer on the left and the final implementation on the right, including labelled PREV/NEXT controls with left/right arrow lines and the new lower-right bag action.
+- Mobile evidence: `.design-qa/merchant-sdk-fullscreen-mobile-top-final.png`, `.design-qa/merchant-sdk-fullscreen-mobile-bottom-final.png`, and `.design-qa/merchant-sdk-fullscreen-mobile-footer-final.png`, each captured from a `390 x 844` CSS viewport at DPR `1`. The live section measured `379 x 989.59375`; document/client widths both measured `379px`.
+
+### Findings and comparison history
+
+- P1 outer-frame mismatch: the previous accepted iteration still placed an inset white `16:9` stage over a large mustard field. The user explicitly requested full-screen. Fix: removed all section padding, mustard backing, desktop aspect-ratio constraint, frame shadow, and capped width; the white product stage now fills the complete viewport below the merchant header.
+- P1 swatch distortion: colour buttons could inherit layout pressure and visually stretch. Fix: locked every swatch's width, height, min/max dimensions, flex basis, and `aspect-ratio: 1 / 1`. Browser measurements show all five swatches at exactly `22 x 22` on both desktop and mobile.
+- P1 missing bag action: the prior footer only contained product navigation and a counter. Fix: replaced the counter with a working `Add to bag — $148` button in the reference's lower-right action position; clicking it changes the visible label to `Added to bag`.
+- P2 navigation-control drift: PREV and NEXT were represented by simple border underlines without directional arrows. Fix: replaced the underlines with Phosphor `ArrowLeft` and `ArrowRight` icons, rendered at `32 x 8` with non-uniform view-box scaling so the complete horizontal line and arrowhead match the reference rather than collapsing to a tiny arrowhead.
+- No actionable P0, P1, or P2 issue remains.
+
+### Required fidelity surfaces
+
+- Fonts and typography: Manrope remains consistent with the existing merchant page and the source's compact uppercase option, product, navigation, and action labels. The product hierarchy and line wrapping remain stable in the full-screen layout.
+- Spacing and layout rhythm: the full-width three-column desktop grid keeps selectors left, the jacket dominant in the center, and product copy/SDK right. The footer spans edge-to-edge with navigation left and the bag action right. Mobile stacks copy, SDK, complete product, selectors, bag action, and navigation without clipping.
+- Colors and visual tokens: the former outer mustard field is removed. The section uses the source's pale product canvas and white footer; mustard is retained only for the intentional SDK and bag actions. Purple remains the selected-size state, and neutral swatches match the jacket palette.
+- Image quality and asset fidelity: the complete transparent `sdk-panelled-jacket.png` remains sharp and uncropped at both viewports. No generated placeholder, CSS product drawing, gradient, logo, or watermark was introduced.
+- Copy and content: `Panel Jacket`, its neutral material description, the SDK CTA, exact `Prev`/`Next` labels, and `Add to bag — $148` are present. The removed internal header, social controls, video action, and yellow outer backdrop do not return.
+
+### Interaction, accessibility, and runtime checks
+
+- All five colour swatches retain accessible labels and pressed states; all five size buttons retain pressed states and keyboard focus treatment.
+- Clicking `Add to bag — $148` changed the button to `Added to bag`. `Find my size & try it on` opened the real local PrimeStyleAI SDK and exposed its upload flow.
+- PREV and NEXT remain semantic keyboard-focusable buttons with visible labels and real icon-library arrows. Their product-carousel behavior remains outside this visual-only landing-page example because there is one approved jacket asset.
+- Desktop and mobile browser measurements reported no horizontal overflow. Fresh post-change diagnostics reported zero warnings and zero errors. Scoped ESLint, full TypeScript, and `git diff --check` passed.
+
+final result: passed
+
+## Merchant dashboard reference section — enlarged UI pass — 2026-08-28
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/Users/arashsn/Downloads/Screenshot - 2026-08-27T231904.123.png` (`508 x 523`). The source establishes the pale full-page field, compact top navigation, split headline/copy area, dominant browser dashboard, tilted floating cards, lime highlights, and faded capability row.
+- Final desktop capture: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/dashboard-showcase-large-type/desktop-final.png` from a `1280 x 900` CSS viewport.
+- Same-input comparison: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/dashboard-showcase-large-type/reference-vs-large-type.png`; the source is normalized on the left and the final implementation is on the right.
+- Mobile captures: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/dashboard-showcase-large-type/mobile-final.png` and `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/dashboard-showcase-large-type/mobile-dashboard-lower.png`, both from a `390 x 844` CSS viewport.
+
+### Findings and corrections
+
+- P1 readability mismatch: internal dashboard navigation, supporting copy, metric labels, action buttons, activity rows, and floating-card copy were set at only `7–9px`, making the browser UI feel materially smaller than the supplied reference. Fix: increased the full dashboard type hierarchy, including the workspace title to `23px`, main metric to `34px`, stat values to `23px`, navigation to `10.5–11.5px`, and supporting labels to `8.5–10px`.
+- P2 dashboard presence mismatch: the browser was capped at `1020px` with a `380px` dashboard body. Fix: expanded the browser to a maximum `1120px`, increased the dashboard body to `430px`, and enlarged the sidebar, cards, controls, row heights, and internal padding proportionally.
+- The reference composition remains intact: no change was made to the pale field, headline/copy split, browser chrome, floating supplier/creator/product cards, lime accents, or capability row.
+- No actionable P0, P1, or P2 visual issue remains.
+
+### Interaction, responsiveness, and runtime checks
+
+- Overview, Suppliers, Creators, Catalog, and Orders remain real interactive tabs in both the top navigation and sidebar. Clicking Suppliers updated the live metric to `28 active` and the summary to `Review availability, approve products, and keep fulfillment moving.`
+- At desktop the `1280px` viewport had a `1269px` client/document width, a `1269px` section width, and a `1066.375px` browser window with no horizontal overflow. At mobile the `390px` viewport reported equal `379px` section/document widths and no horizontal overflow.
+- The mobile browser keeps the metrics, product actions, stat cards, and overlapping supplier/creator cards readable; the product card remains intentionally hidden at the narrow breakpoint to prevent crowding.
+- Fresh browser diagnostics reported zero warnings and zero errors. Scoped ESLint, full TypeScript, and scoped `git diff --check` passed. Port `3001` is served by this checkout.
+
+final result: passed
+
+## Merchant influencer-style header and shared waitlist flow — 2026-08-28
+
+### Source truth and implementation evidence
+
+- Header reference: the live `/influencers` landing header, captured at `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/merchant-waitlist/reference-influencer-header.png`.
+- Form reference: the live homepage Free Pilot modal, captured at `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/merchant-waitlist/reference-home-free-pilot-modal.png`.
+- Final desktop evidence: `merchant-header-final.png` and `merchant-waitlist-modal-final.png` in the same QA folder. Same-view comparisons are `header-comparison.png` and `modal-comparison.png`.
+- Final mobile evidence: `merchant-mobile-header.png`, `merchant-mobile-menu.png`, and `merchant-mobile-waitlist-modal.png` in the same QA folder.
+
+### Findings and corrections
+
+- The merchant header now uses the influencer page's floating translucent pill, compact Prime Style AI identity, centered navigation, and blue rounded waitlist action. Desktop and mobile Sign in links were removed.
+- Every merchant conversion action now uses the exact label `Join the waitlist` and opens the same shared homepage `PilotModal`; internal product-demo and in-page navigation controls remain purpose-specific.
+- Initial P1 stacking issue: the sticky merchant header used `z-index: 80`, above the shared modal's `z-50` portal, obscuring its top edge and close control. Fix: lowered the merchant header to `z-index: 40`; the final modal is fully visible and interactive while the header remains above landing content.
+- The form is not a visual approximation: the merchant page renders the same `app/components/shared/PilotModal.tsx` component used by the homepage, preserving its fields, validation, OTP verification, submission behavior, desktop modal, and mobile drawer.
+- No actionable P0, P1, or P2 issue remains.
+
+### Interaction, accessibility, and runtime checks
+
+- Desktop DOM inspection found 19 exact `Join the waitlist` buttons and no `Sign in`, legacy network-join, dashboard-open, creator-request, or PDP-Studio conversion labels.
+- Clicking the desktop header CTA opened the complete `Decision Engine Pilot Application` with Full name, Work email, Brand website, Monthly visitors, Apparel catalog, Integration, Pilot measurement, and Submit controls. No form data was entered or submitted.
+- The `390 x 844` mobile menu contains the merchant section links plus one `Join the waitlist` action and no Sign in. Its CTA opens the same form as a full-width bottom drawer, and its close control works.
+- Scoped ESLint, full TypeScript, scoped `git diff --check`, desktop/mobile rendered inspection, and reference comparisons passed against the live server on port `3001`.
+
+final result: passed
+
+## Merchant blue-splash Free Pilot form restoration — 2026-08-28
+
+### Source truth and implementation evidence
+
+- Source visual truth: the live `/influencers` waitlist modal, captured at `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/merchant-splash-pilot-form/reference-influencer-form.png` from a `1280 x 900` CSS viewport at DPR `1` (`1280 x 900` pixels).
+- Product constraint: preserve the merchant page's existing blue radial splash, orbit rings, close treatment, serif title, and opening/closing motion. Replace only the form contents with the homepage Free Pilot application fields and use the influencer waitlist's translucent glass-control language.
+- Final desktop evidence: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/merchant-splash-pilot-form/merchant-splash-form-desktop.png` (`1280 x 900`, DPR `1`) and the full scrollable form at `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/merchant-splash-pilot-form/merchant-splash-form-tall.png` (`1280 x 1245`, DPR `1`).
+- Full-view same-state comparison: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/merchant-splash-pilot-form/reference-vs-merchant.png` (`2560 x 900`). The influencer source is on the left and the merchant result is on the right with equal `1280 x 900` halves.
+- Mobile evidence: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/merchant-splash-pilot-form/merchant-splash-form-mobile.png` from a `390 x 844` CSS viewport at DPR `1` (`390 x 844` pixels).
+
+### Findings and corrections
+
+- P1 shell regression: the shared white Free Pilot drawer replaced the established merchant splash and blue background. Fix: restored `MerchantInterestDialog` as the conversion surface, including the original full-screen radial blue field, orbit rings, transparent centered content, close control, and clipped splash transition.
+- P1 form-content mismatch: the original merchant network form did not contain the homepage Free Pilot qualification questions. Fix: retained the original merchant headline and description while replacing only the form body with Full name, Work email, Brand website, Monthly visitors, Apparel catalog, Integration, Pilot measurement, data note, submit action, and confidentiality note.
+- P2 control-language mismatch: default inputs and radio controls would not match the influencer form. Fix: applied the same translucent glass surfaces, white borders, compact uppercase labels, muted placeholders, rounded selected controls, and amber selection accent while keeping semantic labels, fieldsets, and native radio inputs.
+- P1 verification stacking risk: the shared OTP confirmation originally sat below the restored splash layer. Fix: raised the OTP overlay/content layers above the merchant splash so the real email-confirmation step remains usable.
+- No actionable P0, P1, or P2 visual issue remains in the captured desktop or mobile states.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the merchant's established serif display title is intentionally preserved; the influencer reference's compact uppercase field labels, white body hierarchy, muted placeholder weight, and dense form rhythm are matched. The title difference is an intentional preservation of the user's prior merchant design, not drift.
+- Spacing and layout rhythm: the same centered translucent form width, ring-centered composition, close placement, vertical field rhythm, and full-bleed blue viewport are retained. The longer Free Pilot form scrolls vertically on desktop and mobile instead of being compressed or clipped.
+- Colors and visual tokens: the original merchant blue radial field and white orbit lines are restored. Inputs, textarea, and radio cards use white translucent glass surfaces with restrained white and amber states matching the influencer control language.
+- Image quality and asset fidelity: this form view has no raster imagery to substitute or degrade. The background is the original app-owned splash treatment; no placeholder, new generated asset, logo approximation, or inline-SVG artwork was introduced.
+- Copy and content: the merchant title and body remain unchanged. The form uses the homepage Free Pilot copy and data-sharing language rather than the influencer application's creator-specific questions.
+
+### Interaction, accessibility, and runtime checks
+
+- Clicking Shopify and the no-sharing option updated their checked states correctly. Empty submission focused the first invalid field and showed `Add your full name.` without making a network request.
+- The form uses semantic labels, fieldsets, legends, radio inputs, `aria-modal`, a labelled dialog title, Escape/close behavior, and focus-visible control states. The success state remains inside the restored splash.
+- The OTP verification layer and submission endpoint are wired to the existing Free Pilot flow. No real email address was entered, no OTP was requested, and no pilot application was submitted during QA.
+- React best-practices review found no actionable component-structure, hook-dependency, accessibility, bundle, or TypeScript issue. Scoped ESLint, full TypeScript, scoped `git diff --check`, and HTTP runtime checks passed. The frontend returned `200` on port `3001`; the backend health endpoint on port `4000` returned `status: ok`.
+- A later in-app browser refresh was blocked by its localhost URL policy after the saved visual captures; no code changed after those captures. The live processes and HTTP checks remain healthy, and the saved same-input comparison is the visual acceptance evidence.
+
+final result: passed
+
+## Merchant supplier catalog and distribution sections — 2026-08-28
+
+### Source truth and implementation evidence
+
+- Source visual truth 1: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-70c13d3f-1e60-421f-87e5-e614a4f65fb9.png` (`1199 x 1616`). The selected target is only its first hero section: centered copy, one dark pill action, white/lilac/cyan hourglass field, and a vertical blue divider between faded and active network nodes. The page header and all later sections are explicitly excluded.
+- Focused source crop 1: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/supplier-sections/reference-crops/apptics-first-section.png` (`640 x 500`).
+- Source visual truth 2: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-6c8bd1bc-a3a7-476c-ade1-90032a8f26cf.png` (`736 x 552`). The selected target is only its hero body: centered copy and action over a low glowing hub with thin curved lines and circular endpoints. The page header is explicitly excluded and the orange accent is replaced by the merchant page's blue theme.
+- Final project assets: `public/media/partner-landing/merchant-network/supplier-catalog-conversion-no-people-4k.png` and `public/media/partner-landing/merchant-network/supplier-distribution-network-no-people-4k.png`, both exact `3840 x 2160` PNG files. They contain product, storefront, inventory, parcel, and checkout imagery only; there are no people, portraits, faces, avatars, generated text, or page chrome.
+- Final desktop captures: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/supplier-sections/supplier-catalogs-desktop.png` and `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/supplier-sections/supplier-distribution-desktop.png` from a `1280 x 900` CSS viewport.
+- Final mobile captures: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/supplier-sections/supplier-catalogs-mobile.png` and `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/supplier-sections/supplier-distribution-mobile.png` from a `390 x 844` CSS viewport.
+- Same-input comparisons: `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/supplier-sections/catalog-reference-comparison.png` and `/Users/arashsn/.codex/visualizations/2026/08/25/01a03a04-ba19-75c1-8c82-d74c1f9725ab/merchant-design-qa/supplier-sections/distribution-reference-comparison.png`; the selected source is on the left and the implementation is on the right.
+
+### Findings and corrections
+
+- P1 reference drift: the previous implementation added two fake page headers, internal navigation, proof strips, signal copy, footer items, and a framed blue outer canvas that were not requested. Fix: removed `Supplier marketplace`, the category navigation, its top waitlist action, `PrimeStyleAI Network`, `Source / List / Sync / Fulfill`, `Get connected`, the proof strip, the signal label, the footer, the rounded frame, and the outer blue block. Each result is now only the requested hero section.
+- P1 asset-style mismatch: the first generated images were generic photorealistic/3D scenes and did not preserve either reference's distinctive geometry. Fix: regenerated the first asset around the Apptics-style vertical split and the second around the Voltage-style hub-and-lines topology, then saved both as exact 4K 16:9 files.
+- P1 human-imagery mismatch: the supplier and merchant endpoints were represented with human portraits. Fix: replaced every portrait with non-human commerce nodes such as storefronts, racks, shelves, parcels, shopping bags, and checkout hardware. The catalog-conversion visual now also makes the before/after state explicit: everything left of the blue divider is pale grayscale and inactive, while the matching products and commerce nodes to its right are sharp, colored, and approved.
+- P1 text/asset collision: the generated field sat behind the live heading, description, and CTA. Fix: changed both full-screen sections to a two-row layout with copy in row one and the generated artwork in row two. Desktop measurement reported a `26.7px` clear gap between the CTA and artwork; mobile reported `55.6px`. The rows cannot overlap.
+- P1 sizing mismatch: the sections previously had fixed minimums larger than short desktop viewports. Fix: both now use an exact `height: 100svh` two-row grid; clean browser measurements reported exact `900px` and `844px` section heights at the tested desktop and mobile viewports.
+- P2 image delivery: the generated assets are used as full-bleed `<Image fill>` layers with editable semantic HTML above them. The current implementation serves the original project files unoptimized so the 4K source is not recompressed by Next's image pipeline.
+- No actionable P0, P1, or P2 visual issue remains in the focused desktop or mobile comparisons.
+
+### Interaction, responsiveness, and runtime checks
+
+- At `1280 x 900`, each section measured `1269 x 900` inside the browser's `1269px` document width. At `390 x 844`, each measured `379 x 844` inside the browser's `379px` document width. Neither viewport had horizontal overflow.
+- Both 4K project asset URLs returned HTTP `200`; local file inspection confirmed `3840 x 2160` for each file.
+- The exact removed strings `Supplier marketplace`, `PrimeStyleAI Network`, and `Get connected` are absent from the clean rendered page.
+- Clicking the supplier-distribution waitlist action opened the existing merchant waitlist application. No form data was entered or submitted.
+- A fresh browser tab after the final hot reload reported zero warnings and zero errors. Scoped ESLint, full TypeScript, scoped `git diff --check`, and React best-practices review passed.
+- Latest evidence: `supplier-catalogs-no-people-final-v2.png`, `supplier-catalogs-no-people-mobile-final-v2.png`, `supplier-distribution-no-people-final-v2.png`, and `supplier-distribution-no-people-mobile-final-v2.png` in the supplier-sections QA folder. The final browser loaded both original `3840 x 2160` files, measured exact `900px` and `844px` section heights at the tested desktop and mobile viewports, and reported zero warnings or errors.
+
+final result: passed
+
+## Merchant supplier sections — uncropped expansion and post-PDP placement — 2026-08-28
+
+### Source truth and implementation evidence
+
+- Source visual truth: the user-supplied rendered captures `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-1347cd2c-89d2-4eb8-9c20-5b3d43e1ff6e.png` and `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-d0e85daf-bbd5-4e0f-85bf-ed3df18f185f.png`, showing that both 16:9 artworks were being cropped by the fixed-height page sections.
+- Revised first asset: `public/media/partner-landing/merchant-network/supplier-catalog-conversion-reference-scale-v2-4k.png` (`3840 x 2160`), regenerated with crisper products, compact nodes, a low reference-scale conversion field, and a clean upper copy zone.
+- Revised second asset: `public/media/partner-landing/merchant-network/supplier-distribution-network-reference-scale-v3-4k.png` (`3840 x 2160`), regenerated from the Voltage composition with compact endpoints, a smaller hub, thinner lines, harder edges, and restrained glow.
+- Browser-rendered implementation screenshot: unavailable. The in-app browser rejected the localhost reload under its URL policy, so no compliant post-change browser capture could be produced.
+
+### Findings and corrections
+
+- P1 crop: both sections used `height: 100svh`, `overflow: hidden`, a constrained second grid row, and `object-fit: cover`. Fix: removed the fixed height and clipping, preserved both complete 16:9 images at intrinsic proportions, and allowed each section to use the larger of one viewport or its full-width image height.
+- P1 doubled whitespace: the live copy was stacked above image files that already reserved a large clean copy zone. Fix: the copy now occupies that clean upper zone as in both references, while the complete uncropped artwork remains beneath it on the same canvas. Mobile uses the same full image with only the empty copy zone overlapped, not the product/network artwork.
+- P1 order: the supplier sections appeared near the top of the page before sizing and PDP Studio. Fix: moved the complete supplier story after `MerchantNetworkJourney`, whose final section is `pdp-studio-feature`, placing both supplier sections directly after PDP Studio.
+- P1 image softness and scale: the prior files had 4K pixel dimensions but were enlarged from `1672 x 941` generated sources, and the first sharp distribution revision made the nodes materially larger than the Voltage reference. Fix: regenerated both artworks with sharper rendering and reference-scale compact nodes, then produced versioned `3840 x 2160` project assets using Lanczos scaling and controlled sharpening. These are high-quality 4K-sized derivatives, not native 4K generations.
+- No source-level P0/P1/P2 issue remains in the scoped component changes. Visual acceptance remains blocked until a browser-rendered screenshot can be captured and compared.
+
+### Required fidelity surfaces
+
+- Fonts and typography: unchanged from the previously accepted supplier sections.
+- Spacing and layout rhythm: copy and network now share the reference's single canvas instead of two stacked whitespace zones; the sections can still grow beyond one viewport on wide screens.
+- Colors and visual tokens: the existing blue supplier theme and gray-to-color conversion treatment remain unchanged.
+- Image quality and asset fidelity: both full 16:9 canvases are preserved without CSS cropping. The second artwork is a new sharper versioned asset, not a recompressed copy of the old soft file.
+- Copy and content: unchanged. Supplier sections now follow the PDP Studio section as requested.
+
+### Verification
+
+- Scoped ESLint, full TypeScript, and scoped `git diff --check` passed.
+- Port `3001` returned HTTP `200` for `/merchants` from the active Next.js server.
+- Local file inspection confirmed both consuming images are `3840 x 2160`.
+- React best-practices review found no new component, hooks, accessibility, or TypeScript issue in the two scoped TSX edits.
+- Blocking gap: no current desktop/mobile browser-rendered capture or console inspection could be completed because the in-app browser URL policy blocked the localhost page.
+
+final result: blocked
+
+## Merchant supplier catalog — infinite gray-to-color motion — 2026-08-28
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-77107fe3-ac0c-40bf-a91b-673ddbd97b0d.png`, which shows muted supplier products on the left, a slim blue approval line, and vivid approved products on the right.
+- Generated motion field: `public/media/partner-landing/merchant-network/supplier-catalog-motion-field-v1-4k.png` (`3840 x 2160`). It removes every baked-in product and keeps only the white/lilac-to-icy-blue field, curved paths, and central blue line so the products can move independently in the browser.
+- Live product imagery uses existing high-resolution project assets for the dress, jacket, trousers, shoes, and pendant. Each is rendered as a separate DOM image card rather than baked into a low-resolution video frame.
+
+### Findings and corrections
+
+- P1 static-state mismatch: the previous artwork only illustrated the before/after state. Fix: replaced the first supplier visual with a continuous CSS animation. Muted grayscale products enter from the left, move toward the blue line, switch to full color while crossing it, gain an approval dot, and continue through the bright right side.
+- P1 quality risk: exporting the entire effect as a 4K MP4 would still rasterize every product and require a large repeated media download. Fix: only the field is a 4K-sized raster; the five moving products remain individual high-resolution images and the motion is rendered by the browser at the current display resolution.
+- P2 loop continuity: five items share a 17-second linear path with evenly staggered negative delays, so products remain visible on both sides and the loop has no empty restart frame.
+- P2 motion accessibility: `prefers-reduced-motion` disables the moving product layer and leaves the static field visible.
+
+### Verification
+
+- Scoped ESLint and full TypeScript passed using the checked-in binaries. Scoped `git diff --check` passed.
+- `/merchants` returned HTTP `200` from port `3001`, and the server-rendered response contains the motion field and product imagery.
+- Local inspection confirmed the generated field file is exactly `3840 x 2160`. It is a high-quality 4K-sized derivative from a `1672 x 941` ImageGen source, not a native 4K generation.
+- Blocking gap: the in-app browser URL policy still prevents a fresh localhost visual capture, so the timing, line-crossing position, and desktop/mobile composition have not been visually accepted against a rendered screenshot in this pass.
+
+final result: blocked
+
+## Merchant closing section gray footer transition — 2026-08-28
+
+### Source truth and implementation evidence
+
+- Source correction screenshot: `/Users/arashsn/Downloads/Screenshot - 2026-08-28T233620.428.png` (`1857 x 322`, DPR `1`). It shows the rejected peach/yellow strip between the closing section's gray surround and the navy footer.
+- User correction: remove that yellow strip, add more gray space, and let the gray field reach the footer.
+- Final desktop capture: `.design-qa/merchant-closing-reference/gray-footer-transition-desktop.png` (`1269 x 714`) from the default `1280 x 720` CSS viewport at DPR `1`.
+- Final mobile capture: `.design-qa/merchant-closing-reference/gray-footer-transition-mobile.png` (`379 x 820`) from a `390 x 844` CSS viewport at DPR `1`.
+- Focused normalized comparison: `.design-qa/merchant-closing-reference/gray-footer-transition-source-vs-final.png` (`3730 x 322`). The source problem crop is on the left; the final crop is on the right at the same `1857 x 322` size.
+- State: closing section and footer visible together, waitlist dialog closed.
+
+### Findings and correction
+
+- P1 transition-color mismatch: the footer wrapper used `#ffd9ad`, creating an unwanted peach/yellow band. Fix: changed the wrapper to the closing section's exact gray, `#9d9d9b`, so the gray now reaches the navy footer without a color seam.
+- P2 insufficient gray breathing room: the desktop wrapper used `82px` and mobile used `70px` of lead space. Fix: increased the gray lead to `128px` desktop and `96px` mobile. The final desktop browser measurement reports exactly `128px` between the footer wrapper top and navy footer; mobile reports `96px`.
+- No actionable P0, P1, or P2 issue remains in the requested transition.
+
+### Required fidelity surfaces and verification
+
+- Fonts and typography: unchanged; the footer logo, title, and tagline retain their existing hierarchy and rendering.
+- Spacing and layout rhythm: the new gray lead is intentionally taller and continuous with the closing section while the navy footer's radius and centered logo position remain unchanged.
+- Colors and visual tokens: the rejected peach/yellow wrapper is absent; sampled browser style is `rgb(157, 157, 155)`, matching `#9d9d9b`.
+- Image quality and asset fidelity: no image or logo asset changed; the existing PrimeStyleAI mark remains sharp and centered.
+- Copy and content: unchanged.
+- Desktop and mobile document widths remain within their viewports with no horizontal overflow. Fresh desktop console diagnostics reported zero errors.
+- Prettier, full TypeScript, and scoped `git diff --check` passed.
+
+final result: passed
+
+## Supplier distribution engagement pass — 2026-08-28
+
+### Source truth and implementation evidence
+
+- User direction: remove `Supplier distribution, built into the network` and make the remaining section typography larger and as engaging as the influencer section without changing the supplier-section background direction.
+- Source hierarchy capture: `.design-qa/supplier-distribution-engagement/source-influencer-section.jpg` (`1269 x 714`) from a `1280 x 720` CSS viewport at DPR `1`.
+- Before capture: `.design-qa/supplier-distribution-engagement/before-supplier-distribution.jpg` (`1269 x 714`).
+- Final desktop capture: `.design-qa/supplier-distribution-engagement/after-desktop-final-v2.jpg` (`1269 x 714`) from the same viewport and state.
+- Final mobile capture: `.design-qa/supplier-distribution-engagement/after-mobile-final.jpg` (`379 x 820`) from a `390 x 844` CSS viewport at DPR `1`.
+- Full-view same-input comparison: `.design-qa/supplier-distribution-engagement/influencer-vs-supplier-final-v2.jpg` (`2538 x 714`), with the influencer hierarchy source on the left and final supplier distribution section on the right. A separate focused crop was unnecessary because the heading, body, action, and network artwork are fully readable at this scale.
+
+### Findings, fixes, and comparison history
+
+- P1 weak hierarchy: the supplier eyebrow was only `9px`, the heading was `56.32px`, and the body was `13.824px`, while the influencer reference used a `76.8px` display heading. Fix: removed the eyebrow entirely, raised the supplier heading to `76.8px` at the tested desktop viewport with a stronger `0.9` line height and weight, enlarged the body to `17.28px`, and increased the CTA to `56px` high.
+- P2 mobile visual energy: the responsive artwork rendered as a narrow, low-impact network strip. Fix: the final mobile view uses a `54.6px` heading, `15px` body, `52px` CTA, and a `148%`-wide clipped network visual. It remains centered and has zero horizontal overflow.
+- Intentional source difference: the supplier section keeps its established `#fbfdff` field and product-only distribution artwork instead of copying the influencer section's navy frame or human imagery. The reference is used for hierarchy and engagement, not content or palette replacement.
+- The removed eyebrow phrase is absent from the final rendered document. No actionable P0, P1, or P2 issue remains.
+
+### Required fidelity surfaces and verification
+
+- Fonts and typography: the existing Manrope system is preserved; display size, weight, line height, wrapping, body size, and CTA optical weight now match the influencer section's stronger hierarchy.
+- Spacing and layout rhythm: the removed eyebrow gives the display copy a direct start; heading, body, CTA, and network artwork remain distinct with no visible collisions on desktop or mobile.
+- Colors and visual tokens: the supplier blue accent and `#fbfdff` background are unchanged.
+- Image quality and asset fidelity: the existing 4K product-only supplier network asset remains intact and uncropped on desktop; mobile enlarges it through layout sizing without replacing or degrading the source file.
+- Copy and content: only the requested eyebrow phrase was removed. The main message, explanation, and CTA remain intact.
+- The section CTA opened the existing merchant waitlist dialog and the dialog closed normally. Desktop and mobile reported zero horizontal overflow and browser logs reported zero runtime errors.
+- Scoped ESLint, full TypeScript, Prettier, and scoped `git diff --check` passed.
+
+final result: passed
+
+## Merchant closing/footer supplier-background correction — 2026-08-28
+
+### Source truth and implementation evidence
+
+- User correction: the outer field must not be gray; it must use the same background as the supplier sections while keeping the added breathing room before the footer.
+- The preceding supplier distribution section renders `rgb(251, 253, 255)` (`#fbfdff`). This live computed color is the exact source of truth for the correction.
+- Final closing capture: `.design-qa/merchant-closing-reference/supplier-background-transition-desktop.jpg` (`1269 x 714`).
+- Final footer captures: `.design-qa/merchant-closing-reference/supplier-background-footer-desktop.jpg` (`1269 x 714`) and `.design-qa/merchant-closing-reference/supplier-background-transition-mobile.jpg` (`379 x 820`).
+
+### Findings and correction
+
+- P1 background mismatch: the immediately previous pass extended the gray closing-section surround into the footer lead. That pass is superseded. Fix: changed both the closing section's outer field and the footer lead to the supplier distribution section's exact `#fbfdff` background.
+- P2 spacing preservation: retained the requested breathing room at exactly `128px` on desktop and `96px` on mobile.
+- The inner white closing card, its colored cards, and the navy footer remain unchanged.
+
+### Verification
+
+- Live browser styles report `rgb(251, 253, 255)` for the preceding supplier section, the closing-section surround, and the footer lead on both desktop and mobile.
+- Desktop and mobile report zero horizontal overflow. Browser logs contain no runtime errors; existing unrelated Next Image quality warnings remain unchanged.
+- Prettier, full TypeScript, and scoped `git diff --check` passed.
+
+final result: passed
+
+## Merchant supplier-catalog curved transformation loop — 2026-08-28
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/var/folders/s6/jcbgb89n5gg6nx7j1xd_03mm0000gn/T/codex-clipboard-b07004d0-40e7-4f16-9036-b840ff0f92c0.png` (`1680 x 945`, DPR `1`). It defines three fanned product-card rows, unfinished pale-gray supplier inputs on the left, polished product listings on the right, a central blue approval line, and soft converging flow ribbons.
+- Final desktop implementation: `.design-qa/supplier-catalog-four-cards-three-lanes-1440x900.png` (`1440 x 900`, CSS viewport `1440 x 900`, DPR `1`).
+- Final mobile implementation: `.design-qa/supplier-catalog-four-cards-three-lanes-mobile.png` (`390 x 844`, CSS viewport `390 x 844`, DPR `1`).
+- Full-view same-input comparison: `.design-qa/supplier-catalog-reference-vs-four-card-loop.png` (`1440 x 1710`). The `1680 x 945` source was normalized to `1440 x 810` and stacked with the `1440 x 900` browser capture so both were judged in one comparison input without stretching the implementation.
+- Focused asset evidence: `.design-qa/generated-cards-v2-contact-sheet.png` shows the five polished listing cards at a readable scale. The separate pale-gray input set uses the same categories but intentionally simpler unfinished silhouettes under the user's correction.
+- State: the animation is running. Both clipped layers use the same motion timing and geometry, while their image roots remain distinct.
+
+### Findings and comparison history
+
+- Initial P1 asset failure: screenshot crops contained pieces of adjacent cards and could not produce exact repeated rows. Fix: generated five individual polished listing cards and five separate unfinished gray supplier-input cards. Every production asset is a clean `2000 x 1176` PNG with a complete rounded frame, product subject, listing lines, status rail, and trend mark.
+- Initial P1 motion mismatch: cards traveled on straight horizontal tracks. Fix: each of the three rows now follows an inward/outward curve using synchronized vertical displacement and roll. Top and bottom rows fan toward the line and open again; the middle row remains restrained.
+- Initial P1 transformation mismatch: the left and right sides reused the same image with only a grayscale filter. Fix: the muted layer now loads purpose-built low-detail gray supplier inputs, while the color layer loads separate photoreal merchant-ready product listings.
+- Initial P2 line overlap: moving cards could render over the blue line or change appearance before clearing it. Fix: two synchronized streams are clipped at the exact center, and the raster line is rendered above both streams. Card geometry never scales at the crossing.
+- Initial P2 stream density: the first loop used too many movers and read as a crowded grid. Fix: the final implementation contains exactly three rows with exactly four logical long cards per row (`12` movers total), evenly phased over a `14.4s` seamless loop.
+- No actionable P0, P1, or P2 difference remains after the final combined comparison.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the surrounding supplier headline, label, supporting copy, and CTA keep the existing Manrope merchant-page hierarchy. The raster cards contain no readable generated text.
+- Spacing and layout rhythm: three discrete rows remain visible across desktop and mobile. Desktop card width is `259px`; rows use consistent `0%`, `33.4%`, and `66.8%` tracks, with four evenly phased cards assigned to each.
+- Colors and visual tokens: unfinished inputs are pale neutral gray with no blue or product color. Merchant-ready outputs use champagne, beige, black, burgundy, and gold with the reference's cobalt status accents. The white field and subtle blue/purple ribbons retain the supplied composition.
+- Image quality and asset fidelity: all ten card assets are real `2000 x 1176` raster files generated individually in the logged-in ImageGen session. No adjacent-card crop, placeholder, human, logo, watermark, emoji, handcrafted SVG, CSS product drawing, or stretched low-resolution screenshot remains.
+- Copy and content: the section continues to explain supplier selection and merchant-ready collections; the animation specifically covers dresses, jackets, shoes, pants, and jewelry.
+
+### Interaction, responsiveness, and runtime checks
+
+- Browser inspection confirmed exactly `12` logical movers in each clipped visual layer and exactly `4` movers for each of the three lane values. The two layers report identical positions and fixed widths while loading distinct muted and color asset roots.
+- Motion sampling confirmed that a card's horizontal and vertical position changes over time while its CSS width remains constant. The central raster line stays above both streams.
+- Mobile measured `379px` for body, document, and section width inside a `390px` viewport, with no horizontal overflow. The motion field was expanded so the three rows remain distinct rather than collapsing into a flat strip.
+- Scoped ESLint, direct TypeScript (`./node_modules/.bin/tsc --noEmit`), `git diff --check`, 4K field-asset inspection, desktop/mobile visual inspection, and fresh browser diagnostics passed. A fresh reload produced zero new runtime errors. Port `3001` remains served by this checkout.
+
+final result: passed

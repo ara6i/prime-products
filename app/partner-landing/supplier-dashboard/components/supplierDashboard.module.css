@@ -16,10 +16,6 @@
   font-family: var(--font-poppins), var(--font-manrope), Arial, sans-serif;
 }
 
-:global(html) {
-  overflow-x: clip;
-}
-
 .stage *,
 .stage *::before,
 .stage *::after {

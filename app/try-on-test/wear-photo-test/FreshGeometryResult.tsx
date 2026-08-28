@@ -139,6 +139,10 @@ export function FreshGeometryResult({
   prediction,
 }: FreshGeometryResultProps) {
   const fusion = prediction.cameraFusion;
+  const v8Model = prediction.model.version.includes("waist-hips-v8");
+  const modelLabel = v8Model ? "V8 waist + hips" : "Fresh ONNX";
+  const waistValidation = prediction.rows.find((row) => row.kind === "waist")?.syntheticValidation;
+  const hipsValidation = prediction.rows.find((row) => row.kind === "hips")?.syntheticValidation;
   const cameraRowsApplied = fusion?.rows.filter((row) => row.widthSource !== "fresh-onnx").length ?? 0;
   const initialLines = useMemo(() => editableLines(prediction), [prediction]);
   const [draftLines, setDraftLines] = useState<FreshGeometryLineOverrideMap>(initialLines);
@@ -198,23 +202,36 @@ export function FreshGeometryResult({
   return (
     <div className="space-y-5" data-testid="fresh-geometry-result">
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4"><Check className="size-5 text-emerald-700" /><p className="mt-2 text-sm font-black text-emerald-950">Fresh ONNX loaded</p><p className="mt-1 text-xs text-emerald-700">371 independent outputs</p></div>
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4"><Check className="size-5 text-emerald-700" /><p className="mt-2 text-sm font-black text-emerald-950">{modelLabel} loaded</p><p className="mt-1 text-xs text-emerald-700">{prediction.model.targetCount} independent outputs</p></div>
         <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4"><ScanLine className="size-5 text-blue-700" /><p className="mt-2 text-sm font-black text-blue-950">Fresh training</p><p className="mt-1 text-xs text-blue-700">{prediction.model.train.subjects.toLocaleString()} people · {prediction.model.train.records.toLocaleString()} views</p></div>
         <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4"><Box className="size-5 text-violet-700" /><p className="mt-2 text-sm font-black text-violet-950">WEAR validation</p><p className="mt-1 text-xs text-violet-700">{prediction.model.validation.subjects} unseen validation people</p></div>
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4"><Camera className="size-5 text-amber-700" /><p className="mt-2 text-sm font-black text-amber-950">Camera fusion</p><p className="mt-1 text-xs text-amber-700">{fusion ? fusion.state === "failed" ? "Failed · raw ONNX remains" : `${cameraRowsApplied}/${prediction.rows.length} rows · ${fusion.state}${fusion.rowPositionSource === "manual" ? " · manual rows" : ""}` : "Not run"}</p></div>
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4"><AlertTriangle className="size-5 text-rose-700" /><p className="mt-2 text-sm font-black text-rose-950">Normal-photo proof</p><p className="mt-1 text-xs text-rose-700">Not validated yet · private test only</p></div>
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4"><AlertTriangle className="size-5 text-rose-700" /><p className="mt-2 text-sm font-black text-rose-950">{v8Model ? "V8 release gate" : "Normal-photo proof"}</p><p className="mt-1 text-xs text-rose-700">{v8Model ? "Waist failed · 448 remains sealed" : "Not validated yet · private test only"}</p></div>
       </section>
+
+      {v8Model ? <section className="rounded-3xl border-2 border-rose-300 bg-rose-50 p-5" data-testid="v8-validation-status">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div><p className="text-xs font-black uppercase tracking-[0.14em] text-rose-700">Private V8 validation · not production ready</p><h2 className="mt-1 text-xl font-black text-rose-950">Hips passed; waist failed; sealed 448 not opened</h2><p className="mt-2 max-w-4xl text-xs leading-5 text-rose-800">These are results from 427 separate WEAR validation people. This tab runs normal-photo transfer only. It does not claim accuracy on the sealed 448 people, and it is not wired into the SDK.</p></div>
+          <span className="rounded-full bg-rose-700 px-3 py-1.5 text-xs font-black uppercase text-white">Benchmark blocked</span>
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-xl border border-rose-200 bg-white p-3"><p className="text-[10px] font-black uppercase text-slate-500">Waist tape MAE / P95</p><p className="mt-1 text-sm font-black text-rose-800">{waistValidation?.tapeCmMae?.toFixed(2) ?? "—"} / {waistValidation?.tapeP95Cm?.toFixed(2) ?? "—"} cm</p></div>
+          <div className="rounded-xl border border-rose-200 bg-white p-3"><p className="text-[10px] font-black uppercase text-slate-500">Waist shape R²</p><p className="mt-1 text-sm font-black text-rose-800">{waistValidation?.shapeRSquared?.toFixed(3) ?? "—"} · failed</p></div>
+          <div className="rounded-xl border border-emerald-200 bg-white p-3"><p className="text-[10px] font-black uppercase text-slate-500">Hip tape MAE / P95</p><p className="mt-1 text-sm font-black text-emerald-800">{hipsValidation?.tapeCmMae?.toFixed(2) ?? "—"} / {hipsValidation?.tapeP95Cm?.toFixed(2) ?? "—"} cm</p></div>
+          <div className="rounded-xl border border-emerald-200 bg-white p-3"><p className="text-[10px] font-black uppercase text-slate-500">Hip shape R²</p><p className="mt-1 text-sm font-black text-emerald-800">{hipsValidation?.shapeRSquared?.toFixed(3) ?? "—"} · passed</p></div>
+        </div>
+      </section> : null}
 
       <section className="rounded-3xl border border-amber-300 bg-amber-50 p-5">
         <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-800">Exactly what ran</p>
-        <p className="mt-2 text-sm font-black text-amber-950">{fusion && fusion.state !== "failed" ? `Photo segmentation → fresh ONNX rows${fusion.rowPositionSource === "manual" ? " → manual row edits" : ""} → Apple Vision camera scale → Depth Pro surface unprojection → fused A-to-B width → learned depth/width ratio sets hidden depth.` : "Photo segmentation → cleaned 192×256 silhouette → 96×128 fresh ONNX → raw rows, width, depth, shape, tape and ratios."}</p>
+        <p className="mt-2 text-sm font-black text-amber-950">{fusion && fusion.state !== "failed" ? `Photo segmentation → ${v8Model ? "V8" : "fresh ONNX"} rows${fusion.rowPositionSource === "manual" ? " → manual row edits" : ""} → Apple Vision camera scale → Depth Pro surface unprojection → fused A-to-B width → learned depth/width ratio sets hidden depth.` : `Photo segmentation → cleaned 192×256 silhouette → 96×128 ${v8Model ? "V8" : "fresh ONNX"} → raw rows, width, depth, shape, tape and ratios.`}</p>
         <p className="mt-2 text-xs leading-5 text-amber-800">{fusion?.importantLimit ?? "Apple Vision and Depth Pro did not change these values."}</p>
       </section>
 
       <section className="grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(280px,0.75fr)]">
         <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between gap-3">
-            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-700">Normal photo</p><h2 className="mt-1 text-xl font-black text-slate-950">Fresh ONNX row positions and A-to-B edges</h2></div>
+            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-700">Normal photo</p><h2 className="mt-1 text-xl font-black text-slate-950">{modelLabel} row positions and A-to-B edges</h2></div>
             <p className="text-xs font-bold text-slate-500">{prediction.timing.inferenceMs.toFixed(1)} ms ONNX</p>
           </div>
           <div className="relative mt-4 overflow-hidden rounded-2xl bg-slate-950">
@@ -310,7 +327,7 @@ export function FreshGeometryResult({
       ) : null}
 
       <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-200 p-5"><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">Fresh physical outputs</p><h2 className="mt-1 text-xl font-black text-slate-950">{fusion && fusion.state !== "failed" ? "Camera-fused width and depth · direct tape unchanged" : "Width, depth and direct tape predictions"}</h2><p className="mt-2 text-xs leading-5 text-slate-500">Tape is its own learned head. It is not calculated by walking the displayed shape and is not rescaled by Apple or Depth Pro.</p></div>
+        <div className="border-b border-slate-200 p-5"><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">{v8Model ? "V8 physical outputs" : "Fresh physical outputs"}</p><h2 className="mt-1 text-xl font-black text-slate-950">{fusion && fusion.state !== "failed" ? "Camera-fused width and depth · direct tape unchanged" : "Width, depth and direct tape predictions"}</h2><p className="mt-2 text-xs leading-5 text-slate-500">Tape is its own learned head trained against recorded WEAR tape. It is not calculated by walking the displayed shape and is not rescaled by Apple or Depth Pro.</p></div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-5 py-3">Row</th><th className="px-5 py-3">{fusion && fusion.state !== "failed" ? "Fused A-to-B width" : "A-to-B width"}</th><th className="px-5 py-3">{fusion && fusion.state !== "failed" ? "Ratio-fused depth" : "Depth"}</th><th className="px-5 py-3">Learned depth / width</th><th className="px-5 py-3">Direct tape</th><th className="px-5 py-3">Known tape</th><th className="px-5 py-3">Difference</th></tr></thead>
@@ -323,7 +340,7 @@ export function FreshGeometryResult({
       </section>
 
       <section>
-        <div className="mb-3"><p className="text-xs font-black uppercase tracking-[0.14em] text-violet-700">Predicted 3D geometry</p><h2 className="mt-1 text-xl font-black text-slate-950">Five independent 32-point body cross-sections</h2></div>
+        <div className="mb-3"><p className="text-xs font-black uppercase tracking-[0.14em] text-violet-700">Predicted 3D geometry</p><h2 className="mt-1 text-xl font-black text-slate-950">{prediction.rows.length} independent 32-point body cross-sections</h2></div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">{prediction.rows.map((row) => <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" key={row.kind}><p className="text-sm font-black" style={{ color: row.color }}>{row.label}</p><p className="mt-1 text-xs text-slate-500">{formatCm(row.widthCm)} wide · {formatCm(row.depthCm)} deep</p><div className="mt-2"><CrossSection row={row} /></div></div>)}</div>
       </section>
 

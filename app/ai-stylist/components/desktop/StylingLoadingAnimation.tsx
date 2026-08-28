@@ -79,7 +79,7 @@ interface StylingLoadingAnimationProps {
 
 export function StylingLoadingAnimation({ modelImage }: StylingLoadingAnimationProps) {
   const fallback =
-    "https://res.cloudinary.com/dgvtynla7/image/upload/v1759158306/uploads/models/Gemini_Generated_Image_wxdd66wxdd66wxdd_synj3e.png";
+    "https://d3u1mcyz6rhw9o.cloudfront.net/runtime/legacy/source-url/f578df53ab4129ed032dda892b41e7f68e927ce865c8deb000a7ae6da51ccfac.png";
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-[0.833vw] bg-surface-light">

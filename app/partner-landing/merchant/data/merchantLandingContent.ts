@@ -8,7 +8,7 @@ export const MERCHANT_LANDING_CONTENT: MerchantLandingViewModel = {
     titleMiddleTail: "product",
     titleAccent: "advantage.",
     body: "Bring AI sizing and virtual try-on, trusted creators, PDP Studio, a dedicated merchant dashboard, and supplier access around one catalog—so every product is easier to discover, experience, and buy.",
-    primaryCta: "Join the network",
+    primaryCta: "Join the waitlist",
     secondaryCta: "See how it works",
     annotation: "Size it. Try it. Create it. Source it. Sell it.",
     image: "/media/partner-landing/merchant-network/running-shoe.webp",

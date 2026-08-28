@@ -153,6 +153,18 @@ export interface StylistOnboardingProfile {
   coveragePreferences: string[];
   avoidMaterials: string[];
   favoriteBrands: string[];
+  garmentPreferences?: {
+    selectedSlots: Array<
+      | "dress"
+      | "top"
+      | "bottom"
+      | "shoe"
+      | "outerwear"
+      | "bag"
+      | "watch"
+      | "accessory"
+    >;
+  };
   size?: string;
   weather?: {
     temperatureC: number;
@@ -207,6 +219,15 @@ export interface IntelligentOutfitItem {
   sizeStatus?: StylistSizeStatus;
   sizeReason?: string | null;
   embeddingReady: boolean;
+  supplierLifecycleState?:
+    | "active"
+    | "unavailable"
+    | "discontinued"
+    | "deleted"
+    | "replacement_pending"
+    | "replaced";
+  purchaseDisabled?: boolean;
+  availabilityMessage?: string | null;
   candidateScore: {
     vectorRelevance: number;
     occasion: number;
@@ -274,6 +295,11 @@ export interface StylistCatalogProduct {
   product_url: string | null;
   date_added: string;
   variants: unknown[];
+  supplier_lifecycle?: string;
+  shipping_eligibility?: "eligible" | "unverified";
+  eligible_variant_ids?: string[];
+  weight_evidence?: Record<string, unknown> | null;
+  quote_status?: string;
 }
 
 export interface IntelligentOutfit {
@@ -321,6 +347,16 @@ export interface OutfitIntelligenceResponse {
   selectionLimit: number;
   outfits: IntelligentOutfit[];
   trace: OutfitIntelligenceTrace;
+  availabilityContext?: CatalogAvailabilityContext;
+}
+
+export interface CatalogAvailabilityContext {
+  requestedCountry: string | null;
+  effectiveCountry: string;
+  source: "saved" | "detected" | "default";
+  supported: boolean;
+  reason: "supported" | "unsupported_destination";
+  customerMessage: string | null;
 }
 
 export interface OutfitCatalogAvailability {

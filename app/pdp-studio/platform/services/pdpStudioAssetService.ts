@@ -3,7 +3,16 @@ import { pdpStudioApiRequest } from "./pdpStudioApiClient";
 
 interface UploadSignatureResponse {
   ok: true;
-  upload: {
+  upload: ({
+    provider: "s3";
+    method: "PUT";
+    publicId: string;
+    resourceType: "image" | "video";
+    uploadUrl: string;
+    headers: Record<string, string>;
+  } | {
+    provider: "cloudinary";
+    method: "POST";
     apiKey: string;
     timestamp: number;
     signature: string;
@@ -11,7 +20,7 @@ interface UploadSignatureResponse {
     resourceType: "image" | "video";
     type: "authenticated";
     uploadUrl: string;
-  };
+  });
 }
 
 interface CloudinaryUploadResponse {
@@ -75,29 +84,41 @@ export async function uploadPdpStudioAsset(
     "/assets/upload-signature",
     {
       method: "POST",
-      body: JSON.stringify({ resourceType }),
+      body: JSON.stringify({ resourceType, contentType: file.type, originalName: file.name, bytes: file.size }),
     },
   );
-  const form = new FormData();
-  form.set("file", file);
-  form.set("api_key", signature.upload.apiKey);
-  form.set("timestamp", String(signature.upload.timestamp));
-  form.set("signature", signature.upload.signature);
-  form.set("public_id", signature.upload.publicId);
-  form.set("type", signature.upload.type);
-
-  const uploadResponse = await fetch(signature.upload.uploadUrl, {
-    method: "POST",
-    body: form,
-  });
-  const uploaded = (await uploadResponse
-    .json()
-    .catch(() => ({}))) as CloudinaryUploadResponse;
-  if (!uploadResponse.ok || !uploaded.public_id) {
-    throw new Error(
-      uploaded.error?.message ||
-        `Private asset upload failed (${uploadResponse.status}).`,
-    );
+  let uploadedPublicId = signature.upload.publicId;
+  if (signature.upload.provider === "s3") {
+    const uploadResponse = await fetch(signature.upload.uploadUrl, {
+      method: signature.upload.method,
+      headers: signature.upload.headers,
+      body: file,
+    });
+    if (!uploadResponse.ok) {
+      throw new Error(`Private asset upload failed (${uploadResponse.status}).`);
+    }
+  } else {
+    const form = new FormData();
+    form.set("file", file);
+    form.set("api_key", signature.upload.apiKey);
+    form.set("timestamp", String(signature.upload.timestamp));
+    form.set("signature", signature.upload.signature);
+    form.set("public_id", signature.upload.publicId);
+    form.set("type", signature.upload.type);
+    const uploadResponse = await fetch(signature.upload.uploadUrl, {
+      method: signature.upload.method,
+      body: form,
+    });
+    const uploaded = (await uploadResponse
+      .json()
+      .catch(() => ({}))) as CloudinaryUploadResponse;
+    if (!uploadResponse.ok || !uploaded.public_id) {
+      throw new Error(
+        uploaded.error?.message ||
+          `Private asset upload failed (${uploadResponse.status}).`,
+      );
+    }
+    uploadedPublicId = uploaded.public_id;
   }
 
   const finalized = await pdpStudioApiRequest<{
@@ -106,7 +127,7 @@ export async function uploadPdpStudioAsset(
   }>("/assets/finalize", {
     method: "POST",
     body: JSON.stringify({
-      publicId: uploaded.public_id,
+      publicId: uploadedPublicId,
       resourceType,
       originalName: file.name,
       source,

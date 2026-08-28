@@ -223,6 +223,11 @@ function OutfitBoard({
           </button>
         );
       })}
+      {outfit.items.some((item) => item.purchaseDisabled) && (
+        <span className="absolute bottom-2 left-2 z-20 rounded-full bg-white/95 px-2 py-1 text-[0.55vw] font-semibold text-[#8a5a12] shadow-sm">
+          Replacement in progress
+        </span>
+      )}
     </div>
   );
 }
@@ -381,19 +386,31 @@ function PiecesDialog({
                           ? `Your size: ${item.recommendedSize}`
                           : "Size recommendation unavailable"}
                     </p>
+                    {item.purchaseDisabled && (
+                      <p className="mt-1 text-[11px] leading-4 text-[#8a5a12]">
+                        {item.availabilityMessage ??
+                          "This item is no longer available for purchase."}
+                      </p>
+                    )}
                     <div className="mt-auto flex items-center justify-between pt-2">
                       <span className="text-xs font-semibold text-[#24212c]">
                         {formatMoney(item.price, item.currency)}
                       </span>
-                      <a
-                        href={`/shop/ai-stylist/product/${encodeURIComponent(catalogProductId(item))}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-[11px] font-medium text-[#2154ef] hover:underline"
-                      >
-                        Details
-                        <ExternalLink className="h-3 w-3" aria-hidden="true" />
-                      </a>
+                      {item.purchaseDisabled ? (
+                        <span className="text-[11px] font-medium text-[#8a5a12]">
+                          Unavailable
+                        </span>
+                      ) : (
+                        <a
+                          href={`/shop/ai-stylist/product/${encodeURIComponent(catalogProductId(item))}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-[11px] font-medium text-[#2154ef] hover:underline"
+                        >
+                          Details
+                          <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                        </a>
+                      )}
                     </div>
                   </div>
                 </article>
@@ -622,6 +639,9 @@ export function OutfitSelectionView({
       onGenerate={onStartTryOns}
       catalogProducts={catalogProducts}
       catalogDescription="Browse the real products selected by your AI Stylist"
+      emptyCatalogMessage={
+        result.availabilityContext?.customerMessage ?? undefined
+      }
       onToggleCatalogSave={handleToggleCatalogSave}
       productActionLabel="Select look"
       activeProductActionLabel="Selected"
@@ -650,6 +670,23 @@ export function OutfitSelectionView({
             onMouseUpCapture={handleDragReleaseCapture}
             onPointerCancelCapture={clearDraggedPiece}
           >
+            {result.outfits.length === 0 &&
+              result.availabilityContext?.customerMessage && (
+                <div className="m-auto flex max-w-[34rem] flex-col items-center gap-3 rounded-2xl border border-[#dfe3eb] bg-white px-8 py-10 text-center">
+                  <h2 className="text-lg font-semibold text-[#20242c]">
+                    Delivery is not available yet
+                  </h2>
+                  <p className="text-sm leading-6 text-[#667085]">
+                    {result.availabilityContext.customerMessage}
+                  </p>
+                  <a
+                    href="/dashboard/profile"
+                    className="rounded-full bg-[#2457eb] px-5 py-2.5 text-sm font-semibold text-white"
+                  >
+                    Update delivery country
+                  </a>
+                </div>
+              )}
             <div className="shrink-0 pb-[0.625vw]">
               <div className="flex items-center justify-between gap-[0.833vw]">
                 <div className="min-w-0">

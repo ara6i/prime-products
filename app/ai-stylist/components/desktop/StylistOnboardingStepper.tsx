@@ -14,10 +14,14 @@ import type {
   OutfitIntelligenceRequest,
 } from "@/app/ai-stylist/types";
 import {
+  garmentOptionAsset,
+  garmentOptionDescription,
   occasionAsset,
   occasionSkipsSeasonStep,
+  STYLIST_GARMENT_OPTIONS,
   STYLIST_OCCASIONS,
   STYLIST_STEP_LABELS,
+  type StylistGarmentSelection,
   type StylistGender,
 } from "@/app/ai-stylist/data/onboarding";
 import { FULL_BODY_MODELS } from "./ModelPreviewCard";
@@ -27,7 +31,7 @@ import {
   type StylistSizingProfile,
 } from "@/app/ai-stylist/hooks/useStylistSizingPhoto";
 
-type WizardStep = 1 | 2 | 3 | 4;
+type WizardStep = 1 | 2 | 3 | 4 | 5;
 type ModelMode = "choose-model" | "upload-photo";
 
 interface WizardGenerationRequest {
@@ -139,7 +143,7 @@ function OptionCheck({ selected }: { selected: boolean }) {
     <span
       className={`flex h-[1.042vw] w-[1.042vw] shrink-0 items-center justify-center rounded-[0.208vw] border transition-colors ${
         selected
-          ? "border-[#7258fa] bg-[#7258fa]"
+          ? "border-[#2154ef] bg-[#2154ef]"
           : "border-[#b9b9bd] bg-white"
       }`}
       aria-hidden="true"
@@ -173,6 +177,9 @@ export function StylistOnboardingStepper({
   );
   const [seasonId, setSeasonId] = useState("fall");
   const [budgetId, setBudgetId] = useState("premium");
+  const [selectedGarments, setSelectedGarments] = useState<
+    StylistGarmentSelection[]
+  >(() => (initialStep === 5 ? ["top", "bottom", "shoe"] : []));
   const [modelMode, setModelMode] = useState<ModelMode>("choose-model");
   const [selectedModelId, setSelectedModelId] = useState(() => {
     const matchingModel = FULL_BODY_MODELS.find(
@@ -204,22 +211,49 @@ export function StylistOnboardingStepper({
 
   const skipsSeasonStep = occasionSkipsSeasonStep(occasionId);
   const visibleSteps: WizardStep[] = skipsSeasonStep
-    ? [1, 3, 4]
-    : [1, 2, 3, 4];
+    ? [1, 2, 4, 5]
+    : [1, 3, 2, 4, 5];
   const visibleStepIndex = Math.max(0, visibleSteps.indexOf(step));
 
   const handleStylingGenderChange = (gender: StylistGender) => {
     setStylingGender(gender);
+    if (gender === "male") {
+      setSelectedGarments((current) =>
+        current.filter((selection) => selection !== "dress"),
+      );
+    }
     setSelectedModelId(
       FULL_BODY_MODELS.find((model) => model.gender === gender)?.id ?? "",
     );
   };
 
+  const handleGarmentOption = (
+    option: (typeof STYLIST_GARMENT_OPTIONS)[number],
+  ) => {
+    setSelectedGarments((current) => {
+      if (current.includes(option.id)) {
+        return current.filter((selection) => selection !== option.id);
+      }
+      const withoutConflict =
+        option.id === "dress"
+          ? current.filter(
+              (selection) => selection !== "top" && selection !== "bottom",
+            )
+          : option.id === "top" || option.id === "bottom"
+            ? current.filter((selection) => selection !== "dress")
+            : current;
+      return withoutConflict.length >= 5
+        ? withoutConflict
+        : [...withoutConflict, option.id];
+    });
+  };
+
   const canContinue =
     (step === 1 && Boolean(occasionId && stylingGender)) ||
-    (step === 2 && Boolean(seasonId)) ||
-    (step === 3 && Boolean(budgetId)) ||
-    (step === 4 &&
+    (step === 2 && selectedGarments.length > 0) ||
+    (step === 3 && Boolean(seasonId)) ||
+    (step === 4 && Boolean(budgetId)) ||
+    (step === 5 &&
       (modelMode === "choose-model"
         ? Boolean(selectedModel)
         : sizingPhoto.canUsePhoto));
@@ -234,7 +268,7 @@ export function StylistOnboardingStepper({
   };
 
   const handleNext = () => {
-    if (!canContinue || isSubmitting || step === 4) return;
+    if (!canContinue || isSubmitting || step === 5) return;
     setStep(visibleSteps[visibleStepIndex + 1] as WizardStep);
   };
 
@@ -247,7 +281,13 @@ export function StylistOnboardingStepper({
     const season = seasons.find((option) => option.id === seasonId);
     const budget = BUDGET_OPTIONS.find((option) => option.id === budgetId);
 
-    if (!occasion || (!skipsSeasonStep && !season) || !budget) return;
+    if (
+      !occasion ||
+      !selectedGarments.length ||
+      (!skipsSeasonStep && !season) ||
+      !budget
+    )
+      return;
 
     const temperature =
       typeof weatherContext?.temperature === "number"
@@ -307,6 +347,9 @@ export function StylistOnboardingStepper({
             coveragePreferences: [],
             avoidMaterials: [],
             favoriteBrands: [],
+            garmentPreferences: {
+              selectedSlots: selectedGarments,
+            },
             ...(structuredWeather ? { weather: structuredWeather } : {}),
           },
           requestedOutfits: 10,
@@ -336,7 +379,7 @@ export function StylistOnboardingStepper({
         </div>
         <div className="mt-[0.625vw] h-[0.208vw] overflow-hidden rounded-full bg-[#e8e6ed]">
           <div
-            className="h-full rounded-full bg-[#7258fa] transition-[width] duration-300"
+            className="h-full rounded-full bg-[#2154ef] transition-[width] duration-300"
             style={{
               width: `${((visibleStepIndex + 1) / visibleSteps.length) * 100}%`,
             }}
@@ -346,7 +389,7 @@ export function StylistOnboardingStepper({
 
       <div
         className={`min-h-0 flex-1 px-[0.208vw] ${
-          step === 4 && modelMode === "choose-model"
+          step === 5 && modelMode === "choose-model"
             ? "overflow-hidden py-[1.042vw]"
             : "overflow-y-auto py-[1.667vw]"
         }`}
@@ -379,7 +422,7 @@ export function StylistOnboardingStepper({
                     onClick={() => handleStylingGenderChange(value)}
                     className={`rounded-full px-[1.25vw] py-[0.521vw] text-[0.729vw] font-semibold transition-all ${
                       selected
-                        ? "bg-white text-[#5945cb] shadow-[0_0.156vw_0.521vw_rgba(54,43,85,0.14)] ring-1 ring-[#c8bdff]"
+                        ? "bg-white text-[#1847cc] shadow-[0_0.156vw_0.521vw_rgba(33,84,239,0.12)] ring-1 ring-[#aac0ff]"
                         : "text-[#77737f] hover:text-[#423b4c]"
                     }`}
                   >
@@ -402,8 +445,8 @@ export function StylistOnboardingStepper({
                     onClick={() => setOccasionId(occasion.id)}
                     className={`group relative h-[7.604vw] overflow-hidden rounded-[0.625vw] border text-left transition-all ${
                       selected
-                        ? "border-[#9e8aff] bg-[#efebff] shadow-[0_0.208vw_0.625vw_rgba(77,57,159,0.12)]"
-                        : "border-[#dddbe2] bg-[#f3f2f5] hover:border-[#b8acf9] hover:bg-[#f8f6ff]"
+                        ? "border-[#7da0ff] bg-[#eaf0ff] shadow-[0_0.208vw_0.625vw_rgba(33,84,239,0.12)]"
+                        : "border-[#dddbe2] bg-[#f3f2f5] hover:border-[#aac0ff] hover:bg-[#f6f8ff]"
                     }`}
                   >
                     <span className="absolute inset-x-[0.417vw] top-[0.208vw] h-[5.208vw]">
@@ -425,7 +468,84 @@ export function StylistOnboardingStepper({
           </section>
         )}
 
-        {step === 2 && !skipsSeasonStep && (
+        {step === 2 && (
+          <section aria-labelledby="pieces-heading">
+            <h2
+              id="pieces-heading"
+              className="text-center text-[1.25vw] font-medium leading-[1.875vw] text-text-primary"
+            >
+              What would you like in your outfits?
+            </h2>
+            <p className="mt-[0.313vw] text-center text-[0.625vw] leading-[1.042vw] text-text-muted">
+              Choose up to 5 categories. Dress cannot be combined with Tops or Bottoms.
+            </p>
+            <div className="mx-auto mt-[0.833vw] grid max-w-[33.438vw] grid-cols-4 gap-[0.625vw]">
+              {STYLIST_GARMENT_OPTIONS.filter(
+                (option) => !(option.womenOnly && stylingGender === "male"),
+              ).map((option) => {
+                const selected = selectedGarments.includes(option.id);
+                const replacesConflict =
+                  (option.id === "dress" &&
+                    selectedGarments.some((item) =>
+                      ["top", "bottom"].includes(item),
+                    )) ||
+                  (["top", "bottom"].includes(option.id) &&
+                    selectedGarments.includes("dress"));
+                const limitReached =
+                  !selected && selectedGarments.length >= 5 && !replacesConflict;
+                const disabled = limitReached || option.unavailable;
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    aria-pressed={selected}
+                    disabled={disabled}
+                    onClick={() => handleGarmentOption(option)}
+                    className={`group relative h-[7.604vw] overflow-hidden rounded-[0.625vw] border text-left transition-all ${
+                      disabled
+                        ? "cursor-not-allowed border-[#e5e3e8] bg-[#f5f4f6] opacity-45"
+                        : selected
+                          ? "border-[#7da0ff] bg-[#eaf0ff] shadow-[0_0.208vw_0.625vw_rgba(33,84,239,0.12)]"
+                          : "border-[#dddbe2] bg-[#f3f2f5] hover:border-[#aac0ff] hover:bg-[#f6f8ff]"
+                    }`}
+                  >
+                    <span className="absolute inset-x-[0.417vw] top-[0.208vw] h-[4.688vw]">
+                      <Image
+                        src={garmentOptionAsset(option, stylingGender)}
+                        alt=""
+                        fill
+                        sizes="8vw"
+                        className="object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+                      />
+                    </span>
+                    {selected && (
+                      <span className="absolute right-[0.417vw] top-[0.417vw]">
+                        <OptionCheck selected />
+                      </span>
+                    )}
+                    <span className="absolute bottom-[0.365vw] left-[0.313vw] right-[0.313vw] text-center">
+                      <span className="block text-[0.625vw] font-semibold leading-[0.833vw] text-text-primary">
+                        {option.label}
+                      </span>
+                      <span className="mt-[0.104vw] block truncate text-[0.521vw] leading-[0.729vw] text-text-muted">
+                        {option.unavailable
+                          ? option.unavailableMessage
+                          : limitReached
+                          ? "Maximum 5 selected"
+                          : garmentOptionDescription(option, stylingGender)}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-[0.521vw] text-center text-[0.573vw] text-text-muted">
+              {selectedGarments.length}/5 selected · Tops and Bottoms are separate choices.
+            </p>
+          </section>
+        )}
+
+        {step === 3 && !skipsSeasonStep && (
           <section aria-labelledby="season-heading">
             <h2
               id="season-heading"
@@ -445,8 +565,8 @@ export function StylistOnboardingStepper({
                     onClick={() => setSeasonId(season.id)}
                     className={`relative flex h-[5.208vw] items-center overflow-hidden rounded-[0.417vw] border px-[0.833vw] text-left transition-colors ${
                       selected
-                        ? "border-[#c7bcff] bg-[#efebff]"
-                        : "border-[#d8d8dc] bg-[#eeeef0] hover:border-[#b8acf9]"
+                        ? "border-[#aac0ff] bg-[#eaf0ff]"
+                        : "border-[#d8d8dc] bg-[#eeeef0] hover:border-[#aac0ff]"
                     }`}
                   >
                     <span className="relative z-10 text-[0.833vw] font-medium leading-[1.25vw] text-text-primary">
@@ -474,7 +594,7 @@ export function StylistOnboardingStepper({
           </section>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <section aria-labelledby="budget-heading">
             <h2
               id="budget-heading"
@@ -493,8 +613,8 @@ export function StylistOnboardingStepper({
                     onClick={() => setBudgetId(budget.id)}
                     className={`relative flex h-[5.208vw] items-center overflow-hidden rounded-[0.417vw] border px-[0.833vw] text-left transition-colors ${
                       selected
-                        ? "border-[#c7bcff] bg-[#efebff]"
-                        : "border-[#d8d8dc] bg-[#eeeef0] hover:border-[#b8acf9]"
+                        ? "border-[#aac0ff] bg-[#eaf0ff]"
+                        : "border-[#d8d8dc] bg-[#eeeef0] hover:border-[#aac0ff]"
                     }`}
                   >
                     <span className="relative z-10 flex min-w-0 flex-col pr-[2.604vw]">
@@ -525,7 +645,7 @@ export function StylistOnboardingStepper({
           </section>
         )}
 
-        {step === 4 && (
+        {step === 5 && (
           <section
             aria-labelledby="model-heading"
             className="flex h-full min-h-0 flex-col"
@@ -600,8 +720,8 @@ export function StylistOnboardingStepper({
                         onClick={() => setSelectedModelId(model.id)}
                         className={`relative aspect-[4/5] overflow-hidden rounded-[0.417vw] border-[0.104vw] bg-white transition-colors ${
                           selected
-                            ? "border-[#7258fa]"
-                            : "border-transparent hover:border-[#b8acf9]"
+                            ? "border-[#2154ef]"
+                            : "border-transparent hover:border-[#aac0ff]"
                         }`}
                       >
                         <Image
@@ -676,13 +796,13 @@ export function StylistOnboardingStepper({
           Previous
         </Button>
 
-        {step < 4 ? (
+        {step < 5 ? (
           <Button
             type="button"
             size="default"
             disabled={!canContinue || isSubmitting}
             onClick={handleNext}
-            className="min-w-[6.25vw] bg-[#7258fa] hover:bg-[#6035f2]"
+            className="min-w-[6.25vw] bg-[#2154ef] hover:bg-[#1746d3]"
           >
             Next
             <ArrowRightIcon
@@ -697,7 +817,7 @@ export function StylistOnboardingStepper({
             size="default"
             disabled={!canContinue || isSubmitting || isPreparingModel}
             onClick={handleGenerate}
-            className="min-w-[9.375vw] bg-[#7258fa] hover:bg-[#6035f2]"
+            className="min-w-[9.375vw] bg-[#2154ef] hover:bg-[#1746d3]"
           >
             <GenerateIcon
               size={16}

@@ -27,63 +27,104 @@
 
 .header {
   position: sticky;
-  top: 0;
-  z-index: 80;
+  top: 14px;
+  z-index: 40;
   display: grid;
-  grid-template-columns: 184px minmax(0, 1fr) auto;
+  grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr);
   align-items: center;
-  height: 72px;
-  padding: 0 clamp(24px, 4.7vw, 76px);
-  border-bottom: 1px solid var(--rule);
-  background: rgba(250, 248, 242, 0.96);
-  backdrop-filter: blur(18px);
+  width: calc(100% - clamp(32px, 7.2vw, 104px));
+  min-height: 64px;
+  margin: 14px auto 0;
+  padding: 7px 9px 7px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow:
+    0 14px 38px rgba(21, 33, 66, 0.1),
+    inset 0 0 0 1px rgba(49, 85, 244, 0.045);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
+  backdrop-filter: blur(22px) saturate(1.2);
 }
 
 .logoLink {
   display: inline-flex;
   width: fit-content;
   align-items: center;
+  gap: 9px;
+  color: var(--ink);
+  text-decoration: none;
 }
 .logoLink img {
-  width: 64px;
-  height: 56px;
-  object-fit: contain;
-  object-position: left center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.logoLink span {
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
 }
 .desktopNav {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(18px, 2.4vw, 38px);
+  gap: clamp(18px, 2.4vw, 42px);
 }
+.desktopNav a,
 .desktopNav button,
-.signIn,
 .footer button {
+  appearance: none;
   border: 0;
   background: transparent;
   color: inherit;
   font: inherit;
   cursor: pointer;
 }
-.desktopNav button,
-.signIn {
+.desktopNav a,
+.desktopNav button {
   padding: 10px 0;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 650;
   text-decoration: none;
 }
-.desktopNav button:hover,
-.signIn:hover {
+.desktopNav a[aria-current="page"] {
+  color: var(--blue);
+}
+.desktopNav a:hover,
+.desktopNav button:hover {
   color: var(--blue);
 }
 .headerActions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 18px;
+  gap: 17px;
 }
 .headerCta,
-.mobileCta,
+.mobileCta {
+  display: inline-flex;
+  min-width: 142px;
+  min-height: 41px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 20px;
+  border: 1px solid var(--blue);
+  border-radius: 999px;
+  background: var(--blue);
+  box-shadow: 0 7px 18px rgba(49, 85, 244, 0.22);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    background 180ms ease;
+}
 .primaryButton,
 .dialog form > button,
 .cartPanel button {
@@ -106,6 +147,11 @@
     background 180ms ease;
 }
 .headerCta:hover,
+.mobileCta:hover {
+  border-color: #243fd0;
+  background: #243fd0;
+  transform: translateY(-2px);
+}
 .primaryButton:hover,
 .dialog form > button:hover {
   background: var(--blue);
@@ -2228,9 +2274,9 @@
 }
 
 .networkFooter {
-  padding: 82px 0 0;
+  padding: 128px 0 0;
   overflow: hidden;
-  background: #ffd9ad;
+  background: #fbfdff;
   color: var(--ink);
 }
 .footerFrame {
@@ -2795,16 +2841,20 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
-.pdpFeatureNav > a {
+.pdpFeatureNav > .pdpWaitlistCta {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   padding-bottom: 3px;
+  border: 0;
   border-bottom: 1px solid currentColor;
+  background: transparent;
   color: var(--ink);
+  font: inherit;
   font-size: 11px;
   font-weight: 800;
   text-decoration: none;
+  cursor: pointer;
 }
 .pdpFeatureHeading {
   padding: clamp(52px, 6vw, 84px) 24px 42px;
@@ -2957,17 +3007,21 @@
 .pdpStoryCopy li svg {
   color: var(--teal);
 }
-.pdpStoryCopy a {
+.pdpStoryCopy .pdpWaitlistCta {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   margin-top: 26px;
   padding-bottom: 4px;
+  border: 0;
   border-bottom: 1px solid currentColor;
+  background: transparent;
   color: #fff;
+  font: inherit;
   font-size: 11px;
   font-weight: 800;
   text-decoration: none;
+  cursor: pointer;
 }
 .pdpStoryTileActive {
   box-shadow:
@@ -3310,9 +3364,9 @@
 }
 
 @media (min-width: 851px) {
-  .desktopNav button,
-  .signIn {
-    font-size: 14px;
+  .desktopNav a,
+  .desktopNav button {
+    font-size: 12px;
   }
   .headerCta {
     min-height: 42px;
@@ -3595,9 +3649,9 @@
   letter-spacing: 0.065em;
   text-transform: uppercase;
 }
-.dialog input {
+.dialog input:not([type="radio"]),
+.dialog textarea {
   width: 100%;
-  height: 54px;
   padding: 0 16px;
   border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 7px;
@@ -3610,12 +3664,184 @@
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
-.dialog input::placeholder {
+.dialog input:not([type="radio"]) {
+  height: 54px;
+}
+.dialog textarea {
+  min-height: 118px;
+  resize: vertical;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  line-height: 1.55;
+}
+.dialog input::placeholder,
+.dialog textarea::placeholder {
   color: rgba(255, 255, 255, 0.46);
 }
-.dialog input:focus {
+.dialog input:focus,
+.dialog textarea:focus {
   border-color: rgba(255, 255, 255, 0.75);
   outline: 2px solid rgba(255, 255, 255, 0.12);
+}
+.dialogFieldLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.dialogRequired {
+  color: #ffca8b;
+}
+.dialogChoiceGroup {
+  display: grid;
+  min-width: 0;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.dialogChoiceGroup legend {
+  margin-bottom: 9px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+}
+.dialogChoiceRow,
+.dialogChoiceStack {
+  display: grid;
+  gap: 10px;
+}
+.dialogChoiceRow {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.dialogChoiceStack {
+  grid-template-columns: 1fr;
+}
+.dialog .dialogChoice {
+  position: relative;
+  display: flex;
+  min-height: 50px;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(3, 8, 36, 0.08);
+  cursor: pointer;
+  letter-spacing: 0;
+  text-transform: none;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+.dialog .dialogChoice:hover {
+  border-color: rgba(255, 255, 255, 0.68);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 30px rgba(3, 8, 36, 0.18);
+  transform: translateY(-1px);
+}
+.dialogChoice input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.dialogChoiceIndicator {
+  display: grid;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: transparent;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease;
+}
+.dialogChoiceIndicator::after {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
+  transform: scale(0);
+  transition: transform 160ms ease;
+}
+.dialogChoice strong {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.dialogIntegrationMark {
+  display: grid;
+  width: 23px;
+  height: 23px;
+  flex: 0 0 23px;
+  place-items: center;
+  color: #fff;
+}
+.dialogIntegrationMark img {
+  display: block;
+  width: 23px;
+  height: 23px;
+  object-fit: contain;
+}
+.dialogIntegrationReact {
+  color: #61dafb;
+}
+.dialogIntegrationApi {
+  color: #ffca8b;
+}
+.dialogIntegrationWidget {
+  color: #c2d0ff;
+}
+.dialogChoice input:checked + .dialogChoiceIndicator {
+  border-color: #ffca8b;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffca8b;
+}
+.dialogChoice input:checked + .dialogChoiceIndicator::after {
+  transform: scale(1);
+}
+.dialogChoice:has(input:checked) {
+  border-color: rgba(255, 202, 139, 0.88);
+  background: rgba(255, 255, 255, 0.17);
+  box-shadow: 0 12px 32px rgba(3, 8, 36, 0.2);
+}
+.dialogChoice:focus-within {
+  border-color: rgba(255, 255, 255, 0.8);
+  outline: 2px solid rgba(255, 255, 255, 0.14);
+}
+.dialogDataNote,
+.dialogPrivacyNote {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 12px;
+  line-height: 1.55;
+  text-transform: none;
+}
+.dialogPrivacyNote {
+  text-align: center;
+}
+@keyframes dialogSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.dialogSpinner {
+  animation: dialogSpin 900ms linear infinite;
 }
 .dialog form > button {
   min-height: 50px;
@@ -3734,14 +3960,16 @@
 
 @media (max-width: 850px) {
   .desktopNav,
-  .signIn,
   .headerCta {
     display: none;
   }
   .header {
+    top: 10px;
     grid-template-columns: 1fr auto;
-    height: 66px;
-    padding: 0 20px;
+    width: calc(100% - 24px);
+    min-height: 62px;
+    margin-top: 10px;
+    padding: 7px 8px 7px 12px;
   }
   .headerActions {
     grid-column: 2;
@@ -3759,14 +3987,19 @@
   }
   .mobileNav {
     position: absolute;
-    top: 66px;
+    top: calc(100% + 10px);
     right: 0;
     left: 0;
     display: grid;
-    padding: 10px 20px 22px;
-    border-bottom: 1px solid var(--rule);
-    background: var(--paper-light);
-    box-shadow: 0 22px 50px rgba(10, 27, 57, 0.12);
+    gap: 0;
+    padding: 14px 20px 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.92);
+    border-radius: 26px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 24px 60px rgba(20, 34, 70, 0.15);
+    -webkit-backdrop-filter: blur(22px);
+    backdrop-filter: blur(22px);
   }
   .mobileNav a,
   .mobileNav button:not(.mobileCta) {
@@ -4610,7 +4843,7 @@
     font-size: 46px;
   }
   .networkFooter {
-    padding-top: 70px;
+    padding-top: 96px;
   }
   .footerMain {
     padding: 72px 22px 22px;
@@ -4650,6 +4883,9 @@
   .dialog {
     padding: 56px 18px 28px;
   }
+  .dialogChoiceRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .dialogClose {
     top: 7px;
     right: 8px;
@@ -4679,7 +4915,7 @@
     padding: 0 0 10px;
   }
   .featureDarkButton,
-  .pdpFeatureNav > a {
+  .pdpFeatureNav > .pdpWaitlistCta {
     justify-self: end;
   }
   .dashboardFeatureIntro {

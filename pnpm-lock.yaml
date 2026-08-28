@@ -15,8 +15,8 @@ importers:
         specifier: ^2.1.10
         version: 2.1.10(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@primestyleai/tryon':
-        specifier: 5.10.241
-        version: 5.10.241(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 5.10.243
+        version: 5.10.243(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@react-oauth/google':
         specifier: ^0.13.4
         version: 0.13.5(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -1724,8 +1724,8 @@ packages:
       react: '>= 16.8'
       react-dom: '>= 16.8'
 
-  '@primestyleai/tryon@5.10.241':
-    resolution: {integrity: sha512-FWW0mgG8cVbWD57IdGqyP46twqEktQbauWX9o4aMWuLlFH9IwuqtUwPeBrtqAUiJlt8wu0bHeokxvVU5LNe02w==}
+  '@primestyleai/tryon@5.10.243':
+    resolution: {integrity: sha512-b2yNzAl57s7Jtg35j7XgSXHlRtjQBZ0M93GQaJPkkoE8XXkumGFkxlF3OcovCitTdUPp/cT+Edch+pTcROv6DQ==}
     peerDependencies:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
@@ -4551,6 +4551,7 @@ packages:
   eslint@9.39.5:
     resolution: {integrity: sha512-DgZS62aPLXKlnxILS/AYCoRvHaZeXceIzlXPkkGGzJWSow1aEk0lbTlxUSlyjC8jcaKxAdOnTDz+o1JFSBsyjw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -8990,7 +8991,7 @@ snapshots:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
-  '@primestyleai/tryon@5.10.241(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@primestyleai/tryon@5.10.243(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     optionalDependencies:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)

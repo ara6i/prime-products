@@ -125,16 +125,16 @@ export function AiStylistBatchProgressPanel({
             tone: "border-amber-200 bg-amber-50 text-amber-700",
           },
           {
-            label: "Gemini images fixed",
+            label: "Zara-ready images",
             value: number(gemini?.succeeded ?? 0),
-            note: `${number(gemini?.reused ?? 0)} reused · ${number(gemini?.failed ?? 0)} missing`,
+            note: `${number(gemini?.uniqueSources ?? 0)} unique · ${number(gemini?.failed ?? 0)} unresolved`,
             icon: ImageIcon,
             tone: "border-blue-200 bg-blue-50 text-blue-700",
           },
           {
-            label: "Qualified garments saved",
+            label: "Outfit placements",
             value: number(luna?.qualifiedProductsSaved ?? 0),
-            note: `across ${number(luna?.scenariosWithQualifiedProducts ?? 0)} scenarios`,
+            note: `${number(luna?.uniqueProductsClaimed ?? 0)} unique products · ${number(scenariosComplete * 10)} outfits`,
             icon: DatabaseZap,
             tone: "border-violet-200 bg-violet-50 text-violet-700",
           },
@@ -160,10 +160,10 @@ export function AiStylistBatchProgressPanel({
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.12em] text-blue-700">
-                Gemini image refinement
+                Transparent image pipeline
               </p>
               <h3 className="mt-2 text-2xl font-semibold text-slate-950">
-                {gemini?.status === "partial" ? "Finished with one missing image" : gemini?.status ?? "Loading"}
+                {gemini?.status === "partial" ? "Finished with unresolved images" : gemini?.status ?? "Loading"}
               </h3>
             </div>
             <div className="rounded-2xl bg-blue-600 p-3 text-white">
@@ -180,7 +180,7 @@ export function AiStylistBatchProgressPanel({
             </div>
             <ProgressBar value={geminiReadyPercent} tone="blue" />
             <p className="mt-2 text-sm text-slate-500">
-              {geminiReadyPercent.toFixed(1)}% ready · {number(gemini?.succeeded ?? 0)} generated · {number(gemini?.reused ?? 0)} reused · {number(gemini?.failed ?? 0)} missing
+              {geminiReadyPercent.toFixed(1)}% ready · {number(gemini?.succeeded ?? 0)} standardized · {number(gemini?.failed ?? 0)} unresolved
             </p>
           </div>
 
@@ -200,7 +200,7 @@ export function AiStylistBatchProgressPanel({
 
           {gemini?.failureMessage && (
             <p className="mt-4 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800 ring-1 ring-amber-200">
-              One source needs retry: {gemini.failureMessage}
+              One source still needs work: {gemini.failureMessage}
             </p>
           )}
         </article>
@@ -209,11 +209,11 @@ export function AiStylistBatchProgressPanel({
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.12em] text-violet-700">
-                Luna outfit drafts
+                Saved outfit drafts
               </p>
               <h3 className="mt-2 text-2xl font-semibold text-slate-950">
                 {luna?.qualifiedProductsSaved
-                  ? "Saving Luna drafts immediately"
+                  ? "Current exact-10 drafts"
                   : luna?.status === "building"
                     ? "Preparing the no-repeat gate"
                     : luna?.status ?? "Loading"}
@@ -253,7 +253,7 @@ export function AiStylistBatchProgressPanel({
             </div>
             <div className="rounded-2xl border border-violet-100 bg-white p-3">
               <DatabaseZap className="h-4 w-4 text-violet-600" />
-              <p className="mt-2 text-xs font-medium text-slate-500">Qualified saved</p>
+              <p className="mt-2 text-xs font-medium text-slate-500">Placements linked</p>
               <p className="mt-1 text-lg font-semibold text-slate-950">{number(luna?.qualifiedProductsSaved ?? 0)}</p>
             </div>
             <div className="rounded-2xl border border-violet-100 bg-white p-3">

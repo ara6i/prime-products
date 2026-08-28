@@ -47,10 +47,10 @@ export function EmailOtpConfirmModal({ open, onOpenChange, email, onVerified }: 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-[80] bg-text-primary/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-[180] bg-text-primary/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
         <DialogPrimitive.Content
           className={cn(
-            "fixed z-[90] flex flex-col overflow-hidden overscroll-contain border border-brand-blue/10 bg-white shadow-[0_32px_80px_rgba(33,84,239,0.25)]",
+            "fixed z-[190] flex flex-col overflow-hidden overscroll-contain border border-brand-blue/10 bg-white shadow-[0_32px_80px_rgba(33,84,239,0.25)]",
             "inset-x-0 bottom-0 max-h-[86dvh] w-full rounded-t-[24px] rounded-b-none",
             "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom",
             "md:inset-x-auto md:bottom-auto md:left-1/2 md:top-1/2 md:max-h-[90vh] md:w-[94vw] md:max-w-[500px] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl",

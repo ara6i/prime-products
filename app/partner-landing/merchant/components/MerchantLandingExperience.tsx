@@ -4,9 +4,16 @@ import { useMerchantLandingPage } from "../hooks/useMerchantLandingPage";
 import { MerchantHeader } from "./MerchantHeader";
 import { MerchantHero } from "./MerchantHero";
 import { MerchantInterestDialog } from "./MerchantInterestDialog";
+import { MerchantClosingSection } from "./MerchantClosingSection";
 import { MerchantLandingFooter } from "./MerchantLandingFooter";
 import { MerchantNetworkJourney } from "./MerchantNetworkJourney";
-import { MerchantTryOnSizingSection } from "./MerchantTryOnSizingSection";
+import { MerchantOnePhotoSizingSection } from "./MerchantOnePhotoSizingSection";
+import { MerchantOutfitBuilderSection } from "./MerchantOutfitBuilderSection";
+import { MerchantPdpSdkSection } from "./MerchantPdpSdkSection";
+import { MerchantStorefrontSection } from "./MerchantStorefrontSection";
+import { MerchantStoreExampleSection } from "./MerchantStoreExampleSection";
+import { MerchantSupplierSections } from "./MerchantSupplierSections";
+import { MerchantTogetherSection } from "./MerchantTogetherSection";
 import styles from "./merchantLanding.module.css";
 
 export function MerchantLandingExperience() {
@@ -21,9 +28,16 @@ export function MerchantLandingExperience() {
         onSectionSelect={navigation.scrollToSection}
       />
       <main>
+        <MerchantTogetherSection onPrimaryAction={interest.open} />
         <MerchantHero viewModel={viewModel} />
-        <MerchantTryOnSizingSection onPrimaryAction={interest.open} />
+        <MerchantOnePhotoSizingSection />
+        <MerchantOutfitBuilderSection />
+        <MerchantPdpSdkSection />
+        <MerchantStorefrontSection onPrimaryAction={interest.open} />
+        <MerchantStoreExampleSection />
         <MerchantNetworkJourney onPrimaryAction={interest.open} />
+        <MerchantSupplierSections onPrimaryAction={interest.open} />
+        <MerchantClosingSection onPrimaryAction={interest.open} />
       </main>
       <MerchantLandingFooter
         onCtaClick={interest.open}
@@ -32,10 +46,7 @@ export function MerchantLandingExperience() {
       <MerchantInterestDialog
         viewModel={viewModel}
         isOpen={interest.isOpen}
-        message={interest.message}
-        submissionState={interest.submissionState}
         onClose={interest.close}
-        onSubmit={interest.submit}
       />
     </div>
   );

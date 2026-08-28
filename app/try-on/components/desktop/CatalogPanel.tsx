@@ -51,6 +51,7 @@ interface CatalogPanelProps {
   productActionLabel?: string;
   activeProductActionLabel?: string;
   productImageFit?: "cover" | "contain";
+  emptyCatalogMessage?: string;
 }
 
 export function CatalogPanel({
@@ -68,6 +69,7 @@ export function CatalogPanel({
   productActionLabel,
   activeProductActionLabel,
   productImageFit,
+  emptyCatalogMessage,
 }: CatalogPanelProps) {
   const [isExtraTabActive, setIsExtraTabActive] = useState(!!extraTab?.defaultActive);
   const {
@@ -77,6 +79,7 @@ export function CatalogPanel({
     setSearchQuery,
     products,
     totalProducts,
+    availabilityContext,
     savedOutfits,
     closetItems,
     isFilterOpen,
@@ -279,7 +282,9 @@ export function CatalogPanel({
                 </p>
               ) : displayedProducts.length === 0 ? (
                 <p className="col-span-3 py-[2.5vw] text-center text-[0.729vw] text-text-caption">
-                  No products found. Try a different search or filter.
+                  {emptyCatalogMessage ??
+                    availabilityContext?.customerMessage ??
+                    "No products found. Try a different search or filter."}
                 </p>
               ) : (
                 displayedProducts.map((product) => (

@@ -26,6 +26,7 @@ import type {
   OutfitProduct,
 } from "@/app/try-on/types";
 import type { FilterFacetCounts, FilterState } from "@/app/shared/types";
+import type { CatalogAvailabilityContext } from "@/app/ai-stylist/types";
 
 const PRODUCTS_PER_PAGE = 20;
 
@@ -49,6 +50,8 @@ export function useCatalogPanel({ tryOnProductIds }: UseCatalogPanelParams) {
   const [isOutfitModalOpen, setIsOutfitModalOpen] = useState(false);
   const [filterState, setFilterState] = useState<FilterState>(DEFAULT_FILTER_STATE);
   const [filterFacets, setFilterFacets] = useState<FilterFacetCounts>();
+  const [availabilityContext, setAvailabilityContext] =
+    useState<CatalogAvailabilityContext>();
   const [appliedFilters, setAppliedFilters] = useState<FilterState | null>(null);
   const [viewingOutfit, setViewingOutfit] = useState<SavedOutfit | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -105,6 +108,7 @@ export function useCatalogPanel({ tryOnProductIds }: UseCatalogPanelParams) {
         limit: PRODUCTS_PER_PAGE,
       });
       const mapped = mapProductsToFrontend(response.items);
+      setAvailabilityContext(response.availabilityContext);
       if (append) {
         setProducts((prev) => {
           const existing = new Map(prev.map((p) => [p.id, p]));
@@ -358,6 +362,7 @@ export function useCatalogPanel({ tryOnProductIds }: UseCatalogPanelParams) {
     setSearchQuery,
     products,
     totalProducts,
+    availabilityContext,
     savedOutfits,
     closetItems,
     closetProducts,

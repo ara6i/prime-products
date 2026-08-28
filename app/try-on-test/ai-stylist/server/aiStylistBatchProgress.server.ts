@@ -133,6 +133,9 @@ interface CodexFinalSummary {
   scenarioUniverse?: number;
   scenariosComplete?: number;
   scenariosRemaining?: number;
+  savedOutfits?: number;
+  itemReferences?: number;
+  uniqueProductsUsed?: number;
   uniqueImageKeys?: number;
   refinedUniqueImageKeys?: number;
   unrefinedUniqueImageKeys?: number;
@@ -423,7 +426,12 @@ export async function getAiStylistBatchProgress(): Promise<AiStylistBatchProgres
       scenariosComplete,
       scenariosRemaining,
       scenariosCommitted: scenariosComplete,
-      message: `${scenariosComplete} scenarios are saved with exactly 10 outfits each. ${unrefinedUniqueImageKeys} unique product images still need a valid refinement; drafts remain intact.`,
+      uniqueProductsClaimed:
+        codexFinalSummary.uniqueProductsUsed ?? base.luna.uniqueProductsClaimed,
+      qualifiedProductsSaved:
+        codexFinalSummary.itemReferences ?? base.luna.qualifiedProductsSaved,
+      scenariosWithQualifiedProducts: scenariosComplete,
+      message: `${scenariosComplete} scenarios are saved with exactly 10 outfits each. ${codexFinalSummary.savedOutfits ?? scenariosComplete * 10} outfits and ${codexFinalSummary.itemReferences ?? 0} product placements are linked; ${unrefinedUniqueImageKeys} images remain unresolved.`,
     },
   };
 }

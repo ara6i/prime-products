@@ -1,4 +1,5 @@
 import type { FilterFacetCounts, FilterState } from "@/app/shared/types";
+import type { CatalogAvailabilityContext } from "@/app/ai-stylist/types";
 
 export interface ProductApiItem {
   product_id: string;
@@ -34,6 +35,7 @@ interface ProductsResponse {
   nextPage?: number | null;
   totalIsExact?: boolean;
   facets?: FilterFacetCounts;
+  availabilityContext?: CatalogAvailabilityContext;
 }
 
 interface FetchProductsParams {

@@ -106,7 +106,7 @@ export function SupplierMerchantMarketplace({ onPrimaryAction }: SupplierMerchan
             </p>
             <div className={styles.supplierMarketplaceActions}>
               <button type="button" onClick={onPrimaryAction}>
-                Join the supplier network <ArrowRight size={16} weight="bold" />
+                Join the waitlist <ArrowRight size={16} weight="bold" />
               </button>
               <button type="button" onClick={showSellingModes}>See the three ways</button>
             </div>

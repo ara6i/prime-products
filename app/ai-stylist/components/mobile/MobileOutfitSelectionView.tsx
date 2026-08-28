@@ -96,6 +96,25 @@ export function MobileOutfitSelectionView({
     return Array.from(products.values());
   }, [result.outfits]);
 
+  if (result.outfits.length === 0 && result.availabilityContext?.customerMessage) {
+    return (
+      <div className="flex min-h-[420px] flex-col items-center justify-center gap-4 rounded-3xl border border-[#dfe3eb] bg-white px-6 text-center">
+        <h2 className="text-lg font-semibold text-[#20242c]">
+          Delivery is not available yet
+        </h2>
+        <p className="max-w-sm text-sm leading-6 text-[#667085]">
+          {result.availabilityContext.customerMessage}
+        </p>
+        <a
+          href="/dashboard/profile"
+          className="rounded-full bg-[#2457eb] px-5 py-3 text-sm font-semibold text-white"
+        >
+          Update delivery country
+        </a>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-3 pb-4">
       <MobileStylistStage onReset={onReset} onEditModel={onEditModel} />
@@ -363,15 +382,22 @@ export function MobileOutfitSelectionView({
                           ? `Your size: ${item.recommendedSize}`
                           : "Size recommendation unavailable"}
                     </p>
-                    <a
-                      href={`/shop/ai-stylist/product/${encodeURIComponent(productId(item))}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-[#2154ef]"
-                    >
-                      Details
-                      <ExternalLink className="size-3" aria-hidden="true" />
-                    </a>
+                    {item.purchaseDisabled ? (
+                      <p className="mt-2 text-[11px] leading-4 text-[#8a5a12]">
+                        {item.availabilityMessage ??
+                          "This item is no longer available for purchase."}
+                      </p>
+                    ) : (
+                      <a
+                        href={`/shop/ai-stylist/product/${encodeURIComponent(productId(item))}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-[#2154ef]"
+                      >
+                        Details
+                        <ExternalLink className="size-3" aria-hidden="true" />
+                      </a>
+                    )}
                   </div>
                 </article>
               ))}

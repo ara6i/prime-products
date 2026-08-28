@@ -1,0 +1,437 @@
+.supplierStory {
+  --supplier-blue: #1379ed;
+  --supplier-ink: #12131a;
+  --supplier-muted: #686b76;
+  width: 100%;
+  background: #fff;
+  color: var(--supplier-ink);
+  font-family: var(--font-manrope), Manrope, Arial, sans-serif;
+}
+
+.catalogSection,
+.distributionSection {
+  position: relative;
+  box-sizing: border-box;
+  min-height: max(100svh, 56.25vw);
+  isolation: isolate;
+}
+
+.catalogSection {
+  border-top: 1px solid rgba(18, 19, 26, 0.07);
+  border-bottom: 1px solid rgba(18, 19, 26, 0.07);
+  background: #f8f8f7;
+}
+
+.catalogCopy,
+.distributionCopy {
+  position: absolute;
+  top: clamp(56px, 5.2vw, 86px);
+  left: 50%;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  width: min(920px, calc(100% - 40px));
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.catalogEyebrow {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 0 13px;
+  border: 1px solid rgba(47, 114, 246, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #51596a;
+  box-shadow: 0 8px 24px rgba(67, 79, 118, 0.06);
+  font-size: 10px;
+  font-weight: 780;
+}
+
+.catalogEyebrow svg {
+  color: #68ba58;
+}
+
+.catalogCopy h2,
+.distributionCopy h2 {
+  margin: 16px 0 0;
+  color: var(--supplier-ink);
+  font-size: clamp(42px, 4.4vw, 66px);
+  font-weight: 670;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.catalogCopy h2 {
+  max-width: 17ch;
+  margin-top: 0;
+  font-size: clamp(54px, 5vw, 70px);
+  font-weight: 720;
+  letter-spacing: -0.065em;
+  line-height: 0.94;
+}
+
+.catalogCopy h2 span {
+  display: block;
+}
+
+.catalogCopy h2 span,
+.distributionCopy h2 span {
+  color: var(--supplier-blue);
+}
+
+.catalogLead,
+.distributionLead {
+  max-width: 64ch;
+  margin: 14px 0 0;
+  color: var(--supplier-muted);
+  font-size: clamp(12px, 1.08vw, 15px);
+  line-height: 1.65;
+}
+
+.catalogLead {
+  max-width: 58ch;
+  margin-top: 18px;
+  font-size: clamp(14px, 1.15vw, 16px);
+  font-weight: 520;
+  line-height: 1.6;
+}
+
+.catalogCta,
+.distributionCta {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 18px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 820;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.catalogCta {
+  min-height: 52px;
+  margin-top: 20px;
+  padding: 0 25px;
+  background: #17181e;
+  box-shadow: 0 13px 30px rgba(18, 19, 26, 0.18);
+  color: #fff;
+  font-size: 12px;
+}
+
+.catalogMotion,
+.distributionVisual {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: max(100svh, 56.25vw);
+  margin: 0;
+  pointer-events: none;
+}
+
+.distributionVisual img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.catalogMotion {
+  overflow: hidden;
+  background: #fff;
+}
+
+.catalogMotionLine {
+  position: absolute;
+  bottom: 3%;
+  left: 50%;
+  z-index: 6;
+  display: block;
+  width: clamp(32px, 3vw, 44px);
+  height: 50%;
+  object-fit: fill;
+  transform: translateX(-50%);
+}
+
+.catalogStream {
+  position: absolute;
+  right: 0;
+  bottom: 3%;
+  left: 0;
+  height: 50%;
+  min-height: 360px;
+  overflow: hidden;
+}
+
+.catalogStreamMuted {
+  z-index: 2;
+  clip-path: inset(0 50% 0 0);
+}
+
+.catalogStreamColor {
+  z-index: 3;
+  clip-path: inset(0 0 0 50%);
+}
+
+.catalogMover {
+  --catalog-duration: 14.4s;
+  --catalog-start-x: -2vw;
+  --catalog-end-x: 102vw;
+  position: absolute;
+  top: var(--catalog-lane);
+  left: 0;
+  width: clamp(168px, 14vw, 220px);
+  aspect-ratio: 2000 / 1176;
+  opacity: 0;
+  transform: translate3d(calc(var(--catalog-start-x) - 50%), 0, 0);
+  animation: catalog-flow var(--catalog-duration) linear infinite;
+  animation-delay: var(--catalog-delay);
+  will-change: transform, opacity;
+}
+
+.catalogStreamMuted .catalogMover {
+  filter: none;
+}
+
+.catalogStreamColor .catalogMover {
+  filter: none;
+}
+
+.catalogProductCard {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: clamp(10px, 0.8vw, 14px);
+  background: transparent;
+  box-shadow: none;
+  transform-origin: center;
+  animation: catalog-card-curve var(--catalog-duration) ease-in-out infinite;
+  animation-delay: var(--catalog-delay);
+  will-change: transform;
+}
+
+.catalogProductCard img {
+  object-fit: contain;
+}
+
+@keyframes catalog-flow {
+  0% {
+    opacity: 0;
+    transform: translate3d(calc(var(--catalog-start-x) - 50%), 0, 0);
+  }
+
+  4% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--catalog-end-x) - 50%), 0, 0);
+  }
+}
+
+@keyframes catalog-card-curve {
+  0% {
+    transform: translate3d(0, var(--catalog-edge-y), 0)
+      rotate(var(--catalog-start-roll));
+  }
+
+  50% {
+    transform: translate3d(0, var(--catalog-center-y), 0) rotate(0deg);
+  }
+
+  100% {
+    transform: translate3d(0, var(--catalog-edge-y), 0)
+      rotate(var(--catalog-end-roll));
+  }
+}
+
+.distributionSection {
+  background: #fbfdff;
+}
+
+.distributionCopy {
+  top: clamp(72px, 6.5vw, 110px);
+  width: min(1080px, calc(100% - 48px));
+}
+
+.distributionCopy h2 {
+  max-width: 17ch;
+  margin-top: 0;
+  font-size: clamp(64px, 6vw, 88px);
+  font-weight: 760;
+  letter-spacing: -0.07em;
+  line-height: 0.9;
+}
+
+.distributionCopy h2 span {
+  display: block;
+}
+
+.distributionLead {
+  max-width: 58ch;
+  margin-top: 22px;
+  font-size: clamp(15px, 1.35vw, 18px);
+  font-weight: 520;
+  line-height: 1.55;
+}
+
+.distributionCta {
+  min-height: 56px;
+  margin-top: 24px;
+  padding: 0 28px;
+  background: var(--supplier-blue);
+  box-shadow: 0 13px 30px rgba(19, 121, 237, 0.22);
+  color: #fff;
+  font-size: 13px;
+}
+
+.catalogCta:hover,
+.distributionCta:hover {
+  box-shadow: 0 17px 36px rgba(19, 121, 237, 0.25);
+  transform: translateY(-2px);
+}
+
+.catalogCta:focus-visible,
+.distributionCta:focus-visible {
+  outline: 3px solid rgba(19, 121, 237, 0.35);
+  outline-offset: 4px;
+}
+
+@media (max-width: 760px) {
+  .catalogSection,
+  .distributionSection {
+    display: grid;
+    grid-template-rows: auto auto;
+    min-height: 0;
+    padding-bottom: 36px;
+  }
+
+  .distributionSection {
+    overflow: hidden;
+  }
+
+  .catalogCopy,
+  .distributionCopy {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: min(100% - 28px, 560px);
+    margin-inline: auto;
+    padding-top: 54px;
+    transform: none;
+  }
+
+  .catalogCopy h2,
+  .distributionCopy h2 {
+    max-width: 12ch;
+    font-size: clamp(40px, 11.8vw, 58px);
+  }
+
+  .catalogCopy h2 {
+    max-width: 11ch;
+    font-size: clamp(42px, 12vw, 54px);
+  }
+
+  .catalogLead,
+  .distributionLead {
+    max-width: 38ch;
+    font-size: 12px;
+  }
+
+  .catalogLead {
+    max-width: 32ch;
+    margin-top: 16px;
+    font-size: 14px;
+  }
+
+  .catalogCta {
+    min-height: 48px;
+    margin-top: 18px;
+    padding-inline: 22px;
+    font-size: 11px;
+  }
+
+  .distributionCopy h2 {
+    max-width: 11ch;
+    font-size: clamp(48px, 14vw, 64px);
+  }
+
+  .distributionLead {
+    max-width: 32ch;
+    margin-top: 18px;
+    font-size: 15px;
+  }
+
+  .distributionCta {
+    min-height: 52px;
+    margin-top: 20px;
+    padding-inline: 24px;
+    font-size: 12px;
+  }
+
+  .catalogMotion,
+  .distributionVisual {
+    min-height: 0;
+    margin-top: -30vw;
+  }
+
+  .distributionVisual {
+    width: 148%;
+    margin-top: -33vw;
+    margin-left: -24%;
+  }
+
+  .catalogMotion {
+    min-height: 115vw;
+  }
+
+  .catalogStream {
+    bottom: 4%;
+    height: 58%;
+    min-height: 0;
+  }
+
+  .catalogMotionLine {
+    bottom: 4%;
+    height: 58%;
+  }
+
+  .catalogMover {
+    --catalog-start-x: -35vw;
+    --catalog-end-x: 135vw;
+    width: clamp(104px, 29vw, 128px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalogCta,
+  .distributionCta {
+    transition: none;
+  }
+
+  .catalogMover {
+    animation: none;
+  }
+
+  .catalogMover {
+    display: none;
+  }
+}

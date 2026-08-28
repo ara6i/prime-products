@@ -1,0 +1,338 @@
+.storefrontSection {
+  padding: 0;
+  border-bottom: 1px solid rgba(10, 27, 57, 0.12);
+  background: #f8f9ff;
+}
+
+.storefrontExampleFlash {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  min-height: 72px;
+  align-items: center;
+  gap: 13px;
+  margin: 0;
+  padding: 10px 17px 10px 14px;
+  border: 2px dashed rgba(94, 63, 228, 0.48);
+  border-radius: 18px 24px 17px 26px;
+  background: #fff8d7;
+  box-shadow: 5px 6px 0 rgba(94, 63, 228, 0.14);
+  color: #2b2540;
+  text-decoration: none;
+  transform: translateX(-50%) rotate(-1.2deg);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.storefrontExampleFlash > svg:first-child {
+  color: #f36f32;
+}
+
+.storefrontExampleFlash span {
+  display: grid;
+  gap: 2px;
+}
+
+.storefrontExampleFlash strong,
+.storefrontExampleFlash small {
+  line-height: 1;
+}
+
+.storefrontExampleFlash strong {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+}
+
+.storefrontExampleFlash small {
+  color: #665d78;
+  font-size: 10px;
+  font-weight: 760;
+}
+
+.storefrontExampleFlash > svg:last-child {
+  margin-left: 3px;
+  color: #5e3fe4;
+}
+
+.storefrontExampleFlash:hover,
+.storefrontExampleFlash:focus-visible {
+  box-shadow: 7px 8px 0 rgba(94, 63, 228, 0.2);
+  transform: translateX(-50%) rotate(0) translateY(-2px);
+}
+
+.storefrontExampleFlash:focus-visible {
+  outline: 3px solid rgba(94, 63, 228, 0.28);
+  outline-offset: 4px;
+}
+
+.storefrontFrame {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  place-items: start center;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: #f8f9ff;
+  isolation: isolate;
+}
+
+.storefrontBackground {
+  z-index: 0;
+  object-fit: contain;
+  object-position: center;
+}
+
+.storefrontCopy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: min(860px, calc(100% - 40px));
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: clamp(78px, 7vw, 102px) 20px 132px;
+  text-align: center;
+}
+
+.storefrontMark {
+  display: grid;
+  width: 78px;
+  height: 78px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(10, 27, 57, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 15px 34px rgba(51, 49, 112, 0.16);
+}
+
+.storefrontMark img {
+  width: 65px;
+  height: 54px;
+  object-fit: contain;
+}
+
+.storefrontEyebrow {
+  margin: 20px 0 0;
+  color: #3155f4;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.storefrontCopy h2 {
+  margin: 20px 0 0;
+  color: #071a3b;
+  font-size: clamp(50px, 4.7vw, 72px);
+  font-weight: 850;
+  letter-spacing: -0.066em;
+  line-height: 0.96;
+}
+
+.storefrontCopy h2 span {
+  display: block;
+  margin-top: 6px;
+  color: #6230f5;
+}
+
+.storefrontBody {
+  max-width: 63ch;
+  margin: 20px 0 0;
+  color: #3f4a5f;
+  font-size: clamp(13px, 1vw, 16px);
+  font-weight: 560;
+  line-height: 1.6;
+}
+
+.storefrontProof {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  color: #273651;
+}
+
+.storefrontProof > span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(98, 48, 245, 0.16);
+  border-radius: 50%;
+  background: #fff;
+  color: #6230f5;
+  box-shadow: 0 8px 20px rgba(69, 56, 139, 0.11);
+}
+
+.storefrontProof strong {
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.storefrontButton {
+  display: inline-flex;
+  min-width: 260px;
+  min-height: 54px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 8px;
+  background: #6230f5;
+  box-shadow: 0 15px 34px rgba(98, 48, 245, 0.28);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.storefrontButton:hover,
+.storefrontButton:focus-visible {
+  background: #3155f4;
+  box-shadow: 0 17px 38px rgba(49, 85, 244, 0.3);
+  transform: translateY(-2px);
+}
+
+.storefrontButton:focus-visible {
+  outline: 3px solid rgba(49, 85, 244, 0.3);
+  outline-offset: 4px;
+}
+
+.storefrontNote {
+  margin: 17px 0 0;
+  color: #596579;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+@media (max-width: 1280px) {
+  .storefrontFrame {
+    display: flex;
+    min-height: 0;
+    aspect-ratio: auto;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .storefrontBackground {
+    position: relative !important;
+    inset: auto !important;
+    order: 2;
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    object-position: center;
+  }
+
+  .storefrontCopy {
+    order: 1;
+    width: min(860px, calc(100% - 40px));
+    align-self: center;
+    padding: 64px 20px 46px;
+  }
+
+  .storefrontExampleFlash {
+    bottom: 20px;
+  }
+}
+
+@media (max-width: 900px) {
+  .storefrontCopy {
+    width: min(700px, calc(100% - 30px));
+  }
+
+  .storefrontCopy h2 {
+    font-size: clamp(50px, 8vw, 70px);
+  }
+}
+
+@media (max-width: 560px) {
+  .storefrontCopy {
+    width: calc(100% - 22px);
+    padding: 42px 10px 34px;
+  }
+
+  .storefrontExampleFlash {
+    min-height: 66px;
+  }
+
+  .storefrontMark {
+    width: 66px;
+    height: 66px;
+    border-radius: 12px;
+  }
+
+  .storefrontMark img {
+    width: 52px;
+    height: 44px;
+  }
+
+  .storefrontEyebrow {
+    margin-top: 20px;
+    font-size: 8px;
+  }
+
+  .storefrontCopy h2 {
+    margin-top: 20px;
+    font-size: clamp(42px, 12vw, 55px);
+    line-height: 0.94;
+  }
+
+  .storefrontCopy h2 span {
+    margin-top: 8px;
+  }
+
+  .storefrontBody {
+    max-width: 32ch;
+    margin-top: 20px;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .storefrontProof {
+    max-width: 280px;
+    margin-top: 22px;
+    text-align: left;
+  }
+
+  .storefrontProof strong {
+    font-size: 9px;
+    line-height: 1.4;
+  }
+
+  .storefrontButton {
+    width: min(100%, 290px);
+    min-width: 0;
+    min-height: 50px;
+    margin-top: 22px;
+  }
+
+  .storefrontNote {
+    max-width: 28ch;
+    margin-top: 17px;
+    line-height: 1.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .storefrontButton,
+  .storefrontExampleFlash {
+    transition-duration: 0.01ms;
+  }
+}

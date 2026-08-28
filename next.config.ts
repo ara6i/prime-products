@@ -58,6 +58,17 @@ const nextConfig: NextConfig = {
     unoptimized: isCreatorStaticExport,
     qualities: [75, 90],
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "d3u1mcyz6rhw9o.cloudfront.net",
+        pathname: "/runtime/**",
+        search: "",
+      },
+      {
+        protocol: "https",
+        hostname: "primestyleai-media-private-921049726279-us-east-1.s3.us-east-1.amazonaws.com",
+        pathname: "/runtime/pdp-studio/**",
+      },
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "lh3.googleusercontent.com" },

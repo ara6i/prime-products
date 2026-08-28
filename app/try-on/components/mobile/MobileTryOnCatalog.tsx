@@ -203,7 +203,7 @@ function CatalogGrid({
   if (products.length === 0) {
     return (
       <p className="py-12 text-center text-[13px] text-[#767676]">
-        No products found
+        {catalog.availabilityContext?.customerMessage ?? "No products found"}
       </p>
     );
   }

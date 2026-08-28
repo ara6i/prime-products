@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   ArrowLeft,
@@ -13,10 +13,14 @@ import type { OutfitIntelligenceRequest } from "@/app/ai-stylist/types";
 import type { WizardGenerationRequest } from "@/app/ai-stylist/components/desktop/StylistOnboardingStepper";
 import { FULL_BODY_MODELS } from "@/app/ai-stylist/components/desktop/ModelPreviewCard";
 import {
+  garmentOptionAsset,
+  garmentOptionDescription,
   occasionAsset,
   occasionSkipsSeasonStep,
+  STYLIST_GARMENT_OPTIONS,
   STYLIST_OCCASIONS,
   STYLIST_STEP_LABELS,
+  type StylistGarmentSelection,
   type StylistGender,
 } from "@/app/ai-stylist/data/onboarding";
 import { StylistSizingPhotoPicker } from "@/app/ai-stylist/components/shared/StylistSizingPhotoPicker";
@@ -26,7 +30,7 @@ import {
 } from "@/app/ai-stylist/hooks/useStylistSizingPhoto";
 
 interface StylistOnboardingFlowProps {
-  initialStep?: 0 | 3;
+  initialStep?: 0 | 4;
   profileGender?: "female" | "male" | null;
   profileColors?: string[];
   profileStyles?: string[];
@@ -103,10 +107,12 @@ async function assetToDataUrl(src: string): Promise<string> {
 function SelectCard({
   selected,
   onClick,
+  disabled = false,
   children,
 }: {
   selected: boolean;
   onClick: () => void;
+  disabled?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -114,14 +120,15 @@ function SelectCard({
       type="button"
       aria-pressed={selected}
       onClick={onClick}
+      disabled={disabled}
       className={`relative min-h-20 overflow-hidden rounded-xl border p-3 text-left ${
         selected
-          ? "border-[#7258fa] bg-[#f0edff]"
+          ? "border-[#2154ef] bg-[#eaf0ff]"
           : "border-[#dedce3] bg-[#f7f7f9]"
-      }`}
+      } ${disabled && !selected ? "cursor-not-allowed opacity-45" : ""}`}
     >
       {selected && (
-        <span className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#7258fa] text-white">
+        <span className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#2154ef] text-white">
           <Check className="h-3 w-3" />
         </span>
       )}
@@ -139,6 +146,7 @@ export function StylistOnboardingFlow({
   onCancel,
   onGenerate,
 }: StylistOnboardingFlowProps) {
+  const contentRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState<number>(initialStep);
   const [occasionId, setOccasionId] = useState("work-office");
   const [stylingGender, setStylingGender] = useState<StylistGender>(
@@ -147,6 +155,9 @@ export function StylistOnboardingFlow({
   const [seasonId, setSeasonId] =
     useState<(typeof SEASONS)[number]["id"]>("fall");
   const [budgetId, setBudgetId] = useState("premium");
+  const [selectedGarments, setSelectedGarments] = useState<
+    StylistGarmentSelection[]
+  >(() => (initialStep === 4 ? ["top", "bottom", "shoe"] : []));
   const [modelMode, setModelMode] = useState<"choose" | "upload">("choose");
   const defaultModel =
     FULL_BODY_MODELS.find((model) => model.gender === stylingGender) ??
@@ -168,26 +179,60 @@ export function StylistOnboardingFlow({
     sizingPhoto.status !== "idle";
 
   const skipsSeasonStep = occasionSkipsSeasonStep(occasionId);
-  const visibleSteps = skipsSeasonStep ? [0, 2, 3] : [0, 1, 2, 3];
+  const visibleSteps = skipsSeasonStep ? [0, 1, 3, 4] : [0, 2, 1, 3, 4];
   const visibleStepIndex = Math.max(0, visibleSteps.indexOf(step));
+
+  useEffect(() => {
+    if (contentRef.current) contentRef.current.scrollTop = 0;
+  }, [step]);
 
   const handleStylingGenderChange = (gender: StylistGender) => {
     setStylingGender(gender);
+    if (gender === "male") {
+      setSelectedGarments((current) =>
+        current.filter((selection) => selection !== "dress"),
+      );
+    }
     setModelId(
       FULL_BODY_MODELS.find((model) => model.gender === gender)?.id ?? "",
     );
   };
 
+  const handleGarmentOption = (
+    option: (typeof STYLIST_GARMENT_OPTIONS)[number],
+  ) => {
+    setSelectedGarments((current) => {
+      if (current.includes(option.id)) {
+        return current.filter((selection) => selection !== option.id);
+      }
+      const withoutConflict =
+        option.id === "dress"
+          ? current.filter(
+              (selection) => selection !== "top" && selection !== "bottom",
+            )
+          : option.id === "top" || option.id === "bottom"
+            ? current.filter((selection) => selection !== "dress")
+            : current;
+      return withoutConflict.length >= 5
+        ? withoutConflict
+        : [...withoutConflict, option.id];
+    });
+  };
+
   const canContinue =
-    step < 3 ||
-    (modelMode === "choose" ? Boolean(modelId) : sizingPhoto.canUsePhoto);
+    (step === 0 && Boolean(occasionId && stylingGender)) ||
+    (step === 1 && selectedGarments.length > 0) ||
+    (step === 2 && Boolean(seasonId)) ||
+    (step === 3 && Boolean(budgetId)) ||
+    (step === 4 &&
+      (modelMode === "choose" ? Boolean(modelId) : sizingPhoto.canUsePhoto));
 
   const generate = async () => {
     if (!canContinue || preparing) return;
     const occasion = STYLIST_OCCASIONS.find((item) => item.id === occasionId);
     const budget = BUDGETS.find((item) => item.id === budgetId);
     const model = FULL_BODY_MODELS.find((item) => item.id === modelId);
-    if (!occasion || !budget) return;
+    if (!occasion || !budget || !selectedGarments.length) return;
     setPreparing(true);
     setError(null);
 
@@ -227,6 +272,9 @@ export function StylistOnboardingFlow({
           coveragePreferences: [],
           avoidMaterials: [],
           favoriteBrands: [],
+          garmentPreferences: {
+            selectedSlots: selectedGarments,
+          },
           ...(temperature !== null && condition
             ? {
                 weather: {
@@ -262,7 +310,7 @@ export function StylistOnboardingFlow({
         </div>
         <div className="mt-2 h-1 overflow-hidden rounded-full bg-[#eceaf0]">
           <div
-            className="h-full rounded-full bg-[#7258fa] transition-all"
+            className="h-full rounded-full bg-[#2154ef] transition-all"
             style={{
               width: `${((visibleStepIndex + 1) / visibleSteps.length) * 100}%`,
             }}
@@ -270,7 +318,7 @@ export function StylistOnboardingFlow({
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto p-4">
+      <div ref={contentRef} className="min-h-0 flex-1 overflow-y-auto p-4">
         {step === 0 && (
           <>
             <h2 className="text-center text-xl font-semibold">
@@ -297,7 +345,7 @@ export function StylistOnboardingFlow({
                     onClick={() => handleStylingGenderChange(value)}
                     className={`rounded-xl px-4 py-3 text-sm font-semibold transition ${
                       stylingGender === value
-                        ? "bg-white text-[#5945cb] shadow-sm"
+                        ? "bg-white text-[#1847cc] shadow-sm"
                         : "text-[#77737f]"
                     }`}
                   >
@@ -329,7 +377,65 @@ export function StylistOnboardingFlow({
           </>
         )}
 
-        {step === 1 && !skipsSeasonStep && (
+        {step === 1 && (
+          <>
+            <h2 className="text-center text-xl font-semibold">
+              What would you like in your outfits?
+            </h2>
+            <p className="mt-1 text-center text-xs leading-5 text-[#77737f]">
+              Choose up to 5 categories. Top and Bottom are separate choices.
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              {STYLIST_GARMENT_OPTIONS.filter(
+                (option) => !(option.womenOnly && stylingGender === "male"),
+              ).map((option) => {
+                const selected = selectedGarments.includes(option.id);
+                const replacesConflict =
+                  (option.id === "dress" &&
+                    selectedGarments.some((item) =>
+                      ["top", "bottom"].includes(item),
+                    )) ||
+                  (["top", "bottom"].includes(option.id) &&
+                    selectedGarments.includes("dress"));
+                const limitReached =
+                  !selected && selectedGarments.length >= 5 && !replacesConflict;
+                const disabled = limitReached || option.unavailable;
+                return (
+                  <SelectCard
+                    key={option.id}
+                    selected={selected}
+                    disabled={disabled}
+                    onClick={() => handleGarmentOption(option)}
+                  >
+                    <Image
+                      src={garmentOptionAsset(option, stylingGender)}
+                      alt=""
+                      width={160}
+                      height={160}
+                      className="mx-auto h-24 w-full object-contain"
+                    />
+                    <span className="mt-1 block text-center text-sm font-semibold text-[#24212c]">
+                      {option.label}
+                    </span>
+                    <span className="mt-0.5 block truncate text-center text-[11px] text-[#77737f]">
+                      {option.unavailable
+                        ? option.unavailableMessage
+                        : limitReached
+                        ? "Maximum 5 selected"
+                        : garmentOptionDescription(option, stylingGender)}
+                    </span>
+                  </SelectCard>
+                );
+              })}
+            </div>
+            <p className="mt-3 text-center text-xs text-[#77737f]">
+              {selectedGarments.length}/5 selected · Dress cannot be combined
+              with Top or Bottom.
+            </p>
+          </>
+        )}
+
+        {step === 2 && !skipsSeasonStep && (
           <>
             <h2 className="text-center text-lg font-semibold">
               What weather are you dressing for?
@@ -357,7 +463,7 @@ export function StylistOnboardingFlow({
           </>
         )}
 
-        {step === 2 && (
+        {step === 3 && (
           <>
             <h2 className="text-center text-lg font-semibold">
               How much do you usually spend on an outfit?
@@ -381,7 +487,7 @@ export function StylistOnboardingFlow({
           </>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <>
             <h2 className="text-center text-lg font-semibold">
               Choose model to generate outfits
@@ -393,7 +499,7 @@ export function StylistOnboardingFlow({
                 onClick={() => setModelMode("choose")}
                 className={`flex flex-1 items-center justify-center gap-1.5 rounded-full py-2 text-xs ${
                   modelMode === "choose"
-                    ? "bg-[#ddd7ff] text-[#5945cb]"
+                    ? "bg-[#dce6ff] text-[#1847cc]"
                     : "text-[#77737f]"
                 }`}
               >
@@ -405,7 +511,7 @@ export function StylistOnboardingFlow({
                 onClick={() => setModelMode("upload")}
                 className={`flex flex-1 items-center justify-center gap-1.5 rounded-full py-2 text-xs ${
                   modelMode === "upload"
-                    ? "bg-[#ddd7ff] text-[#5945cb]"
+                    ? "bg-[#dce6ff] text-[#1847cc]"
                     : "text-[#77737f]"
                 }`}
               >
@@ -429,7 +535,7 @@ export function StylistOnboardingFlow({
                       onClick={() => setModelId(model.id)}
                       className={`relative aspect-[3/4] overflow-hidden rounded-lg border-2 ${
                         modelId === model.id
-                          ? "border-[#7258fa]"
+                          ? "border-[#2154ef]"
                           : "border-transparent"
                       }`}
                     >
@@ -494,10 +600,11 @@ export function StylistOnboardingFlow({
         {visibleStepIndex < visibleSteps.length - 1 ? (
           <button
             type="button"
+            disabled={!canContinue || preparing}
             onClick={() =>
-              setStep(visibleSteps[visibleStepIndex + 1] ?? 3)
+              setStep(visibleSteps[visibleStepIndex + 1] ?? 4)
             }
-            className="flex items-center gap-1.5 rounded-full bg-[#7258fa] px-5 py-2 text-sm font-medium text-white"
+            className="flex items-center gap-1.5 rounded-full bg-[#2154ef] px-5 py-2 text-sm font-medium text-white disabled:bg-[#ccc8d3]"
           >
             Next
             <ArrowRight className="h-4 w-4" />
@@ -507,7 +614,7 @@ export function StylistOnboardingFlow({
             type="button"
             onClick={generate}
             disabled={!canContinue || preparing}
-            className="flex items-center gap-1.5 rounded-full bg-[#7258fa] px-5 py-2 text-sm font-medium text-white disabled:bg-[#ccc8d3]"
+            className="flex items-center gap-1.5 rounded-full bg-[#2154ef] px-5 py-2 text-sm font-medium text-white disabled:bg-[#ccc8d3]"
           >
             <Sparkles className="h-4 w-4" />
             {preparing ? "Preparing…" : "Generate"}

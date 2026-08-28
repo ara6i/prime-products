@@ -97,12 +97,8 @@ export function MerchantLandingFooter({
 
             <div className={styles.footerActions}>
               <button type="button" onClick={onCtaClick}>
-                Join the merchant network{" "}
-                <ArrowUpRight size={14} weight="bold" />
+                Join the waitlist <ArrowUpRight size={14} weight="bold" />
               </button>
-              <Link href="/merchants/dashboard">
-                Open merchant dashboard <ArrowUpRight size={14} weight="bold" />
-              </Link>
             </div>
 
             <nav
