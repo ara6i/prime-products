@@ -15,7 +15,7 @@ import styles from "./merchantPdpSdk.module.css";
 
 const PrimeStyleTryon = dynamic<PrimeStyleTryonProps>(
   () =>
-    import("../../../../../primestyleai-tryon-sdk/dist/react/index.js").then(
+    import("@primestyleai/tryon/react").then(
       (module) => module.PrimeStyleTryon,
     ),
   {
