@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "test:pdp-studio": "tsx --test app/pdp-studio/platform/mappers/pdpStudioPlatformMapper.test.ts app/pdp-studio/platform/services/pdpStudioApiClient.test.ts app/pdp-studio/platform/hooks/usePdpStudioJobProgress.test.ts app/pdp-studio/workspace/mappers/pdpStudioToolRequestMapper.test.ts app/pdp-studio/workspace/mappers/pdpStudioBatchPresetMapper.test.ts app/pdp-studio/workspace/mappers/shopifyProductsMapper.test.ts app/pdp-studio/workspace/utils/shopifyProductRoute.test.ts app/pdp-studio/workspace/data/pdpStudioAuditData.test.ts",
