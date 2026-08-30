@@ -17,6 +17,7 @@ type CategoryShopHeaderProps = {
   menuOpen: boolean;
   onSearchChange: (value: string) => void;
   onMenuToggle: () => void;
+  onOpenBag: () => void;
 };
 
 const navigation: { id: ShopCategoryId; label: string }[] = [
@@ -33,6 +34,7 @@ export function CategoryShopHeader({
   menuOpen,
   onSearchChange,
   onMenuToggle,
+  onOpenBag,
 }: CategoryShopHeaderProps) {
   return (
     <header className={styles.header}>
@@ -85,6 +87,8 @@ export function CategoryShopHeader({
         <button
           type="button"
           aria-label={`Shopping bag with ${bagCount} ${bagCount === 1 ? "item" : "items"}`}
+          aria-haspopup="dialog"
+          onClick={onOpenBag}
         >
           <Handbag size={19} />
           {bagCount > 0 ? <span>{bagCount}</span> : null}

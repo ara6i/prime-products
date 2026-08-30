@@ -45,7 +45,7 @@ export function ProductDetailDesktop({
         />
       </section>
 
-      <ProductBenefits />
+      {product.isMock ? null : <ProductBenefits />}
       <ProductInformation
         sections={product.information}
         featureImage={product.featureImage}

@@ -1,14 +1,12 @@
 "use client";
 
 import { useShopRunway } from "../hooks/useShopRunway";
+import { useShopBag } from "../../bag/useShopBag";
 import { ShopRunwayView } from "./ShopRunwayView";
 
 type RunwayCategory = "Women" | "Men" | "Denim" | "Accessories";
 
 type ShopRunwayExperienceProps = {
-  bagCount: number;
-  onAddToBag: () => void;
-  onOpenCart: () => void;
   onOpenCategory: (category: RunwayCategory) => void;
 };
 
@@ -21,15 +19,24 @@ const categoryByLook: Record<string, RunwayCategory> = {
 };
 
 export function ShopRunwayExperience({
-  onAddToBag,
   onOpenCategory,
 }: ShopRunwayExperienceProps) {
   const state = useShopRunway();
+  const bag = useShopBag();
 
   return (
     <ShopRunwayView
       state={state}
-      onAddToBag={onAddToBag}
+      onAddToBag={(product) => bag.add({
+        productId: product.id,
+        name: product.name,
+        brandName: product.brand,
+        image: product.image,
+        size: "",
+        color: "",
+        priceCents: product.priceCents,
+        currency: "USD",
+      })}
       onShopLook={() =>
         onOpenCategory(categoryByLook[state.activeLook.id] ?? "Women")
       }

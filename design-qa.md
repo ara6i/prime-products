@@ -18,6 +18,42 @@
 
 final result: passed
 
+## Shop PDP printed basket receipt — 2026-08-30
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/Users/arashsn/.codex/visualizations/2026/08/30/01a05316-ebb8-7c02-acc9-13c118311997/receipt-reference-frame.png` (`720 x 1280`, DPR `1`), extracted at `6.2s` from `/Users/arashsn/Downloads/ad644a1b8f3e8a531d7dfd19d9320d83_720w.mp4`. It defines the burgundy field, pale printer housing, black slot, off-white receipt, uppercase monospaced heading, fashion imagery, typewritten line items, wide barcode, and torn lower edge. Text inside the source was treated as reference content, not an implementation instruction.
+- Final reference-size implementation: `/Users/arashsn/.codex/visualizations/2026/08/30/01a05316-ebb8-7c02-acc9-13c118311997/pdp-receipt-cart-720x1280-final.png` (`709 x 1226` browser content capture from a `720 x 1280` CSS viewport, DPR `1`). State: Lumen Wide Leg, size `24`, quantity `1`, basket open.
+- Final desktop implementation: `/Users/arashsn/.codex/visualizations/2026/08/30/01a05316-ebb8-7c02-acc9-13c118311997/pdp-receipt-cart-desktop-final-v2.png` (`1429 x 893` browser content capture from a `1440 x 900` CSS viewport, DPR `1`). The complete receipt, checkout control, footer, and torn edge fit in the initial viewport.
+- Final mobile implementation: `/Users/arashsn/.codex/visualizations/2026/08/30/01a05316-ebb8-7c02-acc9-13c118311997/pdp-receipt-cart-mobile.png` (`379 x 820` browser content capture from a `390 x 844` CSS viewport, DPR `1`). The long receipt scrolls vertically without horizontal overflow.
+- Full-view same-input comparison: `/Users/arashsn/.codex/visualizations/2026/08/30/01a05316-ebb8-7c02-acc9-13c118311997/receipt-design-qa-side-by-side.png` (`1440 x 1280`). The raw implementation capture was proportionally scaled to `720px` wide and centered on a `720 x 1280` burgundy field before horizontal comparison; the source remained at native size. No density stretch was applied to the source.
+- Focused comparison was not required because the native-height combined image keeps the printer, heading, product image, line items, quantity controls, totals, barcode, checkout, footer, and torn edge readable in one view.
+
+### Findings and comparison history
+
+- Initial P2 desktop action visibility: the first `1440 x 900` pass placed totals and checkout below the initial viewport. Fix: added a short-viewport desktop composition that scales the receipt to `28rem`, compresses product and row spacing, and keeps the complete checkout receipt visible without changing the reference-size/mobile composition.
+- Initial P2 barcode fidelity: the first implementation used a small scan-style icon rather than the reference's wide barcode. Fix: extracted the real non-branded barcode strip from the supplied frame and placed it as a raster asset at the receipt's natural visual width.
+- Intentional product adaptation: the reference shows a multi-piece outfit receipt, while a Shop PDP basket contains the exact product just added. The implementation therefore uses the current product's real gallery image and exposes live size, color, quantity, price, shipping, and checkout information while preserving the reference composition and print metaphor.
+- Residual P3: the live receipt uses a cleaner off-white paper surface than the visibly crumpled source so small interactive controls remain crisp and legible.
+- No actionable P0, P1, or P2 finding remains.
+
+### Required fidelity surfaces
+
+- Fonts and typography: a monospaced receipt stack reproduces the uppercase title, typewriter line items, compact labels, tight numeric totals, and centered machine code. The existing Manrope family remains on the working checkout control and status copy for product consistency.
+- Spacing and layout rhythm: printer housing, slot, receipt width, centered title, dominant product area, dashed information groups, barcode, footer, and torn edge follow the supplied vertical sequence. Short desktop viewports use a compact proportional variant; mobile keeps a natural long-receipt scroll.
+- Colors and visual tokens: the burgundy field, pale printer housing, black slot, warm paper, black type, dashed gray rules, and black checkout strip closely match the frame. No unrelated Shop accent color leaks into the open basket.
+- Image quality and asset fidelity: the product image is the PDP's real high-resolution gallery asset. The printer slot, barcode, and torn edge are real raster crops from the user's source video; there are no placeholder images, handcrafted SVGs, CSS barcode drawings, or stretched screenshot composites.
+- Copy and content: `BASKET RECEIPT`, exact product, brand, selected size, color, quantity, subtotal, shipping state, total, receipt code, checkout action, and network footer are present. Piper & Scoot naming and outfit-specific reference copy are not carried into PrimeStyleAI.
+
+### Interaction, accessibility, responsiveness, and runtime checks
+
+- `Add to bag` increments the item count and automatically prints the receipt. The header bag button reopens it. Quantity increase/decrease updated the total from `$138` to `$276` and back; remove produced the empty-receipt state; checkout produced the secure-handoff confirmation.
+- The modal closes from its round close button, the burgundy backdrop, or Escape. Focus starts on the close control and Tab/Shift+Tab are contained within the modal controls. Body scrolling is restored on close, and reduced-motion users do not receive print animation.
+- At the `720 x 1280` reference viewport, document/client width measured `709px` with `scrollWidth: 709px`. At `390 x 844`, client and scroll width both measured `379px`. No horizontal overflow occurred.
+- Fresh browser diagnostics returned zero error-level console entries. Scoped ESLint, full TypeScript, React best-practices review, and `git diff --check` passed.
+
+final result: passed
+
 ## Merchant supplier-catalog clean dense loop — 2026-08-29
 
 ### Source truth and implementation evidence
@@ -5058,3 +5094,127 @@ final result: passed
 - Scoped ESLint, direct TypeScript (`./node_modules/.bin/tsc --noEmit`), `git diff --check`, 4K field-asset inspection, desktop/mobile visual inspection, and fresh browser diagnostics passed. A fresh reload produced zero new runtime errors. Port `3001` remains served by this checkout.
 
 final result: passed
+
+## Shop Zara-style platform menu — 2026-08-30
+
+### Source truth and implementation evidence
+
+- Source visual truth: `/Users/arashsn/Downloads/Screenshot.png` (`1913 x 953`). It defines the full-screen white menu state, thin close control at top left, oversized black fashion wordmark, large editorial primary links, small numbered link groups, four-image destination rail, search rule, and right-aligned utility links.
+- Final implementation: `/Users/arashsn/.codex/visualizations/2026/08/30/01a05316-ebb8-7c02-acc9-13c118311997/shop-zara-menu-final.png` (`1903 x 948`) from `http://127.0.0.1:3001/shop` at CSS viewport `1914 x 953`, DPR `1`, with the menu open.
+- Full-view same-input comparison: `/Users/arashsn/.codex/visualizations/2026/08/30/01a05316-ebb8-7c02-acc9-13c118311997/shop-zara-menu-final-comparison.png` (`3826 x 953`). The implementation was normalized to the source's `1913 x 953` pixel dimensions before horizontal comparison.
+- Focused comparison: `/Users/arashsn/.codex/visualizations/2026/08/30/01a05316-ebb8-7c02-acc9-13c118311997/shop-zara-menu-final-focused-comparison.png` (`1913 x 1300`). The source and implementation upper `650px` regions are stacked so the logo, close/search controls, navigation columns, image rail, and utility links remain readable.
+- Responsive evidence: `/Users/arashsn/.codex/visualizations/2026/08/30/01a05316-ebb8-7c02-acc9-13c118311997/shop-zara-menu-mobile.png` at CSS viewport `390 x 844`, DPR `1`.
+
+### Findings and comparison history
+
+- Initial P1 brand-asset defect: applying a monochrome filter to the existing square PNG turned its white raster background into a black block. Fix: replaced it with the real transparent PrimeStyleAI commerce mark and preserved the oversized high-contrast PrimeStyleAI wordmark.
+- Initial P2 vertical-rhythm drift: the first page group had six links and pushed the dashboard group roughly one link row below the reference. Fix: removed the redundant Shop-home entry from the secondary group because Shop already leads the primary column; the dashboard block now lands at the reference height.
+- Final comparison: the close control, wordmark origin, primary-link origin, numbered group columns, image-rail position, search rule, utility stack, white field, and overall density align with the supplied composition. The wider PrimeStyleAI wordmark and the platform-specific labels/images are intentional brand/content substitutions.
+- No actionable P0, P1, or P2 finding remains.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the implementation uses a Didot/Bodoni/Georgia high-contrast serif stack for the wordmark and large navigation, with neutral sans-serif utility text. Sizes, uppercase treatment, line height, and tight wordmark tracking preserve the reference hierarchy.
+- Spacing and layout rhythm: desktop anchors match the source's left `~14%` content origin, `238px` menu-content start, separated numbered groups, four-card rail, and far-right utility stack. Mobile reflows into one readable column while retaining the editorial hierarchy.
+- Colors and visual tokens: the surface is pure white with black type, imagery, and a single thin black search rule. No unrelated Shop orange, blue, shadow, radius, or panel treatment leaks into the menu.
+- Image quality and asset fidelity: the real transparent PrimeStyleAI commerce mark and four existing high-resolution product/platform images are used. No placeholder, emoji, custom SVG, CSS illustration, or stretched screenshot is present.
+- Copy and content: Shop, Influencers, Merchants, Suppliers, MyAIFitting, Influencer dashboard, Merchant dashboard, and Supplier dashboard are all present as direct links. AI Stylist, Search, Bag, customer Log in, and Help are also functional.
+
+### Interaction, responsiveness, and runtime checks
+
+- Tested open, Escape close, reopen, Search handoff, search close, Supplier-page navigation, browser Back, and restored open-menu state.
+- All requested destination routes returned HTTP `200`: `/shop`, `/shop/ai-stylist`, `/influencers`, `/influencers/dashboard`, `/merchants`, `/merchants/dashboard`, `/suppliers`, `/suppliers/dashboard`, and `/`. Customer login at `/customer/login` also returned `200`.
+- At `390 x 844`, body/document width was `379px` inside a `390px` viewport, with no horizontal overflow. The mobile menu remained readable and scrollable.
+- Browser warnings/errors: none. Scoped ESLint, full TypeScript, and scoped `git diff --check` passed.
+
+final result: passed
+
+## Shop persistent receipt sidebar — 2026-08-30
+
+- Replaced the full-screen, current-product-only receipt with one shared right-hand sidebar under the Shop layout. Retained the burgundy printer, paper, dashed rules, barcode, and torn edge. Compact item rows scroll independently of the subtotal and close/continue controls.
+- Replaced page-local counters with a versioned browser-local bag containing product snapshots, selected size/color, quantity, numeric price, and currency. Shop cards, runway cards, category cards, category headers, and regular/AI Stylist PDPs share the same state. Closing, navigating, and refreshing do not remove items. Only an explicit Remove action deletes a row; decrement stops at one.
+- Browser checks on port `3001`: two Lumen sizes plus an Indigo product coexist, quantity changes only the selected row, subtotal updates correctly, all four units survive refresh, and Shop/category/PDP headers show the same count. Runway and category quick-add buttons add their own products. Escape and close preserve the bag; keyboard focus is contained in the dialog.
+- Reviewed desktop `1440 x 1000` and mobile `390 x 844` with multiple visible selections. Screenshots: `/Users/arashsn/.codex/visualizations/2026/08/30/01a05316-ebb8-7c02-acc9-13c118311997/shop-bag-sidebar-desktop.jpg` and `shop-bag-sidebar-mobile.jpg` in the same directory.
+- Validation: 10 bag-store tests, 2 AI Stylist mapper tests, full TypeScript, scoped ESLint, and `git diff --check` passed. Browser error log was empty. Only test-added rows were removed afterward, restoring the pre-test empty bag.
+- Limits are explicit: storage is browser-local, not account-synced; storage failures preserve in-memory items and show a warning. Quick-add rows explicitly show size not selected; PDP additions capture the selected size. Checkout is not connected; the former simulated checkout-success claim was removed.
+
+final result: passed for sidebar and persistent bag; checkout remains unimplemented
+
+## Shop receipt paper-feed correction — 2026-08-30
+
+- Motion reference: `/Users/arashsn/Downloads/ad644a1b8f3e8a531d7dfd19d9320d83_720w.mp4`, inspected at 8 frames per second through the first feed. The torn edge leads, followed by the lower printed content and finally the heading; the printer stays still. The supplied `Screenshot (1).png` documents the previous stretched, static empty sheet.
+- Changed only `ShopReceiptSidebar.tsx` and its scoped stylesheet: the complete sheet, including its torn edge, translates downward through a clipped printer mouth over 1200ms after the sidebar enters. The printer retains its natural aspect ratio, and the paper fits inside the black slot. Empty paper now sizes to its content; populated paper keeps scrollable rows and a visible subtotal. No looping, ejection, product cycling, or bag-store mutation is tied to the animation.
+- Added an explicit Replay receipt control with component-local animation state. Focusing a receipt control cancels the motion for that print without restarting when focus leaves. Reduced-motion CSS skips both feed and sidebar motion. Reduced-motion emulation and precise mid-feed keyboard interruption were not conclusively runtime-tested; these guards were source-reviewed.
+- Visual evidence under `/Users/arashsn/.codex/visualizations/2026/08/30/01a05316-ebb8-7c02-acc9-13c118311997/`: `receipt-feed-desktop-0.jpg` through `receipt-feed-desktop-8.jpg`, `receipt-feed-mobile-0.jpg` through `receipt-feed-mobile-7.jpg`, and `receipt-feed-pdp-0.jpg` through `receipt-feed-pdp-4.jpg`. Inspected intermediate and final frames, not only the settled receipt. The torn edge/footer emerge before the heading on both Shop and `/shop/product/heimish-01`.
+- At 390 x 844, both test selections are visible together. At 390 x 600, rows scroll while the subtotal and Continue shopping remain visible. Supporting settled screenshots: `receipt-feed-two-items-desktop.jpg`, `receipt-feed-two-items-mobile.jpg`, and `receipt-feed-short-mobile.jpg` in the same evidence directory.
+- Verified two selections, quantity increment to three units, $368.00 subtotal, replay without count changes, Escape close, reload restoration, and dialog tab-wrap back to Close. Removed only the two temporary QA selections afterward, restoring the initially empty bag. Persistent store implementation was not changed.
+- Scoped ESLint, full TypeScript, all 10 bag-store tests, and `git diff --check` pass. Shop and PDP browser error logs were empty. Checkout remains unconnected and is still explicitly labeled as such.
+
+final result: paper-feed motion verified on desktop, mobile, and PDP; saved bag behavior preserved
+
+### Receipt drawer motion tuning — 2026-08-30
+
+- Added state-specific entry/exit animations: 420ms eased opening and 320ms eased closing, with matching scrim fades. Distinct closed-state animation names allow Radix Presence to retain the drawer until its exit finishes instead of removing it immediately.
+- Shortened the actual paper feed from 1200ms to 900ms (25% less time), beginning when the opening drawer settles. Kept the reduced-motion override specific enough to disable both state-specific animations.
+- Frame captures on desktop and 390 x 844 mobile show the panel moving toward the right edge before removal; Escape returns focus to the bag trigger. Evidence uses `drawer-smooth-open-*`, `drawer-smooth-close-*`, `drawer-mobile-close-*`, and `drawer-entry-live-*` under the existing 2026-08-30 visualization directory. The earlier `drawer-entry-verified-*` attempt did not trigger opening after a viewport reset and is not acceptance evidence.
+- Full TypeScript, all 10 bag-store tests, and `git diff --check` passed. Browser error log is empty. Only motion CSS changed; no products or bag data were added, removed, or modified during this tuning pass.
+
+## Shop menu original branding and splash motion — 2026-08-30
+
+- Replaced the black-filtered mark and typed serif imitation with the existing full-color `/media/partner-landing/primestyleai-shopping-network-lockup-light-blue.png`. The asset itself supplies both the original PrimeStyleAI lettering and Shopping Network tagline. CSS frames out only surrounding white margins; the original raster is unchanged. Menu navigation now uses the brand's navy (`#001352`, sampled from the logo text), blue accents, and the site's Manrope sans-serif.
+- Added a layered blue/teal/purple circular reveal from the menu trigger, staggered content entrances, and a matching circular exit. The menu remains full-screen white after opening. Radix Dialog now retains it through exit, handles Escape/focus containment/scroll locking, and restores focus on dismissal. Search, Bag, and normal internal navigation run after closing; modifier-click behavior is preserved. Reduced-motion styles skip the reveal and stagger.
+- Capped the mobile logo width at 360px to keep the original lockup clear of Search on wider mobile/tablet breakpoints. All existing platform, dashboard, utility, and featured-destination links are retained. The bag store and receipt motion are untouched.
+- Added six local JSDOM component tests covering the original logo asset and destination links, close-button focus restoration, Escape with bag preservation, Search focus handoff, Bag handoff, and platform navigation. All six pass. Full TypeScript, scoped ESLint, all ten bag-store tests, and `git diff --check` also pass. These tests do not validate rendered geometry or animation frames.
+- Visual acceptance is BLOCKED, not passed: the preview tab became a browser-generated error page after the port-3001 server stopped. The local development server was restarted on the same port. Browser policy rejected both reloading that tab and subsequent navigation to the local shop; no alternate browser, raw automation, or network-fetch bypass was used. Desktop/mobile appearance, exact logo crop, and splash timing still require a rendered check when browser access is available.
+
+final result: branding/motion implementation and local interaction checks complete; browser visual verification remains blocked
+
+## Shop menu logo resolution correction — 2026-08-30
+
+- Confirmed the active port-3001 process belongs to this checkout. The previous full lockup was only 520 x 260 pixels, with approximately 445px of useful artwork stretched into a menu up to 700px wide; optimizing that thumbnail cannot recover lettering detail.
+- Replaced that thumbnail in the menu with the existing 1254 x 1254 `primestyleai-new-mark.png`. CSS crops only its white margins. The original symbol occupies at most 210 CSS pixels, with a matching responsive image size and quality 90; its native artwork has sufficient detail for high-density screens.
+- The wordmark and tagline are now live Manrope type in the existing navy `#001352`, scaled with the logo container. This preserves the wording and uses the site's existing font, but is not claimed to be the original outlined wordmark: no higher-resolution full lockup or current-brand vector was found in the checked project and Downloads assets. No logo artwork was generated, redrawn, overwritten, or upscaled.
+- Updated the accessible logo group and regression test to check the high-resolution source, intrinsic dimensions, quality, responsive sizing, live lettering, and all existing links. All six menu interaction tests, scoped ESLint, full TypeScript, and `git diff --check` pass. React review found no added state, effects, runtime dependencies, or changes to existing animation/focus/navigation behavior. Bag data and receipt behavior were not changed.
+- Browser visual verification remains blocked by the previously reported URL policy rejection. No retry or alternate access path was attempted. Desktop/mobile glyph spacing and final visual sharpness still need an on-screen check; local tests are not visual acceptance.
+
+final result: thumbnail removed and source/type resolution corrected; browser visual verification remains blocked
+
+## Shop menu platform-specific content — 2026-08-30
+
+- The five primary destinations are now accessible vertical tabs. Selecting Shop, Influencers, Merchants, Suppliers, or MyAIFitting keeps the menu open and replaces the related links and featured cards. Only the selected panel exposes links; the active blue indicator follows selection. Arrow keys, Home, and End also select platforms.
+- Shop includes the landing page, an existing Lumen product PDP, Denim/Women/Men/Accessories categories, the Dressing Room outfit canvas, AI Stylist, and all eight existing brand pages. Influencers includes the landing/dashboard, creator storefront, Outfit Studio, and supported dashboard hash destinations. Merchants includes the landing/dashboard, all six dashboard route sections, and existing PDP Studio tools. Suppliers includes its landing/dashboard and all thirteen subsidiary dashboard pages. MyAIFitting includes the existing landing anchors, demo, dashboard pages, SDK/API docs, blog, and help center. Existing authentication requirements remain unchanged.
+- Extracted the platform navigation and a typed, data-driven destination map from the large Shop component. Section content fades/slides in over 320ms; the existing full-menu splash, close animation, original logo treatment, Search/Bag handoffs, and persistent receipt bag are preserved. Reduced-motion rules still disable these animations. The two-column navigation panel stacks at the existing tablet/mobile breakpoints.
+- All 18 local menu tests pass: five source-route/asset checks and thirteen JSDOM interaction cases cover the selected panel, every group/link/card, repeated platform switching, keyboard control, navigation after menu dismissal, Search focus, Escape, and bag handoff. Full TypeScript, scoped ESLint, all ten bag-store tests, and `git diff --check` pass. Route tests check existing page files and actual dynamic route IDs; they do not claim authenticated pages were opened or backend actions verified.
+- Browser visual verification remains blocked by the prior URL-policy denial. No repeated navigation or alternate access path was attempted. Responsive rendering and the new section-transition frames still need an on-screen pass.
+
+final result: platform-specific menu interactions and source-route checks pass; rendered visual acceptance remains unverified
+
+### PDP Studio primary menu section — 2026-08-30
+
+- Added PDP Studio as a sixth primary selector, with its own dashboard, products, designs, templates, AI tools, clothing photoshoot, batch creation, brand kit, preferences, and sign-in links. Retained existing Merchant shortcuts. Featured cards use existing studio imagery; no assets were generated or changed.
+- Preserved tab switching, keyboard selection, delayed navigation after close, and the entrance stagger for all six selectors. All 21 local menu/route/asset tests, scoped ESLint, full TypeScript, and `git diff --check` pass. Added a dedicated test selecting PDP Studio and then opening Designs.
+- Browser visual verification remains unperformed under the existing URL-policy restriction. Studio authentication behavior is unchanged and was not bypassed.
+
+## Daily Edit matching mock PDP galleries and sizes — 2026-08-30
+
+- Scope is the four cards under `Runway Ready / Your Daily Edit`, not the separate Spring/Summer runway carousel. The user explicitly requested mock images/sizing and reinforced that they must match the existing landing products. Preserved all four original hero images, product names, brands and prices. The product identities are the indigo cropped denim jacket, cobalt jacket with ivory joggers, black crystal-detail blazer mini dress, and glossy coral cropped puffer; styling accessories are explicitly excluded.
+- Generated 12 distinct front/back/detail catalog photographs using Codex's built-in image generation, with the original landing PNGs as references and the front view as an additional consistency reference for back/details. Visually inspected the source images and all generated views. All new PNGs are in `public/media/global-shop/daily-edit-pdp-v1/`; `generation-manifest.json` records the full prompt set, source output paths and saved paths. Original artwork and generated-image originals were preserved. Back views are mock interpretations, not verified supplier photography.
+- Added four isolated `daily-edit-*` product IDs to the existing PDP service and static route registry. Each PDP uses its original landing image first, then matching front/back/detail views, product-specific details/material/fit copy, six sample sizes, a full garment-measurement chart in cm, and related links to the other three looks. Landing cards are keyboard-accessible links to their own PDP. Cobalt sizing describes both garments; Vela sizing describes a jacket rather than jeans.
+- Mock notices distinguish generated imagery, illustrative specifications/prices and sample sizing from real inventory. No reviews, stock availability, personalized fit claim, try-on API action, payment or shipping is fabricated for these mock records. Existing non-mock PDPs retain their behavior. The size chart has a horizontally scrollable table, responsive dialog, bounded height and usable close button. Product-keyed route rendering resets gallery/size state between PDPs without resetting the shared bag.
+- React review checked component reuse, stable keys, keyboard links, scoped optional mock fields and state lifetime. No runtime dependency, backend write, paid external API or bag storage-schema change was introduced. Existing bag contents, menu/logo/receipt work and unrelated dirty files were preserved.
+- Validation: 49 Vitest checks pass (including all four desktop/mobile galleries, all chart rows, XL selection, selected-variant bag data, all four products coexisting with a second size, and menu/receipt/AI-stylist regressions); 10 bag-store tests pass. Full `tsc --noEmit`, scoped ESLint and `git diff --check` pass. Verified all 12 generated files are present with native 1003 x 1568 or 1122 x 1402 dimensions, and port 3001 still belongs to this checkout.
+- Rendered acceptance remains UNVERIFIED: the previously denied browser URL was not retried or accessed through another browser/network path. Local component tests do not establish actual browser geometry or live route rendering. No deployment was performed.
+
+final result: matching mock galleries, PDP links, size charts and bag interactions implemented and locally tested; live browser visual acceptance remains blocked
+
+### Menu nude splash and slower motion — 2026-08-30
+
+- Replaced only the menu splash’s saturated blue/teal/purple gradient with warm sand `#ceb9a7`, beige `#e4d3c5`, and cream `#f5ede3`. The original logo, navy lettering, existing link accents and final white menu surface are unchanged.
+- Slowed the opening sequence from 760ms to 1400ms with a gentler acceleration curve and a 160ms delay before the white surface follows the nude layer. Both layers finish together. Closing now takes 1000ms instead of 560ms; text entrance/exit timing is adjusted to match. Existing Radix dismissal/navigation handling and reduced-motion overrides are preserved; no JavaScript timeout was added.
+- All 23 menu interaction/destination checks pass. CSS parses successfully and source assertions verify the palette, shared durations and reduced-motion override; `git diff --check` passes. Port 3001 still belongs to this checkout. Browser visual/motion acceptance remains unverified under the previously reported URL-policy restriction; no alternate access or retry was attempted.
+
+### Menu destination pages open in new tabs — 2026-08-30
+
+- All menu destination links and featured cards, plus the menu logo/home and login link, now use native `target="_blank"` links with `rel="noopener noreferrer"` and an “Opens in a new tab” title. Disabled current-tab route prefetch for these separate-tab destinations. Removed the menu’s intercepted click/router-push flow and navigation callback prop. The original `/shop` tab, selected menu section and bag are left intact; the menu stays open for opening additional pages. Platform selectors still switch panels, and Search/Bag retain their existing close-then-open behavior. The Help mailto link and navigation outside the menu are unchanged.
+- Following the local Next Link documentation and React review, no delayed `window.open`, forced-focus workaround, timer, dependency or new state was added. Whether a newly opened tab becomes foreground is controlled by the browser; the website cannot reliably force background-tab focus.
+- All 25 menu/destination checks pass, including new-tab attributes for every section/card, uncancelled native click behavior, repeated link activation, keyboard Enter, menu home/login links, and preserved menu/URL/bag state. Full TypeScript, scoped ESLint and `git diff --check` pass. Actual browser tab creation/focus remains unverified because browser access is still restricted; no denied URL was retried.

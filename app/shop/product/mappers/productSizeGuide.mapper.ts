@@ -68,6 +68,7 @@ function mapBodyRows(product: ProductDetailViewModel, isMenswear: boolean) {
 export function mapProductSizeGuide(
   product: ProductDetailViewModel,
 ): ProductSizeGuideData {
+  if (product.sizeGuide) return product.sizeGuide;
   const context = `${product.category} ${product.name}`.toLowerCase();
   const oneSize = product.sizes.length === 1 && /one\s*size/i.test(product.sizes[0] ?? "");
 

@@ -2,6 +2,7 @@ import type { BrandCatalog } from "../../brand/types/brandCatalog.types";
 import type { RawCategoryCatalog } from "../../category/types/categoryCatalog.types";
 
 export type RawProductDetailSource =
+  | { kind: "mock"; product: ProductDetailViewModel }
   | {
       kind: "brand";
       catalog: BrandCatalog;
@@ -54,6 +55,7 @@ export type ProductDetailViewModel = {
   styleCode: string;
   description: string;
   priceLabel: string;
+  priceCents: number;
   currency?: string;
   compareAtPriceLabel?: string;
   discountLabel?: string;
@@ -66,6 +68,8 @@ export type ProductDetailViewModel = {
     recommendedSize?: string;
   };
   sizes: string[];
+  sizeGuide?: ProductSizeGuideData;
+  isMock?: boolean;
   gallery: ProductGalleryItem[];
   featureImage: string;
   sourceHref: string;
@@ -86,6 +90,7 @@ export type ProductDetailInteractionState = {
   confirmation: string;
   setActiveImageIndex: (index: number) => void;
   setSelectedSize: (size: string) => void;
+  setBagOpen: (open: boolean) => void;
   setSizeGuideOpen: (open: boolean) => void;
   addToBag: () => void;
   toggleFavorite: () => void;

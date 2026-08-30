@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useShopBag } from "../../bag/useShopBag";
 import type {
   ProductDetailInteractionState,
   ProductDetailViewModel,
@@ -15,13 +16,23 @@ export function useProductDetail(
       ? product.sizeRecommendation.recommendedSize
       : product.sizes[0] ?? "",
   );
-  const [bagCount, setBagCount] = useState(0);
+  const bag = useShopBag();
   const [isFavorite, setIsFavorite] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [confirmation, setConfirmation] = useState("");
 
   function addToBag() {
-    setBagCount((count) => count + 1);
+    bag.add({
+      productId: product.id,
+      name: product.name,
+      brandName: product.brandName,
+      image: product.gallery[0]?.src ?? product.featureImage,
+      href: product.canonicalHref ?? `/shop/product/${product.id}`,
+      size: selectedSize,
+      color: product.color,
+      priceCents: product.priceCents,
+      currency: product.currency ?? "USD",
+    });
     setConfirmation(`${product.name}${selectedSize ? ` · ${selectedSize}` : ""} added to your bag`);
   }
 
@@ -32,12 +43,13 @@ export function useProductDetail(
   return {
     activeImageIndex,
     selectedSize,
-    bagCount,
+    bagCount: bag.bagCount,
     isFavorite,
     sizeGuideOpen,
     confirmation,
     setActiveImageIndex,
     setSelectedSize,
+    setBagOpen: bag.setOpen,
     setSizeGuideOpen,
     addToBag,
     toggleFavorite,

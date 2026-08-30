@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useShopBag } from "../../bag/useShopBag";
 import type {
   ActiveCategoryFilters,
   CategoryCatalog,
+  CategoryProduct,
   CategorySortId,
 } from "../types/categoryCatalog.types";
 
@@ -12,7 +14,7 @@ export function useCategoryCatalog(catalog: CategoryCatalog) {
   const [activeFilters, setActiveFilters] = useState<ActiveCategoryFilters>({});
   const [sortId, setSortId] = useState<CategorySortId>("featured");
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-  const [bagCount, setBagCount] = useState(0);
+  const bag = useShopBag();
   const [searchQuery, setSearchQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -68,7 +70,8 @@ export function useCategoryCatalog(catalog: CategoryCatalog) {
     activeFilters,
     sortId,
     favoriteIds,
-    bagCount,
+    bagCount: bag.bagCount,
+    openBag: () => bag.setOpen(true),
     searchQuery,
     menuOpen,
     setExpandedFilterId,
@@ -78,6 +81,16 @@ export function useCategoryCatalog(catalog: CategoryCatalog) {
     toggleFilter,
     toggleFavorite,
     clearFilters: () => setActiveFilters({}),
-    addToBag: () => setBagCount((count) => count + 1),
+    addToBag: (product: CategoryProduct) => bag.add({
+      productId: product.id,
+      name: product.name,
+      brandName: product.brand,
+      image: product.image,
+      href: `/shop/product/${product.id}`,
+      size: "",
+      color: product.facets.find((facet) => facet.groupId === "color")?.value ?? "",
+      priceCents: product.priceCents,
+      currency: "USD",
+    }),
   };
 }

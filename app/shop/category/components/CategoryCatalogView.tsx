@@ -34,6 +34,7 @@ export function CategoryCatalogView({
         <CategoryShopHeader
           categoryId={catalog.id}
           bagCount={state.bagCount}
+          onOpenBag={state.openBag}
           searchQuery={state.searchQuery}
           menuOpen={state.menuOpen}
           onSearchChange={state.setSearchQuery}

@@ -25,6 +25,7 @@ export function ProductDetailExperience({
         brandName={product.brandName}
         brandLogo={product.brandLogo}
         bagCount={state.bagCount}
+        onOpenBag={() => state.setBagOpen(true)}
       />
       <ProductDetailDesktop product={product} state={state} />
       <ProductDetailMobile product={product} state={state} />

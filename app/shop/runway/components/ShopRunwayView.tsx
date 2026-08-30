@@ -2,13 +2,14 @@ import { ArrowLeft, ArrowRight, Heart, Plus } from "@phosphor-icons/react";
 import Image from "next/image";
 import type { CSSProperties, KeyboardEvent, PointerEvent } from "react";
 import type { useShopRunway } from "../hooks/useShopRunway";
+import type { ShopRunwayProduct } from "../types/shopRunway.types";
 import styles from "./shopRunway.module.css";
 
 type ShopRunwayState = ReturnType<typeof useShopRunway>;
 
 type ShopRunwayViewProps = {
   state: ShopRunwayState;
-  onAddToBag: () => void;
+  onAddToBag: (product: ShopRunwayProduct) => void;
   onShopLook: () => void;
 };
 
@@ -232,7 +233,7 @@ export function ShopRunwayView({
                 type="button"
                 tabIndex={hidden ? -1 : undefined}
                 aria-label={`Add ${product.name} to cart`}
-                onClick={onAddToBag}
+                onClick={() => onAddToBag(product)}
               >
                 <Plus size={13} />
               </button>

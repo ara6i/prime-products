@@ -51,6 +51,7 @@ describe("mapStylistProductDetail", () => {
     expect(result.name).toBe(product.name);
     expect(result.brandName).toBe("Trendsi");
     expect(result.priceLabel).toBe("$45.76");
+    expect(result.priceCents).toBe(4576);
     expect(result.gallery.map((image) => image.src)).toEqual([
       "https://images.test/cutout.png",
       "https://images.test/front.webp",

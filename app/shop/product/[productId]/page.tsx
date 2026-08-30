@@ -37,5 +37,5 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!rawProduct) notFound();
   const product = mapProductDetail(rawProduct);
 
-  return <ProductDetailExperience product={product} />;
+  return <ProductDetailExperience key={product.id} product={product} />;
 }

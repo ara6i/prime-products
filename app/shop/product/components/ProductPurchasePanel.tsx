@@ -57,6 +57,12 @@ export function ProductPurchasePanel({
 
       <p className={styles.productDescription}>{product.description}</p>
 
+      {product.isMock ? (
+        <p className={styles.mockProductNotice}>
+          Concept product · AI-generated gallery and sample sizing. Not for sale.
+        </p>
+      ) : null}
+
       {product.sizeRecommendation ? (
         <div className={styles.aiSizeRecommendation} data-status={product.sizeRecommendation.status}>
           <span>PrimeStyleAI size</span>

@@ -12,12 +12,14 @@ interface ProductShopHeaderProps {
   brandName: string;
   brandLogo?: string;
   bagCount: number;
+  onOpenBag: () => void;
 }
 
 export function ProductShopHeader({
   brandName,
   brandLogo,
   bagCount,
+  onOpenBag,
 }: ProductShopHeaderProps) {
   return (
     <>
@@ -60,7 +62,10 @@ export function ProductShopHeader({
             className={styles.bagButton}
             variant="icon"
             size="icon"
+            type="button"
             aria-label={`Shopping bag with ${bagCount} ${bagCount === 1 ? "item" : "items"}`}
+            aria-haspopup="dialog"
+            onClick={onOpenBag}
           >
             <ShoppingBagIcon />
             {bagCount > 0 ? <span>{bagCount}</span> : null}

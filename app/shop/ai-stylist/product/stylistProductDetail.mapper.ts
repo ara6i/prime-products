@@ -156,6 +156,7 @@ export function mapStylistProductDetail(
     styleCode: sourceId.length > 22 ? `…${sourceId.slice(-21)}` : sourceId,
     description: product.description?.trim() || `${product.name} from ${product.brand}, selected from the live PrimeStyleAI catalog.`,
     priceLabel: formatMoney(product.price, product.currency),
+    priceCents: Math.round(product.price * 100),
     currency: product.currency,
     ...(typeof product.original_price === "number" ? {
       compareAtPriceLabel: formatMoney(product.original_price, product.currency),

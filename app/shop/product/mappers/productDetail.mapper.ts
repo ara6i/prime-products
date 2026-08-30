@@ -254,6 +254,7 @@ function mapBrandProduct(
     styleCode: product.styleCode,
     description: product.description,
     priceLabel: formatProductPrice(product.price * 100),
+    priceCents: Math.round(product.price * 100),
     compareAtPriceLabel: compareAtPriceCents
       ? formatProductPrice(compareAtPriceCents)
       : undefined,
@@ -305,6 +306,7 @@ function mapCategoryProduct(
       description:
         "A polished everyday jean with a defined high rise and an easy wide-leg silhouette. Cut in pale non-stretch denim, it balances a clean fitted waist with a fluid full-length shape.",
       priceLabel: formatProductPrice(product.priceCents),
+      priceCents: product.priceCents,
       ratingLabel: "4.8",
       reviewLabel: "124 reviews",
       sizes: ["24", "25", "26", "27", "28", "29", "30", "31", "32", "33"],
@@ -329,6 +331,7 @@ function mapCategoryProduct(
     styleCode: `${source.catalog.id.slice(0, 3).toUpperCase()}-${String(product.position).padStart(3, "0")}`,
     description: `${product.name} is selected for the ${source.catalog.label.toLowerCase()} edit and connected to PrimeStyleAI sizing and styling tools.`,
     priceLabel: formatProductPrice(product.priceCents),
+    priceCents: product.priceCents,
     ratingLabel: (4.5 + (product.position % 4) / 10).toFixed(1),
     reviewLabel: `${36 + product.position * 11} reviews`,
     sizes:
@@ -361,6 +364,7 @@ function mapCategoryProduct(
 export function mapProductDetail(
   source: RawProductDetailSource,
 ): ProductDetailViewModel {
+  if (source.kind === "mock") return source.product;
   return source.kind === "brand"
     ? mapBrandProduct(source)
     : mapCategoryProduct(source);

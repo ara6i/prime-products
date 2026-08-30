@@ -9,7 +9,7 @@ type CategoryProductGridProps = {
   products: CategoryProduct[];
   favoriteIds: string[];
   onFavorite: (productId: string) => void;
-  onAddToBag: () => void;
+  onAddToBag: (product: CategoryProduct) => void;
 };
 
 export function CategoryProductGrid({
@@ -69,7 +69,8 @@ export function CategoryProductGrid({
               type="button"
               variant="commerce"
               size="commerce"
-              onClick={onAddToBag}
+              onClick={() => onAddToBag(product)}
+              aria-label={`Add ${product.name} to bag`}
             >
               Add to bag <Plus size={15} />
             </Button>

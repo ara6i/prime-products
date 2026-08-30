@@ -734,7 +734,10 @@
 }
 
 .sizeGuideDialog {
-  max-width: 31.25vw;
+  width: min(42rem, calc(100vw - 2rem));
+  max-width: min(42rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
   gap: var(--shop-pdp-gap-md);
   padding: var(--shop-pdp-gap-lg);
   border-radius: var(--shop-pdp-radius-card);
@@ -743,6 +746,20 @@
 
 .sizeGuideTitle {
   font-size: var(--shop-pdp-text-section);
+}
+
+.sizeGuideDialog [data-slot="dialog-close"] {
+  top: 8px;
+  right: 8px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+}
+
+.sizeGuideDialog [data-slot="dialog-close"] svg {
+  width: 18px;
+  height: 18px;
 }
 
 .sizeGuideDescription {
@@ -763,6 +780,48 @@
   place-items: center;
   border: var(--shop-pdp-border-width) solid var(--shop-pdp-line);
   font-size: var(--shop-pdp-text-body);
+}
+
+.mockProductNotice {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--shop-pdp-line);
+  color: var(--shop-pdp-copy);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.sizeGuideTableScroll {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.sizeGuideTable {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--shop-pdp-ink);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sizeGuideTable caption {
+  padding-bottom: 12px;
+  text-align: start;
+  font-size: 11px;
+  color: var(--shop-pdp-muted);
+}
+
+.sizeGuideTable th,
+.sizeGuideTable td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--shop-pdp-line);
+  text-align: start;
+  white-space: nowrap;
+}
+
+.sizeGuideTable th {
+  font-weight: 600;
 }
 
 @media (max-width: 47.5rem) {

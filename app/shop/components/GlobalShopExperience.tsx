@@ -15,11 +15,15 @@ import {
 } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { Dialog } from "radix-ui";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { InfluencerFooter } from "../../partner-landing/influencer/components/InfluencerFooter";
 import { shopBrandProfiles } from "../brand/data/brandProfiles.data";
+import { dailyEditProducts } from "../data/dailyEdit.data";
 import { useShopNavigation } from "../hooks/useShopNavigation";
+import { useShopBag } from "../bag/useShopBag";
 import { ShopRunwayExperience } from "../runway/components/ShopRunwayExperience";
+import { ShopMenuNavigation } from "./ShopMenuNavigation";
 import type {
   GlobalShopCategoryFilter,
   GlobalShopProduct,
@@ -27,46 +31,7 @@ import type {
 import styles from "./globalShop.module.css";
 
 const products: GlobalShopProduct[] = [
-  {
-    id: "vela-denim",
-    name: "Vela Cropped Denim",
-    brand: "Northline",
-    price: 148,
-    category: "Denim",
-    image: "/media/global-shop/product-denim-blonde-3d.webp",
-    tone: "Indigo / Ivory",
-    note: "AI fit ready",
-  },
-  {
-    id: "aero-tee",
-    name: "Cobalt Track Set",
-    brand: "Assembly 01",
-    price: 72,
-    category: "Men",
-    image: "/media/global-shop/product-cobalt-3d.webp",
-    tone: "Cobalt / Ivory",
-    note: "4 creator looks",
-  },
-  {
-    id: "cobalt-set",
-    name: "Noir Halo Blazer",
-    brand: "Onda Studio",
-    price: 164,
-    category: "Women",
-    image: "/media/global-shop/product-coral-black-3d.webp",
-    tone: "Black / Coral",
-    note: "Trending now",
-  },
-  {
-    id: "orange-shell",
-    name: "Signal Sport Shell",
-    brand: "Rove Athletics",
-    price: 198,
-    category: "Women",
-    image: "/media/global-shop/product-coral-redhead-3d.webp",
-    tone: "Signal coral",
-    note: "Virtual try-on",
-  },
+  ...dailyEditProducts,
   {
     id: "lavender-set",
     name: "Lilac Volume Jacket",
@@ -140,12 +105,12 @@ const moods = ["Everyday", "Statement", "Weekend"] as const;
 
 export function GlobalShopExperience() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const afterMenuClose = useRef<(() => void) | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState<GlobalShopCategoryFilter>("All");
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-  const [bagCount, setBagCount] = useState(0);
-  const [cartOpen, setCartOpen] = useState(false);
+  const { bagCount, add: addProductToBag, setOpen: setCartOpen } = useShopBag();
   const [selectedBag, setSelectedBag] = useState<(typeof bagLooks)[number]>(
     bagLooks[0],
   );
@@ -155,6 +120,12 @@ export function GlobalShopExperience() {
   const { aiStylistHref, openBrandPage, openCategoryPage } = useShopNavigation({
     onNavigate: closeNavigation,
   });
+
+  function closeMenuThen(action: () => void) {
+    afterMenuClose.current = action;
+    closeNavigation();
+  }
+
   const filteredProducts = useMemo(() => {
     const normalized = searchTerm.trim().toLowerCase();
     return products.filter((product) => {
@@ -184,12 +155,27 @@ export function GlobalShopExperience() {
     );
   }
 
-  function addToBag() {
-    setBagCount((count) => count + 1);
-    setCartOpen(true);
+  function addToBag(product: GlobalShopProduct) {
+    addProductToBag({
+      productId: product.id,
+      name: product.name,
+      brandName: product.brand,
+      image: product.image,
+      size: "",
+      color: product.tone,
+      priceCents: Math.round(product.price * 100),
+      currency: "USD",
+    });
   }
 
   return (
+    <Dialog.Root
+      open={menuOpen}
+      onOpenChange={(open) => {
+        if (open) afterMenuClose.current = null;
+        setMenuOpen(open);
+      }}
+    >
     <main className={styles.page}>
       <header className={styles.header}>
         <Link
@@ -253,15 +239,16 @@ export function GlobalShopExperience() {
             <Handbag size={20} weight="regular" />
             <span>{bagCount}</span>
           </button>
-          <button
-            type="button"
-            className={styles.menuButton}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            {menuOpen ? <X size={22} /> : <List size={22} />}
-          </button>
+          <Dialog.Trigger asChild>
+            <button
+              type="button"
+              className={styles.menuButton}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              onClick={() => setSearchOpen(false)}
+            >
+              {menuOpen ? <X size={22} /> : <List size={22} />}
+            </button>
+          </Dialog.Trigger>
         </div>
 
         {searchOpen ? (
@@ -284,26 +271,91 @@ export function GlobalShopExperience() {
           </div>
         ) : null}
 
-        {menuOpen ? (
-          <nav className={styles.mobileNav} aria-label="Mobile shop navigation">
-            <button type="button" onClick={() => openCategoryPage("Women")}>
-              Women
-            </button>
-            <button type="button" onClick={() => openCategoryPage("Men")}>
-              Men
-            </button>
-            <button type="button" onClick={() => openCategoryPage("Denim")}>
-              Denim
-            </button>
-            <button type="button" onClick={() => scrollTo("ai-stylist")}>
-              AI Stylist
-            </button>
-            <button type="button" onClick={() => scrollTo("brands")}>
-              Brands
-            </button>
-          </nav>
-        ) : null}
       </header>
+
+      <Dialog.Portal>
+        <Dialog.Overlay className={styles.menuSplash} />
+        <Dialog.Content
+          className={styles.menuOverlay}
+          aria-describedby={undefined}
+          onCloseAutoFocus={(event) => {
+            const action = afterMenuClose.current;
+            afterMenuClose.current = null;
+            if (action) {
+              event.preventDefault();
+              action();
+            }
+          }}
+        >
+          <Dialog.Title className={styles.menuAccessibleTitle}>PrimeStyleAI site menu</Dialog.Title>
+          <button
+            type="button"
+            className={styles.menuClose}
+            aria-label="Close menu"
+            onClick={closeNavigation}
+          >
+            <X size={48} weight="thin" />
+          </button>
+
+          <Link
+            className={styles.menuWordmark}
+            href="/shop"
+            aria-label="PrimeStyleAI shop home"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Opens in a new tab"
+            prefetch={false}
+          >
+            <span className={styles.menuLogo} role="img" aria-label="PrimeStyleAI — Shopping Network">
+              <span className={styles.menuLogoMark} aria-hidden="true">
+                <Image
+                  src="/media/partner-landing/primestyleai-new-mark.png"
+                  alt=""
+                  width={1254}
+                  height={1254}
+                  sizes="(max-width: 760px) 120px, 230px"
+                  quality={90}
+                  loading="eager"
+                />
+              </span>
+              <span className={styles.menuLogoText} aria-hidden="true">
+                <span className={styles.menuLogoName}>PrimeStyleAI</span>
+                <span className={styles.menuLogoTagline}>Shopping Network</span>
+              </span>
+            </span>
+          </Link>
+
+          <div className={styles.menuSearchUtility}>
+            <button
+              type="button"
+              onClick={() => closeMenuThen(() => setSearchOpen(true))}
+            >
+              Search
+            </button>
+          </div>
+
+          <nav className={styles.menuUtilityLinks} aria-label="Shop utilities">
+            <button
+              type="button"
+              onClick={() => closeMenuThen(() => setCartOpen(true))}
+            >
+              Bag <span>[ {bagCount} ]</span>
+            </button>
+            <Link
+              href="/customer/login"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Opens in a new tab"
+              prefetch={false}
+            >
+              Log in
+            </Link>
+            <a href="mailto:support@primestyleai.com">Help</a>
+          </nav>
+
+          <ShopMenuNavigation />
+        </Dialog.Content>
+      </Dialog.Portal>
 
       <section className={styles.hero} aria-labelledby="shop-hero-title">
         <div className={styles.heroHeadline}>
@@ -362,9 +414,6 @@ export function GlobalShopExperience() {
       </section>
 
       <ShopRunwayExperience
-        bagCount={bagCount}
-        onAddToBag={addToBag}
-        onOpenCart={() => setCartOpen(true)}
         onOpenCategory={openCategoryPage}
       />
 
@@ -442,7 +491,8 @@ export function GlobalShopExperience() {
                 <button
                   className={styles.addButton}
                   type="button"
-                  onClick={addToBag}
+                  onClick={() => addToBag(product)}
+                  aria-label={`Add ${product.name} to bag`}
                 >
                   Add to bag <Plus size={16} />
                 </button>
@@ -603,25 +653,30 @@ export function GlobalShopExperience() {
                 ))}
               </div>
             </header>
-            <div className={styles.stylistLookRail}>
-              {products.slice(0, 4).map((product) => (
+            <nav className={styles.stylistLookRail} aria-label="Daily Edit products">
+              {dailyEditProducts.map((product) => (
                 <article key={product.id}>
-                  <div>
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 760px) 72vw, 22vw"
-                    />
-                  </div>
-                  <span>{product.note}</span>
-                  <h4>{product.name}</h4>
-                  <p>
-                    {product.brand} · ${product.price}
-                  </p>
+                  <Link href={`/shop/product/${product.id}`} aria-label={`View ${product.name}`}>
+                    <div>
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        sizes="(max-width: 760px) 72vw, 22vw"
+                      />
+                    </div>
+                    <span>{product.note}</span>
+                    <h4>{product.name}</h4>
+                    <p>
+                      {product.brand} · ${product.price}
+                    </p>
+                    <small className={styles.dailyEditProductLink}>
+                      View product <ArrowUpRight size={14} aria-hidden="true" />
+                    </small>
+                  </Link>
                 </article>
               ))}
-            </div>
+            </nav>
           </div>
 
           <div className={styles.stylistBuilderDock}>
@@ -737,11 +792,11 @@ export function GlobalShopExperience() {
         <div className={styles.brandStories}>
           <article>
             <Image
-              src="https://cdn.shopify.com/s/files/1/0710/8231/1725/files/57493c55-52fc-4272-aa84-21d1f810322b-Max.webp?v=1786034036"
-              alt="Judy Blue high-waist straight jeans imported through Trendsi"
+              src="/media/global-shop/brand-campaigns/judy-blue-denim-sculpture-v1.png"
+              alt="Judy Blue denim campaign concept: two women in blue jeans beside an oversized sculptural denim cuff"
               fill
-              sizes="50vw"
-              unoptimized
+              sizes="(max-width: 760px) 92vw, 46vw"
+              quality={90}
             />
             <div>
               <span>Judy Blue</span>
@@ -753,11 +808,11 @@ export function GlobalShopExperience() {
           </article>
           <article>
             <Image
-              src="https://cdn.shopify.com/s/files/1/0710/8231/1725/files/d7639556cd4d490682fee979728e19b9-Max-Origin.webp?v=1786159893"
-              alt="Zenana fleece boyfriend sweatshirt imported through Trendsi"
+              src="/media/global-shop/brand-campaigns/zenana-soft-sculpture-v2.png"
+              alt="Zenana comfortwear campaign concept: two women in soft neutral lounge layers beside a sculptural knitted cuff"
               fill
-              sizes="50vw"
-              unoptimized
+              sizes="(max-width: 760px) 92vw, 46vw"
+              quality={90}
             />
             <div>
               <span>Zenana</span>
@@ -786,49 +841,7 @@ export function GlobalShopExperience() {
         <InfluencerFooter />
       </div>
 
-      {cartOpen ? (
-        <div
-          className={styles.cartScrim}
-          role="presentation"
-          onMouseDown={() => setCartOpen(false)}
-        >
-          <aside
-            className={styles.cartDrawer}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Shopping bag"
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <div>
-              <h2>Your bag</h2>
-              <button
-                type="button"
-                aria-label="Close shopping bag"
-                onClick={() => setCartOpen(false)}
-              >
-                <X size={20} />
-              </button>
-            </div>
-            {bagCount === 0 ? (
-              <p>Your bag is ready for something personal.</p>
-            ) : (
-              <div className={styles.cartSuccess}>
-                <Check size={24} weight="bold" />
-                <h3>
-                  {bagCount} {bagCount === 1 ? "piece" : "pieces"} in your bag
-                </h3>
-                <p>
-                  Your fit profile and virtual try-on will be available before
-                  checkout.
-                </p>
-              </div>
-            )}
-            <button type="button" onClick={() => setCartOpen(false)}>
-              {bagCount ? "Review bag" : "Keep shopping"}
-            </button>
-          </aside>
-        </div>
-      ) : null}
     </main>
+    </Dialog.Root>
   );
 }
