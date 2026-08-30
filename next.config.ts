@@ -27,6 +27,10 @@ const useLocalSdkSource =
 
 const nextConfig: NextConfig = {
   distDir: buildDistDir,
+  // Opt in on memory-constrained build hosts without changing local defaults.
+  ...(process.env.PRIME_PRODUCTS_LOW_MEMORY_BUILD === "true"
+    ? { experimental: { webpackMemoryOptimizations: true } }
+    : {}),
   // The creator release exports only the statically rendered influencer page.
   // Unrelated application routes can be type-checked separately without
   // blocking this isolated artifact.
