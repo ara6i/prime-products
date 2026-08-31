@@ -36,6 +36,9 @@ export function BrandProductCard({
         </span>
         <span className={styles.productCopy}>
           <strong>{product.name}</strong>
+          {product.imageNotice ? (
+            <small className={styles.imageProvenance}>AI-generated preview</small>
+          ) : null}
           <span>
             {product.originalPrice ? (
               <s>{formatBrandPrice(product.originalPrice)}</s>

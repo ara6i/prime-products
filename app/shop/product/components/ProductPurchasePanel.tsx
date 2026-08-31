@@ -63,6 +63,10 @@ export function ProductPurchasePanel({
         </p>
       ) : null}
 
+      {product.imageNotice ? (
+        <p className={styles.mockProductNotice}>{product.imageNotice}</p>
+      ) : null}
+
       {product.sizeRecommendation ? (
         <div className={styles.aiSizeRecommendation} data-status={product.sizeRecommendation.status}>
           <span>PrimeStyleAI size</span>

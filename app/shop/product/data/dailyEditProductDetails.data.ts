@@ -100,7 +100,7 @@ export const dailyEditProductDetails: ProductDetailViewModel[] = dailyEditProduc
     featureImage: `${imageBase}-detail.png`,
     sourceHref: "/shop#outfit-edit",
     sourceLabel: "Daily Edit",
-    canonicalHref: `/shop/product/${product.id}`,
+    canonicalHref: product.href,
     tryOnSupported: false,
     note: "Concept preview only. Generated imagery, sample prices and mock sizing; not available for purchase.",
     information: [
@@ -111,7 +111,7 @@ export const dailyEditProductDetails: ProductDetailViewModel[] = dailyEditProduc
     ],
     related: dailyEditProducts.filter((item) => item.id !== product.id).map((item) => ({
       id: item.id,
-      href: `/shop/product/${item.id}`,
+      href: item.href,
       brandName: item.brand,
       name: item.name,
       image: item.image,

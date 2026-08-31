@@ -160,34 +160,16 @@ function getInformation(
   ];
 }
 
-function getBrandGallery(
-  product: BrandProduct,
-  productIndex: number,
-): ProductGalleryItem[] {
-  if (product.image.startsWith("http")) {
-    return [
-      {
-        id: `${product.id}-view-1`,
-        src: product.image,
-        alt: `${product.name} product view`,
-      },
-    ];
-  }
+function getBrandGallery(product: BrandProduct): ProductGalleryItem[] {
+  // Only use views explicitly associated with this SKU. A local image is not
+  // evidence that one of the shared runway looks belongs to this product.
+  const gallery = product.gallery?.length
+    ? product.gallery
+    : [{ src: product.image, alt: `${product.name} product view` }];
 
-  const lookNumber = 15 + Math.floor(productIndex / 3);
-  const gallery = [
-    product.image,
-    `/media/global-shop/runway-generated/look-${lookNumber}-model.png`,
-    `/media/global-shop/runway-generated/look-${lookNumber}-model-tight.png`,
-  ];
-
-  return gallery.map((src, index) => ({
+  return gallery.map((item, index) => ({
+    ...item,
     id: `${product.id}-view-${index + 1}`,
-    src,
-    alt:
-      index === 0
-        ? `${product.name} product view`
-        : `${product.name} styled runway view ${index}`,
   }));
 }
 
@@ -232,12 +214,7 @@ function mapBrandProduct(
   source: Extract<RawProductDetailSource, { kind: "brand" }>,
 ): ProductDetailViewModel {
   const product = source.catalog.products[source.productIndex];
-  const gallery = getBrandGallery(product, source.productIndex);
-  const sizes = product.sizes.length > 0
-    ? product.sizes
-    : product.category === "Bags"
-      ? ["One size"]
-      : ["XS", "S", "M", "L", "XL"];
+  const gallery = getBrandGallery(product);
   const compareAtPriceCents = product.originalPrice
     ? product.originalPrice * 100
     : undefined;
@@ -259,18 +236,19 @@ function mapBrandProduct(
       ? formatProductPrice(compareAtPriceCents)
       : undefined,
     discountLabel: getDiscountLabel(product.price * 100, compareAtPriceCents),
-    ratingLabel: (4.4 + product.popularity / 250).toFixed(1),
-    reviewLabel: `${Math.max(18, product.popularity + source.productIndex * 7)} reviews`,
-    sizes,
+    sizes: product.sizes,
+    imageNotice: product.imageNotice,
     gallery,
     featureImage: gallery.at(-1)?.src ?? product.image,
     sourceHref: `/shop/brand/${source.catalog.id}`,
     sourceLabel: `${source.catalog.name} edit`,
+    canonicalHref: `/shop/product/${product.id}`,
     note: `${product.color} · ${product.season} ${product.category}`,
     information: getInformation(
       product.category,
       product.color,
       product.description,
+      "Material composition has not been supplied. Check the garment label or merchant listing.",
     ),
     related: mapBrandRelated(
       source.catalog.products,

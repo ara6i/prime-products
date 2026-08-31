@@ -4,6 +4,7 @@ export type GlobalShopCategoryFilter = "All" | GlobalShopCategory;
 
 export type GlobalShopProduct = {
   id: string;
+  href?: string;
   name: string;
   brand: string;
   price: number;

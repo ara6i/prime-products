@@ -32,6 +32,11 @@ export function ProductGallery({
         <span className={styles.galleryCounter}>
           {activeIndex + 1} / {items.length}
         </span>
+        {activeItem.caption ? (
+          <span className={styles.galleryCaption} aria-live="polite">
+            {activeItem.caption}
+          </span>
+        ) : null}
       </div>
 
       {items.length > 1 ? (
@@ -45,6 +50,7 @@ export function ProductGallery({
               variant="ghost"
               aria-label={`Show product view ${index + 1}`}
               aria-pressed={index === activeIndex}
+              title={item.caption ?? item.alt}
               onClick={() => onSelect(index)}
             >
               <Image

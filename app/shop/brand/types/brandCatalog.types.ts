@@ -13,6 +13,12 @@ export type ShopBrandId = (typeof SHOP_BRAND_IDS)[number];
 
 export type BrandSortId = "popular" | "newest" | "price-low" | "price-high";
 
+export type BrandProductImage = {
+  src: string;
+  alt: string;
+  caption: string;
+};
+
 export type BrandProduct = {
   id: string;
   name: string;
@@ -20,6 +26,8 @@ export type BrandProduct = {
   originalPrice?: number;
   badge?: "NEW" | "SALE";
   image: string;
+  gallery?: BrandProductImage[];
+  imageNotice?: string;
   category: string;
   season: string;
   color: string;

@@ -1,9 +1,10 @@
 import type { GlobalShopProduct } from "../types/globalShop.types";
 
 // Keep the landing artwork, names, brands and prices in sync with their mock PDPs.
-export const dailyEditProducts: GlobalShopProduct[] = [
+export const dailyEditProducts: (GlobalShopProduct & { href: string })[] = [
   {
     id: "daily-edit-vela-denim",
+    href: "/shop/product/daily-edit-vela-denim",
     name: "Vela Cropped Denim",
     brand: "Northline",
     price: 148,
@@ -14,6 +15,7 @@ export const dailyEditProducts: GlobalShopProduct[] = [
   },
   {
     id: "daily-edit-cobalt-track",
+    href: "/shop/product/daily-edit-cobalt-track",
     name: "Cobalt Track Set",
     brand: "Assembly 01",
     price: 72,
@@ -24,6 +26,7 @@ export const dailyEditProducts: GlobalShopProduct[] = [
   },
   {
     id: "daily-edit-noir-halo",
+    href: "/shop/product/daily-edit-noir-halo",
     name: "Noir Halo Blazer",
     brand: "Onda Studio",
     price: 164,
@@ -34,6 +37,7 @@ export const dailyEditProducts: GlobalShopProduct[] = [
   },
   {
     id: "daily-edit-signal-shell",
+    href: "/shop/product/daily-edit-signal-shell",
     name: "Signal Sport Shell",
     brand: "Rove Athletics",
     price: 198,

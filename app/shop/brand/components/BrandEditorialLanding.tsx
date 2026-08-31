@@ -145,20 +145,22 @@ export function BrandEditorialLanding({
         className={styles.droppedMediaSection}
         aria-label={`${catalog.name} just dropped collection`}
       >
-        <div className={styles.droppedImage}>
-          <Image
-            src={assets.dropped}
-            alt="Four adults styled in colorful contemporary fashion"
-            fill
-            sizes="100vw"
-          />
-        </div>
         <div className={styles.droppedCards}>
           {droppedProducts.map(({ product, eyebrow }) => (
             <Link key={product.id} href={`/shop/product/${product.id}`}>
+              <span className={styles.droppedProductImage}>
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 47.5rem) 46vw, 24vw"
+                  unoptimized={product.image.startsWith("http")}
+                />
+              </span>
               <span>{eyebrow}</span>
               <strong>{product.name}</strong>
               <small>{formatBrandPrice(product.price)}</small>
+              {product.imageNotice ? <small>AI-generated preview</small> : null}
             </Link>
           ))}
         </div>

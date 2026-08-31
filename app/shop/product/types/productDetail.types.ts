@@ -18,6 +18,7 @@ export type ProductGalleryItem = {
   id: string;
   src: string;
   alt: string;
+  caption?: string;
 };
 
 export type ProductInformationSection = {
@@ -70,6 +71,7 @@ export type ProductDetailViewModel = {
   sizes: string[];
   sizeGuide?: ProductSizeGuideData;
   isMock?: boolean;
+  imageNotice?: string;
   gallery: ProductGalleryItem[];
   featureImage: string;
   sourceHref: string;

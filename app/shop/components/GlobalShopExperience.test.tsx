@@ -42,10 +42,38 @@ it("links each original Daily Edit landing look to its own matching PDP", () => 
   expect(rail.getAllByRole("link")).toHaveLength(4);
   for (const product of dailyEditProducts) {
     const link = rail.getByRole("link", { name: `View ${product.name}` });
-    expect(link.getAttribute("href")).toBe(`/shop/product/${product.id}`);
+    expectNewTabLink(link, product.href);
     expect(within(link).getByAltText(product.name).getAttribute("src")).toBe(product.image);
     expect(within(link).getByText(`${product.brand} · $${product.price}`)).toBeTruthy();
   }
+});
+
+describe("New arrivals product links", () => {
+  it("makes all four product images and names open their matching PDP in a new tab", () => {
+    render(<GlobalShopExperience />);
+    const arrivals = within(screen.getByRole("region", { name: "New arrivals, made personal." }));
+    expect(arrivals.getAllByRole("article")).toHaveLength(4);
+    for (const product of dailyEditProducts) {
+      const imageLink = arrivals.getByRole("link", { name: `View ${product.name}` });
+      expectNewTabLink(imageLink, product.href);
+      expect(within(imageLink).getByAltText(product.name).getAttribute("src")).toBe(product.image);
+      expectNewTabLink(arrivals.getByRole("link", { name: product.name }), product.href);
+      expect(imageLink.querySelector("button")).toBeNull();
+    }
+  });
+
+  it("keeps favorites and quick-add separate from navigation and saves the matching PDP link", async () => {
+    const user = userEvent.setup();
+    render(<GlobalShopExperience />);
+    const arrivals = within(screen.getByRole("region", { name: "New arrivals, made personal." }));
+    const product = dailyEditProducts[0];
+    await user.click(arrivals.getByRole("button", { name: `Add ${product.name} to favorites` }));
+    expect(arrivals.getByRole("button", { name: `Remove ${product.name} from favorites` })).toBeTruthy();
+    expect(actions.add).not.toHaveBeenCalled();
+    await user.click(arrivals.getByRole("button", { name: `Add ${product.name} to bag` }));
+    expect(actions.add).toHaveBeenCalledWith(expect.objectContaining({ productId: product.id, href: product.href }));
+    expect(actions.push).not.toHaveBeenCalled();
+  });
 });
 
 async function openMenu() {

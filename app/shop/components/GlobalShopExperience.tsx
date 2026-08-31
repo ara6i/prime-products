@@ -161,6 +161,7 @@ export function GlobalShopExperience() {
       name: product.name,
       brandName: product.brand,
       image: product.image,
+      href: product.href,
       size: "",
       color: product.tone,
       priceCents: Math.round(product.price * 100),
@@ -457,15 +458,30 @@ export function GlobalShopExperience() {
         <div className={styles.productGrid}>
           {filteredProducts.slice(0, 4).map((product) => {
             const favorite = favoriteIds.includes(product.id);
+            const productImage = (
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                sizes="(max-width: 700px) 82vw, (max-width: 1100px) 44vw, 24vw"
+              />
+            );
             return (
               <article className={styles.productCard} key={product.id}>
                 <div className={styles.productImage}>
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    sizes="(max-width: 700px) 82vw, (max-width: 1100px) 44vw, 24vw"
-                  />
+                  {product.href ? (
+                    <Link
+                      className={styles.productImageLink}
+                      href={product.href}
+                      aria-label={`View ${product.name}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Opens in a new tab"
+                      prefetch={false}
+                    >
+                      {productImage}
+                    </Link>
+                  ) : productImage}
                   <button
                     type="button"
                     className={favorite ? styles.favoriteActive : ""}
@@ -482,7 +498,19 @@ export function GlobalShopExperience() {
                 </div>
                 <div className={styles.productMeta}>
                   <p>{product.brand}</p>
-                  <h3>{product.name}</h3>
+                  <h3>
+                    {product.href ? (
+                      <Link
+                        href={product.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Opens in a new tab"
+                        prefetch={false}
+                      >
+                        {product.name}
+                      </Link>
+                    ) : product.name}
+                  </h3>
                   <div>
                     <span>{product.tone}</span>
                     <strong>${product.price}</strong>
@@ -656,7 +684,14 @@ export function GlobalShopExperience() {
             <nav className={styles.stylistLookRail} aria-label="Daily Edit products">
               {dailyEditProducts.map((product) => (
                 <article key={product.id}>
-                  <Link href={`/shop/product/${product.id}`} aria-label={`View ${product.name}`}>
+                  <Link
+                    href={product.href}
+                    aria-label={`View ${product.name}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Opens in a new tab"
+                    prefetch={false}
+                  >
                     <div>
                       <Image
                         src={product.image}

@@ -223,6 +223,18 @@
   order: -1;
 }
 
+.galleryCaption {
+  position: absolute;
+  inset-inline-start: var(--shop-pdp-gap-sm);
+  inset-block-end: var(--shop-pdp-gap-sm);
+  max-width: calc(100% - 6rem);
+  padding: var(--shop-pdp-gap-xs) var(--shop-pdp-gap-sm);
+  background: color-mix(in srgb, var(--shop-pdp-paper) 94%, transparent);
+  color: var(--shop-pdp-ink);
+  font-size: var(--shop-pdp-text-caption);
+  line-height: 1.4;
+}
+
 .galleryThumbnail {
   position: relative;
   width: 100%;
