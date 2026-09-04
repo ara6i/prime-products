@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>MyAIFitting feature decisions for Shane</title>
+  <title>Simple MyAIFitting questions for Shane</title>
   <style>
     :root { color-scheme: light; --ink:#201d2a; --muted:#6d6877; --line:#ddd9e5; --blue:#2154ef; --soft:#f5f6fb; --gold:#fff0a8; }
     * { box-sizing:border-box; }
@@ -34,40 +34,40 @@
 <body>
 <main>
   <header>
-    <span class="badge">Decision review · proposed defaults</span>
-    <h1>MyAIFitting purchase benefits, wedding styling, and sharing</h1>
-    <p class="muted">Shane: please approve each proposed decision or choose “Change” and add the replacement. Answers stay in this browser and can be copied or printed.</p>
+    <span class="badge">Questions for Shane · our suggested answers</span>
+    <h1>Simple questions about the new MyAIFitting features</h1>
+    <p class="muted">For each question, choose “Yes, use this answer” or “No, I want a change.” If you want a change, write it in the box. Your answers stay in this browser. You can copy or print them.</p>
   </header>
   <div id="questions" class="grid" aria-label="Feature decision questions"></div>
   <div class="actions">
-    <button class="primary" id="copy" type="button">Copy response summary</button>
+    <button class="primary" id="copy" type="button">Copy my answers</button>
     <button class="secondary" id="print" type="button">Print / Save PDF</button>
     <button class="secondary" id="reset" type="button">Reset answers</button>
     <span class="status" id="status" role="status" aria-live="polite"></span>
   </div>
-  <section class="summary" id="summary" aria-labelledby="summary-title"><h2 id="summary-title">Response summary</h2><span class="muted">No answers saved yet.</span></section>
+  <section class="summary" id="summary" aria-labelledby="summary-title"><h2 id="summary-title">Your answers</h2><span class="muted">You have not answered yet.</span></section>
 </main>
 <script>
   const questions = [
-    ["Token price", "Should each completed classic Try On or AI Stylist visual outfit cost exactly 10 tokens?", "Yes. Classic Try On is 10 regardless of garment count; AI Stylist charges 10 for each outfit actually sent to visual try-on. Catalog recommendations are free."],
-    ["Purchase credit", "Should buying any attributed item in its recommended size return the complete generation charge?", "Yes. Credit 10 tokens once per qualifying generation, not once per product."],
-    ["Credit timing and returns", "Should the credit appear when the order is paid and reverse only when no qualifying item from that generation remains?", "Yes. Paid orders credit immediately. Cancellation or return of the last qualifying retained item appends a 10-token reversal."],
-    ["Reversal shortfall", "What if fewer than 10 tokens remain when a reversal is required?", "Clamp the balance at zero and record the unrecovered shortfall for audit. Do not create token debt or seize future credits."],
-    ["Free standard shipping", "Should free shipping require every sizing-eligible order line to use its recommended size?", "Yes. At least one sizing-eligible item must exist; every eligible line must match. Non-sizing items are neutral."],
-    ["Attribution window", "How long after generation may an explicitly attributed purchase qualify?", "30 days from successful generation to checkout."],
-    ["Expedited delivery", "How should expedited shipping work for a qualifying order?", "Credit the standard-shipping amount and charge the customer only the expedited difference."],
-    ["Public share", "What should friends see without signing in?", "A revocable public link showing the tried-on outfit on the disc plus clickable, sanitized product details. Sign-in is suggested, never required."],
-    ["Stars and notes", "Who may rate, and who may read written notes?", "Owners and anonymous friends may give 1–5 stars and an optional short note. Aggregates are public; raw notes are private to the owner/moderation."],
-    ["Wedding launch", "What CJ-only inventory must be guaranteed for the first wedding release?", "Ten unique bride looks and ten unique groom/tuxedo looks. Bridesmaid, groomsman, and guest roles use the same palette/board workflow without an initial ten-look guarantee."],
+    ["Cost in tokens", "When a Try On picture is finished, should it cost 10 tokens? Should each AI Stylist outfit picture also cost 10 tokens?", "Yes. One finished Try On costs 10 tokens, even if it uses more than one clothing item. Each AI Stylist outfit made into a Try On picture also costs 10 tokens. Looking at the 10 suggested outfits is free."],
+    ["Give tokens back after buying", "If a user buys an item from a Try On in the size we suggested, should we give back all 10 tokens?", "Yes. Give back 10 tokens one time for that Try On. Do not give 10 tokens for every item from the same Try On."],
+    ["When tokens are given back", "When should we give the 10 tokens back? What happens if the user later returns the item?", "Give back the 10 tokens as soon as the order is paid. If the user returns every correct-size item from that Try On, take the 10 tokens back. If the user still keeps one correct-size item, do not take the tokens back."],
+    ["Not enough tokens", "What should happen if we need to take back 10 tokens, but the user has fewer than 10?", "Take only the tokens that are left and make the balance zero. Save a record of the missing amount. Do not make the balance negative. Do not take tokens from the user later."],
+    ["Free normal shipping", "Should the user get free normal shipping only when every item that has a suggested size is bought in that size?", "Yes. The order must have at least one item with a size suggestion. Every such item must use the suggested size. Items that do not have a size suggestion do not affect the answer."],
+    ["30-day limit", "How much time should a user have to buy an item after making the Try On?", "30 days. The user must buy it within 30 days after the Try On is finished."],
+    ["Fast shipping", "What happens if the user chooses fast or express shipping?", "We pay the cost of normal shipping. The user pays only the extra cost for faster shipping."],
+    ["Share with friends", "What should a friend see when the user shares an outfit?", "The friend can open a public link without logging in. They can see the outfit on the disc and click each item to see safe product details. We can ask them to log in, but we must not require it. The owner can turn the link off later."],
+    ["Stars and short notes", "Who can rate an outfit, and who can see the written notes?", "The owner and friends can give 1 to 5 stars and write a short note. Everyone can see the average stars and number of votes. Only the outfit owner and our moderation team can see the full written notes."],
+    ["First wedding products", "For the first wedding version, how many CJ outfits must be ready?", "10 different bride looks and 10 different groom or tuxedo looks. We will also support bridesmaids, groomsmen, and guests, but they do not need 10 guaranteed looks at first."],
   ];
   const storageKey = "myaifitting-shane-decisions-v1";
   let saved = {}; try { saved = JSON.parse(localStorage.getItem(storageKey) || "{}"); } catch {}
   const root = document.getElementById("questions");
-  root.innerHTML = questions.map((q,i)=>`<section class="card"><h3>${i+1}. ${q[0]}</h3><p>${q[1]}</p><div class="default"><strong>Arash’s proposed default:</strong><br>${q[2]}</div><div class="choices"><label><input type="radio" name="q${i}" value="approved"> Approve</label><label><input type="radio" name="q${i}" value="change"> Change</label></div><label for="note${i}">Replacement or note</label><textarea id="note${i}" placeholder="Write a replacement decision or context…"></textarea></section>`).join("");
+  root.innerHTML = questions.map((q,i)=>`<section class="card"><h3>${i+1}. ${q[0]}</h3><p>${q[1]}</p><div class="default"><strong>Our suggested answer:</strong><br>${q[2]}</div><div class="choices"><label><input type="radio" name="q${i}" value="approved"> Yes, use this answer</label><label><input type="radio" name="q${i}" value="change"> No, I want a change</label></div><label for="note${i}">Your change or note</label><textarea id="note${i}" placeholder="Write your change or note here…"></textarea></section>`).join("");
   function render() {
-    const lines = ["MyAIFitting decisions — Shane review", ""];
-    questions.forEach((q,i)=>{ const answer=saved[i]||{}; lines.push(`${i+1}. ${q[0]}: ${answer.choice || "unanswered"}${answer.note ? ` — ${answer.note}` : ""}`); });
-    document.getElementById("summary").innerHTML = `<h2 id="summary-title">Response summary</h2>${lines.join("\n")}`;
+    const lines = ["MyAIFitting — Shane's answers", ""];
+    questions.forEach((q,i)=>{ const answer=saved[i]||{}; const choice=answer.choice === "approved" ? "Yes, use the suggested answer" : answer.choice === "change" ? "No, I want a change" : "Not answered"; lines.push(`${i+1}. ${q[0]}: ${choice}${answer.note ? ` — ${answer.note}` : ""}`); });
+    document.getElementById("summary").innerHTML = `<h2 id="summary-title">Your answers</h2>${lines.join("\n")}`;
     localStorage.setItem(storageKey, JSON.stringify(saved));
   }
   questions.forEach((_,i)=>{
@@ -77,9 +77,9 @@
     document.querySelectorAll(`input[name=q${i}]`).forEach(el=>el.addEventListener("change",e=>{saved[i]={...(saved[i]||{}),choice:e.target.value};render();}));
     document.getElementById(`note${i}`).addEventListener("input",e=>{saved[i]={...(saved[i]||{}),note:e.target.value};render();});
   });
-  document.getElementById("copy").addEventListener("click",async()=>{ await navigator.clipboard.writeText(document.getElementById("summary").innerText); document.getElementById("status").textContent="Summary copied."; });
+  document.getElementById("copy").addEventListener("click",async()=>{ await navigator.clipboard.writeText(document.getElementById("summary").innerText); document.getElementById("status").textContent="Your answers were copied."; });
   document.getElementById("print").addEventListener("click",()=>window.print());
-  document.getElementById("reset").addEventListener("click",()=>{ if(!confirm("Clear Shane’s saved answers in this browser?"))return; saved={}; localStorage.removeItem(storageKey); location.reload(); });
+  document.getElementById("reset").addEventListener("click",()=>{ if(!confirm("Delete the answers saved in this browser?"))return; saved={}; localStorage.removeItem(storageKey); location.reload(); });
   render();
 </script>
 </body>
