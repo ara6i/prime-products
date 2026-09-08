@@ -48,4 +48,6 @@ Each person receives front/side 2D JSON, preview GLB, .blend, metadata, camera p
 
 Set `PRIMESTYLE_WEAR_USE_PREBUILT_S3=1` on Test Server so it restores and verifies every checksum before serving a body. Also set `PRIMESTYLE_WEAR_REQUIRE_PREBUILT_S3=1` on Test Server: an unfinished scan then returns a clear artifact-not-ready error and never falls back to Blender. Local Test Lab may omit the second flag to retain on-demand headless Blender generation while the batch is being built.
 
+For an authenticated Test Server, set `PRIME_PRODUCTS_INTERNAL_ORIGIN` to its local Next listener (for example `http://127.0.0.1:3004`). Private mesh proxy calls then remain inside the host instead of re-entering the public login boundary.
+
 As of 2026-09-08, NA-0217-A is the verified S3 pilot. The full batch is not complete until the root artifact manifest contains 4,324 unique successful scan IDs.

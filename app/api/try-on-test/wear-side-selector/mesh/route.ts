@@ -32,8 +32,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "The hidden input side mesh is available only after a user selection is revealed." }, { status: 403 });
     }
 
-    const origin = new URL(request.url).origin;
-    const renderResponse = await fetch(new URL("/api/try-on-test/sizing-lab/sdk-wear/render", origin), {
+    const publicOrigin = new URL(request.url).origin;
+    // On the authenticated Test Server, calling the public origin from inside
+    // the route re-enters the site login boundary without the browser cookie.
+    // Keep this private server-to-server hop on loopback instead.
+    const internalOrigin = process.env.PRIME_PRODUCTS_INTERNAL_ORIGIN ?? publicOrigin;
+    const renderResponse = await fetch(new URL("/api/try-on-test/sizing-lab/sdk-wear/render", internalOrigin), {
       method: "POST",
       headers: { "Content-Type": "application/json", Host: request.headers.get("host") ?? "" },
       body: JSON.stringify({ scanId }),
@@ -50,7 +54,7 @@ export async function POST(request: Request) {
     }
     const artifactPath = body.view === "front" ? rendered.artifacts.front2dUrl : rendered.artifacts.side2dUrl;
     if (!artifactPath) throw new Error(`The ${body.view} mesh is missing for ${scanId}.`);
-    const artifactResponse = await fetch(new URL(artifactPath, origin), {
+    const artifactResponse = await fetch(new URL(artifactPath, internalOrigin), {
       headers: { Host: request.headers.get("host") ?? "" },
       cache: "no-store",
     });
