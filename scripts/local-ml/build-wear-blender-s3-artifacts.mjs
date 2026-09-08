@@ -2,7 +2,7 @@
 
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
-import { access, appendFile, readFile, readdir, stat, writeFile } from "node:fs/promises";
+import { access, appendFile, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -23,6 +23,7 @@ const LIMIT = Number(valueAfter("--limit", "0"));
 const START_AFTER = valueAfter("--start-after", "");
 const UPLOAD = args.has("--upload");
 const MANIFEST_ONLY = args.has("--manifest-only");
+const CLEANUP_LOCAL = args.has("--cleanup-local");
 const REQUIRED = [
   "front-2d.json",
   "side-2d.json",
@@ -153,6 +154,7 @@ async function main() {
     version: VERSION,
     destination: `s3://${BUCKET}/${PREFIX}/`,
     upload: UPLOAD,
+    cleanupLocal: CLEANUP_LOCAL,
     catalogPeople: catalog.personCount,
     alreadyCompleted: completed.size,
     scheduled: people.length,
@@ -180,6 +182,16 @@ async function main() {
         uploaded: UPLOAD,
         completedAt: new Date().toISOString(),
       }) + "\n", { mode: 0o600 });
+      if (UPLOAD && CLEANUP_LOCAL) {
+        try {
+          await Promise.all([
+            rm(path.join(ROOT, ".local-ml", "wear-sdk-heldout", "blender", scanId.toLowerCase()), { recursive: true, force: true }),
+            rm(path.join(ROOT, ".local-ml", "wear-mesh-overlay", "dynamic-sources", scanId.toLowerCase()), { recursive: true, force: true }),
+          ]);
+        } catch (cleanupError) {
+          process.stderr.write(`[${index + 1}/${people.length}] ${scanId} uploaded, but local cleanup failed: ${cleanupError.message}\n`);
+        }
+      }
       process.stdout.write(`[${index + 1}/${people.length}] ${scanId} complete${UPLOAD ? " + uploaded" : ""}\n`);
     } catch (error) {
       await appendFile(checkpointPath, JSON.stringify({
