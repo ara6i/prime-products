@@ -37,9 +37,15 @@ export async function POST(request: Request) {
     // the route re-enters the site login boundary without the browser cookie.
     // Keep this private server-to-server hop on loopback instead.
     const internalOrigin = process.env.PRIME_PRODUCTS_INTERNAL_ORIGIN ?? publicOrigin;
+    const cookie = request.headers.get("cookie");
+    const internalHeaders = {
+      "Content-Type": "application/json",
+      Host: request.headers.get("host") ?? "",
+      ...(cookie ? { Cookie: cookie } : {}),
+    };
     const renderResponse = await fetch(new URL("/api/try-on-test/sizing-lab/sdk-wear/render", internalOrigin), {
       method: "POST",
-      headers: { "Content-Type": "application/json", Host: request.headers.get("host") ?? "" },
+      headers: internalHeaders,
       body: JSON.stringify({ scanId }),
       cache: "no-store",
     });
@@ -55,7 +61,7 @@ export async function POST(request: Request) {
     const artifactPath = body.view === "front" ? rendered.artifacts.front2dUrl : rendered.artifacts.side2dUrl;
     if (!artifactPath) throw new Error(`The ${body.view} mesh is missing for ${scanId}.`);
     const artifactResponse = await fetch(new URL(artifactPath, internalOrigin), {
-      headers: { Host: request.headers.get("host") ?? "" },
+      headers: internalHeaders,
       cache: "no-store",
     });
     if (!artifactResponse.ok) throw new Error(`The ${body.view} Blender mesh could not be read.`);
