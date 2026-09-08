@@ -14,6 +14,7 @@ const TABS = [
   { href: "/try-on-test/wear-everything", label: "WEAR Everything" },
   { href: "/try-on-test/wear-mesh-overlay", label: "WEAR Mesh Match" },
   { href: "/try-on-test/wear-front-side-proof", label: "Front + Side Proof" },
+  { href: "/try-on-test/wear-side-selector", label: "WEAR Side Mesh Picker" },
   { href: "/try-on-test/model-forge", label: "Model Forge" },
   { href: "/try-on-test/capacity-lab", label: "Capacity Lab" },
   { href: "/try-on-test/ai-stylist", label: "AI Stylist" },

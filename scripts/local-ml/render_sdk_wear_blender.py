@@ -17,15 +17,16 @@ import tempfile
 from pathlib import Path
 
 from mathutils import Vector
-
-
-RENDER_SCHEMA_VERSION = 4
+RENDER_SCHEMA_VERSION = 8
+MAX_DISPLAY_SOURCE_FACES = 18_000
 CAMERA_CARDS = (
     {"id": "canonical", "yawDeg": 0.0, "pitchDeg": 0.0, "rollDeg": 0.0, "lensMm": 55.0},
     {"id": "yaw-left-12", "yawDeg": -12.0, "pitchDeg": 0.0, "rollDeg": 0.0, "lensMm": 55.0},
     {"id": "yaw-right-12", "yawDeg": 12.0, "pitchDeg": 0.0, "rollDeg": 0.0, "lensMm": 55.0},
     {"id": "pitch-up-6", "yawDeg": 0.0, "pitchDeg": 6.0, "rollDeg": 0.0, "lensMm": 55.0},
     {"id": "roll-right-3", "yawDeg": 0.0, "pitchDeg": 0.0, "rollDeg": 3.0, "lensMm": 55.0},
+    {"id": "side-left-90", "yawDeg": -90.0, "pitchDeg": 0.0, "rollDeg": 0.0, "lensMm": 55.0},
+    {"id": "side-right-90", "yawDeg": 90.0, "pitchDeg": 0.0, "rollDeg": 0.0, "lensMm": 55.0},
 )
 
 
@@ -43,9 +44,13 @@ def arguments() -> argparse.Namespace:
 
 
 def load_base_renderer():
-    source = Path.cwd() / ".local-ml/tools/render_wear3d_pilot.py"
-    if not source.is_file():
-        raise RuntimeError(f"Canonical WEAR renderer is unavailable: {source}")
+    candidates = (
+        Path.cwd() / ".local-ml/tools/render_wear3d_pilot.py",
+        Path.cwd() / "share/WEAR-V8-PIPELINE-2026-08-26/01_teacher/exact_remote_worker/render_wear3d_pilot.py",
+    )
+    source = next((candidate for candidate in candidates if candidate.is_file()), None)
+    if source is None:
+        raise RuntimeError(f"Canonical WEAR renderer is unavailable: {candidates}")
     spec = importlib.util.spec_from_file_location("teacher_proof_base_renderer", source)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"Could not import canonical WEAR renderer: {source}")
@@ -104,6 +109,118 @@ def world_bounds(obj: bpy.types.Object) -> tuple[Vector, Vector]:
         Vector((min(point.x for point in corners), min(point.y for point in corners), min(point.z for point in corners))),
         Vector((max(point.x for point in corners), max(point.y for point in corners), max(point.z for point in corners))),
     )
+
+
+def write_flat_projection(body: bpy.types.Object, view: str, output_path: Path) -> dict[str, object]:
+    coordinates = np.empty(len(body.data.vertices) * 3, dtype=np.float64)
+    body.data.vertices.foreach_get("co", coordinates)
+    coordinates = coordinates.reshape((-1, 3))
+    source_triangles = np.asarray(
+        [list(polygon.vertices) for polygon in body.data.polygons],
+        dtype=np.int64,
+    )
+    if source_triangles.ndim != 2 or source_triangles.shape[1] != 3:
+        raise RuntimeError("The source WEAR PLY must already contain triangle faces; no replacement triangulation is allowed.")
+
+    # The browser view uses only faces that already exist in the PLY. We select
+    # camera-facing source faces for a responsive wire display, but never create,
+    # collapse, stretch, or reconnect geometry.
+    face_points = coordinates[source_triangles]
+    normals = np.cross(face_points[:, 1] - face_points[:, 0], face_points[:, 2] - face_points[:, 0])
+    view_to_camera = np.asarray((0.0, -1.0, 0.0) if view == "front" else (1.0, 0.0, 0.0))
+    facing = normals @ view_to_camera
+    horizontal_index = 0 if view == "front" else 1
+    horizontal_direction = 1.0 if view == "front" else -1.0
+    projected_all = coordinates[:, [horizontal_index, 2]].copy() * 100.0
+    projected_all[:, 0] *= horizontal_direction
+    projected_faces = projected_all[source_triangles]
+    projected_twice_area = np.abs(
+        (projected_faces[:, 1, 0] - projected_faces[:, 0, 0])
+        * (projected_faces[:, 2, 1] - projected_faces[:, 0, 1])
+        - (projected_faces[:, 1, 1] - projected_faces[:, 0, 1])
+        * (projected_faces[:, 2, 0] - projected_faces[:, 0, 0])
+    )
+    visible_face_indices = np.flatnonzero((facing > 1e-12) & (projected_twice_area > 1e-8))
+    if not len(visible_face_indices):
+        raise RuntimeError(f"The real WEAR PLY has no camera-facing source faces for its {view} projection.")
+    if len(visible_face_indices) > MAX_DISPLAY_SOURCE_FACES:
+        sample_positions = np.linspace(
+            0,
+            len(visible_face_indices) - 1,
+            MAX_DISPLAY_SOURCE_FACES,
+            dtype=np.int64,
+        )
+        display_face_indices = visible_face_indices[sample_positions]
+    else:
+        display_face_indices = visible_face_indices
+    display_source_triangles = source_triangles[display_face_indices]
+
+    # A real mesh silhouette is made of edges whose adjacent source faces turn
+    # from camera-facing to back-facing. Export independent edge segments so no
+    # false bridge is ever closed across an arm, torso gap, or the floor.
+    source_edges = np.concatenate((
+        source_triangles[:, [0, 1]],
+        source_triangles[:, [1, 2]],
+        source_triangles[:, [2, 0]],
+    ))
+    source_edge_faces = np.tile(np.arange(len(source_triangles), dtype=np.int64), 3)
+    source_edges = np.sort(source_edges, axis=1)
+    edge_order = np.lexsort((source_edges[:, 1], source_edges[:, 0]))
+    sorted_edges = source_edges[edge_order]
+    sorted_edge_faces = source_edge_faces[edge_order]
+    group_starts = np.r_[0, np.flatnonzero(np.any(np.diff(sorted_edges, axis=0), axis=1)) + 1]
+    group_ends = np.r_[group_starts[1:], len(sorted_edges)]
+    silhouette_edges: list[np.ndarray] = []
+    for start, end in zip(group_starts, group_ends):
+        adjacent = sorted_edge_faces[start:end]
+        adjacent_facing = facing[adjacent]
+        if (
+            (len(adjacent) == 1 and adjacent_facing[0] > 1e-12)
+            or (adjacent_facing.max(initial=-1.0) > 1e-12 and adjacent_facing.min(initial=1.0) <= 1e-12)
+        ):
+            silhouette_edges.append(sorted_edges[start])
+    silhouette_edge_indices = np.asarray(silhouette_edges, dtype=np.int64).reshape((-1, 2))
+    silhouette_segments = [
+        [[round(float(value), 5) for value in projected_all[vertex_index]] for vertex_index in edge]
+        for edge in silhouette_edge_indices
+    ]
+
+    used_vertex_indices = np.unique(display_source_triangles.reshape(-1))
+    remap = np.full(len(coordinates), -1, dtype=np.int64)
+    remap[used_vertex_indices] = np.arange(len(used_vertex_indices), dtype=np.int64)
+    vertices = np.round(projected_all[used_vertex_indices], 5).tolist()
+    triangles = remap[display_source_triangles].astype(int).tolist()
+    payload = {
+        "schemaVersion": "primestyle-wear-blender-2d/v3",
+        "scanId": body.get("wear_scan_id"),
+        "view": view,
+        "units": "centimetres",
+        "source": "Orthographic projection of existing camera-facing faces from the real canonical WEAR PLY",
+        "generator": {
+            "application": "Blender",
+            "version": bpy.app.version_string,
+            "headless": bool(bpy.app.background),
+            "pythonApi": True,
+            "operation": f"Canonical {view} orthographic projection of existing source PLY face topology; no new triangulation",
+        },
+        "verticesCm": vertices,
+        "triangles": triangles,
+        "outlineCm": [],
+        "outlineSegmentsCm": silhouette_segments,
+        "stats": {
+            "vertexCount": len(vertices),
+            "triangleCount": len(triangles),
+            "outlinePointCount": 0,
+            "silhouetteSegmentCount": len(silhouette_segments),
+            "sourcePlyVertexCount": len(body.data.vertices),
+            "sourcePlyFaceCount": len(body.data.polygons),
+            "cameraFacingSourceFaceCount": len(visible_face_indices),
+            "displayedSourceFaceCount": len(triangles),
+            "displayFaceSelection": "deterministic subset of existing camera-facing source PLY faces",
+        },
+    }
+    output_path.write_text(json.dumps(payload, separators=(",", ":")) + "\n")
+    return payload
 
 
 def keep_largest_component(body: bpy.types.Object) -> dict[str, int]:
@@ -343,10 +460,14 @@ def main() -> None:
     output_png = args.output_dir / "render.png"
     output_blend = args.output_dir / "scene.blend"
     output_meta = args.output_dir / "metadata.json"
+    output_front_2d = args.output_dir / "front-2d.json"
+    output_side_2d = args.output_dir / "side-2d.json"
 
     clear_scene()
     with tempfile.TemporaryDirectory(prefix="primestyle-sdk-wear-") as temp:
         body, metadata = prepare_body(args, Path(temp))
+    front_2d = write_flat_projection(body, "front", output_front_2d)
+    side_2d = write_flat_projection(body, "side", output_side_2d)
     scene, camera, camera_target = configure_scene(args.height_cm / 100.0, output_png)
 
     bpy.ops.object.select_all(action="DESELECT")
@@ -384,7 +505,14 @@ def main() -> None:
         "blend": output_blend.name,
         "glb": output_glb.name,
         "png": output_png.name,
+        "front2d": output_front_2d.name,
+        "side2d": output_side_2d.name,
         "cameraCards": [card["file"] for card in rendered_camera_cards],
+    }
+    metadata["projection2d"] = {
+        "front": front_2d["stats"],
+        "side": side_2d["stats"],
+        "truthBoundary": "Both 2D views project existing source PLY faces and true face-turn silhouette edges. No silhouette fill, Delaunay mesh, body guess, or RGB render is used.",
     }
     output_meta.write_text(json.dumps(metadata, indent=2) + "\n")
     print(f"SDK_WEAR_BLENDER_RESULT={json.dumps(metadata, separators=(',', ':'))}")

@@ -5,7 +5,10 @@ import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
 const SAFE_SCAN_ID = /^(?:IT|NA|NL)-[0-9]{4}-A$/;
-const BUCKET = "primestyleai-wear3d-921049726279-us-east-1";
+const BUCKET = process.env.PRIMESTYLE_WEAR_S3_BUCKET ?? "primestyleai-wear3d-921049726279-us-east-1";
+const REGION = process.env.PRIMESTYLE_WEAR_S3_REGION ?? "us-east-1";
+const SOURCE_MANIFEST_KEY = process.env.PRIMESTYLE_WEAR_SOURCE_MANIFEST_KEY
+  ?? "manifests/wear3d-standing-a-v3-20260813/source-manifest-standing-a.jsonl";
 const SOURCE_PREFIX = "/opt/primestyle/wear3d/";
 
 interface ManifestRecord {
@@ -31,14 +34,34 @@ async function exists(filePath: string) {
   }
 }
 
-async function manifestRecords() {
-  if (manifestPromise) return manifestPromise;
+function awsArguments(source: string, destination: string) {
+  const args = ["s3", "cp", source, destination, "--region", REGION, "--only-show-errors"];
+  const profile = process.env.PRIMESTYLE_WEAR_S3_PROFILE;
+  if (profile) args.push("--profile", profile);
+  return args;
+}
+
+export async function wearSourceManifestPath() {
   const manifestPath = path.join(
     process.cwd(),
     ".local-ml",
     "wear3d-v6-audit",
     "source-manifest-standing-a.jsonl",
   );
+  if (await exists(manifestPath)) return manifestPath;
+  await mkdir(path.dirname(manifestPath), { recursive: true });
+  await execFileAsync(
+    "aws",
+    awsArguments(`s3://${BUCKET}/${SOURCE_MANIFEST_KEY}`, manifestPath),
+    { cwd: process.cwd(), timeout: 240_000, maxBuffer: 2 * 1024 * 1024 },
+  );
+  if (!(await exists(manifestPath))) throw new Error("The verified WEAR source manifest was not downloaded from S3.");
+  return manifestPath;
+}
+
+async function manifestRecords() {
+  if (manifestPromise) return manifestPromise;
+  const manifestPath = await wearSourceManifestPath();
   manifestPromise = readFile(manifestPath, "utf8").then((source) => new Map(
     source.split("\n")
       .filter(Boolean)
@@ -48,6 +71,11 @@ async function manifestRecords() {
       }),
   ));
   return manifestPromise;
+}
+
+export async function loadWearSourceManifestRecord(scanId: string) {
+  if (!SAFE_SCAN_ID.test(scanId)) return null;
+  return (await manifestRecords()).get(scanId) ?? null;
 }
 
 function s3Key(sourcePath: string) {
@@ -126,15 +154,7 @@ async function ensureWearSourcePair(scanId: string) {
     if (await exists(targetPath)) continue;
     await execFileAsync(
       "aws",
-      [
-        "s3",
-        "cp",
-        `s3://${BUCKET}/${s3Key(sourcePath)}`,
-        targetPath,
-        "--region",
-        "us-east-1",
-        "--only-show-errors",
-      ],
+      awsArguments(`s3://${BUCKET}/${s3Key(sourcePath)}`, targetPath),
       { cwd: root, timeout: 240_000, maxBuffer: 2 * 1024 * 1024 },
     );
   }
