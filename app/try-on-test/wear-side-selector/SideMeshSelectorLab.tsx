@@ -46,6 +46,47 @@ function candidateMetric(candidate: WearFrontCandidate, mode: WearRankingMode) {
   return typeof gap === "number" ? `${gap.toFixed(2)} cm front-width gap` : "Row unavailable";
 }
 
+function FrontDifferenceGrid({
+  candidate,
+  inputWidths,
+}: {
+  candidate: WearFrontCandidate;
+  inputWidths: WearRankingResponse["input"]["frontWidthCmByPart"];
+}) {
+  return (
+    <div className="mt-3 overflow-hidden rounded-lg border border-cyan-300/15 bg-slate-950/80">
+      <div className="border-b border-white/10 px-3 py-2">
+        <strong className="text-xs text-white">All front-width differences</strong>
+        <span className="ml-2 text-[11px] text-slate-500">candidate − input</span>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5">
+        {SDK_WEAR_PARTS.map((part) => {
+          const inputCm = inputWidths[part];
+          const candidateCm = candidate.frontWidthCmByPart[part];
+          const differenceCm = typeof inputCm === "number" && typeof candidateCm === "number"
+            ? candidateCm - inputCm
+            : null;
+          return (
+            <div key={part} className="border-b border-r border-white/5 px-3 py-2 last:border-r-0">
+              <span className="block text-[11px] font-bold uppercase tracking-wide text-slate-400">{LABELS[part]}</span>
+              {differenceCm == null ? (
+                <strong className="mt-1 block text-sm text-slate-500">Unavailable</strong>
+              ) : (
+                <>
+                  <strong className={`mt-1 block text-sm ${Math.abs(differenceCm) <= 1 ? "text-emerald-300" : "text-orange-300"}`}>
+                    {signed(differenceCm)} cm
+                  </strong>
+                  <span className="block text-[10px] text-slate-500">{Number(inputCm).toFixed(1)} → {Number(candidateCm).toFixed(1)} cm</span>
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function EvaluationTable({ title, metric }: { title: string; metric: WearEvaluationMetric }) {
   return (
     <div className="overflow-hidden rounded-xl border border-white/10 bg-slate-950">
@@ -179,12 +220,17 @@ export function SideMeshSelectorLab() {
       });
       const payload = await response.json() as WearRankingResponse & { error?: string };
       if (!response.ok || !payload.ok) throw new Error(payload.error || "Front ranking failed.");
-      const firstRing = payload.rings.find((item) => item.leaderboards.overall.candidateIds.length) ?? payload.rings[0];
+      const firstRing = payload.globalFrontWinner
+        ? payload.rings.find((item) => item.ring === payload.globalFrontWinner?.ring)
+        : payload.rings.find((item) => item.leaderboards.overall.candidateIds.length) ?? payload.rings[0];
+      const firstSelection = payload.globalFrontWinner?.scanId
+        ?? firstRing?.leaderboards.overall.candidateIds[0]
+        ?? "";
       setResult(payload);
       setRing(firstRing?.ring ?? 1);
       setMode("overall");
       setVisibleCount(DEFAULT_VISIBLE);
-      setSelectedScanId(firstRing?.leaderboards.overall.candidateIds[0] ?? "");
+      setSelectedScanId(firstSelection);
       setStatus("ready");
     } catch (caught) {
       setStatus("error");
@@ -220,6 +266,11 @@ export function SideMeshSelectorLab() {
 
   const selectedCandidate = displayedCandidates.find((candidate) => candidate.scanId === selectedScanId) ?? null;
   const selectedEvaluation = reveal?.candidates.find((candidate) => candidate.scanId === selectedScanId) ?? null;
+  const globalFrontCandidate = result?.globalFrontWinner
+    ? result.rings
+      .find((item) => item.ring === result.globalFrontWinner?.ring)
+      ?.candidates.find((candidate) => candidate.scanId === result.globalFrontWinner?.scanId) ?? null
+    : null;
 
   return (
     <main className="mx-auto max-w-[1700px] space-y-6 px-4 py-8 text-slate-100 sm:px-6">
@@ -283,9 +334,10 @@ export function SideMeshSelectorLab() {
               <p className="mt-1 text-sm text-slate-400">Input {result.input.scanId} · {result.input.heightCm.toFixed(1)} cm · {result.input.weightKg.toFixed(1)} kg</p>
               <p className="mt-2 text-xs leading-5 text-cyan-100">{result.rankingBoundary}</p>
               <div className="mt-4 rounded-xl border border-emerald-400/30 bg-emerald-400/10 p-3">
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-200">Global front winner</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-200">Global front winner · auto selected</span>
                 <strong className="mt-1 block text-xl text-white">{result.globalFrontWinner?.scanId ?? "No eligible winner"}</strong>
                 {result.globalFrontWinner ? <span className="text-xs text-slate-300">Ring ±{result.globalFrontWinner.ring} · {result.globalFrontWinner.overallMeanGapCm.toFixed(2)} cm mean · {result.globalFrontWinner.overallWorstGapCm.toFixed(2)} cm worst</span> : null}
+                {globalFrontCandidate ? <FrontDifferenceGrid candidate={globalFrontCandidate} inputWidths={result.input.frontWidthCmByPart} /> : null}
               </div>
             </div>
             <div>
@@ -338,6 +390,7 @@ export function SideMeshSelectorLab() {
                       </div>
                       {index === 0 ? <span className="rounded-full bg-emerald-300 px-2 py-1 text-xs font-black text-slate-950">AUTO BEST</span> : null}
                     </div>
+                    <FrontDifferenceGrid candidate={candidate} inputWidths={result.input.frontWidthCmByPart} />
                     <div className="mt-3">
                       <WearFrontSidePreview runId={result.runId} scanId={candidate.scanId} />
                     </div>
