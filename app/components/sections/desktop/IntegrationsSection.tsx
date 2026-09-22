@@ -13,8 +13,6 @@ import { usePilotModal } from "../../shared/PilotModalContext";
 import { cn } from "@/app/shared/lib/utils";
 import { useLandingLanguage } from "@/app/landing/i18n";
 
-const SHOPIFY_APP_HREF = "https://apps.shopify.com/primestyleai";
-
 type Visual =
   | {
       kind: "video";
@@ -34,7 +32,7 @@ type IntegrationTab = {
     status: "available" | "soon";
     title: string;
     description: string;
-    primaryHref: string;
+    primaryHref?: string;
     primaryLabel: string;
     secondaryHref?: string;
     secondaryLabel?: string;
@@ -68,12 +66,11 @@ const TABS: IntegrationTab[] = [
     label: "Shopify",
     icon: <ShoppingBag className="h-4 w-4 shrink-0" />,
     content: {
-      status: "available",
+      status: "soon",
       title: "Shopify App",
       description:
         "A native Shopify app trained on your own size chart. Themed automatically to match your store and live on every product page in minutes — no theme edits, no developer required, no maintenance tax.",
-      primaryHref: SHOPIFY_APP_HREF,
-      primaryLabel: "Install on Shopify",
+      primaryLabel: "Coming soon",
       visual: {
         kind: "video",
         mp4: "/videos/primestyleai-product-demo.mp4",
@@ -118,7 +115,7 @@ export function IntegrationsSection() {
         <SectionHeading
           eyebrow={translate("Ship it your way")}
           title={translate("Three ways to integrate.")}
-          subtitle={translate("SDK and Shopify app are live today. Widget is next up.")}
+          subtitle={translate("SDK is live today. Shopify app and Widget are coming soon.")}
         />
 
         <Reveal variant="fade" delay={1}>
@@ -189,6 +186,7 @@ function TabCopy({
   const soon = content.status === "soon";
   const notifyProduct: NotifyProduct | null =
     tab.value === "widget" ? "widget" : tab.value === "shopify" ? "shopify" : null;
+  const disabledCta = soon && tab.value === "shopify";
   const isPilotCta = !soon && content.primaryHref === "#pilot";
   return (
     <div className="flex flex-col items-start gap-4">
@@ -211,7 +209,14 @@ function TabCopy({
       <p className="max-w-[52ch] text-[15px] leading-[1.65] text-text-body">{translate(content.description)}</p>
 
       <div className="mt-2 flex flex-wrap items-center gap-3">
-        {soon ? (
+        {disabledCta ? (
+          <span
+            aria-disabled="true"
+            className="inline-flex h-11 items-center gap-2 rounded-full border border-brand-blue/20 bg-white px-5 text-sm font-medium text-brand-blue-dark opacity-80"
+          >
+            {translate(content.primaryLabel)}
+          </span>
+        ) : soon ? (
           <button
             type="button"
             onClick={() => notifyProduct && onNotify(notifyProduct)}

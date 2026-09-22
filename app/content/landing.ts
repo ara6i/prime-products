@@ -22,7 +22,6 @@ const ASSET = "/images/landing/ps";
 export const GET_API_KEY_HREF = "#pilot";
 export const DOCS_HREF = "/customer/dashboard";
 export const DEMO_HREF = "/demo/products";
-export const SHOPIFY_APP_HREF = "https://apps.shopify.com/primestyleai";
 
 export const HERO: HeroContent = {
   eyebrow: "SDK · Widget · Shopify",
@@ -210,7 +209,7 @@ export const GARMENTS: GarmentsContent = {
 export const INTEGRATIONS: IntegrationContent = {
   eyebrow: "Ship it your way",
   title: "Three ways to integrate.",
-  subtitle: "SDK and Shopify app are live today. Widget is next up — get on the list and we'll ping you the day it ships.",
+  subtitle: "SDK is live today. Shopify app and Widget are coming soon.",
   methods: [
     {
       id: "sdk",
@@ -225,8 +224,8 @@ export const INTEGRATIONS: IntegrationContent = {
       label: "Shopify",
       title: "Shopify App",
       body: "One-click install. Trained on your size chart, themed to your store, live on every product page in minutes.",
-      docsHref: SHOPIFY_APP_HREF,
-      badge: "Available",
+      docsHref: "#integrations",
+      comingSoon: true,
     },
     {
       id: "widget",

@@ -13,8 +13,6 @@ import { usePilotModal } from "../../shared/PilotModalContext";
 import { cn } from "@/app/shared/lib/utils";
 import { useLandingLanguage } from "@/app/landing/i18n";
 
-const SHOPIFY_APP_HREF = "https://apps.shopify.com/primestyleai";
-
 type Visual =
   | {
       kind: "video";
@@ -34,7 +32,7 @@ type IntegrationTab = {
     status: "available" | "soon";
     title: string;
     description: string;
-    primaryHref: string;
+    primaryHref?: string;
     primaryLabel: string;
     secondaryHref?: string;
     secondaryLabel?: string;
@@ -68,12 +66,11 @@ const TABS: IntegrationTab[] = [
     label: "Shopify",
     icon: <ShoppingBag className="h-3.5 w-3.5 shrink-0" />,
     content: {
-      status: "available",
+      status: "soon",
       title: "Shopify App",
       description:
         "A native Shopify app trained on your own size chart. Themed to match your store, live on every product page in minutes — no theme edits, no developer required.",
-      primaryHref: SHOPIFY_APP_HREF,
-      primaryLabel: "Install on Shopify",
+      primaryLabel: "Coming soon",
       visual: {
         kind: "video",
         mp4: "/videos/primestyleai-product-demo.mp4",
@@ -120,7 +117,7 @@ export function IntegrationsSection() {
           {translate("Three ways to integrate.")}
         </h2>
         <p className="text-[15px] leading-[1.55] text-text-body">
-          {translate("SDK and Shopify app are live today. Widget is next up.")}
+          {translate("SDK is live today. Shopify app and Widget are coming soon.")}
         </p>
       </Reveal>
 
@@ -188,6 +185,7 @@ function TabCopyMobile({
   const soon = content.status === "soon";
   const notifyProduct: NotifyProduct | null =
     tab.value === "widget" ? "widget" : tab.value === "shopify" ? "shopify" : null;
+  const disabledCta = soon && tab.value === "shopify";
   const isPilotCta = !soon && content.primaryHref === "#pilot";
   return (
     <div className="flex flex-col gap-3">
@@ -209,7 +207,14 @@ function TabCopyMobile({
       <p className="text-[14.5px] leading-[1.65] text-text-body">{translate(content.description)}</p>
 
       <div className="flex flex-col gap-2 pt-1">
-        {soon ? (
+        {disabledCta ? (
+          <span
+            aria-disabled="true"
+            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-brand-blue/25 bg-white px-6 text-sm font-medium text-brand-blue-dark opacity-80"
+          >
+            {translate(content.primaryLabel)}
+          </span>
+        ) : soon ? (
           <button
             type="button"
             onClick={() => notifyProduct && onNotify(notifyProduct)}
