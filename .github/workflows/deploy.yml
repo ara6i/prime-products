@@ -60,9 +60,9 @@ jobs:
 
             echo "Restarting PM2..."
             if pm2 describe prime-products > /dev/null 2>&1; then
-              pm2 restart prime-products --update-env
+              PRIME_PRODUCTS_DIST_DIR=.next pm2 restart prime-products --update-env
             else
-              PORT=3001 pm2 start npm --name "prime-products" -- start
+              PRIME_PRODUCTS_DIST_DIR=.next PORT=3001 pm2 start npm --name "prime-products" -- start
             fi
             pm2 save
 
