@@ -25,13 +25,15 @@ export interface ShopWeddingStageComposition {
   visiblePeople: number;
 }
 
+export const SHOP_WOMEN_WEDDING_CENTER_MODEL_IMAGE =
+  "/media/global-shop/ai-stylist-wedding-v2/women/bride/bride-01-floral-ballgown.webp";
+
 const BRIDE_LOOKS = [
   {
     title: "Floral Ballgown",
     outfit:
       "ivory floral-applique ballgown, fingertip veil, pearl earrings, and ivory pumps",
-    image:
-      "/media/global-shop/ai-stylist-wedding-v2/women/bride/bride-01-floral-ballgown.webp",
+    image: SHOP_WOMEN_WEDDING_CENTER_MODEL_IMAGE,
   },
   {
     title: "Architectural Mikado",
@@ -120,7 +122,10 @@ const MOTHER_OF_BRIDE_IMAGE =
 const MOTHER_OF_GROOM_IMAGE =
   "/media/global-shop/ai-stylist-wedding-v2/men/mother/mother-of-groom-aubergine.png";
 
-const BRIDESMAID_LOOKS = [BRIDE_LOOKS[0].image, ...BRIDESMAID_IMAGES].map(
+const BRIDESMAID_LOOKS = [
+  SHOP_WOMEN_WEDDING_CENTER_MODEL_IMAGE,
+  ...BRIDESMAID_IMAGES,
+].map(
   (image, index) => ({
     gender: "women" as const,
     role: "bridesmaid" as const,
@@ -212,7 +217,7 @@ const WEDDING_STAGE_COMPOSITIONS: Partial<
   "women:bridesmaid": {
     label: "Bride centered with four bridesmaids in one matching dress",
     visiblePeople: 5,
-    images: [BRIDE_LOOKS[0].image, ...BRIDESMAID_IMAGES],
+    images: [SHOP_WOMEN_WEDDING_CENTER_MODEL_IMAGE, ...BRIDESMAID_IMAGES],
     alt: [
       "Bride centered in an ivory floral wedding gown",
       ...BRIDESMAID_IMAGES.map(
@@ -224,7 +229,7 @@ const WEDDING_STAGE_COMPOSITIONS: Partial<
   "women:mother": {
     label: "Bride with only her mother beside her",
     visiblePeople: 2,
-    images: [BRIDE_LOOKS[0].image, MOTHER_OF_BRIDE_IMAGE, "", "", ""],
+    images: [SHOP_WOMEN_WEDDING_CENTER_MODEL_IMAGE, MOTHER_OF_BRIDE_IMAGE, "", "", ""],
     alt: [
       "Bride in an ivory floral wedding gown",
       "Mother of the bride in a muted-mauve formal dress",

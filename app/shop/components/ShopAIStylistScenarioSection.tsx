@@ -118,9 +118,27 @@ export function getScenarioLooks(
 
   if (occasion === "wedding") {
     const weddingLooks = getWeddingRoleLooks(gender, weddingRole);
+    const mainWeddingLook = weddingLooks[0];
+    if (!mainWeddingLook) {
+      throw new Error(`Wedding scenario ${gender}/${weddingRole} has no lead look.`);
+    }
     const budgetOffset = BUDGETS.indexOf(budget);
-    return weddingLooks.map((_, index) => ({
-      ...weddingLooks[(index + budgetOffset) % weddingLooks.length],
+    const orderedWeddingLooks = ["bride", "groom"].includes(weddingRole)
+      ? [
+          mainWeddingLook,
+          ...weddingLooks
+            .slice(1)
+            .map(
+              (_, index, alternatives) =>
+                alternatives[(index + budgetOffset) % alternatives.length],
+            ),
+        ]
+      : weddingLooks.map(
+          (_, index) =>
+            weddingLooks[(index + budgetOffset) % weddingLooks.length],
+        );
+    return orderedWeddingLooks.map((look, index) => ({
+      ...look,
       totalPrice: totals[index],
     }));
   }

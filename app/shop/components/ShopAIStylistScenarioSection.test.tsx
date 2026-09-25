@@ -14,6 +14,7 @@ import {
   SHOP_AI_STYLIST_WEDDING_LOOKS,
   SHOP_BASE_SCENARIO_COUNT,
   SHOP_BUDGET_SCENARIO_COUNT,
+  SHOP_WOMEN_WEDDING_CENTER_MODEL_IMAGE,
 } from "./shopAIStylistWeddingLooks.data";
 
 vi.mock("@/app/shared/hooks/useWeather", () => ({
@@ -165,6 +166,13 @@ it("gives the same Bride and Groom five distinct looks and builds party composit
 
   expect(bridesmaidStage?.visiblePeople).toBe(5);
   expect(bridesmaidStage?.images.filter(Boolean)).toHaveLength(5);
+  expect(bride[0]?.image).toBe(SHOP_WOMEN_WEDDING_CENTER_MODEL_IMAGE);
+  expect(bridesmaidStage?.images[0]).toBe(
+    SHOP_WOMEN_WEDDING_CENTER_MODEL_IMAGE,
+  );
+  expect(motherOfBrideStage?.images[0]).toBe(
+    SHOP_WOMEN_WEDDING_CENTER_MODEL_IMAGE,
+  );
   expect(usherStage?.visiblePeople).toBe(5);
   expect(usherStage?.images.filter(Boolean)).toHaveLength(5);
   expect(motherOfBrideStage?.images.filter(Boolean)).toHaveLength(2);
