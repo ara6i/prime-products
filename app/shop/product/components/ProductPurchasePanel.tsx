@@ -81,7 +81,7 @@ export function ProductPurchasePanel({
         />
       </div>
 
-      <div className={styles.sizeField} id="size">
+      <div className={styles.sizeField} id={`${headingId}-size`}>
         <div className={styles.sizeFieldHeader}>
           <span>{product.sizes.length > 0 ? "Select size" : "Sizes"}</span>
           {product.sizes.length > 0 ? (

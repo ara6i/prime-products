@@ -5,17 +5,18 @@ import styles from "./productDetail.module.css";
 
 interface RelatedProductsProps {
   products: ProductRelatedItem[];
+  headingId: string;
 }
 
-export function RelatedProducts({ products }: RelatedProductsProps) {
+export function RelatedProducts({ products, headingId }: RelatedProductsProps) {
   if (products.length === 0) return null;
 
   return (
-    <section className={styles.related} aria-labelledby="related-title">
+    <section className={styles.related} aria-labelledby={headingId}>
       <header>
         <div>
           <span>Complete the edit</span>
-          <h2 id="related-title">You may also like</h2>
+          <h2 id={headingId}>You may also like</h2>
         </div>
         <Link href="/shop">View all products</Link>
       </header>

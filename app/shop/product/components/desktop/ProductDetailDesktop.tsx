@@ -50,7 +50,10 @@ export function ProductDetailDesktop({
         sections={product.information}
         featureImage={product.featureImage}
       />
-      <RelatedProducts products={product.related} />
+      <RelatedProducts
+        products={product.related}
+        headingId="desktop-related-title"
+      />
     </main>
   );
 }

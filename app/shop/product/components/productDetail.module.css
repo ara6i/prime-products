@@ -1281,19 +1281,13 @@
   }
 
   .tryOnSdkRoot {
-    position: fixed;
-    inset-inline: 0;
-    inset-block-end: 0;
-    z-index: 70;
-    width: auto;
-    margin: 0;
-    padding: 2.051vw var(--shop-pdp-mobile-page-x)
-      calc(2.051vw + env(safe-area-inset-bottom, 0px));
-    border-top: var(--shop-pdp-border-width) solid var(--shop-pdp-line);
-    background: rgba(255, 255, 255, 0.96);
-    box-shadow: 0 -3.077vw 7.692vw rgba(20, 36, 81, 0.1);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    position: static;
+    width: 100%;
+    margin-block-start: var(--shop-pdp-mobile-gap-xs);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   .tryOnSdkRoot .tryOnButton {

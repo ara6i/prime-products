@@ -9,7 +9,7 @@ describe("shop-only SDK release isolation", () => {
   it("pins shop preview separately from the existing base SDK", () => {
     const { dependencies } = JSON.parse(read("package.json"));
     expect(dependencies["@primestyleai/tryon-shop"]).toBe(
-      "file:vendor/primestyleai-tryon-5.10.245-preview.9-arc-jacket-v22.tgz",
+      "file:vendor/primestyleai-tryon-5.10.245-preview.9-arc-jacket-v24.tgz",
     );
     expect(dependencies["@primestyleai/tryon"]).toBe("5.10.243");
     const installed = JSON.parse(
@@ -34,6 +34,8 @@ describe("shop-only SDK release isolation", () => {
     expect(bundle).toContain("bra-cup");
     expect(bundle).toContain("data-guided-demo-locked");
     expect(bundle).toContain('closest(".ps-bp-next-btn")');
+    expect(bundle).toContain('return e && i === "photo" && r;');
+    expect(bundle).toContain("const SA = Mr(), JA = g,");
   });
 
   it("ships the staged outfit orbit and body-landmark try-on transitions", () => {
@@ -127,11 +129,13 @@ describe("shop-only SDK release isolation", () => {
     );
   });
 
-  it("keeps the mobile Build with AI action visible above the gallery", () => {
+  it("keeps the mobile Build with AI action in the product flow", () => {
     const css = read("app/shop/product/components/productDetail.module.css");
     expect(css).toMatch(
+      /\.tryOnSdkRoot\s*\{[^}]*position:\s*static;[^}]*width:\s*100%;/,
+    );
+    expect(css).not.toMatch(
       /\.tryOnSdkRoot\s*\{[^}]*position:\s*fixed;[^}]*inset-block-end:\s*0;/,
     );
-    expect(css).toContain("env(safe-area-inset-bottom, 0px)");
   });
 });

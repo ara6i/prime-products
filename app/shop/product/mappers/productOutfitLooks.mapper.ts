@@ -9,6 +9,10 @@ import {
   showcaseAsset,
   type ShowcaseProduct,
 } from "../../data/showcaseCatalog.data";
+import {
+  CAMEL_BLAZER_EXTRA_COMPANIONS,
+  type ProductOutfitCompanion,
+} from "../data/productOutfitCompanions.data";
 
 const COMPANION_MASKS = ["0000", "0101", "1010", "0011", "1100"] as const;
 const LOOK_LABELS = [
@@ -19,38 +23,59 @@ const LOOK_LABELS = [
   "Weekend polish",
 ] as const;
 
-function alternativesFor(product: ShowcaseProduct) {
-  return SHOWCASE_PRODUCTS.filter(
-    (candidate) =>
-      candidate.gender === product.gender &&
-      candidate.slot === product.slot &&
-      candidate.id !== product.id,
-  ).map((candidate) => ({
-    slot: candidate.slot,
-    productId: candidate.id,
-    title: candidate.name,
-    image: showcaseAsset(candidate, "01-product-front"),
-    displayImage: showcaseAsset(candidate, "01-product-front"),
-    url: `/shop/product/${candidate.id}`,
-    color: candidate.color,
-    garmentType: candidate.slot,
-    recommendedSize: candidate.sizes[0] === "One size" ? "One size" : undefined,
-  }));
+function showcaseRecommendedSize(product: ShowcaseProduct) {
+  if (product.sizes.includes("One size")) return "One size";
+  if (product.sizes.includes("M")) return "M";
+  return product.sizes[Math.floor(product.sizes.length / 2)] ?? "M";
 }
 
-function mapOutfitItem(product: ShowcaseProduct): PrimeStyleOutfitItem {
+function showcaseCompanion(product: ShowcaseProduct): ProductOutfitCompanion {
   return {
     slot: product.slot,
     productId: product.id,
     title: product.name,
     image: showcaseAsset(product, "01-product-front"),
-    displayImage: showcaseAsset(product, "01-product-front"),
     url: `/shop/product/${product.id}`,
     color: product.color,
+    recommendedSize: showcaseRecommendedSize(product),
+  };
+}
+
+function companionsFor(
+  pinnedProduct: ShowcaseProduct,
+  slot: ShowcaseProduct["slot"],
+) {
+  const showcaseCompanions = SHOWCASE_PRODUCTS.filter(
+    (candidate) =>
+      candidate.gender === pinnedProduct.gender && candidate.slot === slot,
+  ).map(showcaseCompanion);
+
+  if (pinnedProduct.id !== "women-camel-pinstripe-tailored-blazer") {
+    return showcaseCompanions;
+  }
+
+  return [
+    ...showcaseCompanions,
+    ...(CAMEL_BLAZER_EXTRA_COMPANIONS[slot] ?? []),
+  ];
+}
+
+function mapOutfitItem(
+  product: ProductOutfitCompanion,
+  candidates: ProductOutfitCompanion[],
+): PrimeStyleOutfitItem {
+  return {
+    ...product,
+    displayImage: product.image,
     garmentType: product.slot,
-    recommendedSize: product.sizes[0] === "One size" ? "One size" : undefined,
     selected: true,
-    alternatives: alternativesFor(product),
+    alternatives: candidates
+      .filter((candidate) => candidate.productId !== product.productId)
+      .map((candidate) => ({
+        ...candidate,
+        displayImage: candidate.image,
+        garmentType: candidate.slot,
+      })),
   };
 }
 
@@ -64,24 +89,30 @@ export function getProductInstantOutfitLooks(
     (slot) => slot !== pinnedProduct.slot,
   );
   return COMPANION_MASKS.map((mask, lookIndex) => {
-    const selectedBySlot = new Map<ShowcaseProduct["slot"], ShowcaseProduct>();
+    const selectedBySlot = new Map<
+      ShowcaseProduct["slot"],
+      { selected: ProductOutfitCompanion; candidates: ProductOutfitCompanion[] }
+    >();
     missingSlots.forEach((slot, slotIndex) => {
-      const candidates = SHOWCASE_PRODUCTS.filter(
-        (candidate) =>
-          candidate.gender === pinnedProduct.gender && candidate.slot === slot,
-      );
-      const choice = Number(mask[slotIndex] ?? "0");
-      selectedBySlot.set(slot, candidates[choice] ?? candidates[0]);
+      const candidates = companionsFor(pinnedProduct, slot);
+      const choice =
+        candidates.length >= COMPANION_MASKS.length
+          ? lookIndex
+          : Number(mask[slotIndex] ?? "0");
+      selectedBySlot.set(slot, {
+        selected: candidates[choice] ?? candidates[0],
+        candidates,
+      });
     });
 
     return {
       id: `${pinnedProduct.id}-look-${lookIndex + 1}-${mask}`,
       label: LOOK_LABELS[lookIndex],
       items: missingSlots.map((slot) => {
-        const product = selectedBySlot.get(slot);
-        if (!product)
+        const selection = selectedBySlot.get(slot);
+        if (!selection)
           throw new Error(`Missing ${slot} for ${pinnedProduct.id}`);
-        return mapOutfitItem(product);
+        return mapOutfitItem(selection.selected, selection.candidates);
       }),
     };
   });

@@ -55,13 +55,13 @@ describe("prepared Shop PDP SDK demos", () => {
       ).toBe(true);
       for (const look of demo?.instantOutfitLooks ?? []) {
         for (const item of look.items) {
-          expect(item.image, item.productId).toContain(
-            "/01-product-front.png",
+          expect(item.image, item.productId).toMatch(
+            /(?:\/01-product-front\.png|\/sdk-companions-v1\/)/,
           );
           expect(item.displayImage, item.productId).toBe(item.image);
           for (const alternative of item.alternatives ?? []) {
-            expect(alternative.image, alternative.productId).toContain(
-              "/01-product-front.png",
+            expect(alternative.image, alternative.productId).toMatch(
+              /(?:\/01-product-front\.png|\/sdk-companions-v1\/)/,
             );
             expect(alternative.displayImage, alternative.productId).toBe(
               alternative.image,
@@ -118,6 +118,29 @@ describe("prepared Shop PDP SDK demos", () => {
         braSizeRegion: "US",
       }),
     );
+  });
+
+  it("gives the Camel Blazer five distinct replacements with real sizes in every category", async () => {
+    const product = await getProduct("women-camel-pinstripe-tailored-blazer");
+    const demo = getProductSdkDemo(product);
+
+    expect(demo?.instantOutfitLooks).toHaveLength(5);
+    for (const look of demo?.instantOutfitLooks ?? []) {
+      for (const item of look.items) {
+        const options = [item, ...(item.alternatives ?? [])];
+        expect(new Set(options.map((option) => option.productId)).size).toBe(5);
+        expect(options.every((option) => Boolean(option.recommendedSize))).toBe(
+          true,
+        );
+      }
+    }
+
+    for (const slot of ["bottom", "shoe", "bag", "accessory"]) {
+      const selectedIds = (demo?.instantOutfitLooks ?? []).map(
+        (look) => look.items.find((item) => item.slot === slot)?.productId,
+      );
+      expect(new Set(selectedIds).size).toBe(5);
+    }
   });
 
   it("prepares five looks for every product currently shown in Women and Men", async () => {

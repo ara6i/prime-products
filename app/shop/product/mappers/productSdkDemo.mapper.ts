@@ -130,10 +130,14 @@ function alternativesFor(product: ShowcaseProduct) {
     url: `/shop/product/${candidate.id}`,
     color: candidate.color,
     garmentType: candidate.slot,
-    recommendedSize: candidate.sizes.includes("One size")
-      ? "One size"
-      : undefined,
+    recommendedSize: recommendedShowcaseSize(candidate),
   }));
+}
+
+function recommendedShowcaseSize(product: ShowcaseProduct) {
+  if (product.sizes.includes("One size")) return "One size";
+  if (product.sizes.includes("M")) return "M";
+  return product.sizes[Math.floor(product.sizes.length / 2)] ?? "M";
 }
 
 function showcaseItem(product: ShowcaseProduct): PrimeStyleOutfitItem {
@@ -146,9 +150,7 @@ function showcaseItem(product: ShowcaseProduct): PrimeStyleOutfitItem {
     url: `/shop/product/${product.id}`,
     color: product.color,
     garmentType: product.slot,
-    recommendedSize: product.sizes.includes("One size")
-      ? "One size"
-      : undefined,
+    recommendedSize: recommendedShowcaseSize(product),
     selected: true,
     alternatives: alternativesFor(product),
   };

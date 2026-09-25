@@ -37,7 +37,10 @@ export function ProductDetailMobile({
         viewport="mobile"
       />
       <ProductInformation sections={product.information} mobile />
-      <RelatedProducts products={product.related} />
+      <RelatedProducts
+        products={product.related}
+        headingId="mobile-related-title"
+      />
     </main>
   );
 }
