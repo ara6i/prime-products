@@ -25,14 +25,6 @@ async function getProduct(productId: string) {
   return mapProductDetail(source);
 }
 
-function expectedProfilePhoto(product: Awaited<ReturnType<typeof getProduct>>) {
-  return (
-    product.gallery.find((item) =>
-      /original supplier photo/i.test(item.caption ?? ""),
-    )?.src ?? product.gallery[0]?.src
-  );
-}
-
 describe("prepared Shop PDP SDK demos", () => {
   it("builds a preset profile and five matched results for every showcase PDP", async () => {
     for (const product of SHOWCASE_PRODUCTS) {
@@ -56,12 +48,12 @@ describe("prepared Shop PDP SDK demos", () => {
       for (const look of demo?.instantOutfitLooks ?? []) {
         for (const item of look.items) {
           expect(item.image, item.productId).toMatch(
-            /(?:\/01-product-front\.png|\/sdk-companions-v1\/)/,
+            /(?:\/01-product-front\.png|\/sdk-companions-v1\/|\/arc-jacket-demo-v2\/|\/daily-edit-pdp-v1\/)/,
           );
           expect(item.displayImage, item.productId).toBe(item.image);
           for (const alternative of item.alternatives ?? []) {
             expect(alternative.image, alternative.productId).toMatch(
-              /(?:\/01-product-front\.png|\/sdk-companions-v1\/)/,
+              /(?:\/01-product-front\.png|\/sdk-companions-v1\/|\/arc-jacket-demo-v2\/|\/daily-edit-pdp-v1\/)/,
             );
             expect(alternative.displayImage, alternative.productId).toBe(
               alternative.image,
@@ -151,9 +143,6 @@ describe("prepared Shop PDP SDK demos", () => {
     for (const product of genderProducts) {
       const detail = await getProduct(product.id);
       const demo = getProductSdkDemo(detail);
-      const showcase = SHOWCASE_PRODUCTS.find(
-        (candidate) => candidate.id === product.id,
-      );
       expect(demo?.instantOutfitLooks, product.id).toHaveLength(5);
       expect(
         demo?.instantOutfitLooks.every((look) =>
@@ -163,19 +152,17 @@ describe("prepared Shop PDP SDK demos", () => {
       ).toBe(true);
       expect(demo?.instantOutfitResults, product.id).toHaveLength(5);
       expect(demo?.presetProfile.photoUrl, product.id).toBe(
-        showcase
-          ? expectedShowcaseBasePhoto[showcase.gender]
-          : expectedProfilePhoto(detail),
+        expectedShowcaseBasePhoto[detail.gender ?? "women"],
       );
     }
   });
 
-  it("uses each imported brand's worn supplier photo for the prepared profile", async () => {
+  it("starts imported products from the raw model and uses the worn photo as the deterministic result", async () => {
     const detail = await getProduct("judy-blue-01");
     const demo = getProductSdkDemo(detail);
 
     expect(detail.gallery[1]?.caption).toBe("Original supplier photo");
-    expect(demo?.presetProfile.photoUrl).toBe(detail.gallery[1]?.src);
+    expect(demo?.presetProfile.photoUrl).toBe(expectedShowcaseBasePhoto.women);
     expect(
       demo?.instantOutfitResults.every(
         (result) => result.image === detail.gallery[1]?.src,
@@ -191,6 +178,56 @@ describe("prepared Shop PDP SDK demos", () => {
         braSizeRegion: "US",
       }),
     );
+  });
+
+  it("uses prepared assets and five replaceable choices for every Daily Edit PDP", async () => {
+    for (const productId of [
+      "daily-edit-vela-denim",
+      "daily-edit-cobalt-track",
+      "daily-edit-noir-halo",
+      "daily-edit-signal-shell",
+    ]) {
+      const detail = await getProduct(productId);
+      const demo = getProductSdkDemo(detail);
+
+      expect(demo.presetProfile.photoUrl).toBe(
+        expectedShowcaseBasePhoto[detail.gender ?? "women"],
+      );
+      expect(demo.instantOutfitLooks).toHaveLength(5);
+      expect(demo.instantOutfitResults).toHaveLength(5);
+      for (const [index, result] of demo.instantOutfitResults.entries()) {
+        expect(result.image).toBe(
+          `/media/global-shop/daily-edit-sdk-v1/${productId}/results/look-${String(index + 1).padStart(2, "0")}.png`,
+        );
+        expect(
+          existsSync(path.join(root, "public", result.image)),
+          result.image,
+        ).toBe(true);
+      }
+      for (const look of demo.instantOutfitLooks) {
+        for (const item of look.items) {
+          expect([item, ...(item.alternatives ?? [])]).toHaveLength(5);
+        }
+      }
+    }
+  });
+
+  it("keeps set and dress outfit builders structurally correct", async () => {
+    const cobalt = getProductSdkDemo(
+      await getProduct("daily-edit-cobalt-track"),
+    );
+    const noir = getProductSdkDemo(await getProduct("daily-edit-noir-halo"));
+
+    expect(cobalt.instantOutfitLooks[0].items.map((item) => item.slot)).toEqual([
+      "top",
+      "shoe",
+      "accessory",
+    ]);
+    expect(
+      noir.instantOutfitLooks.every((look) =>
+        look.items.every((item) => item.slot !== "bottom"),
+      ),
+    ).toBe(true);
   });
 
   it("uses one stable asset convention for later generated results", () => {
@@ -218,22 +255,20 @@ describe("prepared Shop PDP SDK demos", () => {
     expect((await response.arrayBuffer()).byteLength).toBeGreaterThan(0);
   });
 
-  it("wires the showcase-only demo props into the Shop SDK", () => {
+  it("wires the demo-only props into every Shop PDP SDK", () => {
     const source = readFileSync(
       path.join(root, "app/shop/product/components/ProductTryOnButton.tsx"),
       "utf8",
     );
 
-    expect(source).toContain(
-      'outfitBuilderSource={sdkDemo ? "ai-stylist" : "sdk"}',
-    );
+    expect(source).toContain('outfitBuilderSource="ai-stylist"');
     expect(source).toContain("getProductSdkDemo(product)");
     expect(source).toContain(
-      "instantOutfitResults={sdkDemo?.instantOutfitResults}",
+      "instantOutfitResults={sdkDemo.instantOutfitResults}",
     );
-    expect(source).toContain("presetProfile={sdkDemo?.presetProfile}");
-    expect(source).toContain("guidedDemoAutoplay={Boolean(sdkDemo)}");
-    expect(source).toContain("usePresetProfileOnly={Boolean(sdkDemo)}");
-    expect(source).toContain("showHeaderControls={!sdkDemo}");
+    expect(source).toContain("presetProfile={sdkDemo.presetProfile}");
+    expect(source).toContain("guidedDemoAutoplay");
+    expect(source).toContain("usePresetProfileOnly");
+    expect(source).toContain("showHeaderControls={false}");
   });
 });

@@ -11,7 +11,16 @@ import {
   showcaseAsset,
   type ShowcaseProduct,
 } from "../../data/showcaseCatalog.data";
-import { showcasePreparedResultAsset } from "../data/productSdkDemo.data";
+import {
+  COBALT_SET_COMPANIONS,
+  MEN_SDK_COMPANIONS,
+  WOMEN_SDK_EXTRA_COMPANIONS,
+  type ProductOutfitCompanion,
+} from "../data/productOutfitCompanions.data";
+import {
+  dailyEditPreparedResultAsset,
+  showcasePreparedResultAsset,
+} from "../data/productSdkDemo.data";
 import type { ProductDetailViewModel } from "../types/productDetail.types";
 import { getProductInstantOutfitLooks } from "./productOutfitLooks.mapper";
 
@@ -56,19 +65,12 @@ function recommendedSize(product: ProductDetailViewModel) {
 function presetProfile(
   product: ProductDetailViewModel,
   gender: "women" | "men",
-  useShowcaseBaseModel: boolean,
 ): PreparedDemoProfile {
   const measurements = PRESET_MEASUREMENTS[gender];
-  const wornProductPhoto =
-    product.gallery.find((item) =>
-      /original supplier photo/i.test(item.caption ?? ""),
-    ) ?? product.gallery[0];
   return {
     id: `shop-demo-${product.id}`,
     gender: gender === "women" ? "female" : "male",
-    photoUrl: useShowcaseBaseModel
-      ? PRESET_BASE_MODEL_IMAGES[gender]
-      : wornProductPhoto?.src ?? product.featureImage,
+    photoUrl: PRESET_BASE_MODEL_IMAGES[gender],
     height: measurements.height,
     weight: measurements.weight,
     heightUnit: "cm",
@@ -115,45 +117,59 @@ function inferSlot(
   return "top";
 }
 
-function alternativesFor(product: ShowcaseProduct) {
-  return SHOWCASE_PRODUCTS.filter(
-    (candidate) =>
-      candidate.gender === product.gender &&
-      candidate.slot === product.slot &&
-      candidate.id !== product.id,
-  ).map((candidate) => ({
-    slot: candidate.slot,
-    productId: candidate.id,
-    title: candidate.name,
-    image: showcaseAsset(candidate, "01-product-front"),
-    displayImage: showcaseAsset(candidate, "01-product-front"),
-    url: `/shop/product/${candidate.id}`,
-    color: candidate.color,
-    garmentType: candidate.slot,
-    recommendedSize: recommendedShowcaseSize(candidate),
-  }));
-}
-
 function recommendedShowcaseSize(product: ShowcaseProduct) {
   if (product.sizes.includes("One size")) return "One size";
   if (product.sizes.includes("M")) return "M";
   return product.sizes[Math.floor(product.sizes.length / 2)] ?? "M";
 }
 
-function showcaseItem(product: ShowcaseProduct): PrimeStyleOutfitItem {
+function companionItem(
+  product: ProductOutfitCompanion,
+  candidates: ProductOutfitCompanion[],
+): PrimeStyleOutfitItem {
+  return {
+    ...product,
+    displayImage: product.image,
+    garmentType: product.slot,
+    selected: true,
+    alternatives: candidates
+      .filter((candidate) => candidate.productId !== product.productId)
+      .map((candidate) => ({
+        ...candidate,
+        displayImage: candidate.image,
+        garmentType: candidate.slot,
+      })),
+  };
+}
+
+function showcaseCompanion(product: ShowcaseProduct): ProductOutfitCompanion {
   return {
     slot: product.slot,
     productId: product.id,
     title: product.name,
     image: showcaseAsset(product, "01-product-front"),
-    displayImage: showcaseAsset(product, "01-product-front"),
     url: `/shop/product/${product.id}`,
     color: product.color,
-    garmentType: product.slot,
     recommendedSize: recommendedShowcaseSize(product),
-    selected: true,
-    alternatives: alternativesFor(product),
   };
+}
+
+function genericCandidates(
+  gender: "women" | "men",
+  slot: ShowcaseProduct["slot"],
+) {
+  const showcase = SHOWCASE_PRODUCTS.filter(
+    (candidate) => candidate.gender === gender && candidate.slot === slot,
+  ).map(showcaseCompanion);
+  if (gender === "men") return MEN_SDK_COMPANIONS[slot] ?? showcase;
+  return [...showcase, ...(WOMEN_SDK_EXTRA_COMPANIONS[slot] ?? [])];
+}
+
+function inferGender(product: ProductDetailViewModel): "women" | "men" {
+  if (product.gender) return product.gender;
+  const text = `${product.category} ${product.name} ${product.note}`;
+  if (/\b(men|man|male|mens|men’s)\b/i.test(text)) return "men";
+  return "women";
 }
 
 function genericLooks(
@@ -161,48 +177,58 @@ function genericLooks(
   gender: "women" | "men",
 ): PrimeStyleOutfitLook[] {
   const inferredSlot = inferSlot(product);
-  const isDress = /\bdress\b/i.test(`${product.category} ${product.name}`);
-  const companionSlots = SHOWCASE_SLOTS.filter(
-    (slot) => slot !== inferredSlot && !(isDress && slot === "bottom"),
+  const isDress = /\bdress(?:es)?\b/i.test(
+    `${product.category} ${product.name}`,
   );
+  const isCobaltSet = product.id === "daily-edit-cobalt-track";
+  const companionSlots = isCobaltSet
+    ? (["top", "shoe", "accessory"] as const)
+    : SHOWCASE_SLOTS.filter(
+        (slot) =>
+          slot !== inferredSlot &&
+          !(isDress && slot === "bottom") &&
+          !(gender === "men" && slot === "bag"),
+      );
 
   return GENERIC_MASKS.map((mask, lookIndex) => ({
     id: `${product.id}-prepared-look-${lookIndex + 1}`,
     label: GENERIC_LOOK_LABELS[lookIndex],
     items: companionSlots.map((slot, slotIndex) => {
-      const candidates = SHOWCASE_PRODUCTS.filter(
-        (candidate) => candidate.gender === gender && candidate.slot === slot,
-      );
-      const choice = Number(mask[slotIndex] ?? "0");
+      const candidates = isCobaltSet
+        ? (COBALT_SET_COMPANIONS[slot] ?? [])
+        : genericCandidates(gender, slot);
+      const choice =
+        candidates.length >= GENERIC_MASKS.length
+          ? lookIndex
+          : Number(mask[slotIndex] ?? "0");
       const selected = candidates[choice] ?? candidates[0];
       if (!selected) {
         throw new Error(`Missing ${gender} ${slot} companion product`);
       }
-      return showcaseItem(selected);
+      return companionItem(selected, candidates);
     }),
   }));
 }
 
 /**
- * Every product explicitly assigned to Women or Men gets the same prepared
- * Shop SDK journey. Structured showcase products use their stable result
- * route; imported products use their PDP model photo until a generated full
- * look is placed at a product-specific result URL.
+ * Every Shop PDP gets a deterministic demo journey. Structured showcase and
+ * Daily Edit products use prepared result assets; the remaining catalog uses
+ * the neutral preset model so it never falls through to the live SDK flow.
  */
 export function getProductSdkDemo(
   product: ProductDetailViewModel,
-): ProductSdkDemo | undefined {
-  if (!product.gender) return undefined;
+): ProductSdkDemo {
+  const gender = inferGender(product);
   const showcaseProduct = getShowcaseProduct(product.id);
   const looks = showcaseProduct
     ? getProductInstantOutfitLooks(product.id)
-    : genericLooks(product, product.gender);
-  if (looks.length === 0) return undefined;
-  const profile = presetProfile(
-    product,
-    product.gender,
-    Boolean(showcaseProduct),
-  );
+    : genericLooks(product, gender);
+  const profile = presetProfile(product, gender);
+  const isDailyEdit = product.id.startsWith("daily-edit-");
+  const wornProductPhoto =
+    product.gallery.find((item) =>
+      /original supplier photo/i.test(item.caption ?? ""),
+    )?.src ?? product.gallery[0]?.src;
 
   return {
     presetProfile: profile,
@@ -212,8 +238,10 @@ export function getProductSdkDemo(
       looks,
       showcaseProduct
         ? (index) => showcasePreparedResultAsset(showcaseProduct, index)
+        : isDailyEdit
+          ? (index) => dailyEditPreparedResultAsset(product.id, index)
         : undefined,
-      profile.photoUrl,
+      wornProductPhoto ?? product.featureImage,
     ),
   };
 }

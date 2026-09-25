@@ -184,21 +184,33 @@ describe("generated shop showcase catalog", () => {
       const looks = getProductInstantOutfitLooks(pinned.id);
       expect(looks).toHaveLength(5);
       for (const look of looks) {
-        expect(look.items).toHaveLength(4);
+        const expectedSlots = SHOWCASE_SLOTS.filter(
+          (slot) =>
+            slot !== pinned.slot &&
+            !(pinned.gender === "men" && slot === "bag"),
+        );
+        expect(look.items).toHaveLength(expectedSlots.length);
         expect(new Set(look.items.map((item) => item.slot))).toEqual(
-          new Set(SHOWCASE_SLOTS.filter((slot) => slot !== pinned.slot)),
+          new Set(expectedSlots),
         );
         expect(look.items.some((item) => item.productId === pinned.id)).toBe(
           false,
         );
         for (const item of look.items) {
-          const catalogProduct = SHOWCASE_PRODUCTS.find(
-            (candidate) => candidate.id === item.productId,
-          );
-          expect(catalogProduct?.gender).toBe(pinned.gender);
-          expect(item.url).toBe(`/shop/product/${item.productId}`);
-          expect(item.alternatives).toHaveLength(1);
-          expect(item.alternatives?.[0].slot).toBe(item.slot);
+          expect(
+            item.productId.startsWith(`${pinned.gender}-`) ||
+              (pinned.gender === "women" &&
+                item.productId.startsWith("daily-edit-")),
+          ).toBe(true);
+          if (item.url) {
+            expect(item.url).toBe(`/shop/product/${item.productId}`);
+          }
+          expect(item.alternatives).toHaveLength(4);
+          expect(
+            item.alternatives?.every(
+              (alternative) => alternative.slot === item.slot,
+            ),
+          ).toBe(true);
         }
       }
     }

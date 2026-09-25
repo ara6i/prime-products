@@ -19,8 +19,11 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { InfluencerFooter } from "../../partner-landing/influencer/components/InfluencerFooter";
 import influencerStyles from "../../partner-landing/influencer/components/influencerLanding.module.css";
 import { MerchantPdpSdkSection } from "../../partner-landing/merchant/components/MerchantPdpSdkSection";
-import { shopBrandProfiles } from "../brand/data/brandProfiles.data";
 import { dailyEditProducts } from "../data/dailyEdit.data";
+import {
+  SHOWCASE_PRODUCTS,
+  showcaseAsset,
+} from "../data/showcaseCatalog.data";
 import { useShopNavigation } from "../hooks/useShopNavigation";
 import { useShopBag } from "../bag/useShopBag";
 import { ShopRunwayExperience } from "../runway/components/ShopRunwayExperience";
@@ -35,49 +38,7 @@ import type {
 } from "../types/globalShop.types";
 import styles from "./globalShop.module.css";
 
-const products: GlobalShopProduct[] = [
-  ...dailyEditProducts,
-  {
-    id: "lavender-set",
-    name: "Lilac Volume Jacket",
-    brand: "Mara & Form",
-    price: 188,
-    category: "Women",
-    image: "/media/global-shop/product-lilac-lime-3d.webp",
-    tone: "Soft lilac",
-    note: "Styled by AI",
-  },
-  {
-    id: "cobalt-bag",
-    name: "Form 02 Handbag",
-    brand: "Mara & Form",
-    price: 119,
-    category: "Accessories",
-    image: "/media/global-shop/stylist-cobalt-3d.webp",
-    tone: "Cobalt",
-    note: "3 outfit matches",
-  },
-  {
-    id: "coral-bag",
-    name: "Arc Mini Bag",
-    brand: "Mara & Form",
-    price: 96,
-    category: "Accessories",
-    image: "/media/global-shop/stylist-coral-3d.webp",
-    tone: "Coral",
-    note: "New arrival",
-  },
-  {
-    id: "ice-streetwear",
-    name: "Cloudline Layer Set",
-    brand: "Afterglow",
-    price: 132,
-    category: "Women",
-    image: "/media/global-shop/product-camel-3d.webp",
-    tone: "Camel / Black",
-    note: "Creator favorite",
-  },
-];
+const products: GlobalShopProduct[] = dailyEditProducts;
 
 const categories: GlobalShopCategoryFilter[] = [
   "All",
@@ -86,7 +47,20 @@ const categories: GlobalShopCategoryFilter[] = [
   "Accessories",
 ];
 
-const featuredBrands = shopBrandProfiles;
+const catalogHighlightIds = [
+  "women-camel-pinstripe-tailored-blazer",
+  "women-chocolate-tailored-trouser",
+  "women-oxblood-leather-slingback-pump",
+  "men-espresso-double-breasted-blazer",
+  "men-charcoal-pleated-trouser",
+  "men-chocolate-suede-court-sneaker",
+] as const;
+
+const catalogHighlights = catalogHighlightIds.map((id) => {
+  const product = SHOWCASE_PRODUCTS.find((candidate) => candidate.id === id);
+  if (!product) throw new Error(`Missing Shop catalog highlight ${id}`);
+  return product;
+});
 
 const bagLooks = [
   {
@@ -125,7 +99,7 @@ export function GlobalShopExperience() {
   const [mood, setMood] = useState<(typeof moods)[number]>("Everyday");
   const [stylistReady, setStylistReady] = useState(false);
   const closeNavigation = useCallback(() => setMenuOpen(false), []);
-  const { aiStylistHref, openBrandPage, openCategoryPage } = useShopNavigation({
+  const { openCategoryPage } = useShopNavigation({
     onNavigate: closeNavigation,
   });
 
@@ -598,13 +572,13 @@ export function GlobalShopExperience() {
                   complete look around your taste, fit, and the products you
                   love.
                 </p>
-                <Link
+                <button
+                  type="button"
                   className={styles.stylistPrimaryAction}
-                  href={aiStylistHref}
-                  prefetch={false}
+                  onClick={() => scrollTo("ai-stylist-scenario")}
                 >
                   Build my outfit <ArrowUpRight size={15} />
-                </Link>
+                </button>
               </div>
               <div className={styles.stylistHeroModel}>
                 <Image
@@ -663,12 +637,13 @@ export function GlobalShopExperience() {
                   products from connected brands—then turns them into one
                   complete shoppable look.
                 </p>
-                <Link
+                <button
+                  type="button"
                   className={styles.stylistEditorialAction}
-                  href="/shop/dressing-room"
+                  onClick={() => scrollTo("ai-stylist-scenario")}
                 >
                   Create my look <ArrowRight size={14} />
-                </Link>
+                </button>
               </div>
               <figure className={styles.stylistEditorialRight}>
                 <Image
@@ -678,70 +653,6 @@ export function GlobalShopExperience() {
                   sizes="180px"
                 />
               </figure>
-            </div>
-
-            <div className={styles.stylistRunway} id="outfit-edit">
-              <header>
-                <h3>
-                  Runway Ready
-                  <br />
-                  Your Daily Edit
-                </h3>
-                <p>
-                  {mood} pieces chosen to work together, fit together, and shop
-                  together.
-                </p>
-                <div className={styles.moodTabs} aria-label="Outfit mood">
-                  {moods.map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      aria-pressed={mood === item}
-                      onClick={() => {
-                        setMood(item);
-                        setStylistReady(false);
-                      }}
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              </header>
-              <nav
-                className={styles.stylistLookRail}
-                aria-label="Daily Edit products"
-              >
-                {dailyEditProducts.map((product) => (
-                  <article key={product.id}>
-                    <Link
-                      href={product.href}
-                      aria-label={`View ${product.name}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="Opens in a new tab"
-                      prefetch={false}
-                    >
-                      <div>
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          fill
-                          sizes="(max-width: 760px) 72vw, 22vw"
-                        />
-                      </div>
-                      <span>{product.note}</span>
-                      <h4>{product.name}</h4>
-                      <p>
-                        {product.brand} · ${product.price}
-                      </p>
-                      <small className={styles.dailyEditProductLink}>
-                        View product{" "}
-                        <ArrowUpRight size={14} aria-hidden="true" />
-                      </small>
-                    </Link>
-                  </article>
-                ))}
-              </nav>
             </div>
 
             <div className={styles.stylistBuilderDock}>
@@ -815,84 +726,51 @@ export function GlobalShopExperience() {
           aria-labelledby="brands-title"
         >
           <div className={styles.brandsTop}>
-            <span>03 · Imported brand collections</span>
+            <span>03 · Women’s and Men’s collections</span>
             <h2 id="brands-title">
-              THE NAMES
+              THE PIECES
               <br />
-              YOU KNOW.
+              IN YOUR
               <br />
               <i>
-                AND THE ONES
-                <br />
-                YOU&apos;LL DISCOVER.
+                PERSONAL
+                <br />EDIT.
               </i>
             </h2>
             <p>
-              Real brand names from products already imported through Trendsi,
-              organized for clean and personalized discovery.
+              Shop only the products already available in our Women’s and
+              Men’s edits. Every piece opens its product page with the prepared
+              sizing, try-on, and outfit demo.
             </p>
           </div>
-          <div
-            className={styles.brandRail}
-            aria-label="Featured imported brands"
-          >
-            {featuredBrands.map((brand) => (
-              <button
-                key={brand.id}
-                type="button"
-                aria-label={`Shop ${brand.name}`}
-                onClick={() => openBrandPage(brand.id)}
-              >
-                {brand.logo ? (
-                  <Image
-                    src={brand.logo}
-                    alt={`${brand.name} logo`}
-                    width={180}
-                    height={58}
-                    unoptimized
-                  />
-                ) : (
-                  <strong>{brand.shortName}</strong>
-                )}
-              </button>
-            ))}
-          </div>
-          <div className={styles.brandStories}>
-            <article>
-              <Image
-                src="/media/global-shop/brand-campaigns/judy-blue-denim-sculpture-v1.png"
-                alt="Judy Blue denim campaign concept: two women in blue jeans beside an oversized sculptural denim cuff"
-                fill
-                sizes="(max-width: 760px) 92vw, 46vw"
-                quality={90}
-              />
-              <div>
-                <span>Judy Blue</span>
-                <h3>Denim made for every body.</h3>
-                <button
-                  type="button"
-                  onClick={() => openBrandPage("judy-blue")}
+          <div className={styles.catalogProductGrid}>
+            {catalogHighlights.map((product) => (
+              <article key={product.id}>
+                <Link
+                  href={`/shop/product/${product.id}`}
+                  aria-label={`View ${product.name}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Opens in a new tab"
+                  prefetch={false}
                 >
-                  Explore brand <ArrowUpRight size={15} />
-                </button>
-              </div>
-            </article>
-            <article>
-              <Image
-                src="/media/global-shop/brand-campaigns/zenana-soft-sculpture-v2.png"
-                alt="Zenana comfortwear campaign concept: two women in soft neutral lounge layers beside a sculptural knitted cuff"
-                fill
-                sizes="(max-width: 760px) 92vw, 46vw"
-                quality={90}
-              />
-              <div>
-                <span>Zenana</span>
-                <h3>Everyday comfort, refined.</h3>
-                <button type="button" onClick={() => openBrandPage("zenana")}>
-                  Explore brand <ArrowUpRight size={15} />
-                </button>
-              </div>
-            </article>
+                  <div className={styles.catalogProductImage}>
+                    <Image
+                      src={showcaseAsset(product, "03-model-front")}
+                      alt={`${product.name} from the ${product.gender} edit`}
+                      fill
+                      sizes="(max-width: 760px) 86vw, (max-width: 1120px) 44vw, 30vw"
+                    />
+                  </div>
+                  <span>{product.gender} · PrimeStyleAI Atelier</span>
+                  <h3>{product.name}</h3>
+                  <p>{product.color}</p>
+                  <small>
+                    View product <ArrowUpRight size={14} aria-hidden="true" />
+                  </small>
+                </Link>
+              </article>
+            ))}
           </div>
         </section>
 

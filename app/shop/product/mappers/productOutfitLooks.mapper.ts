@@ -10,7 +10,8 @@ import {
   type ShowcaseProduct,
 } from "../../data/showcaseCatalog.data";
 import {
-  CAMEL_BLAZER_EXTRA_COMPANIONS,
+  MEN_SDK_COMPANIONS,
+  WOMEN_SDK_EXTRA_COMPANIONS,
   type ProductOutfitCompanion,
 } from "../data/productOutfitCompanions.data";
 
@@ -50,13 +51,13 @@ function companionsFor(
       candidate.gender === pinnedProduct.gender && candidate.slot === slot,
   ).map(showcaseCompanion);
 
-  if (pinnedProduct.id !== "women-camel-pinstripe-tailored-blazer") {
-    return showcaseCompanions;
+  if (pinnedProduct.gender === "men") {
+    return MEN_SDK_COMPANIONS[slot] ?? showcaseCompanions;
   }
 
   return [
     ...showcaseCompanions,
-    ...(CAMEL_BLAZER_EXTRA_COMPANIONS[slot] ?? []),
+    ...(WOMEN_SDK_EXTRA_COMPANIONS[slot] ?? []),
   ];
 }
 
@@ -86,7 +87,9 @@ export function getProductInstantOutfitLooks(
   if (!pinnedProduct) return [];
 
   const missingSlots = SHOWCASE_SLOTS.filter(
-    (slot) => slot !== pinnedProduct.slot,
+    (slot) =>
+      slot !== pinnedProduct.slot &&
+      !(pinnedProduct.gender === "men" && slot === "bag"),
   );
   return COMPANION_MASKS.map((mask, lookIndex) => {
     const selectedBySlot = new Map<

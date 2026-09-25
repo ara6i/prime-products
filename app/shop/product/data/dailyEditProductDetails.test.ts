@@ -32,6 +32,12 @@ describe("Daily Edit mock product catalog", () => {
     expect(product.canonicalHref).toBe(card.href);
     expect(product.isMock).toBe(true);
     expect(product.tryOnSupported).toBe(true);
+    expect(product.gender).toMatch(/women|men/);
+    expect(product.slot).toBe("top");
+    expect(product.fitType).toBe("apparel");
+    expect(product.garmentReferenceImage).toContain("-front.png");
+    expect(product.garmentDetailImage).toContain("-detail.png");
+    expect(product.sourceHref).toBe("/shop#shop-edit");
     expect(product.ratingLabel).toBeUndefined();
     expect(product.reviewLabel).toBeUndefined();
   });

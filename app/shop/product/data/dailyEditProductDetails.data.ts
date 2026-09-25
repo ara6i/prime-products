@@ -5,6 +5,8 @@ import { formatProductPrice } from "../utils/productDetail.utils";
 type MockSpecification = {
   asset: string;
   category: string;
+  gender: "women" | "men";
+  slot: "top";
   colorHex: string;
   description: string;
   details: string[];
@@ -17,6 +19,8 @@ const specifications: Record<string, MockSpecification> = {
   "daily-edit-vela-denim": {
     asset: "vela",
     category: "Denim jackets",
+    gender: "women",
+    slot: "top",
     colorHex: "#172c49",
     description: "The indigo cropped jacket from the Daily Edit. A boxy trucker silhouette, rounded sleeves and golden contrast stitching bring structure to a clean, short hem.",
     details: ["Pointed collar and silver-tone button front", "Two buttoned chest flap pockets", "Dropped shoulders and full-length sleeves", "Jacket only; ivory trousers and blue shoes are styling pieces"],
@@ -31,6 +35,8 @@ const specifications: Record<string, MockSpecification> = {
   "daily-edit-cobalt-track": {
     asset: "cobalt",
     category: "Men’s sets",
+    gender: "men",
+    slot: "top",
     colorHex: "#064ccb",
     description: "Cobalt above, ivory below. The Daily Edit’s relaxed two-piece set pairs a hooded blue windbreaker with easy ivory joggers, finished with black zip hardware and gathered cuffs.",
     details: ["Set includes the cobalt jacket and ivory trousers", "Hooded jacket with black zip fastening and zip pockets", "Elasticated trouser waist and ankle cuffs", "White T-shirt and sneakers are styling pieces, not included"],
@@ -45,6 +51,8 @@ const specifications: Record<string, MockSpecification> = {
   "daily-edit-noir-halo": {
     asset: "noir",
     category: "Blazer dresses",
+    gender: "women",
+    slot: "top",
     colorHex: "#171716",
     description: "Sharp tailoring with a small flash of light. This black blazer mini dress keeps the Daily Edit’s notched lapels, gathered wrap waist and delicate crystal spray at the left side.",
     details: ["Structured shoulders and long, slim sleeves", "Asymmetric wrap-over mini silhouette", "Silver-tone crystal detail at the wearer’s left waist", "Blazer dress only; the coral bag and cream boots are styling pieces"],
@@ -59,6 +67,8 @@ const specifications: Record<string, MockSpecification> = {
   "daily-edit-signal-shell": {
     asset: "signal",
     category: "Puffer jackets",
+    gender: "women",
+    slot: "top",
     colorHex: "#ff603d",
     description: "The bright coral puffer from the Daily Edit, with its glossy finish, cropped body and generous quilted sleeves. A tall stand collar and gold-tone zip complete the shape.",
     details: ["Glossy orange-coral finish with horizontal quilting", "Cropped silhouette and padded stand collar", "Full-length zip fastening and elastic sleeve cuffs", "Jacket only; tank, trousers, blue bag and accessories are styling pieces"],
@@ -98,10 +108,15 @@ export const dailyEditProductDetails: ProductDetailViewModel[] = dailyEditProduc
       { id: `${product.id}-detail`, src: `${imageBase}-detail.png`, alt: `${product.name} — generated fabric and construction detail` },
     ],
     featureImage: `${imageBase}-detail.png`,
-    sourceHref: "/shop#outfit-edit",
-    sourceLabel: "Daily Edit",
+    sourceHref: "/shop#shop-edit",
+    sourceLabel: "New arrivals",
     canonicalHref: product.href,
     tryOnSupported: true,
+    gender: spec.gender,
+    slot: spec.slot,
+    fitType: "apparel",
+    garmentReferenceImage: `${imageBase}-front.png`,
+    garmentDetailImage: `${imageBase}-detail.png`,
     note: "Concept preview only. Generated imagery, sample prices and mock sizing; not available for purchase.",
     information: [
       { id: "details", title: "Details", summary: spec.description, items: spec.details },

@@ -115,18 +115,13 @@ export function ProductTryOnButton({
       productCompareAtPrice={product.compareAtPriceLabel}
       productCurrency={product.currency ?? "USD"}
       productUrl={product.canonicalHref ?? `/shop/product/${product.id}`}
-      outfitBuilderSource={sdkDemo ? "ai-stylist" : "sdk"}
-      instantOutfitLooks={sdkDemo?.instantOutfitLooks}
-      instantOutfitResults={sdkDemo?.instantOutfitResults}
-      instantOutfitMessage={
-        sdkDemo
-          ? undefined
-          : "No complete prepared look is available for this item yet."
-      }
-      presetProfile={sdkDemo?.presetProfile}
-      guidedDemoAutoplay={Boolean(sdkDemo)}
-      usePresetProfileOnly={Boolean(sdkDemo)}
-      showHeaderControls={!sdkDemo}
+      outfitBuilderSource="ai-stylist"
+      instantOutfitLooks={sdkDemo.instantOutfitLooks}
+      instantOutfitResults={sdkDemo.instantOutfitResults}
+      presetProfile={sdkDemo.presetProfile}
+      guidedDemoAutoplay
+      usePresetProfileOnly
+      showHeaderControls={false}
       buttonText="Build with AI"
       buttonIcon={<TryOnIcon />}
       showPoweredBy

@@ -13,7 +13,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GlobalShopExperience } from "./GlobalShopExperience";
 import { shopMenuSections } from "./shopMenu.data";
 import { dailyEditProducts } from "../data/dailyEdit.data";
-import { shopBrandProfiles } from "../brand/data/brandProfiles.data";
 
 const actions = vi.hoisted(() => ({
   push: vi.fn(),
@@ -145,22 +144,13 @@ it("labels the shop as a launching-soon demo and uses Shane's latest Google Book
   expect(banner.queryByRole("link", { name: "Schedule a Demo" })).toBeNull();
 });
 
-it("links each original Daily Edit landing look to its own matching PDP", () => {
+it("does not duplicate New Arrivals inside the removed runway section", () => {
   render(<GlobalShopExperience />);
-  const rail = within(
-    screen.getByRole("navigation", { name: "Daily Edit products" }),
-  );
-  expect(rail.getAllByRole("link")).toHaveLength(4);
-  for (const product of dailyEditProducts) {
-    const link = rail.getByRole("link", { name: `View ${product.name}` });
-    expectNewTabLink(link, product.href);
-    expect(within(link).getByAltText(product.name).getAttribute("src")).toBe(
-      product.image,
-    );
-    expect(
-      within(link).getByText(`${product.brand} · $${product.price}`),
-    ).toBeTruthy();
-  }
+  expect(
+    screen.queryByRole("navigation", { name: "Daily Edit products" }),
+  ).toBeNull();
+  expect(screen.queryByText("Runway Ready")).toBeNull();
+  expect(screen.queryByText("Your Daily Edit")).toBeNull();
 });
 
 describe("New arrivals product links", () => {
@@ -358,33 +348,26 @@ it("presents one full supplier-focused network section", () => {
   ).toBeNull();
 });
 
-it("opens every featured brand and both brand stories in filtered Women collections", async () => {
-  const user = userEvent.setup();
+it("shows only real Women’s and Men’s catalog products in the former brand section", () => {
   render(<GlobalShopExperience />);
   const brands = within(document.getElementById("brands") as HTMLElement);
-
-  for (const brand of shopBrandProfiles) {
-    await user.click(
-      brands.getByRole("button", { name: `Shop ${brand.name}` }),
-    );
-    expect(actions.push).toHaveBeenLastCalledWith(
-      `/shop/category/women?brand=${brand.id}`,
+  expect(brands.getAllByRole("article")).toHaveLength(6);
+  expect(brands.queryByText("Judy Blue")).toBeNull();
+  expect(brands.queryByText("Zenana")).toBeNull();
+  for (const name of [
+    "Camel Pinstripe Tailored Blazer",
+    "Chocolate Tailored Trouser",
+    "Oxblood Leather Slingback Pump",
+    "Espresso Double-Breasted Blazer",
+    "Charcoal Pleated Trouser",
+    "Chocolate Suede Court Sneaker",
+  ]) {
+    const link = brands.getByRole("link", { name: `View ${name}` });
+    expect(link.getAttribute("href")).toMatch(/^\/shop\/product\//);
+    expect(link.querySelector("img")?.getAttribute("src")).toContain(
+      "/media/global-shop/showcase-v4/",
     );
   }
-
-  const stories = brands.getAllByRole("article");
-  await user.click(
-    within(stories[0]).getByRole("button", { name: "Explore brand" }),
-  );
-  expect(actions.push).toHaveBeenLastCalledWith(
-    "/shop/category/women?brand=judy-blue",
-  );
-  await user.click(
-    within(stories[1]).getByRole("button", { name: "Explore brand" }),
-  );
-  expect(actions.push).toHaveBeenLastCalledWith(
-    "/shop/category/women?brand=zenana",
-  );
 });
 
 async function openMenu() {
@@ -441,17 +424,16 @@ describe("Shop branded menu", () => {
       shop
         .getByRole("link", { name: "Product page · PDP" })
         .getAttribute("href"),
-    ).toBe("/shop/product/denim-light-wide-leg");
+    ).toBe("/shop/product/daily-edit-vela-denim");
     expect(shop.queryByRole("link", { name: "Denim" })).toBeNull();
     expect(shop.getByRole("link", { name: "Women" }).getAttribute("href")).toBe(
       "/shop/category/women",
     );
     expect(
-      shop.getByRole("link", { name: "Judy Blue" }).getAttribute("href"),
-    ).toBe("/shop/category/women?brand=judy-blue");
-    expect(
-      shop.getByRole("link", { name: "Outfit canvas" }).getAttribute("href"),
-    ).toBe("/shop/dressing-room");
+      shop.getAllByRole("link", { name: "Camel Tailored Blazer" }),
+    ).toHaveLength(2);
+    expect(shop.queryByRole("link", { name: "AI Stylist" })).toBeNull();
+    expect(shop.queryByRole("link", { name: "Outfit canvas" })).toBeNull();
     expect(menu.queryByRole("link", { name: "Merchant dashboard" })).toBeNull();
   });
 
@@ -551,7 +533,7 @@ describe("Shop branded menu", () => {
     expect(
       menu.queryByRole("link", { name: "PDP Studio dashboard" }),
     ).toBeNull();
-    expect(menu.getByRole("link", { name: "Outfit canvas" })).toBeTruthy();
+    expect(menu.queryByRole("link", { name: "Outfit canvas" })).toBeNull();
     expect(actions.push).not.toHaveBeenCalled();
   });
 
@@ -655,13 +637,9 @@ describe("Shop branded menu", () => {
     ).toBeTruthy();
   });
 
-  it("keeps filtered brand link activation in the new-tab flow", async () => {
-    const { user, menu } = await openMenu();
-    const brand = menu.getByRole("link", { name: "Judy Blue" });
-    expectNewTabLink(brand, "/shop/category/women?brand=judy-blue");
-    brand.focus();
-    await user.keyboard("{Enter}");
-    expect(actions.push).not.toHaveBeenCalled();
-    expect(menu.getByRole("tabpanel", { name: "Shop" })).toBeTruthy();
+  it("does not expose disabled AI Stylist or outfit-canvas routes", async () => {
+    const { menu } = await openMenu();
+    expect(menu.queryByRole("link", { name: "AI Stylist" })).toBeNull();
+    expect(menu.queryByRole("link", { name: "Outfit canvas" })).toBeNull();
   });
 });

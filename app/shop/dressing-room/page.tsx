@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DressingRoomExperience } from "./components/DressingRoomExperience";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Dressing Room · PrimeStyleAI Shop",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function DressingRoomPage() {
-  return <DressingRoomExperience />;
+  notFound();
 }

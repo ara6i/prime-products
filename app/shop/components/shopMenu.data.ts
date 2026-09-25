@@ -1,6 +1,3 @@
-import { shopBrandProfiles } from "../brand/data/brandProfiles.data";
-import { getBrandHref } from "../mappers/shopNavigation.mapper";
-
 type MenuLink = { label: string; href: string };
 type MenuSection = {
   id: string;
@@ -21,10 +18,8 @@ export const shopMenuSections: MenuSection[] = [
           { label: "Shop landing", href: "/shop" },
           {
             label: "Product page · PDP",
-            href: "/shop/product/denim-light-wide-leg",
+            href: "/shop/product/daily-edit-vela-denim",
           },
-          { label: "AI Stylist", href: "/shop/ai-stylist" },
-          { label: "Outfit canvas", href: "/shop/dressing-room" },
         ],
       },
       {
@@ -36,11 +31,25 @@ export const shopMenuSections: MenuSection[] = [
         ],
       },
       {
-        label: "Brands",
-        links: shopBrandProfiles.map((brand) => ({
-          label: brand.name,
-          href: getBrandHref(brand.id),
-        })),
+        label: "Featured products",
+        links: [
+          {
+            label: "Camel Tailored Blazer",
+            href: "/shop/product/women-camel-pinstripe-tailored-blazer",
+          },
+          {
+            label: "Chocolate Tailored Trouser",
+            href: "/shop/product/women-chocolate-tailored-trouser",
+          },
+          {
+            label: "Espresso Double-Breasted Blazer",
+            href: "/shop/product/men-espresso-double-breasted-blazer",
+          },
+          {
+            label: "Charcoal Pleated Trouser",
+            href: "/shop/product/men-charcoal-pleated-trouser",
+          },
+        ],
       },
     ],
     features: [
@@ -57,14 +66,16 @@ export const shopMenuSections: MenuSection[] = [
           "/media/global-shop/showcase-v4/category-banners/men-category-mobile.webp",
       },
       {
-        label: "Accessories",
-        href: "/shop/category/accessories",
-        image: "/media/global-shop/stylist-cobalt-3d.webp",
+        label: "Camel Tailored Blazer",
+        href: "/shop/product/women-camel-pinstripe-tailored-blazer",
+        image:
+          "/media/global-shop/showcase-v4/women/women-camel-pinstripe-tailored-blazer/03-model-front.png",
       },
       {
-        label: "AI styling",
-        href: "/shop/ai-stylist",
-        image: "/media/global-shop/product-lilac-lime-3d.webp",
+        label: "Espresso Double-Breasted Blazer",
+        href: "/shop/product/men-espresso-double-breasted-blazer",
+        image:
+          "/media/global-shop/showcase-v4/men/men-espresso-double-breasted-blazer/03-model-front.png",
       },
     ],
   },

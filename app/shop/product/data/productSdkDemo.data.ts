@@ -35,3 +35,11 @@ export function showcasePreparedResultFile(
   const lookNumber = String(lookIndex + 1).padStart(2, "0");
   return `media/global-shop/showcase-sdk-results/${product.gender}/${product.id}/look-${lookNumber}.png`;
 }
+
+export function dailyEditPreparedResultAsset(
+  productId: string,
+  lookIndex: number,
+) {
+  const lookNumber = String(lookIndex + 1).padStart(2, "0");
+  return `/media/global-shop/daily-edit-sdk-v1/${productId}/results/look-${lookNumber}.png`;
+}

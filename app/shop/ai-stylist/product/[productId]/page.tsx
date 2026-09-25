@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { StylistProductDetailClient } from "./StylistProductDetailClient";
+import { notFound } from "next/navigation";
 
 interface StylistProductPageProps {
   params: Promise<{ productId: string }>;
@@ -11,6 +11,6 @@ export const metadata: Metadata = {
 };
 
 export default async function StylistProductPage({ params }: StylistProductPageProps) {
-  const { productId } = await params;
-  return <StylistProductDetailClient key={productId} productId={productId} />;
+  await params;
+  notFound();
 }

@@ -4,20 +4,17 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { MERCHANT_DASHBOARD_ROUTE_SECTIONS } from "../../partner-landing/merchant-dashboard/types";
-import { shopBrandProfiles } from "../brand/data/brandProfiles.data";
 import { SHOP_CATEGORY_IDS } from "../category/types/categoryCatalog.types";
 import { getStaticProductIds } from "../product/services/productDetail.service";
 import { shopMenuSections } from "./shopMenu.data";
 
 const productIds = new Set(getStaticProductIds());
-const brandIds = new Set<string>(shopBrandProfiles.map((brand) => brand.id));
 
 function hasPage(href: string) {
   const pathname = href.split(/[?#]/)[0];
   const parts = pathname.split("/").filter(Boolean);
   if (parts[0] === "shop" && parts.length === 3) {
     if (parts[1] === "product") return productIds.has(parts[2]);
-    if (parts[1] === "brand") return brandIds.has(parts[2]);
     if (parts[1] === "category") return SHOP_CATEGORY_IDS.some((id) => id === parts[2]);
   }
   if (parts[0] === "merchants" && parts[1] === "dashboard" && parts.length === 3) {
@@ -37,15 +34,20 @@ describe("Platform menu destinations", () => {
     expect(JSON.stringify(shop)).not.toContain("/shop/category/denim");
   });
 
-  it("routes every imported brand into its filtered Women collection", () => {
+  it("uses only existing Women’s and Men’s products in the featured product group", () => {
     const shop = shopMenuSections.find((section) => section.id === "shop");
-    const brandLinks = shop?.groups.find((group) => group.label === "Brands")?.links;
-    expect(brandLinks).toEqual(
-      shopBrandProfiles.map((brand) => ({
-        label: brand.name,
-        href: `/shop/category/women?brand=${brand.id}`,
-      })),
-    );
+    const productLinks = shop?.groups.find(
+      (group) => group.label === "Featured products",
+    )?.links;
+    expect(productLinks).toHaveLength(4);
+    expect(
+      productLinks?.every((link) =>
+        link.href.startsWith("/shop/product/") &&
+        productIds.has(link.href.split("/").at(-1) ?? ""),
+      ),
+    ).toBe(true);
+    expect(JSON.stringify(shop)).not.toContain("/shop/ai-stylist");
+    expect(JSON.stringify(shop)).not.toContain("/shop/dressing-room");
   });
 
   it.each(shopMenuSections)("uses existing pages and original image assets for $label", (section) => {
