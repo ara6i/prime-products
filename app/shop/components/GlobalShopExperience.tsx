@@ -211,9 +211,9 @@ export function GlobalShopExperience() {
             <Link href="/shop/category/men">Men</Link>
             <Link href="/influencers">For Influencers</Link>
             <Link href="/merchants">For Merchants</Link>
-            <button type="button" onClick={() => scrollTo("supplier-network")}>
+            <Link href="/suppliers">
               For Suppliers
-            </button>
+            </Link>
           </nav>
 
           <div className={styles.headerActions}>

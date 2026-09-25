@@ -19,6 +19,7 @@ export interface ShopAIStylistWeddingLook {
 export interface ShopWeddingStageComposition {
   alt: readonly string[];
   images: readonly string[];
+  imageObjectPositions?: readonly string[];
   imageScales?: readonly number[];
   label: string;
   visiblePeople: number;
@@ -236,9 +237,16 @@ const WEDDING_STAGE_COMPOSITIONS: Partial<
     label: "Groom centered with four ushers in one matching suit",
     visiblePeople: 5,
     images: [GROOM_LOOKS[0].image, ...USHER_IMAGES],
-    // The groom source has a wider canvas than the usher cutouts. Compensate
-    // only in this party view so the centered groom remains the visual anchor.
-    imageScales: [1.15, 1, 1, 1, 1],
+    // The groom source has a wider canvas than the usher cutouts. Anchor his
+    // full body to the disc and compensate only in this party composition.
+    imageObjectPositions: [
+      "center bottom",
+      "center",
+      "center",
+      "center",
+      "center",
+    ],
+    imageScales: [1.22, 1, 1, 1, 1],
     alt: [
       "Groom centered in a black barathea tuxedo",
       ...USHER_IMAGES.map(

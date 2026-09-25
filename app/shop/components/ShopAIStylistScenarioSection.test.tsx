@@ -302,6 +302,7 @@ it("switches Wedding to Groom and Usher for men", async () => {
   expect(screen.getByText("Men · Wedding · Usher · $150–$300")).toBeTruthy();
   const [groom] = screen.getAllByAltText(/Groom centered/i);
   expect(groom).toBeTruthy();
-  expect(groom.parentElement?.style.transform).toContain("scale(1.15)");
+  expect(groom.style.objectPosition).toBe("center bottom");
+  expect(groom.parentElement?.style.transform).toContain("scale(1.22)");
   expect(screen.getAllByAltText(/Usher \d in the matching/i)).toHaveLength(4);
 });

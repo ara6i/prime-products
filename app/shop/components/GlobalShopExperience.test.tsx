@@ -104,13 +104,7 @@ it("places AI Stylist second and the SDK third without reordering later sections
   );
 });
 
-it("keeps partner destinations in the header and scrolls the final supplier action to its section", async () => {
-  const user = userEvent.setup();
-  const scrollIntoView = vi.fn();
-  Object.defineProperty(Element.prototype, "scrollIntoView", {
-    configurable: true,
-    value: scrollIntoView,
-  });
+it("links every partner destination in the header to its landing page", () => {
   render(<GlobalShopExperience />);
   const navigationElement = screen.getByRole("navigation", {
     name: "Shop navigation",
@@ -129,16 +123,11 @@ it("keeps partner destinations in the header and scrolls the final supplier acti
       .getAttribute("href"),
   ).toBe("/merchants");
 
-  const supplierAction = navigation.getByRole("button", {
+  const supplierAction = navigation.getByRole("link", {
     name: "For Suppliers",
   });
   expect(navigationElement.lastElementChild).toBe(supplierAction);
-
-  await user.click(supplierAction);
-  expect(scrollIntoView).toHaveBeenCalledWith({
-    behavior: "smooth",
-    block: "start",
-  });
+  expect(supplierAction.getAttribute("href")).toBe("/suppliers");
 });
 
 it("labels the shop as a launching-soon demo and uses Shane's latest Google Booking link", () => {

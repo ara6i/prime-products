@@ -586,6 +586,9 @@ export function ShopAIStylistScenarioSection() {
               outfits={[]}
               modelImageUrl={null}
               slotImages={stageImages}
+              slotImageObjectPositions={
+                weddingStageComposition?.imageObjectPositions
+              }
               slotImageScales={weddingStageComposition?.imageScales}
               fillContainer
               showRotationGuide={!showMenWizardPreview && !weddingStageComposition}

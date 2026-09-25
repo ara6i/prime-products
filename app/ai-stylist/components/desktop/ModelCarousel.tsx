@@ -86,6 +86,7 @@ function modelFilter(layout: SlotLayout): string {
 
 interface ModelCarouselProps {
   images: string[];
+  imageObjectPositions?: readonly string[];
   imageScales?: readonly number[];
   imageAlt?: (index: number) => string;
   rotationRef: React.RefObject<number>;
@@ -102,6 +103,7 @@ interface ModelCarouselProps {
 
 export function ModelCarousel({
   images,
+  imageObjectPositions,
   imageScales,
   imageAlt = (index) => `Style model ${index + 1}`,
   rotationRef,
@@ -296,6 +298,9 @@ export function ModelCarousel({
                     src={src}
                     alt={imageAlt(i)}
                     className="absolute inset-0 h-full w-full max-w-none object-contain"
+                    style={{
+                      objectPosition: imageObjectPositions?.[i] ?? "center",
+                    }}
                     decoding="async"
                     draggable={false}
                     fetchPriority={i === selectedIndex ? "high" : "auto"}

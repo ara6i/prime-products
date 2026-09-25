@@ -69,7 +69,7 @@ describe("submitPartnerInterest", () => {
       productCategory: "apparel",
       catalogSize: "100-500",
       sellingModel: "flexible",
-      shippingReach: "global",
+      shippingReach: "US,CA,GB",
       connectionGoals: ["merchant-connections", "influencer-partnerships"],
       notes: "Interested in long-term partnerships.",
     });
@@ -86,7 +86,7 @@ describe("submitPartnerInterest", () => {
       productCategory: "apparel",
       catalogSize: "100-500",
       sellingModel: "flexible",
-      shippingReach: "global",
+      shippingReach: "US,CA,GB",
       connectionGoals: ["merchant-connections", "influencer-partnerships"],
     });
   });

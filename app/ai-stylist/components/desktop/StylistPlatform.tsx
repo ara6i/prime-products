@@ -155,6 +155,7 @@ interface StylistPlatformProps {
   showModels?: boolean;
   modelImageUrl?: string | null;
   slotImages?: string[];
+  slotImageObjectPositions?: readonly string[];
   slotImageScales?: readonly number[];
   selectedIndex?: number;
   onSelectedIndexChange?: (index: number) => void;
@@ -174,6 +175,7 @@ export function StylistPlatform({
   showModels = true,
   modelImageUrl = null,
   slotImages,
+  slotImageObjectPositions,
   slotImageScales,
   selectedIndex: controlledSelectedIndex,
   onSelectedIndexChange,
@@ -405,6 +407,7 @@ export function StylistPlatform({
           <ModelCarousel
             key={displayImages.join("|")}
             images={displayImages}
+            imageObjectPositions={slotImageObjectPositions}
             imageScales={slotImageScales}
             imageAlt={imageAlt}
             rotationRef={rotationRef}
