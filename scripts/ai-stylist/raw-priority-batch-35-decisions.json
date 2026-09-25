@@ -1,0 +1,62 @@
+{
+  "batch": "35",
+  "approvals": {
+    "4": {
+      "color": "Coffee Brown",
+      "constraint": "Use this coffee-brown relaxed hoodie once only for Premium Fall/Winter Casual Everyday, Weekend, Travel, Campus or a restrained daytime Date. Balance its clean Fear-of-God-style volume with straight or gently tapered trousers in ecru, cream, stone, light gray or washed mid-blue and low-profile cream, tan or gray footwear; never combine it with a baggy or puddled bottom, another oversized layer, a black/navy head-to-toe palette, bulky trainer or any Wedding/Wedding Guest use."
+    },
+    "9": {
+      "color": "Khaki",
+      "constraint": "Use this light-khaki textured henley knit once only for Premium Fall/Winter Casual Everyday, Weekend, Travel, creative Office, daytime Date or a refined casual Party. Pair its tactile warm neutral with a controlled straight trouser in chocolate, muted olive, burgundy, charcoal or clean dark denim and cream, tan or brown low-profile footwear; never style it with a second loose beige layer, a puddled cargo, bulky shoe, muddy all-khaki palette or any Wedding/Wedding Guest use."
+    },
+    "30": {
+      "color": "Paris Gray",
+      "constraint": "Use this Paris-gray tapered utility jogger once only for Spring/Summer/Fall Activewear, Gym, Travel, Errands or a sporty Weekend. Keep the upper half clean and controlled with a relaxed white, ecru, sky-blue, sage or muted coral tee or lightweight sweatshirt and a streamlined white, cream or gray sneaker; never pair it with an oversized long top, another technical cargo layer, a heavy coat, bulky dark trainer, all-black palette or any Wedding/Wedding Guest use."
+    },
+    "38": {
+      "color": "Army Green",
+      "constraint": "Use this army-green pleated corduroy trouser once only for Premium Fall/Winter Casual Everyday, Weekend, creative Office, daytime Date or a restrained Party. Build a modern Zara-led look with an ecru, cream, dusty blue, soft rust or burgundy knit, polo or overshirt and a cream, tan or dark-brown low-profile shoe; never add a long baggy top, oversized cargo outerwear, bulky sneaker, all-dark green/black palette or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 3, 6, 7, 10, 11, 16, 19],
+      "reason": "These tops are visibly skinny, overlong, deep-cut, dated performance-led or dominated by dark generic styling and fail the modern controlled-proportion gate."
+    },
+    {
+      "cards": [2, 8, 15, 17, 18, 20],
+      "reason": "These product-only or hanger-only tops lack credible adult fit and movement proof and are additionally generic, visibly branded, costume-like or too weak to justify a unique matrix identity."
+    },
+    {
+      "cards": [5, 13, 14],
+      "reason": "The attached-scarf tee, fake layered tee and deep-button blouse are novelty or costume constructions rather than versatile Zara-led menswear."
+    },
+    {
+      "cards": [12],
+      "reason": "Both raglan colors retain an excessively long, loose streetwear body that would recreate the oversized-top problem instead of a controlled relaxed silhouette."
+    },
+    {
+      "cards": [21, 22, 24, 25, 26, 27, 28, 29, 32, 34, 35, 36, 37],
+      "reason": "These bottoms are excessively wide, puddled, ballooned, drawstring-heavy, convertible, tie-dyed or multi-pocket cargo designs and directly recreate the baggy-bottom problem."
+    },
+    {
+      "cards": [23, 31, 33],
+      "reason": "These dark cargo bottoms are skinny or generic, visually repetitive and add no stronger modern color or silhouette role than the approved pool."
+    },
+    {
+      "cards": [39],
+      "reason": "The blue camouflage cargo is novelty-led, product-only and too visually busy for a clean modern outfit system."
+    },
+    {
+      "cards": [40],
+      "reason": "The knee-length multi-pocket cargo Bermuda has a dated long proportion and heavy pocket treatment rather than a clean modern summer short."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 80 recorded color images rendered; all displayed images loaded with zero broken files.",
+    "4 accepted with one exact color and variant selected each: coffee-brown relaxed hoodie, light-khaki textured henley knit, Paris-gray tapered utility jogger and army-green pleated corduroy trouser.",
+    "36 rejected after the base pass and close inspection of all 11 variants across six borderline identities.",
+    "Every selected identity, variant and image has zero collision with every prior accepted or conditional item.",
+    "Rejections remove skinny and overlong tops, unproven generic basics, novelty constructions, thirteen puddled or exaggerated cargos, repetitive dark cargos, camouflage and a dated cargo Bermuda."
+  ]
+}

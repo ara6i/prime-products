@@ -1,0 +1,28 @@
+{
+  "batch": "50",
+  "approvals": {},
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+      "reason": "These tops are driven by slogans, cartoons, logos, pseudo-brand lettering, bodybuilding cuts or cheap novelty graphics rather than versatile modern Zara-led design; several also lack reliable on-body proportion proof."
+    },
+    {
+      "cards": [21, 22, 23, 26, 29, 30, 33, 35],
+      "reason": "These distressed jeans are tight, flared, heavily ripped, gimmick-layered or shown only as product cutouts without trustworthy rise, thigh and shoe-break proof."
+    },
+    {
+      "cards": [24, 25, 27, 31, 32, 34, 36, 37, 38, 39, 40],
+      "reason": "These bottoms are excessively wide, puddled, cuff-stacked, camouflage, floral, abstract-print or novelty-shaped and fail the controlled straight-leg requirement."
+    },
+    {
+      "cards": [28],
+      "reason": "The closest candidate still has a generic loose light-wash line, visible knee distressing and only one weak on-body image; it is not clean or distinctive enough for the strict modern pool."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 100 recorded color images rendered and loaded with zero broken files.",
+    "0 accepted; all 20 graphic or novelty tops and all 20 distressed, wide or insufficiently proven bottoms failed the visual gate.",
+    "The single borderline light-wash jean was rejected after closer review because its loose distressed line and limited proof do not meet the Zara-led standard.",
+    "No candidate entered the usable pool, so no new identity, variant or image collision was introduced."
+  ]
+}

@@ -32,6 +32,8 @@ import type {
   IntelligentOutfitItem,
   OutfitIntelligenceResponse,
 } from "@/app/ai-stylist/types";
+import { LocalMlImageBadge } from "@/app/ai-stylist/components/shared/LocalMlImageBadge";
+import { isLocalMlOutfitImage } from "@/app/ai-stylist/utils/imageProvenance";
 import type { CatalogProduct } from "@/app/try-on/types";
 
 interface OutfitSelectionViewProps {
@@ -165,6 +167,11 @@ function OutfitBoard({
             data-style-rag-id={item.styleRagId}
             data-slot={item.slot}
             data-cutout-ready={item.cutoutImageUrl ? "true" : "false"}
+            data-image-provenance={
+              isLocalMlOutfitImage(item)
+                ? "local-ml"
+                : item.imageProvenance ?? "unknown"
+            }
             aria-label={`${itemLabel(item)}: ${item.title}. Drag onto another ${itemLabel(item).toLowerCase()} to swap.`}
             aria-grabbed={isDragged}
             title={`Drag to swap this ${itemLabel(item).toLowerCase()}`}
@@ -190,6 +197,10 @@ function OutfitBoard({
                 : "focus-visible:ring-2 focus-visible:ring-[#7258fa]"
             }`}
           >
+            <LocalMlImageBadge
+              item={item}
+              className="absolute left-1 top-1"
+            />
             <motion.span
               layoutId={`stylist-garment-${item.styleRagId}`}
               transition={{ type: "spring", stiffness: 420, damping: 36 }}

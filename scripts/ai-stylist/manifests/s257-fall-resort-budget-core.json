@@ -1,0 +1,213 @@
+{
+  "outputDir": "fall-resort-budget-pilot-s257",
+  "scenarioId": "S257",
+  "occasion": "Vacation / Resort",
+  "season": "Fall",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-zero-local-front-runners-awaiting-full-core",
+  "comparisonTitle": "S257 · Fall Vacation / Resort · existing core screen",
+  "comparisonSubtitle": "Eight colorful layerable tops · five unique controlled bottoms · seven light Fall layers",
+  "comparisonNote": "Require a warm-destination Fall palette, breathable texture and clean relaxed proportions without baggy bottoms, skinny tops or dark monotony · not UI integrated",
+  "coreTitle": "S257 · Fall Vacation / Resort · no defensible local core",
+  "coreSubtitle": "the former cargo bomber failed full-source proportion review",
+  "coreNote": "Top, bottom, outerwear, shoe, bag and accessory all remain unresolved · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "excludeCandidateKeys": ["B6"],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men sunset orange textured short sleeve knitted polo regular fit",
+      "targetProduct": "sunset-orange textured short-sleeve knit polo"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men warm ecru travel trousers controlled straight leg fall resort",
+      "targetProduct": "warm-ecru controlled-straight Fall Resort trouser"
+    },
+    {
+      "category": "outerwear",
+      "searchPhrase": "men light khaki short resort blouson natural shoulder minimal pockets regular fit",
+      "targetProduct": "light-khaki short regular Resort blouson with minimal pockets"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men rust suede deck shoes round toe gum sole low profile",
+      "targetProduct": "rust-suede round-toe gum-sole deck shoe"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men sage canvas cognac leather weekender bag minimalist",
+      "targetProduct": "sage-canvas-and-cognac-leather weekender"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men amber tortoiseshell rectangular sunglasses polarized minimal logo",
+      "targetProduct": "amber-tortoiseshell rectangular sunglasses"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:45be3635b9a7c001bb8738451df092fc94b18ad1",
+      "name": "Terracotta Linen-Look Hooded Pullover",
+      "decision": "reject-for-s257",
+      "decisionReason": "The terracotta linen-look color is useful, but the hooded pullover has a long tunic body, rolled bunched sleeves, black cords and a loose drawstring-lounge presentation that is not the clean Zara-led Resort silhouette required."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:5990f168c4c897e4a4a3f7e37efe212853e4be04",
+      "name": "Light-Green Textured Long-Sleeve Henley",
+      "decision": "reject-for-s257",
+      "decisionReason": "The light-green Henley supplies cheerful color, but its deep open neck, rolled sleeves and very long rounded hem create a dated tourist-resort tunic rather than a modern controlled top."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:f9c9196d870785e0b931566b5097b11a6898df94",
+      "name": "Anchor-Red Relaxed Heavyweight Tee",
+      "decision": "reject-for-s257",
+      "decisionReason": "The anchor-red tee is heavily dropped, broad and long with streetwear bag styling; it would recreate the oversized-top problem and overwhelm a clean Resort bottom."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:1feb73f9a4814c97fb18176dbbb9e7dcd3e854f0",
+      "name": "Peacock-Blue Resort Shirt",
+      "decision": "reject-for-s257",
+      "decisionReason": "The peacock-blue shirt is a hanger-only open overshirt layered over a separate white tee, so shoulder, body, hem and worn drape are not credibly proven."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:6b0af24c8ff4871890fdd99cd65f8712fd26dc84",
+      "name": "Warm-Brown Button-Front Shirt",
+      "decision": "reject-for-s257",
+      "decisionReason": "The warm-brown shirt is another hanger-only twin-pocket overshirt with a long rounded hem and white-tee dependency; it adds a muddy neutral without reliable body proof."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:5c758ac61260c421f746e98c9c2f2e01b4ade9d0",
+      "name": "Washed Light-Green Long-Sleeve Polo",
+      "decision": "reject-for-s257",
+      "decisionReason": "The washed green polo has extreme dropped shoulders, a wide long body and heavily bagged sleeves, making it too oversized and shapeless for the requested modern proportion."
+    },
+    {
+      "group": "top",
+      "key": "T7",
+      "identity": "shopify_supplier:bd7d3b2b02cde5cdc39ecb6fb8973b884734d91b",
+      "name": "Warm-Brown Controlled Relaxed Tee",
+      "decision": "reject-for-s257",
+      "decisionReason": "The brown tee is long and oversized with dropped shoulders plus a visible micro wordmark; its dull color and volume do not deliver the bright refined Resort direction."
+    },
+    {
+      "group": "top",
+      "key": "T8",
+      "identity": "shopify_supplier:40a4127a4b2d81c1f79ac40c43b11901a63a0fc5",
+      "name": "Creamy-White Corduroy Overshirt",
+      "decision": "reject-for-s257",
+      "decisionReason": "The creamy corduroy overshirt is extremely boxy and long with oversized utility pockets and sleeves; it would dominate the outfit instead of acting as one controlled Fall layer."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:bf7fa4e61eb13d0ac96cfca0028b90814633535c",
+      "name": "Ivory Straight-Leg Jean",
+      "decision": "reject-for-s257",
+      "decisionReason": "The ivory jean has a promising clean color but is shown only as a product cutout; there is no credible proof of rise, seat, full worn width or shoe break, so it cannot receive a visual hold."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:2757295a71470293dac80a2c7e1e5684a21f33e3",
+      "name": "Khaki Clean Straight Travel Trouser",
+      "decision": "reject-for-s257",
+      "decisionReason": "The khaki travel trouser exposes a fully elastic waist and long black webbing belt with a soft technical fabric; it reads functional travelwear rather than polished Fall Resort."
+    },
+    {
+      "group": "bottom",
+      "key": "B3",
+      "identity": "shopify_supplier:9e68a94a7d4832053cbe5b8803fd273e7e5c3eea",
+      "name": "French-Blue Clean Straight Jean",
+      "decision": "reject-for-s257",
+      "decisionReason": "The source is explicitly a slim-fit jean and the worn image shows a narrow thigh-to-ankle line; it conflicts with the no-skinny rule and cannot anchor the corrected Fall Resort silhouette."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:c4694a3740fce46e4cb36568c29f9bd341398236",
+      "name": "Medium-Blue Straight-Leg Jean",
+      "decision": "reject-for-s257",
+      "decisionReason": "The medium-blue jean is broad through the leg and visibly pools at the shoe, while its slanted trouser pockets and glossy saturated wash look dated rather than relaxed and modern."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265",
+      "name": "Military-Green Casual Trouser",
+      "decision": "reject-for-s257",
+      "decisionReason": "The military-green trouser is shown unworn and wrinkled with novelty bead hardware, so neither clean drape nor a refined Resort finish is proven."
+    },
+    {
+      "group": "bottom",
+      "key": "B6",
+      "identity": "shopify_supplier:048f91fa8b67f16175d1ad88b171fbd87340e32c",
+      "name": "Dusty-Blue Straight-Fit Jean",
+      "decision": "reject-for-s257",
+      "decisionReason": "The dusty-blue jean is narrower through the thigh and lower leg with a visibly bunched hem; its dated slim-straight line is weaker than the controlled French-blue option."
+    },
+    {
+      "group": "outerwear",
+      "key": "O1",
+      "identity": "shopify_supplier:15af46e83826d45cd0e8225166a53b0d6d62e472",
+      "name": "Off-White and Powder-Blue Windbreaker",
+      "decision": "reject-for-s257",
+      "decisionReason": "The windbreaker stacks an oversized off-white shell over a large blue hood, dark graphic sweatshirt and cap, creating excessive upper-body bulk and a sporty streetwear mood rather than Resort ease."
+    },
+    {
+      "group": "outerwear",
+      "key": "O2",
+      "identity": "shopify_supplier:5d5eb7a403cdcbaab147934e34260021d12d0dba",
+      "name": "Light-Khaki Relaxed Blazer",
+      "decision": "reject-for-s257",
+      "decisionReason": "The light-khaki blazer has a long oversized body, low shoulders, large patch pockets and extremely wide black trousers in its proof image; it reproduces the loose-on-loose silhouette the rebuild excludes."
+    },
+    {
+      "group": "outerwear",
+      "key": "O3",
+      "identity": "shopify_supplier:0207913076417c4f3fc03599b3b2cc589b66c644",
+      "name": "Sapphire-Blue Denim Jacket",
+      "decision": "reject-for-s257",
+      "decisionReason": "The sapphire denim jacket is a dark product-only image with strong white contrast stitching and four-pocket visual weight; fit is unproven and the color would drag the Resort palette dark."
+    },
+    {
+      "group": "outerwear",
+      "key": "O4",
+      "identity": "shopify_supplier:a09789e253d99e246a5ec1964db4154eb9305f6a",
+      "name": "Army-Green Corduroy Snap Jacket",
+      "decision": "reject-for-s257",
+      "decisionReason": "The army-green corduroy jacket is an unworn composited product image with dropped shoulders, bulky utility pockets and prominent silver hardware, leaving both fit and refinement unproven."
+    },
+    {
+      "group": "outerwear",
+      "key": "O5",
+      "identity": "shopify_supplier:0b0026d57ef43627c967e2592a1523d683169666",
+      "name": "Warm-Brown Snap Shirt Jacket",
+      "decision": "reject-for-s257",
+      "decisionReason": "The warm-brown shirt jacket is shown only as a floating product with long rounded tails and large flap construction; it lacks body proof and would make the palette heavy and muddy."
+    },
+    {
+      "group": "outerwear",
+      "key": "O6",
+      "identity": "shopify_supplier:16979789931509ee789c04fefffd07da8162def5",
+      "name": "Fresh-Green Button-Up Cardigan",
+      "decision": "reject-for-s257",
+      "decisionReason": "The green cardigan has a narrow shaped torso, long fitted sleeves and loud red, cream and black retro stripes; it is costume-like and conflicts with the modern relaxed brief."
+    }
+  ]
+}

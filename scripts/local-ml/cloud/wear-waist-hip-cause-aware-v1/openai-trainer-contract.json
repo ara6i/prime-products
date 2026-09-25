@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "wear-waist-hip-openai-attached-trainer/v1",
+  "trainer": {
+    "environment": "Codex authenticated ChatGPT session",
+    "model": "gpt-5.6-sol",
+    "role": "inspect each failed rule result and teach one named correction",
+    "localResponsesApiConnector": "openai_visual_cause_trainer.py",
+    "apiConnectionStatus": "code complete; not authenticated because OPENAI_API_KEY is not configured in the project"
+  },
+  "lessonCauses": [
+    "wrong waist or hip body line",
+    "wrong A-B silhouette edges",
+    "wrong A-B centimetre scale",
+    "wrong front-to-back depth",
+    "wrong 32-point cross-section shape",
+    "wrong waist-to-hip width or depth ratio",
+    "wrong tape protocol correction",
+    "bad or unresolved teacher",
+    "camera or silhouette quality problem"
+  ],
+  "requiredLessonFields": [
+    "scanId",
+    "target",
+    "teacher status",
+    "first answer with complete source trace",
+    "named component errors",
+    "counterfactual error removed by each component",
+    "visual evidence references",
+    "main cause",
+    "confidence",
+    "one proposed visible rule change",
+    "validation result",
+    "keep or reject decision"
+  ],
+  "authority": {
+    "mayChangeOneNamedCandidateRule": true,
+    "mayCreateHiddenNumbers": false,
+    "mayUsePyTorchOrAdamW": false,
+    "mayUseHeldout448BeforeFreeze": false,
+    "mayKeepLessonWithoutPersonLevelValidation": false
+  }
+}

@@ -1,6 +1,4 @@
-import { ArrowBendRightDown } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
-import Link from "next/link";
 
 import styles from "./merchantOutfitBuilder.module.css";
 
@@ -18,7 +16,7 @@ const benefits = [
   {
     index: "03",
     title: "Promote the right match",
-    body: "When your product completes a look with products from another merchant, we can surface it to relevant shoppers across the PrimeStyleAI network.",
+    body: "When your product completes a look with products from another merchant, we can surface it to relevant shoppers across the PrimeStyleAI global network.",
   },
 ] as const;
 
@@ -45,7 +43,9 @@ export function MerchantOutfitBuilderSection() {
         </figure>
 
         <article className={styles.copy}>
-          <p className={styles.eyebrow}>Outfit Builder · Shopping Network</p>
+          <p className={styles.eyebrow}>
+            Outfit Builder · Global Shopping Network
+          </p>
           <h2 id="outfit-builder-title">
             One product.
             <span>A complete look.</span>
@@ -71,18 +71,6 @@ export function MerchantOutfitBuilderSection() {
             More relevant suggestions. More product discovery. More chances to
             sell.
           </p>
-
-          <Link
-            className={styles.sdkCue}
-            href="#ai-fitting"
-            aria-label="See how customers land on your product page, find their right size, and try it on"
-          >
-            <span>
-              See how customers land on your PDP,
-              <strong>find their right size and try it on.</strong>
-            </span>
-            <ArrowBendRightDown size={126} weight="thin" aria-hidden="true" />
-          </Link>
         </article>
       </div>
     </section>

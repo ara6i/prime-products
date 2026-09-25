@@ -1,0 +1,27 @@
+{
+  "outputDir": "winter-sports-luxury-pilot-s232",
+  "scenarioId": "S232",
+  "occasion": "Sports / Workout",
+  "season": "Winter",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s230-winter-sports-midrange-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-accessory",
+  "comparisonTitle": "S232 · Winter Sports / Workout · Luxury local screen",
+  "comparisonSubtitle": "The nine unique Winter active candidates re-evaluated for Luxury warmth, performance material and hand finish",
+  "comparisonNote": "Require ultrafine merino-cashmere performance knit, technical wool soft shell, traceable premium down, handmade footwear or equivalent Luxury proof · no relabeling of mass-market pieces · not UI integrated",
+  "coreTitle": "S232 · provisional Winter Sports Luxury core",
+  "coreSubtitle": "No local garment reaches the Winter Luxury activewear bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Luxury re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men plum ultrafine merino cashmere performance crew luxury winter workout","targetProduct":"plum ultrafine-merino-cashmere performance crew","customerRetailTarget":"$300-$450"},
+    {"category":"bottom","searchPhrase":"men pale taupe technical wool softshell jogger luxury winter workout","targetProduct":"pale-taupe technical-wool soft-shell training jogger","customerRetailTarget":"$350-$500"},
+    {"category":"outerwear","searchPhrase":"men winter white traceable down technical puffer luxury workout","targetProduct":"winter-white Luxury traceable-down technical puffer","customerRetailTarget":"$800-$1,200"},
+    {"category":"shoe","searchPhrase":"men cream sage handmade luxury weather resistant winter trainer","targetProduct":"cream-and-sage handmade Luxury weather-resistant trainer","customerRetailTarget":"$420-$600"},
+    {"category":"accessory","searchPhrase":"men saffron cashmere merino performance beanie luxury winter","targetProduct":"saffron cashmere-merino Luxury performance beanie","customerRetailTarget":"$250-$450"}
+  ]
+}

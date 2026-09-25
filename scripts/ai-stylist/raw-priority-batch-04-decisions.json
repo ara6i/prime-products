@@ -1,0 +1,74 @@
+{
+  "batch": "04",
+  "approvals": {
+    "14": {
+      "color": "Coffee Color",
+      "constraint": "Use the warm coffee fine-striped regular-relaxed shirt once only for Spring or Fall Casual Everyday, Office, Date Night, or Travel. Pair with ecru, stone, olive, or controlled mid-blue straight bottoms and avoid a second oversized layer."
+    },
+    "20": {
+      "color": "Deep Red",
+      "constraint": "Use the deep-red two-in-one training short once only for Spring or Summer Sports / Workout. Pair with a clean white, ecru, light gray, or restrained technical top and a low-profile performance shoe."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13],
+      "reason": "Hanger or garment-only imagery does not prove adult-male shoulder, torso, length, or material behavior; visible labels, pseudo-branding, or contrast details also weaken the clean modern direction."
+    },
+    {
+      "cards": [2],
+      "reason": "The exaggerated broad vertical stripe blocks and product-only presentation read loud and supplier-generic without credible fit proof."
+    },
+    {
+      "cards": [10],
+      "reason": "Pseudo-brand chest text and product-only imagery make the shirt unsuitable for a clean globally unique wardrobe slot."
+    },
+    {
+      "cards": [15],
+      "reason": "The contrast white collar and cuffs plus an elongated loose body read dated and preppy-supplier rather than Zara-led."
+    },
+    {
+      "cards": [16],
+      "reason": "The excessive length and volume, drooping chest pocket, and uncontrolled oversized silhouette fail the modern relaxed-fit standard."
+    },
+    {
+      "cards": [17],
+      "reason": "The long wide Bermuda silhouette and ambiguous composited fit do not provide a controlled modern short proportion."
+    },
+    {
+      "cards": [18],
+      "reason": "The see-through mesh and exposed bodybuilding cut are too specialized and revealing for the versatile Sports / Workout wardrobe."
+    },
+    {
+      "cards": [19, 21, 22, 24, 26],
+      "reason": "Product-only imagery does not prove rise, thigh volume, length, or adult-male fit; small logo treatment further weakens card 24."
+    },
+    {
+      "cards": [23, 27],
+      "reason": "The ultra-short high-rise bodybuilding proportion, prominent branding, or zip-pocket treatment is too exposed and supplier-generic."
+    },
+    {
+      "cards": [25],
+      "reason": "The all-over floral and bird print is too loud and novelty-led for the restrained modern wardrobe brief."
+    },
+    {
+      "cards": [28],
+      "reason": "The below-knee baggy mesh-panel construction recreates the shapeless long-short problem."
+    },
+    {
+      "cards": [29, 30, 31, 32, 33, 34, 35, 36, 37, 39, 40],
+      "reason": "Product-only imagery does not prove outerwear fit, while the generic bomber shapes, shiny faux leather, heavy padding, patches, or tactical details read dated and repetitive."
+    },
+    {
+      "cards": [38],
+      "reason": "Although shown on body, the overlong oversized cream bomber and pseudo-brand chest text do not meet the controlled modern silhouette standard."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 148 recorded color images rendered; 188 displayed images loaded with zero broken files.",
+    "2 accepted with one exact color and variant selected: one top and one bottom identity.",
+    "38 rejected.",
+    "Accepted colors are warm coffee stripe and deep red.",
+    "Rejections include unproven hanger shirts, dated contrast trim, uncontrolled oversized shirts, long or product-only shorts, bodybuilding cuts, logos, graphics, shiny faux leather, and generic supplier bombers."
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "batch": "44",
+  "approvals": {
+    "2": {
+      "color": "Khakis",
+      "constraint": "Use this light-khaki relaxed cotton overshirt once only for Spring/Fall Casual Everyday, Weekend, Travel, Campus, creative Office or a daytime Date. Keep it as the outfit's only relaxed-volume layer over a clean white, sky-blue, burgundy, forest-green, rust or charcoal base with straight dark-denim, tobacco, charcoal or muted-olive bottoms and low-profile cream, tan, brown or muted-blue footwear; never pair it with a baggy bottom, another oversized layer, an all-beige palette, bulky trainer or any Wedding/Wedding Guest use."
+    },
+    "18": {
+      "color": "Pea Green",
+      "constraint": "Use this pea-green textured regular-relaxed shirt once only for Spring/Summer Casual Everyday, Travel, Vacation, Resort, creative Office or a clean daytime Date. Pair the muted green texture with controlled cream, stone, tobacco, washed-blue, burgundy or charcoal straight trousers or tailored shorts and minimal cream, tan, brown or muted-blue footwear; never combine it with a baggy bottom, another green layer, a chunky trainer, an all-dark palette or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "The hooded plaid shirt is product-only, pocket-heavy and visually dated, without trustworthy adult fit proof."
+    },
+    {
+      "cards": [3, 5],
+      "reason": "These product-only oversized plaid shirts lack reliable on-body proportion proof and read long, repetitive or dated rather than clean contemporary menswear."
+    },
+    {
+      "cards": [4],
+      "reason": "The tie-dye shirt is visibly overlong and novelty-led, with an uncontrolled oversized silhouette."
+    },
+    {
+      "cards": [6],
+      "reason": "The plain product-only hoodie has no adult fit or drape proof and adds generic neutral repetition without a distinctive role."
+    },
+    {
+      "cards": [7, 8, 9, 11],
+      "reason": "These lace-up and sleeveless hooded tops are bodybuilding-focused, revealing or costume-led rather than versatile modern menswear."
+    },
+    {
+      "cards": [10, 12, 14],
+      "reason": "These hoodies are excessively dropped, long or branded, with uncontrolled oversized volume and dark-neutral repetition."
+    },
+    {
+      "cards": [13],
+      "reason": "The otherwise credible zip hoodie fails product truth because the recorded Light Gray image appears olive and the Light Green image appears cream, so color identity cannot be trusted."
+    },
+    {
+      "cards": [15],
+      "reason": "The product-only diamond sweater vest has no adult fit proof and reads dated and synthetic rather than modern Zara-led knitwear."
+    },
+    {
+      "cards": [16, 17, 19, 20],
+      "reason": "These contrast-trim, ruched or plaid-detail shirts are visibly skinny, dated and dark, directly repeating the tight-shirt failure."
+    },
+    {
+      "cards": [21, 22, 23, 24],
+      "reason": "These on-body cargo trousers are extremely wide, ballooned or puddled and recreate the baggy-bottom failure."
+    },
+    {
+      "cards": [25],
+      "reason": "The shiny black cargo jogger is pocket-heavy, cuffed and dated, with a narrow lower leg that cannot support clean modern outfits."
+    },
+    {
+      "cards": [26, 27, 28, 29],
+      "reason": "These product-only or partially shown cargos are wide, flared, heavily pocketed or unproven through the waist, thigh and shoe break."
+    },
+    {
+      "cards": [30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
+      "reason": "These camouflage cargos are novelty-led, wide or unproven and cannot support the clean, versatile Zara-led wardrobe."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 144 recorded color images rendered and loaded with zero broken files.",
+    "2 tops accepted with one exact color and variant selected each: light-khaki relaxed cotton overshirt and pea-green textured regular-relaxed shirt.",
+    "38 rejected after the base pass and close inspection of all 12 variants across four borderline identities; every bottom failed.",
+    "Every selected identity, variant and image has zero collision with every prior accepted or conditional item.",
+    "The batch mostly failed for weak product-only proof, gimmick hooded tops, uncontrolled oversized hoodies, skinny shirts, and wide, puddled, pocket-heavy or camouflage cargos."
+  ]
+}

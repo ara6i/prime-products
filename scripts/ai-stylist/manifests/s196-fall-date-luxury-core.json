@@ -1,0 +1,28 @@
+{
+  "outputDir": "fall-date-luxury-pilot-s196",
+  "scenarioId": "S196",
+  "occasion": "Date Night",
+  "season": "Fall",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s194-fall-date-midrange-core.json",
+  "excludeCandidateKeys": ["O2"],
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-watch",
+  "comparisonTitle": "S196 · Fall Date Night · Luxury local screen",
+  "comparisonSubtitle": "Twenty-one unique unreserved Fall Date candidates after the S194 layer hold",
+  "comparisonNote": "Require silk-cashmere, wool-silk, lamb suede or equivalent Luxury proof, expressive Fall color and hand-finished controlled proportion · no relabeling of mass-market pieces · not UI integrated",
+  "coreTitle": "S196 · provisional Fall Date Night Luxury core",
+  "coreSubtitle": "No remaining local garment reaches the Fall Luxury Date visual bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after current uniqueness exclusion and Luxury re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men burnt coral silk cashmere fine gauge long sleeve knit polo luxury fall date","targetProduct":"burnt-coral silk-cashmere fine-gauge long-sleeve knit polo with hand-finished collar","customerRetailTarget":"$300-$450"},
+    {"category":"bottom","searchPhrase":"men warm ivory wool silk high rise double pleat trouser luxury fall date","targetProduct":"warm-ivory wool-silk high-rise double-pleat trouser with hand-finished waistband and exact break","customerRetailTarget":"$380-$550"},
+    {"category":"outerwear","searchPhrase":"men taupe lamb suede hand finished cropped collared blouson luxury fall date","targetProduct":"taupe lamb-suede hand-finished cropped collared blouson","customerRetailTarget":"$650-$900"},
+    {"category":"shoe","searchPhrase":"men burgundy calf suede handmade round toe derby luxury fall date","targetProduct":"burgundy calf-suede handmade Luxury round-toe derby","customerRetailTarget":"$420-$600"},
+    {"category":"watch","searchPhrase":"men soft sage dial dark coffee leather thin case luxury watch fall date","targetProduct":"soft-sage-dial thin-case Luxury watch with fine dark-coffee leather strap","customerRetailTarget":"$350-$700"}
+  ]
+}

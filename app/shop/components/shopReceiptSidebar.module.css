@@ -111,6 +111,7 @@ a.productName:hover { text-decoration: underline; }
 @media (max-width: 540px) {
   .sidebar { width: 100%; padding: max(14px, env(safe-area-inset-top)) 8px max(10px, env(safe-area-inset-bottom)); }
   .header { padding: 0 8px 13px; }
+  .close { width: 44px; height: 44px; }
   .description { max-width: 270px; }
   .paper { padding: 18px 14px 0; }
   .receiptHeading > span { font-size: 10px; letter-spacing: .6px; }
@@ -120,6 +121,9 @@ a.productName:hover { text-decoration: underline; }
   .productImage { width: 76px; height: 104px; flex-basis: 76px; }
   .itemTopline { flex-wrap: wrap; gap: 3px 8px; }
   .productName { font-size: 16px; }
+  .quantity { min-height: 44px; }
+  .quantity button { width: 44px; height: 44px; }
+  .remove, .reprint { min-height: 44px; }
   .summary { padding-top: 14px; }
   .barcode { height: 22px; width: 115px; margin-bottom: 7px; }
   .receiptControls { gap: 6px; padding-top: 8px; }

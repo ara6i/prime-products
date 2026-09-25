@@ -1,0 +1,28 @@
+{
+  "outputDir": "fall-formal-luxury-pilot-s176",
+  "scenarioId": "S176",
+  "occasion": "Formal Evening",
+  "season": "Fall",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s174-fall-formal-midrange-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-watch-and-suit",
+  "comparisonTitle": "S176 · Fall Formal Evening · Luxury local screen",
+  "comparisonSubtitle": "The 21 unique unreserved Fall Formal candidates re-evaluated for Luxury fiber, hand construction and exact drape",
+  "comparisonNote": "Require silk, cashmere, wool-silk or equivalent Luxury proof, expressive Fall color and hand-finished controlled tailoring · no relabeling of mass-market garments · not UI integrated",
+  "coreTitle": "S176 · provisional Fall Formal Evening Luxury core",
+  "coreSubtitle": "No local garment reaches the Fall Luxury Formal Evening visual bar · all roles unresolved",
+  "coreNote": "Zero provisional holds after immediate full-resolution Luxury re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch", "suit"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men dusty coral silk cashmere fine gauge long sleeve knit polo luxury fall formal evening","targetProduct":"dusty-coral silk-cashmere fine-gauge long-sleeve knit polo with hand-finished collar","customerRetailTarget":"$300-$450"},
+    {"category":"bottom","searchPhrase":"men warm pearl stone wool silk high rise double pleat trouser luxury fall formal evening","targetProduct":"warm pearl-stone wool-silk high-rise double-pleat trouser with hand-finished waistband and exact break","customerRetailTarget":"$380-$550"},
+    {"category":"outerwear","searchPhrase":"men soft olive wool silk cashmere unstructured blazer luxury fall formal evening","targetProduct":"soft-olive wool-silk-cashmere natural-shoulder blazer with hand-finished construction","customerRetailTarget":"$650-$900"},
+    {"category":"shoe","searchPhrase":"men dark brown calf leather handmade bespoke loafer luxury formal evening","targetProduct":"dark-brown calf-leather handmade low-profile round-toe Luxury loafer","customerRetailTarget":"$420-$600"},
+    {"category":"watch","searchPhrase":"men cream dial coffee alligator leather thin case luxury dress watch formal evening","targetProduct":"cream-dial thin-case Luxury dress watch with fine dark-coffee leather strap","customerRetailTarget":"$350-$700"},
+    {"category":"suit","searchPhrase":"men soft olive wool silk cashmere bespoke two piece suit luxury fall formal evening","targetProduct":"soft-olive wool-silk-cashmere two-piece suit with natural shoulders and hand-finished straight trousers","customerRetailTarget":"$1,000-$1,500"}
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "outputDir": "winter-date-premium-pilot-s199",
+  "scenarioId": "S199",
+  "occasion": "Date Night",
+  "season": "Winter",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s198-winter-date-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-watch",
+  "comparisonTitle": "S199 · Winter Date Night · Premium local screen",
+  "comparisonSubtitle": "Fourteen unique unreserved Winter Date candidates re-evaluated for Premium fiber, construction and drape",
+  "comparisonNote": "Require silk-merino, wool-silk, wool-cashmere or equivalent Premium proof, romantic Winter color and exact controlled proportion · no promotion of skinny, technical, product-only, novelty or puddled pieces · not UI integrated",
+  "coreTitle": "S199 · provisional Winter Date Night Premium core",
+  "coreSubtitle": "No remaining local garment reaches the Winter Premium Date visual bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Premium re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men dusty lilac silk merino fine gauge long sleeve knit polo premium winter date","targetProduct":"dusty-lilac silk-merino fine-gauge long-sleeve knit polo","customerRetailTarget":"$180-$240"},
+    {"category":"bottom","searchPhrase":"men winter cream wool silk double pleat controlled straight trouser premium winter date","targetProduct":"winter-cream wool-silk high-rise double-pleat trouser with exact break","customerRetailTarget":"$220-$300"},
+    {"category":"outerwear","searchPhrase":"men soft forest green wool cashmere short car coat premium winter date","targetProduct":"soft-forest wool-cashmere short car coat with natural shoulders","customerRetailTarget":"$320-$420"},
+    {"category":"shoe","searchPhrase":"men burgundy calf suede handmade side zip ankle boot premium winter date","targetProduct":"burgundy calf-suede handmade almond-toe side-zip ankle boot","customerRetailTarget":"$240-$320"},
+    {"category":"watch","searchPhrase":"men champagne dial coffee leather thin case premium watch winter date","targetProduct":"champagne-dial thin-case Premium watch with dark-coffee leather strap","customerRetailTarget":"$120-$180"}
+  ]
+}

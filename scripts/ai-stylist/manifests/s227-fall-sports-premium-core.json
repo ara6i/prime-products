@@ -1,0 +1,27 @@
+{
+  "outputDir": "fall-sports-premium-pilot-s227",
+  "scenarioId": "S227",
+  "occasion": "Sports / Workout",
+  "season": "Fall",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s226-fall-sports-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-bag",
+  "comparisonTitle": "S227 · Fall Sports / Workout · Premium local screen",
+  "comparisonSubtitle": "The nine unique Fall active candidates re-evaluated for Premium textile engineering and movement",
+  "comparisonNote": "Require merino-tech yarn, technical stretch weave, bonded weather shell and premium trail construction with exact movement ease · no promotion of low-cost basics · not UI integrated",
+  "coreTitle": "S227 · provisional Fall Sports Premium core",
+  "coreSubtitle": "No local garment reaches the Fall Premium activewear bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Premium re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men cerulean merino tencel half zip premium fall workout","targetProduct":"cerulean merino-Tencel performance half-zip","customerRetailTarget":"$170-$220"},
+    {"category":"bottom","searchPhrase":"men warm stone technical stretch training trouser premium fall","targetProduct":"warm-stone technical stretch training trouser with bonded finish","customerRetailTarget":"$180-$240"},
+    {"category":"outerwear","searchPhrase":"men paprika bonded weather shell premium fall workout","targetProduct":"paprika-red bonded technical weather shell","customerRetailTarget":"$220-$300"},
+    {"category":"shoe","searchPhrase":"men gray sage premium low profile trail trainer fall","targetProduct":"gray-and-sage Premium low-profile trail trainer","customerRetailTarget":"$220-$300"},
+    {"category":"bag","searchPhrase":"men camel premium technical crossbody workout sling fall","targetProduct":"camel Premium technical workout sling","customerRetailTarget":"$140-$200"}
+  ]
+}

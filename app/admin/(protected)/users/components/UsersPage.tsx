@@ -18,7 +18,9 @@ function UsersTable({ items }: { items: ProfileUserGroupItem[] }) {
   if (!items.length) {
     return (
       <div className="p-8 text-center">
-        <p className="text-base font-semibold text-text-primary">No users found</p>
+        <p className="text-base font-semibold text-text-primary">
+          No users found
+        </p>
       </div>
     );
   }
@@ -40,27 +42,43 @@ function UsersTable({ items }: { items: ProfileUserGroupItem[] }) {
           {items.map((item) => (
             <tr key={item.id} className="align-top">
               <td className="max-w-[270px] px-4 py-4">
-                <p className="truncate font-semibold text-text-primary">{item.userLabel}</p>
-                <p className="mt-1 truncate text-xs text-customer-muted">{item.accountLabel}</p>
+                <p className="truncate font-semibold text-text-primary">
+                  {item.userLabel}
+                </p>
+                <p className="mt-1 truncate text-xs text-customer-muted">
+                  {item.accountLabel}
+                </p>
               </td>
               <td className="px-4 py-4">
-                <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${item.sourceTone}`}>
+                <span
+                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${item.sourceTone}`}
+                >
                   {item.sourceLabel}
                 </span>
               </td>
               <td className="max-w-[230px] px-4 py-4">
-                <p className="truncate font-semibold text-text-primary">{item.originLabel}</p>
+                <p className="truncate font-semibold text-text-primary">
+                  {item.originLabel}
+                </p>
                 <p className="mt-1 truncate text-xs text-customer-muted">
-                  {item.primaryProfile.raw.storeName || item.primaryProfile.raw.productTitle || `${item.profileCount} profile${item.profileCount === 1 ? "" : "s"}`}
+                  {item.primaryProfile.raw.storeName ||
+                    item.primaryProfile.raw.productTitle ||
+                    `${item.profileCount} profile${item.profileCount === 1 ? "" : "s"}`}
                 </p>
               </td>
               <td className="max-w-[220px] px-4 py-4">
                 <p className="truncate text-text-body">{item.deviceLabel}</p>
-                <p className="mt-1 truncate text-xs text-customer-muted">{item.countryLabel}</p>
+                <p className="mt-1 truncate text-xs text-customer-muted">
+                  {item.countryLabel}
+                </p>
               </td>
               <td className="px-4 py-4">
-                <p className="font-medium text-text-primary">{item.activityLabel}</p>
-                <p className="mt-1 text-xs text-customer-muted">{item.lastSeenLabel}</p>
+                <p className="font-medium text-text-primary">
+                  {item.activityLabel}
+                </p>
+                <p className="mt-1 text-xs text-customer-muted">
+                  {item.lastSeenLabel}
+                </p>
               </td>
               <td className="px-4 py-4 text-right">
                 <Link
@@ -79,6 +97,87 @@ function UsersTable({ items }: { items: ProfileUserGroupItem[] }) {
   );
 }
 
+function UsersMobileCards({ items }: { items: ProfileUserGroupItem[] }) {
+  if (!items.length) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-base font-semibold text-text-primary">
+          No users found
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="divide-y divide-customer-border">
+      {items.map((item) => (
+        <article key={item.id} className="p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="break-words text-base font-semibold text-text-primary">
+                {item.userLabel}
+              </h2>
+              <p className="mt-1 break-all text-xs text-customer-muted">
+                {item.accountLabel}
+              </p>
+            </div>
+            <span
+              className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${item.sourceTone}`}
+            >
+              {item.sourceLabel}
+            </span>
+          </div>
+
+          <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-customer-border pt-4 text-sm">
+            <div>
+              <dt className="text-xs text-customer-muted">Origin</dt>
+              <dd className="mt-1 break-words font-semibold text-text-primary">
+                {item.originLabel}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs text-customer-muted">Profiles</dt>
+              <dd className="mt-1 font-semibold text-text-primary">
+                {item.profileCount}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs text-customer-muted">Device</dt>
+              <dd className="mt-1 break-words text-text-body">
+                {item.deviceLabel}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs text-customer-muted">Country</dt>
+              <dd className="mt-1 break-words text-text-body">
+                {item.countryLabel}
+              </dd>
+            </div>
+          </dl>
+
+          <div className="mt-4 flex items-end justify-between gap-3 border-t border-customer-border pt-4">
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-text-primary">
+                {item.activityLabel}
+              </p>
+              <p className="mt-1 text-xs text-customer-muted">
+                {item.lastSeenLabel}
+              </p>
+            </div>
+            <Link
+              href={`/admin/users/${encodeURIComponent(item.id)}`}
+              className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-customer-border px-4 text-sm font-semibold text-brand-blue"
+            >
+              <Eye className="h-4 w-4" aria-hidden />
+              View
+            </Link>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 export function UsersPage({ view }: UsersPageProps) {
   const [query, setQuery] = useState("");
   const normalizedQuery = query.trim().toLowerCase();
@@ -91,10 +190,15 @@ export function UsersPage({ view }: UsersPageProps) {
     <section className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-blue">Admin</p>
-          <h2 className="mt-2 text-3xl font-semibold leading-tight text-text-primary lg:text-4xl">Users</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-blue">
+            Admin
+          </p>
+          <h2 className="mt-2 text-3xl font-semibold leading-tight text-text-primary lg:text-4xl">
+            Users
+          </h2>
           <p className="mt-2 text-sm text-customer-muted">
-            {view.userTotal.toLocaleString("en-US")} users · {view.profileTotal.toLocaleString("en-US")} profiles
+            {view.userTotal.toLocaleString("en-US")} users ·{" "}
+            {view.profileTotal.toLocaleString("en-US")} profiles
           </p>
         </div>
 
@@ -110,7 +214,12 @@ export function UsersPage({ view }: UsersPageProps) {
       </div>
 
       <section className="overflow-hidden rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card">
-        <UsersTable items={filteredItems} />
+        <div className="hidden lg:block">
+          <UsersTable items={filteredItems} />
+        </div>
+        <div className="lg:hidden">
+          <UsersMobileCards items={filteredItems} />
+        </div>
       </section>
     </section>
   );

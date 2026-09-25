@@ -1,0 +1,158 @@
+{
+  "batch": "16",
+  "approvals": {
+    "2": {
+      "color": "Dusty Blue",
+      "constraint": "Use the dusty-blue, soft-gray and white regular-relaxed cotton plaid shirt once only for Spring or Fall Casual Everyday, Travel, or a relaxed daytime Date Night. Pair with ecru, stone, sand, tobacco, muted olive, clean dark-indigo or restrained charcoal straight bottoms and low-profile white, cream, tan or brown footwear; keep the rest of the outfit solid and controlled, with no second pattern, bulky outer layer, or baggy trouser."
+    },
+    "12": {
+      "color": "Sky Blue",
+      "constraint": "Use the clean sky-blue band-collar regular-relaxed cotton shirt once only for Spring or Summer Casual Everyday, relaxed Office, Travel, Vacation / Resort, or a daytime Date Night. Pair with ecru, cream, sand, stone, light gray, tobacco, muted olive or dark-indigo straight bottoms and minimal white, cream, tan or brown footwear; keep it as the only relaxed-volume piece and avoid a puddled trouser, heavy dark layer, or all-dark styling."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "The hanger-only color-block shirt has no adult fit proof, and its double-pocket construction and contrast collar cannot be trusted from a styled product image alone."
+    },
+    {
+      "cards": [3],
+      "reason": "The floral shirt is severely tight through the arms, chest and waist, with an over-open neckline and loud oversized print."
+    },
+    {
+      "cards": [4],
+      "reason": "The product-only plaid shacket has no adult shoulder, torso, sleeve or hem proof and presents an unverified long, loose silhouette."
+    },
+    {
+      "cards": [5],
+      "reason": "The striped T-shirt is extremely long and oversized, with broad high-contrast bands and a visible chest badge."
+    },
+    {
+      "cards": [6],
+      "reason": "The brown hero is a broken gray placeholder, while the alternate abstract-print image provides no reliable fit proof and uses a muddy novelty pattern."
+    },
+    {
+      "cards": [7],
+      "reason": "The on-body shirt is narrow and tight through the torso and sleeves, reproducing the dated skinny-shirt silhouette being removed."
+    },
+    {
+      "cards": [8],
+      "reason": "The product-only tropical shirt has no fit proof and relies on a dense, loud floral print rather than a refined versatile surface."
+    },
+    {
+      "cards": [9],
+      "reason": "The black half-sleeve shirt is excessively long and oversized and includes busy chest-pocket trim and a visible badge."
+    },
+    {
+      "cards": [10],
+      "reason": "The hanger-only mottled plaid shirt has no fit proof, a busy distressed surface and a visible pocket label."
+    },
+    {
+      "cards": [11, 13],
+      "reason": "These near-duplicate product-only shirts have no fit proof and combine loud contrast stitching with a conspicuous AUTHENTIC pocket label."
+    },
+    {
+      "cards": [14],
+      "reason": "The hanger-only marbled shirt has no adult fit proof and uses an all-over cracked abstract print that limits modern outfit compatibility."
+    },
+    {
+      "cards": [15],
+      "reason": "The hanger-only sky-blue and white basics provide no adult fit proof and repeat already approved clean-shirt color roles without stronger construction evidence."
+    },
+    {
+      "cards": [16],
+      "reason": "The product-only split-panel shirt has no fit proof and uses dated high-contrast color blocking, pocket stripes and an uneven visual break across the torso."
+    },
+    {
+      "cards": [17],
+      "reason": "The black elastic-waist trouser has a generic synthetic finish, narrow formal-casual mismatch and repetitive dark color role; the alternate gray does not add a proven modern silhouette."
+    },
+    {
+      "cards": [18],
+      "reason": "The side-stripe track trouser is excessively wide and visibly puddles over the shoes, with long contrast drawstrings and stripes adding more bulk."
+    },
+    {
+      "cards": [19],
+      "reason": "The apricot drawstring trouser is extremely wide and pools heavily over the footwear, failing the controlled relaxed-silhouette gate despite its useful color."
+    },
+    {
+      "cards": [20],
+      "reason": "The side-striped jogger uses a dated tapered athletic cut, tight cuffs, long contrast drawstrings and generic synthetic styling."
+    },
+    {
+      "cards": [21],
+      "reason": "The product-only drawstring trouser has no adult rise, seat, thigh or footwear proof and adds another generic black or gray synthetic basic."
+    },
+    {
+      "cards": [22],
+      "reason": "The jogger is loose through the thigh but tightly cuffed at the ankle and carries a large embossed thigh logo plus long contrast drawstrings."
+    },
+    {
+      "cards": [23],
+      "reason": "The hanger-only gray-green and hemp-color trousers do not prove adult rise, seat, thigh, hem width or shoe break, so their apparent straight shape is not reliable enough to approve."
+    },
+    {
+      "cards": [24],
+      "reason": "The tapered jogger has tight cuffs, a generic velour-like finish and prominent thigh lettering."
+    },
+    {
+      "cards": [25],
+      "reason": "The loose track trouser is extremely wide and puddled, with bright side stripes and oversized decorative drawstrings."
+    },
+    {
+      "cards": [26],
+      "reason": "The jogger has a narrow cuffed athletic silhouette, long drawstrings and a large green clover graphic on the thigh."
+    },
+    {
+      "cards": [27],
+      "reason": "The listing is explicitly a printed skirt and the image shows oversized knee-length shorts with loud all-over gothic lettering, outside the requested men's garment brief."
+    },
+    {
+      "cards": [28],
+      "reason": "The black jogger is loose through the thigh but sharply tapered into elastic cuffs, creating another generic dark gym silhouette."
+    },
+    {
+      "cards": [29],
+      "reason": "The product-only winter coat has no fit proof and is overloaded with straps, flap pockets, zips, tabs and a dated tactical finish."
+    },
+    {
+      "cards": [30],
+      "reason": "The mannequin-only three-piece suit does not prove a complete on-body silhouette and appears narrow through the jacket with slim trousers; it cannot support a modern formal approval."
+    },
+    {
+      "cards": [31, 32],
+      "reason": "These product-only padded and sherpa-lined coats provide no adult fit or movement proof and add bulky generic winter construction without a distinctive modern color role."
+    },
+    {
+      "cards": [33],
+      "reason": "The product-only vest has no fit proof, a generic synthetic utility cut and visible SPORTS chest text."
+    },
+    {
+      "cards": [34],
+      "reason": "The black product-only padded coat has no fit proof and adds another all-dark generic puffer role at a high price."
+    },
+    {
+      "cards": [35, 36],
+      "reason": "These product-only black and dark-gray tailored layers provide no on-body fit proof and show narrow blazer-like construction that cannot validate modern proportion."
+    },
+    {
+      "cards": [37, 38],
+      "reason": "These products are explicitly wedding and groomsmen suits, which are excluded from scope; both also show tight, cropped jackets and skinny formal proportions."
+    },
+    {
+      "cards": [39],
+      "reason": "The product-only hooded denim jacket has no fit proof and combines a bulky hood, dark acid wash, ribbed cuffs and multiple decorative zips into a dated construction."
+    },
+    {
+      "cards": [40],
+      "reason": "Both knit-cardigan variants are extremely oversized through the dropped shoulder and balloon sleeves, creating the uncontrolled volume the brief explicitly rejects."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 76 recorded color images rendered; 116 displayed images loaded with zero broken files.",
+    "2 accepted with one exact color and variant selected: a dusty-blue relaxed cotton plaid shirt and a clean sky-blue band-collar shirt.",
+    "38 rejected after the base pass and close inspection of six promising color variants across three identities.",
+    "The two selected identities, source products, variants and images have zero collision with every prior accepted or conditional item.",
+    "Rejections include skinny, logo-led or unproven shirts, puddled track trousers, harem-like and cuffed joggers, product-only dark outerwear, wedding-specific skinny suits and an extremely oversized cardigan."
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "batch": "39",
+  "approvals": {
+    "4": {
+      "color": "Mustard",
+      "constraint": "Use this mustard clean half-zip once only for Fall/Winter Casual Everyday, Weekend, Travel, Campus, creative Office, daytime Date or a cheerful cold-weather Party. Make it the outfit's single saturated piece with straight or tapered ecru, stone, charcoal, chocolate or muted-olive trousers and low-profile cream, tan, brown or gray footwear; never combine it with a skinny bottom, baggy cargo, another mustard layer, bulky black trainer or any Wedding/Wedding Guest use."
+    },
+    "7": {
+      "color": "Cerulean",
+      "constraint": "Use this cerulean technical half-zip fleece once only for Fall/Winter Hiking, Outdoor Adventure, active Travel, Sports, Campus or a deliberate casual Weekend. Balance the bright blue with controlled charcoal, stone, dark-olive, gray or black technical trousers and streamlined gray, cream, navy or muted-green footwear; never add another vivid-blue layer, an oversized cargo, formal pieces, an all-dark board or any Wedding/Wedding Guest use."
+    },
+    "9": {
+      "color": "Light Blue",
+      "constraint": "Use this light-blue quick-dry quarter-zip top once only for Spring/Fall Sports, Running, Workout, Hiking, active Travel or outdoor Errands. Pair it with clean gray, charcoal, navy, white or muted-green performance bottoms of controlled length and a streamlined white, gray, navy or pale-blue trainer; never use it with baggy lifestyle trousers, another color-block top, formal pieces, bulky footwear or any Wedding/Wedding Guest outfit."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2],
+      "reason": "Both open-net tanks are highly transparent, body-focused and underwear-exposing rather than versatile modern menswear."
+    },
+    {
+      "cards": [3, 8, 11, 13, 15, 18, 20],
+      "reason": "These product-only long-sleeve, quarter-zip and quick-dry basics lack reliable adult fit and movement proof and add generic technical repetition."
+    },
+    {
+      "cards": [5],
+      "reason": "The product-only fleece jacket has no adult fit proof and its bright-orange zipper pulls make the cream version read cheap and technical rather than clean."
+    },
+    {
+      "cards": [6, 16, 17],
+      "reason": "These dark tactical or shiny quarter-zips use sleeve patches, logos, utility pockets or synthetic sheen that fail the clean Zara-led bar."
+    },
+    {
+      "cards": [10],
+      "reason": "The busy digital-print active T-shirt is visually dated and logo-led; alternate colors preserve the same distracting graphic."
+    },
+    {
+      "cards": [12, 19],
+      "reason": "These active tops are narrow, dark or visibly logoed and recreate the skinny performance-top problem despite having model proof."
+    },
+    {
+      "cards": [14],
+      "reason": "The quarter-zip fleece has acceptable fit proof but all four muted colors are visually redundant beside stronger accepted cold-weather layers."
+    },
+    {
+      "cards": [21, 22, 25, 27, 28, 29, 31, 32, 33, 36, 37, 38, 39, 40],
+      "reason": "These drawstring, denim and lightweight bottoms are uncontrolled wide-leg, balloon, harem or puddled silhouettes and directly recreate the baggy-bottom failure."
+    },
+    {
+      "cards": [23, 24, 26, 30, 34, 35],
+      "reason": "These mesh-panel, striped, patchwork, gradient and sports-stripe bottoms are novelty-led, logoed or overly wide rather than clean, modern and versatile."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 167 recorded color images rendered and loaded with zero broken files.",
+    "3 tops accepted with one exact color and variant selected each: mustard clean half-zip, cerulean technical fleece and light-blue quick-dry training top.",
+    "37 rejected after the base pass and close inspection of all 16 variants across four borderline identities; every bottom failed.",
+    "Every selected identity, variant and image has zero collision with every prior accepted or conditional item.",
+    "The batch mostly failed for transparent tanks, generic product-only technical tops, tactical details, and wide or puddled bottoms."
+  ]
+}

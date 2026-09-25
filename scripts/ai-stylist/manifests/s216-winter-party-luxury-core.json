@@ -1,0 +1,27 @@
+{
+  "outputDir": "winter-party-luxury-pilot-s216",
+  "scenarioId": "S216",
+  "occasion": "Party / Night Out",
+  "season": "Winter",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s214-winter-party-midrange-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-watch",
+  "comparisonTitle": "S216 · Winter Party / Night Out · Luxury local screen",
+  "comparisonSubtitle": "The 11 unique Winter Party candidates re-evaluated for Luxury fiber, hand construction and exact drape",
+  "comparisonNote": "Require silk-cashmere, wool-cashmere, handmade calf suede or equivalent Luxury proof with lively Winter color and hand-finished proportion · no relabeling of mass-market pieces · not UI integrated",
+  "coreTitle": "S216 · provisional Winter Party Luxury core",
+  "coreSubtitle": "No local garment reaches the Winter Luxury Party visual bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Luxury re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men dusty coral silk cashmere fine gauge knit polo luxury winter party","targetProduct":"dusty-coral silk-cashmere fine-gauge long-sleeve knit polo","customerRetailTarget":"$300-$450"},
+    {"category":"bottom","searchPhrase":"men winter ecru wool cashmere double pleat trouser luxury party","targetProduct":"winter-ecru wool-cashmere hand-finished double-pleat trouser","customerRetailTarget":"$380-$550"},
+    {"category":"outerwear","searchPhrase":"men petrol blue wool cashmere hand finished cropped blouson luxury party","targetProduct":"petrol-blue wool-cashmere hand-finished cropped blouson","customerRetailTarget":"$800-$1,200"},
+    {"category":"shoe","searchPhrase":"men burgundy calf suede handmade luxury chelsea boot winter party","targetProduct":"burgundy calf-suede handmade Luxury round-toe Chelsea boot","customerRetailTarget":"$420-$600"},
+    {"category":"watch","searchPhrase":"men champagne dial burgundy leather luxury thin case watch party","targetProduct":"champagne-dial thin-case Luxury watch with fine burgundy leather strap","customerRetailTarget":"$350-$700"}
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "outputDir": "winter-casual-premium-pilot-s147",
+  "scenarioId": "S147",
+  "occasion": "Casual Everyday",
+  "season": "Winter",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-bag-accessory",
+  "comparisonTitle": "S147 · Winter Casual Everyday · Premium local screen",
+  "comparisonSubtitle": "Eight refined cold-weather tops · eight controlled full-length bottoms · eight warm layers · all unique and unreserved",
+  "comparisonNote": "Require Zara-led texture, richer happy color and Premium finish with controlled ease · no skinny knit, puddled denim, oversized-on-oversized stack, outdoor branding or black/navy monotony · not UI integrated",
+  "coreTitle": "S147 · provisional Winter Casual Everyday Premium core",
+  "coreSubtitle": "No local garment reaches the Winter Premium visual bar · all six roles unresolved",
+  "coreNote": "Zero provisional holds after consolidated-gallery re-audit · Premium customer-retail proof plus top, bottom, outerwear, shoe, bag and accessory still missing · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men dusty coral textured fine gauge mock neck sweater regular relaxed premium",
+      "targetProduct": "dusty-coral textured fine-gauge mock-neck sweater with a controlled regular-relaxed body",
+      "customerRetailTarget": "$170-$240"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men clean mid blue premium denim controlled straight leg precise break winter",
+      "targetProduct": "clean mid-blue premium jean with controlled straight volume and no shoe puddling",
+      "customerRetailTarget": "$190-$280"
+    },
+    {
+      "category": "outerwear",
+      "searchPhrase": "men oatmeal ivory short wool blend zip blouson clean minimal winter",
+      "targetProduct": "soft-oatmeal short wool-blend zip blouson with clean minimal hardware",
+      "customerRetailTarget": "$220-$320"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men burgundy suede low profile winterized sneaker gum sole minimal",
+      "targetProduct": "burgundy-suede low-profile winterized sneaker with a restrained gum sole",
+      "customerRetailTarget": "$240-$320"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men forest green pebbled leather compact crossbody minimal no logo",
+      "targetProduct": "forest-green pebbled-leather compact minimalist crossbody",
+      "customerRetailTarget": "$220-$320"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men cream camel burnt orange wool check scarf minimal",
+      "targetProduct": "cream, camel and restrained burnt-orange wool-blend check scarf",
+      "customerRetailTarget": "$80-$120"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:2693b2e7c9469df9e223abb50944033ddd9ad3d2","name":"Taupe Textured Long-Sleeve Sweater","decision":"reject-for-s147","decisionReason":"The horizontal texture is useful, but the source is a hanger-only product image with no proof of shoulder, torso, hem or sleeve proportion. The brown-taupe color is also too muted to lead the happy Premium palette."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:a286644bd6cead92f5ec66950a3c81eec1186009","name":"Ivory Striped Crew-Neck Sweater","decision":"reject-for-s147","decisionReason":"The ivory and burgundy color could be cheerful, but the narrow torso, tightly cut sleeves, repetitive thin stripe and small chest badge create a dated fitted golf-sweater look rather than contemporary Zara knitwear."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:2984c73a22084c0ed6a3de38270524b2b9a5f582","name":"Camel Cable Quarter-Zip Sweater","decision":"reject-for-s147","decisionReason":"The cable work is credible, but the worn source is visibly tight through the chest, waist and arms and bunches above the ribbed hem. It reproduces the skinny knit silhouette the rebuild is removing."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:275a738cb5f88c0828e599c51834fe10db3ae6e3","name":"French-Blue Textured Quarter-Zip Top","decision":"reject-for-s147","decisionReason":"Only a product rendering is available and its narrow shoulders, close sleeves and long straight body resemble an athletic base layer. The synthetic waffle surface and orange zipper do not reach the Premium fashion bar."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:1567c4a133b03632c21e4cbfe188bc4b1dde577b","name":"Off-White Ribbed Long-Sleeve Sweater","decision":"reject-for-s147","decisionReason":"The geometric rib texture is promising, but the hanger source provides no body-fit proof and the long narrow sleeves and raised collar risk a close generic shape. Off-white alone adds no richer Winter color."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:a7c85685ca8b1fcfb36a878bd4e814091c43d722","name":"Dusty-Purple Long-Sleeve Sweatshirt","decision":"reject-for-s147","decisionReason":"The dusty purple is useful, but the worn body is extremely broad and tunic-long with dropped shoulders, long sleeves and a large double chest pocket. It would create the oversized upper half the user rejected."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:6d0c6f6f1028eb77e12773dd77de5a3b597b6b78","name":"Bean-Green Half-Zip Sweatshirt","decision":"reject-for-s147","decisionReason":"The worn source shows a close athletic torso, synthetic performance fabric and a long base-layer hem. It reads gym or hiking midlayer rather than Premium Casual Everyday."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:3da4c00c5788b8cb3a84fe448d95335ed2281f94","name":"Brown Long-Sleeve Knit Polo","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a controlled regular-relaxed body, tactile knit and useful collar, so it remains credible for a unique Winter Date or smart Office Casual outfit. Its near-black brown tone and oversized bright buttons are too dark and conventional for this color-led core."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:afb7fb3cf9cc6771830ceb3630b7001b6b0a833a","name":"Peacock-Blue Straight-Fit Jean","decision":"reject-for-s147","decisionReason":"The leg is reasonably straight, but the low rise, heavy whiskering, faded thigh and slight hem collapse read dated mass-market denim. It lacks the clean Premium wash and waist line required."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:aabdffc99d8e26c94746c17f630f60a6bb135e66","name":"Yellow-Green Straight-Leg Jean","decision":"reject-for-s147","decisionReason":"The yellow-green color is expressive, but the worn jean is extremely long, broad and flared, folding over both sneakers. The distressed acid wash and oversized-on-oversized styling are exactly the wrong direction."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:36775b09ed8cf6af570dd58f177804a5200ce70c","name":"Khaki Straight-Leg Trouser","decision":"reject-for-s147","decisionReason":"The worn source proves a narrow conventional office chino with a low plain waist and tapered leg. It is controlled, but too slim, formal and generic for a modern Premium Casual outfit."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:bd9eb3e71ff44da3314d188440d5608833ddeaae","name":"Army-Green Corduroy Wide-Leg Trouser","decision":"reject-for-s147","decisionReason":"Only a flat product image exists. The deep front pleats, balloon taper, rolled cuffs and D-ring create a bulky utility trouser with no worn proof of rise, drape or shoe break."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:7572cafda48c1fb7fd652ae7a470e2cdafb136a0","name":"Blue-Gray Vintage Relaxed Jean","decision":"reject-for-s147","decisionReason":"The dark indigo wash is heavily whiskered and the supplier styling relies on rolled cuffs and work boots. It reads rugged and dated rather than clean Premium denim."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:f82ede51ff9fb0180d8e8318e06f575aa5f03944","name":"Nostalgic-Blue Straight-Leg Jean","decision":"reject-for-s147","decisionReason":"The pale wash is fresh, but the leg is broad and long enough to fold and stack over the sneakers. It would repeat the loose lower-half problem and the cloudy wash looks inexpensive."},
+    {"group":"bottom","key":"B7","identity":"shopify_supplier:fbebc32906d6ea8b0cf739471efe7542300585dc","name":"Blue Washed Straight-Leg Jean","decision":"reject-for-s147","decisionReason":"The consolidated gallery contradicts the earlier hold: the leg is broad through the lower half and visibly folds and puddles over the shoes. The clear mid-blue wash is useful, but the baggy stacked break fails the controlled Premium silhouette."},
+    {"group":"bottom","key":"B8","identity":"shopify_supplier:ab2aa6d1c74a8d9545ea4517b457fc9d7c312e26","name":"Blue Relaxed Vintage-Wash Jean","decision":"reject-for-s147","decisionReason":"The jean is broad from hip through hem and hangs heavily over the shoes, while the cloudy gray-blue whiskering looks worn and generic. It lacks the controlled clean break of B7."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:7df108deda150146a14be24dcf21c574ff57a096","name":"Sage Padded Quilted Zip Jacket","decision":"reject-for-s147","decisionReason":"The soft sage-gray direction is compatible, but only a product packshot exists. The broad quilted sleeves, shiny nylon and unverified torso length cannot meet a Premium fit-proof bar."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:6b52abff343f1111ea1b4465ec34cb4c99c79d7e","name":"Dusty-Blue Stand-Collar Puffer","decision":"reject-for-s147","decisionReason":"There is no worn fit evidence, and the dark slate-blue body, large outlined utility pockets and technical zipper details make this a functional puffer rather than a refined happy-color layer."},
+    {"group":"outerwear","key":"O3","identity":"shopify_supplier:aeec300145fdb4b330693796cf4e270f33526c42","name":"Beige Winter Puffer","decision":"reject-for-s147","decisionReason":"The clean beige color is useful, but the product-only source cannot verify shoulder width, jacket length or sleeve volume. Its broad deep quilting may overwhelm the straight jean and cannot receive a Premium hold without body proof."},
+    {"group":"outerwear","key":"O4","identity":"shopify_supplier:97d0fa66e0f0b15d1c75f32a5a86c1db3210eba1","name":"Khaki Minimal Zip Bomber","decision":"reject-for-s147","decisionReason":"Only a packshot is available, with no proof of the broad sleeves or ribbed hem on a body. The synthetic khaki surface and sleeve patch read mass-market military bomber rather than Premium Zara polish."},
+    {"group":"outerwear","key":"O5","identity":"shopify_supplier:a09789e253d99e246a5ec1964db4154eb9305f6a","name":"Army-Green Corduroy Snap Jacket","decision":"reject-for-s147","decisionReason":"The image is a composited product presentation rather than reliable body proof. Multiple zippers, flap pockets and bright snaps create utility clutter, while the gray-green corduroy makes the palette dull."},
+    {"group":"outerwear","key":"O6","identity":"shopify_supplier:0b0026d57ef43627c967e2592a1523d683169666","name":"Brown Snap-Down Shirt Jacket","decision":"reject-for-s147","decisionReason":"The long product-only outline, oversized chest flaps and curved shirt hem are unverified on a body and would add another muted brown utility layer rather than clean Winter structure."},
+    {"group":"outerwear","key":"O7","identity":"shopify_supplier:3da72b4415a9def6f4f66e9e9fc5e5bfda3a926c","name":"Khaki Fleece-Lined Puffer Jacket","decision":"reject-for-s147","decisionReason":"The cream fleece and camel shell are pleasant, but only a packshot exists and the oversized fleece collar, dropped shoulder and puffy synthetic body look bulky. It lacks the concise wool-blend finish planned for Premium."},
+    {"group":"outerwear","key":"O8","identity":"shopify_supplier:f23bed156981c3eefb1fe37ab832a7e947f07775","name":"Blue Button-Up Winter Shacket","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a usable relaxed blazer-like line and cheerful sky blue, but the thin linen-look fabric, rolled sleeves and open white-shirt styling are clearly warm-weather. Preserve it for Summer Office Casual or Resort rather than mis-seasoning Winter."}
+  ]
+}

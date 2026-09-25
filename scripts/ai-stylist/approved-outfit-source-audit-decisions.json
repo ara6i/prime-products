@@ -1,0 +1,63 @@
+{
+  "generatedAt": "2026-09-16T00:00:00.000Z",
+  "localOnly": true,
+  "gender": "male",
+  "weddingAndWeddingGuestExcluded": true,
+  "rule": "A complete outfit passes only when the original product images prove season, occasion, silhouette, color balance and modern styling. Final-alpha cutouts cannot overrule contradictory source imagery.",
+  "decisions": [
+    {
+      "scenarioId": "S137",
+      "position": 1,
+      "decision": "pass",
+      "reason": "The source images prove a controlled textured polo, clean tailored green short and low-profile white sneaker. The palette is light, summery and balanced, with no loose-on-loose or skinny proportion."
+    },
+    {
+      "scenarioId": "S137",
+      "position": 2,
+      "decision": "revoke",
+      "reason": "The washed-blue short-sleeve overshirt has a mottled acid wash, visible chest label and long generic catalog shape. It does not meet the Zara-led quality bar even though the ivory trouser and tan loafer are individually strong."
+    },
+    {
+      "scenarioId": "S137",
+      "position": 3,
+      "decision": "revoke",
+      "reason": "The white knee-length short uses a dated embossed diagonal texture and conservative synthetic-looking shape. It weakens the otherwise good sage knit and off-white loafer."
+    },
+    {
+      "scenarioId": "S137",
+      "position": 4,
+      "decision": "revoke",
+      "reason": "A long drop-shoulder T-shirt over an elastic drawstring short creates the loose-on-loose silhouette the user explicitly rejected. The top also lacks on-body fit proof."
+    },
+    {
+      "scenarioId": "S137",
+      "position": 5,
+      "decision": "revoke",
+      "reason": "The desert-yellow T-shirt source is a long, strongly dropped-shoulder packshot with no on-body fit proof. The tailored short and two-tone loafer are strong, but the complete outfit cannot be approved on an unproved upper silhouette."
+    },
+    {
+      "scenarioId": "S149",
+      "position": 1,
+      "decision": "pass",
+      "reason": "The sky-blue one-piece-collar shirt, high-rise pleated khaki trouser and black penny loafer form a controlled modern office silhouette with credible full-product proof."
+    },
+    {
+      "scenarioId": "S189",
+      "position": 1,
+      "decision": "pass",
+      "reason": "The orange gauze shirt is the single relaxed element; the clean white straight trouser and two-tone suede loafer control the silhouette. The palette is warm, happy and season-correct for a summer date."
+    },
+    {
+      "scenarioId": "S193",
+      "position": 1,
+      "decision": "revoke",
+      "reason": "The brown trouser is explicitly sold as slim-fit and the source confirms a narrow cropped ankle. That contradicts the no-skinny menswear direction, regardless of the strong teal-and-taupe palette."
+    },
+    {
+      "scenarioId": "S225",
+      "position": 1,
+      "decision": "pass",
+      "reason": "The bright regular-fit fleece, straight technical utility trouser and real trail shoe work as a Fall outdoor-sports look. Keep it limited to trail, hiking or outdoor activity rather than generic gym styling."
+    }
+  ]
+}

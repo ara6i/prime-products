@@ -133,7 +133,7 @@ export function ScenarioCoveragePanel({
 
   const summary = coverage?.snapshot.summary;
   const refresh = coverage?.refresh;
-  const target = coverage?.definition.targetPerScenario ?? 20;
+  const target = coverage?.definition.targetPerScenario ?? 10;
   const totalScenarios = coverage?.definition.totalScenarios ?? 264;
   const targetSlots =
     coverage?.definition.targetOutfitSlots ?? totalScenarios * target;

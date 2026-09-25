@@ -1,0 +1,66 @@
+{
+  "batch": "38",
+  "approvals": {
+    "17": {
+      "color": "Light Green",
+      "constraint": "Use this light-green textured long-sleeve henley once only for Spring/Summer/Early-Fall Casual Everyday, Vacation, Resort, Travel, daytime Date or creative casual use. Keep it as the outfit's single softly relaxed top with controlled white, ecru, stone, tobacco or washed-blue tailored shorts or straight trousers and minimal cream, tan or gray footwear; never pair it with a baggy bottom, another long top, a bulky dark shoe, an all-muted-green palette or any Wedding/Wedding Guest use."
+    },
+    "20": {
+      "color": "Khaki",
+      "constraint": "Use this khaki openwork sleeveless knit once only for Spring/Summer Vacation, Resort, Festival, Travel, daytime Date or a restrained warm-weather Party. Add a clean tonal cream base when opacity requires it and pair with controlled white, ecru, tobacco, muted-olive or washed-blue tailored shorts or straight trousers plus minimal cream, tan or brown footwear; never add another mesh layer, a baggy cargo, heavy outerwear, a chunky trainer or any Wedding/Wedding Guest use."
+    },
+    "27": {
+      "color": "Moss",
+      "constraint": "Use this moss technical hiking trouser once only for Hiking, Outdoor Adventure, active Travel, wet-weather Errands or a functional Festival outfit. Balance its utility detail with one clean ecru, light-gray, teal, soft-yellow or muted-lavender performance top or shell and streamlined gray, cream or muted-green trail footwear; never combine it with another cargo-heavy piece, an oversized long top, a black-heavy palette, lifestyle formalwear or any Wedding/Wedding Guest use."
+    },
+    "30": {
+      "color": "Army Green",
+      "constraint": "Use this army-green ribbed straight-relaxed trouser once only for Spring/Summer Vacation, Resort, Casual Everyday, Travel, daytime Date or a polished warm-weather Party. Pair it with a clean ecru, cream, apricot, soft-yellow, sky-blue or white regular-proportion knit, polo or shirt and minimal cream, tan or brown sandals, loafers or sneakers; never add another wide or ribbed piece, a skinny top, bulky trainer, muddy all-green palette or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 3, 12, 15, 19],
+      "reason": "These product-only athletic or fleece basics lack reliable adult fit and movement proof and add generic technical repetition rather than a distinct modern styling role."
+    },
+    {
+      "cards": [2, 4, 6, 7],
+      "reason": "These dark quarter-zip, compression and crew-neck tops are narrow, generic or muscle-tight and recreate the skinny-top problem."
+    },
+    {
+      "cards": [5],
+      "reason": "The distressed semi-transparent wide-scoop knit reads dated and fragile rather than clean Zara-led menswear."
+    },
+    {
+      "cards": [8, 9, 10, 11, 13, 18],
+      "reason": "These deep-scoop, stringer, V-neck and transparent tanks are bodybuilding-led, too revealing, tight or excessively long for the versatile modern matrix."
+    },
+    {
+      "cards": [14],
+      "reason": "The plain long scoop-hem tank remains generic after all five colors were inspected, and only the black version provides on-body fit proof."
+    },
+    {
+      "cards": [16],
+      "reason": "The low-buttoned black henley is overly long, narrow through the body and styled with excessive chest exposure; the lighter colors do not fix the silhouette."
+    },
+    {
+      "cards": [22, 23, 25, 26],
+      "reason": "These paint-splatter, camouflage, washed-denim and flower-patch cargo shorts are long, novelty-led, pocket-heavy or insufficiently proven."
+    },
+    {
+      "cards": [21, 24, 28, 29, 31, 32, 33, 34, 36, 38, 39, 40],
+      "reason": "These drawstring, denim and lightweight trousers are uncontrolled wide-leg, balloon, harem or puddled silhouettes and recreate the baggy-bottom failure."
+    },
+    {
+      "cards": [35, 37],
+      "reason": "These logoed or striped track trousers are wide, ankle-bunched and sportswear-novelty led rather than clean and versatile."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 216 recorded color images rendered and loaded with zero broken files.",
+    "4 accepted with one exact color and variant selected each: light-green textured henley, khaki openwork knit tank, moss technical hiking trouser and army-green ribbed resort trouser.",
+    "36 rejected after the base pass and close inspection of all 21 variants across five borderline identities.",
+    "Every selected identity, variant and image has zero collision with every prior accepted or conditional item.",
+    "Most of the batch failed for compression or bodybuilding tops, generic dark knits, novelty cargo shorts, and uncontrolled wide or puddled bottoms."
+  ]
+}

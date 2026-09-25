@@ -1,0 +1,24 @@
+{
+  "batch": "52",
+  "approvals": {},
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+      "reason": "Every top is graphic, cartoon, slogan, holiday, pseudo-brand or portrait-led, with many oversized or product-only proportions; none is a clean versatile Zara-led wardrobe piece."
+    },
+    {
+      "cards": [21, 22, 23, 24, 25, 29, 30, 32, 33, 34, 35, 36, 37],
+      "reason": "These bottoms depend on paint, patchwork, plaid, stripes, camouflage, distressing, flare, raw hems or novelty construction and fail the clean controlled silhouette gate."
+    },
+    {
+      "cards": [26, 27, 28, 31, 38, 39, 40],
+      "reason": "These photographed trousers and jeans are excessively wide, ballooned, long or puddled over the shoe and cannot support the requested balanced modern outfits."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 82 recorded color images rendered and loaded with zero broken files.",
+    "0 accepted; every graphic or novelty top and every wide, puddled, distressed or gimmick bottom failed the visual gate.",
+    "No candidate warranted a variant shortlist or final approval board.",
+    "No candidate entered the usable pool, so no new identity, variant or image collision was introduced."
+  ]
+}

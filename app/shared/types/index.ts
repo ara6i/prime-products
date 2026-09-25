@@ -69,6 +69,7 @@ export interface FilterSectionConfig {
 /** Weather pill data */
 export interface WeatherData {
   location: string;
+  country?: string;
   temperature: string;
   icon: "cloud" | "sun" | "rain";
   condition: string;

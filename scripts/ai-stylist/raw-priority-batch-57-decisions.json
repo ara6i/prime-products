@@ -1,0 +1,27 @@
+{
+  "batch": "57",
+  "approvals": {},
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+      "reason": "These tops are graphic, slogan, pseudo-brand, novelty, bodybuilding or oversized dropped-shoulder merchandise; even the quieter apricot tank and washed sweatshirts remain long, logo-led and uncontrolled, so none supports a clean modern Zara-led wardrobe."
+    },
+    {
+      "cards": [21, 22, 25, 31, 36, 37, 38],
+      "reason": "These photographed jeans and cargos are visibly extremely wide, cargo-heavy, ballooned or puddled over the shoe and fail the controlled silhouette gate."
+    },
+    {
+      "cards": [23, 24, 26, 27, 28, 29, 30, 32, 33, 34, 35],
+      "reason": "These product-only bottoms are wide, cargo-heavy, distressed, washed, plaid, curved or novelty-constructed and lack credible clean on-body fit proof."
+    },
+    {
+      "cards": [39, 40],
+      "reason": "These product-only active shorts use oversized animal or slogan graphics and cheap contrast details rather than clean performance styling."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 129 recorded color images loaded for full visual review.",
+    "Nothing passed: every top was graphic, slogan, logo-led, bodybuilding or uncontrolled oversized merchandise, and every bottom was wide, puddled, cargo-heavy, distressed, gimmicky or insufficiently proven.",
+    "No candidate warranted a variant shortlist or final approval board, and no new identity, variant or image entered the usable pool."
+  ]
+}

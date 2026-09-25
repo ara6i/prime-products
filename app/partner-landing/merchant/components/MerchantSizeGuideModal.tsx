@@ -164,10 +164,10 @@ export function MerchantSizeGuideModal({
 
           <div className={styles.guide}>
             <div className={styles.intro}>
-              <p>Women&apos;s cropped outerwear</p>
+              <p>Men&apos;s cropped outerwear</p>
               <h2 id="arc-jacket-size-guide-title">Find your Arc Jacket size.</h2>
               <span>
-                Use your body bust and waist to choose a size. Shoulder, sleeve,
+                Use your body chest and waist to choose a size. Shoulder, sleeve,
                 and cropped length confirm how the jacket will sit.
               </span>
             </div>
@@ -233,8 +233,8 @@ export function MerchantSizeGuideModal({
               <span>Recommended body range for {selectedSize}</span>
               <div>
                 <p>
-                  <strong>Bust</strong>
-                  {formatGuideRange(activeRow.bodyBust, unit)} {unit}
+                  <strong>Chest</strong>
+                  {formatGuideRange(activeRow.bodyChest, unit)} {unit}
                 </p>
                 <p>
                   <strong>Waist</strong>
@@ -248,7 +248,7 @@ export function MerchantSizeGuideModal({
                 <Ruler size={17} weight="regular" aria-hidden="true" />
                 Body measurements used for fitting
               </p>
-              <span>Bust · Waist · Shoulder breadth · Arm length · Height</span>
+              <span>Chest · Waist · Shoulder breadth · Arm length · Height</span>
             </div>
 
             <p className={styles.note}>

@@ -1,0 +1,28 @@
+{
+  "outputDir": "spring-party-midrange-pilot-s202",
+  "scenarioId": "S202",
+  "occasion": "Party / Night Out",
+  "season": "Spring",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s201-spring-party-budget-core.json",
+  "excludeCandidateKeys": ["T8"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-watch",
+  "comparisonTitle": "S202 · Spring Party / Night Out · Mid-Range local screen",
+  "comparisonSubtitle": "Twelve unique Spring Party candidates after the S201 dusty-rose shirt hold",
+  "comparisonNote": "Require expressive Spring color, tactile evening finish and controlled high-street proportion · no utility overshirt, streetwear-long tee, loud stripe, lounge trouser, puddled leg or product-only guess · not UI integrated",
+  "coreTitle": "S202 · provisional Spring Party Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Spring Mid-Range Party bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men saffron silk cotton textured knit polo regular fit spring party mid range","targetProduct":"soft-saffron silk-cotton textured knit polo with a clean open collar","customerRetailTarget":"$90-$130"},
+    {"category":"bottom","searchPhrase":"men ecru cotton wool double pleat controlled straight trouser spring party","targetProduct":"ecru cotton-wool high-rise double-pleat trouser with a controlled straight break","customerRetailTarget":"$110-$160"},
+    {"category":"outerwear","searchPhrase":"men light sage suede look cropped blouson spring party modern","targetProduct":"light-sage soft suede-look cropped blouson with restrained hardware","customerRetailTarget":"$140-$200"},
+    {"category":"shoe","searchPhrase":"men oxblood suede low profile round toe loafer spring party","targetProduct":"oxblood-suede low-profile round-toe loafer","customerRetailTarget":"$130-$180"},
+    {"category":"watch","searchPhrase":"men pale green dial cognac leather thin case watch spring party","targetProduct":"pale-green-dial thin-case watch with cognac leather strap","customerRetailTarget":"$50-$80"}
+  ]
+}

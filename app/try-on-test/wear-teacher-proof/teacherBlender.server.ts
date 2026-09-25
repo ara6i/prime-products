@@ -23,6 +23,8 @@ export const TEACHER_CAMERA_FILES = [
   "camera-yaw-right-12.png",
   "camera-pitch-up-6.png",
   "camera-roll-right-3.png",
+  "camera-side-left-90.png",
+  "camera-side-right-90.png",
 ] as const;
 
 export function teacherBlenderDirectory(scanId: string) {
@@ -53,7 +55,7 @@ async function cachedMetadata(scanId: string) {
     return metadata.scanId === scanId
       && metadata.generator?.application === "Blender"
       && metadata.generator.headless === true
-      && metadata.renderSchemaVersion === 4
+      && metadata.renderSchemaVersion === 5
       && metadata.cameraCards?.every((card) => card.knownTransform)
       ? metadata
       : null;

@@ -1,0 +1,27 @@
+{
+  "outputDir": "fall-travel-luxury-pilot-s244",
+  "scenarioId": "S244",
+  "occasion": "Travel",
+  "season": "Fall",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s243-fall-travel-premium-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S244 · Fall Travel · Luxury local screen",
+  "comparisonSubtitle": "The unique Fall Travel remainder re-evaluated for Luxury textile and hand finish",
+  "comparisonNote": "Require silk-cashmere, wool-cashmere, hand-finished lamb suede and full-grain leather or equivalent Luxury proof · not UI integrated",
+  "coreTitle": "S244 · provisional Fall Travel Luxury core",
+  "coreSubtitle": "No remaining local garment reaches the Luxury Travel bar · five roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men petrol blue silk cashmere travel polo fall luxury", "targetProduct": "petrol-blue silk-cashmere fine-gauge travel polo", "customerRetailTarget": "$300-$450"},
+    {"category": "bottom", "searchPhrase": "men pale stone wool cashmere travel trouser luxury", "targetProduct": "pale-stone wool-cashmere Luxury travel trouser", "customerRetailTarget": "$380-$550"},
+    {"category": "outerwear", "searchPhrase": "men burnt orange lamb suede travel blouson luxury", "targetProduct": "burnt-orange hand-finished lamb-suede travel blouson", "customerRetailTarget": "$700-$1,000"},
+    {"category": "shoe", "searchPhrase": "men burgundy handmade calf suede travel sneaker luxury", "targetProduct": "burgundy handmade calf-suede Luxury travel sneaker", "customerRetailTarget": "$420-$600"},
+    {"category": "bag", "searchPhrase": "men ochre full grain leather compact weekender luxury", "targetProduct": "ochre full-grain leather Luxury compact weekender", "customerRetailTarget": "$650-$900"}
+  ]
+}

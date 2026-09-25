@@ -1,0 +1,146 @@
+{
+  "batch": "23",
+  "approvals": {
+    "4": {
+      "color": "Orange",
+      "constraint": "Use the orange-and-ivory fuzzy stripe sweater once only for Fall or Winter Casual Everyday, Weekend, daytime Party, relaxed Date Night, or Travel. Keep the lower half solid and controlled in ecru, stone, charcoal or dark brown, with one low-profile cream, tan or brown shoe; no second print, oversized bottom or bulky sneaker."
+    },
+    "14": {
+      "color": "Coffee Color",
+      "constraint": "Use the coffee plaid regular-relaxed shirt-jacket once only for Fall Casual Everyday, Weekend, Travel, Campus, creative Work, or a relaxed daytime Date Night. Wear open or lightly buttoned over one plain ecru, white, taupe or muted rust layer with controlled straight trousers or clean dark denim and minimal cream, tan or brown footwear; no print mixing, puddled trouser or oversized inner layer."
+    },
+    "21": {
+      "color": "French Blue",
+      "constraint": "Use the French-blue clean cropped casual trouser once only for Spring or Summer Casual Everyday, smart Weekend, Travel, daytime Date Night, or creative Work. Pair with a regular-proportion white, cream, pale gray, sand or light-blue top and low-profile white, cream or tan footwear; no oversized top, long outer layer, bulky shoe or competing saturated color."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "Black, khaki and light-gray worn views have an acceptable relaxed line, but the visible pocket label and generic polyester overshirt construction repeat cleaner approved layers."
+    },
+    {
+      "cards": [2],
+      "reason": "Light blue, navy and white add another generic button-down identity with a small chest logo and no distinctive Zara-led proportion, texture or color role."
+    },
+    {
+      "cards": [3],
+      "reason": "The long bamboo-print shirt combines frog closures, novelty graphics and a costume-like tunic shape in every color."
+    },
+    {
+      "cards": [5],
+      "reason": "Black, gray and green stripes sit on an uncontrolled oversized streetwear body with balloon sleeves, overlong cuffs and a dropped hem."
+    },
+    {
+      "cards": [6],
+      "reason": "The black and white three-quarter-sleeve shirts are overlong, loose and dated, without the controlled regular-relaxed line required for this catalog."
+    },
+    {
+      "cards": [7],
+      "reason": "The pale diamond-pattern shirt visibly clings through the chest, waist and upper arms, repeating the skinny-top problem."
+    },
+    {
+      "cards": [8],
+      "reason": "Black and white leopard satin shirts are shiny, narrow and nightlife-costume driven rather than polished modern statements."
+    },
+    {
+      "cards": [9],
+      "reason": "The black and white product-only long-sleeve camp shirts are visually repetitive basics with no reliable shoulder, torso, sleeve or hem proof."
+    },
+    {
+      "cards": [10],
+      "reason": "Blue and gray plaids are dominated by an oversized spiderweb graphic that reads as novelty merchandise rather than versatile modern shirting."
+    },
+    {
+      "cards": [11],
+      "reason": "Raw-linen and white product-only tunic shirts have an overlong oversized body and no adult drape or movement proof."
+    },
+    {
+      "cards": [12],
+      "reason": "The black and white frog-closure shirts read as costume-led traditional styling and do not fill a general modern outfit role."
+    },
+    {
+      "cards": [13],
+      "reason": "Both gray pinstripe versions carry a conspicuous animal logo and a narrow office-shirt silhouette that looks dated."
+    },
+    {
+      "cards": [15],
+      "reason": "The dense black and coffee abstract print is visually busy, product-only and difficult to coordinate without looking like cheap novelty shirting."
+    },
+    {
+      "cards": [16],
+      "reason": "Blue and red raw-hem plaids use conspicuous fringe and hanger-only grunge construction without trustworthy fit proof."
+    },
+    {
+      "cards": [17],
+      "reason": "All four washed jeans use excess thigh and leg volume with visible fabric stacking over the shoe, duplicating the rejected baggy-and-puddled silhouette."
+    },
+    {
+      "cards": [18],
+      "reason": "Army, black, gray and khaki technical trousers are narrow through the lower leg, synthetically smooth and shown on shirtless catalog models while repeating already approved active-travel roles."
+    },
+    {
+      "cards": [19],
+      "reason": "Black, gray, navy and white harem pants use an extreme dropped, ballooned leg with uncontrolled volume."
+    },
+    {
+      "cards": [20],
+      "reason": "The integrated belt, thigh zip, synthetic finish and ankle stacking make all four technical pants visually busy and repetitive against cleaner approved utility bottoms."
+    },
+    {
+      "cards": [22],
+      "reason": "Black, blue, gray and khaki stretch pants are generic synthetic slim-tapered basics with weak presentation and no missing style role."
+    },
+    {
+      "cards": [23],
+      "reason": "Black, coffee and gray elastic-waist pants are product-only, visibly wide and lack rise, seat, break or movement proof."
+    },
+    {
+      "cards": [24],
+      "reason": "Black, cream and gray versions have very wide loose legs with heavy pooling at the shoe."
+    },
+    {
+      "cards": [25],
+      "reason": "The cropped high-waist leggings are skin-tight, logo-led and unsuitable as a general men's outfit bottom."
+    },
+    {
+      "cards": [26],
+      "reason": "Black, gray and navy golf-style pants add only dark generic straight trousers and no useful color, texture or construction distinction."
+    },
+    {
+      "cards": [27],
+      "reason": "The black, gray and khaki images do not establish a trustworthy adult-male fit and the plain synthetic trouser role is already well covered."
+    },
+    {
+      "cards": [28],
+      "reason": "Black, navy and sage joggers bunch at the cuffs, use a shiny synthetic finish and duplicate several cleaner approved jogger identities."
+    },
+    {
+      "cards": [29, 30, 33, 34],
+      "reason": "These multi-pocket mesh and outdoor vests remain boxy fishing-utility layers with excessive pockets, product-only proof and no polished modern outfit role."
+    },
+    {
+      "cards": [31],
+      "reason": "The vivid blue-and-white puffer is shiny, logo-led and visually loud in a dated imitation-sportswear way."
+    },
+    {
+      "cards": [32, 35, 36, 37, 38],
+      "reason": "These product-only fleece or utility vests repeat bulky pocketed technical constructions, dark color roles and visible supplier styling without adult fit proof."
+    },
+    {
+      "cards": [39],
+      "reason": "The black hooded jacket uses red and blue hem stripes on a narrow dark body, producing a dated rather than clean modern layer."
+    },
+    {
+      "cards": [40],
+      "reason": "Black, matcha, navy and white product-only vests have no on-body proportion proof and add visible stud trim to an already repetitive utility category."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 132 recorded color images rendered; 172 displayed images loaded with zero broken files.",
+    "3 accepted with one exact color and variant selected for each: an orange-and-ivory fuzzy stripe sweater, a coffee plaid shirt-jacket and French-blue cropped casual trousers.",
+    "37 rejected after the base pass and close inspection of 34 promising color variants across ten identities.",
+    "All three selected identities, source products, variants and images have zero collision with every prior accepted or conditional item.",
+    "Rejections include skinny and costume-led shirts, uncontrolled oversized sweaters, puddled jeans and wide pants, repetitive synthetic technical trousers, joggers, fishing vests and logo-led outerwear."
+  ]
+}

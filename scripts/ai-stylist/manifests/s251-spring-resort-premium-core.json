@@ -1,0 +1,27 @@
+{
+  "outputDir": "spring-resort-premium-pilot-s251",
+  "scenarioId": "S251",
+  "occasion": "Vacation / Resort",
+  "season": "Spring",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s250-spring-resort-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S251 · Spring Vacation / Resort · Premium local screen",
+  "comparisonSubtitle": "The unique Spring Resort remainder re-evaluated for Premium textile and finish",
+  "comparisonNote": "Require silk-cotton openwork, premium linen blend, handmade suede and refined leather-canvas accessories · no promotion of low-cost beach basics · not UI integrated",
+  "coreTitle": "S251 · provisional Spring Resort Premium core",
+  "coreSubtitle": "No remaining local garment reaches the Premium Resort bar · five roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men soft coral silk cotton openwork camp shirt spring premium", "targetProduct": "soft-coral silk-cotton openwork camp shirt", "customerRetailTarget": "$180-$240"},
+    {"category": "bottom", "searchPhrase": "men soft sage premium linen tailored resort shorts", "targetProduct": "soft-sage Premium linen tailored resort short", "customerRetailTarget": "$200-$260"},
+    {"category": "shoe", "searchPhrase": "men ecru handmade suede espadrille premium", "targetProduct": "ecru handmade suede rope-sole espadrille", "customerRetailTarget": "$240-$320"},
+    {"category": "bag", "searchPhrase": "men powder blue premium canvas leather resort tote", "targetProduct": "powder-blue Premium canvas-and-cognac-leather resort tote", "customerRetailTarget": "$200-$280"},
+    {"category": "accessory", "searchPhrase": "men amber tortoiseshell premium sunglasses resort", "targetProduct": "amber-tortoiseshell Premium rectangular sunglasses", "customerRetailTarget": "$100-$160"}
+  ]
+}

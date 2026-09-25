@@ -1,4 +1,5 @@
 import { readFile, stat } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { NextResponse } from "next/server";
 import sharp from "sharp";
@@ -7,7 +8,8 @@ import { isTestLabAvailableForHost } from "@/app/try-on-test/lib/access";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const DEFAULT_CHECKPOINT_ROOT = ".local-ml/checkpoints/wear3d-waist-hips-v8-fresh-mask-h100-20260825";
+const LOCAL_CHECKPOINT_ROOT = "/Volumes/PrimeStorage/PrimeStyleAI-model-artifacts/legacy/wear3d-waist-hips-v8-fresh-mask-h100";
+const SERVER_CHECKPOINT_ROOT = ".local-ml/checkpoints/wear3d-waist-hips-v8-fresh-mask-h100-20260825";
 const MODEL_FILE = "model.onnx";
 const CURRENT_LIMIT = "Private waist/hip research model. V8 failed the fixed 448-person benchmark, so release, publishing, and SDK use remain blocked.";
 const RUNTIME_FILE = "runtime.json";
@@ -105,10 +107,12 @@ let cachedSession: {
   modifiedMs: number;
   session: import("onnxruntime-node").InferenceSession;
 } | null = null;
+let cachedChecksum: { modifiedMs: number; sha256: string } | null = null;
 
 function checkpointRoot() {
   const configured = process.env.WEAR_V8_MODEL_DIR?.trim();
-  return configured || path.join(process.cwd(), DEFAULT_CHECKPOINT_ROOT);
+  const selected = configured || (process.platform === "darwin" ? LOCAL_CHECKPOINT_ROOT : SERVER_CHECKPOINT_ROOT);
+  return path.isAbsolute(selected) ? selected : path.join(process.cwd(), selected);
 }
 
 function checkpointPath(fileName: string) {
@@ -163,6 +167,12 @@ async function loadSession() {
   const filePath = checkpointPath(MODEL_FILE);
   const fileStat = await stat(filePath);
   if (cachedSession?.modifiedMs === fileStat.mtimeMs) return cachedSession.session;
+  const manifest = await loadRuntimeManifest();
+  const digest = cachedChecksum?.modifiedMs === fileStat.mtimeMs
+    ? cachedChecksum.sha256
+    : createHash("sha256").update(await readFile(filePath)).digest("hex");
+  cachedChecksum = { modifiedMs: fileStat.mtimeMs, sha256: digest };
+  if (digest !== manifest.modelSha256) throw new Error("The V8 ONNX checksum does not match its authoritative runtime contract.");
   const ort = await import("onnxruntime-node");
   const session = await ort.InferenceSession.create(filePath, {
     executionProviders: ["cpu"],
@@ -369,10 +379,8 @@ export async function GET(request: Request) {
     return responseError(new Error("This model is available only inside Test Lab."), 403);
   }
   try {
-    const [manifest] = await Promise.all([
-      loadRuntimeManifest(),
-      stat(checkpointPath(MODEL_FILE)),
-    ]);
+    const manifest = await loadRuntimeManifest();
+    await loadSession();
     return NextResponse.json({
       ok: true,
       modelVersion: manifest.modelVersion,

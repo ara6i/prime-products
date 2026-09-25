@@ -1,0 +1,70 @@
+{
+  "batch": "31",
+  "approvals": {
+    "10": {
+      "color": "Pink",
+      "constraint": "Use this washed-pink controlled relaxed zip hoodie once only for Premium Spring/Fall Casual Everyday, Travel, Campus, creative daytime Party or a playful Date look. Make it the single high-impact color with a clean straight or tapered bottom in ecru, stone, light gray, washed blue or soft charcoal and a low-profile cream, gray or white shoe; never use the matching pink bottom, a graphic tee, a baggy or puddled trouser, a bulky trainer, another oversized layer or any Wedding/Wedding Guest outfit."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 7, 8, 9],
+      "reason": "These washed sleeveless tops are dark, overlong or visually repetitive staged-set variations and add no stronger role than the cleaner sleeveless identity already accepted."
+    },
+    {
+      "cards": [3, 4, 12, 14],
+      "reason": "These product-only black or gray basics provide no credible adult fit, movement or proportion proof and are visually generic."
+    },
+    {
+      "cards": [5],
+      "reason": "The plain black tee is generic, dark and redundant with stronger regular-relaxed T-shirt identities already accepted."
+    },
+    {
+      "cards": [6],
+      "reason": "The thin close-fitting performance hoodie has a narrow torso, long sleeves and a high cowl hood rather than a modern structured casual silhouette."
+    },
+    {
+      "cards": [11, 13],
+      "reason": "These henley and pocket T-shirts are narrow, elongated, chest-emphasizing or dated and recreate the rejected skinny-top direction."
+    },
+    {
+      "cards": [15],
+      "reason": "The black hoodie is uncontrolled and oversized with weak product-only proof, while stronger colored hoodies already cover the role."
+    },
+    {
+      "cards": [16],
+      "reason": "The long hanger-only button blouse reads as an unproven tunic and provides no credible adult-male fit or controlled hem proof."
+    },
+    {
+      "cards": [17, 18, 23, 24, 25, 26, 27, 28],
+      "reason": "These cargo shorts are long, loose, drawstring-heavy or overloaded with utility pockets and do not meet the clean tailored or controlled active-short gate."
+    },
+    {
+      "cards": [19, 20, 21, 22],
+      "reason": "These pleated trousers are extremely wide, ballooned or puddled over the shoe and directly violate the controlled straight or tailored silhouette requirement."
+    },
+    {
+      "cards": [29, 30, 31, 32, 34],
+      "reason": "These puffers and padded vests are generic dark, bulky, product-only or visually repetitive and add no distinctive modern outerwear role."
+    },
+    {
+      "cards": [33],
+      "reason": "The product is explicitly a groom three-piece suit, is skinny and product-only, and is excluded because Wedding and Wedding Guest remain untouched."
+    },
+    {
+      "cards": [35, 36, 37, 38, 39],
+      "reason": "These fishing and cargo vests are pocket-heavy, logo-led, shapeless or purely utilitarian rather than modern versatile menswear."
+    },
+    {
+      "cards": [40],
+      "reason": "The oversized dark denim jacket is heavily washed, distressed, patched and visually dated rather than a clean controlled layer."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 170 recorded color images rendered; 170 displayed images loaded with zero broken files.",
+    "1 accepted with one exact color and variant selected: a washed-pink controlled relaxed zip hoodie.",
+    "39 rejected after the base pass and close inspection of all four color variants of the only credible identity; every bottom and outerwear product failed.",
+    "The selected identity, source product, variant and image have zero collision with every prior accepted or conditional item.",
+    "Rejections include repetitive tanks and generic basics, skinny tops, long cargo shorts, ultra-wide puddled trousers, generic puffers, wedding tailoring, fishing vests and distressed oversized denim."
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "outputDir": "winter-party-budget-pilot-s213",
+  "scenarioId": "S213",
+  "occasion": "Party / Night Out",
+  "season": "Winter",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "source-core-three-piece-pass-three-separates-roles-and-suit-family-missing",
+  "comparisonTitle": "S213 · Winter Party / Night Out · existing core screen",
+  "comparisonSubtitle": "Six colorful winter knits · five controlled full-length bottom options · all unique and available",
+  "comparisonNote": "Prefer rich color, clean texture and controlled Zara-led proportions without all-dark nightclub styling · not UI integrated",
+  "coreTitle": "S213 · provisional Winter Party core",
+  "coreSubtitle": "New Year Red knit polo · warm beige corduroy trouser · tobacco-brown suede loafer",
+  "coreNote": "Three exact CJ sources reviewed at original resolution and landed-cost validated · outerwear, bag and accessory remain open for the separates look and the separate suit family remains queued · no uniqueness hold · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["outerwear", "suit", "bag", "accessory"],
+  "queuedRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men dusty coral textured knit polo long sleeve regular fit",
+      "targetProduct": "dusty-coral textured long-sleeve knit polo"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men winter ecru double pleat trousers straight leg regular fit",
+      "targetProduct": "winter-ecru double-pleat straight trouser"
+    },
+    {
+      "category": "outerwear",
+      "searchPhrase": "men warm camel wool look cropped blouson regular fit minimal",
+      "targetProduct": "warm-camel wool-look cropped minimal blouson"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men coffee brown leather casual shoes round toe sneaker",
+      "targetProduct": "tobacco-brown cowhide-suede round-toe penny loafer"
+    },
+    {
+      "category": "suit",
+      "searchPhrase": "men deep teal unstructured suit regular fit straight trousers",
+      "targetProduct": "deep-teal unstructured straight-trouser suit"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:9e8719479f6d34233b8dfd557767f52a1bffa7b4",
+      "name": "Peacock-Blue Fine-Knit Crew",
+      "decision": "reject-for-s213",
+      "decisionReason": "The fine peacock-blue color is useful, but original-resolution review shows a close chest and narrow sleeve line that recreates the fitted skinny-top silhouette explicitly excluded."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:0ae1b8390f88851ec82739efb73704f9d134321e",
+      "name": "Mustard Half-Zip Knit",
+      "decision": "reject-for-s213",
+      "decisionReason": "The mustard color is cheerful, but the plain performance-style half zip, synthetic surface and basic straight body read outdoor base layer rather than a modern Party knit."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:65c1781808a6d16c8113a9839cb77a38926cf9fe",
+      "name": "Green and Oatmeal Argyle Knit",
+      "decision": "reject-for-s213",
+      "decisionReason": "The red-green argyle is expressive, but the extremely oversized fuzzy body, balloon sleeves and Christmas-like palette look costume-heavy rather than clean Zara-led evening styling."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:fbfc103acc2f63512ef6f1c5b1038a150ab8c1db",
+      "name": "Peacock-Blue Mock-Neck Knit",
+      "decision": "reject-for-s213",
+      "decisionReason": "The isolated product image has no on-body fit proof and is digitally shaped into a visibly tight chest and narrow waist, making it unsafe for the regular-proportion brief."
+    },
+    {
+      "group": "top",
+      "key": "T7",
+      "identity": "shopify_supplier:c718a3072a23b5f3daffd582a98373e700ff8129",
+      "name": "White Cable-Knit Turtleneck",
+      "decision": "reject-for-s213",
+      "decisionReason": "The product-only cable turtleneck provides no body proof and its narrow torso and sleeves appear fitted; white alone cannot justify a Winter Party approval."
+    },
+    {
+      "group": "top",
+      "key": "T8",
+      "identity": "shopify_supplier:2984c73a22084c0ed6a3de38270524b2b9a5f582",
+      "name": "Camel Cable-Knit Quarter Zip",
+      "decision": "reject-for-s213",
+      "decisionReason": "Full-resolution body proof shows a close torso and narrow sleeves, while the camel cable quarter zip reads conventional and dated rather than fresh Party styling."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:bd9eb3e71ff44da3314d188440d5608833ddeaae",
+      "name": "Army-Green Pleated Corduroy Trouser",
+      "decision": "reject-for-s213",
+      "decisionReason": "The product-only corduroy has no on-body drape proof and combines deep front pleats, a balloon-taper leg, rolled cuffs and a D-ring utility detail; it risks exactly the baggy bottom problem."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:fabf15cd2935c7ad9c6fc6909dbdb8e94ea7f169",
+      "name": "Light-Gray Straight Washed Jean",
+      "decision": "reject-for-s213",
+      "decisionReason": "The light gray wash is useful, but the very broad leg stacks and puddles heavily over chunky sneakers, making the jean too baggy and Casual for the requested Party line."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:8d9fb6dd4f6289a656e655b8b9b0e6efe6005a3d",
+      "name": "Dark Zip-Detail Straight Jean",
+      "decision": "reject-for-s213",
+      "decisionReason": "The dark washed jean has hem stacking, zipper hardware and a black-heavy presentation; it would return the scenario to the repetitive dark nightclub styling the user rejected."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:f82ede51ff9fb0180d8e8318e06f575aa5f03944",
+      "name": "Nostalgic-Blue Straight Jean",
+      "decision": "reject-for-s213",
+      "decisionReason": "The pale nostalgic wash is too summery and the long loose leg visibly puddles over the shoe, producing a baggy streetwear silhouette rather than Winter Party polish."
+    },
+    {
+      "group": "bottom",
+      "key": "B6",
+      "identity": "shopify_supplier:7572cafda48c1fb7fd652ae7a470e2cdafb136a0",
+      "name": "Blue-Gray Relaxed Jean",
+      "decision": "reject-for-s213",
+      "decisionReason": "The jean is dark, heavily whiskered and styled with rolled cuffs and work boots; its tapered rugged look reads dated outdoor Casual rather than Night Out."
+    }
+  ]
+}

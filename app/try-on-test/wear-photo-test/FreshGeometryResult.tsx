@@ -1,8 +1,10 @@
 "use client";
 
-import { AlertTriangle, Box, Camera, Check, Loader2, RotateCcw, Ruler, ScanLine, SlidersHorizontal } from "lucide-react";
-import { useMemo, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { AlertTriangle, Box, Camera, Check, Loader2, Maximize2, RotateCcw, Ruler, ScanLine, SlidersHorizontal, X, ZoomIn, ZoomOut } from "lucide-react";
+import { useEffect, useMemo, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { cn } from "@/app/shared/lib/utils";
+import { AiadOutputs } from "./AiadOutputs";
+import { crossSectionPerimeterCm } from "./cameraGeometry";
 import type {
   FreshGeometryLineOverride,
   FreshGeometryLineOverrideMap,
@@ -11,6 +13,7 @@ import type {
 } from "./freshGeometryTypes";
 
 interface FreshGeometryResultProps {
+  applyLabel?: string;
   actuals: Partial<Record<"neck" | "chest" | "underbust" | "waist" | "hips", number | null>>;
   imageUrl: string;
   lineEditError: string | null;
@@ -39,6 +42,16 @@ function difference(value: number | null, actual: number | null | undefined) {
     && typeof actual === "number" && Number.isFinite(actual)
     ? value - actual
     : null;
+}
+
+function signedCm(value: number | null) {
+  return value == null ? "—" : `${value >= 0 ? "+" : ""}${value.toFixed(1)} cm`;
+}
+
+function formatCmAndInches(value: number | null | undefined, digits = 1) {
+  return typeof value === "number" && Number.isFinite(value)
+    ? `${value.toFixed(digits)} cm · ${(value / 2.54).toFixed(2)} in`
+    : "—";
 }
 
 function ratioLabel(key: string) {
@@ -99,6 +112,39 @@ function normalizedPointer(clientX: number, clientY: number, svg: SVGSVGElement)
   };
 }
 
+export function previewFreshGeometry(
+  rows: FreshGeometryRow[],
+  initialLines: FreshGeometryLineOverrideMap,
+  draftLines: FreshGeometryLineOverrideMap,
+) {
+  return rows.map((row) => {
+    const initial = initialLines[row.kind];
+    const draft = draftLines[row.kind];
+    const originalSpan = initial ? initial.rightX - initial.leftX : null;
+    const editedSpan = draft ? draft.rightX - draft.leftX : null;
+    const spanScale = originalSpan != null && originalSpan > 0 && editedSpan != null
+      ? editedSpan / originalSpan
+      : 1;
+    const widthCm = row.widthCm == null ? null : row.widthCm * spanScale;
+    const depthCm = widthCm != null && row.depthWidthRatio != null
+      ? widthCm * row.depthWidthRatio
+      : row.depthCm == null ? null : row.depthCm * spanScale;
+    return {
+      kind: row.kind,
+      label: row.label,
+      color: row.color,
+      widthCm,
+      depthCm,
+      circumferenceCm: crossSectionPerimeterCm(row.shape, widthCm, depthCm),
+      changed: Boolean(initial && draft && (
+        Math.abs(initial.leftX - draft.leftX) > 0.0005
+        || Math.abs(initial.rightX - draft.rightX) > 0.0005
+        || Math.abs(initial.y - draft.y) > 0.0005
+      )),
+    };
+  });
+}
+
 function CrossSection({ row }: { row: FreshGeometryRow }) {
   if (row.shape.length < 3) {
     return <div className="flex h-40 items-center justify-center text-xs font-bold text-slate-400">No certified shape head</div>;
@@ -131,6 +177,7 @@ function CrossSection({ row }: { row: FreshGeometryRow }) {
 }
 
 export function FreshGeometryResult({
+  applyLabel,
   actuals,
   imageUrl,
   lineEditError,
@@ -139,16 +186,53 @@ export function FreshGeometryResult({
   prediction,
 }: FreshGeometryResultProps) {
   const fusion = prediction.cameraFusion;
+  const aiad = prediction.aiad;
   const v8Model = prediction.model.version.includes("waist-hips-v8");
-  const modelLabel = v8Model ? "V8 waist + hips" : "Fresh ONNX";
+  const modelLabel = aiad ? "Aiad ONNX" : v8Model ? "V8 waist + hips" : "Fresh ONNX";
   const waistValidation = prediction.rows.find((row) => row.kind === "waist")?.syntheticValidation;
   const hipsValidation = prediction.rows.find((row) => row.kind === "hips")?.syntheticValidation;
   const cameraRowsApplied = fusion?.rows.filter((row) => row.widthSource !== "fresh-onnx").length ?? 0;
   const initialLines = useMemo(() => editableLines(prediction), [prediction]);
-  const [draftLines, setDraftLines] = useState<FreshGeometryLineOverrideMap>(initialLines);
+  const initialLinesKey = JSON.stringify(initialLines);
+  const [draftState, setDraftState] = useState<{ sourceKey: string; lines: FreshGeometryLineOverrideMap }>({
+    sourceKey: initialLinesKey,
+    lines: initialLines,
+  });
+  const draftLines = draftState.sourceKey === initialLinesKey ? draftState.lines : initialLines;
+  const setDraftLines = (
+    next: FreshGeometryLineOverrideMap | ((current: FreshGeometryLineOverrideMap) => FreshGeometryLineOverrideMap),
+  ) => {
+    setDraftState((current) => {
+      const currentLines = current.sourceKey === initialLinesKey ? current.lines : initialLines;
+      return {
+        sourceKey: initialLinesKey,
+        lines: typeof next === "function" ? next(currentLines) : next,
+      };
+    });
+  };
   const [strokeWidth, setStrokeWidth] = useState(6);
   const [dragging, setDragging] = useState<FreshLineDrag | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [zoom, setZoom] = useState(0.5);
   const dirtyKinds = useMemo(() => changedLineKinds(initialLines, draftLines), [draftLines, initialLines]);
+  const previewRows = useMemo(
+    () => previewFreshGeometry(prediction.rows, initialLines, draftLines),
+    [draftLines, initialLines, prediction.rows],
+  );
+
+  useEffect(() => {
+    if (!expanded) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setExpanded(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [expanded]);
   const updateDraftLine = (kind: FreshGeometryRow["kind"], update: (line: FreshGeometryLineOverride) => FreshGeometryLineOverride) => {
     setDraftLines((current) => {
       const line = current[kind] ?? initialLines[kind];
@@ -156,7 +240,7 @@ export function FreshGeometryResult({
     });
   };
   const beginLineDrag = (
-    event: ReactPointerEvent<SVGLineElement>,
+    event: ReactPointerEvent<SVGGraphicsElement>,
     kind: FreshGeometryRow["kind"],
     mode: FreshLineDrag["mode"],
   ) => {
@@ -197,22 +281,27 @@ export function FreshGeometryResult({
     }));
   };
   const finishLineDrag = (event: ReactPointerEvent<SVGSVGElement>) => {
-    if (dragging?.pointerId === event.pointerId) setDragging(null);
+    if (dragging?.pointerId !== event.pointerId) return;
+    setDragging(null);
+    if (changedLineKinds(initialLines, draftLines).length) {
+      void onRecalculateLines(draftLines);
+    }
   };
   return (
+    <>
     <div className="space-y-5" data-testid="fresh-geometry-result">
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4"><Check className="size-5 text-emerald-700" /><p className="mt-2 text-sm font-black text-emerald-950">{modelLabel} loaded</p><p className="mt-1 text-xs text-emerald-700">{prediction.model.targetCount} independent outputs</p></div>
-        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4"><ScanLine className="size-5 text-blue-700" /><p className="mt-2 text-sm font-black text-blue-950">Fresh training</p><p className="mt-1 text-xs text-blue-700">{prediction.model.train.subjects.toLocaleString()} people · {prediction.model.train.records.toLocaleString()} views</p></div>
-        <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4"><Box className="size-5 text-violet-700" /><p className="mt-2 text-sm font-black text-violet-950">WEAR validation</p><p className="mt-1 text-xs text-violet-700">{prediction.model.validation.subjects} unseen validation people</p></div>
+        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4"><ScanLine className="size-5 text-blue-700" /><p className="mt-2 text-sm font-black text-blue-950">{aiad ? "Frozen ensemble" : "Fresh training"}</p><p className="mt-1 text-xs text-blue-700">{aiad ? "4 × ConvNeXt Tiny · unchanged weights" : `${prediction.model.train?.subjects.toLocaleString() ?? "—"} people · ${prediction.model.train?.records.toLocaleString() ?? "—"} views`}</p></div>
+        <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4"><Box className="size-5 text-violet-700" /><p className="mt-2 text-sm font-black text-violet-950">{aiad ? "Row positions" : "WEAR validation"}</p><p className="mt-1 text-xs text-violet-700">{aiad ? "Fixed height fractions + torso edges" : `${prediction.model.validation?.subjects ?? "—"} unseen validation people`}</p></div>
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4"><Camera className="size-5 text-amber-700" /><p className="mt-2 text-sm font-black text-amber-950">Camera fusion</p><p className="mt-1 text-xs text-amber-700">{fusion ? fusion.state === "failed" ? "Failed · raw ONNX remains" : `${cameraRowsApplied}/${prediction.rows.length} rows · ${fusion.state}${fusion.rowPositionSource === "manual" ? " · manual rows" : ""}` : "Not run"}</p></div>
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4"><AlertTriangle className="size-5 text-rose-700" /><p className="mt-2 text-sm font-black text-rose-950">{v8Model ? "V8 release gate" : "Normal-photo proof"}</p><p className="mt-1 text-xs text-rose-700">{v8Model ? "Waist failed · 448 remains sealed" : "Not validated yet · private test only"}</p></div>
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4"><AlertTriangle className="size-5 text-rose-700" /><p className="mt-2 text-sm font-black text-rose-950">{v8Model ? "V8 release gate" : "Normal-photo proof"}</p><p className="mt-1 text-xs text-rose-700">{v8Model ? "Both rows failed fixed 448 · SDK blocked" : "Not validated yet · private test only"}</p></div>
       </section>
 
       {v8Model ? <section className="rounded-3xl border-2 border-rose-300 bg-rose-50 p-5" data-testid="v8-validation-status">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div><p className="text-xs font-black uppercase tracking-[0.14em] text-rose-700">Private V8 validation · not production ready</p><h2 className="mt-1 text-xl font-black text-rose-950">Hips passed; waist failed; sealed 448 not opened</h2><p className="mt-2 max-w-4xl text-xs leading-5 text-rose-800">These are results from 427 separate WEAR validation people. This tab runs normal-photo transfer only. It does not claim accuracy on the sealed 448 people, and it is not wired into the SDK.</p></div>
-          <span className="rounded-full bg-rose-700 px-3 py-1.5 text-xs font-black uppercase text-white">Benchmark blocked</span>
+          <div><p className="text-xs font-black uppercase tracking-[0.14em] text-rose-700">Private V8 validation and fixed benchmark · not production ready</p><h2 className="mt-1 text-xl font-black text-rose-950">Hips passed validation; both rows failed the fixed 448 benchmark</h2><p className="mt-2 max-w-4xl text-xs leading-5 text-rose-800">The validation values below come from 427 people who were not used for training. The later 448-person benchmark was also run and both waist and hip failed. Its labels had already been opened during older testing, so it is a fixed benchmark, not a pristine final test.</p></div>
+          <span className="rounded-full bg-rose-700 px-3 py-1.5 text-xs font-black uppercase text-white">448 failed</span>
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-xl border border-rose-200 bg-white p-3"><p className="text-[10px] font-black uppercase text-slate-500">Waist tape MAE / P95</p><p className="mt-1 text-sm font-black text-rose-800">{waistValidation?.tapeCmMae?.toFixed(2) ?? "—"} / {waistValidation?.tapeP95Cm?.toFixed(2) ?? "—"} cm</p></div>
@@ -224,15 +313,18 @@ export function FreshGeometryResult({
 
       <section className="rounded-3xl border border-amber-300 bg-amber-50 p-5">
         <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-800">Exactly what ran</p>
-        <p className="mt-2 text-sm font-black text-amber-950">{fusion && fusion.state !== "failed" ? `Photo segmentation → ${v8Model ? "V8" : "fresh ONNX"} rows${fusion.rowPositionSource === "manual" ? " → manual row edits" : ""} → Apple Vision camera scale → Depth Pro surface unprojection → fused A-to-B width → learned depth/width ratio sets hidden depth.` : `Photo segmentation → cleaned 192×256 silhouette → 96×128 ${v8Model ? "V8" : "fresh ONNX"} → raw rows, width, depth, shape, tape and ratios.`}</p>
+<p className="mt-2 text-sm font-black text-amber-950">{aiad ? `${aiad.segmentation === "aiad-rembg-photo" ? "Aiad rembg photo segmentation" : aiad.segmentation === "mediapipe-photo" ? "MediaPipe photo segmentation" : "Existing WEAR render threshold"} → Aiad 192×256 canonical silhouette → four-model ONNX ensemble → direct tape, width/depth, uncertainty and shape code. Separately: Aiad row_endpoints → fixed-height silhouette edges → optional manual edits and camera width comparison.` : fusion && fusion.state !== "failed" ? `Photo segmentation → ${v8Model ? "V8" : "fresh ONNX"} rows${fusion.rowPositionSource === "manual" ? " → manual row edits" : ""} → Apple Vision camera scale → Depth Pro surface unprojection → fused A-to-B width → learned depth/width ratio sets hidden depth.` : `Photo segmentation → cleaned 192×256 silhouette → 96×128 ${v8Model ? "V8" : "fresh ONNX"} → raw rows, width, depth, shape, tape and ratios.`}</p>
         <p className="mt-2 text-xs leading-5 text-amber-800">{fusion?.importantLimit ?? "Apple Vision and Depth Pro did not change these values."}</p>
       </section>
 
       <section className="grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(280px,0.75fr)]">
         <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between gap-3">
-            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-700">Normal photo</p><h2 className="mt-1 text-xl font-black text-slate-950">{modelLabel} row positions and A-to-B edges</h2></div>
-            <p className="text-xs font-bold text-slate-500">{prediction.timing.inferenceMs.toFixed(1)} ms ONNX</p>
+            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-700">{aiad?.segmentation === "thresholded-WEAR-render" ? "WEAR render" : "Normal photo"}</p><h2 className="mt-1 text-xl font-black text-slate-950">{aiad ? "Aiad row guides and A-to-B edges" : `${modelLabel} row positions and A-to-B edges`}</h2></div>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <p className="text-xs font-bold text-slate-500">{prediction.timing.inferenceMs.toFixed(1)} ms ONNX</p>
+              {!aiad ? <button className="inline-flex items-center gap-1.5 rounded-xl bg-slate-950 px-3 py-2 text-xs font-black text-white hover:bg-slate-800" data-testid="fresh-open-fullscreen" onClick={() => setExpanded(true)} type="button"><Maximize2 className="size-4" /> Open full-screen editor</button> : null}
+            </div>
           </div>
           <div className="relative mt-4 overflow-hidden rounded-2xl bg-slate-950">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -255,7 +347,7 @@ export function FreshGeometryResult({
           <div className="mt-4 flex flex-wrap gap-2">{prediction.rows.map((row) => <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1 text-xs font-black" key={row.kind}><span className="size-2.5 rounded-full" style={{ backgroundColor: row.color }} />{row.label}</span>)}</div>
           <div className="mt-4 rounded-2xl border border-cyan-200 bg-cyan-50 p-4" data-testid="fresh-line-editor">
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div><p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-cyan-800"><SlidersHorizontal className="size-4" /> Manual line editor</p><p className="mt-1 text-xs font-black text-cyan-950">Use the mouse directly on the photo: drag the middle of a line to move it; drag either invisible end zone to resize A-to-B.</p><p className="mt-1 text-xs leading-5 text-cyan-900">The sliders below are optional fine controls. The preview changes immediately; measurements change only after recalculation.</p></div>
+              <div><p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-cyan-800"><SlidersHorizontal className="size-4" /> Manual line editor</p><p className="mt-1 text-xs font-black text-cyan-950">Use the mouse directly on the photo: drag the middle of a line to move it; drag either invisible end zone to resize A-to-B.</p><p className="mt-1 text-xs leading-5 text-cyan-900">{prediction.aiad ? "The sliders are optional fine controls. Apply saves the guide edits. With camera mode enabled, it also recalculates comparison widths; raw tape never changes." : "The sliders below are optional fine controls. The preview changes immediately; measurements change only after recalculation."}</p></div>
               <label className="min-w-44 text-xs font-black text-cyan-950"><span className="flex justify-between"><span>Visual thickness</span><span>{strokeWidth}px</span></span><input className="mt-2 w-full accent-cyan-700" max="12" min="2" onChange={(event) => setStrokeWidth(Number(event.target.value))} step="1" type="range" value={strokeWidth} /></label>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -273,10 +365,10 @@ export function FreshGeometryResult({
               })}
             </div>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-              <p className={cn("text-xs font-bold", dirtyKinds.length ? "text-amber-800" : "text-cyan-800")}>{dirtyKinds.length ? `${dirtyKinds.length} edited row${dirtyKinds.length === 1 ? "" : "s"} · displayed numbers are still the previous calculation` : fusion?.rowPositionSource === "manual" ? `Manual rows applied: ${fusion.manuallyEditedRows.join(", ")}` : "No manual changes"}</p>
+              <p className={cn("text-xs font-bold", dirtyKinds.length ? "text-amber-800" : "text-cyan-800")}>{dirtyKinds.length ? `${dirtyKinds.length} edited row${dirtyKinds.length === 1 ? "" : "s"} · displayed numbers are still the previous calculation` : prediction.aiad?.manuallyEditedRows?.length ? `Manual guides applied: ${prediction.aiad.manuallyEditedRows.join(", ")}` : fusion?.rowPositionSource === "manual" ? `Manual rows applied: ${fusion.manuallyEditedRows.join(", ")}` : "No manual changes"}</p>
               <div className="flex flex-wrap gap-2">
                 <button className="rounded-xl border border-cyan-300 bg-white px-3 py-2 text-xs font-black text-cyan-900 disabled:opacity-40" disabled={!dirtyKinds.length || lineRecalibrating} onClick={() => setDraftLines(initialLines)} type="button">Reset pending changes</button>
-                <button className="inline-flex items-center gap-2 rounded-xl bg-cyan-700 px-4 py-2 text-xs font-black text-white disabled:bg-slate-300" data-testid="fresh-recalculate-lines" disabled={!dirtyKinds.length || lineRecalibrating} onClick={() => void onRecalculateLines(draftLines)} type="button">{lineRecalibrating ? <Loader2 className="size-4 animate-spin" /> : <Ruler className="size-4" />}{lineRecalibrating ? "Recalculating Apple + Depth Pro…" : "Apply rows and recalculate"}</button>
+                <button className="inline-flex items-center gap-2 rounded-xl bg-cyan-700 px-4 py-2 text-xs font-black text-white disabled:bg-slate-300" data-testid="fresh-recalculate-lines" disabled={(!dirtyKinds.length && !aiad) || lineRecalibrating} onClick={() => void onRecalculateLines(draftLines)} type="button">{lineRecalibrating ? <Loader2 className="size-4 animate-spin" /> : <Ruler className="size-4" />}{lineRecalibrating ? "Applying camera tools…" : applyLabel ?? "Apply rows and recalculate"}</button>
               </div>
             </div>
             {lineEditError ? <p className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-bold text-red-800"><AlertTriangle className="mr-1 inline size-4" />{lineEditError}</p> : null}
@@ -292,9 +384,9 @@ export function FreshGeometryResult({
           </div>
           <dl className="mt-4 grid grid-cols-2 gap-3 text-xs">
             <div className="rounded-xl bg-slate-50 p-3"><dt className="font-bold text-slate-500">Mask</dt><dd className="mt-1 font-black text-slate-950">192 × 256</dd></div>
-            <div className="rounded-xl bg-slate-50 p-3"><dt className="font-bold text-slate-500">ONNX tensor</dt><dd className="mt-1 font-black text-slate-950">96 × 128</dd></div>
+            <div className="rounded-xl bg-slate-50 p-3"><dt className="font-bold text-slate-500">ONNX tensor · W × H</dt><dd className="mt-1 font-black text-slate-950">{prediction.preprocessing.modelInputSize.join(" × ")}</dd></div>
             <div className="rounded-xl bg-slate-50 p-3"><dt className="font-bold text-slate-500">BMI</dt><dd className="mt-1 font-black text-slate-950">{prediction.profile.bmi.toFixed(1)}</dd></div>
-            <div className="rounded-xl bg-slate-50 p-3"><dt className="font-bold text-slate-500">Removed mask</dt><dd className="mt-1 font-black text-slate-950">{prediction.preprocessing.removedForegroundPixels.toLocaleString()} px</dd></div>
+            <div className="rounded-xl bg-slate-50 p-3"><dt className="font-bold text-slate-500">Mask cleanup</dt><dd className="mt-1 font-black text-slate-950">{prediction.aiad?.segmentation === "aiad-rembg-photo" ? "Aiad reference cleanup" : `${prediction.preprocessing.removedForegroundPixels.toLocaleString()} px removed`}</dd></div>
           </dl>
         </div>
       </section>
@@ -302,7 +394,7 @@ export function FreshGeometryResult({
       {fusion ? (
         <section className="overflow-hidden rounded-3xl border border-amber-200 bg-white shadow-sm" data-testid="fresh-camera-fusion">
           <div className="flex flex-wrap items-start justify-between gap-3 border-b border-amber-200 bg-amber-50 p-5">
-            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-amber-800">Apple Vision + Depth Pro</p><h2 className="mt-1 text-xl font-black text-amber-950">Post-ONNX camera and A-to-B fusion</h2><p className="mt-2 max-w-4xl text-xs leading-5 text-amber-800">The fresh model still chooses every anatomical row. Apple estimates the camera scale; Depth Pro reads the visible person surface at those endpoints. Hidden depth uses the learned depth/width ratio. Direct tape stays unchanged.</p></div>
+            <div><p className="text-xs font-black uppercase tracking-[0.14em] text-amber-800">Apple Vision + Depth Pro</p><h2 className="mt-1 text-xl font-black text-amber-950">Post-ONNX camera and A-to-B fusion</h2><p className="mt-2 max-w-4xl text-xs leading-5 text-amber-800">{aiad ? "Aiad's fixed-height guides (or your edits) select the rows—not a learned landmark detector. " : "The fresh model chooses the initial rows. "}Apple estimates camera scale; Depth Pro samples the visible surface when enabled. Hidden depth uses the learned depth/width ratio. The original ONNX tape is preserved and a separate camera geometry estimate is shown below.</p></div>
             <span className={cn("rounded-full px-3 py-1.5 text-xs font-black uppercase", fusion.state === "applied" ? "bg-emerald-100 text-emerald-800" : fusion.state === "partial" ? "bg-amber-200 text-amber-900" : "bg-red-100 text-red-800")}>{fusion.state}{fusion.rowPositionSource === "manual" ? " · manual rows" : ""}</span>
           </div>
           <div className="grid gap-3 border-b border-slate-200 p-5 sm:grid-cols-2 xl:grid-cols-6">
@@ -322,34 +414,134 @@ export function FreshGeometryResult({
               })}</tbody>
             </table>
           </div>
+          {!aiad && fusion.state !== "failed" ? <div className="border-t border-blue-200 bg-blue-50 p-5">
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-blue-800">Raw V8 versus camera geometry</p>
+            <h3 className="mt-1 text-lg font-black text-blue-950">Two separate answers — do not mix them</h3>
+            <p className="mt-2 max-w-4xl text-xs leading-5 text-blue-900">Raw V8 tape is the model’s original waist or hip answer. The camera estimate walks V8’s 32-point cross-section after scaling it to the Apple/Depth width. Its hidden depth still comes from V8’s learned depth-to-width ratio, so this is a diagnostic estimate and may be worse.</p>
+            <div className="mt-4 overflow-x-auto rounded-2xl border border-blue-200 bg-white">
+              <table className="min-w-full text-left text-sm">
+                <thead className="bg-blue-100/70 text-xs uppercase tracking-wide text-blue-900"><tr><th className="px-4 py-3">Body row</th><th className="px-4 py-3">Saved real tape</th><th className="px-4 py-3">Raw V8 tape</th><th className="px-4 py-3">Raw error</th><th className="px-4 py-3">Camera geometry estimate</th><th className="px-4 py-3">Camera estimate error</th></tr></thead>
+                <tbody className="divide-y divide-blue-100">{fusion.rows.map((cameraRow) => {
+                  const modelRow = prediction.rows.find((candidate) => candidate.kind === cameraRow.kind);
+                  const actual = actuals[cameraRow.kind];
+                  const rawError = difference(cameraRow.directTapeCm, actual);
+                  const cameraError = difference(cameraRow.cameraGeometryCircumferenceCm, actual);
+                  return <tr key={cameraRow.kind}>
+                    <th className="px-4 py-4 font-black" style={{ color: modelRow?.color }}>{modelRow?.label ?? cameraRow.kind}</th>
+                    <td className="px-4 py-4 font-black text-slate-800">{formatCm(actual)}</td>
+                    <td className="px-4 py-4 font-black text-cyan-800">{formatCm(cameraRow.directTapeCm)}</td>
+                    <td className="px-4 py-4 font-black text-slate-800">{signedCm(rawError)}</td>
+                    <td className="px-4 py-4 font-black text-violet-800">{formatCm(cameraRow.cameraGeometryCircumferenceCm)}</td>
+                    <td className="px-4 py-4 font-black text-slate-800">{signedCm(cameraError)}</td>
+                  </tr>;
+                })}</tbody>
+              </table>
+            </div>
+            <p className="mt-3 text-xs font-bold leading-5 text-blue-900"><strong>Product sizing still uses Raw V8 tape.</strong> The camera estimate is displayed for comparison until it is tested across WEAR tape data and proves that it improves accuracy.</p>
+          </div> : null}
           {fusion.warnings.length ? <div className="border-t border-amber-200 bg-amber-50 p-4"><p className="text-xs font-black text-amber-900">Review warnings</p><ul className="mt-2 space-y-1 text-xs text-amber-800">{fusion.warnings.map((warning) => <li key={warning}>• {warning}</li>)}</ul></div> : null}
         </section>
       ) : null}
 
       <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-200 p-5"><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">{v8Model ? "V8 physical outputs" : "Fresh physical outputs"}</p><h2 className="mt-1 text-xl font-black text-slate-950">{fusion && fusion.state !== "failed" ? "Camera-fused width and depth · direct tape unchanged" : "Width, depth and direct tape predictions"}</h2><p className="mt-2 text-xs leading-5 text-slate-500">Tape is its own learned head trained against recorded WEAR tape. It is not calculated by walking the displayed shape and is not rescaled by Apple or Depth Pro.</p></div>
+        <div className="border-b border-slate-200 p-5"><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">{prediction.aiad ? "Aiad physical outputs" : v8Model ? "V8 physical outputs" : "Fresh physical outputs"}</p><h2 className="mt-1 text-xl font-black text-slate-950">{fusion && fusion.state !== "failed" ? "Camera-fused width and depth · original tape preserved" : "Width, depth and direct tape predictions"}</h2><p className="mt-2 text-xs leading-5 text-slate-500">Direct tape is V8’s original learned answer. Apple and Depth Pro do not rewrite it. When camera geometry succeeds, the separate comparison above shows the circumference obtained by walking the adjusted 32-point shape.</p></div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-5 py-3">Row</th><th className="px-5 py-3">{fusion && fusion.state !== "failed" ? "Fused A-to-B width" : "A-to-B width"}</th><th className="px-5 py-3">{fusion && fusion.state !== "failed" ? "Ratio-fused depth" : "Depth"}</th><th className="px-5 py-3">Learned depth / width</th><th className="px-5 py-3">Direct tape</th><th className="px-5 py-3">Known tape</th><th className="px-5 py-3">Difference</th></tr></thead>
             <tbody className="divide-y divide-slate-100">{prediction.rows.map((row) => {
               const delta = difference(row.tapeCm, actuals[row.kind]);
-              return <tr key={row.kind}><td className="px-5 py-4 font-black" style={{ color: row.color }}>{row.label}</td><td className="px-5 py-4 font-black text-slate-900">{formatCm(row.widthCm)}</td><td className="px-5 py-4 font-black text-slate-900">{formatCm(row.depthCm)}</td><td className="px-5 py-4 font-black text-slate-900">{row.depthWidthRatio == null ? "—" : row.depthWidthRatio.toFixed(3)}</td><td className="px-5 py-4 font-black text-cyan-800">{formatCm(row.tapeCm)}</td><td className="px-5 py-4 font-black text-slate-700">{formatCm(actuals[row.kind])}</td><td className={cn("px-5 py-4 font-black", delta == null ? "text-slate-400" : Math.abs(delta) <= 3 ? "text-emerald-700" : "text-red-700")}>{delta == null ? "—" : `${delta >= 0 ? "+" : ""}${delta.toFixed(1)} cm`}</td></tr>;
+              return <tr key={row.kind}><td className="px-5 py-4 font-black" style={{ color: row.color }}>{row.label}</td><td className="px-5 py-4 font-black text-slate-900">{formatCm(row.widthCm)}</td><td className="px-5 py-4 font-black text-slate-900">{formatCm(row.depthCm)}</td><td className="px-5 py-4 font-black text-slate-900">{row.depthWidthRatio == null ? "—" : row.depthWidthRatio.toFixed(3)}</td><td className="px-5 py-4 font-black text-cyan-800">{formatCm(row.tapeCm)}</td><td className="px-5 py-4 font-black text-slate-700">{formatCm(actuals[row.kind])}</td><td className={cn("px-5 py-4 font-black", delta == null ? "text-slate-400" : Math.abs(delta) <= (prediction.aiad ? 1.27 : 3) ? "text-emerald-700" : "text-red-700")}>{delta == null ? "—" : `${delta >= 0 ? "+" : ""}${delta.toFixed(1)} cm`}</td></tr>;
             })}</tbody>
           </table>
         </div>
       </section>
 
-      <section>
+      {aiad ? <AiadOutputs prediction={prediction} actuals={actuals} /> : <section>
         <div className="mb-3"><p className="text-xs font-black uppercase tracking-[0.14em] text-violet-700">Predicted 3D geometry</p><h2 className="mt-1 text-xl font-black text-slate-950">{prediction.rows.length} independent 32-point body cross-sections</h2></div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">{prediction.rows.map((row) => <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" key={row.kind}><p className="text-sm font-black" style={{ color: row.color }}>{row.label}</p><p className="mt-1 text-xs text-slate-500">{formatCm(row.widthCm)} wide · {formatCm(row.depthCm)} deep</p><div className="mt-2"><CrossSection row={row} /></div></div>)}</div>
-      </section>
+      </section>}
 
-      <section className="grid gap-4 lg:grid-cols-2">
+      {!aiad ? <section className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-center gap-2"><Camera className="size-5 text-amber-600" /><h2 className="text-lg font-black">WEAR-taught camera outputs · diagnostic only</h2></div><p className="mt-2 text-xs leading-5 text-slate-500">These fresh-model camera heads are displayed for comparison. The fusion above uses Apple Vision and Depth Pro instead of feeding these predictions back into the model.</p><div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">{Object.entries(prediction.camera).map(([key, value]) => <div className="rounded-xl bg-slate-50 p-3" key={key}><p className="text-[11px] font-bold text-slate-500">{key.replaceAll("_", " ")}</p><p className="mt-1 text-sm font-black text-slate-950">{value == null ? "—" : value.toFixed(3)}</p></div>)}</div></div>
         <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-center gap-2"><Ruler className="size-5 text-blue-600" /><h2 className="text-lg font-black">Learned body ratios</h2></div><div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">{prediction.ratios.map((ratio) => <div className="rounded-xl bg-slate-50 p-3" key={ratio.key}><p className="text-[11px] font-bold text-slate-500">{ratioLabel(ratio.key)}</p><p className="mt-1 text-sm font-black text-slate-950">{ratio.value == null ? "—" : ratio.value.toFixed(3)}</p></div>)}</div></div>
-      </section>
+      </section> : null}
 
       <section className="rounded-3xl border border-rose-200 bg-rose-50 p-5"><p className="text-xs font-black uppercase tracking-[0.14em] text-rose-700">Review before believing the numbers</p><ul className="mt-3 space-y-2 text-sm font-bold leading-6 text-rose-950">{prediction.preprocessing.warnings.map((warning) => <li className="flex gap-2" key={warning}><AlertTriangle className="mt-1 size-4 shrink-0 text-rose-600" />{warning}</li>)}</ul><p className="mt-4 text-xs leading-5 text-rose-800">Model hash: {prediction.model.sha256.slice(0, 16)}… · sealed 448 used: {prediction.model.sealedTestSubjectsUsed} · SDK ready: no</p></section>
     </div>
+
+    {expanded && !aiad ? <div className="fixed inset-0 z-[120] bg-slate-950 text-white" data-testid="fresh-geometry-fullscreen">
+      <div className="grid h-screen min-h-0 grid-cols-1 md:grid-cols-[minmax(0,1fr)_430px]">
+        <section className="flex min-h-0 flex-col gap-3 p-3 sm:p-4">
+          <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+            <div><p className="text-sm font-black">V8 ONNX waist and hip editor</p><p className="mt-1 text-xs text-slate-300">Drag a line to move it. Drag either end to change A-to-B width.</p></div>
+            <button className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/20 px-3 text-sm font-black hover:bg-white/10" onClick={() => setExpanded(false)} type="button"><X className="size-4" /> Close</button>
+          </header>
+          <div className="flex shrink-0 flex-wrap items-center gap-2 rounded-xl border border-slate-700 bg-white p-2 text-slate-900">
+            <button aria-label="Zoom out" className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200" disabled={zoom <= 0.5} onClick={() => setZoom((value) => Math.max(0.5, value - 0.1))} type="button"><ZoomOut className="size-4" /></button>
+            <input aria-label="V8 photo zoom" className="h-2 min-w-36 flex-1 accent-cyan-700" max="2.5" min="0.5" onChange={(event) => setZoom(Number(event.target.value))} step="0.05" type="range" value={zoom} />
+            <button aria-label="Zoom in" className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200" disabled={zoom >= 2.5} onClick={() => setZoom((value) => Math.min(2.5, value + 0.1))} type="button"><ZoomIn className="size-4" /></button>
+            <button aria-label="Reset zoom" className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200" onClick={() => setZoom(0.5)} type="button"><RotateCcw className="size-4" /></button>
+            <span className="min-w-12 text-right font-mono text-xs font-black">{Math.round(zoom * 100)}%</span>
+            {prediction.rows.map((row) => <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-2 py-1 text-[11px] font-black" key={row.kind}><span className="size-2.5 rounded-full" style={{ backgroundColor: row.color }} />{row.label}</span>)}
+          </div>
+          <div className="min-h-0 flex-1 overflow-auto rounded-xl border border-slate-700 bg-black">
+            <div className="relative min-w-0 bg-black" style={{ width: `${zoom * 100}%` }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img alt="Person with editable V8 waist and hip lines" className="block h-auto w-full select-none" draggable={false} src={imageUrl} />
+              <svg aria-label="Editable V8 waist and hip lines" className="absolute inset-0 size-full select-none touch-none" onPointerCancel={finishLineDrag} onPointerMove={moveLineDrag} onPointerUp={finishLineDrag} preserveAspectRatio="none" viewBox="0 0 1000 1000">
+                {prediction.rows.map((row) => {
+                  const line = draftLines[row.kind];
+                  return line ? <g data-row-kind={row.kind} key={row.kind}>
+                    <line cursor="move" onPointerDown={(event) => beginLineDrag(event, row.kind, "move")} pointerEvents="stroke" stroke="rgba(15,23,42,.9)" strokeLinecap="round" strokeWidth="10" vectorEffect="non-scaling-stroke" x1={line.leftX * 1000} x2={line.rightX * 1000} y1={line.y * 1000} y2={line.y * 1000} />
+                    <line cursor="move" onPointerDown={(event) => beginLineDrag(event, row.kind, "move")} pointerEvents="stroke" stroke={row.color} strokeLinecap="round" strokeWidth="4" vectorEffect="non-scaling-stroke" x1={line.leftX * 1000} x2={line.rightX * 1000} y1={line.y * 1000} y2={line.y * 1000} />
+                    <circle aria-label={`${row.label} left edge`} cursor="ew-resize" cx={line.leftX * 1000} cy={line.y * 1000} fill="white" onPointerDown={(event) => beginLineDrag(event, row.kind, "left")} r="9" stroke={row.color} strokeWidth="4" vectorEffect="non-scaling-stroke" />
+                    <circle aria-label={`${row.label} right edge`} cursor="ew-resize" cx={line.rightX * 1000} cy={line.y * 1000} fill="white" onPointerDown={(event) => beginLineDrag(event, row.kind, "right")} r="9" stroke={row.color} strokeWidth="4" vectorEffect="non-scaling-stroke" />
+                    <text fill="white" fontSize="18" fontWeight="800" paintOrder="stroke" stroke="rgba(15,23,42,.95)" strokeWidth="5" x={(line.rightX * 1000) + 12} y={(line.y * 1000) + 6}>{row.label}</text>
+                  </g> : null;
+                })}
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        <aside className="min-h-0 overflow-y-auto border-l border-slate-200 bg-white p-4 text-slate-900">
+          <div className="rounded-2xl border border-cyan-200 bg-cyan-50 p-4">
+            <p className="text-xs font-black uppercase tracking-[0.12em] text-cyan-800">What changes?</p>
+            <p className="mt-2 text-sm font-black text-cyan-950">The edited geometry answer changes with your line.</p>
+            <p className="mt-1 text-xs leading-5 text-cyan-900">The raw V8 answer stays visible because V8 already finished its ONNX prediction. Releasing a line also runs Apple Vision and Depth Pro when available.</p>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {prediction.rows.map((row) => {
+              const line = draftLines[row.kind];
+              const initial = initialLines[row.kind];
+              const preview = previewRows.find((candidate) => candidate.kind === row.kind);
+              const actual = actuals[row.kind];
+              const rawError = difference(row.tapeCm, actual);
+              const editedError = difference(preview?.circumferenceCm ?? null, actual);
+              if (!line || !initial || !preview) return null;
+              const center = (line.leftX + line.rightX) / 2;
+              const span = line.rightX - line.leftX;
+              return <section className="rounded-2xl border border-slate-200 p-4" data-testid={`fresh-fullscreen-row-${row.kind}`} key={row.kind}>
+                <div className="flex items-center justify-between gap-2"><h2 className="font-black" style={{ color: row.color }}>{row.label}</h2><button className="inline-flex items-center gap-1 text-[11px] font-black text-slate-500" onClick={() => setDraftLines((current) => ({ ...current, [row.kind]: initial }))} type="button"><RotateCcw className="size-3" /> Reset</button></div>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <div className="rounded-xl bg-slate-100 p-3"><p className="text-[10px] font-black uppercase text-slate-500">Raw V8 answer</p><p className="mt-1 text-sm font-black">{formatCmAndInches(row.tapeCm)}</p><p className="mt-1 text-[11px] text-slate-500">Error {signedCm(rawError)}</p></div>
+                  <div className={cn("rounded-xl p-3", preview.changed ? "bg-violet-100" : "bg-slate-100")}><p className="text-[10px] font-black uppercase text-violet-700">Manual line result</p><p className="mt-1 text-sm font-black text-violet-950" data-testid={`fresh-live-circumference-${row.kind}`}>{formatCmAndInches(preview.circumferenceCm)}</p><p className="mt-1 text-[11px] text-violet-700">Error {signedCm(editedError)} · moves with A-to-B</p></div>
+                </div>
+                <p className="mt-2 text-[11px] font-bold text-slate-600">A-to-B {formatCmAndInches(preview.widthCm)} · depth {formatCmAndInches(preview.depthCm)}</p>
+                <label className="mt-3 block text-[11px] font-bold"><span className="flex justify-between"><span>Move line up / down</span><span>{(line.y * 100).toFixed(1)}%</span></span><input aria-label={`${row.label} full-screen vertical position`} className="mt-1 w-full accent-cyan-700" max="99" min="1" onChange={(event) => updateDraftLine(row.kind, (current) => ({ ...current, y: Number(event.target.value) / 100 }))} step="0.1" type="range" value={line.y * 100} /></label>
+                <label className="mt-3 block text-[11px] font-bold"><span className="flex justify-between"><span>Move left / right</span><span>{(center * 100).toFixed(1)}%</span></span><input aria-label={`${row.label} full-screen horizontal center`} className="mt-1 w-full accent-cyan-700" max="99" min="1" onChange={(event) => updateDraftLine(row.kind, (current) => centeredLine(current, Number(event.target.value) / 100, current.rightX - current.leftX))} step="0.1" type="range" value={center * 100} /></label>
+                <label className="mt-3 block text-[11px] font-bold"><span className="flex justify-between"><span>Change A-to-B width</span><span>{(span * 100).toFixed(1)}%</span></span><input aria-label={`${row.label} full-screen A-to-B span`} className="mt-1 w-full accent-cyan-700" max="95" min="2" onChange={(event) => updateDraftLine(row.kind, (current) => centeredLine(current, (current.leftX + current.rightX) / 2, Number(event.target.value) / 100))} step="0.1" type="range" value={span * 100} /></label>
+              </section>;
+            })}
+          </div>
+
+          <button className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-700 px-4 py-3 text-sm font-black text-white disabled:bg-slate-300" disabled={!dirtyKinds.length || lineRecalibrating} onClick={() => void onRecalculateLines(draftLines)} type="button">{lineRecalibrating ? <Loader2 className="size-4 animate-spin" /> : <Ruler className="size-4" />}{lineRecalibrating ? "Recalculating…" : "Apply lines and camera tools"}</button>
+          {lineEditError ? <p className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-bold text-red-800">{lineEditError}</p> : null}
+          <p className="mt-3 text-[11px] leading-5 text-slate-500">This screen uses the V8 ONNX result. Sizing Lab Local ML uses a separate model named front-multitask-v1.</p>
+        </aside>
+      </div>
+    </div> : null}
+    </>
   );
 }

@@ -1,4 +1,18 @@
-import type { RawCategoryCatalog } from "../types/categoryCatalog.types";
+import { brandCatalogData } from "../../brand/data/brandCatalog.data";
+import type { BrandProduct } from "../../brand/types/brandCatalog.types";
+import type {
+  ActiveRawCategoryCatalog,
+  RawCategoryCatalog,
+  RawCategoryFilter,
+  RawCategoryProduct,
+} from "../types/categoryCatalog.types";
+import {
+  getShowcaseProductSpecification,
+  getShowcaseProductsByGender,
+  showcaseAsset,
+  type ShowcaseGender,
+  type ShowcaseProduct,
+} from "../../data/showcaseCatalog.data";
 
 const sharedFilters = [
   {
@@ -29,7 +43,7 @@ const sharedFilters = [
   },
 ];
 
-export const categoryCatalogData: RawCategoryCatalog[] = [
+export const legacyCategoryCatalogData: RawCategoryCatalog[] = [
   {
     id: "denim",
     label: "Denim",
@@ -430,4 +444,281 @@ export const categoryCatalogData: RawCategoryCatalog[] = [
       },
     ],
   },
+];
+
+const showcaseFilterLabels = [
+  { id: "category", label: "Category" },
+  { id: "price", label: "Price" },
+  { id: "size", label: "Size" },
+  { id: "brand", label: "Brands" },
+  { id: "color", label: "Color" },
+  { id: "material", label: "Material" },
+] as const;
+
+const slotLabel = {
+  top: "Tops",
+  bottom: "Bottoms",
+  shoe: "Shoes",
+  bag: "Bags",
+  accessory: "Accessories",
+} as const;
+
+function priceFacet(priceCents: number) {
+  if (priceCents < 10000) return "Under $100";
+  if (priceCents <= 17500) return "$100–$175";
+  return "$175+";
+}
+
+function colorFacet(color: string) {
+  if (/blue|slate/i.test(color)) return "Blue";
+  if (/grey|charcoal/i.test(color)) return "Grey";
+  if (/burgundy|oxblood/i.test(color)) return "Burgundy";
+  if (/ivory/i.test(color)) return "Ivory";
+  if (/stone|sand|limestone/i.test(color)) return "Stone";
+  if (/olive|sage/i.test(color)) return "Olive";
+  return "Brown";
+}
+
+function materialFacet(material: string) {
+  if (/wool/i.test(material)) return "Wool";
+  if (/cotton|canvas/i.test(material)) return "Cotton";
+  if (/suede/i.test(material)) return "Suede";
+  if (/leather|calf/i.test(material)) return "Leather";
+  if (/silk/i.test(material)) return "Silk";
+  return "Technical";
+}
+
+function filtersFromProducts(
+  products: RawCategoryProduct[],
+): RawCategoryFilter[] {
+  return showcaseFilterLabels.flatMap(({ id, label }) => {
+    const options = Array.from(
+      new Set(
+        products.flatMap((product) =>
+          product.facets
+            .filter((facet) => facet.groupId === id)
+            .map((facet) => facet.value),
+        ),
+      ),
+    );
+    return options.length > 0 ? [{ id, label, options }] : [];
+  });
+}
+
+function showcaseEditorialAsset(product: ShowcaseProduct, file: string) {
+  return `/media/global-shop/showcase-v5/${product.gender}/${product.id}/${file}.png`;
+}
+
+function showcaseGallery(product: ShowcaseProduct) {
+  const views = [
+    [
+      "03-model-front",
+      `Editorial model wearing or carrying ${product.name} from the front`,
+      "Editorial front",
+      true,
+    ],
+    [
+      "04-model-three-quarter",
+      `Closer editorial model view of ${product.name}`,
+      "Editorial close view",
+      true,
+    ],
+    [
+      "05-model-back",
+      `Editorial rear model view of ${product.name}`,
+      "Editorial rear",
+      true,
+    ],
+    [
+      "06-model-movement",
+      `Editorial movement view of ${product.name}`,
+      "Editorial in movement",
+      true,
+    ],
+    [
+      "07-model-crop",
+      `Closer worn detail of ${product.name}`,
+      "Worn detail",
+      true,
+    ],
+    [
+      "09-model-alternate",
+      `Alternate editorial model view of ${product.name}`,
+      "Alternate editorial",
+      true,
+    ],
+    [
+      "01-product-front",
+      `${product.name} isolated front view`,
+      "Product front",
+      false,
+    ],
+    [
+      "02-product-back",
+      `${product.name} isolated alternate view`,
+      "Product back",
+      false,
+    ],
+    [
+      "08-detail",
+      `Material and construction detail of ${product.name}`,
+      "Material detail",
+      false,
+    ],
+  ] as const;
+  return views.map(([file, alt, caption, editorial]) => ({
+    src: editorial
+      ? showcaseEditorialAsset(product, file)
+      : showcaseAsset(product, file),
+    alt,
+    caption,
+  }));
+}
+
+function mapShowcaseProduct(product: ShowcaseProduct, position: number) {
+  const specification = getShowcaseProductSpecification(product.id);
+  if (!specification) {
+    throw new Error(
+      `Missing generated showcase specification for ${product.id}`,
+    );
+  }
+
+  return {
+    id: product.id,
+    name: product.name,
+    brand: "PrimeStyleAI Atelier",
+    priceCents: product.priceCents,
+    image: showcaseAsset(product, "01-product-front"),
+    hoverImage: showcaseAsset(product, "02-product-back"),
+    note: "Generated showcase",
+    position: position + 1,
+    gender: product.gender,
+    slot: product.slot,
+    fitType: product.fitType,
+    sizes: product.sizes,
+    measurements: product.measurements,
+    description: product.description,
+    material: product.material,
+    details: specification.details,
+    materialDetails: specification.materialDetails,
+    careInstructions: specification.careInstructions,
+    fitDescription: specification.fitDescription,
+    fitNotes: specification.fitNotes,
+    sizeGuide: specification.sizeGuide,
+    showcaseNotes: [
+      "Original AI-generated product and model photography",
+      "Structured illustrative size chart is passed to the PrimeStyleAI SDK",
+      "No supplier-verified composition, stock, review, fulfillment, or production-fit claim",
+      "Created for showcase, AI Stylist, virtual try-on, and sizing workflow testing",
+    ],
+    colorHex: product.colorHex,
+    displayColor: product.color,
+    gallery: showcaseGallery(product),
+    garmentReferenceImage: showcaseAsset(product, "01-product-front"),
+    garmentDetailImage: showcaseAsset(product, "08-detail"),
+    facets: [
+      { groupId: "category", value: slotLabel[product.slot] },
+      { groupId: "price", value: priceFacet(product.priceCents) },
+      ...product.sizes.map((size) => ({ groupId: "size", value: size })),
+      { groupId: "brand", value: "PrimeStyleAI Atelier" },
+      { groupId: "color", value: colorFacet(product.color) },
+      { groupId: "material", value: materialFacet(product.material) },
+    ],
+  };
+}
+
+function mapBrandProduct(
+  brandName: string,
+  product: BrandProduct,
+  position: number,
+): RawCategoryProduct {
+  return {
+    id: product.id,
+    name: product.name,
+    brand: brandName,
+    priceCents: Math.round(product.price * 100),
+    image: product.image,
+    hoverImage: product.gallery?.[1]?.src,
+    note: product.badge === "SALE" ? "Limited offer" : "Imported collection",
+    position,
+    sizes: product.sizes,
+    description: product.description,
+    displayColor: product.color,
+    facets: [
+      { groupId: "category", value: product.category },
+      { groupId: "price", value: priceFacet(product.price * 100) },
+      ...product.sizes.map((size) => ({ groupId: "size", value: size })),
+      { groupId: "brand", value: brandName },
+      { groupId: "color", value: product.color },
+    ],
+  };
+}
+
+function makeShowcaseCatalog(gender: ShowcaseGender): ActiveRawCategoryCatalog {
+  const existingCatalog = legacyCategoryCatalogData.find(
+    (catalog) => catalog.id === gender,
+  );
+  if (!existingCatalog || existingCatalog.id === "denim") {
+    throw new Error(`Missing existing ${gender} category presentation`);
+  }
+
+  const showcaseProducts =
+    getShowcaseProductsByGender(gender).map(mapShowcaseProduct);
+  const denimProducts =
+    gender === "women"
+      ? (
+          legacyCategoryCatalogData.find((catalog) => catalog.id === "denim")
+            ?.products ?? []
+        ).map((product, index) => ({
+          ...product,
+          position: showcaseProducts.length + index + 1,
+        }))
+      : [];
+  const brandProducts =
+    gender === "women"
+      ? brandCatalogData
+          .flatMap((brand) =>
+            brand.products.map((product) => ({
+              brandName: brand.name,
+              product,
+            })),
+          )
+          .map(({ brandName, product }, index) =>
+            mapBrandProduct(
+              brandName,
+              product,
+              showcaseProducts.length + denimProducts.length + index + 1,
+            ),
+          )
+      : [];
+  const products = [...showcaseProducts, ...denimProducts, ...brandProducts];
+
+  return {
+    ...existingCatalog,
+    id: gender,
+    heroImage: `/media/global-shop/showcase-v4/category-banners/${gender}-category-desktop.webp`,
+    mobileHeroImage: `/media/global-shop/showcase-v4/category-banners/${gender}-category-mobile.webp`,
+    heroAlt:
+      gender === "women"
+        ? "Women’s tailored garments and accessories arranged in a warm neutral studio"
+        : "Men’s tailored garments and accessories arranged in a warm neutral studio",
+    heroObjectPosition: "center",
+    filters: filtersFromProducts(products),
+    products,
+  };
+}
+
+const accessoriesCatalog = legacyCategoryCatalogData.find(
+  (catalog): catalog is ActiveRawCategoryCatalog =>
+    catalog.id === "accessories",
+);
+
+if (!accessoriesCatalog) {
+  throw new Error("Missing existing accessories category presentation");
+}
+
+export const categoryCatalogData: ActiveRawCategoryCatalog[] = [
+  accessoriesCatalog,
+  makeShowcaseCatalog("women"),
+  makeShowcaseCatalog("men"),
 ];

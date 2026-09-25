@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUpRight } from "@phosphor-icons/react";
-import Image from "next/image";
+import { useEffect, useRef } from "react";
 import styles from "./merchantTogether.module.css";
 
 type MerchantTogetherSectionProps = {
@@ -28,6 +28,47 @@ const roles = [
 export function MerchantTogetherSection({
   onPrimaryAction,
 }: MerchantTogetherSectionProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+
+    if (!video || reducedMotion.matches) return;
+
+    // Safari can ignore the declarative autoplay attributes during the first
+    // paint. Retrying from media/page lifecycle events keeps the hero moving
+    // without requiring a click while respecting reduced-motion preferences.
+    video.muted = true;
+    video.defaultMuted = true;
+
+    const playVideo = () => {
+      if (document.visibilityState !== "visible") return;
+      void video.play().catch(() => {
+        // `canplay` or the next visible `pageshow` event retries playback.
+      });
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") playVideo();
+    };
+
+    video.addEventListener("loadeddata", playVideo);
+    video.addEventListener("canplay", playVideo);
+    window.addEventListener("pageshow", playVideo);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    playVideo();
+
+    return () => {
+      video.removeEventListener("loadeddata", playVideo);
+      video.removeEventListener("canplay", playVideo);
+      window.removeEventListener("pageshow", playVideo);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
   return (
     <section
       id="commerce-together"
@@ -52,51 +93,45 @@ export function MerchantTogetherSection({
             loading="eager"
             decoding="async"
             className={styles.background}
-            alt="Fashion merchants, customers, apparel suppliers, and influencers working across one connected commerce network"
+            alt="Fashion merchants, customers, apparel suppliers, and influencers working across one connected global network"
           />
         </picture>
 
         <video
+          ref={videoRef}
           className={styles.video}
           autoPlay
           muted
           loop
           playsInline
           preload="auto"
-          poster="/media/partner-landing/merchant-network/commerce-together-editorial-wide.webp"
           aria-hidden="true"
           tabIndex={-1}
         >
           <source
-            src="/media/partner-landing/merchant-network/commerce-together-editorial-seedance2-native-4k-v2-web.mp4"
+            media="(max-width: 680px)"
+            src="/media/partner-landing/merchant-network/commerce-together-editorial-seamless-mobile-portrait-1080x1350.mp4"
             type="video/mp4"
-            media="(min-width: 681px) and (prefers-reduced-motion: no-preference)"
+          />
+          <source
+            src="/media/partner-landing/merchant-network/commerce-together-editorial-seedance2-4k-seamless-loop.mp4"
+            type="video/mp4"
           />
         </video>
-
-        <div className={styles.signature} aria-hidden="true">
-          <Image
-            src="/media/partner-landing/primestyleai-commerce-gateway-mark.webp"
-            alt=""
-            width={600}
-            height={471}
-            sizes="34px"
-          />
-        </div>
 
         <div className={styles.centerCopy}>
           <p className={styles.eyebrow}>Every side of commerce</p>
           <h2 id="commerce-together-title">
             <span className={styles.coral}>Meet</span>
             <span className={styles.violet}>the</span>
-            <span className={styles.teal}>network</span>
+            <span className={styles.teal}>global network</span>
           </h2>
           <p className={styles.roleLine}>
             Merchants · Customers · Suppliers · Influencers
           </p>
           <p className={styles.description}>
             Products move from supplier source to merchant storefront, creator
-            story, and customer checkout—inside one connected network.
+            story, and customer checkout—inside one connected global network.
           </p>
           <p className={styles.flowLine}>Source · Match · Story · Sale</p>
           <button type="button" onClick={onPrimaryAction}>
@@ -106,7 +141,7 @@ export function MerchantTogetherSection({
 
         <div
           className={styles.roleLabels}
-          aria-label="People in the PrimeStyleAI network"
+          aria-label="People in the PrimeStyleAI global network"
         >
           {roles.map((role) => (
             <div

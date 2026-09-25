@@ -1,0 +1,158 @@
+{
+  "batch": "21",
+  "approvals": {
+    "26": {
+      "color": "Light Blue",
+      "constraint": "Use the light-blue toile-print controlled knee-length short once only for Summer Vacation / Resort, Casual Everyday, Travel, daytime Date Night, or a deliberate daytime Party look. Pair with one solid white, cream, ecru, pale blue, light gray or muted sage regular-proportion top and low-profile white, cream or tan footwear; no second print, oversized top or bulky shoe."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "The black product-only shirt uses scattered brown novelty motifs, adds another dark print and supplies no adult fit proof."
+    },
+    {
+      "cards": [2, 3],
+      "reason": "These dark product-only striped and plaid shirts are visually heavy, repeat existing roles and provide no adult fit proof."
+    },
+    {
+      "cards": [4],
+      "reason": "The gray-and-black fine stripe reads flat and dated, while the on-body image gives insufficient hem and drape proof for a distinctive modern top."
+    },
+    {
+      "cards": [5],
+      "reason": "The dark gray product-only short-sleeve shirt has a visible neck label, no adult fit evidence and no missing color role."
+    },
+    {
+      "cards": [6],
+      "reason": "All four ribbed-henley colors visibly cling to the arms, chest and waist, reproducing the skinny-top problem despite useful brown and white options."
+    },
+    {
+      "cards": [7],
+      "reason": "The ribbed tank is explicitly body-hugging musclewear in every color and is unsuitable for the controlled regular-relaxed brief."
+    },
+    {
+      "cards": [8],
+      "reason": "The black and ivory product-only sweatshirts use a large raised abstract texture and add no trustworthy on-body fit evidence."
+    },
+    {
+      "cards": [9],
+      "reason": "Black and white variants are overlong and loose through the torso with a deep notch neck, reading as generic supplier knitwear rather than a polished Zara-led tee."
+    },
+    {
+      "cards": [10],
+      "reason": "All six colorways combine tight arms and torso with wide horizontal crochet blocks and contrast plackets; the result is busy, narrow and difficult to coordinate."
+    },
+    {
+      "cards": [11],
+      "reason": "The black, gray, ivory, light-blue, navy and sage images are simple recolors of the same visibly slim chest, arm and waist fit."
+    },
+    {
+      "cards": [12, 15],
+      "reason": "These product-only shirts use contrast collars, contrast cuffs, patterned plackets and decorative dark buttons, creating a dated office-shirt look."
+    },
+    {
+      "cards": [13],
+      "reason": "The satin-finish shirt is extremely shiny and body-hugging, with obvious chest and arm tension."
+    },
+    {
+      "cards": [14],
+      "reason": "The shiny feather-like print, deep open neckline and narrow body create a cheap nightlife shirt rather than a modern versatile print."
+    },
+    {
+      "cards": [16],
+      "reason": "Cream, pink, ivory, blue, moss and rust are useful colors, but every variant visibly clings through the chest, waist and sleeves; color does not rescue the skinny silhouette."
+    },
+    {
+      "cards": [17],
+      "reason": "Apricot and black variants are extremely wide, balloon through the leg and puddle heavily at the hem."
+    },
+    {
+      "cards": [18],
+      "reason": "The acid-wash denim short is wide, below-knee and covered with pale flame-like distressing."
+    },
+    {
+      "cards": [19],
+      "reason": "The product-only short is extremely wide and long, with decorative floral trim that makes it even less versatile."
+    },
+    {
+      "cards": [20],
+      "reason": "The black denim short reaches the knee with a wide leg and scattered paint marks, creating a heavy and dated shape."
+    },
+    {
+      "cards": [21],
+      "reason": "The wide below-knee denim short adds pearl embellishment across the hem and fails both silhouette and versatility gates."
+    },
+    {
+      "cards": [22],
+      "reason": "The single black active short is clean but generic, visually repetitive and offers no useful color or construction distinction."
+    },
+    {
+      "cards": [23, 24, 27],
+      "reason": "These pale, blue and dark-blue denim shorts all use exaggerated wide legs and knee or below-knee lengths, reproducing the baggy short problem."
+    },
+    {
+      "cards": [25],
+      "reason": "The black rolled-hem short is narrow at the knee, scattered with sparkle-like marks and adds another dark denim role."
+    },
+    {
+      "cards": [28],
+      "reason": "Army green, black and khaki product views do not prove rise, full-length break or movement, while the cargo construction repeats an already crowded role."
+    },
+    {
+      "cards": [29],
+      "reason": "The faux-leather moto is narrow, shiny and overworked with multiple zips, straps and seam panels."
+    },
+    {
+      "cards": [30],
+      "reason": "Black, brown and green product-only images show no adult fit evidence, while the material record conflicts with the leather-led title and the finish remains visibly synthetic."
+    },
+    {
+      "cards": [31],
+      "reason": "The black hooded jacket uses oversized faux-fur trim, contrast stitching and decorative metal pockets, creating a dated winter look."
+    },
+    {
+      "cards": [32],
+      "reason": "The black padded shell uses vivid blue lining and visible cuff text; the white version repeats the same generic supplier construction."
+    },
+    {
+      "cards": [33],
+      "reason": "Black and gray product-only puffers are shiny, generic and already covered by cleaner approved winter layers."
+    },
+    {
+      "cards": [34],
+      "reason": "The ivory/khaki and black/khaki shells have abrupt contrast paneling and no on-body shoulder, torso, sleeve or movement proof; they do not beat existing approved technical layers."
+    },
+    {
+      "cards": [35],
+      "reason": "Oversized white faux fur, red shoulder panels, contrast zips and a sleeve patch make the parka loud and dated."
+    },
+    {
+      "cards": [36],
+      "reason": "The orange version is happier but repeats existing bright technical shells, while both colors carry a visible chest logo and an overlong boxy body."
+    },
+    {
+      "cards": [37],
+      "reason": "The gray and navy softshells use bright-blue asymmetric trim and generic product-only construction with no adult fit proof."
+    },
+    {
+      "cards": [38],
+      "reason": "Black and brown snap-front puffers are generic dark winter basics with no real-body silhouette proof."
+    },
+    {
+      "cards": [39],
+      "reason": "The shiny puffer uses sleeve racing stripes and visible chest text, creating dated imitation-sportswear styling."
+    },
+    {
+      "cards": [40],
+      "reason": "Black and ivory parkas are bulky, product-only and logo-led, with technical sleeve details and no trustworthy fit evidence."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 104 recorded color images rendered; 144 displayed images loaded with zero broken files.",
+    "1 accepted with one exact color and variant selected: one light-blue toile-print controlled resort short.",
+    "39 rejected after the base pass and close inspection of 34 promising color variants across nine identities.",
+    "The selected identity, source product, variant and image have zero collision with every prior accepted or conditional item.",
+    "Rejections include dark novelty shirts, tight recolored knit tops, contrast-detail dress shirts, wide below-knee denim shorts, embellished bottoms, synthetic moto jackets, generic puffers and logo-led technical layers."
+  ]
+}

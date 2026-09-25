@@ -1,0 +1,27 @@
+{
+  "outputDir": "summer-resort-premium-pilot-s255",
+  "scenarioId": "S255",
+  "occasion": "Vacation / Resort",
+  "season": "Summer",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s254-summer-resort-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S255 · Summer Vacation / Resort · Premium local screen",
+  "comparisonSubtitle": "The unique Summer Resort remainder re-evaluated for Premium textile and finish",
+  "comparisonNote": "Require silk-cotton jacquard, premium linen tailoring, handmade woven calf and refined accessories · not UI integrated",
+  "coreTitle": "S255 · provisional Summer Resort Premium core",
+  "coreSubtitle": "No remaining local garment reaches the Premium Resort bar · five roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men turquoise silk cotton jacquard camp shirt summer premium", "targetProduct": "turquoise silk-cotton jacquard camp shirt", "customerRetailTarget": "$180-$240"},
+    {"category": "bottom", "searchPhrase": "men warm ecru premium linen tailored resort shorts", "targetProduct": "warm-ecru Premium linen tailored resort short", "customerRetailTarget": "$200-$260"},
+    {"category": "shoe", "searchPhrase": "men tobacco handmade woven calf resort loafer premium", "targetProduct": "tobacco handmade woven-calf resort loafer", "customerRetailTarget": "$260-$340"},
+    {"category": "bag", "searchPhrase": "men soft coral premium canvas leather resort crossbody", "targetProduct": "soft-coral Premium canvas-and-leather resort crossbody", "customerRetailTarget": "$200-$280"},
+    {"category": "accessory", "searchPhrase": "men honey tortoiseshell premium sunglasses resort", "targetProduct": "honey-tortoiseshell Premium rectangular sunglasses", "customerRetailTarget": "$100-$160"}
+  ]
+}

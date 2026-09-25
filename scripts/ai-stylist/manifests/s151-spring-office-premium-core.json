@@ -1,0 +1,77 @@
+{
+  "outputDir": "spring-office-premium-pilot-s151",
+  "scenarioId": "S151",
+  "occasion": "Work / Office",
+  "season": "Spring",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-bag-accessory",
+  "comparisonTitle": "S151 · Spring Work / Office · Premium local screen",
+  "comparisonSubtitle": "Six refined-top candidates · six controlled-bottom candidates · six Spring layer candidates · all unique and unreserved",
+  "comparisonNote": "Require Premium textile and fit proof, modern Zara-led proportion and purposeful Spring color · no skinny knit, puddled leg, lounge waist, utility clutter or dark monotony · not UI integrated",
+  "coreTitle": "S151 · provisional Spring Work / Office Premium core",
+  "coreSubtitle": "No local garment reaches the Spring Premium Office visual bar · all six roles unresolved",
+  "coreNote": "Zero provisional holds after all 18 originals were checked at full resolution · Premium customer-retail proof and all companion roles remain unresolved · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men dusty coral sage fine gauge knit polo refined shirt relaxed premium spring office",
+      "targetProduct": "dusty-coral or soft-sage fine-gauge knit polo or refined shirt with controlled regular-relaxed ease",
+      "customerRetailTarget": "$170-$220"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men warm ivory wool blend double pleat controlled straight trouser premium spring office",
+      "targetProduct": "warm-ivory wool-blend double-pleat trouser with a controlled straight leg and precise break",
+      "customerRetailTarget": "$200-$280"
+    },
+    {
+      "category": "outerwear",
+      "searchPhrase": "men sky blue light sage wool linen unstructured blazer premium spring office",
+      "targetProduct": "sky-blue or light-sage unstructured wool-linen blazer with clean relaxed tailoring",
+      "customerRetailTarget": "$240-$320"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men burgundy suede low profile round toe penny loafer premium office",
+      "targetProduct": "burgundy-suede low-profile round-toe penny loafer",
+      "customerRetailTarget": "$220-$280"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men cognac pebbled leather slim briefcase crossbody premium office",
+      "targetProduct": "cognac pebbled-leather slim briefcase or structured compact office crossbody",
+      "customerRetailTarget": "$200-$280"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men cream dial sage leather minimal watch premium office",
+      "targetProduct": "cream-dial minimalist watch with a soft-sage leather strap",
+      "customerRetailTarget": "$100-$160"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:3c8baacfaca7fe2715165e06af8f0c00d5a68cd4","name":"Coffee Textured Long-Sleeve Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The controlled relaxed body and woven coffee texture are visually credible, but the long open overshirt, large patch pocket, backpack styling and visible base T-shirt make it a Casual or Travel layer rather than a self-contained Premium Office top."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:29a34029f06f4434c133662c2e7a2cacdef8d2c5","name":"Green Textured Long-Sleeve Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The saturated green would add joyful Spring color, but the hanger composition gives no worn shoulder, torso, sleeve or hem proof. Its shiny crinkled surface and visible white-tee dependency read lower-tier Casual, not Premium Office."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:99c29ea832577fba8e2f28594b32b18c09c741f5","name":"Muted-Blue Twin-Pocket Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The worn image proves regular ease, but two large flap pockets, washed muted color, long open body and dark base T-shirt turn it into a utility overshirt. Preserve it for Casual or Travel rather than forcing it into polished Office styling."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:c088c69f9f54b34e8066d0bfb29314b31c32c1f0","name":"Light-Blue Ribbed Short-Sleeve Knit","decision":"reject-for-s151","decisionReason":"The light blue and vertical rib are useful, but the isolated cropped source cannot prove full-body proportion. The narrow sleeve opening, close torso and heavily bunched waist risk the fitted dated knit silhouette being removed."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:3da4c00c5788b8cb3a84fe448d95335ed2281f94","name":"Brown Long-Sleeve Knit Polo","decision":"keep-available-for-other-scenario","decisionReason":"The knit has reasonable body ease and quiet texture, but the very dark brown is flat for Spring, the bright oversized buttons cheapen the front and the sleeves bunch heavily at the cuffs. It is weaker than the required colorful Premium Office direction."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:628b14cf9051f8ade734e81412d141c75b497aad","name":"White Textured Knit Crew T-Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The clean white texture and relaxed body can work for Summer Casual, but the dropped shoulder, broad long T-shirt proportion and casual five-pocket styling do not supply the refined collar or knit structure required for Premium Office."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320","name":"Light-Gray Relaxed Trouser","decision":"reject-for-s151","decisionReason":"Only a product image is available, so rise, thigh drape, length and shoe break are unproven. The diagonal knee seams, wrinkled synthetic-looking surface and snap waist read technical rather than premium tailored Office."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:bf7fa4e61eb13d0ac96cfca0028b90814633535c","name":"Ivory Straight-Leg Jean","decision":"keep-available-for-other-scenario","decisionReason":"The warm ivory is useful for Spring Casual, but the flat product-only image cannot prove rise, thigh ease, length or shoe break, while the broad five-pocket leg is denim rather than the premium tailored trouser this cell needs."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:c4694a3740fce46e4cb36568c29f9bd341398236","name":"Medium-Blue Straight-Leg Jean","decision":"reject-for-s151","decisionReason":"The clean blue is wearable, but the casual denim surface and long broad leg visibly fold and stack over the sneaker. It would repeat the uncontrolled baggy-bottom problem and is not Premium Office tailoring."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265","name":"Military-Green Casual Trouser","decision":"reject-for-s151","decisionReason":"The product-only source provides no fit or hem proof, and the shiny wrinkled olive fabric, casual pocketing and novelty multicolor bead attachment undermine Premium Office refinement."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:3095c87326ee7556a98852b611d3737df02b04a4","name":"Flax-Coffee Lightweight Trouser","decision":"reject-for-s151","decisionReason":"The exposed black drawstring, gathered elastic waist, crinkled lounge fabric, broad leg and puddled hem make this a casual lounge pant rather than a polished Spring Office trouser."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:aabdffc99d8e26c94746c17f630f60a6bb135e66","name":"Yellow-Green Straight-Leg Jean","decision":"reject-for-s151","decisionReason":"The dirty acid yellow-green wash, streetwear treatment, very broad leg and heavy hem collapse over chunky sneakers directly conflict with clean controlled Premium Office styling."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:f23bed156981c3eefb1fe37ab832a7e947f07775","name":"Sky-Blue Unstructured Button-Up Jacket","decision":"keep-available-for-other-scenario","decisionReason":"The sky blue is cheerful and the worn source shows relaxed ease, but the rumpled thin linen-like surface, casual rolled cuffs, patch chest pocket and jeans styling read Summer Resort or Casual. The finish is not credible enough for a Premium Office blazer hold."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:5d5eb7a403cdcbaab147934e34260021d12d0dba","name":"Khaki Single-Breasted Blazer","decision":"reject-for-s151","decisionReason":"The blazer is extremely long and boxy with low patch pockets, thin flat fabric and sleeves that extend beyond the wrist. It creates oversized upper-body volume without the drape or finish expected at Premium."},
+    {"group":"outerwear","key":"O3","identity":"shopify_supplier:5ab0310ae9053fa971557c673b0ef3ddd136b573","name":"White Button-Up Blazer","decision":"keep-available-for-other-scenario","decisionReason":"The white color and cleaner regular line are useful for Summer Smart Casual, but the washed lightweight surface, long bunched sleeves, casual T-shirt pairing and generic patch-pocket construction do not prove Premium Spring Office quality."},
+    {"group":"outerwear","key":"O4","identity":"shopify_supplier:16979789931509ee789c04fefffd07da8162def5","name":"Green Striped Button-Up Cardigan","decision":"reject-for-s151","decisionReason":"The close waist and sleeves recreate a fitted dated silhouette, while the heavy green, burgundy, black and cream vertical striping feels retro and visually busy rather than modern Premium Office."},
+    {"group":"outerwear","key":"O5","identity":"shopify_supplier:2f30cccc9b77808ce60e8aef94ba5ed6271a4556","name":"Taupe Faux-Leather Zip Shacket","decision":"keep-available-for-other-scenario","decisionReason":"The controlled hip-length shape is credible, but the mottled faux-leather surface, exposed zipper, snap hardware and graphic T-shirt styling read lower-tier Fall Casual rather than light polished Spring Office."},
+    {"group":"outerwear","key":"O6","identity":"shopify_supplier:2349a25ac0e2ed693d29d058a48f7be7233b84f7","name":"Khaki Double-Breasted Trench","decision":"keep-available-for-other-scenario","decisionReason":"The trench can serve a Rainy Day or Travel scenario, but the strongly dropped shoulder, extra-long oversized body, streetwear jeans and canvas-sneaker styling overwhelm a controlled Premium Office outfit."}
+  ]
+}

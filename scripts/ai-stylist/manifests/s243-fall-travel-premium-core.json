@@ -1,0 +1,27 @@
+{
+  "outputDir": "fall-travel-premium-pilot-s243",
+  "scenarioId": "S243",
+  "occasion": "Travel",
+  "season": "Fall",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s242-fall-travel-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S243 · Fall Travel · Premium local screen",
+  "comparisonSubtitle": "The unique Fall Travel remainder re-evaluated for Premium textile and finish",
+  "comparisonNote": "Require silk-merino, wool-silk travel drape, supple suede and handmade low-profile footwear · no promotion of low-cost utility pieces · not UI integrated",
+  "coreTitle": "S243 · provisional Fall Travel Premium core",
+  "coreSubtitle": "No remaining local garment reaches the Premium Travel bar · five roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men petrol blue silk merino travel polo fall premium", "targetProduct": "petrol-blue silk-merino fine-gauge travel polo", "customerRetailTarget": "$180-$240"},
+    {"category": "bottom", "searchPhrase": "men pale stone wool silk travel trouser fall premium", "targetProduct": "pale-stone wool-silk Premium travel trouser", "customerRetailTarget": "$220-$300"},
+    {"category": "outerwear", "searchPhrase": "men burnt orange genuine suede travel blouson fall premium", "targetProduct": "burnt-orange genuine-suede cropped travel blouson", "customerRetailTarget": "$300-$420"},
+    {"category": "shoe", "searchPhrase": "men burgundy handmade suede travel sneaker premium", "targetProduct": "burgundy handmade calf-suede travel sneaker", "customerRetailTarget": "$240-$320"},
+    {"category": "bag", "searchPhrase": "men ochre premium canvas leather weekender travel", "targetProduct": "ochre Premium canvas-and-leather compact weekender", "customerRetailTarget": "$160-$220"}
+  ]
+}

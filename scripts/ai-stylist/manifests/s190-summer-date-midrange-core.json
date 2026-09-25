@@ -1,0 +1,42 @@
+{
+  "outputDir": "summer-date-midrange-pilot-s190",
+  "scenarioId": "S190",
+  "occasion": "Date Night",
+  "season": "Summer",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s154-summer-office-midrange-core.json",
+  "candidateOverrides": {
+    "T1": {"decision":"reject-for-s190","decisionReason":"The subdued pea green and texture are useful, but the long open overshirt, large pocket and white-tee dependency create a daytime utility layer rather than a self-contained Date top."},
+    "T2": {"decision":"reject-for-s190","decisionReason":"The pink is cheerful, but raw frayed edges, bleached plaid and an open grunge silhouette look distressed rather than polished for a modern date."},
+    "T3": {"decision":"reject-for-s190","decisionReason":"The sky blue is fresh, but the hanger composition supplies no worn shoulder, torso, sleeve or hem proof and depends on a separate white tee."},
+    "T5": {"decision":"reject-for-s190","decisionReason":"The khaki mock-neck knit is an isolated product form with no worn shoulder, torso or hem proof and reads too neutral for the intended romantic color story."},
+    "T6": {"decision":"reject-for-s190","decisionReason":"The white mock-neck is only a flat product image; fit, drape and knit quality are unproven, and it would create another generic pale basic."},
+    "T7": {"decision":"reject-for-s190","decisionReason":"The lightweight white shirt is hanger-only, so shoulder, body width, sleeve opening and hem behavior cannot be approved visually."},
+    "T8": {"decision":"reject-for-s190","decisionReason":"The product-only gray-green shirt has two large asymmetric utility pockets and no worn fit proof; it reads workwear rather than Date Night."},
+    "B1": {"decision":"reject-for-s190","decisionReason":"The pastel-blue short is shown only as a shiny flat product cutout with an elastic side waist; rise, leg opening and worn proportion are unproven."},
+    "B2": {"decision":"reject-for-s190","decisionReason":"The fresh blue cannot overcome the gathered elastic waist, visible drawstring, crumpled cloth and casual cropped shape."},
+    "B3": {"decision":"reject-for-s190","decisionReason":"The gray trouser exposes a fully gathered drawstring waist, oversized front volume and casual technical styling."},
+    "B4": {"decision":"reject-for-s190","decisionReason":"The dark navy leg is broad and visibly puddled over the sneaker, adding both heavy color and uncontrolled lower-body volume."},
+    "B5": {"decision":"reject-for-s190","decisionReason":"The camel trouser has a broad leg stacked heavily over chunky sneakers; the warm color does not justify the loose-on-loose proportion."},
+    "B6": {"decision":"reject-for-s190","decisionReason":"The khaki short is a wrinkled product-only image with no body, rise, thigh or hem proof and cannot support an approved date silhouette."},
+    "B7": {"decision":"keep-available-for-other-scenario","decisionReason":"The cheerful toile belongs in Resort or Vacation; its straight knee-length shape and all-over print are too thematic for this polished Date brief."},
+    "B8": {"decision":"reject-for-s190","decisionReason":"The sage color is attractive, but the product-only short hides rise, seat, leg opening and full worn proportion."}
+  },
+  "status": "full-resolution-correction-zero-holds-awaiting-full-core",
+  "comparisonTitle": "S190 · Summer Date Night · Mid-Range local screen",
+  "comparisonSubtitle": "Eight warm-weather tops · eight bottoms · all unique and unreserved before this screen",
+  "comparisonNote": "Require tactile summer color, clean collar and controlled relaxed proportion · no hanger guess, distressed grunge, utility clutter, elastic lounge waist, product-only short or puddled leg · not UI integrated",
+  "coreTitle": "S190 · provisional Summer Date Night Mid-Range core",
+  "coreSubtitle": "former roll-tab shirt rejected · replacement top, washed-aqua trouser, tobacco loafer and watch required",
+  "coreNote": "Zero visual front-runners after full-source correction · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"bottom","searchPhrase":"men washed aqua blue linen viscose double pleat controlled straight trouser summer date","targetProduct":"washed-aqua linen-viscose high-rise double-pleat trouser with a controlled straight break","customerRetailTarget":"$170-$220"},
+    {"category":"shoe","searchPhrase":"men tobacco woven suede leather low profile loafer summer date mid range","targetProduct":"tobacco woven-suede-and-leather low-profile round-toe loafer","customerRetailTarget":"$210-$270"},
+    {"category":"watch","searchPhrase":"men champagne pale blue dial tan leather thin case watch summer date","targetProduct":"champagne or pale-blue-dial thin-case watch with tan leather strap","customerRetailTarget":"$80-$110"}
+  ]
+}

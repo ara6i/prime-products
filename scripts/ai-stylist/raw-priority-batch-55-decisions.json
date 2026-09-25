@@ -1,0 +1,45 @@
+{
+  "batch": "55",
+  "approvals": {
+    "23": {
+      "color": "French Blue",
+      "constraint": "Use this French-blue clean straight jean once only for Spring/Fall Casual Everyday, Campus, Travel, Weekend, daytime Date Night or creative casual use. Pair with a regular or controlled-relaxed cream, ecru, white, soft-pink, rust, sage or chocolate top and low-profile off-white, tan or brown footwear; never use the paler wash, a skinny top, another oversized garment, double denim, bulky trainers, Sports/Workout, formal evening styling, or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+      "reason": "These tops are dominated by oversized graphics, cartoons, graffiti, slogans, pseudo-brand marks, gothic or medieval costume details, shiny fabric or uncontrolled hoodie volume and cannot support a clean modern Zara-led wardrobe."
+    },
+    {
+      "cards": [21, 25],
+      "reason": "These product-only black slim bottoms lack reliable on-body proof through the rise, thigh, knee and shoe break and are too generic or narrow to pass the silhouette gate."
+    },
+    {
+      "cards": [22, 24, 26, 27],
+      "reason": "These jeans are visibly skinny, thigh-clinging, ankle-narrow or dated by acid and contrast washing; close review confirmed that card 27 remains substantially slimmer and busier than the approved straight jean."
+    },
+    {
+      "cards": [28, 29, 30, 32, 33, 34, 35, 36, 39],
+      "reason": "These cargos are product-only or visibly wide, heavily pocketed, puddled, shiny, gimmick-led or insufficiently proven and fail the controlled modern trouser gate."
+    },
+    {
+      "cards": [31],
+      "reason": "The plush khaki drawstring trouser is too cropped, cuffed and loose through the leg to serve as a versatile clean utility bottom."
+    },
+    {
+      "cards": [37, 38],
+      "reason": "These below-knee floral or distressed camouflage cargo shorts are long, novelty-led and visually dated."
+    },
+    {
+      "cards": [40],
+      "reason": "The palm-tree trouser is a novelty set component with an uncontrolled wide, puddled line and cannot enter the single-product styling pool."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 140 recorded color images loaded for full visual review.",
+    "1 bottom accepted in one exact color after close inspection of three variants across the only two plausible jean identities: a French-blue clean straight jean with controlled ease and one shoe break.",
+    "39 rejected: every top failed, and the remaining bottoms were skinny, wide, puddled, cargo-heavy, novelty-led or insufficiently proven.",
+    "The selected identity, variant and image have zero collision with every prior accepted or conditional item."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "outputDir": "spring-travel-midrange-pilot-s234",
+  "scenarioId": "S234",
+  "occasion": "Travel",
+  "season": "Spring",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceSpec": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/spring-travel-budget-pilot-s233/bottom-comparison.json",
+  "excludeCandidateKeys": ["A"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S234 · Spring Travel · Mid-Range local screen",
+  "comparisonSubtitle": "Remaining unique Spring Travel bottoms after the S233 trouser hold",
+  "comparisonNote": "Require packable polish, controlled movement ease and credible Mid-Range construction · no webbing waist, acid wash, cargo bulk or baggy stacking · not UI integrated",
+  "coreTitle": "S234 · provisional Spring Travel Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Mid-Range Travel bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men dusty coral fine knit travel polo regular fit spring mid range", "targetProduct": "dusty-coral fine-knit travel polo with controlled regular ease", "customerRetailTarget": "$90-$130"},
+    {"category": "bottom", "searchPhrase": "men soft sage technical wool travel trouser straight spring mid range", "targetProduct": "soft-sage clean straight travel trouser with subtle stretch", "customerRetailTarget": "$120-$170"},
+    {"category": "outerwear", "searchPhrase": "men washed sky blue cotton overshirt spring travel mid range", "targetProduct": "washed-sky cotton travel overshirt with a clean hip-length body", "customerRetailTarget": "$140-$200"},
+    {"category": "shoe", "searchPhrase": "men ecru leather low profile travel sneaker spring mid range", "targetProduct": "ecru low-profile leather travel sneaker", "customerRetailTarget": "$130-$180"},
+    {"category": "bag", "searchPhrase": "men caramel canvas leather compact weekender spring travel mid range", "targetProduct": "caramel canvas-and-leather compact weekender", "customerRetailTarget": "$70-$110"}
+  ]
+}

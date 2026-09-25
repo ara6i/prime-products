@@ -17,6 +17,9 @@ importers:
       '@primestyleai/tryon':
         specifier: 5.10.243
         version: 5.10.243(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@primestyleai/tryon-shop':
+        specifier: file:vendor/primestyleai-tryon-5.10.245-preview.9.tgz
+        version: '@primestyleai/tryon@file:vendor/primestyleai-tryon-5.10.245-preview.9.tgz(react-dom@19.2.3(react@19.2.3))(react@19.2.3)'
       '@react-oauth/google':
         specifier: ^0.13.4
         version: 0.13.5(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -1726,6 +1729,18 @@ packages:
 
   '@primestyleai/tryon@5.10.243':
     resolution: {integrity: sha512-b2yNzAl57s7Jtg35j7XgSXHlRtjQBZ0M93GQaJPkkoE8XXkumGFkxlF3OcovCitTdUPp/cT+Edch+pTcROv6DQ==}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
+  '@primestyleai/tryon@file:vendor/primestyleai-tryon-5.10.245-preview.9.tgz':
+    resolution: {integrity: sha512-UM5yPJf+nhIg6bqcOrLNa40E6gxpsIjfc2S+JZCR6jFzxd/naPqCOMhKiJtW++J2yGtexrDrguXLCEMi5qRupw==, tarball: file:vendor/primestyleai-tryon-5.10.245-preview.9.tgz}
+    version: 5.10.245-preview.9
     peerDependencies:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
@@ -8992,6 +9007,11 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
 
   '@primestyleai/tryon@5.10.243(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    optionalDependencies:
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
+
+  '@primestyleai/tryon@file:vendor/primestyleai-tryon-5.10.245-preview.9.tgz(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     optionalDependencies:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)

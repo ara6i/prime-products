@@ -22,6 +22,11 @@ type PublicPageFetchResult =
   | { kind: "unsafe-redirect" }
   | { kind: "too-many-redirects" };
 
+type PinterestShortLinkResult =
+  | { kind: "resolved"; normalizedUrl: string }
+  | { kind: "invalid" }
+  | { kind: "unverified" };
+
 const CREATOR_CHANNELS = new Set<CreatorPrimaryChannel>([
   "instagram",
   "tiktok",
@@ -32,8 +37,13 @@ const CREATOR_CHANNELS = new Set<CreatorPrimaryChannel>([
   "other",
 ]);
 
-function isCreatorPrimaryChannel(value: unknown): value is CreatorPrimaryChannel {
-  return typeof value === "string" && CREATOR_CHANNELS.has(value as CreatorPrimaryChannel);
+function isCreatorPrimaryChannel(
+  value: unknown,
+): value is CreatorPrimaryChannel {
+  return (
+    typeof value === "string" &&
+    CREATOR_CHANNELS.has(value as CreatorPrimaryChannel)
+  );
 }
 
 function isLoginOrChallengeUrl(url: URL): boolean {
@@ -45,6 +55,69 @@ function isLoginOrChallengeUrl(url: URL): boolean {
     path.includes("/consent") ||
     path.includes("/auth")
   );
+}
+
+async function resolvePinterestShortLink(
+  normalizedUrl: string,
+  signal: AbortSignal,
+): Promise<PinterestShortLinkResult> {
+  const token = new URL(normalizedUrl).pathname.split("/").filter(Boolean)[0];
+  if (!token) return { kind: "invalid" };
+
+  let currentUrl = new URL(
+    `https://api.pinterest.com/url_shortener/${encodeURIComponent(token)}/redirect/`,
+  );
+
+  for (let redirectCount = 0; redirectCount <= 2; redirectCount += 1) {
+    const response = await fetch(currentUrl, {
+      method: "GET",
+      redirect: "manual",
+      cache: "no-store",
+      signal,
+      headers: {
+        Accept: "text/html,application/xhtml+xml",
+        "Accept-Language": "en-US,en;q=0.8",
+        "User-Agent":
+          "Mozilla/5.0 (compatible; PrimeStyleAI-ProfileCheck/1.0; +https://primestyleai.com)",
+      },
+    });
+
+    if (response.status === 404 || response.status === 410) {
+      await response.body?.cancel().catch(() => undefined);
+      return { kind: "invalid" };
+    }
+    if (response.status < 300 || response.status >= 400) {
+      await response.body?.cancel().catch(() => undefined);
+      return { kind: "unverified" };
+    }
+
+    const location = response.headers.get("location");
+    await response.body?.cancel().catch(() => undefined);
+    if (!location) return { kind: "unverified" };
+
+    const nextUrl = new URL(location, currentUrl);
+    if (
+      isLoginOrChallengeUrl(nextUrl) ||
+      !isCreatorPlatformHostname("pinterest", nextUrl.hostname)
+    ) {
+      return { kind: "unverified" };
+    }
+
+    const nextHost = nextUrl.hostname.toLowerCase();
+    if (nextHost === "pinterest.com" || nextHost === "www.pinterest.com") {
+      const resolvedProfile = validateCreatorProfileUrl(
+        "pinterest",
+        nextUrl.toString(),
+      );
+      return resolvedProfile.valid && resolvedProfile.handle
+        ? { kind: "resolved", normalizedUrl: resolvedProfile.normalizedUrl }
+        : { kind: "invalid" };
+    }
+
+    currentUrl = nextUrl;
+  }
+
+  return { kind: "unverified" };
 }
 
 async function fetchPublicProfilePage(
@@ -102,7 +175,8 @@ async function readResponsePrefix(
       const { done, value } = await reader.read();
       if (done) break;
       const remaining = limit - received;
-      const chunk = value.byteLength > remaining ? value.slice(0, remaining) : value;
+      const chunk =
+        value.byteLength > remaining ? value.slice(0, remaining) : value;
       chunks.push(chunk);
       received += chunk.byteLength;
     }
@@ -162,7 +236,9 @@ function hasPublicProfileSignal(
     `username=${normalizedHandle}`,
     `/@${normalizedHandle}`,
   ];
-  const hasUsernameSignal = usernameSignals.some((signal) => compact.includes(signal));
+  const hasUsernameSignal = usernameSignals.some((signal) =>
+    compact.includes(signal),
+  );
 
   if (platform === "instagram") {
     const usernameSignal = `"username":"${normalizedHandle}"`;
@@ -174,7 +250,10 @@ function hasPublicProfileSignal(
         Math.min(compact.length, usernameIndex + 5_000),
       );
       if (/"is_?private":false/i.test(profileWindow)) return true;
-      usernameIndex = compact.indexOf(usernameSignal, usernameIndex + usernameSignal.length);
+      usernameIndex = compact.indexOf(
+        usernameSignal,
+        usernameIndex + usernameSignal.length,
+      );
     }
 
     return false;
@@ -282,6 +361,31 @@ async function verifyPublicCreatorProfile(
   const timeout = setTimeout(() => controller.abort(), 4_500);
 
   try {
+    if (
+      platform === "pinterest" &&
+      new URL(normalizedUrl).hostname.toLowerCase() === "pin.it"
+    ) {
+      const resolved = await resolvePinterestShortLink(
+        normalizedUrl,
+        controller.signal,
+      );
+      if (resolved.kind === "invalid") {
+        return result(
+          "invalid",
+          normalizedUrl,
+          "This Pinterest short link does not lead to a creator profile.",
+        );
+      }
+      if (resolved.kind === "resolved") {
+        return result(
+          "verified",
+          resolved.normalizedUrl,
+          "Pinterest profile link confirmed.",
+        );
+      }
+      return result("unverified", normalizedUrl, manualReviewMessage(label));
+    }
+
     if (platform === "tiktok") {
       const oEmbedResult = await verifyTikTokProfileWithOEmbed(
         normalizedUrl,
@@ -298,19 +402,18 @@ async function verifyPublicCreatorProfile(
     );
 
     if (fetched.kind !== "response") {
-      return result(
-        "unverified",
-        normalizedUrl,
-        manualReviewMessage(label),
-      );
+      return result("unverified", normalizedUrl, manualReviewMessage(label));
     }
 
     const { response } = fetched;
+    const verifiedNormalizedUrl = normalizedUrl;
+    const verifiedHandle = handle;
+
     if (response.status === 404 || response.status === 410) {
       await response.body?.cancel().catch(() => undefined);
       return result(
         "invalid",
-        normalizedUrl,
+        verifiedNormalizedUrl,
         `No public ${label} profile was found at this link. Check the username.`,
       );
     }
@@ -318,7 +421,7 @@ async function verifyPublicCreatorProfile(
       await response.body?.cancel().catch(() => undefined);
       return result(
         "unverified",
-        normalizedUrl,
+        verifiedNormalizedUrl,
         manualReviewMessage(label),
       );
     }
@@ -326,7 +429,7 @@ async function verifyPublicCreatorProfile(
       await response.body?.cancel().catch(() => undefined);
       return result(
         "invalid",
-        normalizedUrl,
+        verifiedNormalizedUrl,
         `No public ${label} profile was found at this link. Check the username.`,
       );
     }
@@ -339,12 +442,16 @@ async function verifyPublicCreatorProfile(
     if (appearsPrivate(html)) {
       return result(
         "invalid",
-        normalizedUrl,
+        verifiedNormalizedUrl,
         `${label} profile appears private. Make it public, then try again.`,
       );
     }
 
-    const publicProfileConfirmed = hasPublicProfileSignal(platform, html, handle);
+    const publicProfileConfirmed = hasPublicProfileSignal(
+      platform,
+      html,
+      verifiedHandle,
+    );
 
     // TikTok includes localized missing-account messages in the JavaScript
     // dictionary of valid profile pages. Its matching user-detail payload is
@@ -352,36 +459,32 @@ async function verifyPublicCreatorProfile(
     if (platform === "tiktok" && publicProfileConfirmed) {
       return result(
         "verified",
-        normalizedUrl,
+        verifiedNormalizedUrl,
         `Public ${label} profile confirmed.`,
       );
     }
     if (appearsMissing(html)) {
       return result(
         "invalid",
-        normalizedUrl,
+        verifiedNormalizedUrl,
         `No public ${label} profile was found at this link. Check the username.`,
       );
     }
     if (publicProfileConfirmed) {
       return result(
         "verified",
-        normalizedUrl,
+        verifiedNormalizedUrl,
         `Public ${label} profile confirmed.`,
       );
     }
 
     return result(
       "unverified",
-      normalizedUrl,
+      verifiedNormalizedUrl,
       manualReviewMessage(label),
     );
   } catch {
-    return result(
-      "unverified",
-      normalizedUrl,
-      manualReviewMessage(label),
-    );
+    return result("unverified", normalizedUrl, manualReviewMessage(label));
   } finally {
     clearTimeout(timeout);
   }
@@ -393,14 +496,22 @@ export async function POST(request: Request) {
     body = (await request.json()) as { platform?: unknown; url?: unknown };
   } catch {
     return Response.json(
-      { status: "invalid", normalizedUrl: "", message: "Enter a profile link." },
+      {
+        status: "invalid",
+        normalizedUrl: "",
+        message: "Enter a profile link.",
+      },
       { status: 400, headers: { "Cache-Control": "no-store" } },
     );
   }
 
   if (!isCreatorPrimaryChannel(body.platform) || typeof body.url !== "string") {
     return Response.json(
-      { status: "invalid", normalizedUrl: "", message: "Choose a platform and enter its profile link." },
+      {
+        status: "invalid",
+        normalizedUrl: "",
+        message: "Choose a platform and enter its profile link.",
+      },
       { status: 400, headers: { "Cache-Control": "no-store" } },
     );
   }

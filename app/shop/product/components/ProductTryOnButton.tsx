@@ -2,20 +2,22 @@
 
 import { useMemo, useSyncExternalStore, type ComponentType } from "react";
 import dynamic from "next/dynamic";
-import type { PrimeStyleTryonProps } from "@primestyleai/tryon/react";
+import type { PrimeStyleTryonProps } from "@primestyleai/tryon-shop/react";
 import { TryOnIcon } from "@/app/shared/components/icons";
 import type {
   ProductDetailInteractionState,
   ProductDetailViewModel,
 } from "../types/productDetail.types";
 import { mapProductSizeGuide } from "../mappers/productSizeGuide.mapper";
+import { getProductSdkDemo } from "../mappers/productSdkDemo.mapper";
 import styles from "./productDetail.module.css";
 
 const DESKTOP_QUERY = "(min-width: 47.5001rem)";
 
+// Shop-only preview pin: /demo keeps its existing SDK import and configuration.
 const PrimeStyleTryon = dynamic<PrimeStyleTryonProps>(
   () =>
-    import("@primestyleai/tryon/react").then(
+    import("@primestyleai/tryon-shop/react").then(
       (module) => module.PrimeStyleTryon,
     ),
   { ssr: false },
@@ -69,6 +71,7 @@ export function ProductTryOnButton({
   );
   const shouldRender = viewport === "desktop" ? isDesktop : !isDesktop;
   const sizeGuideData = useMemo(() => mapProductSizeGuide(product), [product]);
+  const sdkDemo = useMemo(() => getProductSdkDemo(product), [product]);
 
   if (!shouldRender) return null;
 
@@ -86,6 +89,8 @@ export function ProductTryOnButton({
       productId={product.id}
       productImage={product.gallery[0]?.src ?? product.featureImage}
       productImages={product.gallery.map((item) => item.src)}
+      garmentReferenceImage={product.garmentReferenceImage}
+      garmentDetailImage={product.garmentDetailImage}
       productCarouselItems={product.related.map((item) => ({
         image: item.image,
         title: item.name,
@@ -93,8 +98,15 @@ export function ProductTryOnButton({
       }))}
       productTitle={product.name}
       productCategory={product.category}
-      productGender={inferProductGender(product)}
-      productType={product.category}
+      productGender={
+        product.gender === "women"
+          ? "female"
+          : product.gender === "men"
+            ? "male"
+            : inferProductGender(product)
+      }
+      productType={product.slot ?? product.category}
+      productFitType={product.fitType}
       productVendor={product.brandName}
       productDescription={product.description}
       productMaterial={material}
@@ -103,12 +115,24 @@ export function ProductTryOnButton({
       productCompareAtPrice={product.compareAtPriceLabel}
       productCurrency={product.currency ?? "USD"}
       productUrl={product.canonicalHref ?? `/shop/product/${product.id}`}
+      outfitBuilderSource={sdkDemo ? "ai-stylist" : "sdk"}
+      instantOutfitLooks={sdkDemo?.instantOutfitLooks}
+      instantOutfitResults={sdkDemo?.instantOutfitResults}
+      instantOutfitMessage={
+        sdkDemo
+          ? undefined
+          : "No complete prepared look is available for this item yet."
+      }
+      presetProfile={sdkDemo?.presetProfile}
+      guidedDemoAutoplay={Boolean(sdkDemo)}
+      usePresetProfileOnly={Boolean(sdkDemo)}
+      showHeaderControls={!sdkDemo}
       buttonText="Build with AI"
       buttonIcon={<TryOnIcon />}
       showPoweredBy
       className={styles.tryOnSdkRoot}
       classNames={{ button: styles.tryOnButton }}
-      onAddToBag={() => state.addToBag()}
+      onAddToBag={(payload) => state.addSdkSelection(payload)}
     />
   );
 }

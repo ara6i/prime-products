@@ -1,0 +1,27 @@
+{
+  "outputDir": "summer-travel-premium-pilot-s239",
+  "scenarioId": "S239",
+  "occasion": "Travel",
+  "season": "Summer",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s238-summer-travel-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S239 · Summer Travel · Premium local screen",
+  "comparisonSubtitle": "The unique Summer Travel remainder re-evaluated for Premium breathability and finish",
+  "comparisonNote": "Require silk-cotton or mercerized knit, linen-wool drape, premium linen layer and handmade warm-weather footwear · not UI integrated",
+  "coreTitle": "S239 · provisional Summer Travel Premium core",
+  "coreSubtitle": "No remaining local garment reaches the Premium Travel bar · five roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men pale apricot silk cotton open collar polo summer premium", "targetProduct": "pale-apricot silk-cotton open-collar travel polo", "customerRetailTarget": "$180-$240"},
+    {"category": "bottom", "searchPhrase": "men washed teal linen wool travel trouser summer premium", "targetProduct": "washed-teal linen-wool Premium travel trouser", "customerRetailTarget": "$220-$300"},
+    {"category": "outerwear", "searchPhrase": "men warm ivory premium linen overshirt summer travel", "targetProduct": "warm-ivory Premium linen travel overshirt", "customerRetailTarget": "$260-$360"},
+    {"category": "shoe", "searchPhrase": "men tobacco handmade woven calf travel sneaker premium", "targetProduct": "tobacco handmade woven-calf low-profile travel sneaker", "customerRetailTarget": "$240-$320"},
+    {"category": "bag", "searchPhrase": "men soft sage premium canvas leather travel crossbody", "targetProduct": "soft-sage Premium canvas-and-leather compact crossbody", "customerRetailTarget": "$160-$220"}
+  ]
+}

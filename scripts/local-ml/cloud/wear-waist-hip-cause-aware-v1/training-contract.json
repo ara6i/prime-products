@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "wear-waist-hip-transparent-training-contract/v1",
+  "scope": ["waist", "hips"],
+  "developmentPeople": 3878,
+  "crossValidationFolds": 5,
+  "heldoutPeople": 448,
+  "heldoutUse": "one final evaluation after every rule and case is frozen",
+  "currentPrototypeInputs": ["front silhouette summaries", "height", "weight", "BMI", "gender"],
+  "requiredFinalCustomerInputs": ["front silhouette", "photo-derived 2D body mesh", "height", "weight", "BMI", "gender"],
+  "requiredTrainingTeacherEvidence": ["real WEAR 2D mesh projection", "real WEAR 3D PLY mesh", "verified waist and hip tape"],
+  "learningMethod": "OpenAI-taught visible rules plus audited similar-person evidence",
+  "currentAcceptedDevelopmentRecipe": "waist_local_hip_named_shape_v7",
+  "currentNeighborCountByTarget": {
+    "waist": 15,
+    "hips": 9
+  },
+  "currentDevelopmentMetrics": {
+    "waistMaeCm": 3.195429,
+    "hipMaeCm": 1.654088,
+    "waistMeanFoldP95Cm": 8.169701,
+    "hipMeanFoldP95Cm": 4.22197,
+    "waistWithinHalfInchPercent": 26.4457,
+    "hipWithinHalfInchPercent": 48.9904
+  },
+  "currentRecipeIsFinal": false,
+  "latestCauseStudentPrototype": {
+    "lesson": 19,
+    "status": "rejected because it improved its own baseline but remained worse than the current accepted recipe",
+    "waistMaeCm": 3.291807,
+    "hipMaeCm": 2.214808,
+    "heldout448Used": 0
+  },
+  "pytorchAllowed": false,
+  "adamwAllowed": false,
+  "gradientsAllowed": false,
+  "randomNeuralInitializationAllowed": false,
+  "hiddenWeightsOrBiasesAllowed": false,
+  "requiredFirstAnswerTrace": [
+    "input silhouette source",
+    "body bounding box and scale",
+    "waist or hip row rule",
+    "left A pixel",
+    "right B pixel",
+    "pixel width",
+    "centimetre scale",
+    "audited similar teacher IDs and distances",
+    "front-to-back depth source",
+    "32-point shape source",
+    "waist-to-hip ratios",
+    "walked ring circumference",
+    "approved tape-protocol correction",
+    "final tape answer"
+  ],
+  "successGates": {
+    "plainEnglish": "The model passes only when both waist and hip average error are below half an inch on five-fold development validation and again on the one untouched 448-person final test.",
+    "targetInches": 0.5,
+    "targetCm": 1.27,
+    "meanFiveFoldWaistMaeCmBelow": 1.27,
+    "meanFiveFoldHipMaeCmBelow": 1.27,
+    "final448WaistMaeCmBelow": 1.27,
+    "final448HipMaeCmBelow": 1.27,
+    "bothMeasurementsMustPass": true,
+    "developmentAndFinalTestMustPass": true,
+    "reportPercentWithinHalfInch": true,
+    "reportP95AndWorstError": true,
+    "p95MustImproveOverCurrentRecipe": true,
+    "allFiveFoldsRequired": true,
+    "subgroupRegressionAllowed": false
+  }
+}

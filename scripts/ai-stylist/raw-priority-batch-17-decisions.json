@@ -1,0 +1,150 @@
+{
+  "batch": "17",
+  "approvals": {
+    "4": {
+      "color": "Blue",
+      "constraint": "Use the muted-blue regular-relaxed twin-pocket cotton overshirt once only for Spring or Fall Casual Everyday, Travel, Date Night, or relaxed Office. Pair with ecru, cream, stone, sand, tobacco, muted olive, charcoal or clean black straight bottoms and minimal white, cream, tan or brown footwear; keep every other piece simple because the two flap pockets already add utility detail, and do not pair it with a baggy trouser."
+    },
+    "8": {
+      "color": "Apricot",
+      "constraint": "Use the apricot-and-brown textured check overshirt once only for Fall or mild Winter Casual Everyday, Travel, Date Night, or a restrained Party / Night Out look. Pair with ecru, warm white, chocolate, tobacco, dark indigo, charcoal or clean black straight bottoms and cream, tan or dark-brown footwear; all other garments must be solid and controlled, with no second pattern or oversized bottom."
+    },
+    "26": {
+      "color": "Cerise",
+      "constraint": "Use the washed-cerise regular-relaxed cotton shorts once only for Summer Casual Everyday, Travel, Vacation / Resort, or a deliberate daytime Party look. Pair with a clean regular shirt, knit polo or structured tee in white, ecru, light gray, pale blue, sand, sage or restrained navy and low-profile white, cream or tan footwear; avoid an oversized top, another washed pink piece, or bulky shoes."
+    },
+    "27": {
+      "color": "Earthy Yellow",
+      "constraint": "Use the light earthy-yellow clean straight elastic-waist shorts once only for Summer Casual Everyday, Travel, Vacation / Resort, or a daytime Date Night. Pair with white, ecru, sky blue, soft green, muted coral, cocoa or restrained navy regular-proportion tops and minimal white, cream, tan or brown footwear; keep the top hem controlled and do not add an oversized layer."
+    },
+    "35": {
+      "color": "Blazing Red",
+      "constraint": "Use the blazing-red regular lightweight hooded shell once only for Spring or Fall wet-weather Travel, Sports / Workout, or a deliberate Casual Everyday look. Pair with white, ecru, stone, light gray, restrained navy, charcoal or clean black straight or tapered garments and minimal neutral technical footwear; the shell must be the only bright and loose-volume piece, with no cargo-heavy bottom or second red item."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "The hanger-only light-blue shirt has no adult fit proof, a visible pocket label and a thick contrast lining that makes its real season and drape uncertain."
+    },
+    {
+      "cards": [2, 3],
+      "reason": "These product-only dark plaid or solid shirts provide no adult shoulder, torso, sleeve or hem proof and add repetitive dark roles without stronger construction evidence."
+    },
+    {
+      "cards": [5],
+      "reason": "The white variant is a clean regular shirt, but it repeats an already well-covered white basic role and the backpack strap obscures shoulder and sleeve proof; the gray option adds another dark neutral."
+    },
+    {
+      "cards": [6],
+      "reason": "Both regular-fit variants carry a conspicuous white supplier label at the lower placket, while gray and navy repeat already crowded dark solid-shirt roles."
+    },
+    {
+      "cards": [7],
+      "reason": "The product-only black and white shirt has no fit proof and uses oversized contrast-stitched patch pockets that dominate the front."
+    },
+    {
+      "cards": [9, 10],
+      "reason": "These product-only shirts have no adult fit proof and add high-contrast side panels or a visible green pocket label rather than a clean modern surface."
+    },
+    {
+      "cards": [11],
+      "reason": "The product-only fleece-lined shirt has no fit proof and shows a heavy contrasting cuff and lining that makes it unsuitable as a clean versatile shirt layer."
+    },
+    {
+      "cards": [12],
+      "reason": "The plaid shirt uses dated three-quarter rolled sleeves, a long narrow hem and a conspicuous red chest label."
+    },
+    {
+      "cards": [13, 14, 15],
+      "reason": "These product-only classic shirts provide no reliable adult fit proof and carry visible pocket or hem labels; the plaids also repeat dark dated check roles."
+    },
+    {
+      "cards": [16],
+      "reason": "The product-only split-panel shirt has no fit proof and uses dated high-contrast blocking and pocket stripes across the torso."
+    },
+    {
+      "cards": [17, 18, 19],
+      "reason": "These drawstring sweatpants are extremely wide and visibly puddle over the footwear, with side stripes or oversized decorative cords adding more uncontrolled bulk."
+    },
+    {
+      "cards": [20],
+      "reason": "The quilted trouser combines extreme width, hem pooling and an all-over padded pattern into a costume-like winter silhouette."
+    },
+    {
+      "cards": [21],
+      "reason": "The product-only rolled-hem jogger has no adult rise, seat, thigh or shoe-break proof and cannot validate a controlled silhouette despite its light color."
+    },
+    {
+      "cards": [22],
+      "reason": "The relaxed drawstring trouser is extremely wide and visibly pools over the shoes in both dark color roles."
+    },
+    {
+      "cards": [23],
+      "reason": "The relaxed jean is excessively wide and puddled and adds a long cream drawstring plus visible pocket patch, creating an uncontrolled hybrid silhouette."
+    },
+    {
+      "cards": [24],
+      "reason": "The side-stripe trouser is extremely wide and pooled at the hem, with bright piping reinforcing a dated track-pant look."
+    },
+    {
+      "cards": [25],
+      "reason": "The gray sweatpant image is gender-ambiguous and shows a slight flared leg with visible hem pooling rather than a proven men's controlled straight fit."
+    },
+    {
+      "cards": [28],
+      "reason": "The black jogger has a sharply tapered leg and unusually tall tight ankle panels, creating a bodybuilding legging-like silhouette."
+    },
+    {
+      "cards": [29],
+      "reason": "The on-body hooded jacket is dark, bulky and generic and carries prominent TEAMWORK chest text plus multiple ring and drawcord details."
+    },
+    {
+      "cards": [30],
+      "reason": "The product-only winter jacket provides no adult fit proof and combines a bulky hood with a dated patterned quilt lining; brighter recolors do not fix the construction."
+    },
+    {
+      "cards": [31],
+      "reason": "The product-only outdoor jacket is overloaded with contrast panels, flap pockets, rings and zips and does not prove adult fit."
+    },
+    {
+      "cards": [32],
+      "reason": "The product-only fleece jacket has no fit proof and is dominated by chest and sleeve logos, contrast zipper tabs and a bulky high hood."
+    },
+    {
+      "cards": [33],
+      "reason": "The product-only color-block shell has no real-body fit or movement proof; its many recolors do not establish a trustworthy adult silhouette."
+    },
+    {
+      "cards": [34],
+      "reason": "The only on-body image is the dark version, while the lighter variants are product-only; the multi-pocket cargo construction remains too utility-heavy for the clean modern brief."
+    },
+    {
+      "cards": [36],
+      "reason": "The selected-color images are product-only technical shells with no adult fit proof and repeat an already covered generic rain-jacket role."
+    },
+    {
+      "cards": [37],
+      "reason": "The product-only anorak has no fit proof and carries large FIND YOUR OWN WAY chest text, a sleeve patch and busy zipper construction."
+    },
+    {
+      "cards": [38],
+      "reason": "The product-only hybrid padded jacket has no fit proof and combines a bulky puffer body, sweatshirt sleeves and oversized hood in a generic all-dark construction."
+    },
+    {
+      "cards": [39],
+      "reason": "The product-only windbreaker has no fit proof and uses a dated long shape, contrast orange zipper pulls and generic dark synthetic finish."
+    },
+    {
+      "cards": [40],
+      "reason": "The product-only denim jacket has no adult fit proof and uses a narrow torso, dark acid wash, multiple zip details and visible chest branding."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 132 recorded color images rendered; 172 displayed images loaded with zero broken files.",
+    "5 accepted with one exact color and variant selected: two modern colored overshirts, two clean Summer shorts and one bright lightweight technical shell.",
+    "35 rejected after the base pass and close inspection of 17 promising color variants across nine identities.",
+    "The five selected identities, source products, variants and images have zero collision with every prior accepted or conditional item.",
+    "Rejections include unproven or label-led shirts, every long trouser for excessive width or puddling, logo-heavy technical jackets, product-only shells without fit proof and dated dark outerwear."
+  ]
+}

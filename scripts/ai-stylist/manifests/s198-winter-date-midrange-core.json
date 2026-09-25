@@ -1,0 +1,37 @@
+{
+  "outputDir": "winter-date-midrange-pilot-s198",
+  "scenarioId": "S198",
+  "occasion": "Date Night",
+  "season": "Winter",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s197-winter-date-budget-core.json",
+  "excludeCandidateKeys": ["T3", "B1"],
+  "additionalCandidates": [
+    {"group":"top","key":"T7","identity":"shopify_supplier:c718a3072a23b5f3daffd582a98373e700ff8129","name":"White Cable-Knit Turtleneck","decision":"reject-for-s198","decisionReason":"The narrow shaped product form proves neither worn ease nor material quality; its slim sleeves and tapered waist risk the dated skinny Winter silhouette."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:be3d8e8b3c2378e5b61eabc19a922df12ab5eabd","name":"Beige Fine-Knit Turtleneck","decision":"reject-for-s198","decisionReason":"The product-only basic lacks shoulder, torso, sleeve and drape proof, while beige cannot supply the intended romantic jewel-toned Winter focus."},
+    {"group":"top","key":"T9","identity":"shopify_supplier:3da4c00c5788b8cb3a84fe448d95335ed2281f94","name":"Brown Long-Sleeve Knit Polo","decision":"reject-for-s198","decisionReason":"The regular body is usable, but bright oversized buttons, bunched sleeves and flat dark-brown color make the polo look inexpensive and heavy for Date Night."},
+    {"group":"top","key":"T10","identity":"shopify_supplier:7b959d24fb23eafe687761871356bdbb13a615b4","name":"Light-Khaki Textured Henley Knit","decision":"reject-for-s198","decisionReason":"The rib texture is promising, but the isolated product form gives no worn fit, recovery or hem proof and the light khaki is too neutral for this role."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320","name":"Light-Gray Relaxed Trouser","decision":"reject-for-s198","decisionReason":"The flat product image hides rise, seat, length and break while diagonal knee seams and synthetic wrinkles read technical rather than Date tailoring."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:bd9eb3e71ff44da3314d188440d5608833ddeaae","name":"Army-Green Corduroy Trouser","decision":"reject-for-s198","decisionReason":"The product-only trouser has a balloon taper, rolled cuffs and D-ring hardware; the silhouette is casual workwear rather than controlled romance."},
+    {"group":"bottom","key":"B7","identity":"shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265","name":"Military-Green Casual Trouser","decision":"reject-for-s198","decisionReason":"The unworn olive trouser is shiny and wrinkled with novelty bead hardware; neither drape nor Mid-Range Date quality is proven."}
+  ],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-watch",
+  "comparisonTitle": "S198 · Winter Date Night · Mid-Range local screen",
+  "comparisonSubtitle": "Fourteen unique unreserved Winter Date candidates after the S197 top and trouser holds",
+  "comparisonNote": "Require romantic Winter color, tactile material credibility and controlled tailored proportion · no skinny knit, technical half-zip, product-only guess, novelty balloon trouser or puddled denim · no valid local Winter Date layer remains · not UI integrated",
+  "coreTitle": "S198 · provisional Winter Date Night Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Winter Mid-Range Date visual bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after current uniqueness exclusion and full-resolution re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men dusty lilac merino fine gauge long sleeve knit henley polo winter date mid range","targetProduct":"dusty-lilac merino fine-gauge long-sleeve knit Henley or polo with controlled ease","customerRetailTarget":"$110-$150"},
+    {"category":"bottom","searchPhrase":"men winter cream wool blend double pleat controlled straight trouser winter date","targetProduct":"winter-cream wool-blend high-rise double-pleat trouser with controlled straight break","customerRetailTarget":"$130-$180"},
+    {"category":"outerwear","searchPhrase":"men soft forest green wool blend short car coat winter date modern","targetProduct":"soft-forest wool-blend short car coat with clean natural shoulders","customerRetailTarget":"$160-$220"},
+    {"category":"shoe","searchPhrase":"men burgundy suede side zip ankle boot almond toe slim sole winter date","targetProduct":"burgundy-suede almond-toe side-zip ankle boot with a slim weather-ready sole","customerRetailTarget":"$150-$200"},
+    {"category":"watch","searchPhrase":"men champagne dial coffee leather thin case watch winter date","targetProduct":"champagne-dial thin-case watch with dark-coffee leather strap","customerRetailTarget":"$50-$80"}
+  ]
+}

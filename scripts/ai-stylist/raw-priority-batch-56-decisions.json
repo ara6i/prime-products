@@ -1,0 +1,31 @@
+{
+  "batch": "56",
+  "approvals": {},
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+      "reason": "These tops are oversized graphic merchandise dominated by cartoons, slogans, pseudo-brand text, skulls, distressed prints or uncontrolled length and cannot support a clean modern Zara-led wardrobe."
+    },
+    {
+      "cards": [8],
+      "reason": "The distressed Liberty graphic hoodie is costume-led, damaged, oversized and too dark and theatrical for a versatile modern wardrobe."
+    },
+    {
+      "cards": [21],
+      "reason": "The long asymmetric distressed denim short is product-only, heavily ripped and visually dated."
+    },
+    {
+      "cards": [22, 24, 25, 26, 27, 35, 36],
+      "reason": "These photographed trousers are visibly extremely wide, synthetic, cargo-heavy or puddled at the shoe and fail the controlled silhouette gate."
+    },
+    {
+      "cards": [23, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40],
+      "reason": "These product-only bottoms are wide, ballooned, cargo-heavy, distressed, paint-splattered, slogan-led or otherwise novelty-driven and lack credible clean on-body fit proof."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 103 recorded color images loaded for full visual review.",
+    "Nothing passed: every top was oversized graphic merchandise and every bottom was distressed, extremely wide, puddled, cargo-heavy, novelty-led or insufficiently proven.",
+    "No candidate warranted a variant shortlist or final approval board, and no new identity, variant or image entered the usable pool."
+  ]
+}

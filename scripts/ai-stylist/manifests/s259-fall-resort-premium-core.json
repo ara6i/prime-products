@@ -1,0 +1,28 @@
+{
+  "outputDir": "fall-resort-premium-pilot-s259",
+  "scenarioId": "S259",
+  "occasion": "Vacation / Resort",
+  "season": "Fall",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s258-fall-resort-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-six-unique-roles",
+  "comparisonTitle": "S259 · Fall Vacation / Resort · Premium local screen",
+  "comparisonSubtitle": "The unique Fall Resort remainder re-evaluated for Premium textile and finish",
+  "comparisonNote": "Require silk-merino knit, wool-silk travel drape, supple suede and handmade low-profile footwear · not UI integrated",
+  "coreTitle": "S259 · provisional Fall Resort Premium core",
+  "coreSubtitle": "No remaining local garment reaches the Premium Resort bar · six roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men paprika silk merino knit polo fall resort premium", "targetProduct": "paprika silk-merino textured knit polo", "customerRetailTarget": "$180-$240"},
+    {"category": "bottom", "searchPhrase": "men pale stone wool silk travel trouser fall resort premium", "targetProduct": "pale-stone wool-silk Premium Resort trouser", "customerRetailTarget": "$200-$280"},
+    {"category": "outerwear", "searchPhrase": "men petrol blue genuine suede overshirt fall resort premium", "targetProduct": "petrol-blue genuine-suede Premium Resort overshirt", "customerRetailTarget": "$280-$380"},
+    {"category": "shoe", "searchPhrase": "men sand handmade suede deck shoe premium", "targetProduct": "sand handmade calf-suede deck shoe", "customerRetailTarget": "$220-$300"},
+    {"category": "bag", "searchPhrase": "men cognac premium canvas leather weekender", "targetProduct": "cognac Premium canvas-and-leather compact weekender", "customerRetailTarget": "$160-$220"},
+    {"category": "accessory", "searchPhrase": "men amber tortoiseshell premium sunglasses resort", "targetProduct": "amber-tortoiseshell Premium rectangular sunglasses", "customerRetailTarget": "$100-$160"}
+  ]
+}

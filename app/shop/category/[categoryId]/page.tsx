@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getBrandCatalog } from "../../brand/services/brandCatalog.service";
 import { CategoryCatalogExperience } from "../components/CategoryCatalogExperience";
 import {
   getCategoryCatalog,
@@ -8,6 +9,7 @@ import {
 
 type CategoryPageProps = {
   params: Promise<{ categoryId: string }>;
+  searchParams: Promise<{ brand?: string | string[] }>;
 };
 
 export const dynamicParams = false;
@@ -28,9 +30,26 @@ export async function generateMetadata({
   };
 }
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: CategoryPageProps) {
   const { categoryId } = await params;
   const catalog = await getCategoryCatalog(categoryId);
   if (!catalog) notFound();
-  return <CategoryCatalogExperience catalog={catalog} />;
+
+  const requestedBrand = (await searchParams).brand;
+  const brandId = Array.isArray(requestedBrand)
+    ? requestedBrand[0]
+    : requestedBrand;
+  const brand =
+    categoryId === "women" && brandId ? await getBrandCatalog(brandId) : null;
+
+  return (
+    <CategoryCatalogExperience
+      key={`${categoryId}:${brand?.id ?? "all"}`}
+      catalog={catalog}
+      initialBrand={brand?.name}
+    />
+  );
 }

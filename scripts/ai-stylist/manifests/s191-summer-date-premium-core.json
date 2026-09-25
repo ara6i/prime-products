@@ -1,0 +1,28 @@
+{
+  "outputDir": "summer-date-premium-pilot-s191",
+  "scenarioId": "S191",
+  "occasion": "Date Night",
+  "season": "Summer",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s190-summer-date-midrange-core.json",
+  "excludeCandidateKeys": ["T4"],
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-shoe-bag-and-watch",
+  "comparisonTitle": "S191 · Summer Date Night · Premium local screen",
+  "comparisonSubtitle": "Fifteen unique unreserved Summer Date candidates after the S190 top hold",
+  "comparisonNote": "Require silk-cotton or linen-wool proof, romantic color, exact warm-weather drape and Premium finish · no promotion of hanger-only, utility, product-only, elastic, distressed or puddled pieces · not UI integrated",
+  "coreTitle": "S191 · provisional Summer Date Night Premium core",
+  "coreSubtitle": "No remaining local garment reaches the Summer Premium Date visual bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after current uniqueness exclusion and Premium re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men soft coral silk cotton fine gauge short sleeve knit polo premium summer date","targetProduct":"soft-coral silk-cotton fine-gauge short-sleeve knit polo","customerRetailTarget":"$180-$240"},
+    {"category":"bottom","searchPhrase":"men warm ivory linen wool double pleat controlled straight trouser premium summer date","targetProduct":"warm-ivory linen-wool high-rise double-pleat trouser with exact break","customerRetailTarget":"$220-$300"},
+    {"category":"shoe","searchPhrase":"men tobacco woven calf suede handmade loafer premium summer date","targetProduct":"tobacco woven-calf-and-suede handmade low-profile loafer","customerRetailTarget":"$240-$320"},
+    {"category":"bag","searchPhrase":"men powder blue cognac leather compact crossbody premium summer date","targetProduct":"powder-blue and cognac pebbled-leather compact crossbody","customerRetailTarget":"$200-$280"},
+    {"category":"watch","searchPhrase":"men champagne dial tan leather thin case premium watch summer date","targetProduct":"champagne-dial thin-case Premium watch with tan leather strap","customerRetailTarget":"$120-$180"}
+  ]
+}

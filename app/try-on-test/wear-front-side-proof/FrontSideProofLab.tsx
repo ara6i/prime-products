@@ -275,8 +275,8 @@ interface WearModelPayload {
       plane: { heightCm: number };
       breadthCm: number;
       depthCm: number;
-      abBreadth: { frontProjectionCm: [Point2, Point2] };
-      cdDepth: { cCanonicalCm: [number, number, number]; dCanonicalCm: [number, number, number] };
+      abBreadth?: { frontProjectionCm?: [Point2, Point2] };
+      cdDepth?: { cCanonicalCm?: [number, number, number]; dCanonicalCm?: [number, number, number] };
     }>>;
   };
   dual: {
@@ -474,7 +474,7 @@ function ManualPhotoLineEditor({
   return (
     <div className={styles.manualEditor}>
       <div className={styles.manualPhotoStage} style={{ aspectRatio: `${imageWidth} / ${imageHeight}` }}>
-        <Image src={imageSrc} alt={`${subjectName} ${view} adjustable ${rowKey} line`} fill sizes="(max-width: 900px) 100vw, 55vw" />
+        <Image src={imageSrc} alt={`${subjectName} ${view} adjustable ${rowKey} line`} fill unoptimized sizes="(max-width: 900px) 100vw, 55vw" />
         <canvas ref={meshCanvasRef} aria-label={`${subjectName} ${view} Blender 2D mesh`} />
         <svg
           viewBox={`0 0 ${imageWidth} ${imageHeight}`}
@@ -616,7 +616,7 @@ function PhotoMeshCard({
     <article className={styles.photoCard}>
       <header><strong>{title}</strong><span>{valueLabel}</span></header>
       <div className={styles.photoStage}>
-        <Image src={src} alt={title} fill sizes="(max-width: 900px) 100vw, 38vw" />
+        <Image src={src} alt={title} fill unoptimized sizes="(max-width: 900px) 100vw, 38vw" />
         <canvas ref={canvasRef} />
       </div>
       <footer><b>Solid yellow</b> = predicted waist row · <b>pink dashed</b> = WEAR-guided hip row.</footer>
@@ -700,6 +700,7 @@ function RealPhotoLinePanel({
         src={src}
         alt={`Real ${subjectName} ${view} photo with WEAR-guided waist and hip lines`}
         fill
+        unoptimized
         priority
         sizes="(max-width: 900px) 100vw, 50vw"
       />
@@ -792,9 +793,14 @@ function canonicalWearMesh(payload: WearModelPayload, view: ComparisonView, alig
   if (!(bodyHeight > 0)) return null;
   const anchorRow = payload.frontMetric.rows[alignRow];
   if (!anchorRow) return null;
+  const anchorFront = anchorRow.abBreadth?.frontProjectionCm;
+  const anchorSideStart = anchorRow.cdDepth?.cCanonicalCm;
+  const anchorSideEnd = anchorRow.cdDepth?.dCanonicalCm;
+  if (view === "front" && !anchorFront) return null;
+  if (view === "side" && (!anchorSideStart || !anchorSideEnd)) return null;
   const centreX = view === "front"
-    ? (anchorRow.abBreadth.frontProjectionCm[0][0] + anchorRow.abBreadth.frontProjectionCm[1][0]) / 2
-    : (anchorRow.cdDepth.cCanonicalCm[1] + anchorRow.cdDepth.dCanonicalCm[1]) / 2;
+    ? (anchorFront![0][0] + anchorFront![1][0]) / 2
+    : (anchorSideStart![1] + anchorSideEnd![1]) / 2;
   // Delaram's side photo faces left. Mirroring the orthographic WEAR side
   // projection is the equivalent opposite-side camera view; it changes no
   // distance, vertex, or measurement.
@@ -812,9 +818,14 @@ function canonicalWearMesh(payload: WearModelPayload, view: ComparisonView, alig
   const rows = CROSS_SECTION_PARTS.flatMap((key): CanonicalRow[] => {
     const row = payload.frontMetric.rows[key];
     if (!row) return [];
+    const front = row.abBreadth?.frontProjectionCm;
+    const sideStart = row.cdDepth?.cCanonicalCm;
+    const sideEnd = row.cdDepth?.dCanonicalCm;
+    if (view === "front" && !front) return [];
+    if (view === "side" && (!sideStart || !sideEnd)) return [];
     const endpoints = view === "front"
-      ? [row.abBreadth.frontProjectionCm[0][0], row.abBreadth.frontProjectionCm[1][0]]
-      : [row.cdDepth.cCanonicalCm[1], row.cdDepth.dCanonicalCm[1]];
+      ? [front![0][0], front![1][0]]
+      : [sideStart![1], sideEnd![1]];
     return [{
       key,
       label: PART_LABELS[key],
@@ -897,22 +908,33 @@ function MeshCompareCanvas({
         const centreZ = (minimumZ + maximumZ) / 2;
         return [canvas.width / 2 + x * scale, canvas.height / 2 - (shiftedZ - centreZ) * scale] as const;
       };
-      const drawMesh = (mesh: CanonicalMesh, color: string, alpha: number, dashedOutline: boolean) => {
-        context.beginPath();
-        for (const triangle of mesh.triangles) {
-          const a = map(mesh.vertices[triangle[0]]!, mesh);
-          const b = map(mesh.vertices[triangle[1]]!, mesh);
-          const c = map(mesh.vertices[triangle[2]]!, mesh);
-          context.moveTo(a[0], a[1]);
-          context.lineTo(b[0], b[1]);
-          context.lineTo(c[0], c[1]);
-          context.closePath();
+      const drawMesh = (
+        mesh: CanonicalMesh,
+        color: string,
+        alpha: number,
+        dashedOutline: boolean,
+        drawSourceFaces: boolean,
+      ) => {
+        // A photo mask is only measured 2D boundary evidence. Its helper
+        // triangulation must never be drawn as if it were a reconstructed body
+        // mesh. Face edges are reserved for the real source WEAR PLY.
+        if (drawSourceFaces) {
+          context.beginPath();
+          for (const triangle of mesh.triangles) {
+            const a = map(mesh.vertices[triangle[0]]!, mesh);
+            const b = map(mesh.vertices[triangle[1]]!, mesh);
+            const c = map(mesh.vertices[triangle[2]]!, mesh);
+            context.moveTo(a[0], a[1]);
+            context.lineTo(b[0], b[1]);
+            context.lineTo(c[0], c[1]);
+            context.closePath();
+          }
+          context.strokeStyle = color;
+          context.globalAlpha = alpha;
+          context.lineWidth = Math.max(.5, .55 * ratio);
+          context.stroke();
+          context.globalAlpha = 1;
         }
-        context.strokeStyle = color;
-        context.globalAlpha = alpha;
-        context.lineWidth = Math.max(.5, .55 * ratio);
-        context.stroke();
-        context.globalAlpha = 1;
         if (mesh.outline.length > 1) {
           context.beginPath();
           const first = map(mesh.outline[0]!, mesh);
@@ -957,8 +979,8 @@ function MeshCompareCanvas({
           context.fillText(label, x, y);
         }
       };
-      if (owner !== "wear") drawMesh(delaram, "#22d3ee", owner === "both" ? .58 : .82, false);
-      if (owner !== "delaram") drawMesh(wear, "#fb923c", owner === "both" ? .58 : .82, owner === "both");
+      if (owner !== "wear") drawMesh(delaram, "#22d3ee", owner === "both" ? .58 : .82, false, false);
+      if (owner !== "delaram") drawMesh(wear, "#fb923c", owner === "both" ? .58 : .82, owner === "both", true);
       if (showRows && owner !== "wear") drawRows(delaram, "#f472b6", subjectName, "left", false);
       if (showRows && owner !== "delaram") drawRows(wear, "#facc15", "WEAR", "right", true);
     };
@@ -1294,11 +1316,11 @@ export function FrontSideProofLab() {
       </label>
       <div className={styles.selectedPhotoPair}>
         <figure>
-          <Image src={selectedPerson.frontImageUrl} alt={`${subjectName} front photo`} width={120} height={160} />
+          <Image src={selectedPerson.frontImageUrl} alt={`${subjectName} front photo`} width={120} height={160} unoptimized />
           <figcaption>Front photo</figcaption>
         </figure>
         <figure>
-          <Image src={selectedPerson.sideImageUrl} alt={`${subjectName} side photo`} width={120} height={160} />
+          <Image src={selectedPerson.sideImageUrl} alt={`${subjectName} side photo`} width={120} height={160} unoptimized />
           <figcaption>Side photo</figcaption>
         </figure>
       </div>
@@ -1461,7 +1483,9 @@ export function FrontSideProofLab() {
       )}
 
       <section className={styles.twoTruths}>
-        <div data-status="accepted"><strong>ANGLE: ACCEPTED</strong><span>The 9 WEAR bodies agree on the camera turn.</span></div>
+        {match.cameraFit ? (
+          <div data-status="accepted"><strong>ANGLE: ACCEPTED</strong><span>The 9 WEAR bodies agree on the camera turn.</span></div>
+        ) : null}
         <div data-status="rejected"><strong>BODY SHAPE: REJECTED</strong><span>The visible mesh does not prove {subjectName}&apos;s exact hidden 3D body.</span></div>
       </section>
 
@@ -1470,10 +1494,12 @@ export function FrontSideProofLab() {
         <PhotoMeshCard title={`${subjectName} side lines`} src={selectedPerson.sideImageUrl} mesh={sideMesh} rawMesh={rawSideMesh} rows={sideRows} valueLabel="Depth C–D" color="#a78bfa" />
       </section>
 
-      <section className={styles.blenderProof}>
-        <div><span>Blender camera scene</span><h2>One real WEAR body · two fitted cameras</h2><p>Orange is the front photo camera. Purple is the side photo camera. Only camera direction moved.</p></div>
-        <Image src="/try-on-test/wear-mesh-overlay/wear-rigid-camera-fit.png" alt="Blender WEAR rigid camera fit" width={1000} height={740} />
-      </section>
+      {match.cameraFit ? (
+        <section className={styles.blenderProof}>
+          <div><span>Blender camera scene</span><h2>One real WEAR body · two fitted cameras</h2><p>Orange is the front photo camera. Purple is the side photo camera. Only camera direction moved.</p></div>
+          <Image src="/try-on-test/wear-mesh-overlay/wear-rigid-camera-fit.png" alt="Blender WEAR rigid camera fit" width={1000} height={740} unoptimized />
+        </section>
+      ) : null}
         </div>
       </details>
 

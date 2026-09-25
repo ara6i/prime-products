@@ -318,22 +318,40 @@
 
 @media (max-width: 760px) {
   .runway {
-    min-height: 520px;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .runwayShell,
+  .runwayLayout {
+    height: auto;
+  }
+
+  .runwayShell {
+    overflow: visible;
   }
 
   .runwayLayout {
-    grid-template-columns: minmax(0, 70%) minmax(0, 30%);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(540px, 68svh) 268px;
+    overflow: visible;
+  }
+
+  .stage {
+    min-height: 540px;
+    touch-action: pan-y;
   }
 
   .look {
     overflow: visible;
-    transform: translate3d(-50%, 0, 0) scale(var(--look-scale)) scale(1.72);
+    transform: translate3d(-50%, 0, 0) scale(var(--look-scale)) scale(1.38);
   }
 
   .intro {
     top: 5%;
     left: 6%;
-    width: 54%;
+    width: 62%;
   }
 
   .intro h2 {
@@ -342,7 +360,8 @@
   }
 
   .intro p {
-    font-size: 6px;
+    font-size: 9px;
+    line-height: 1.5;
   }
 
   .lookMeta {
@@ -355,39 +374,106 @@
   }
 
   .lookMeta button {
-    font-size: 6px;
+    min-height: 44px;
+    font-size: 9px;
   }
 
   .advanceLook {
-    left: 91%;
-    width: 34px;
-    height: 22px;
+    top: 50%;
+    right: 14px;
+    left: auto;
+    width: 44px;
+    height: 44px;
+    transform: translateY(-50%);
   }
 
   .runwayControls {
-    display: none;
+    right: 14px;
+    bottom: 14px;
+    display: flex;
+    opacity: 1;
+  }
+
+  .runwayControls button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .productRail {
+    min-height: 268px;
+    border-top: 1px solid rgba(16, 20, 22, 0.09);
+    border-left: 0;
+    cursor: grab;
+    touch-action: pan-y;
+  }
+
+  .productStack {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .runwayProduct {
+    width: auto;
+    height: 100%;
+    border-right: 1px solid rgba(16, 20, 22, 0.1);
+    border-bottom: 0;
   }
 
   .productVisual {
-    inset: 7% 5% 28%;
+    inset: 12px 8px 82px;
   }
 
   .productCopy {
-    right: 6%;
-    bottom: 7%;
-    left: 6%;
+    right: 34px;
+    bottom: 15px;
+    left: 9px;
+    gap: 3px;
   }
 
-  .productCopy span,
-  .productCopy strong,
+  .productCopy span {
+    font-size: 7px;
+  }
+
+  .productCopy strong {
+    font-size: 9px;
+  }
+
   .productCopy small {
-    font-size: 5px;
+    font-size: 9px;
   }
 
   .favorite,
   .addProduct {
-    width: 24px;
-    height: 24px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .favorite {
+    top: 0;
+    left: 0;
+  }
+
+  .addProduct {
+    right: 0;
+    bottom: 0;
+  }
+}
+
+@media (max-width: 390px) {
+  .runwayLayout {
+    grid-template-rows: minmax(520px, 66svh) 252px;
+  }
+
+  .stage {
+    min-height: 520px;
+  }
+
+  .productRail {
+    min-height: 252px;
+  }
+
+  .productVisual {
+    inset: 12px 8px 78px;
   }
 }
 

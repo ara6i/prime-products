@@ -101,7 +101,7 @@ export const dailyEditProductDetails: ProductDetailViewModel[] = dailyEditProduc
     sourceHref: "/shop#outfit-edit",
     sourceLabel: "Daily Edit",
     canonicalHref: product.href,
-    tryOnSupported: false,
+    tryOnSupported: true,
     note: "Concept preview only. Generated imagery, sample prices and mock sizing; not available for purchase.",
     information: [
       { id: "details", title: "Details", summary: spec.description, items: spec.details },

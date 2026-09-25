@@ -1,0 +1,28 @@
+{
+  "outputDir": "summer-resort-midrange-pilot-s254",
+  "scenarioId": "S254",
+  "occasion": "Vacation / Resort",
+  "season": "Summer",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceSpec": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/summer-resort-budget-pilot-s253/bottom-comparison.json",
+  "excludeCandidateKeys": ["A"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S254 · Summer Vacation / Resort · Mid-Range local screen",
+  "comparisonSubtitle": "Remaining unique Summer Resort shorts after the S253 terracotta hold",
+  "comparisonNote": "Require breathable tailoring, lively warm-weather color and exact above-knee proof · no crinkled active short, visible drawcord or product-only cuffed chino · not UI integrated",
+  "coreTitle": "S254 · provisional Summer Resort Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Mid-Range Resort bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men turquoise jacquard camp shirt summer resort mid range", "targetProduct": "turquoise textured-jacquard camp shirt with regular ease", "customerRetailTarget": "$100-$140"},
+    {"category": "bottom", "searchPhrase": "men warm ecru tailored resort shorts summer mid range", "targetProduct": "warm-ecru clean tailored above-knee resort short", "customerRetailTarget": "$110-$150"},
+    {"category": "shoe", "searchPhrase": "men tobacco woven leather resort loafer summer", "targetProduct": "tobacco woven-leather low-profile resort loafer", "customerRetailTarget": "$140-$190"},
+    {"category": "bag", "searchPhrase": "men soft coral canvas leather resort crossbody", "targetProduct": "soft-coral canvas-and-leather compact resort crossbody", "customerRetailTarget": "$100-$140"},
+    {"category": "accessory", "searchPhrase": "men honey tortoiseshell sunglasses summer resort", "targetProduct": "honey-tortoiseshell minimal rectangular sunglasses", "customerRetailTarget": "$60-$90"}
+  ]
+}

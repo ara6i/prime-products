@@ -1,0 +1,108 @@
+{
+  "reviewedAt": "2026-09-17T14:30:00.000Z",
+  "reviewRule": "Compare the exact source product detail, Gemini-refined image and final transparent alpha at full resolution. Preserve product identity and construction; reject material shape drift, hidden oversized or skinny proportions, incorrect garment role, weak seasonal fit, or an image that cannot support the intended scenario.",
+  "decisions": [
+    {
+      "productId": "2510060252201615900",
+      "scenarioId": "S141",
+      "decision": "pass-with-constraint",
+      "reason": "The worn source proves a regular-relaxed warm-brown polo rather than a skinny knit. Refinement preserves the open collar, short placket, cuffs, knit surface and straight ribbed hem. Retain as the Fall outfit's warm focal top with a controlled light bottom; do not add another loose brown layer."
+    },
+    {
+      "productId": "1763829130497372160",
+      "scenarioId": "S157",
+      "decision": "reject-after-full-source-recheck",
+      "reason": "Revoked on 2026-09-17. The full source proves a deliberately dropped shoulder, broad boxy lounge body, long layered white tee and drawstring-pant styling. A technically clean refinement cannot make this product Work / Office appropriate or Zara-led enough for the retained men's pool."
+    },
+    {
+      "productId": "2505030853171607400",
+      "scenarioId": "S253",
+      "decision": "pass-with-strict-constraint",
+      "reason": "The source proves an airy, longer short-sleeve band-collar shirt. Refinement removes the hanger and source watermark while preserving the collar, button line, rolled cuffs and curved hem. Keep it Resort-only with tailored above-knee shorts and a woven shoe; no long loose bottom."
+    },
+    {
+      "productId": "2503120536241602800",
+      "scenarioId": "S237",
+      "decision": "pass-with-constraint",
+      "reason": "The source includes a separate white tee, but the refinement correctly isolates the raw-jute linen overshirt and preserves its collar, buttons, cuffs, weave and shirt-tail hem. Use it open as a light Summer Travel layer over one compact top, not as a coat or a second oversized piece."
+    },
+    {
+      "productId": "2505230844101616100",
+      "scenarioId": "S133",
+      "decision": "pass",
+      "reason": "The exact source is already a clean product view, and the refined and alpha stages preserve the washed-blue suede-like surface, collarless opening, zipper, sleeves, cuffs and short ribbed hem without changing the product silhouette."
+    },
+    {
+      "productId": "2411230856521607100",
+      "scenarioId": "S185",
+      "decision": "pass-with-constraint",
+      "reason": "The worn source proves the high rise, double pleats, side adjusters, controlled straight-to-gentle-taper leg and cuffed cropped hem. Refinement keeps those construction details. Pair only with a regular top and low-profile shoe; do not add oversized upper volume."
+    },
+    {
+      "productId": "2502130357161608600",
+      "scenarioId": "S173",
+      "decision": "pass",
+      "reason": "All three stages match on dark-coffee leather tone, strap coil, holes, edge finish and minimal rounded silver pin buckle. No fake-luxury hardware or product-identity drift is visible."
+    },
+    {
+      "productId": "2503280137551608300",
+      "scenarioId": "S233",
+      "decision": "pass",
+      "reason": "The refinement removes only the source shadow while preserving the light-khaki crown panels, top button, seam placement, curved brim and underside. The final alpha remains a plain minimal Travel cap with no invented branding."
+    },
+    {
+      "productId": "2506231532431626500",
+      "scenarioId": "S153",
+      "decision": "pass",
+      "reason": "The source proves a controlled straight Summer knit polo, and the refined and alpha images preserve its open collar, short placket, vertical texture, sleeve trim and ribbed hem. It remains suitable for light Summer Office tailoring."
+    },
+    {
+      "productId": "2505191522541624600",
+      "scenarioId": "S205",
+      "decision": "pass-with-strict-constraint",
+      "reason": "The source proves an intentionally relaxed long-sleeve pointelle shirt. Refinement preserves the open collar, button detail, perforated fabric, cuffs and curved hem. Retain only above a high-rise controlled-straight Summer trouser; every loose or wide local bottom remains rejected."
+    },
+    {
+      "productId": "2411110358151627900",
+      "scenarioId": "S209",
+      "decision": "pass",
+      "reason": "Source, refinement and alpha remain consistent on the short blouson proportion, wine-red corduroy surface, collar, front pockets, zipper, cuffs and hem. No extra bulk, logo or construction drift was introduced."
+    },
+    {
+      "productId": "1716804667801350144",
+      "scenarioId": "S241",
+      "decision": "pass-with-constraint",
+      "reason": "The worn source confirms a relaxed but structured rust corduroy field jacket. Refinement preserves the collar, raglan shoulder, snap front, chest welt pockets, lower flap pockets and hip-length hem. Keep it as the outfit's only utility-volume layer over controlled companions."
+    },
+    {
+      "productId": "736610CB-75F0-45C7-9225-A3F4860A9CA4",
+      "scenarioId": "S133",
+      "decision": "pass-with-constraint",
+      "reason": "The source and refined stages preserve a quiet light-sand tonal low-top with a rounded toe, restrained panels and a low casual sole. Retain only for the light Spring Casual core; supplier material and wear-comfort remain separate commerce gates."
+    },
+    {
+      "productId": "2406110219091605300",
+      "scenarioId": "S137",
+      "decision": "pass-with-strict-constraint",
+      "reason": "The close source proves a clean cream-beige waistband, side elastic, double pleats and refined fabric surface, while the final product image preserves the tailored short. Keep only in Summer Casual with a compact or regular top; no additional loose layer and no Formal or Office use."
+    },
+    {
+      "productId": "2501150834271620600",
+      "scenarioId": "S137",
+      "decision": "pass-with-strict-constraint",
+      "reason": "The flat source shows an intentional light-mint relaxed T-shirt with a dense collar, clean sleeves and straight hem. It supplies happy color but lacks worn-body proof, so retain only as the single relaxed element above a controlled tailored short; no baggy bottom or second oversized layer."
+    },
+    {
+      "productId": "2504281547131609000",
+      "scenarioId": "S137",
+      "decision": "pass-with-strict-constraint",
+      "reason": "The worn source proves an above-knee apricot-ecru Summer short with moderate thigh ease and a restrained turn-up hem, but its elastic drawstring waist is casual rather than tailored. Keep only in Summer Casual; never use for Office, Formal, Date or a baggy-on-baggy pairing."
+    },
+    {
+      "productId": "2503070647481600500",
+      "scenarioId": "S137",
+      "decision": "pass-with-strict-constraint",
+      "reason": "The source shows a deliberate desert-yellow relaxed T-shirt with a dense crew neck, dropped shoulder and straight hem. Retain for one happy-color Summer Casual look only, paired with a controlled tailored short and low-profile shoe; no wide bottom, extra oversized layer or non-casual scenario."
+    }
+  ]
+}

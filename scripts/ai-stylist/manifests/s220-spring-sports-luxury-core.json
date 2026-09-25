@@ -1,0 +1,27 @@
+{
+  "outputDir": "spring-sports-luxury-pilot-s220",
+  "scenarioId": "S220",
+  "occasion": "Sports / Workout",
+  "season": "Spring",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s218-spring-sports-midrange-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-bag",
+  "comparisonTitle": "S220 · Spring Sports / Workout · Luxury local screen",
+  "comparisonSubtitle": "The 11 unique Spring active candidates re-evaluated for Luxury performance material and hand finish",
+  "comparisonNote": "Require traceable ultrafine merino blend, advanced bonded shell, precision stretch weave, handmade footwear or equivalent Luxury performance proof · no relabeling of mass-market pieces · not UI integrated",
+  "coreTitle": "S220 · provisional Spring Sports Luxury core",
+  "coreSubtitle": "No local garment reaches the Spring Luxury activewear bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Luxury re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men ultramarine ultrafine merino performance tee luxury spring workout","targetProduct":"ultramarine ultrafine-merino performance tee with precision ventilation","customerRetailTarget":"$300-$450"},
+    {"category":"bottom","searchPhrase":"men pale stone luxury technical wool stretch training trouser","targetProduct":"pale-stone technical-wool stretch training trouser with hand-finished seams","customerRetailTarget":"$350-$500"},
+    {"category":"outerwear","searchPhrase":"men pale lime luxury three layer bonded wind shell spring workout","targetProduct":"pale-lime Luxury three-layer bonded performance shell","customerRetailTarget":"$700-$1,000"},
+    {"category":"shoe","searchPhrase":"men silver gray handmade luxury performance trainer spring","targetProduct":"silver-gray handmade Luxury low-profile performance trainer","customerRetailTarget":"$420-$600"},
+    {"category":"bag","searchPhrase":"men dusty coral full grain technical leather workout sling luxury","targetProduct":"dusty-coral full-grain technical-leather workout sling","customerRetailTarget":"$350-$700"}
+  ]
+}

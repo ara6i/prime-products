@@ -1,0 +1,70 @@
+{
+  "batch": "28",
+  "approvals": {
+    "5": {
+      "color": "Flower Apricot",
+      "constraint": "Use this flower-apricot short-sleeve knit henley once only for Spring/Summer Casual Everyday, Resort, Travel, creative Office or a daytime Date. Pair with one controlled straight or tailored bottom in charcoal, cocoa, muted olive, warm navy or medium gray and a cream, tan or brown low-profile shoe; avoid a second pale knit, wide or puddled trousers, bulky footwear or head-to-toe beige."
+    },
+    "6": {
+      "color": "Sauce Purple",
+      "constraint": "Use this sauce-purple relaxed long-sleeve sweatshirt once only for cool Spring/Fall Casual Everyday, Campus, Travel, creative work or a restrained daytime Party look. Balance its longer relaxed body with a clean straight bottom in ecru, stone, charcoal, cocoa or dark olive and an off-white, gray or tan low-profile shoe; never add a baggy bottom, another oversized layer, matching purple, a black monotone palette or a chunky sneaker."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2],
+      "reason": "These lace-up tops use theatrical necklines, asymmetry or long narrow bodies rather than versatile modern Zara-led proportions."
+    },
+    {
+      "cards": [3, 4, 7, 9, 13, 14],
+      "reason": "These product-only or hanger-only tops do not prove adult shoulder, torso, sleeve, hem or fabric behavior, and several also show elongated or uncontrolled drop-shoulder proportions."
+    },
+    {
+      "cards": [8, 11],
+      "reason": "These plain performance T-shirts are tight and elongated through the torso and add no useful modern styling role beyond already reviewed active basics."
+    },
+    {
+      "cards": [10, 12, 15, 16],
+      "reason": "These loose T-shirts, layered tops and tank are generic or excessively oversized. Close variant inspection did not justify another basic identity, and the silhouettes would recreate the loose-top and baggy-bottom problem unless over-constrained."
+    },
+    {
+      "cards": [17],
+      "reason": "The product-only polyester trouser has no on-body rise, thigh, taper, hem or movement proof; the rolled cuff image cannot establish a clean modern fit."
+    },
+    {
+      "cards": [18],
+      "reason": "The black synthetic jogger is dark, cuff-bunched and visually redundant with stronger accepted active and travel trousers."
+    },
+    {
+      "cards": [19, 21, 22, 23, 24, 25, 26, 27, 28],
+      "reason": "These bootcut, flared, wide, novelty-washed or embroidered jeans carry excessive leg volume, shoe pooling, distorted washes, hardware or loud graphics."
+    },
+    {
+      "cards": [20],
+      "reason": "The branded compression leggings are a tight base layer rather than a versatile standalone men's outfit bottom."
+    },
+    {
+      "cards": [29],
+      "reason": "The striped two-piece tracksuit uses an artificial-looking composite, dated contrast trim and a matching cuffed set rather than a credible modern outerwear identity."
+    },
+    {
+      "cards": [30],
+      "reason": "The shiny three-piece suit is explicitly wedding and groomsmen styled, artificial, sequined and outside the non-wedding scope."
+    },
+    {
+      "cards": [31, 32, 36],
+      "reason": "These faux or PU leather motorcycle jackets are shiny, dated, over-detailed and repetitive; the product evidence does not support a premium modern layer."
+    },
+    {
+      "cards": [33, 34, 35, 37, 38, 39, 40],
+      "reason": "These product-only hooded puffers are repetitive, bulky, synthetic or utility-heavy and lack credible adult fit, movement and proportion proof across their recolors."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 217 recorded color images rendered; 217 displayed images loaded with zero broken files.",
+    "2 accepted with one exact color and variant selected each: a flower-apricot short-sleeve knit henley and a sauce-purple relaxed long-sleeve sweatshirt.",
+    "38 rejected after the base pass and close inspection of 16 promising color variants across three identities; every bottom and outerwear product failed.",
+    "Every selected identity, source product, variant and image has zero collision with every prior accepted or conditional item.",
+    "Rejections include costume lace-up tops, product-only basics without fit proof, redundant oversized tees, tight performance tops, flared and novelty jeans, wedding tailoring, faux leather and repetitive puffers."
+  ]
+}

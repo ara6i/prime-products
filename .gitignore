@@ -58,6 +58,7 @@ next-env.d.ts
 /artifacts/
 /.artifacts/
 /reports/
+/private-reports/
 /tmp/
 /.agents/
 /skills-lock.json

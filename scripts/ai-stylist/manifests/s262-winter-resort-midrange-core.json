@@ -1,0 +1,29 @@
+{
+  "outputDir": "winter-resort-midrange-pilot-s262",
+  "scenarioId": "S262",
+  "occasion": "Vacation / Resort",
+  "season": "Winter",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceSpec": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/winter-resort-budget-pilot-s261/core-comparison.json",
+  "excludeCandidateKeys": ["O1"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-six-unique-roles",
+  "comparisonTitle": "S262 · Winter Vacation / Resort · Mid-Range local screen",
+  "comparisonSubtitle": "Remaining unique Winter Resort candidates after the S261 puffer hold",
+  "comparisonNote": "Require lodge-ready warmth, happy Winter color and controlled silhouette · no fuzzy crop, tight knit, oversized corduroy, product-only trouser, puddled denim or logo puffer · not UI integrated",
+  "coreTitle": "S262 · provisional Winter Resort Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Mid-Range Resort bar · six roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men paprika merino mock neck sweater winter resort mid range", "targetProduct": "paprika merino fine-knit mock-neck sweater", "customerRetailTarget": "$100-$140"},
+    {"category": "bottom", "searchPhrase": "men winter cream corduroy trouser controlled straight resort", "targetProduct": "winter-cream controlled-straight corduroy trouser", "customerRetailTarget": "$120-$170"},
+    {"category": "outerwear", "searchPhrase": "men dusty blue short technical puffer winter resort", "targetProduct": "dusty-blue short technical Resort puffer with controlled volume", "customerRetailTarget": "$140-$190"},
+    {"category": "shoe", "searchPhrase": "men cognac suede cream sole winter resort boot", "targetProduct": "cognac-suede round-toe cream-sole winter boot", "customerRetailTarget": "$130-$170"},
+    {"category": "bag", "searchPhrase": "men chocolate canvas leather weekender winter resort", "targetProduct": "chocolate canvas-and-leather compact weekender", "customerRetailTarget": "$70-$110"},
+    {"category": "accessory", "searchPhrase": "men ivory sage wool scarf winter resort", "targetProduct": "ivory-and-sage colorblock wool scarf", "customerRetailTarget": "$40-$70"}
+  ]
+}

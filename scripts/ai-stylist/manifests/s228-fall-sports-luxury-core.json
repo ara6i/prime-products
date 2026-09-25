@@ -1,0 +1,27 @@
+{
+  "outputDir": "fall-sports-luxury-pilot-s228",
+  "scenarioId": "S228",
+  "occasion": "Sports / Workout",
+  "season": "Fall",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s226-fall-sports-midrange-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-bag",
+  "comparisonTitle": "S228 · Fall Sports / Workout · Luxury local screen",
+  "comparisonSubtitle": "The nine unique Fall active candidates re-evaluated for Luxury performance material and hand finish",
+  "comparisonNote": "Require ultrafine performance merino, technical wool stretch, three-layer shell, handmade trail footwear and full-grain technical leather proof · no relabeling of mass-market pieces · not UI integrated",
+  "coreTitle": "S228 · provisional Fall Sports Luxury core",
+  "coreSubtitle": "No local garment reaches the Fall Luxury activewear bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Luxury re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men cerulean ultrafine merino performance half zip luxury fall workout","targetProduct":"cerulean ultrafine-merino performance half-zip","customerRetailTarget":"$300-$450"},
+    {"category":"bottom","searchPhrase":"men warm stone technical wool stretch training trouser luxury fall","targetProduct":"warm-stone technical-wool stretch training trouser","customerRetailTarget":"$350-$500"},
+    {"category":"outerwear","searchPhrase":"men paprika luxury three layer bonded weather shell fall workout","targetProduct":"paprika-red Luxury three-layer bonded performance shell","customerRetailTarget":"$700-$1,000"},
+    {"category":"shoe","searchPhrase":"men gray sage handmade luxury trail trainer fall","targetProduct":"gray-and-sage handmade Luxury trail trainer","customerRetailTarget":"$420-$600"},
+    {"category":"bag","searchPhrase":"men camel full grain technical leather workout sling luxury","targetProduct":"camel full-grain technical-leather workout sling","customerRetailTarget":"$650-$900"}
+  ]
+}

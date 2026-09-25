@@ -8,7 +8,7 @@ export const dailyEditProducts: (GlobalShopProduct & { href: string })[] = [
     name: "Vela Cropped Denim",
     brand: "Northline",
     price: 148,
-    category: "Denim",
+    category: "Women",
     image: "/media/global-shop/product-denim-blonde-3d.webp",
     tone: "Indigo",
     note: "Cropped denim jacket",

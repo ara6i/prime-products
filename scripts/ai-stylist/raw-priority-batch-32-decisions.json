@@ -1,0 +1,58 @@
+{
+  "batch": "32",
+  "approvals": {
+    "4": {
+      "color": "French Blue",
+      "constraint": "Use this clean French-blue relaxed short-sleeve overshirt once only for Spring/Summer Casual Everyday, Weekend, Travel, Campus, daytime Date or creative casual Party. Style it open over a fitted-to-regular white or ecru crew-neck top with a clean straight or gently tapered bottom in ecru, stone, light gray, washed blue or muted olive and a low-profile white, cream or light-gray shoe; never pair it with a baggy or puddled bottom, a longline inner top, a bulky trainer, another oversized layer, tonal dark-blue pieces or any Wedding/Wedding Guest outfit."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "All three colors have an overlong tunic-like hem and broad dropped shape; the mandarin collar does not rescue the proportion, so it fails the controlled modern silhouette gate."
+    },
+    {
+      "cards": [2, 9, 10, 11, 13, 14, 15, 16],
+      "reason": "These tops are logo-led, novelty-detailed, generic dark, visibly branded, poorly proportioned or weakly proven and do not add a credible Zara-led modern role."
+    },
+    {
+      "cards": [3, 5, 7],
+      "reason": "These hanger or product-only tops provide no convincing adult-male fit, movement or hem-length proof and are too generic or dark to justify approval."
+    },
+    {
+      "cards": [6, 12],
+      "reason": "These quarter-zip and notched tops are tight through the torso and chest and recreate the rejected skinny performance or muscle-fit direction."
+    },
+    {
+      "cards": [8],
+      "reason": "The Chinese-style button top reads as an elongated costume-like tunic rather than versatile modern menswear."
+    },
+    {
+      "cards": [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27],
+      "reason": "These shorts are long, loose, distressed, camouflage-led, drawstring-heavy or overloaded with cargo pockets and fail the clean tailored or controlled active-short gate."
+    },
+    {
+      "cards": [28],
+      "reason": "The product-only black trouser has no credible fit proof and its flared slim-straight cut creates shoe-puddling and dated silhouette risk."
+    },
+    {
+      "cards": [29],
+      "reason": "The denim vest-and-pants set is extremely baggy with oversized contrast panels and reads as novelty streetwear rather than a controlled versatile layer."
+    },
+    {
+      "cards": [30, 31, 32, 33, 34, 35, 36, 37, 38, 39],
+      "reason": "These are wedding, groom or tuxedo products and also rely on skinny tailoring, sequins, mesh, satin, embroidery or costume styling; Wedding and Wedding Guest remain excluded and untouched."
+    },
+    {
+      "cards": [40],
+      "reason": "The dark snap jacket carries prominent NOTHING TO SAY text branding and adds neither the clean finish nor happier color needed for the catalog."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 148 recorded color images rendered; 148 displayed images loaded with zero broken files.",
+    "1 accepted with one exact color and variant selected: a French-blue controlled relaxed short-sleeve overshirt.",
+    "39 rejected after the base pass and close inspection of all variants for the only two remotely plausible identities; every bottom and outerwear product failed.",
+    "The selected identity, source product, variant and image have zero collision with every prior accepted or conditional item.",
+    "Rejections include long tunic-like or skinny tops, logos and novelty details, cargo-heavy shorts, an unproven flared trouser, a baggy contrast denim set, wedding or costume tailoring and a slogan jacket."
+  ]
+}

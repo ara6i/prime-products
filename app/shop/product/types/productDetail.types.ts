@@ -1,5 +1,6 @@
 import type { BrandCatalog } from "../../brand/types/brandCatalog.types";
 import type { RawCategoryCatalog } from "../../category/types/categoryCatalog.types";
+import type { PrimeStyleAddToBagPayload } from "@primestyleai/tryon-shop/react";
 
 export type RawProductDetailSource =
   | { kind: "mock"; product: ProductDetailViewModel }
@@ -81,6 +82,11 @@ export type ProductDetailViewModel = {
   note: string;
   information: ProductInformationSection[];
   related: ProductRelatedItem[];
+  gender?: "women" | "men";
+  slot?: "top" | "bottom" | "shoe" | "bag" | "accessory";
+  fitType?: "apparel" | "shoe" | "bag" | "accessory";
+  garmentReferenceImage?: string;
+  garmentDetailImage?: string;
 };
 
 export type ProductDetailInteractionState = {
@@ -90,10 +96,26 @@ export type ProductDetailInteractionState = {
   isFavorite: boolean;
   sizeGuideOpen: boolean;
   confirmation: string;
+  pendingOutfit: Array<{
+    productId: string;
+    name: string;
+    brandName: string;
+    image: string;
+    href: string;
+    color: string;
+    priceCents: number;
+    currency: string;
+    sizes: string[];
+    selectedSize: string;
+  }>;
   setActiveImageIndex: (index: number) => void;
   setSelectedSize: (size: string) => void;
   setBagOpen: (open: boolean) => void;
   setSizeGuideOpen: (open: boolean) => void;
   addToBag: () => void;
+  addSdkSelection: (payload: PrimeStyleAddToBagPayload) => void;
+  setPendingOutfitSize: (productId: string, size: string) => void;
+  confirmPendingOutfit: () => void;
+  closePendingOutfit: () => void;
   toggleFavorite: () => void;
 };

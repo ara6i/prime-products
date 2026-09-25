@@ -1,0 +1,29 @@
+{
+  "outputDir": "spring-travel-budget-core-s233-top",
+  "scenarioId": "S233",
+  "occasion": "Travel",
+  "season": "Spring",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-top-pass-existing-bottom-and-accessory-retained-awaiting-shoe-and-bag",
+  "comparisonTitle": "S233 · Spring Travel · soft-blue top screen",
+  "comparisonSubtitle": "Soft-blue regular overshirt · existing deep-olive travel chino · existing light-khaki cap",
+  "comparisonNote": "Full-source color, season and proportion pass · three-piece subtotal $137.48 · off-white low-profile sneaker and olive-tan backpack still missing · not outfit-approved · not UI integrated",
+  "coreTitle": "S233 · provisional Spring Travel top",
+  "coreSubtitle": "Soft blue lifts the olive-and-khaki base without adding dark or oversized repetition",
+  "coreNote": "One new uniqueness hold only · existing bottom hold and cap reservation remain · no complete outfit · not UI integrated",
+  "frontRunnerKeys": ["T1"],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:e8997b5e3ea0731ad69c295bf646b2c7069b4b3e",
+      "name": "Soft-Blue Regular Travel Overshirt",
+      "decision": "visual-front-runner-for-s233",
+      "decisionReason": "The full worn source proves a natural shoulder, regular chest ease, clean single-pocket front and controlled curved hem. Soft blue gives the deep-olive chino and light-khaki cap a fresh Spring contrast while the quiet construction avoids utility overload."
+    }
+  ],
+  "missingSlots": ["shoe", "bag"],
+  "queuedRoles": []
+}

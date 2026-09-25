@@ -1,0 +1,28 @@
+{
+  "outputDir": "fall-party-midrange-pilot-s210",
+  "scenarioId": "S210",
+  "occasion": "Party / Night Out",
+  "season": "Fall",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s194-fall-date-midrange-core.json",
+  "excludeCandidateKeys": ["O2"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-watch",
+  "comparisonTitle": "S210 · Fall Party / Night Out · Mid-Range local screen",
+  "comparisonSubtitle": "Twenty-one unique Fall candidates after the S194 taupe blouson hold",
+  "comparisonNote": "Require rich but lively Fall color, tactile evening texture and controlled modern proportion · no utility overshirt, bulky knit, lounge waist, puddled hem, skinny basic or engulfing blazer · not UI integrated",
+  "coreTitle": "S210 · provisional Fall Party Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Fall Mid-Range Party bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men burnt orange merino fine gauge knit polo fall party mid range","targetProduct":"burnt-orange merino-blend fine-gauge knit polo with controlled regular ease","customerRetailTarget":"$100-$140"},
+    {"category":"bottom","searchPhrase":"men pale stone wool blend double pleat straight trouser fall party","targetProduct":"pale-stone wool-blend high-rise double-pleat trouser with clean break","customerRetailTarget":"$140-$190"},
+    {"category":"outerwear","searchPhrase":"men petrol teal suede look cropped bomber fall party modern","targetProduct":"petrol-teal soft suede-look cropped bomber with minimal hardware","customerRetailTarget":"$160-$220"},
+    {"category":"shoe","searchPhrase":"men burgundy suede round toe derby low profile fall party","targetProduct":"burgundy-suede round-toe derby with low-profile sole","customerRetailTarget":"$150-$210"},
+    {"category":"watch","searchPhrase":"men champagne dial forest green leather thin case watch fall party","targetProduct":"champagne-dial thin-case watch with forest-green leather strap","customerRetailTarget":"$50-$80"}
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "batch": "60",
+  "approvals": {},
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "The purple basketball short is dominated by oversized pseudo-brand lettering and contrast piping rather than clean active styling."
+    },
+    {
+      "cards": [2],
+      "reason": "The casual drawstring pant is visibly wide and puddled, with a large front graphic that makes every one of its eight colors unsuitable."
+    },
+    {
+      "cards": [3, 4],
+      "reason": "These jeans are skinny and heavily covered with graffiti, lettering, distressing or contrast wash, directly failing both silhouette and modern-versatility gates."
+    },
+    {
+      "cards": [5, 6],
+      "reason": "These wide jeans are puddled and dominated by cartoon embellishment, dirty wash or large letter graphics, so they cannot serve as clean versatile bottoms."
+    }
+  ],
+  "qaSummary": [
+    "The final six previously unreviewed identities and all 19 recorded color images loaded for full visual review.",
+    "Nothing passed: every remaining bottom was graphic, slogan-led, skinny, wide, puddled, distressed, dirty-washed or novelty-embellished.",
+    "No new identity, variant or image entered the usable pool; the existing raw men's non-wedding garment backlog is now fully reviewed."
+  ]
+}

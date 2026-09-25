@@ -1,0 +1,28 @@
+{
+  "outputDir": "summer-sports-midrange-pilot-s222",
+  "scenarioId": "S222",
+  "occasion": "Sports / Workout",
+  "season": "Summer",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceSpec": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/summer-sports-budget-pilot-s221/core-comparison.json",
+  "excludeCandidateKeys": ["T4", "B1"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-shoe-bag-and-accessory",
+  "comparisonTitle": "S222 · Summer Sports / Workout · Mid-Range local screen",
+  "comparisonSubtitle": "Ten unique warm-weather active candidates after the S221 tee and short holds",
+  "comparisonNote": "Require breathable happy color, credible body proof, mapped ventilation and controlled above-knee movement · no hanger guess, skinny Henley, stringer tank, product-only basic or tailored navy short · not UI integrated",
+  "coreTitle": "S222 · provisional Summer Sports Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Summer Mid-Range activewear bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men soft coral ventilated performance tee regular fit summer workout mid range","targetProduct":"soft-coral ventilated performance tee with regular movement ease","customerRetailTarget":"$100-$140"},
+    {"category":"bottom","searchPhrase":"men powder blue lined training short controlled summer workout","targetProduct":"powder-blue lined technical training short with controlled outer volume","customerRetailTarget":"$110-$150"},
+    {"category":"shoe","searchPhrase":"men light warm gray breathable low profile trainer gum detail summer","targetProduct":"light warm-gray breathable low-profile trainer with restrained gum detail","customerRetailTarget":"$140-$190"},
+    {"category":"bag","searchPhrase":"men soft sage lightweight workout sling summer","targetProduct":"soft-sage lightweight technical workout sling","customerRetailTarget":"$100-$140"},
+    {"category":"accessory","searchPhrase":"men pale apricot lightweight running cap summer workout","targetProduct":"pale-apricot lightweight running cap","customerRetailTarget":"$60-$90"}
+  ]
+}

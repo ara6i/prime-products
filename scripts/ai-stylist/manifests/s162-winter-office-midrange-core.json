@@ -1,0 +1,38 @@
+{
+  "outputDir": "winter-office-midrange-pilot-s162",
+  "scenarioId": "S162",
+  "occasion": "Work / Office",
+  "season": "Winter",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-bag-accessory",
+  "comparisonTitle": "S162 · Winter Work / Office · Mid-Range local screen",
+  "comparisonSubtitle": "Eight remaining Winter-capable tops · one remaining trouser · all unique and unreserved",
+  "comparisonNote": "Require warm material credibility, controlled Office ease and a brighter winter palette · no skinny knit, product-only guess, oversized overshirt, puddled leg or athletic half-zip · no valid local Winter Office layer remains · not UI integrated",
+  "coreTitle": "S162 · provisional Winter Work / Office Mid-Range core",
+  "coreSubtitle": "No local garment reaches the Winter Mid-Range Office visual bar · all six roles unresolved",
+  "coreNote": "Zero provisional holds after the remaining nine candidates were rechecked against their original-resolution evidence · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men dusty coral fine gauge merino long sleeve knit polo winter office relaxed","targetProduct":"dusty-coral fine-gauge merino long-sleeve knit polo with controlled regular-relaxed ease","customerRetailTarget":"$110-$150"},
+    {"category":"bottom","searchPhrase":"men warm ivory wool blend double pleat controlled straight trouser winter office","targetProduct":"warm-ivory wool-blend double-pleat trouser with a controlled straight leg and precise break","customerRetailTarget":"$120-$170"},
+    {"category":"outerwear","searchPhrase":"men light camel wool blend short car coat winter office modern","targetProduct":"light-camel wool-blend short car coat with clean controlled shoulders","customerRetailTarget":"$140-$190"},
+    {"category":"shoe","searchPhrase":"men burgundy dark brown suede round toe derby rubber sole winter office","targetProduct":"burgundy or dark-brown suede round-toe derby with a low weather-ready sole","customerRetailTarget":"$130-$180"},
+    {"category":"bag","searchPhrase":"men muted sage cognac leather canvas slim briefcase winter office","targetProduct":"muted-sage canvas-and-cognac-leather slim office briefcase or compact crossbody","customerRetailTarget":"$80-$120"},
+    {"category":"accessory","searchPhrase":"men cream dial burgundy leather minimal watch winter office","targetProduct":"cream-dial minimalist watch with a burgundy leather strap","customerRetailTarget":"$40-$70"}
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:c718a3072a23b5f3daffd582a98373e700ff8129","name":"White Cable-Knit Turtleneck","decision":"reject-for-s162","decisionReason":"Only a narrow product form is shown. The sharply tapered waist, slim sleeves and tight tall neck offer no credible relaxed worn fit and risk the dated skinny Winter Office silhouette being removed."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:fbfc103acc2f63512ef6f1c5b1038a150ab8c1db","name":"Peacock-Blue Mock-Neck Sweater","decision":"reject-for-s162","decisionReason":"The saturated blue is welcome, but the product-only image depicts an artificially muscle-sculpted, skin-tight mock neck with a long tapered torso and no reliable drape proof."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:be3d8e8b3c2378e5b61eabc19a922df12ab5eabd","name":"Beige Turtleneck","decision":"reject-for-s162","decisionReason":"The product-only source does not prove shoulder, torso or sleeve ease, while beige would produce a washed-out neutral board with the required camel coat rather than the requested happier winter color."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:7b959d24fb23eafe687761871356bdbb13a615b4","name":"Light-Khaki Textured Henley Knit","decision":"reject-for-s162","decisionReason":"The clean henley idea is useful, but only a product form exists; worn fit, knit recovery and hem behavior are unproven, and the khaki tone would repeat the planned camel layer."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:0794e5a5d5baa6332657d5add9661ae7a433d05c","name":"Dusty-Blue Corduroy Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The dusty blue brightens the palette, but the long open-over-tee body, cap styling and lightweight shirt construction read mild-weather Casual or Travel rather than a warm self-contained Winter Office top."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:9e8719479f6d34233b8dfd557767f52a1bffa7b4","name":"Steel-Blue Fine-Knit Crew","decision":"reject-for-s162","decisionReason":"The listed peacock color actually reads dusty steel blue, while the narrow shoulder, close torso, tight sleeves and long ribbed hem repeat the dated skinny-knit shape."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:2984c73a22084c0ed6a3de38270524b2b9a5f582","name":"Camel Cable-Knit Quarter-Zip","decision":"reject-for-s162","decisionReason":"The dense cable has Winter substance, but the close arms and torso, bulky high zip neck and camel-on-camel direction feel dated and muddy rather than modern colorful Office."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:0ddafa2ad2660d3d70d8956732d8421c65ac55f6","name":"White-and-Black Grid Overshirt","decision":"keep-available-for-other-scenario","decisionReason":"The relaxed grid can serve Casual or Travel, but the overshirt depends on a separate base layer and its graphic black-white pattern lacks the warm fine-gauge polish required for Mid-Range Winter Office."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:bd9eb3e71ff44da3314d188440d5608833ddeaae","name":"Army-Green Corduroy Wide-Leg Trouser","decision":"reject-for-s162","decisionReason":"The product-only image cannot prove rise, thigh or drape and shows a balloon-taper corduroy leg with rolled cuffs. It is too dark and uncertain for the required warm-ivory controlled Office trouser."}
+  ]
+}

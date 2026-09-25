@@ -1,0 +1,76 @@
+{
+  "outputDir": "winter-casual-midrange-pilot-s146",
+  "scenarioId": "S146",
+  "occasion": "Casual Everyday",
+  "season": "Winter",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "full-resolution-correction-no-winter-core-awaiting-replacement-top-bottom-outerwear-shoe-bag-accessory",
+  "comparisonTitle": "S146 · Winter Casual Everyday · Mid-Range local screen",
+  "comparisonSubtitle": "Eight cold-weather color and texture tops · eight full-length bottoms · eight Winter layers · all unique and unreserved",
+  "comparisonNote": "Require warm Zara-led function, controlled proportions and a light or happy color story · no skinny knit, puddled jean, oversized-on-oversized stack, utility overload or black/navy monotony · not UI integrated",
+  "coreTitle": "S146 · corrected Winter Casual Everyday Mid-Range empty core",
+  "coreSubtitle": "oversized peacock hoodie rejected · replacement regular top required",
+  "coreNote": "Zero provisional holds · top, bottom, outerwear, shoe, bag and accessory missing · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "bottom",
+      "searchPhrase": "men ecru winter weight clean straight five pocket trouser jean controlled fit",
+      "targetProduct": "ecru winter-weight clean straight five-pocket trouser or jean",
+      "customerRetailTarget": "$100-$150"
+    },
+    {
+      "category": "outerwear",
+      "searchPhrase": "men off white short clean sleeveless padded vest minimal no logo",
+      "targetProduct": "off-white short clean sleeveless padded vest with minimal hardware",
+      "customerRetailTarget": "$130-$190"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men cream suede low profile winterized court sneaker gum sole teal detail minimal",
+      "targetProduct": "cream-suede low-profile winterized court sneaker with gum sole and restrained teal detail",
+      "customerRetailTarget": "$140-$200"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men taupe compact crossbody minimalist no logo",
+      "targetProduct": "taupe compact minimalist crossbody",
+      "customerRetailTarget": "$80-$120"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men burnt orange ribbed wool beanie minimal no logo",
+      "targetProduct": "burnt-orange fine-rib wool-blend beanie",
+      "customerRetailTarget": "$30-$50"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T2","identity":"shopify_supplier:e072509bbb39ee226b308bb09215ba9116bf6fe5","name":"Orange-and-Ivory Fuzzy Stripe Sweater","decision":"reject-for-s146","decisionReason":"The orange-and-ivory stripe is cheerful, but only a flat fuzzy packshot exists. The shoulder, torso length and sleeve control are unproven, while the very broad outline and extra-long sleeves risk another oversized upper half."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:8a64334bbf508713bdcb9363a1ed69f5be9ca300","name":"Khaki Textured Half-Button Sweatshirt","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a clean textured surface, controlled regular-relaxed body and tidy upper-hip hem, making it a credible future unique Winter top. Its muted khaki palette is less appropriate than the peacock front-runner for this color-led Casual Everyday screen."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:8be044b2ef75a018352c5bfc03846f0fecbb1fce","name":"Coffee-Brown Raglan Hoodie","decision":"keep-available-for-other-scenario","decisionReason":"The full worn source shows a controlled relaxed raglan body and useful warm brown, but the small centered REGRESS wordmark and muted palette reduce its clean Zara-led finish. Preserve it for a later lower-key Weekend or Travel look rather than repeating another dark Casual core."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:7b959d24fb23eafe687761871356bdbb13a615b4","name":"Light-Khaki Textured Henley Knit","decision":"reject-for-s146","decisionReason":"The light neutral and rib texture could work, but the source is product-only. Its very broad shoulders, long sleeves and unverified hem create too much silhouette risk to approve for a Mid-Range outfit."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:2f383a80506460f5f52121264692ac41381d2f6d","name":"Deep-Navy Funnel-Neck Sweatshirt","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a clean regular-relaxed funnel-neck shape with no skinny chest or excessive length. Keep it for a future Evening, Travel or minimalist Winter scenario; selecting deep navy here would repeat the dark monotony the rebuild is correcting."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:8df09bb84b2fc7ce594c34d8dfc116fb2c862376","name":"Warm-Coffee Button-Neck Sweater","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves tactile marled texture, a useful button neck and a controlled relaxed line. It is a credible unique choice for a Winter Date or Premium outfit, but its warm coffee tone is too muted for this happy-color Casual core."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:0b273a769388021d166d25e44f6005fa71599f1f","name":"Yellow-Green Ribbed Hooded Sweater","decision":"reject-for-s146","decisionReason":"The yellow-green color is welcome, but only a product image exists. The large hood, wide body and long sleeves have no worn proof, so the piece cannot pass the silhouette gate."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320","name":"Light-Gray Relaxed-Fit Trouser","decision":"reject-for-s146","decisionReason":"The pale gray is useful, but this is a flat packshot of a thin technical trouser with articulated knee seams. There is no proof of rise, thigh ease, hem break or genuine Winter weight, so it cannot anchor this outfit."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:00f657f5fb0ef1157e296ad9fa3404f0f0bd577d","name":"Light-Blue Relaxed Straight Jean","decision":"reject-for-s146","decisionReason":"The worn source shows an extremely broad leg with excess length collapsing and stacking over both shoes. Pairing it with the relaxed hoodie would recreate the oversized-on-oversized silhouette the user rejected."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:75a9c43d42d0852a63c2291928fa436c7dfbc823","name":"Vintage-Blue Relaxed Jean","decision":"reject-for-s146","decisionReason":"The leg is more controlled than the other denim candidates, but the heavy whiskering, rolled cuffs and side utility pocket read dated carpenter jean. The blue wash also creates an unrefined blue-on-blue outfit beside the peacock hoodie."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:bf7fa4e61eb13d0ac96cfca0028b90814633535c","name":"Ivory Straight-Leg Jean","decision":"reject-for-s146","decisionReason":"The ivory color is exactly the needed direction, but the flat packshot provides no body proof of rise, thigh width, full length or shoe break. Its wide outline cannot receive a Mid-Range hold without a credible worn image."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265","name":"Military-Green Casual Trouser","decision":"reject-for-s146","decisionReason":"Only a cropped product image is available, so the leg line and hem are unknown. The shiny olive fabric, front pleat and decorative bead attachment read inexpensive and would muddy the clean color story."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:c4694a3740fce46e4cb36568c29f9bd341398236","name":"Medium-Blue Straight Jean","decision":"reject-for-s146","decisionReason":"The dark-blue denim has a synthetic glossy wash and runs long enough to bunch over the shoes. Its conventional low-rise line and heavy stacking are not the clean contemporary straight fit required."},
+    {"group":"bottom","key":"B7","identity":"shopify_supplier:2d404d28d11be77008250d5736f3877c185ccfe7","name":"Light-Blue Vintage Straight Jean","decision":"reject-for-s146","decisionReason":"The worn source reveals a narrow upper leg opening into a pronounced flare. That retro bootcut shape is not the controlled straight Zara-led lower half planned for this Casual Everyday outfit."},
+    {"group":"bottom","key":"B8","identity":"shopify_supplier:fabf15cd2935c7ad9c6fc6909dbdb8e94ea7f169","name":"Light-Gray Straight Washed Jean","decision":"reject-for-s146","decisionReason":"The gray jean is broad through the full leg and visibly folds and stacks at both shoes. The dark dirty wash and excess length make the outfit heavier and repeat the baggy-bottom problem."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:7771fc177b9d3f64e54c30eb8b86fbfa738c0fb7","name":"White Quilted Snap-Down Puffer","decision":"reject-for-s146","decisionReason":"The worn source proves a long, very bulky drop-shoulder puffer with oversized sleeves and a visible ADVANCED chest wordmark. It would overwhelm the relaxed hoodie and turn the upper body into a double-volume stack."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:33d31748b8087e9593417b35db25cccf5f8023bf","name":"White Urban Padded Coat","decision":"reject-for-s146","decisionReason":"There is no worn fit proof, and the large patch pockets, mixed fabric panels and prominent pseudo-brand chest text create a cargo-heavy streetwear coat rather than a clean light layer."},
+    {"group":"outerwear","key":"O3","identity":"shopify_supplier:aeec300145fdb4b330693796cf4e270f33526c42","name":"Beige Winter Puffer","decision":"reject-for-s146","decisionReason":"The soft beige is compatible, but only an isolated packshot exists and the full sleeves and deep quilting appear bulky. Fit, hem length and compatibility over the already relaxed hoodie cannot be verified."},
+    {"group":"outerwear","key":"O4","identity":"shopify_supplier:13d330b040b32bff8bdb5ef4f660a1a54df5b1b2","name":"Army-Green Hooded Puffer","decision":"reject-for-s146","decisionReason":"The worn source shows a bulky dark color-block puffer with its own large hood. Layering it over the selected hoodie would create hood-on-hood bulk and replace the happy blue focal color with a heavy technical palette."},
+    {"group":"outerwear","key":"O5","identity":"shopify_supplier:31b3e47fddc26122c76c6ee3507b55b8ab91243f","name":"Gray-Green Thermal Fleece Jacket","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a controlled thermal fleece silhouette, but the dark gray-green surface, chest branding and outdoor construction belong in a Hiking, Commute or Travel scenario. It is not the light refined contrast needed here."},
+    {"group":"outerwear","key":"O6","identity":"shopify_supplier:858efc647d67f500a70a3b003ebc5d4d5376d421","name":"White Padded Zip Vest","decision":"reject-for-s146","decisionReason":"A short white sleeveless puffer is the correct layering concept, but this supplier provides only a packshot. Armhole width, torso volume and hem length are unproven, so it cannot be approved despite matching the target direction."},
+    {"group":"outerwear","key":"O7","identity":"shopify_supplier:4d8999448b83e0cdd90a9a1b9590776cddcb35ac","name":"Light-Green Hooded Puffer","decision":"reject-for-s146","decisionReason":"The product-only source shows a broad technical puffer with a second hood, sleeve patch and visible OUTDOOR WALK text. It would add unverified bulk and utility branding rather than clean Mid-Range polish."},
+    {"group":"outerwear","key":"O8","identity":"shopify_supplier:588b0118c8a036effadc80c4027c3144595968ab","name":"Green Zip-Up Puffer","decision":"reject-for-s146","decisionReason":"The gray-green tone is muted, the chest carries visible text and there is no worn fit proof. The full quilted sleeves and broad product outline risk another bulky upper half, so this cannot complete the selected hoodie."}
+  ]
+}

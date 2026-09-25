@@ -1,0 +1,27 @@
+{
+  "outputDir": "summer-party-premium-pilot-s207",
+  "scenarioId": "S207",
+  "occasion": "Party / Night Out",
+  "season": "Summer",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s206-summer-party-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-shoe-bag-and-watch",
+  "comparisonTitle": "S207 · Summer Party / Night Out · Premium local screen",
+  "comparisonSubtitle": "The 15 unique Summer Party candidates re-evaluated for Premium fiber, construction and drape",
+  "comparisonNote": "Require silk-cotton or linen-wool proof, breathable texture, saturated warm-weather color and exact drape · no promotion of elastic, product-only, distressed or puddled pieces · not UI integrated",
+  "coreTitle": "S207 · provisional Summer Party Premium core",
+  "coreSubtitle": "No local garment reaches the Summer Premium Party visual bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Premium re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men pale lemon silk cotton open knit polo premium summer party","targetProduct":"pale-lemon silk-cotton open-knit polo with hand-finished collar","customerRetailTarget":"$180-$240"},
+    {"category":"bottom","searchPhrase":"men washed teal linen wool pleated straight trouser premium summer party","targetProduct":"washed-teal linen-wool single-pleat trouser with exact ankle break","customerRetailTarget":"$220-$300"},
+    {"category":"shoe","searchPhrase":"men sand woven calf suede handmade loafer premium summer party","targetProduct":"sand woven-calf-and-suede handmade low-profile loafer","customerRetailTarget":"$260-$360"},
+    {"category":"bag","searchPhrase":"men ivory tan pebbled leather compact crossbody premium party","targetProduct":"ivory-and-tan pebbled-leather compact crossbody","customerRetailTarget":"$240-$340"},
+    {"category":"watch","searchPhrase":"men sky blue dial tan leather thin case premium watch summer party","targetProduct":"sky-blue-dial thin-case Premium watch with tan leather strap","customerRetailTarget":"$120-$200"}
+  ]
+}

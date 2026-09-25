@@ -17,6 +17,7 @@ import type {
   IntelligentOutfitItem,
 } from "@/app/ai-stylist/types";
 import type { StylistPreparationStatus } from "@/app/ai-stylist/hooks/useOutfitIntelligence";
+import { LocalMlImageBadge } from "@/app/ai-stylist/components/shared/LocalMlImageBadge";
 import { MobileStylistStage } from "./MobileStylistStage";
 
 interface MobileOutfitSelectionViewProps {
@@ -50,8 +51,12 @@ function OutfitPreview({ outfit }: { outfit: IntelligentOutfit }) {
       {outfit.items.slice(0, 4).map((item) => (
         <div
           key={item.styleRagId}
-          className="flex min-w-0 items-center justify-center overflow-hidden rounded-lg bg-white"
+          className="relative flex min-w-0 items-center justify-center overflow-hidden rounded-lg bg-white"
         >
+          <LocalMlImageBadge
+            item={item}
+            className="absolute left-1 top-1 scale-90"
+          />
           {/* Product images are dynamic affiliate/CDN URLs. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -358,8 +363,12 @@ export function MobileOutfitSelectionView({
               {piecesOutfit.items.map((item) => (
                 <article
                   key={item.styleRagId}
-                  className="flex gap-3 rounded-2xl border border-[#e4e2e8] p-3"
+                  className="relative flex gap-3 rounded-2xl border border-[#e4e2e8] p-3"
                 >
+                  <LocalMlImageBadge
+                    item={item}
+                    className="absolute right-2 top-2"
+                  />
                   <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#f5f4f7]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img

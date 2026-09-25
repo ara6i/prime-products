@@ -204,6 +204,8 @@ export interface IntelligentOutfitItem {
   affiliateUrl: string | null;
   imageUrl: string;
   cutoutImageUrl: string | null;
+  imagePipelineVersion?: string | null;
+  imageProvenance?: "gemini" | "local-ml" | "unknown";
   color: string | null;
   colorHex: string | null;
   material: string | null;

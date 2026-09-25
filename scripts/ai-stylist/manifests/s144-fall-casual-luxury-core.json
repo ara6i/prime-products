@@ -1,0 +1,77 @@
+{
+  "outputDir": "fall-casual-luxury-pilot-s144",
+  "scenarioId": "S144",
+  "occasion": "Casual Everyday",
+  "season": "Fall",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-shoe-bag-accessory",
+  "comparisonTitle": "S144 · Fall Casual Everyday · Luxury local screen",
+  "comparisonSubtitle": "Eight textured tops · eight controlled-bottom candidates · eight Fall layers · all unique and unreserved",
+  "comparisonNote": "Require elevated Zara-led texture, confident color and controlled proportion · no skinny knit, puddled trouser, cheap technical detail, oversized-on-oversized stack or dark monotony · not UI integrated",
+  "coreTitle": "S144 · provisional Fall Casual Everyday Luxury core",
+  "coreSubtitle": "No local top reaches the Fall Luxury visual bar · all five planned roles unresolved",
+  "coreNote": "Zero provisional holds after consolidated-gallery re-audit · no outerwear by design · Luxury customer-retail proof plus top, bottom, shoe, bag and accessory still missing · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men light apricot textured cable sweater regular relaxed controlled luxury fall",
+      "targetProduct": "light-apricot textured knit with a controlled regular-relaxed body and clean upper-hip hem",
+      "customerRetailTarget": "$300-$450"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men deep plum burgundy wool blend straight trouser clean flat front",
+      "targetProduct": "deep-plum wool-blend clean straight trouser",
+      "customerRetailTarget": "$360-$520"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men mushroom taupe suede low profile retro sneaker gum sole minimal",
+      "targetProduct": "mushroom-taupe suede low-profile retro sneaker with restrained gum sole",
+      "customerRetailTarget": "$420-$650"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men tobacco full grain leather compact crossbody minimalist no logo",
+      "targetProduct": "tobacco full-grain-leather compact minimalist crossbody",
+      "customerRetailTarget": "$650-$1000"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men cognac suede baseball cap luxury minimal logo fall",
+      "targetProduct": "cognac-suede luxury minimalist baseball cap",
+      "customerRetailTarget": "$350-$700"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:8a64334bbf508713bdcb9363a1ed69f5be9ca300","name":"Khaki Textured Half-Button Sweatshirt","decision":"keep-available-for-other-scenario","decisionReason":"The worn original proves excellent diagonal texture, a controlled shoulder drop and a clean upper-hip line. It remains a strong Premium candidate, but the khaki is deliberately quiet and the deep split neck exposes a separate white base; S144 needs a self-contained light knit that can accept richer color below."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:0b273a769388021d166d25e44f6005fa71599f1f","name":"Yellow-Green Ribbed Hooded Sweater","decision":"reject-for-s144","decisionReason":"The olive-yellow ribbed surface could be expressive, but only an isolated packshot exists. Shoulder width, sleeve volume, torso length and hood collapse cannot be verified, so it cannot support a Luxury hold."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:135b9e50f6e72dc7185baef75627227a9a429ef0","name":"Muted-Purple Utility Overshirt","decision":"keep-available-for-other-scenario","decisionReason":"The dusty-purple color is valuable and the source proves a wearable relaxed line, but the shirt is long, visibly dropped and worn open over a separate white tee. Preserve it for a unique layered Travel, Party or Date look with a sharply controlled trouser rather than using it as a self-contained Luxury top."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:604ce0729f87d1a481f5cae14adac4e515e78c4c","name":"Moss Twin-Pocket Cotton Overshirt","decision":"keep-available-for-other-scenario","decisionReason":"The moss wash and regular-relaxed fit are credible, but two large utility pockets, an open white-tee dependency and a muted workwear tone make it less elevated than the cable knit. Keep it for a later Casual, Travel or creative Office outfit."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:ee5f1157bc2bcfb11222797f6c3cdbeb367d530c","name":"Warm Rust Contrast-Collar Overshirt","decision":"keep-available-for-other-scenario","decisionReason":"The warm rust is the strongest saturated Fall color in the pool and the worn line is controlled, but the dark contrast collar, twin workwear pockets and separate black base make it a layer rather than a complete top. Preserve it for a future color-led layered outfit."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:103874fdc98f0d098753e001e36f6000b75a187d","name":"Apricot-Brown Textured Check Overshirt","decision":"reject-for-s144","decisionReason":"The woven texture is visible, but the dense brown check, long open overshirt body, separate cream tee and supplier MODEL SHOW banner create a busy generic presentation rather than quiet Luxury polish."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:beacbb3827e6eb7d02fe7ed511e1648aa3e2da0b","name":"Light-Apricot Asymmetric Cable Sweater","decision":"reject-for-s144","decisionReason":"The consolidated gallery makes the silhouette failure clear: the asymmetric novelty construction, very broad long body and sleeves covering the hands read uncontrolled oversized rather than elevated Luxury. The luminous color is useful, but color cannot override the weak proportion."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:1567c4a133b03632c21e4cbfe188bc4b1dde577b","name":"Off-White Ribbed Knit Sweater","decision":"reject-for-s144","decisionReason":"The geometric rib texture is attractive, but the only source is a hanger close-up held by hand. There is no reliable proof of shoulder, torso, sleeve or hem proportion, so it does not pass the one-by-one Luxury fit gate."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:1a666f5be35d5c8b71d25f4cbf709b11f941d134","name":"Sand-Gray Drawstring Trouser","decision":"reject-for-s144","decisionReason":"Only a flat product image is available. The double elastic waistband, long drawstrings, exposed seam lines and narrow lower leg read jogger rather than elevated straight trouser, and worn break is unproven."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265","name":"Military-Green Casual Trouser","decision":"reject-for-s144","decisionReason":"The product-only image does not prove rise, thigh ease, length or shoe break. Its synthetic sheen and dangling multicolor bead charm also fail the clean Luxury brief."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:00f657f5fb0ef1157e296ad9fa3404f0f0bd577d","name":"Light-Blue Relaxed Straight Jean","decision":"reject-for-s144","decisionReason":"The jean is extremely broad from thigh to hem and visibly puddles over both shoes. It recreates the baggy lower-half problem and is too pale and summery for this Fall Luxury direction."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:afb7fb3cf9cc6771830ceb3630b7001b6b0a833a","name":"Peacock-Blue Straight-Fit Jean","decision":"reject-for-s144","decisionReason":"The leg is more controlled than B3, but the low conventional rise, heavy horizontal whiskering and visible hem stack look dated rather than luxurious. A merely acceptable blue jean is not enough for S144."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:fabf15cd2935c7ad9c6fc6909dbdb8e94ea7f169","name":"Light-Gray Straight Washed Jean","decision":"reject-for-s144","decisionReason":"The worn source proves a very broad leg with substantial fabric collapse and stacking over high-top sneakers. Its cloudy gray wash is also visually heavy beside the light knit."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:bd9eb3e71ff44da3314d188440d5608833ddeaae","name":"Army-Green Pleated Corduroy Trouser","decision":"reject-for-s144","decisionReason":"Only a packshot exists, so the deep double pleats, balloon taper and rolled cuff cannot be validated on a body. The D-ring and dark muddy corduroy add utility clutter rather than Luxury precision."},
+    {"group":"bottom","key":"B7","identity":"shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320","name":"Light-Gray Relaxed Trouser","decision":"reject-for-s144","decisionReason":"The isolated product image provides no fit or shoe-break proof. Synthetic technical sheen and articulated knee seams read Travel gear, not a refined Luxury casual trouser."},
+    {"group":"bottom","key":"B8","identity":"shopify_supplier:bf7fa4e61eb13d0ac96cfca0028b90814633535c","name":"Ivory Straight-Leg Jean","decision":"reject-for-s144","decisionReason":"The ivory color would brighten the board, but only a flat packshot is available and its full wide outline could become oversized or puddled. No Luxury hold is recorded without worn rise, thigh and hem proof."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:b50b813f19e70580788dc58b1d3c0200845e5f6c","name":"Blue Snap-Front Denim Jacket","decision":"reject-for-s144","decisionReason":"The raw indigo is clean, but the source is product-only and the extra rivet rows, broad shoulder and long sleeves are unverified on a body. It also adds a dark workwear block instead of Luxury color balance."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:6fc1345a5afac5435b7b137404be37b0770de2f5","name":"Deep-Blue Clean Denim Jacket","decision":"reject-for-s144","decisionReason":"The leather-look contrast collar and faded denim could work for another casual outfit, but there is no worn fit proof and the wash reads vintage workwear rather than elevated modern Luxury."},
+    {"group":"outerwear","key":"O3","identity":"shopify_supplier:2f30cccc9b77808ce60e8aef94ba5ed6271a4556","name":"Taupe Faux-Leather Zip Shacket","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a useful waist-length relaxed jacket, but the mottled faux-leather surface, separate graphic tee and olive trouser styling make it too brown-heavy for the planned cream-and-plum Luxury palette. Preserve it for a unique Date or Travel look."},
+    {"group":"outerwear","key":"O4","identity":"shopify_supplier:b9007875eb65fea3bd88de9ad0a6b71ce38b23b6","name":"Army-Green Lightweight Zip Jacket","decision":"reject-for-s144","decisionReason":"Only a packshot exists, so fit and length are unproven. The shiny technical shell, diagonal black pocket zips and ribbed bomber trim read functional mass-market outerwear, not Luxury."},
+    {"group":"outerwear","key":"O5","identity":"shopify_supplier:eb9f1ca89e42083379c0e262a20ac2c0b7df6d2d","name":"Military-Green Lightweight Zip Jacket","decision":"reject-for-s144","decisionReason":"The corded surface is preferable to nylon, but the product-only view cannot prove its rounded bomber volume. Sleeve hardware, silver zips and dark lining add technical clutter and no happy color."},
+    {"group":"outerwear","key":"O6","identity":"shopify_supplier:97d0fa66e0f0b15d1c75f32a5a86c1db3210eba1","name":"Khaki Clean Bomber Jacket","decision":"reject-for-s144","decisionReason":"The high pile-lined collar, sleeve patch, utility zip and visibly broad body make this a bulky technical bomber. With the cable sweater it would stack upper-body volume and turn the palette muddy beige."},
+    {"group":"outerwear","key":"O7","identity":"shopify_supplier:39129805d156a12a421fd64b66233122e09d62a7","name":"Light-Blue Relaxed Denim Jacket","decision":"reject-for-s144","decisionReason":"The light wash is pleasant, but the isolated jacket has an extreme shoulder drop and broad long body. It lacks worn fit proof and would add a second relaxed-volume piece over the knit."},
+    {"group":"outerwear","key":"O8","identity":"shopify_supplier:5d5eb7a403cdcbaab147934e34260021d12d0dba","name":"Light-Khaki Relaxed Blazer","decision":"keep-available-for-other-scenario","decisionReason":"The original proves a credible modern relaxed blazer, but it is long and broad and was designed to sit over a slimmer base. Layering it over T7 would create loose-on-loose volume; reserve it for an Office Casual or Date outfit with a controlled fine knit."}
+  ]
+}

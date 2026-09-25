@@ -1,0 +1,27 @@
+{
+  "outputDir": "spring-sports-premium-pilot-s219",
+  "scenarioId": "S219",
+  "occasion": "Sports / Workout",
+  "season": "Spring",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s218-spring-sports-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-bag",
+  "comparisonTitle": "S219 · Spring Sports / Workout · Premium local screen",
+  "comparisonSubtitle": "The 11 unique Spring active candidates re-evaluated for Premium textile engineering and movement",
+  "comparisonNote": "Require merino-Tencel or equivalent performance yarn, technical stretch weave, clean bonded construction and exact movement ease · no promotion of low-cost active basics · not UI integrated",
+  "coreTitle": "S219 · provisional Spring Sports Premium core",
+  "coreSubtitle": "No local garment reaches the Spring Premium activewear bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Premium re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men ultramarine merino tencel performance tee premium spring workout","targetProduct":"ultramarine merino-Tencel performance tee with mapped ventilation","customerRetailTarget":"$170-$220"},
+    {"category":"bottom","searchPhrase":"men pale stone technical stretch tapered training trouser premium","targetProduct":"pale-stone technical stretch training trouser with bonded clean finish","customerRetailTarget":"$180-$240"},
+    {"category":"outerwear","searchPhrase":"men pale lime bonded technical wind shell premium spring workout","targetProduct":"pale-lime bonded technical wind shell with controlled movement volume","customerRetailTarget":"$220-$300"},
+    {"category":"shoe","searchPhrase":"men silver gray premium low profile performance trainer spring","targetProduct":"silver-gray Premium low-profile performance trainer","customerRetailTarget":"$220-$300"},
+    {"category":"bag","searchPhrase":"men dusty coral premium technical crossbody workout sling","targetProduct":"dusty-coral Premium technical workout sling","customerRetailTarget":"$120-$180"}
+  ]
+}

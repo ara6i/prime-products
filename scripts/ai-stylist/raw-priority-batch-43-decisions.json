@@ -1,0 +1,66 @@
+{
+  "batch": "43",
+  "approvals": {
+    "14": {
+      "color": "White",
+      "constraint": "Use this white textured notch-neck sleeveless top once only for Spring/Summer Casual Everyday, Vacation, Resort, Festival, Travel or a clean daytime Date. Pair the light texture with controlled stone, tobacco, muted-olive, washed-blue, terracotta or charcoal tailored shorts or straight trousers and minimal cream, tan, brown or muted-blue footwear; never combine it with a baggy bottom, another white textured layer, a chunky trainer, an all-white lounge look or any Wedding/Wedding Guest use."
+    },
+    "19": {
+      "color": "Creamy-white",
+      "constraint": "Use this creamy-white relaxed corduroy overshirt once only for Fall/Winter Casual Everyday, Weekend, Travel, Campus, creative Office or a daytime Date. Keep it as the outfit's single relaxed layer over a clean burgundy, forest-green, sky-blue, rust, charcoal or white base with straight dark-denim, charcoal, tobacco or muted-olive bottoms and minimal cream, tan, brown or burgundy footwear; never add another oversized layer, a baggy trouser, an all-cream palette, bulky trainer or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "The product-only contrast-stripe T-shirt has no adult fit proof and its sleeve stripes read dated and generic."
+    },
+    {
+      "cards": [2, 3, 15, 16],
+      "reason": "These openwork, sequin and zebra-mesh tops are transparent, body-focused or costume-led rather than versatile modern menswear."
+    },
+    {
+      "cards": [4, 5, 13],
+      "reason": "These active and quarter-zip tops are compression-tight, generic dark repeats or too narrowly fitted for the requested silhouette."
+    },
+    {
+      "cards": [6, 7],
+      "reason": "The cropped blue tank and buckle-cutout black tank are extremely body-focused, revealing and unsuitable for broad scenario coverage."
+    },
+    {
+      "cards": [8],
+      "reason": "The product-only hooded plaid shirt is dated, narrow and visually busy rather than clean contemporary menswear."
+    },
+    {
+      "cards": [9, 10, 12],
+      "reason": "The camouflage knit, chili-print beach shirt and fluffy butterfly sweater are novelty-led and cannot support versatile Zara-led outfits."
+    },
+    {
+      "cards": [11, 17],
+      "reason": "The product-only black polo knit and fake layered plaid sweater provide no trustworthy adult fit proof and add generic or contrived repetition."
+    },
+    {
+      "cards": [18, 20],
+      "reason": "These striped button-up shirts are visibly skinny, open-chested or pattern-heavy and directly repeat the tight-shirt failure."
+    },
+    {
+      "cards": [22, 23, 31, 32, 33, 34, 35, 39],
+      "reason": "These on-body cargo and elastic-waist trousers are excessively wide, ballooned or puddled and recreate the baggy-bottom failure."
+    },
+    {
+      "cards": [24, 25],
+      "reason": "These camouflage cargos are busy, novelty-led and product-only, with uncontrolled width and pocket volume."
+    },
+    {
+      "cards": [21, 26, 27, 28, 29, 30, 36, 37, 38, 40],
+      "reason": "These product-only cargos lack reliable on-body waist, thigh, break and movement proof and appear wide, pocket-heavy or generic."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 118 recorded color images rendered and loaded with zero broken files.",
+    "2 products accepted with one exact color and variant selected each: white textured notch-neck sleeveless top and creamy-white relaxed corduroy overshirt.",
+    "38 rejected after the base pass, close inspection of all six variants across two borderline identities, and the final full-resolution candidate-board check.",
+    "Every selected identity, variant and image has zero collision with every prior accepted or conditional item.",
+    "The batch mostly failed for transparent or costume tops, compression fits, novelty prints, skinny shirts, and wide, puddled or unproven cargos."
+  ]
+}

@@ -55,6 +55,7 @@ function waitForNextPaint(): Promise<void> {
 
 function sortOutfitsForDisplay(
   outfits: IntelligentOutfit[],
+  allowItemReuse = false,
 ): IntelligentOutfit[] {
   const normalizedTextIdentity = (value: string | null) =>
     String(value ?? "")
@@ -70,6 +71,7 @@ function sortOutfitsForDisplay(
       right.items.length - left.items.length ||
       right.score.total - left.score.total,
   );
+  if (allowItemReuse) return ranked;
   const usedItems = new Set<string>();
   return ranked.filter((outfit) => {
     const itemKeys = outfit.items.flatMap((item) => {
@@ -93,6 +95,14 @@ function sortOutfitsForDisplay(
     itemKeys.forEach((key) => usedItems.add(key));
     return true;
   });
+}
+
+function isLocalMensAgentPreview(
+  response: OutfitIntelligenceResponse,
+): boolean {
+  return response.trace.templatesConsidered.some((template) =>
+    template.startsWith("saved-draft-id:local-agent:"),
+  );
 }
 
 function attachCutouts(
@@ -527,10 +537,11 @@ export function useOutfitIntelligence() {
       await new Promise((resolve) => window.setTimeout(resolve, 300));
       if (generationIdRef.current !== generationId) return false;
 
-      const firstOutfits = sortOutfitsForDisplay(generated.outfits).slice(
-        0,
-        INITIAL_OUTFIT_COUNT,
-      );
+      const localMensAgentPreview = isLocalMensAgentPreview(generated);
+      const firstOutfits = sortOutfitsForDisplay(
+        generated.outfits,
+        localMensAgentPreview,
+      ).slice(0, INITIAL_OUTFIT_COUNT);
       setResult({ ...generated, outfits: firstOutfits });
       setStatus("ready");
 
@@ -555,7 +566,10 @@ export function useOutfitIntelligence() {
           // the UI showing selections that can no longer be generated.
           const cleanExpanded = [
             ...firstOutfits,
-            ...sortOutfitsForDisplay(expanded.outfits),
+            ...sortOutfitsForDisplay(
+              expanded.outfits,
+              isLocalMensAgentPreview(expanded),
+            ),
           ].slice(0, requestedTotal);
           if (cleanExpanded.length > firstOutfits.length) {
             setResult((current) =>

@@ -1,7 +1,7 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Ruler } from "@phosphor-icons/react";
-import type { PrimeStyleTryonProps } from "@primestyleai/tryon/react";
+import { Ruler } from "@phosphor-icons/react";
+import type { PrimeStyleTryonProps } from "@primestyleai/tryon-shop/react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState, type CSSProperties } from "react";
@@ -10,12 +10,16 @@ import {
   ARC_JACKET_SIZES,
   type ArcJacketSize,
 } from "./arcJacketSizeGuide";
+import {
+  ARC_JACKET_OUTFIT_LOOKS,
+  ARC_JACKET_OUTFIT_RESULTS_BY_COLOUR,
+} from "./arcJacketOutfitLooks";
 import { MerchantSizeGuideModal } from "./MerchantSizeGuideModal";
 import styles from "./merchantPdpSdk.module.css";
 
 const PrimeStyleTryon = dynamic<PrimeStyleTryonProps>(
   () =>
-    import("@primestyleai/tryon/react").then(
+    import("@primestyleai/tryon-shop/react").then(
       (module) => module.PrimeStyleTryon,
     ),
   {
@@ -83,26 +87,22 @@ const SIZE_GUIDE = {
   ]),
 };
 
-export function MerchantPdpSdkSection() {
+const ARC_JACKET_RAW_MODEL_PHOTO =
+  "/media/global-shop/arc-jacket-demo-v2/model-source.png";
+
+type MerchantPdpSdkSectionProps = {
+  productUrl?: string;
+};
+
+export function MerchantPdpSdkSection({
+  productUrl = "/merchants#ai-fitting",
+}: MerchantPdpSdkSectionProps = {}) {
   const [selectedSize, setSelectedSize] = useState<ArcJacketSize>("M");
   const [selectedColour, setSelectedColour] = useState(0);
-  const [bagAdded, setBagAdded] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const activeColour = COLOURS[selectedColour];
 
-  const addToBag = () => setBagAdded(true);
-
-  const chooseColour = (index: number) => {
-    setSelectedColour(index);
-    setBagAdded(false);
-  };
-
-  const moveColour = (direction: -1 | 1) => {
-    chooseColour((selectedColour + direction + COLOURS.length) % COLOURS.length);
-  };
-
-  const previousColour = COLOURS[(selectedColour - 1 + COLOURS.length) % COLOURS.length];
-  const nextColour = COLOURS[(selectedColour + 1) % COLOURS.length];
+  const chooseColour = (index: number) => setSelectedColour(index);
 
   return (
     <section
@@ -110,6 +110,29 @@ export function MerchantPdpSdkSection() {
       className={styles.section}
       aria-labelledby="merchant-sdk-product-title"
     >
+      <header className={styles.sectionIntro}>
+        <div>
+          <span>AI fitting, built into the look</span>
+          <h2 id="merchant-sdk-section-title">
+            Try it. Size it. Style the whole look.
+          </h2>
+        </div>
+        <div
+          className={styles.sectionDemoCue}
+          aria-label="See the Arc Jacket AI fitting demo below"
+        >
+          <span>See a demo!</span>
+          <svg viewBox="0 0 220 130" aria-hidden="true">
+            <path d="M10 24c58-18 154 4 181 77" />
+            <path d="m173 88 19 14 4-24" />
+            <path
+              className={styles.sectionDemoCueEcho}
+              d="M12 28c58-17 150 5 178 74"
+            />
+          </svg>
+        </div>
+      </header>
+
       <div
         className={styles.productStage}
         style={
@@ -128,7 +151,9 @@ export function MerchantPdpSdkSection() {
                   <button
                     key={size}
                     type="button"
-                    className={size === selectedSize ? styles.sizeActive : undefined}
+                    className={
+                      size === selectedSize ? styles.sizeActive : undefined
+                    }
                     onClick={() => setSelectedSize(size)}
                     aria-pressed={size === selectedSize}
                   >
@@ -189,7 +214,7 @@ export function MerchantPdpSdkSection() {
           </div>
 
           <article className={styles.productDetails}>
-            <p className={styles.productType}>Women&apos;s jacket</p>
+            <p className={styles.productType}>Men&apos;s jacket</p>
             <h2 id="merchant-sdk-product-title">Arc Jacket</h2>
             <p className={styles.productDescription}>
               A sculpted cropped jacket with curved ivory panels and one clean
@@ -197,91 +222,86 @@ export function MerchantPdpSdkSection() {
               wear every day.
             </p>
 
-            <PrimeStyleTryon
-              key={activeColour.slug}
-              apiUrl={
-                process.env.NEXT_PUBLIC_API_BASE_URL ||
-                process.env.NEXT_PUBLIC_API_URL ||
-                "http://localhost:4000"
-              }
-              productId={`merchant-arc-jacket-${activeColour.slug}`}
-              productImage={activeColour.image}
-              productImages={COLOURS.map((colour) => colour.image)}
-              garmentReferenceImage={activeColour.image}
-              productTitle={`Arc Jacket — ${activeColour.name}`}
-              productCategory="Women's jackets"
-              productSubcategory="Cropped jacket"
-              productGender="female"
-              productType="Sculpted cropped jacket"
-              productFitType="apparel"
-              productVendor="Merchant Store"
-              productTags={[
-                "women",
-                "jacket",
-                "structured",
-                "curved-panel",
-                "cropped",
-                activeColour.slug,
-              ]}
-              productDescription={`Cropped ${activeColour.name.toLowerCase()} jacket with curved warm-ivory panels, restrained contrast piping, and a polished metal zip.`}
-              productMaterial="Premium cotton twill with smooth satin details and a lightweight lining."
-              sizeGuideData={SIZE_GUIDE}
-              productUrl="/merchants#ai-fitting"
-              buttonText="Find my size & try it on"
-              buttonIcon={<Ruler size={18} weight="bold" />}
-              showPoweredBy
-              addToBagLabel="Add Arc Jacket to bag"
-              onAddToBag={addToBag}
-              className={styles.sdkRoot}
-              classNames={{ button: styles.sdkButton }}
-            />
+            <div className={styles.aiFitCopy}>
+              <strong>AI sizing + virtual try-on</strong>
+              <span>
+                Upload one photo to get your recommended size and see the Arc
+                Jacket on you.
+              </span>
+            </div>
+
+            <div className={styles.sdkCtaWrap}>
+              <div className={styles.sdkPrompt}>
+                <span>Try it now!</span>
+                <svg viewBox="0 0 78 38" aria-hidden="true">
+                  <path d="M3 7c23-8 48 2 64 24" />
+                  <path d="M58 28l10 4-2-11" />
+                  <path
+                    className={styles.sdkPromptEcho}
+                    d="M4 9c22-7 46 2 62 23"
+                  />
+                </svg>
+              </div>
+
+              <PrimeStyleTryon
+                key={activeColour.slug}
+                apiUrl={
+                  process.env.NEXT_PUBLIC_API_BASE_URL ||
+                  process.env.NEXT_PUBLIC_API_URL ||
+                  "http://localhost:4000"
+                }
+                productId={`merchant-arc-jacket-${activeColour.slug}`}
+                productImage={activeColour.image}
+                productImages={[activeColour.image]}
+                garmentReferenceImage={activeColour.image}
+                garmentDetailImage={activeColour.image}
+                productTitle={`Arc Jacket — ${activeColour.name}`}
+                productCategory="Men's jackets"
+                productSubcategory="Cropped jacket"
+                productGender="male"
+                productType="Sculpted cropped jacket"
+                productFitType="apparel"
+                productVendor="Merchant Store"
+                productTags={[
+                  "men",
+                  "menswear",
+                  "jacket",
+                  "structured",
+                  "curved-panel",
+                  "cropped",
+                  activeColour.slug,
+                ]}
+                productDescription={`Cropped ${activeColour.name.toLowerCase()} jacket with curved warm-ivory panels, restrained contrast piping, and a polished metal zip.`}
+                productMaterial="Premium cotton twill with smooth satin details and a lightweight lining."
+                sizeGuideData={SIZE_GUIDE}
+                outfitBuilderSource="ai-stylist"
+                instantOutfitLooks={ARC_JACKET_OUTFIT_LOOKS}
+                instantOutfitResults={
+                  ARC_JACKET_OUTFIT_RESULTS_BY_COLOUR[activeColour.slug]
+                }
+                guidedDemoAutoplay
+                usePresetProfileOnly
+                showHeaderControls={false}
+                presetProfile={{
+                  id: "arc-jacket-demo-model",
+                  gender: "male",
+                  photoUrl: ARC_JACKET_RAW_MODEL_PHOTO,
+                  height: 180,
+                  weight: 78,
+                  heightUnit: "cm",
+                  weightUnit: "kg",
+                  age: 28,
+                }}
+                productUrl={productUrl}
+                buttonText="Find my size & try it on"
+                buttonIcon={<Ruler size={18} weight="bold" />}
+                showPoweredBy
+                className={styles.sdkRoot}
+                classNames={{ button: styles.sdkButton }}
+              />
+            </div>
           </article>
         </div>
-
-        <footer className={styles.productFooter} aria-label="Product navigation">
-          <div className={styles.footerNavigation}>
-            <button
-              type="button"
-              className={styles.footerControl}
-              onClick={() => moveColour(-1)}
-              aria-label={`Previous colour: ${previousColour.name}`}
-            >
-              <span>Prev</span>
-              <ArrowLeft
-                size={32}
-                weight="regular"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-              />
-            </button>
-            <button
-              type="button"
-              className={styles.footerControl}
-              onClick={() => moveColour(1)}
-              aria-label={`Next colour: ${nextColour.name}`}
-            >
-              <span>Next</span>
-              <ArrowRight
-                size={32}
-                weight="regular"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-              />
-            </button>
-          </div>
-          <p className={styles.footerColour} aria-live="polite">
-            <span>{String(selectedColour + 1).padStart(2, "0")} / {String(COLOURS.length).padStart(2, "0")}</span>
-            {activeColour.name}
-          </p>
-          <button
-            type="button"
-            className={styles.addToBagButton}
-            onClick={addToBag}
-            aria-live="polite"
-          >
-            {bagAdded ? "Added to bag" : "Add to bag — $148"}
-          </button>
-        </footer>
       </div>
       <MerchantSizeGuideModal
         open={sizeGuideOpen}

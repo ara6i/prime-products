@@ -1,0 +1,28 @@
+{
+  "outputDir": "winter-sports-midrange-pilot-s230",
+  "scenarioId": "S230",
+  "occasion": "Sports / Workout",
+  "season": "Winter",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceSpec": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/winter-sports-budget-pilot-s229/core-comparison.json",
+  "excludeCandidateKeys": ["T1", "B2"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-accessory",
+  "comparisonTitle": "S230 · Winter Sports / Workout · Mid-Range local screen",
+  "comparisonSubtitle": "Nine unique cold-weather active candidates after the S229 base-core holds",
+  "comparisonNote": "Require warm performance construction, happy Winter color, credible movement proof and controlled cuffs · no product-only hoodie, skinny contrast quarter-zip, dark default top, shiny jogger or beach taper · not UI integrated",
+  "coreTitle": "S230 · provisional Winter Sports Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Winter Mid-Range activewear bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men plum thermal performance crew regular fit winter workout mid range","targetProduct":"plum thermal performance crew with controlled regular movement ease","customerRetailTarget":"$110-$150"},
+    {"category":"bottom","searchPhrase":"men pale taupe weather resistant tapered jogger winter workout","targetProduct":"pale-taupe weather-resistant tapered training jogger","customerRetailTarget":"$120-$170"},
+    {"category":"outerwear","searchPhrase":"men winter white short technical puffer regular fit workout","targetProduct":"winter-white short technical puffer with controlled layering volume","customerRetailTarget":"$150-$210"},
+    {"category":"shoe","searchPhrase":"men cream sage weather resistant low profile winter trainer","targetProduct":"cream-and-sage weather-resistant low-profile winter trainer","customerRetailTarget":"$140-$190"},
+    {"category":"accessory","searchPhrase":"men saffron merino performance beanie winter workout","targetProduct":"saffron merino-blend performance beanie","customerRetailTarget":"$40-$70"}
+  ]
+}

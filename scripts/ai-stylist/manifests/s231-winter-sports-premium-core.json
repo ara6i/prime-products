@@ -1,0 +1,27 @@
+{
+  "outputDir": "winter-sports-premium-pilot-s231",
+  "scenarioId": "S231",
+  "occasion": "Sports / Workout",
+  "season": "Winter",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s230-winter-sports-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-accessory",
+  "comparisonTitle": "S231 · Winter Sports / Workout · Premium local screen",
+  "comparisonSubtitle": "The nine unique Winter active candidates re-evaluated for Premium warmth, textile engineering and movement",
+  "comparisonNote": "Require merino-Tencel thermal knit, soft-shell stretch, down or advanced insulation and premium weather-ready trainer construction · no promotion of low-cost basics · not UI integrated",
+  "coreTitle": "S231 · provisional Winter Sports Premium core",
+  "coreSubtitle": "No local garment reaches the Winter Premium activewear bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Premium re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men plum merino tencel thermal performance crew premium winter workout","targetProduct":"plum merino-Tencel thermal performance crew","customerRetailTarget":"$180-$240"},
+    {"category":"bottom","searchPhrase":"men pale taupe premium softshell stretch jogger winter workout","targetProduct":"pale-taupe Premium soft-shell stretch training jogger","customerRetailTarget":"$180-$240"},
+    {"category":"outerwear","searchPhrase":"men winter white premium short technical down puffer workout","targetProduct":"winter-white Premium short technical down puffer","customerRetailTarget":"$260-$360"},
+    {"category":"shoe","searchPhrase":"men cream sage premium weather resistant winter trainer","targetProduct":"cream-and-sage Premium weather-resistant trainer","customerRetailTarget":"$220-$300"},
+    {"category":"accessory","searchPhrase":"men saffron premium merino performance beanie winter","targetProduct":"saffron Premium merino performance beanie","customerRetailTarget":"$80-$120"}
+  ]
+}

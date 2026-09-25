@@ -6,6 +6,7 @@ import { ProductDetailDesktop } from "./desktop/ProductDetailDesktop";
 import { ProductDetailMobile } from "./mobile/ProductDetailMobile";
 import { ProductShopHeader } from "./ProductShopHeader";
 import { SizeGuideDialog } from "./SizeGuideDialog";
+import { OutfitSizeDialog } from "./OutfitSizeDialog";
 import styles from "./productDetail.module.css";
 
 interface ProductDetailExperienceProps {
@@ -20,10 +21,11 @@ export function ProductDetailExperience({
   const state = useProductDetail(product);
 
   return (
-    <div className={`${styles.page} ${theme === "ai-stylist" ? styles.aiStylistTheme : ""}`}>
+    <div
+      className={`${styles.page} ${theme === "ai-stylist" ? styles.aiStylistTheme : ""}`}
+      data-shop-product-detail
+    >
       <ProductShopHeader
-        brandName={product.brandName}
-        brandLogo={product.brandLogo}
         bagCount={state.bagCount}
         onOpenBag={() => state.setBagOpen(true)}
       />
@@ -34,6 +36,7 @@ export function ProductDetailExperience({
         open={state.sizeGuideOpen}
         onOpenChange={state.setSizeGuideOpen}
       />
+      <OutfitSizeDialog state={state} />
     </div>
   );
 }

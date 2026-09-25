@@ -137,7 +137,7 @@ export function MerchantClosingSection({
           <article className={`${styles.card} ${styles.networkCard}`}>
             <h3>
               Reach your whole
-              <span>shopping network.</span>
+              <span>global shopping network.</span>
             </h3>
             <Image
               className={styles.networkArtwork}

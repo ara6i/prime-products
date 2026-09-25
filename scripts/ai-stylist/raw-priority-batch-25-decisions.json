@@ -1,0 +1,126 @@
+{
+  "batch": "25",
+  "approvals": {
+    "3": {
+      "color": "Khaki",
+      "constraint": "Use this cream-and-caramel openwork collared knit once only for Summer or warm-Spring Casual Everyday, Weekend, Resort, Travel or a relaxed daytime Date. Pair with one controlled straight or tailored short/trouser in chocolate, tobacco, ecru, stone or muted olive and a low-profile cream, tan or brown shoe; keep the base layer discreet and never add another open knit, loud print, skinny bottom or bulky technical shoe."
+    },
+    "15": {
+      "color": "Purple",
+      "constraint": "Use the soft-lavender button-neck sweatshirt once only for Fall, Winter or cool-Spring Casual Everyday, Weekend, Campus, creative Work, Travel or a relaxed Date. Pair with one clean straight trouser or jean in ecru, charcoal, chocolate, stone or deep olive and an off-white, tan or tobacco low-profile shoe; avoid a second bright garment, oversized bottom, dark monotone outfit or bulky running sneaker."
+    },
+    "25": {
+      "color": "Medium Gray",
+      "constraint": "Use this medium-gray clean straight tailored trouser once only for Office, Work, Interview, Business Casual, Smart Casual or a polished Date in Spring, Fall or Winter. Build color above it with ecru, pale blue, dusty pink, sage, burgundy or warm camel, then finish with a brown, oxblood, tan or clean off-white shoe; never pair it with an oversized top, puddled outer layer or all-gray/all-black styling."
+    },
+    "37": {
+      "color": "Light Blue",
+      "constraint": "Use this airy light-blue hooded button-up overshirt once only as a light layer for Spring or mild-Summer Travel, Weekend, Casual Everyday, Resort evening or Airport styling. Pair with a white, cream, cocoa or olive regular-fit base and one controlled ecru, stone, chocolate or muted-green bottom plus a cream, tan or tobacco shoe; do not use it for hot midday heat, formal occasions, rain-performance looks or with another hood."
+    },
+    "40": {
+      "color": "Navy",
+      "constraint": "Use this navy denim workwear vest once only for Spring or Fall Weekend, Casual Everyday, creative Work, Festival or daytime Travel. Lighten it with an ecru, cream, sage, dusty-blue or tobacco base and a stone, cream, olive or warm-brown straight bottom, finishing with an off-white or tobacco shoe; never repeat the source image's dark double-denim styling, add baggy jeans or build an all-navy outfit."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "The black-and-white zigzag sweater uses a giant utility pocket and busy contrast pattern that reads as novelty streetwear rather than a versatile modern knit."
+    },
+    {
+      "cards": [2, 8],
+      "reason": "These ribbed sleeveless or short-sleeve tops visibly cling through the chest, waist and arms, repeating the rejected muscle-fit skinny-top problem."
+    },
+    {
+      "cards": [4, 5],
+      "reason": "These hanger-only striped or watercolor shirts offer no adult shoulder, torso, sleeve or drape proof; the brighter print alone is not enough to approve an unverified fit."
+    },
+    {
+      "cards": [6, 7, 10],
+      "reason": "These product-only contrast-collar sweaters use dated faux-layered details and add no reliable adult fit proof or missing modern role."
+    },
+    {
+      "cards": [9],
+      "reason": "The chunky black quarter-zip sweater is product-only, expensive and supplies no adult shoulder, torso, sleeve or hem proof for another dark basic knit."
+    },
+    {
+      "cards": [11],
+      "reason": "All three notched sleeveless knit variants hang long and apron-like with exposed armholes, limiting adult outfit versatility despite their clean colors."
+    },
+    {
+      "cards": [12],
+      "reason": "The black cardigan appears gender-misclassified and uses decorative gold buttons and embroidered details that do not support the intended men's modern catalog."
+    },
+    {
+      "cards": [13],
+      "reason": "The smoky black-to-apricot gradient ribbed sweater is product-only, visually gimmicky and unproven on an adult body."
+    },
+    {
+      "cards": [14],
+      "reason": "The asymmetric cold-shoulder mock-neck top is narrow, overlong and costume-like rather than a broadly usable modern men's layer."
+    },
+    {
+      "cards": [16],
+      "reason": "The elongated V-neck henley tee is product-only and visibly narrow through its body, with no trustworthy adult fit proof."
+    },
+    {
+      "cards": [17],
+      "reason": "Black and khaki cropped pants keep excessive width from hip to hem; the clean ankle does not offset their boxy, baggy proportion."
+    },
+    {
+      "cards": [18, 23, 24, 26, 27, 28],
+      "reason": "These track pants, casual pants and jeans use exaggerated wide legs, ballooned volume or visible shoe pooling, directly repeating the rejected baggy-bottom problem."
+    },
+    {
+      "cards": [19],
+      "reason": "The apricot product-only loose pant combines an unverified wide shape with frayed edges and chain-like decoration, reading as novelty rather than controlled tailoring."
+    },
+    {
+      "cards": [20],
+      "reason": "The product-only graffiti jeans use an oversized wide shape and loud all-over print with no adult fit or break proof."
+    },
+    {
+      "cards": [21],
+      "reason": "The black-and-white branded active leggings are skin-tight and unsuitable as a general men's outfit bottom."
+    },
+    {
+      "cards": [22],
+      "reason": "The black-and-white bootcut jeans are presented on a likely misclassified model and flare into a wide, puddled hem."
+    },
+    {
+      "cards": [29, 31],
+      "reason": "These tactical and fishing vests use excessive utility pockets, visible workwear cues and product-only presentation without a polished modern outfit role."
+    },
+    {
+      "cards": [30, 32],
+      "reason": "These product-only utility and fleece vests are generic technical basics with no adult fit proof and no useful new color or silhouette role."
+    },
+    {
+      "cards": [33],
+      "reason": "The black hooded puffer is a repetitive dark product-only technical jacket with no adult fit proof and a very high price."
+    },
+    {
+      "cards": [34, 35],
+      "reason": "These product-only denim vests use dated biker or multi-pocket construction and provide no adult fit proof."
+    },
+    {
+      "cards": [36],
+      "reason": "The black contrast-trim sweater vest is shown in an oversized, dark and baggy layered outfit and offers no distinct color role to justify that silhouette."
+    },
+    {
+      "cards": [38],
+      "reason": "The product-only hooded coat is a bulky generic technical shell; its bright recolors do not supply adult fit, drape or movement proof."
+    },
+    {
+      "cards": [39],
+      "reason": "The fuzzy hooded parka uses a bulky body, oversized faux-fur trim and dated outdoor styling rather than a clean modern silhouette."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 110 recorded color images rendered; 150 displayed images loaded with zero broken files.",
+    "5 accepted with one exact color and variant selected each: a cream-and-caramel openwork knit shirt, soft-lavender button-neck sweatshirt, medium-gray tailored trouser, light-blue linen-like hooded overshirt and navy denim workwear vest.",
+    "35 rejected after the base pass and close inspection of 24 promising color variants across seven identities.",
+    "Every selected identity, source product, variant and image has zero collision with every prior accepted or conditional item.",
+    "Rejections include skinny ribbed tops, unproven hanger-only shirts, dated contrast-collar knits, wide or puddled bottoms, novelty jeans, tactical vests, repetitive puffers and bulky parkas."
+  ]
+}

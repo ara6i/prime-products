@@ -1,0 +1,42 @@
+{
+  "outputDir": "spring-formal-premium-pilot-s167",
+  "scenarioId": "S167",
+  "occasion": "Formal Evening",
+  "season": "Spring",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-watch-and-suit",
+  "comparisonTitle": "S167 · Spring Formal Evening · Premium local screen",
+  "comparisonSubtitle": "The 13 unique unreserved Spring Formal candidates re-evaluated for Premium material, construction and drape",
+  "comparisonNote": "Require expressive light Spring color, natural-shoulder tailoring, precise controlled volume and credible Premium finish · no utility overshirts, lounge waists, puddled legs, skinny tailoring or flat synthetic blazers · not UI integrated",
+  "coreTitle": "S167 · provisional Spring Formal Evening Premium core",
+  "coreSubtitle": "No local garment reaches the Spring Premium Formal Evening visual bar · all roles unresolved",
+  "coreNote": "Zero provisional holds after immediate full-resolution Premium re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch", "suit"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men soft lilac silk cotton fine gauge long sleeve knit polo spring premium formal evening","targetProduct":"soft-lilac or pale-aqua silk-cotton fine-gauge long-sleeve knit polo with a clean open collar","customerRetailTarget":"$170-$230"},
+    {"category":"bottom","searchPhrase":"men light stone wool silk single pleat controlled straight trouser spring premium formal evening","targetProduct":"light-stone wool-silk single-pleat trouser with a high clean rise and precise controlled-straight break","customerRetailTarget":"$220-$300"},
+    {"category":"outerwear","searchPhrase":"men muted sky blue wool silk unstructured blazer natural shoulder spring premium formal evening","targetProduct":"muted-sky-blue wool-silk unstructured blazer with natural shoulders and softly controlled shape","customerRetailTarget":"$280-$380"},
+    {"category":"shoe","searchPhrase":"men burgundy suede leather handmade low profile round toe loafer double monk premium formal evening","targetProduct":"burgundy suede-and-leather handmade low-profile round-toe loafer or double monk","customerRetailTarget":"$220-$300"},
+    {"category":"watch","searchPhrase":"men pale blue dial brown leather thin silver case premium minimal watch formal evening","targetProduct":"pale-blue-dial thin silver-case watch with a fine medium-brown leather strap","customerRetailTarget":"$120-$180"},
+    {"category":"suit","searchPhrase":"men muted blue sage wool silk regular relaxed two piece suit premium spring formal evening","targetProduct":"muted-blue or light-sage wool-silk two-piece suit with natural shoulders and controlled straight trousers","customerRetailTarget":"$600-$800"}
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:0312db0cd26acade9f91f474e8b9b19311c3e778","name":"Pink Plaid Button-Up Shirt","decision":"reject-for-s167","decisionReason":"The happy pink cannot overcome loud plaid, novelty styling, dropped shoulders and an oversized long streetwear body; neither material nor construction reaches Premium Formal."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:47ca6448dd910b9ff3503470a65b607a5617e9fb","name":"Sky-Blue Textured Button-Up Shirt","decision":"reject-for-s167","decisionReason":"The color is excellent, but the garment is an open rolled-cuff overshirt over a tee with a long rounded hem. It provides no Premium self-contained evening-shirt construction."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:945a758197eabed56a7270a176e4bd70b22f38bd","name":"Light-Blue Gingham Button-Up Shirt","decision":"reject-for-s167","decisionReason":"Pale gingham, contrast buttons and a casual untucked body read conventional daytime smart-casual, without Premium textile or evening character."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:103874fdc98f0d098753e001e36f6000b75a187d","name":"Apricot Checked Button-Up Shirt","decision":"reject-for-s167","decisionReason":"The warm check, open overshirt construction and boxy body are Casual outer-layer cues; the source does not prove Premium fabric or refined evening drape."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:99c29ea832577fba8e2f28594b32b18c09c741f5","name":"Muted-Blue Utility Button-Up Shirt","decision":"reject-for-s167","decisionReason":"The broad dropped body and two large flap pockets make this a utility overshirt. Muted blue alone does not make it Premium Formal."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:135b9e50f6e72dc7185baef75627227a9a429ef0","name":"Purple Utility Button-Up Shirt","decision":"reject-for-s167","decisionReason":"Purple is welcome, but the very long boxy body, dropped shoulder and oversized utility pockets visibly lack Premium evening precision."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:5bd91e115e4ceaf0c92ee34cf5e55204f4403650","name":"White Four-Pocket Button-Up Shirt","decision":"reject-for-s167","decisionReason":"The safari pocket front, open Resort collar and beach presentation are incompatible with Premium Formal Evening construction."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:79749ba3c0481d9992007e844672ced11dda107a","name":"Light-Apricot Mandarin Shirt","decision":"reject-for-s167","decisionReason":"The line is controlled, but the near-white linen surface reads lightweight daytime minimalist and does not prove Premium fiber, hand or expressive evening color."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320","name":"Light-Gray Relaxed Trouser","decision":"reject-for-s167","decisionReason":"The cropped packshot hides rise, seat, drape and shoe break, while diagonal knee seams and a smooth technical surface fail a Premium tailoring gate."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:2ee1a0fbc1261c590f394c7d2529549fd8a033c9","name":"Navy Relaxed-Straight Trouser","decision":"reject-for-s167","decisionReason":"The broad dark leg puddles over the shoe and supplies neither precise Premium break nor the light Spring palette required."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:04d7241016fbcf860f5b98ce77b100cd3efa1689","name":"Camel Wide-Leg Casual Trouser","decision":"reject-for-s167","decisionReason":"The low casual rise, broad cotton leg and heavy sneaker stacking are visibly everyday Casual, not Premium Formal tailoring."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:0706cc59d6cccb0e2018c17d2d73768af8afa55e","name":"Gray Drawstring Straight Trouser","decision":"reject-for-s167","decisionReason":"A fully gathered waist, exposed rope drawcord, black D-ring and synthetic drape disqualify this lounge trouser from Premium Formal."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:5d5eb7a403cdcbaab147934e34260021d12d0dba","name":"Light-Khaki Relaxed Blazer","decision":"reject-for-s167","decisionReason":"The original shows an extremely long boxy body, overlong sleeves, low patch pockets and thin flat cloth. It lacks Premium tailoring shape, drape and finish."}
+  ]
+}

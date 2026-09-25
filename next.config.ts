@@ -12,6 +12,9 @@ const siteAuthEnabled = process.env.PRIME_PRODUCTS_SITE_AUTH_ENABLED === "true";
 const buildDistDir = process.env.PRIME_PRODUCTS_DIST_DIR || ".next";
 const isCreatorStaticExport =
   process.env.PRIME_CREATOR_STATIC_EXPORT === "true";
+const isMerchantStaticExport =
+  process.env.PRIME_MERCHANT_STATIC_EXPORT === "true";
+const isPartnerStaticExport = isCreatorStaticExport || isMerchantStaticExport;
 const localWorkspaceRoot = path.resolve(process.cwd(), "..");
 const localSdkRoot = process.env.PRIME_PRODUCTS_LOCAL_SDK_ROOT
   ? path.resolve(process.env.PRIME_PRODUCTS_LOCAL_SDK_ROOT)
@@ -31,11 +34,11 @@ const nextConfig: NextConfig = {
   ...(process.env.PRIME_PRODUCTS_LOW_MEMORY_BUILD === "true"
     ? { experimental: { webpackMemoryOptimizations: true } }
     : {}),
-  // The creator release exports only the statically rendered influencer page.
+  // Partner releases export only their statically rendered landing page.
   // Unrelated application routes can be type-checked separately without
   // blocking this isolated artifact.
   typescript: {
-    ignoreBuildErrors: isCreatorStaticExport,
+    ignoreBuildErrors: isPartnerStaticExport,
   },
   allowedDevOrigins: ["127.0.0.1", "localhost", "192.168.6.123"],
   serverExternalPackages: ["onnxruntime-node"],
@@ -48,7 +51,19 @@ const nextConfig: NextConfig = {
             "@primestyleai/tryon/react": localSdkReactAlias,
           },
         },
+      }
+    : {}),
+  ...(useLocalSdkSource || isPartnerStaticExport
+    ? {
         webpack(config) {
+          if (
+            isPartnerStaticExport ||
+            process.env.PRIME_PRODUCTS_LOW_MEMORY_BUILD === "true"
+          ) {
+            config.cache = false;
+          }
+          if (!useLocalSdkSource) return config;
+
           config.resolve = config.resolve ?? {};
           config.resolve.alias = {
             ...(config.resolve.alias ?? {}),
@@ -59,7 +74,7 @@ const nextConfig: NextConfig = {
       }
     : {}),
   images: {
-    unoptimized: isCreatorStaticExport,
+    unoptimized: isPartnerStaticExport,
     qualities: [75, 90],
     remotePatterns: [
       {

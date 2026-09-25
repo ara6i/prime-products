@@ -1,0 +1,77 @@
+{
+  "outputDir": "spring-casual-premium-pilot-s135",
+  "scenarioId": "S135",
+  "occasion": "Casual Everyday",
+  "season": "Spring",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-shoe-bag-accessory",
+  "comparisonTitle": "S135 · Spring Casual Everyday · Premium local screen",
+  "comparisonSubtitle": "Eight Spring-color tops · eight controlled-bottom candidates · eight light layers · all unique and unreserved",
+  "comparisonNote": "Require fresh Zara-led color, refined texture and controlled ease · no winter weight, skinny top, puddled bottom, utility overload, oversized-on-oversized stack or dark monotony · not UI integrated",
+  "coreTitle": "S135 · provisional Spring Casual Everyday Premium core",
+  "coreSubtitle": "No local top reaches the Spring Premium visual bar · all five planned roles unresolved",
+  "coreNote": "Zero provisional holds after full-size borderline re-audit · no outerwear by design · Premium customer-retail proof plus top, bottom, shoe, bag and accessory still missing · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men sky blue premium cotton poplin band collar shirt regular fit spring",
+      "targetProduct": "self-contained sky-blue cotton-poplin band-collar shirt with a controlled regular fit",
+      "customerRetailTarget": "$170-$240"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men ecru stone cotton linen cropped straight trouser clean flat front",
+      "targetProduct": "ecru-stone cotton-linen clean cropped straight trouser",
+      "customerRetailTarget": "$180-$260"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men cream suede low profile court sneaker sage accent gum sole minimal",
+      "targetProduct": "cream-suede low-profile court sneaker with restrained sage accent",
+      "customerRetailTarget": "$260-$360"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men tobacco pebbled leather compact crossbody minimalist no logo",
+      "targetProduct": "tobacco pebbled-leather compact minimalist crossbody",
+      "customerRetailTarget": "$260-$420"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men pale sage premium cotton twill baseball cap minimal logo spring",
+      "targetProduct": "pale-sage premium cotton-twill minimalist baseball cap",
+      "customerRetailTarget": "$140-$220"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:048334ba15315bb75e75ece8e59d4743ba05dca5","name":"Clean Sky-Blue Band-Collar Shirt","decision":"reject-for-s135","decisionReason":"The full-size source shows a dropped shoulder, broad long overshirt body and open styling that depends on a separate white tee. The color is excellent, but it is not a reliable self-contained Premium top and the previous decision understated its volume."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:71f81c72052d42dbc845255031bdbf2e12592ea4","name":"Pale-Mint Striped Overshirt","decision":"keep-available-for-other-scenario","decisionReason":"The pale-mint stripe and twin-pocket overshirt construction are useful, but the worn source is broad, dropped and open over a separate white tee. Preserve it for a later layered Travel or Weekend look with a sharply controlled bottom; it adds too much upper-body volume for this first Premium core."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:dd0cd78c2ea2a34c4afe10d9b0b15c3117e4d4be","name":"Washed Coral-Red Band-Collar Shirt","decision":"reject-for-s135","decisionReason":"The coral color is valuable, but only a creased hanger image is available. Shoulder line, torso ease, sleeve length and hem cannot be verified on a body, and the shiny wrinkled presentation does not meet the Premium visual-proof bar."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:3585f563acb3495d789e9eea3b68a05f6553a4d1","name":"Pale Bean-Green Regular Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The gentle green is Spring-appropriate and the worn fit is credible, but the shirt is long, curved and shown open over a separate tee, so it behaves as a layer rather than a self-contained top. Keep it for a future unique layered outfit."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:79749ba3c0481d9992007e844672ced11dda107a","name":"Light-Apricot Mandarin-Collar Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The lightweight fabric, clean mandarin collar and controlled fit are visually sound, but the near-white apricot has less energy than the sky-blue front-runner and is styled tonally with matching trousers. Preserve it for an elevated Resort, Brunch or Office Casual outfit that adds stronger color elsewhere."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:f27a1a32bc0d6660e3074660de42f61431531d05","name":"Cream-and-Tangerine Raglan T-Shirt","decision":"reject-for-s135","decisionReason":"The tangerine raglan contrast is cheerful, but the tee has an extremely broad long torso, low arm openings and an almost tunic-length hem. It would recreate the loose oversized top proportion the rebuild is removing."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:57161b1bafab134efb446d1e28e19336e0ad28e8","name":"Dusty-Blue Soft-Gray Plaid Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The worn original proves a usable regular-relaxed line and a soft blue-gray palette, but the large conventional plaid reads more Campus or Travel than refined Premium Casual Everyday. It remains available for a scenario where the pattern is intentional."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:e91eeff2e12728ba653563b1948d0728a0b051c1","name":"Soft-Green Striped Button-Down","decision":"keep-available-for-other-scenario","decisionReason":"The soft green pinstripe, clean shoulder and controlled straight body are credible and modern. It is a strong future unique Office Casual or Spring Date top, but T1's band collar and clearer blue create the more distinctive Casual Everyday focal piece."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:2757295a71470293dac80a2c7e1e5684a21f33e3","name":"Khaki Controlled Straight Trouser","decision":"keep-available-for-other-scenario","decisionReason":"The worn outline is controlled and cropped, but the elastic waistband, integrated black web belt, technical nylon surface and shirtless presentation read Outdoor or Travel rather than Premium Zara Casual. Preserve it only for a technical scenario."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:d61bbb433a5e5e5a18d8f920296ad06f2085e703","name":"Washed-Blue Cropped Relaxed-Tapered Jean","decision":"reject-for-s135","decisionReason":"The cropped tapered shape avoids puddling, but the strong whiskering, rolled cuffs and faded dad-jean wash look dated and mass-market. It does not provide the clean polished lower half required beside the band-collar shirt."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:0706cc59d6cccb0e2018c17d2d73768af8afa55e","name":"Gray Regular Straight Drawstring Trouser","decision":"reject-for-s135","decisionReason":"The shiny gray suiting fabric, exposed drawstring hardware, D-ring and close thigh create a hybrid office-jogger look. It is neither relaxed tailoring nor clean casual and fails the Premium finish bar."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:bf7fa4e61eb13d0ac96cfca0028b90814633535c","name":"Ivory Straight-Leg Jean","decision":"reject-for-s135","decisionReason":"The ivory color is correct for the planned palette, but only a flat packshot exists. The wide full-length outline has no worn proof of rise, thigh control, hem length or shoe break, so it cannot receive a Premium hold."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:0ea516ce4334a3e1b7d95485d902e489baa6c0c3","name":"Light-Blue Cotton-Linen Straight Trouser","decision":"reject-for-s135","decisionReason":"The light-blue color is fresh, but the gathered drawstring waistband, oversized patch pockets, uneven rolled hem and barefoot supplier styling read beach loungewear rather than elevated Casual Everyday."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:d3c89988d1f15bb65bf4a21fb3bfcceac90b4625","name":"Light-Tan Straight Drawstring Trouser","decision":"reject-for-s135","decisionReason":"The fabric and color are Spring-compatible, but the very broad lounge leg runs into the shoes and visibly collapses at the hem. It recreates the baggy puddled lower half the user asked to remove."},
+    {"group":"bottom","key":"B7","identity":"shopify_supplier:3095c87326ee7556a98852b611d3737df02b04a4","name":"Flax-Coffee Lightweight Straight Trouser","decision":"reject-for-s135","decisionReason":"The trouser is broad, long and visibly stacked over the sneakers, with a black drawstring and D-ring that cheapen the finish. Its beige-gray tone also makes the Spring palette flatter rather than happier."},
+    {"group":"bottom","key":"B8","identity":"shopify_supplier:2ee1a0fbc1261c590f394c7d2529549fd8a033c9","name":"Navy Lightweight Relaxed-Straight Trouser","decision":"reject-for-s135","decisionReason":"The leg is extremely broad and full length, with fabric pooling and folding over both shoes. The dark navy technical construction would make the outfit heavier and repeat the baggy-bottom problem."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:5d5eb7a403cdcbaab147934e34260021d12d0dba","name":"Light-Khaki Relaxed Blazer","decision":"keep-available-for-other-scenario","decisionReason":"The light blazer has a credible relaxed modern line, but its long broad body is already a large upper-volume piece and is shown over an unrelated black top. It belongs in a dedicated Office Casual look with a compact knit, not over the self-contained band-collar shirt."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:2349a25ac0e2ed693d29d058a48f7be7233b84f7","name":"Light-Khaki Double-Breasted Trench","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a usable light trench, but the dropped shoulders, long sleeves and very broad body make it intentionally oversized. Preserve it for an elevated rainy Travel or Office scenario with a narrow base rather than stacking loose volume here."},
+    {"group":"outerwear","key":"O3","identity":"shopify_supplier:5d4ad508913ada7dc9cf744d6ac1d462762f6923","name":"Apricot Relaxed Zip Hoodie","decision":"keep-available-for-other-scenario","decisionReason":"The warm apricot fleece, upper-hip length and controlled relaxed fit are credible, but a hoodie would cover the selected shirt and turn the look sporty. Keep it for a cooler Spring Weekend or Travel outfit with a simple tee."},
+    {"group":"outerwear","key":"O4","identity":"shopify_supplier:75180814820b72eb8664e3e545c6a0e780b86680","name":"Lime Lightweight Hooded Jacket","decision":"reject-for-s135","decisionReason":"The lime color is welcome, but only an isolated packshot is available. Fit, length and hood volume are unproven, while the thin shiny technical shell reads Outdoor rather than Premium Casual Everyday."},
+    {"group":"outerwear","key":"O5","identity":"shopify_supplier:6f8f9fcd5970b84a5cf90bd15003a79c4ee7b61c","name":"Airy Light-Blue Hooded Overshirt","decision":"reject-for-s135","decisionReason":"The light blue is fresh, but the shiny crinkled fabric, hood strings, oversized brown buttons and shirt-jacket hybrid construction read inexpensive resort wear. It would compete with rather than refine the selected shirt."},
+    {"group":"outerwear","key":"O6","identity":"shopify_supplier:2f30cccc9b77808ce60e8aef94ba5ed6271a4556","name":"Taupe Faux-Leather Zip Shacket","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a clean controlled jacket line and useful suede-like taupe texture, but its weight and mottled brown surface belong to Fall. Preserve it for a later unique cool-season outfit instead of mis-seasoning Spring."},
+    {"group":"outerwear","key":"O7","identity":"shopify_supplier:15af46e83826d45cd0e8225166a53b0d6d62e472","name":"Off-White Powder-Blue Windbreaker","decision":"reject-for-s135","decisionReason":"The off-white and blue palette is appropriate, but the jacket combines a very broad shell, a second visible hood, long drawcords and multiple stacked layers. It creates bulky technical volume rather than a clean Premium finish."},
+    {"group":"outerwear","key":"O8","identity":"shopify_supplier:16979789931509ee789c04fefffd07da8162def5","name":"Green Striped Button-Up Cardigan","decision":"reject-for-s135","decisionReason":"The green, burgundy and cream stripe could be expressive, but there is no worn fit proof and the illustrated outline is narrow through body and arms. The dark retro palette and likely skinny cardigan proportion conflict with the Spring brief."}
+  ]
+}

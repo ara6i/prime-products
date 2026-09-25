@@ -42,6 +42,6 @@ export const editorialNewsStories: EditorialStory[] = [
   {
     eyebrow: "Cold weather",
     title: "The luxury layer",
-    href: "/shop/category/denim",
+    href: "/shop/category/women",
   },
 ];

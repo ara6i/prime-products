@@ -1,0 +1,69 @@
+{
+  "scope": "Seven S217/S221/S229 Sports / Workout products checked at their full source resolution",
+  "outputSlug": "provisional-source-audit-activewear-corrections",
+  "boardFilename": "seven-activewear-source-corrections.jpg",
+  "boardTitle": "Seven activewear products · full-source audit",
+  "boardNote": "One identity rejected from catalog · six retained with Sports / Workout-only styling constraints · no complete outfit approval or UI integration",
+  "minimumWidth": 1000,
+  "minimumHeight": 1333,
+  "localOnly": true,
+  "weddingExcluded": true,
+  "entries": [
+    {
+      "scenarioId": "S217",
+      "identity": "shopify_supplier:f4059b07f867790eb39da047ce3dd310bfa15a81",
+      "label": "Burnt-Coral Vent-Mapped Active Tee",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/18815de0-f58f-4a91-8843-a50950019473-Max-Origin.webp?v=1786230500",
+      "verdict": "pass-with-constraint",
+      "reason": "The full source proves a regular athletic body, natural shoulder and breathable tonal mapping rather than compression tightness. Keep the happy coral as S217's color lead with a controlled olive technical trouser, off-white shell and streamlined light trainer; no second loud color, bulky shoe or casual cargo piece."
+    },
+    {
+      "scenarioId": "S217",
+      "identity": "shopify_supplier:ee3ba1530d518b5036c789599b05a8f4714de2ca",
+      "label": "Olive Ankle-Length Technical Trouser",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/290e830cc863491cadb6623b9f7bf576-Max-Origin.webp?v=1786179720",
+      "verdict": "pass-with-correction",
+      "reason": "The source shows useful thigh ease, a controlled taper and clean ankle length; it is not a skinny jogger. The black buckle and zip hardware make it strictly technical, so pair only with a clean performance top and low-profile trainer; never add cargo pockets, a bulky layer or formal styling."
+    },
+    {
+      "scenarioId": "S217",
+      "identity": "shopify_supplier:daa47d98069dac45b7357df942b7c8dd908fea47",
+      "label": "Off-White Lightweight Technical Shell",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/fa2c17d5-b730-4c08-a739-cd595c1b9e2c-Max-Origin.webp?v=1786226641",
+      "verdict": "pass-with-correction",
+      "reason": "The worn source proves a clean regular shoulder, light movement ease and a straight hip-length body without oversized volume. Keep for Spring or Fall Sports, active Travel or technical Casual only, and use it as the light neutral over one controlled color story."
+    },
+    {
+      "scenarioId": "S221",
+      "identity": "shopify_supplier:b50f3875a4135f5b5b82ff20420885f4d6b6f40a",
+      "label": "Ice-Blue Raglan Performance Tee",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/ecbef78f-b323-49a0-941c-334bfb53e697-Max-Origin.webp?v=1786238787",
+      "verdict": "pass-with-correction",
+      "reason": "The full source has a regular straight body, clean raglan shoulder and subtle tonal ventilation mapping. Keep only for warm-weather Sports / Workout with the mint two-in-one short and a streamlined white-gray trainer; do not turn the pale palette into generic casualwear or add a dark bulky layer."
+    },
+    {
+      "scenarioId": "S221",
+      "identity": "shopify_supplier:56c0746f57ef998678cf3dae029f3fca9c6eb8d9",
+      "label": "Mint Two-in-One Running Short",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/0e840804-0be0-4596-a7b0-6bc88ff34eff-Max.webp?v=1786210919",
+      "verdict": "pass-with-constraint",
+      "reason": "The source clearly proves an above-knee running outer short, fitted support liner and controlled athletic volume. It is authentic gymwear, not a casual Resort short; preserve the two-in-one construction and use only for Sports / Workout with a regular performance tee and minimal trainer."
+    },
+    {
+      "scenarioId": "S229",
+      "identity": "shopify_supplier:e5b94283fe9808da58aa712e17b33289ce633ec7",
+      "label": "Gray-Sage Stand-Collar Half-Zip Active Base",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/ed7b2bd3-2441-42d4-9f21-c64589efd463-Max-Origin.webp?v=1786203794",
+      "verdict": "pass-with-correction",
+      "reason": "The source proves a regular shoulder and straight movement-friendly body, but the long plain silhouette is a supporting Winter base layer rather than a hero piece. Keep only beneath a short cream technical puffer with a lighter controlled-straight trouser and cream-gray trainer; no dark outer layer, dark bottom or all-muted outfit."
+    },
+    {
+      "scenarioId": "S229",
+      "identity": "shopify_supplier:33f20ed218284095318e12a6ed062423fec638af",
+      "label": "Dark-Navy Narrow Stacked Jogger",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/1ea8919b-8cb9-4603-9964-12af442ad215-Max-Origin.webp?v=1786169626",
+      "verdict": "reject-from-catalog",
+      "reason": "The full source contradicts the previous clean-leg judgment: the leg narrows continuously below the knee and visibly stacks over both shoes. Its near-black navy and generic drawstring finish recreate the dark skinny-jogger problem, so it is removed rather than rescued with lighter companions."
+    }
+  ]
+}

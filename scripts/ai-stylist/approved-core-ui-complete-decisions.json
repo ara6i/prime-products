@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-09-17T00:00:00.000Z",
+  "localOnly": true,
+  "decisionRule": "A six-role Separates look is UI-complete only after all six unique identities pass a combined visual gate for season, occasion, budget, palette, silhouette and source-image credibility.",
+  "decisions": [
+    {
+      "scenarioId": "S149",
+      "outfitId": "S149-SEPARATES-V1-PARTIAL-01",
+      "decision": "approve-ui-complete-six-piece-outfit",
+      "boardPath": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/spring-office-budget-s149-six-piece-reuse/six-piece-candidate.jpg",
+      "reason": "The sky-blue regular shirt, controlled khaki pleated trouser and black penny loafer remain a clean Spring Office core. The white unstructured blazer adds a light modern layer without a tight waist or oversized shoulder. The slim black briefcase and plain black belt repeat the loafer as one restrained leather accent family instead of scattered dark filler. Six identities are unique, the full supplier-price total is USD 186.88 inside the UI's USD 0-500 Budget-Friendly band, and the combined silhouette is controlled rather than skinny-top or baggy-bottom.",
+      "addOnIdentities": [
+        "shopify_supplier:5ab0310ae9053fa971557c673b0ef3ddd136b573",
+        "cj:1793456734774763520",
+        "cj:1375007945837907968"
+      ],
+      "visuallyReviewedAt": "2026-09-17",
+      "uiIntegrated": false
+    },
+    {
+      "scenarioId": "S133",
+      "outfitId": "S133-SEPARATES-V1-LOCAL-01",
+      "decision": "approve-ui-complete-six-piece-outfit",
+      "boardPath": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/spring-casual-budget-core-s133-02/six-piece-complete-candidate.jpg",
+      "reason": "The regular cream chevron-knit shirt and clean French-blue controlled-straight trouser create a light modern Spring Casual base without the rejected skinny-top or baggy-bottom imbalance. The short washed-blue bomber is tonal but visibly distinct, the low sand sneaker keeps the footwear quiet, and the compact warm-brown crescent bag adds one grounded accent. The beige woven belt lightens and connects the cream and sand pieces while using a different supplier identity from S149's black belt. Six identities are unique and the USD 158.74 supplier-price total is inside the UI's USD 0-500 Budget-Friendly band.",
+      "productIdentities": [
+        "shopify_supplier:c1d7e0ae691889e61edf338a9b90f0e8389415d6",
+        "shopify_supplier:398e675c18f7e47723df3a8eeae3d2ca50b522ff",
+        "cj:2505230844101616100",
+        "cj:736610cb-75f0-45c7-9225-a3f4860a9ca4",
+        "shopify_supplier:25f0ae396193e56843b28f53ef22cb3376e9c01d",
+        "cj:1444132140966088704"
+      ],
+      "visuallyReviewedAt": "2026-09-17",
+      "uiIntegrated": false
+    }
+  ]
+}

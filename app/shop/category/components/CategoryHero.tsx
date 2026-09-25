@@ -21,7 +21,6 @@ export function CategoryHero({ catalog, onShopEdit }: CategoryHeroProps) {
           alt={catalog.heroAlt}
           fill
           priority
-          unoptimized={catalog.id === "denim"}
           sizes="(max-width: 760px) 100vw, 94vw"
           className={
             catalog.mobileHeroImage ? styles.heroDesktopImage : undefined

@@ -2,7 +2,7 @@
 @import "tailwindcss" source(none);
 @source ".";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import "../node_modules/shadcn/dist/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -1322,4 +1322,13 @@ body {
 [data-pdp-studio] .editor-icon:disabled {
   opacity: 0.35;
   pointer-events: none;
+}
+
+/* Keep the Shop PDP SDK action below all three women's bra-size controls. */
+@media (min-width: 769px) {
+  body:has([data-shop-product-detail])
+    .ps-bp-photo-screen-women
+    .ps-bp-next-btn {
+    bottom: 16px;
+  }
 }

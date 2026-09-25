@@ -1,0 +1,33 @@
+{
+  "batch": "58",
+  "approvals": {
+    "19": {
+      "color": "Brown",
+      "constraint": "Use this warm-brown controlled relaxed micro-letter T-shirt once only for Spring/Summer/Early-Fall Casual Everyday, Travel, Campus, Weekend, daytime Date Night or a restrained casual Party look. Treat it as the outfit's single relaxed-volume piece and pair with a straight or gently tapered ecru, stone, sage, light-blue denim or muted-navy bottom plus low-profile off-white, tan or brown footwear; never use the black or white sibling, another oversized garment, a baggy bottom, bulky trainer, all-dark palette, formal styling, or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20],
+      "reason": "These tops are graphic, slogan, pseudo-brand, racing, skull, novelty, distressed or uncontrolled oversized merchandise and cannot support a clean modern Zara-led wardrobe."
+    },
+    {
+      "cards": [21, 22, 23, 24, 25],
+      "reason": "These shorts are flag-, bodybuilding-, slogan-, gothic- or novelty-print-led, with cheap contrast details or below-knee proportions rather than clean active or resort styling."
+    },
+    {
+      "cards": [26],
+      "reason": "The black moto jean is visibly skinny through the thigh, knee and ankle and includes dated panel details."
+    },
+    {
+      "cards": [27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
+      "reason": "These jeans and carpenter bottoms are wide, puddled, heavily distressed, paint-splattered, contrast-ruched, cropped or novelty-constructed and fail the controlled modern silhouette gate."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 112 recorded color images loaded for full visual review.",
+    "1 top accepted in one exact color after close inspection of all three variants: a warm-brown controlled relaxed micro-letter T-shirt with a clean Zara and Fear-of-God-adjacent proportion.",
+    "39 rejected: the remaining tops were graphic or novelty-led, and every bottom was skinny, wide, puddled, distressed, gimmicky or insufficiently versatile.",
+    "The selected identity, variant and image have zero collision with every prior accepted or conditional item."
+  ]
+}

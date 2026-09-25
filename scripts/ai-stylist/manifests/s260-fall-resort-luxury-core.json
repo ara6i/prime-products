@@ -1,0 +1,28 @@
+{
+  "outputDir": "fall-resort-luxury-pilot-s260",
+  "scenarioId": "S260",
+  "occasion": "Vacation / Resort",
+  "season": "Fall",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s259-fall-resort-premium-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-six-unique-roles",
+  "comparisonTitle": "S260 · Fall Vacation / Resort · Luxury local screen",
+  "comparisonSubtitle": "The unique Fall Resort remainder re-evaluated for Luxury textile and hand finish",
+  "comparisonNote": "Require silk-cashmere knit, wool-cashmere drape, lamb suede and full-grain leather or equivalent Luxury proof · not UI integrated",
+  "coreTitle": "S260 · provisional Fall Resort Luxury core",
+  "coreSubtitle": "No remaining local garment reaches the Luxury Resort bar · six roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men paprika silk cashmere knit polo fall resort luxury", "targetProduct": "paprika silk-cashmere textured Luxury knit polo", "customerRetailTarget": "$300-$450"},
+    {"category": "bottom", "searchPhrase": "men pale stone wool cashmere travel trouser resort luxury", "targetProduct": "pale-stone wool-cashmere Luxury Resort trouser", "customerRetailTarget": "$350-$500"},
+    {"category": "outerwear", "searchPhrase": "men petrol blue lamb suede overshirt resort luxury", "targetProduct": "petrol-blue hand-finished lamb-suede Resort overshirt", "customerRetailTarget": "$650-$900"},
+    {"category": "shoe", "searchPhrase": "men sand handmade calf suede deck shoe luxury", "targetProduct": "sand handmade calf-suede Luxury deck shoe", "customerRetailTarget": "$420-$600"},
+    {"category": "bag", "searchPhrase": "men cognac full grain leather compact weekender luxury", "targetProduct": "cognac full-grain leather Luxury compact weekender", "customerRetailTarget": "$650-$900"},
+    {"category": "accessory", "searchPhrase": "men amber tortoiseshell handmade sunglasses luxury", "targetProduct": "amber-tortoiseshell handmade Luxury sunglasses", "customerRetailTarget": "$350-$700"}
+  ]
+}

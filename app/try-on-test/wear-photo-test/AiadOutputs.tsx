@@ -1,0 +1,29 @@
+"use client";
+
+import type { AiadMeasure } from "./aiadPreprocessing";
+import type { FreshGeometryPrediction } from "./freshGeometryTypes";
+import { aiadSourceLevels } from "./aiadWorkbenchGeometry";
+
+export function AiadOutputs({ prediction, actuals }: { prediction: FreshGeometryPrediction; actuals: Partial<Record<AiadMeasure, number | null>> }) {
+  const aiad = prediction.aiad;
+  if (!aiad) return null;
+  const levels = aiadSourceLevels(prediction).map((row) => {
+    const raw = prediction.cameraFusion?.rows.find((value) => value.kind === row.kind);
+    return raw ? { ...row, widthCm: raw.rawWidthCm, depthCm: raw.rawDepthCm } : row;
+  });
+  const diagramSize = Math.max(60, ...levels.flatMap((row) => row ? [(row.widthCm ?? 0) + 4, (row.depthCm ?? 0) + 4] : []));
+  return <section className="space-y-4" data-testid="aiad-outputs">
+    <div className="overflow-hidden rounded-3xl border border-teal-200 bg-white">
+      <div className="border-b border-teal-100 p-5"><h2 className="text-xl font-black">All Aiad tape outputs + estimated uncertainty</h2><p className="mt-2 text-xs text-slate-600">Raw, unchanged ONNX values. Bands use ±1.959964σ; they are model estimates, not guaranteed accuracy. Male under-bust is intentionally unavailable.</p></div>
+      <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-teal-50 text-xs uppercase"><tr><th className="p-3">Measure</th><th className="p-3">Tape cm</th><th className="p-3">Estimated 95% band cm</th><th className="p-3">Known tape cm</th><th className="p-3">Difference cm</th></tr></thead><tbody>{aiad.measurements.map((m) => {
+        const actual = actuals[m.kind], diff = actual != null && m.valueCm != null ? m.valueCm - actual : null;
+        return <tr className="border-t border-slate-100" key={m.kind}><th className="p-3 capitalize">{m.kind}</th><td className="p-3 font-bold">{m.valueCm?.toFixed(2) ?? "Not applicable"}</td><td className="p-3">{m.valueCm != null && m.sigmaCm != null ? `${(m.valueCm - 1.959964 * m.sigmaCm).toFixed(1)}–${(m.valueCm + 1.959964 * m.sigmaCm).toFixed(1)}` : "—"}</td><td className="p-3">{actual?.toFixed(2) ?? "—"}</td><td className={`p-3 font-bold ${diff == null ? "text-slate-400" : Math.abs(diff) <= 1.27 ? "text-emerald-700" : "text-amber-800"}`}>{diff == null ? "—" : `${diff >= 0 ? "+" : ""}${diff.toFixed(2)}`}</td></tr>;
+      })}</tbody></table></div>
+    </div>
+<div className="rounded-3xl border border-slate-200 bg-white p-5"><h2 className="text-xl font-black">Raw width × inferred depth diagrams</h2><p className="mt-2 text-xs leading-5 text-slate-600">Like Aiad’s report, these are illustrative ellipses from raw ONNX width and depth—not scanned contours, learned 32-point rings, or a tape-length formula. Physical aspect ratios are preserved. Camera comparisons are shown separately above.</p><div className="mt-4 grid gap-3 sm:grid-cols-3 xl:grid-cols-6">{levels.map((row) => row && <div className="rounded-xl bg-slate-50 p-3 text-center" key={row.kind}><p className="text-sm font-bold" style={{ color: row.color }}>{row.label}</p><svg aria-label={`${row.label} illustrative width-depth ellipse`} className="mx-auto h-28 w-full" viewBox={`0 0 ${diagramSize} ${diagramSize}`}><ellipse cx={diagramSize / 2} cy={diagramSize / 2} rx={(row.widthCm ?? 0) / 2} ry={(row.depthCm ?? 0) / 2} fill={`${row.color}22`} stroke={row.color} strokeWidth="0.7" /></svg><p className="text-xs">{row.widthCm?.toFixed(1)} × {row.depthCm?.toFixed(1)} cm</p></div>)}</div></div>
+    <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white"><div className="p-5"><h2 className="text-xl font-black">Aiad’s original six guides</h2><p className="mt-2 text-xs leading-5 text-slate-600">From his supplied <code>row_endpoints</code> helper, reproduced in our adapter. Original coordinates are on the 192×256 canonical mask. Fixed stature fractions locate the rows; the silhouette provides the A/B edges. The helper’s height-scaled image width is separate from ONNX width. These values never change with manual edits.</p></div>
+      <div className="overflow-x-auto"><table className="w-full text-left text-xs"><thead className="bg-slate-50"><tr>{["Level", "Mask row", "A px", "B px", "Fixed height cm", "Image width cm", "Full extent cm"].map((label) => <th className="p-3" key={label}>{label}</th>)}</tr></thead><tbody>{levels.map((row) => <tr key={row.kind} className="border-t border-slate-100"><th className="p-3">{row.label}</th>{[row.endpoints?.row_px, row.endpoints?.A_px, row.endpoints?.B_px, row.endpoints?.row_cm_from_floor, row.endpoints?.width_image_cm, row.endpoints?.full_extent_cm].map((value, i) => <td key={i} className="p-3">{value ?? "Not saved"}</td>)}</tr>)}</tbody></table></div>
+    </div>
+    <div className="grid gap-4 lg:grid-cols-2"><div className="rounded-3xl border border-slate-200 bg-white p-5"><h2 className="text-lg font-black">Ratios from predicted tape</h2><p className="mt-2 text-xs text-slate-600">Our display divides his predicted tape values. These ratios are not additional ONNX inputs or learned ratio outputs.</p><div className="mt-3 flex flex-wrap gap-2">{prediction.ratios.map((r) => <p className="rounded-lg bg-slate-50 p-3 text-xs" key={r.key}>{r.key.replace("ratio.tape.", "").replaceAll("_", " / ")}: <b>{r.value?.toFixed(3) ?? "—"}</b></p>)}</div></div><div className="rounded-3xl border border-slate-200 bg-white p-5"><h2 className="text-lg font-black">10-value predicted shape code</h2><p className="mt-2 text-xs leading-5 text-slate-600">Exported latent coefficients, not a decoded 3D scan. The uploaded package does not contain the fitted PCA body decoder needed to reconstruct its body representation.</p><p className="mt-3 break-words font-mono text-xs">[{aiad.shapeCode.map((v) => v.toFixed(4)).join(", ")}]</p></div></div>
+  </section>;
+}

@@ -127,16 +127,36 @@
 
 @media (max-width: 520px) {
   .layout {
-    gap: 42px;
-    padding-top: 58px;
+    min-height: auto;
+    gap: 34px;
+    padding: 50px 20px 64px;
   }
 
   .copy h2 {
-    font-size: clamp(43px, 12.5vw, 61px);
+    font-size: clamp(38px, 10.8vw, 48px);
+    line-height: 0.96;
+  }
+
+  .copy h2 span {
+    color: #595752;
   }
 
   .description {
+    margin-top: 24px;
     font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .promise {
+    margin-top: 28px;
+  }
+
+  .promise p {
+    min-height: 50px;
+  }
+
+  .closing {
+    margin-top: 20px;
   }
 
 }

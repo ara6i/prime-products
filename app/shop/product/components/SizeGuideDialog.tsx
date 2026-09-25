@@ -20,17 +20,31 @@ export function SizeGuideDialog({
   onOpenChange,
 }: SizeGuideDialogProps) {
   const guide = product.sizeGuide;
+  const isGeneratedShowcase = product.badge === "Generated showcase";
+  const guideTitle = isGeneratedShowcase
+    ? "Showcase size guide"
+    : product.isMock
+      ? "Mock size guide"
+      : "Size guide";
+  const measurementNote =
+    product.fitType === "shoe"
+      ? "Foot length is the recommended foot range. Insole length, outsole width, and heel or sole height are finished-product measurements."
+      : product.fitType === "bag" || product.fitType === "accessory"
+        ? "The table describes the finished one-size item; it is not a body-size recommendation."
+        : "Chest, bust, waist, and hip values are body-fit ranges. Shoulder, sleeve, rise, inseam, length, and hem values are finished-garment point measurements.";
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={styles.sizeGuideDialog}>
         <DialogHeader>
           <DialogTitle className={styles.sizeGuideTitle}>
-            {product.isMock ? "Mock size guide" : "Size guide"}
+            {guideTitle}
           </DialogTitle>
           <DialogDescription className={styles.sizeGuideDescription}>
-            {product.isMock
-              ? `Sample garment measurements for ${product.name}, in centimeters. Illustrative mock data, not supplier sizing or a fit recommendation.`
-              : `Available sizes for ${product.name}. Use AI sizing for a personalized recommendation before checkout.`}
+            {isGeneratedShowcase
+              ? `Structured sample measurements for ${product.name}. They power this local SDK demonstration and are illustrative, not supplier-verified or a personalized fit guarantee.`
+              : product.isMock
+                ? `Sample garment measurements for ${product.name}, in centimeters. Illustrative mock data, not supplier sizing or a fit recommendation.`
+                : `Available sizes for ${product.name}. Use AI sizing for a personalized recommendation before checkout.`}
           </DialogDescription>
         </DialogHeader>
         {guide ? (
@@ -45,7 +59,9 @@ export function SizeGuideDialog({
               <thead>
                 <tr>
                   {guide.headers.map((header) => (
-                    <th key={header} scope="col">{header}</th>
+                    <th key={header} scope="col">
+                      {header}
+                    </th>
                   ))}
                 </tr>
               </thead>
@@ -70,9 +86,9 @@ export function SizeGuideDialog({
         )}
         {product.isMock ? (
           <p className={styles.sizeGuideDescription}>
-            Chest, bust, waist, hip and hem are full garment circumferences.
-            Length, shoulder, sleeve and inseam are point-to-point measurements.
-            Compare with a garment laid flat; double flat widths for circumferences.
+            {isGeneratedShowcase
+              ? measurementNote
+              : "Chest, bust, waist, hip and hem are full garment circumferences. Length, shoulder, sleeve and inseam are point-to-point measurements. Compare with a garment laid flat; double flat widths for circumferences."}
           </p>
         ) : null}
       </DialogContent>

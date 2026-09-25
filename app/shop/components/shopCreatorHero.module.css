@@ -1,0 +1,629 @@
+.section {
+  overflow: clip;
+  padding-bottom: clamp(64px, 7vw, 104px);
+  background: #fffaf2;
+  color: #111114;
+}
+
+.stage {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 62.2fr) minmax(330px, 37.8fr);
+  min-height: clamp(680px, 66vw, 820px);
+  overflow: hidden;
+  background: #f579c7;
+}
+
+.visual {
+  position: relative;
+  z-index: 2;
+  grid-column: 1;
+  grid-row: 1;
+  overflow: hidden;
+  background: #ff5a12;
+}
+
+.models {
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+.headline {
+  position: absolute;
+  z-index: 3;
+  top: clamp(50px, 5.4vw, 76px);
+  right: 2.6vw;
+  left: 2.6vw;
+  margin: 0;
+  color: #fffaf2;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: clamp(76px, 8.65vw, 142px);
+  font-stretch: condensed;
+  font-weight: 900;
+  letter-spacing: -.038em;
+  line-height: .82;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pitch {
+  position: relative;
+  z-index: 4;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  width: min(100%, 430px);
+  padding: clamp(180px, 19vw, 244px) clamp(28px, 4vw, 66px) 92px;
+}
+
+.eyebrow {
+  max-width: 18ch;
+  margin: 0 0 20px;
+  color: #111114;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.promise {
+  max-width: 10ch;
+  margin: 0;
+  font-size: clamp(30px, 3vw, 47px);
+  font-weight: 800;
+  letter-spacing: -.055em;
+  line-height: .98;
+}
+
+.body {
+  max-width: 31ch;
+  margin: 18px 0 0;
+  color: rgba(17, 17, 20, .76);
+  font-size: clamp(13px, 1.1vw, 16px);
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.cta {
+  display: inline-flex;
+  min-height: 62px;
+  align-items: center;
+  gap: 13px;
+  margin-top: 28px;
+  padding: 7px 21px 7px 7px;
+  border: 2px solid #111114;
+  border-radius: 999px;
+  background: #ffd21c;
+  color: #111114;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 850;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.cta:hover {
+  box-shadow: 0 8px 0 #111114;
+  transform: translateY(-4px);
+}
+
+.cta:focus-visible {
+  outline: 3px solid #fffaf2;
+  outline-offset: 4px;
+}
+
+.ctaIcon {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: #111114;
+  color: #ff6a17;
+}
+
+.leftMeta,
+.rightMeta {
+  position: absolute;
+  z-index: 4;
+  bottom: 22px;
+  margin: 0;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.leftMeta {
+  left: 2.7vw;
+  color: rgba(255, 250, 242, .86);
+}
+
+.rightMeta {
+  right: clamp(28px, 4vw, 66px);
+  color: rgba(17, 17, 20, .74);
+}
+
+.journey {
+  padding: clamp(52px, 6vw, 92px) clamp(14px, 2vw, 28px);
+  background: #e6e6e6;
+}
+
+.campaignJourney {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.campaignGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: clamp(38px, 3.4vw, 54px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.campaignGrid > li {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  align-self: stretch;
+}
+
+.campaignCard {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(17, 17, 20, .1);
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(17, 17, 20, .08);
+}
+
+.roundBadge {
+  position: absolute;
+  z-index: 3;
+  top: 264px;
+  right: 16px;
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffd91a;
+  color: #111114;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: -.03em;
+  line-height: 1.05;
+  text-align: center;
+  text-transform: uppercase;
+  transform: rotate(8deg);
+}
+
+.cardVisual {
+  position: relative;
+  min-height: 292px;
+  margin: 0;
+  background: #fff;
+}
+
+.cardVisual img {
+  object-fit: contain;
+  object-position: center;
+}
+
+.cardContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 42px 16px 20px;
+  background: #fff;
+}
+
+.cardContent h3 {
+  max-width: 100%;
+  margin: 0 0 14px;
+  color: #111114;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: clamp(35px, 3vw, 48px);
+  font-weight: 900;
+  letter-spacing: -.035em;
+  line-height: .84;
+  text-transform: uppercase;
+}
+
+.campaignGrid > li:nth-child(1) .cardVisual {
+  min-height: 329px;
+}
+
+.campaignGrid > li:nth-child(1) .roundBadge {
+  top: 301px;
+}
+
+.campaignGrid > li:nth-child(2) .cardVisual {
+  min-height: 390px;
+}
+
+.campaignGrid > li:nth-child(2) .roundBadge {
+  top: 362px;
+}
+
+.campaignGrid > li:nth-child(3) .cardVisual {
+  min-height: 442px;
+}
+
+.campaignGrid > li:nth-child(3) .roundBadge {
+  top: 414px;
+}
+
+.cardSummary {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 10px 10px 12px;
+  border-radius: 22px;
+  background: #ffd91a;
+  color: #111114;
+}
+
+.cardSummary p {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1.3;
+}
+
+.cardChevrons {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  margin-right: -8px;
+}
+
+.cardChevrons svg + svg {
+  margin-left: -10px;
+}
+
+.fitDetails {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 13px 0 0;
+  overflow: hidden;
+  border: 1px solid #111114;
+  background: #111114;
+}
+
+.fitDetails > div {
+  display: grid;
+  gap: 4px;
+  padding: 8px 9px;
+  background: #fff;
+}
+
+.fitDetails dt,
+.fitDetails dd {
+  margin: 0;
+}
+
+.fitDetails dt {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.fitDetails dd {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.sizeDetail,
+.confidenceDetail {
+  grid-column: 1 / -1;
+}
+
+.confidenceDetail {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  background: #f579c7 !important;
+}
+
+.confidenceDetail dd {
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: 29px;
+  letter-spacing: -.02em;
+}
+
+.toolChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.toolChips span,
+.readyStatus {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 10px;
+  border: 1px solid #111114;
+  border-radius: 999px;
+  color: #111114;
+  font-size: 9px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.readyStatus {
+  margin-top: 13px;
+  background: #111114;
+  color: #fff;
+}
+
+.readyStatus svg {
+  color: #ffd91a;
+}
+
+.payoutPanel {
+  width: 100%;
+  margin-top: 13px;
+  border: 1px solid #111114;
+  color: #111114;
+}
+
+.payoutPanel header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 4px 12px;
+  padding: 10px;
+  background: #f579c7;
+}
+
+.payoutPanel header span,
+.payoutPanel header small,
+.payoutPanel footer span,
+.payoutPanel footer small {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.payoutPanel header strong {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: 30px;
+  letter-spacing: -.025em;
+  line-height: .9;
+}
+
+.orderRow {
+  display: flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  border-top: 1px solid #111114;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.payoutPanel footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 10px;
+  border-top: 1px solid #111114;
+  background: #ffd91a;
+}
+
+.journeyConnector {
+  position: absolute;
+  z-index: 6;
+  top: 42%;
+  right: clamp(-43px, -2.9vw, -31px);
+  display: grid;
+  justify-items: center;
+  color: #111114;
+  pointer-events: none;
+  transform: rotate(-6deg);
+}
+
+.journeyConnector small {
+  margin-bottom: -5px;
+  font-family: "Bradley Hand", "Comic Sans MS", cursive;
+  font-size: 12px;
+  line-height: 1;
+}
+
+@media (max-width: 1080px) {
+  .stage {
+    grid-template-columns: minmax(0, 61fr) minmax(310px, 39fr);
+    min-height: 700px;
+  }
+
+  .headline {
+    font-size: clamp(68px, 8.3vw, 92px);
+  }
+
+  .pitch {
+    padding-right: 34px;
+    padding-left: 34px;
+  }
+}
+
+@media (max-width: 860px) {
+  .stage {
+    display: block;
+    min-height: 0;
+    background: #f579c7;
+  }
+
+  .visual {
+    width: 100%;
+    height: min(116vw, 720px);
+  }
+
+  .headline {
+    top: 32px;
+    right: 18px;
+    left: 18px;
+    font-size: clamp(62px, 15vw, 118px);
+    line-height: .86;
+    white-space: normal;
+  }
+
+  .pitch {
+    width: 100%;
+    padding: 64px 24px 92px;
+  }
+
+  .promise {
+    max-width: 12ch;
+    font-size: clamp(42px, 9vw, 68px);
+  }
+
+  .body {
+    max-width: 44ch;
+    font-size: 15px;
+  }
+
+  .leftMeta {
+    top: calc(min(116vw, 720px) - 32px);
+    bottom: auto;
+    left: 18px;
+  }
+
+  .rightMeta {
+    right: 24px;
+    bottom: 24px;
+  }
+}
+
+@media (max-width: 520px) {
+  .visual {
+    height: 570px;
+  }
+
+  .models {
+    object-position: 54% bottom;
+  }
+
+  .headline {
+    top: 26px;
+    font-size: clamp(58px, 18vw, 82px);
+  }
+
+  .pitch {
+    padding: 54px 18px 86px;
+  }
+
+  .leftMeta {
+    top: 535px;
+    max-width: 38ch;
+  }
+
+  .cta {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .cta > svg {
+    margin-left: auto;
+  }
+
+  .journey {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+}
+
+@media (max-width: 900px) {
+  .campaignJourney {
+    overflow-x: auto;
+    padding: 0 8px 18px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+  }
+
+  .campaignGrid {
+    width: max-content;
+    grid-template-columns: repeat(4, min(82vw, 320px));
+    gap: 44px;
+  }
+
+  .campaignGrid > li {
+    scroll-snap-align: start;
+  }
+
+  .campaignCard {
+    min-height: 0;
+  }
+
+  .cardVisual {
+    min-height: 350px;
+  }
+
+  .roundBadge {
+    top: 322px;
+  }
+
+  .cardContent h3 {
+    font-size: clamp(48px, 13vw, 62px);
+  }
+
+  .journeyConnector {
+    right: -45px;
+  }
+}
+
+@media (max-width: 420px) {
+  .journey {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .cardContent {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .roundBadge {
+    right: 18px;
+    width: 72px;
+    height: 72px;
+    font-size: 10px;
+  }
+
+  .cardSummary {
+    border-radius: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta {
+    transition: none;
+  }
+}

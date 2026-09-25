@@ -1,0 +1,62 @@
+{
+  "batch": "29",
+  "approvals": {
+    "2": {
+      "color": "Orange",
+      "constraint": "Use this washed-orange relaxed T-shirt once only for Spring/Summer Casual Everyday, Travel, Resort, Weekend or a deliberate daytime Party look. Pair its loose body with one clean straight or tailored bottom in stone, ecru, charcoal, warm navy or muted olive and a cream, tan or white low-profile shoe; never add wide or puddled jeans, cargo volume, another oversized layer, a bulky sneaker or an all-orange palette."
+    },
+    "25": {
+      "color": "Khaki Color",
+      "constraint": "Use this warm-khaki single-pleat tailored trouser once only for Office, Interview, Date Night, Formal Evening or a restrained Party look. The worn image reads controlled relaxed-straight despite the supplier title; pair it with a regular-proportion knit, polo or shirt in white, soft blue, burgundy, olive, chocolate or black and a brown, oxblood, cream or black low-profile shoe. Do not combine it with an oversized top, chunky footwear, another wide silhouette or any hem pooling."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 10, 15],
+      "reason": "These V-neck or notched tops are tight, elongated and chest-emphasizing, recreating the rejected skinny-top direction."
+    },
+    {
+      "cards": [3, 6, 16],
+      "reason": "These narrow product-only henley and contrast-detail shirts have weak fit proof, dated trim or label details and no useful modern role."
+    },
+    {
+      "cards": [4, 5, 13, 14],
+      "reason": "These product-only zip hoodies and pullovers provide no credible adult shoulder, torso, sleeve, hem or movement proof and repeat already reviewed generic hoodie roles."
+    },
+    {
+      "cards": [7],
+      "reason": "The plaid military-style shirt uses dated contrast panels, gold hardware, an elongated narrow body and artificial-looking product imagery."
+    },
+    {
+      "cards": [8],
+      "reason": "The oversized color-block tee carries visible text branding and a dark synthetic-looking construction rather than a clean versatile basic."
+    },
+    {
+      "cards": [9],
+      "reason": "The product-only black tank is an unproven generic base layer and does not establish a complete adult-male outfit top."
+    },
+    {
+      "cards": [11, 12],
+      "reason": "These lace-up blouses use theatrical pirate-like necklines and artificial-looking model imagery rather than wearable modern menswear."
+    },
+    {
+      "cards": [17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28],
+      "reason": "These washed jeans, bootcuts and wide corduroy or pleated trousers show excessive leg volume, shoe pooling, ballooned cuffs, weak product-only proof or direct visual redundancy with the cleaner cropped jean already accepted in batch 27."
+    },
+    {
+      "cards": [29, 30, 33],
+      "reason": "These faux or PU leather hooded and motorcycle jackets are shiny, dated, product-only and visually repetitive rather than premium modern outerwear."
+    },
+    {
+      "cards": [31, 32, 34, 35, 36, 37, 38, 39, 40],
+      "reason": "These product-only puffers are repetitive, bulky, shiny, contrast-trimmed or utility-heavy and do not prove credible adult fit, movement and proportion."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 177 recorded color images rendered; 177 displayed images loaded with zero broken files.",
+    "2 accepted with one exact color and variant selected each: a washed-orange relaxed T-shirt and a warm-khaki single-pleat tailored trouser.",
+    "38 rejected after the base pass and close inspection of eight promising color variants across two identities; every outerwear product failed.",
+    "Every selected identity, source product, variant and image has zero collision with every prior accepted or conditional item.",
+    "Rejections include skinny V-necks, product-only hoodies, dated plaid and lace-up tops, wide and puddled bottoms, faux leather and repetitive puffers."
+  ]
+}

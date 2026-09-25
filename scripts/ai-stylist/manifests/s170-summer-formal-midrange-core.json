@@ -1,0 +1,42 @@
+{
+  "outputDir": "summer-formal-midrange-pilot-s170",
+  "scenarioId": "S170",
+  "occasion": "Formal Evening",
+  "season": "Summer",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-watch-and-suit",
+  "comparisonTitle": "S170 · Summer Formal Evening · Mid-Range local screen",
+  "comparisonSubtitle": "Seven unreserved warm-weather tops · five remaining trousers · two light layers · all unique and unreserved",
+  "comparisonNote": "Require breathable evening polish, controlled tailoring, confident Summer color and credible Mid-Range material · no unproven product renders, lounge waists, puddled hems, skinny knits or Resort overshirts · not UI integrated",
+  "coreTitle": "S170 · provisional Summer Formal Evening Mid-Range core",
+  "coreSubtitle": "No local garment reaches the Summer Mid-Range Formal Evening visual bar · all roles unresolved",
+  "coreNote": "Zero provisional holds after 14 source originals were checked and re-evaluated for Summer Formal · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch", "suit"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men pale pistachio mercerized cotton fine knit short sleeve polo regular fit summer formal evening","targetProduct":"pale-pistachio mercerized-cotton fine-knit short-sleeve polo with an open collar and controlled body","customerRetailTarget":"$90-$130"},
+    {"category":"bottom","searchPhrase":"men ivory linen viscose double pleat controlled straight trousers summer formal evening","targetProduct":"ivory linen-viscose high-rise double-pleat trouser with a controlled straight leg and precise break","customerRetailTarget":"$110-$160"},
+    {"category":"outerwear","searchPhrase":"men smoky aqua linen blend unstructured blazer natural shoulder summer formal evening","targetProduct":"smoky-aqua linen-blend unstructured blazer with natural shoulders and controlled regular-relaxed shape","customerRetailTarget":"$140-$200"},
+    {"category":"shoe","searchPhrase":"men oxblood woven leather low profile round toe penny loafer summer formal evening","targetProduct":"oxblood woven-leather low-profile round-toe penny loafer","customerRetailTarget":"$130-$180"},
+    {"category":"watch","searchPhrase":"men champagne dial tan leather thin gold case minimal watch summer formal evening","targetProduct":"champagne-dial thin gold-case watch with a clean tan-leather strap","customerRetailTarget":"$40-$70"},
+    {"category":"suit","searchPhrase":"men smoky aqua linen blend regular relaxed two piece suit straight trousers summer formal evening","targetProduct":"smoky-aqua linen-blend two-piece suit with natural shoulders and controlled straight trousers","customerRetailTarget":"$330-$430"}
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:4364e9fb40a107fbdd3db7c2b04eb9ebef44b1e2","name":"Khaki Short-Sleeve Mock-Neck Knit","decision":"reject-for-s170","decisionReason":"The product-only cutout does not prove shoulder, chest, hem or worn drape, and the washed khaki color lacks the fresh Summer energy needed for a Mid-Range Formal core."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:f7e9aaeca612a242f9dc832cf56866df4010398c","name":"Green Short-Sleeve Mock-Neck Knit","decision":"reject-for-s170","decisionReason":"The green is welcome, but the isolated straight product render gives no worn proportion or material-quality proof and reads like a basic mock-neck tee rather than evening knitwear."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:9cc79e1077cee3d17f7915da83507df07302d073","name":"White Short-Sleeve Button-Up","decision":"reject-for-s170","decisionReason":"The crumpled hanger image shows a casual band-collar overshirt layered over a crew tee with rolled sleeves and a long rounded hem, not polished Mid-Range shirting."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:c088c69f9f54b34e8066d0bfb29314b31c32c1f0","name":"Light-Blue Ribbed Short-Sleeve Knit","decision":"reject-for-s170","decisionReason":"The light blue and rib are promising, but the cropped product shape appears narrow and bunched, includes a small hem badge and omits full on-body proportion proof."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:2950c7b291a65a0052cf1680b5ad6cc594a5c5f9","name":"Lake-Blue Long-Sleeve Shirt","decision":"reject-for-s170","decisionReason":"The hanger-only shirt depends on a white base tee, rolled cuffs and long overshirt styling, while a novelty embroidered figure weakens the clean Formal finish."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:f49451cbcc0ad90a1ca810a75aa551f0a6e26970","name":"Pale-Brown Relaxed Summer Shirt","decision":"reject-for-s170","decisionReason":"The shirt is worn open over a tee with dropped shoulders, a long body and visible backpack hardware, making it a Casual overshirt rather than Formal shirting."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:0ea516ce4334a3e1b7d95485d902e489baa6c0c3","name":"Light-Blue Straight Drawstring Trouser","decision":"reject-for-s170","decisionReason":"The exposed elastic drawstring waist, patch pockets, crumpled fabric, rolled hems and barefoot presentation clearly identify beach lounge pants, not Formal tailoring."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:3095c87326ee7556a98852b611d3737df02b04a4","name":"Flax-Coffee Lightweight Trouser","decision":"reject-for-s170","decisionReason":"A gathered waist, prominent black athletic drawcord and long puddled hem over sneakers make the trouser casual and poorly controlled for Summer Formal."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:d3c89988d1f15bb65bf4a21fb3bfcceac90b4625","name":"Light-Tan Straight Drawstring Trouser","decision":"reject-for-s170","decisionReason":"The exposed rope drawstring, broad lounge leg and pooling hem remain non-formal despite the useful pale color."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320","name":"Light-Gray Relaxed Trouser","decision":"reject-for-s170","decisionReason":"The isolated packshot omits rise, seat, full length, drape and shoe break, while diagonal knee seams and a smooth technical surface undermine Formal tailoring."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:0706cc59d6cccb0e2018c17d2d73768af8afa55e","name":"Gray Straight Drawstring Trouser","decision":"reject-for-s170","decisionReason":"The gathered elastic waist, visible drawstring, black D-ring and soft synthetic construction are lounge details, not Mid-Range evening tailoring."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:5ab0310ae9053fa971557c673b0ef3ddd136b573","name":"White Lightweight Button-Up Blazer","decision":"reject-for-s170","decisionReason":"The white layer has a comparatively controlled line, but the washed translucent cloth, long bunched sleeves, T-shirt styling and generic patch-pocket construction read inexpensive Smart Casual rather than Mid-Range Formal."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:f23bed156981c3eefb1fe37ab832a7e947f07775","name":"Sky-Blue Lightweight Shacket","decision":"reject-for-s170","decisionReason":"The cheerful sky blue is right emotionally, but the rumpled linen-like surface, rolled cuffs, chest pocket, open shirt construction and jeans styling make this a Resort shacket rather than a Formal blazer."}
+  ]
+}

@@ -1,0 +1,181 @@
+{
+  "outputDir": "fall-casual-budget-pilot-s141",
+  "scenarioId": "S141",
+  "occasion": "Casual Everyday",
+  "season": "Fall",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-local-companion-selected-existing-cj-top-reserved-bottom-and-shoe-already-queued",
+  "comparisonTitle": "S141 · Fall Casual Everyday · Budget-Friendly local companion screen",
+  "comparisonSubtitle": "Six modern tops · six controlled full-length bottoms · eight Fall layers · all unique and available",
+  "comparisonNote": "Require modern Zara-led color, clean controlled volume and credible Fall function without skinny tops, puddled trousers, dark monotony or utility overload · not UI integrated",
+  "coreTitle": "S141 · provisional Fall Casual Everyday Budget-Friendly core",
+  "coreSubtitle": "Reserved warm-brown CJ polo still needs ecru straight denim and a light-stone court sneaker",
+  "coreNote": "Twenty originals reviewed · no local companion passed · no new product selected or reserved · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["bottom", "shoe"],
+  "queuedRoles": [],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:f5c6e9fa5a6e29ce932dad2d8a56377ce802e6d1",
+      "name": "Sky-Blue Corduroy Quarter-Zip",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The cheerful sky blue and ribbed texture are useful, but the original shows a deeply dropped shoulder, broad torso and long loose hem. It would replace the already reserved brown polo and reintroduce the oversized-top proportion the rebuild is removing."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:5c758ac61260c421f746e98c9c2f2e01b4ade9d0",
+      "name": "Light-Green Washed Long-Sleeve Polo",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The washed green is attractive, but the polo is very wide through shoulder and chest, hangs long below the hip and gathers heavily at the cuffs. It is another loose top rather than a cleaner companion for this first S141 look."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:0794e5a5d5baa6332657d5add9661ae7a433d05c",
+      "name": "Dusty-Blue Corduroy Shirt",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "This is a credible regular-relaxed dusty-blue overshirt with good Fall texture, but it is sold and accepted as the top slot and depends on a white base tee. S141 look 1 already has a unique refined brown polo reserved, so this identity is kept available for a later outfit rather than creating a role collision."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:1567c4a133b03632c21e4cbfe188bc4b1dde577b",
+      "name": "Off-White Ribbed Knit",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The off-white geometric rib is visually clean, but the hanger-and-hand image provides no adult shoulder, torso, sleeve, length or movement proof. The fuzzy high-neck construction also reads colder and heavier than the mild-Fall everyday brief."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:1feb73f9a4814c97fb18176dbbb9e7dcd3e854f0",
+      "name": "Peacock-Blue Casual Shirt",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The peacock blue is a useful happier color, but the hanger-only image does not prove the shoulder, body, sleeve or worn hem. It also duplicates the reserved top role rather than completing the brown-polo outfit."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:25e4ce74d0c84d92ba777c70dc01436d62f1fe17",
+      "name": "Brown Textured Knit Pullover",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The original is extremely oversized through shoulder, sleeve and body and falls well below the hip. Its dark marled brown would also duplicate the reserved warm-brown polo and produce the muddy oversized look the user rejected."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:bf7fa4e61eb13d0ac96cfca0028b90814633535c",
+      "name": "Ivory Straight-Leg Jean",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The ivory color is exactly right, but the isolated packshot supplies no rise, thigh, knee, worn length or shoe-break proof. Its broad flat lower leg cannot be trusted as the controlled ecru straight denim this outfit requires."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:fabf15cd2935c7ad9c6fc6909dbdb8e94ea7f169",
+      "name": "Light-Gray Straight Washed Jean",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The worn image proves a broad relaxed leg, but the hem visibly puddles and bunches over bulky white trainers. The heavy gray fade also makes the brown-polo outfit duller and rougher than the clean ecru direction."
+    },
+    {
+      "group": "bottom",
+      "key": "B3",
+      "identity": "shopify_supplier:8d9fb6dd4f6289a656e655b8b9b0e6efe6005a3d",
+      "name": "Dark Straight Zip-Detail Jean",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The dark jean has controlled thigh width, but the long lower leg stacks heavily at the ankle and the side-zip details add unnecessary hardware. Brown over washed black would also return this Casual look to the dark palette being removed."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:0706cc59d6cccb0e2018c17d2d73768af8afa55e",
+      "name": "Gray Straight Drawstring Trouser",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The cropped source hides the hem and shoe break, while the elastic waist, long drawcord, black metal tips and D-ring read like an office jogger. It is less clean and less color-lifting beside warm brown than an ecru five-pocket jean."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:04d7241016fbcf860f5b98ce77b100cd3efa1689",
+      "name": "Camel Relaxed-Straight Cotton Trouser",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The camel trouser has credible relaxed-straight ease and only one modest break, but it sits too close to the warm-brown reserved polo. The result would be a flat brown-on-camel outfit instead of the brighter ecru contrast planned for S141."
+    },
+    {
+      "group": "bottom",
+      "key": "B6",
+      "identity": "shopify_supplier:bd9eb3e71ff44da3314d188440d5608833ddeaae",
+      "name": "Army-Green Pleated Corduroy Trouser",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The product-only image provides no worn rise or drape proof, while the double pleats, balloon taper, rolled cuffs and D-ring make the leg visually busy. Dark olive corduroy with warm brown would also create a muddy heavy palette."
+    },
+    {
+      "group": "outerwear",
+      "key": "O1",
+      "identity": "shopify_supplier:2f30cccc9b77808ce60e8aef94ba5ed6271a4556",
+      "name": "Taupe Faux-Leather Shacket",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The short faux-leather shacket has credible on-body proof and a modern shape, but its dropped shoulder and broad sleeve add another relaxed volume over the polo. Taupe-brown over a warm-brown top would make this first look overly tonal and dull."
+    },
+    {
+      "group": "outerwear",
+      "key": "O2",
+      "identity": "shopify_supplier:15af46e83826d45cd0e8225166a53b0d6d62e472",
+      "name": "Khaki Lightweight Windbreaker",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The off-white and powder-blue palette is fresh, but the source styling shows a large hood, long drawcords, layered double hem and very broad body. That technical layered bulk conflicts with the clean brown knit and controlled everyday silhouette."
+    },
+    {
+      "group": "outerwear",
+      "key": "O3",
+      "identity": "shopify_supplier:5d5eb7a403cdcbaab147934e34260021d12d0dba",
+      "name": "Light-Khaki Relaxed Blazer",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The blazer is long and boxy with oversized patch pockets, and its proof styling is smart rather than ordinary Casual Everyday. It would make the simple polo outfit look office-led while adding unnecessary upper-body volume."
+    },
+    {
+      "group": "outerwear",
+      "key": "O4",
+      "identity": "shopify_supplier:a09789e253d99e246a5ec1964db4154eb9305f6a",
+      "name": "Army-Green Corduroy Jacket",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The isolated product image provides no adult fit proof, and multiple flap pockets, exposed metal zips and gathered hem create utility clutter. Army green over warm brown would also make the palette dark and muddy."
+    },
+    {
+      "group": "outerwear",
+      "key": "O5",
+      "identity": "shopify_supplier:0b0026d57ef43627c967e2592a1523d683169666",
+      "name": "Warm-Brown Snap Shirt Jacket",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The product-only source cannot prove worn shoulder or body proportions, and its large chest flaps, long rounded hem and dangling hardware read utility-heavy. It would also repeat the reserved top's brown color instead of lifting it."
+    },
+    {
+      "group": "outerwear",
+      "key": "O6",
+      "identity": "shopify_supplier:881a65e9f9d80311bf1b074fec346f7eb5c53887",
+      "name": "Khaki Relaxed Shacket",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The on-body proof shows a long, dropped and very broad shirt jacket with large four-pocket construction. It would put a baggy neutral layer over the brown polo and repeat the loose-on-loose silhouette the user explicitly rejected."
+    },
+    {
+      "group": "outerwear",
+      "key": "O7",
+      "identity": "shopify_supplier:ba598eeda96118aa245db1edd47953e4ce9d83d0",
+      "name": "Blazing-Red Lightweight Shell",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The red shell has useful Fall weather function and a controlled worn body, but gray hood lining, black technical patches and backpack styling make it a Travel/Sports focal layer. Bright red beside warm brown is less coherent than the clean brown-ecru-stone plan."
+    },
+    {
+      "group": "outerwear",
+      "key": "O8",
+      "identity": "shopify_supplier:6630dc2632bcf5d749f8ca2811f8295abdb23953",
+      "name": "Caramel-Orange Technical Shell",
+      "decision": "reject-for-s141-look-1",
+      "decisionReason": "The product-only shell has no worn shoulder, sleeve or length proof and is covered with technical pockets, cords, hook-and-loop patches and hardware. Caramel over warm brown would also become a heavy orange-brown block rather than a fresh Casual palette."
+    }
+  ]
+}

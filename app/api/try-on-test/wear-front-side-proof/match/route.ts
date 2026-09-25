@@ -104,7 +104,10 @@ interface UserPosePoint {
   yPx: number;
   score: number;
 }
-interface UserPoseAsset { mhr70?: UserPosePoint[] }
+interface UserPoseAsset {
+  imageSize?: [number, number];
+  mhr70?: UserPosePoint[];
+}
 interface RigidCameraSolution {
   canonicalBreadthCm: number;
   canonicalDepthCm: number;
@@ -219,7 +222,11 @@ async function loadUserLandmarkLengths(
   )));
   const outline = pairsFromFlat(mesh.outline);
   const vertical = outline.map(([, y]) => y);
-  const bodyHeightPx = Math.max(...vertical) - Math.min(...vertical);
+  // The Blender mesh outline is stored in normalized image coordinates while
+  // Sapiens landmarks are stored in source-image pixels. Put both on the same
+  // pixel scale before turning landmark distances into centimetres.
+  const imageHeightPx = Number(pose.imageSize?.[1] ?? mesh.imageSize[1]);
+  const bodyHeightPx = (Math.max(...vertical) - Math.min(...vertical)) * imageHeightPx;
   if (!(bodyHeightPx > 0) || !(statureCm > 0)) throw new Error("The user mesh has no valid known-height scale.");
   const cmPerPixel = statureCm / bodyHeightPx;
   const result: Partial<Record<LandmarkLengthPart, {
@@ -307,7 +314,9 @@ export async function GET(request: Request) {
   const overlayRoot = path.join(process.cwd(), ".local-ml", "wear-mesh-overlay");
   try {
     const cameraFitPromise: Promise<RigidCameraReport | null> = photoId === "delaram" && sidePhotoId === "delaram-side"
-      ? readFile(path.join(overlayRoot, "rigid-camera-fit", "index.json"), "utf8").then((value) => JSON.parse(value) as RigidCameraReport)
+      ? readFile(path.join(overlayRoot, "rigid-camera-fit", "index.json"), "utf8")
+        .then((value) => JSON.parse(value) as RigidCameraReport)
+        .catch(() => null)
       : Promise.resolve(null);
     const [frontMesh, sideMesh, cameraFit, shapeIndex] = await Promise.all([
       readFile(path.join(overlayRoot, "blender-mesh", `${photoId}.json`), "utf8").then((value) => JSON.parse(value) as MeshAsset),

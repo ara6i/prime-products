@@ -53,6 +53,36 @@ export function usePartnerInterest(audience: PartnerAudience) {
           audience === "influencer"
             ? undefined
             : String(formData.get("website") ?? ""),
+        companyName:
+          audience === "supplier"
+            ? String(formData.get("companyName") ?? "")
+            : undefined,
+        productCategory:
+          audience === "supplier"
+            ? String(formData.get("productCategory") ?? "")
+            : undefined,
+        catalogSize:
+          audience === "supplier"
+            ? String(formData.get("catalogSize") ?? "")
+            : undefined,
+        sellingModel:
+          audience === "supplier"
+            ? String(formData.get("sellingModel") ?? "")
+            : undefined,
+        shippingReach:
+          audience === "supplier"
+            ? String(formData.get("shippingReach") ?? "")
+            : undefined,
+        connectionGoals:
+          audience === "supplier"
+            ? formData
+                .getAll("connectionGoals")
+                .map((goal) => String(goal))
+            : undefined,
+        notes:
+          audience === "supplier"
+            ? String(formData.get("notes") ?? "")
+            : undefined,
         primaryChannel:
           creatorProfiles[0]?.platform ??
           (String(

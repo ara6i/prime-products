@@ -66,17 +66,21 @@ function getAngleForIndex(index: number): number {
 
 function getNearestIndex(rotation: number): number {
   const step = TWO_PI / MODEL_COUNT;
-  const normalized = (((-rotation) % TWO_PI) + TWO_PI) % TWO_PI;
+  const normalized = ((-rotation % TWO_PI) + TWO_PI) % TWO_PI;
   return Math.round(normalized / step) % MODEL_COUNT;
 }
 
 function shortestPath(current: number, target: number): number {
   let difference = target - current;
-  difference = ((difference + Math.PI) % TWO_PI + TWO_PI) % TWO_PI - Math.PI;
+  difference =
+    ((((difference + Math.PI) % TWO_PI) + TWO_PI) % TWO_PI) - Math.PI;
   return current + difference;
 }
 
-function useTurntableRotation(selectedIndex: number, onIndexChange: (index: number) => void) {
+function useTurntableRotation(
+  selectedIndex: number,
+  onIndexChange: (index: number) => void,
+) {
   const [isDragging, setIsDragging] = useState(false);
   const rotationRef = useRef(getAngleForIndex(selectedIndex));
   const velocityRef = useRef(0);
@@ -96,26 +100,29 @@ function useTurntableRotation(selectedIndex: number, onIndexChange: (index: numb
     animationFrameRef.current = 0;
   }, []);
 
-  const snapToAngle = useCallback((targetAngle: number, targetIndex: number) => {
-    cancelAnimation();
+  const snapToAngle = useCallback(
+    (targetAngle: number, targetIndex: number) => {
+      cancelAnimation();
 
-    const animate = () => {
-      const current = rotationRef.current;
-      const difference = targetAngle - current;
+      const animate = () => {
+        const current = rotationRef.current;
+        const difference = targetAngle - current;
 
-      if (Math.abs(difference) < 0.001) {
-        rotationRef.current = targetAngle;
-        lastReportedIndexRef.current = targetIndex;
-        queueMicrotask(() => onIndexChangeRef.current(targetIndex));
-        return;
-      }
+        if (Math.abs(difference) < 0.001) {
+          rotationRef.current = targetAngle;
+          lastReportedIndexRef.current = targetIndex;
+          queueMicrotask(() => onIndexChangeRef.current(targetIndex));
+          return;
+        }
 
-      rotationRef.current = current + difference * TURNTABLE.snapStiffness;
+        rotationRef.current = current + difference * TURNTABLE.snapStiffness;
+        animationFrameRef.current = requestAnimationFrame(animate);
+      };
+
       animationFrameRef.current = requestAnimationFrame(animate);
-    };
-
-    animationFrameRef.current = requestAnimationFrame(animate);
-  }, [cancelAnimation]);
+    },
+    [cancelAnimation],
+  );
 
   const startInertia = useCallback(() => {
     cancelAnimation();
@@ -126,7 +133,10 @@ function useTurntableRotation(selectedIndex: number, onIndexChange: (index: numb
 
       if (Math.abs(velocityRef.current) < TURNTABLE.snapThreshold) {
         const nearestIndex = getNearestIndex(rotationRef.current);
-        const target = shortestPath(rotationRef.current, getAngleForIndex(nearestIndex));
+        const target = shortestPath(
+          rotationRef.current,
+          getAngleForIndex(nearestIndex),
+        );
         snapToAngle(target, nearestIndex);
         return;
       }
@@ -137,37 +147,52 @@ function useTurntableRotation(selectedIndex: number, onIndexChange: (index: numb
     animationFrameRef.current = requestAnimationFrame(animate);
   }, [cancelAnimation, snapToAngle]);
 
-  const onPointerDown = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
-    cancelAnimation();
-    isDraggingRef.current = true;
-    setIsDragging(true);
-    lastPointerXRef.current = event.clientX;
-    velocityRef.current = 0;
-    event.currentTarget.setPointerCapture(event.pointerId);
-  }, [cancelAnimation]);
+  const onPointerDown = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      cancelAnimation();
+      isDraggingRef.current = true;
+      setIsDragging(true);
+      lastPointerXRef.current = event.clientX;
+      velocityRef.current = 0;
+      event.currentTarget.setPointerCapture(event.pointerId);
+    },
+    [cancelAnimation],
+  );
 
-  const onPointerMove = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current) return;
-    const deltaX = event.clientX - lastPointerXRef.current;
-    lastPointerXRef.current = event.clientX;
-    const deltaRotation = deltaX * TURNTABLE.dragSensitivity;
-    velocityRef.current = 0.7 * velocityRef.current + 0.3 * deltaRotation;
-    rotationRef.current += deltaRotation;
-  }, []);
+  const onPointerMove = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (!isDraggingRef.current) return;
+      const deltaX = event.clientX - lastPointerXRef.current;
+      lastPointerXRef.current = event.clientX;
+      const deltaRotation = deltaX * TURNTABLE.dragSensitivity;
+      velocityRef.current = 0.7 * velocityRef.current + 0.3 * deltaRotation;
+      rotationRef.current += deltaRotation;
+    },
+    [],
+  );
 
-  const onPointerUp = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
-    setIsDragging(false);
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-    startInertia();
-  }, [startInertia]);
+  const onPointerUp = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (!isDraggingRef.current) return;
+      isDraggingRef.current = false;
+      setIsDragging(false);
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+      startInertia();
+    },
+    [startInertia],
+  );
 
   useEffect(() => {
-    if (selectedIndex !== lastReportedIndexRef.current && !isDraggingRef.current) {
-      const target = shortestPath(rotationRef.current, getAngleForIndex(selectedIndex));
+    if (
+      selectedIndex !== lastReportedIndexRef.current &&
+      !isDraggingRef.current
+    ) {
+      const target = shortestPath(
+        rotationRef.current,
+        getAngleForIndex(selectedIndex),
+      );
       snapToAngle(target, selectedIndex);
     }
     lastReportedIndexRef.current = selectedIndex;
@@ -206,8 +231,7 @@ function StylistDisc({
     const update = () => {
       if (rotatingTopRef.current) {
         const degrees = (rotationRef.current * 180) / Math.PI;
-        rotatingTopRef.current.style.transform =
-          `translate(-50%, -50%) scaleY(0.27) rotate(${degrees}deg)`;
+        rotatingTopRef.current.style.transform = `translate(-50%, -50%) scaleY(0.27) rotate(${degrees}deg)`;
       }
       animationFrame = requestAnimationFrame(update);
     };
@@ -275,17 +299,20 @@ const MODEL_DEPTH = 4.5;
 
 function wrapSlotPhase(phase: number): number {
   const half = MODEL_COUNT / 2;
-  return ((phase + half) % MODEL_COUNT + MODEL_COUNT) % MODEL_COUNT - half;
+  return ((((phase + half) % MODEL_COUNT) + MODEL_COUNT) % MODEL_COUNT) - half;
 }
 
 function ModelCarousel({
+  images,
+  imageAlt,
   rotationRef,
   tuning,
 }: {
+  images: readonly [string, string, string, string, string];
+  imageAlt: (index: number) => string;
   rotationRef: RefObject<number>;
   tuning: PlatformTuning;
 }) {
-  const { t } = useCreatorLanguage();
   const modelContainerRef = useRef<HTMLDivElement>(null);
   const shadowContainerRef = useRef<HTMLDivElement>(null);
   const spotlightContainerRef = useRef<HTMLDivElement>(null);
@@ -301,8 +328,10 @@ function ModelCarousel({
       }
 
       const models = modelContainer.children as HTMLCollectionOf<HTMLElement>;
-      const shadows = shadowContainerRef.current?.children as HTMLCollectionOf<HTMLElement> | undefined;
-      const spotlights = spotlightContainerRef.current?.children as HTMLCollectionOf<HTMLElement> | undefined;
+      const shadows = shadowContainerRef.current?.children as
+        HTMLCollectionOf<HTMLElement> | undefined;
+      const spotlights = spotlightContainerRef.current?.children as
+        HTMLCollectionOf<HTMLElement> | undefined;
       const rotationInSlots = rotationRef.current / (TWO_PI / MODEL_COUNT);
       const outerFrontness = Math.cos(FIGMA_SLOT_ARC * 2);
       const modelBottom = BASE_MODEL_BOTTOM + tuning.modelOffsetY;
@@ -313,18 +342,26 @@ function ModelCarousel({
       for (let index = 0; index < MODEL_COUNT; index += 1) {
         const phase = wrapSlotPhase(index + rotationInSlots);
         const absolutePhase = Math.abs(phase);
-        const slotAngle = Math.min(absolutePhase, MODEL_COUNT / 2) * FIGMA_SLOT_ARC;
+        const slotAngle =
+          Math.min(absolutePhase, MODEL_COUNT / 2) * FIGMA_SLOT_ARC;
         const frontness = Math.max(0, Math.cos(slotAngle));
-        const depthProgress = Math.min(1, (1 - frontness) / (1 - outerFrontness));
+        const depthProgress = Math.min(
+          1,
+          (1 - frontness) / (1 - outerFrontness),
+        );
         const seamStart = Math.max(0, MODEL_COUNT / 2 - 0.5);
-        const wrapFade = absolutePhase <= seamStart
-          ? 1
-          : Math.max(0, 1 - (absolutePhase - seamStart) * 2);
+        const wrapFade =
+          absolutePhase <= seamStart
+            ? 1
+            : Math.max(0, 1 - (absolutePhase - seamStart) * 2);
         const scale = FIGMA_MIN_SCALE + FIGMA_SCALE_RANGE * frontness;
-        const brightness = TURNTABLE.unselectedBrightness + (activeBrightness - TURNTABLE.unselectedBrightness) * frontness;
+        const brightness =
+          TURNTABLE.unselectedBrightness +
+          (activeBrightness - TURNTABLE.unselectedBrightness) * frontness;
         const activeLight = Math.pow(frontness, 8) * wrapFade;
         const horizontalOffset = Math.sin(slotAngle) * modelSpread;
-        const leftPercent = 50 + tuning.modelOffsetX + Math.sign(phase) * horizontalOffset;
+        const leftPercent =
+          50 + tuning.modelOffsetX + Math.sign(phase) * horizontalOffset;
         const bottomPercent = modelBottom + depthProgress * MODEL_DEPTH;
         const heightPercent = modelSize * scale;
         const zIndex = Math.round((MODEL_COUNT / 2 - absolutePhase) * 10) + 4;
@@ -369,18 +406,30 @@ function ModelCarousel({
 
   return (
     <>
-      <div ref={spotlightContainerRef} className={styles.turntableSpotlights} aria-hidden>
-        {MODEL_IMAGES.map((source) => <span key={`${source}-spotlight`} />)}
+      <div
+        ref={spotlightContainerRef}
+        className={styles.turntableSpotlights}
+        aria-hidden
+      >
+        {images.map((source) => (
+          <span key={`${source}-spotlight`} />
+        ))}
       </div>
-      <div ref={shadowContainerRef} className={styles.turntableShadows} aria-hidden>
-        {MODEL_IMAGES.map((source) => <span key={`${source}-shadow`} />)}
+      <div
+        ref={shadowContainerRef}
+        className={styles.turntableShadows}
+        aria-hidden
+      >
+        {images.map((source) => (
+          <span key={`${source}-shadow`} />
+        ))}
       </div>
       <div ref={modelContainerRef} className={styles.turntableModels}>
-        {MODEL_IMAGES.map((source, index) => (
+        {images.map((source, index) => (
           <span key={source}>
             <Image
               src={source}
-              alt={t("AI Stylist outfit model {number}", { number: index + 1 })}
+              alt={imageAlt(index)}
               width={1497}
               height={2160}
               draggable={false}
@@ -392,23 +441,65 @@ function ModelCarousel({
   );
 }
 
-export function InfluencerTurntable() {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const { rotationRef, isDragging, pointerHandlers } = useTurntableRotation(selectedIndex, setSelectedIndex);
-  const { t } = useCreatorLanguage();
+export interface InfluencerTurntableStageProps {
+  images: readonly [string, string, string, string, string];
+  imageAlt: (index: number) => string;
+  selectedIndex: number;
+  onSelectedIndexChange: (index: number) => void;
+  labels?: {
+    dragSurface: string;
+    dragHint: string;
+    controls: string;
+    rotateLeft: string;
+    rotateRight: string;
+    of: string;
+  };
+}
 
-  const navigate = useCallback((direction: -1 | 1) => {
-    setSelectedIndex((current) => (current + direction + MODEL_COUNT) % MODEL_COUNT);
-  }, []);
+const DEFAULT_LABELS: NonNullable<InfluencerTurntableStageProps["labels"]> = {
+  dragSurface: "Drag left or right to rotate the MyAIFitting styling platform",
+  dragHint: "Drag to rotate",
+  controls: "Platform rotation controls",
+  rotateLeft: "Rotate platform left",
+  rotateRight: "Rotate platform right",
+  of: "of",
+};
+
+/** The reusable AI Stylist disc used by both the creator and Shop experiences. */
+export function InfluencerTurntableStage({
+  images,
+  imageAlt,
+  selectedIndex,
+  onSelectedIndexChange,
+  labels = DEFAULT_LABELS,
+}: InfluencerTurntableStageProps) {
+  const { rotationRef, isDragging, pointerHandlers } = useTurntableRotation(
+    selectedIndex,
+    onSelectedIndexChange,
+  );
+
+  const navigate = useCallback(
+    (direction: -1 | 1) => {
+      onSelectedIndexChange(
+        (selectedIndex + direction + MODEL_COUNT) % MODEL_COUNT,
+      );
+    },
+    [onSelectedIndexChange, selectedIndex],
+  );
 
   return (
     <div className={styles.turntableScene} data-dragging={isDragging}>
       <StylistDisc rotationRef={rotationRef} tuning={PLATFORM_TUNING} />
-      <ModelCarousel rotationRef={rotationRef} tuning={PLATFORM_TUNING} />
+      <ModelCarousel
+        images={images}
+        imageAlt={imageAlt}
+        rotationRef={rotationRef}
+        tuning={PLATFORM_TUNING}
+      />
 
       <div
         className={styles.turntableDragSurface}
-        aria-label={t("Drag left or right to rotate the MyAIFitting styling platform")}
+        aria-label={labels.dragSurface}
         role="slider"
         aria-valuemin={1}
         aria-valuemax={MODEL_COUNT}
@@ -426,19 +517,55 @@ export function InfluencerTurntable() {
 
       <div className={styles.turntableMoveHint} aria-hidden>
         <HandGrabbing size={15} weight="fill" />
-        <span>{t("Drag to rotate")}</span>
+        <span>{labels.dragHint}</span>
         <ArrowsLeftRight size={17} weight="bold" />
       </div>
 
-      <div className={styles.turntableControls} aria-label={t("Platform rotation controls")}>
-        <button type="button" aria-label={t("Rotate platform left")} onClick={() => navigate(-1)}>
+      <div className={styles.turntableControls} aria-label={labels.controls}>
+        <button
+          type="button"
+          aria-label={labels.rotateLeft}
+          onClick={() => navigate(-1)}
+        >
           <ArrowCounterClockwise size={17} weight="bold" />
         </button>
-        <span><strong>{selectedIndex + 1}</strong> {t("of")} {MODEL_COUNT}</span>
-        <button type="button" aria-label={t("Rotate platform right")} onClick={() => navigate(1)}>
+        <span>
+          <strong>{selectedIndex + 1}</strong> {labels.of} {MODEL_COUNT}
+        </span>
+        <button
+          type="button"
+          aria-label={labels.rotateRight}
+          onClick={() => navigate(1)}
+        >
           <ArrowClockwise size={17} weight="bold" />
         </button>
       </div>
     </div>
+  );
+}
+
+export function InfluencerTurntable() {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const { t } = useCreatorLanguage();
+
+  return (
+    <InfluencerTurntableStage
+      images={MODEL_IMAGES}
+      imageAlt={(index) =>
+        t("AI Stylist outfit model {number}", { number: index + 1 })
+      }
+      selectedIndex={selectedIndex}
+      onSelectedIndexChange={setSelectedIndex}
+      labels={{
+        dragSurface: t(
+          "Drag left or right to rotate the MyAIFitting styling platform",
+        ),
+        dragHint: t("Drag to rotate"),
+        controls: t("Platform rotation controls"),
+        rotateLeft: t("Rotate platform left"),
+        rotateRight: t("Rotate platform right"),
+        of: t("of"),
+      }}
+    />
   );
 }

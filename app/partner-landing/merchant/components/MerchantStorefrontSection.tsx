@@ -41,7 +41,7 @@ export function MerchantStorefrontSection({
 
           <h2 id="shopping-network-title">
             Your own store.
-            <span>In our shopping network.</span>
+            <span>In our global shopping network.</span>
           </h2>
 
           <p className={styles.storefrontBody}>

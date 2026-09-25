@@ -1,0 +1,68 @@
+{
+  "outputDir": "fall-casual-midrange-pilot-s142",
+  "scenarioId": "S142",
+  "occasion": "Casual Everyday",
+  "season": "Fall",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "full-resolution-correction-bottom-only-fall-core-awaiting-replacement-top-shoe-bag-accessory",
+  "comparisonTitle": "S142 · Fall Casual Everyday · Mid-Range local screen",
+  "comparisonSubtitle": "Ten expressive fall tops · ten candidate bottoms · eight light layers · all unique and unreserved",
+  "comparisonNote": "Require modern Zara-led balance, visible color and controlled volume · no skinny top, puddled trouser, bulky shoe, all-dark palette or fake-luxury signal · not UI integrated",
+  "coreTitle": "S142 · corrected Fall Casual Everyday Mid-Range partial core",
+  "coreSubtitle": "controlled blue-gray straight jean · oversized lavender half-zip rejected",
+  "coreNote": "One provisional hold · replacement regular-length top plus shoe, bag and accessory missing · no complete outfit · not UI integrated",
+  "frontRunnerKeys": ["B9"],
+  "missingSlots": ["top", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "shoe",
+      "searchPhrase": "men stone suede low profile retro sneaker burgundy accent gum sole",
+      "targetProduct": "stone-suede low-profile retro sneaker with restrained burgundy accent",
+      "customerRetailTarget": "$170-$220"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men tobacco suede leather compact crossbody minimalist no logo",
+      "targetProduct": "tobacco suede-leather compact minimalist crossbody",
+      "customerRetailTarget": "$140-$200"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men muted burgundy fine merino rib beanie minimal logo fall",
+      "targetProduct": "muted-burgundy fine-merino minimalist rib beanie",
+      "customerRetailTarget": "$120-$180"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:f9c9196d870785e0b931566b5097b11a6898df94","name":"Anchor-Red Heavyweight Relaxed T-Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The original proves a strong burgundy color and substantial jersey, but the dropped shoulder and long broad body need a more precise companion than this S142 pool provides. Preserve it for a unique early-Fall Party, Travel or Campus look rather than forcing another loose silhouette here."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:0ae1b8390f88851ec82739efb73704f9d134321e","name":"Mustard Clean Half-Zip Sweatshirt","decision":"reject-for-s142","decisionReason":"The mustard color is useful, but the worn source is visibly narrow through chest, waist and sleeves with a long close body. It recreates the skinny-top proportion the rebuild is explicitly removing."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:9e8719479f6d34233b8dfd557767f52a1bffa7b4","name":"Peacock-Blue Fine-Knit Crew","decision":"reject-for-s142","decisionReason":"The fine knit is body-conscious through chest and torso and the pushed three-quarter sleeves make it look dated and dressy. It is not the relaxed-but-controlled Zara casual silhouette required here."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:beacbb3827e6eb7d02fe7ed511e1648aa3e2da0b","name":"Light-Apricot Asymmetric Cable Sweater","decision":"keep-available-for-other-scenario","decisionReason":"The split cable texture and light apricot tone are credible, and the body is intentionally relaxed rather than skinny. Keep it unique for a future Fall/Winter outfit with a stronger dark controlled trouser; the available S142 bottoms do not give it enough contrast without visual heaviness."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:65c1781808a6d16c8113a9839cb77a38926cf9fe","name":"Dark-Green Red Oatmeal Argyle Knit","decision":"keep-available-for-other-scenario","decisionReason":"The red, green and oatmeal graphic is cheerful and seasonally strong, but the fuzzy knit is very oversized through shoulder, sleeve and body. Reserve it for a deliberate Holiday or Party look with an exceptionally clean narrow-straight bottom, not this everyday core."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:1c0f112e7a66a7893bf1c88cce7a4a75b666af19","name":"White Ribbed Notch-Neck Long-Sleeve Top","decision":"reject-for-s142","decisionReason":"The ribbing is useful, but the source shows a very broad dropped shoulder, long loose body and lounge-like drape. It would add upper-body bulk without the polished structure needed for Mid-Range Casual Everyday."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:562ef215a70cbcfd7ce173689cb66a424834d5bd","name":"Mustard-Yellow Regular Button-Down Shirt","decision":"reject-for-s142","decisionReason":"The saturated mustard is welcome, but the shirt is close through chest and arms, conventionally tucked into heavily whiskered jeans and styled with a button-down collar. The source reads dated mainstream casual rather than current Zara."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:0794e5a5d5baa6332657d5add9661ae7a433d05c","name":"Dusty-Blue Corduroy Long-Sleeve Shirt","decision":"reject-for-s142","decisionReason":"The color and corduroy surface are credible, but the shirt is dropped, long and worn as an open layer over a separate white tee. It is not a self-contained top and would require another unique product while repeating the loose layered silhouette."},
+    {"group":"top","key":"T10","identity":"shopify_supplier:0312db0cd26acade9f91f474e8b9b19311c3e778","name":"Warm-Pink Tonal Plaid Shirt","decision":"reject-for-s142","decisionReason":"The pink tonal plaid is cheerful, but the extreme shoulder drop, oversized sleeves, long shirt-tail and distressed surface create a festival costume effect. The novelty pink woven bag in the source reinforces that it is not a clean everyday Mid-Range core."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:fabf15cd2935c7ad9c6fc6909dbdb8e94ea7f169","name":"Light-Gray Straight Washed Jean","decision":"reject-for-s142","decisionReason":"The jean is broad through the full leg and visibly collapses and stacks over both high-top shoes. It is exactly the puddled bottom-heavy proportion the rebuild must remove."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:bd9eb3e71ff44da3314d188440d5608833ddeaae","name":"Army-Green Pleated Corduroy Trouser","decision":"reject-for-s142","decisionReason":"Only a flat product image is available, so rise, thigh volume and shoe break cannot be verified. The deep pleats and balloon-to-cuff outline also risk an overly baggy lower half."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:04d7241016fbcf860f5b98ce77b100cd3efa1689","name":"Camel Relaxed-Straight Cotton Trouser","decision":"reject-for-s142","decisionReason":"The camel tone is useful, but the leg is broad and the full inseam bunches over both chunky trainers. It would repeat the loose, puddled bottom the user rejected."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:c4694a3740fce46e4cb36568c29f9bd341398236","name":"Medium-Blue Straight-Leg Jean","decision":"keep-available-for-other-scenario","decisionReason":"The worn source gives a basically controlled straight line, but the shiny stretch-denim surface, conventional blue wash and small hem stack make it less refined than B9. Keep it available for a simpler future casual outfit rather than this color-led core."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:aabdffc99d8e26c94746c17f630f60a6bb135e66","name":"Yellow-Green Straight-Leg Jean","decision":"reject-for-s142","decisionReason":"The acid yellow-green wash is attention-grabbing, but the jean is extremely long, very wide and heavily puddled over bulky sneakers. The source also pairs it with an oversized graphic sweatshirt, exactly the silhouette problem being removed."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:0706cc59d6cccb0e2018c17d2d73768af8afa55e","name":"Gray Regular Straight Drawstring Trouser","decision":"reject-for-s142","decisionReason":"The visible upper leg is controlled, but the source cuts off the hem and shoes, so the full break cannot be verified. Exposed drawstrings, black grommets and the side D-ring also make it sporty rather than a clean Mid-Range everyday trouser."},
+    {"group":"bottom","key":"B7","identity":"shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320","name":"Light-Gray Relaxed-Fit Trouser","decision":"reject-for-s142","decisionReason":"Only an isolated product image is available. Rise, thigh ease, inseam and shoe break are unproven, while the synthetic technical sheen and knee seaming read Travel rather than polished Fall Casual Everyday."},
+    {"group":"bottom","key":"B8","identity":"shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265","name":"Military-Green Casual Trouser","decision":"reject-for-s142","decisionReason":"The army-green color is seasonally credible, but the image is product-only and does not prove the complete silhouette. The dangling multicolor bead charm and slightly shiny surface also undermine the clean Zara direction."},
+    {"group":"bottom","key":"B9","identity":"shopify_supplier:d38c480b9f56c27ada2ad07ecfe6f1d0669e5dbc","name":"Blue-Gray Washed Straight-Leg Jean","decision":"visual-front-runner-for-s142","decisionReason":"The original proves a controlled straight-tapered leg, clean ankle crop and zero puddling, with enough room through the thigh to avoid skinny denim. Its blue-gray wash quietly grounds the lavender half-zip while keeping the board light and modern."},
+    {"group":"bottom","key":"B10","identity":"shopify_supplier:f82ede51ff9fb0180d8e8318e06f575aa5f03944","name":"Nostalgic-Blue Straight-Leg Jean","decision":"reject-for-s142","decisionReason":"The light wash is useful, but the leg is longer and visibly breaks over both sneakers. Its low, pale summer wash is also less seasonally grounded than B9 for this Fall core."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:15af46e83826d45cd0e8225166a53b0d6d62e472","name":"Off-White Powder-Blue Lightweight Windbreaker","decision":"reject-for-s142","decisionReason":"The off-white and powder-blue palette is attractive, but the jacket combines a broad long shell with a second oversized hooded layer. It would make the upper half bulky and requires a separate dark graphic base not included in the product."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:cb3221d742c0aaad361cfbcd62a31272142a2274","name":"Light-Blue Regular-Relaxed Denim Jacket","decision":"reject-for-s142","decisionReason":"The wash is light, but the jacket is broad and boxy with the shoulder and torso obscured by crossed arms and an unrelated black bag. The source does not provide clean menswear fit proof for this core."},
+    {"group":"outerwear","key":"O3","identity":"shopify_supplier:7d49a77c6a00bae512e0cf904b9b68d8402b81e9","name":"Khaki Lightweight Zip Jacket","decision":"reject-for-s142","decisionReason":"The light khaki is usable, but the taped black zips, high technical hood and glove-and-rope styling read hiking Travel gear. It does not support a modern everyday Zara outfit."},
+    {"group":"outerwear","key":"O4","identity":"shopify_supplier:6dc9a69a70a364cceecd8091ca99770dd30be06f","name":"Army-Green Corduroy Shacket","decision":"reject-for-s142","decisionReason":"The shacket has a serviceable regular line, but the dark green, rolled sleeves, open white-tee styling and visibly cut-out source feel generic and dated beside the cleaner lavender core."},
+    {"group":"outerwear","key":"O5","identity":"shopify_supplier:881a65e9f9d80311bf1b074fec346f7eb5c53887","name":"Khaki Relaxed Button-Down Shacket","decision":"reject-for-s142","decisionReason":"The fabric and pocket geometry are modern, but the shacket is long, very broad and dropped, with oversized cuffs. Layering it over T9 would stack two loose upper pieces and destroy the controlled balance."},
+    {"group":"outerwear","key":"O6","identity":"shopify_supplier:2349a25ac0e2ed693d29d058a48f7be7233b84f7","name":"Light-Khaki Double-Breasted Trench","decision":"keep-available-for-other-scenario","decisionReason":"The light trench is visually credible and its full length is shown, but it is deliberately oversized and styled with shirt, tie and cropped black trousers. Preserve it for a unique Office, Date or elevated Travel outfit rather than casual S142."},
+    {"group":"outerwear","key":"O7","identity":"shopify_supplier:16979789931509ee789c04fefffd07da8162def5","name":"Green Striped Button-Up Cardigan","decision":"reject-for-s142","decisionReason":"Only an isolated product image is available, so chest, shoulder and sleeve ease cannot be confirmed. The narrow body, formal shirt collar and heavy retro burgundy striping risk a dated slim silhouette."},
+    {"group":"outerwear","key":"O8","identity":"shopify_supplier:a514a8da05fe246ab7a55950bbd761138973f084","name":"Light-Blue Vintage Wash Denim Jacket","decision":"reject-for-s142","decisionReason":"The light wash is pleasant, but the jacket is heavily dropped and broad through the shoulder and sleeve. It would add a second relaxed-volume piece over T9 and push the outfit back toward oversized layering."}
+  ]
+}

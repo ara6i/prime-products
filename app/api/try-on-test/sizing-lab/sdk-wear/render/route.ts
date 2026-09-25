@@ -16,23 +16,41 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const execFileAsync = promisify(execFile);
+type RenderProfile = "full" | "browser-comparison";
+
 const renderPromises = new Map<string, Promise<WearBlenderMetadata>>();
 // A comparison reads artifact URLs after both render requests resolve. Keeping
 // only two bodies allowed a third in-flight selection to prune one of those
 // files between the JSON response and the browser fetch, producing a transient
 // 404. Keep a small working set of recent comparison pairs instead.
-const MAX_CACHED_BODIES = 24;
+const MAX_CACHED_BODIES = 14;
 const PREBUILT_BUCKET = process.env.PRIMESTYLE_WEAR_S3_BUCKET ?? "primestyleai-wear3d-921049726279-us-east-1";
 const PREBUILT_REGION = process.env.PRIMESTYLE_WEAR_S3_REGION ?? "us-east-1";
-const PREBUILT_VERSION = process.env.PRIMESTYLE_WEAR_ARTIFACT_VERSION ?? "wear-blender-canonical-v1-20260908";
+const PREBUILT_VERSION = process.env.PRIMESTYLE_WEAR_CROSS_SECTION_ARTIFACT_VERSION
+  ?? "wear-blender-cross-sections-v2-20260921";
+const COMPARISON_PREBUILT_VERSION = process.env.PRIMESTYLE_WEAR_COMPARISON_ARTIFACT_VERSION
+  ?? "wear-blender-browser-comparison-v1-20260921";
 
 interface WearBlenderMetadata {
   scanId: string;
   source: string;
   truthBoundary: string;
   generator: { application: string; version: string; headless: boolean; pythonApi: boolean };
+  renderProfile?: RenderProfile;
   geometry: { originalFaces: number; browserFaces: number; browserVertices: number };
   renderSchemaVersion: number;
+  crossSections?: Array<{
+    row: "waist" | "hips";
+    heightCm: number;
+    straightABWidthCm: number;
+    frontCurvedABCm: number;
+    backCurvedBACm: number;
+    meshCircumferenceCm: number;
+    pointA: number[];
+    pointB: number[];
+    loopPointCount: number;
+    source: string;
+  }>;
   cameraCards: Array<{
     id: string;
     file: string;
@@ -55,8 +73,25 @@ const CAMERA_FILES = [
   "camera-side-right-90.png",
 ] as const;
 
-function outputDirectory(scanId: string) {
-  return path.join(process.cwd(), ".local-ml", "wear-sdk-heldout", "blender", scanId.toLowerCase());
+function outputDirectory(scanId: string, profile: RenderProfile) {
+  const directory = profile === "browser-comparison" ? "blender-comparison" : "blender";
+  return path.join(process.cwd(), ".local-ml", "wear-sdk-heldout", directory, scanId.toLowerCase());
+}
+
+function artifactVersion(profile: RenderProfile) {
+  return profile === "browser-comparison" ? COMPARISON_PREBUILT_VERSION : PREBUILT_VERSION;
+}
+
+function requiredFiles(profile: RenderProfile): readonly string[] {
+  return profile === "browser-comparison"
+    ? ["model.glb", "metadata.json"]
+    : ["model.glb", "scene.blend", "metadata.json", "front-2d.json", "side-2d.json", ...CAMERA_FILES];
+}
+
+function awsCopyArguments(source: string, destination: string) {
+  const args = ["s3", "cp", source, destination, "--region", PREBUILT_REGION, "--only-show-errors"];
+  if (process.env.PRIMESTYLE_WEAR_S3_PROFILE) args.push("--profile", process.env.PRIMESTYLE_WEAR_S3_PROFILE);
+  return args;
 }
 
 async function exists(filePath: string) {
@@ -68,17 +103,22 @@ async function exists(filePath: string) {
   }
 }
 
-async function cachedMetadata(scanId: string) {
-  const directory = outputDirectory(scanId);
-  const required = ["model.glb", "scene.blend", "metadata.json", "front-2d.json", "side-2d.json", ...CAMERA_FILES];
+async function cachedMetadata(scanId: string, profile: RenderProfile) {
+  const directory = outputDirectory(scanId, profile);
+  const required = requiredFiles(profile);
   if (!(await Promise.all(required.map((name) => exists(path.join(directory, name))))).every(Boolean)) return null;
   try {
     const metadata = JSON.parse(await readFile(path.join(directory, "metadata.json"), "utf8")) as WearBlenderMetadata;
+    const profileMatches = profile === "browser-comparison"
+      ? metadata.renderProfile === "browser-comparison"
+      : metadata.renderProfile == null || metadata.renderProfile === "full";
     return metadata.scanId === scanId
       && metadata.generator?.application === "Blender"
       && metadata.generator.headless
-      && metadata.renderSchemaVersion === 8
-      && metadata.cameraCards?.every((card) => card.knownTransform)
+      && metadata.renderSchemaVersion === 10
+      && metadata.crossSections?.length === 2
+      && profileMatches
+      && (profile === "browser-comparison" || metadata.cameraCards?.every((card) => card.knownTransform))
       ? metadata
       : null;
   } catch {
@@ -86,8 +126,10 @@ async function cachedMetadata(scanId: string) {
   }
 }
 
-async function restorePrebuiltArtifact(scanId: string) {
-  if (process.env.PRIMESTYLE_WEAR_USE_PREBUILT_S3 !== "1") return null;
+async function restorePrebuiltArtifact(scanId: string, profile: RenderProfile) {
+  // The verified private S3 package is the normal web-host source. Set the
+  // variable to 0 only on a workstation that intentionally rebuilds in Blender.
+  if (process.env.PRIMESTYLE_WEAR_USE_PREBUILT_S3 === "0") return null;
   const temporaryDirectory = path.join(
     process.cwd(),
     ".local-ml",
@@ -95,17 +137,13 @@ async function restorePrebuiltArtifact(scanId: string) {
     "s3-restore",
     `${scanId.toLowerCase()}-${process.pid}-${Date.now()}`,
   );
-  const prefix = `s3://${PREBUILT_BUCKET}/processed/${PREBUILT_VERSION}/people/${scanId}`;
-  const aws = (source: string, destination: string) => {
-    const args = ["s3", "cp", source, destination, "--region", PREBUILT_REGION, "--only-show-errors"];
-    if (process.env.PRIMESTYLE_WEAR_S3_PROFILE) args.push("--profile", process.env.PRIMESTYLE_WEAR_S3_PROFILE);
-    return args;
-  };
+  const version = artifactVersion(profile);
+  const prefix = `s3://${PREBUILT_BUCKET}/processed/${version}/people/${scanId}`;
   await mkdir(temporaryDirectory, { recursive: true });
   try {
     const manifestFile = path.join(temporaryDirectory, "artifact-manifest.json");
     try {
-      await execFileAsync("aws", aws(`${prefix}/artifact-manifest.json`, manifestFile), {
+      await execFileAsync("aws", awsCopyArguments(`${prefix}/artifact-manifest.json`, manifestFile), {
         cwd: process.cwd(), timeout: 120_000, maxBuffer: 2 * 1024 * 1024,
       });
     } catch {
@@ -117,27 +155,79 @@ async function restorePrebuiltArtifact(scanId: string) {
       scanId?: string;
       artifacts?: Record<string, { sha256?: string }>;
     };
-    if (manifest.schema !== "wear-blender-s3-artifact-v1" || manifest.version !== PREBUILT_VERSION || manifest.scanId !== scanId) {
+    if (manifest.schema !== "wear-blender-s3-artifact-v1" || manifest.version !== version || manifest.scanId !== scanId) {
       throw new Error(`Prebuilt artifact manifest is invalid for ${scanId}.`);
     }
-    const required = ["model.glb", "scene.blend", "metadata.json", "front-2d.json", "side-2d.json", ...CAMERA_FILES];
-    for (const name of required) {
+    const required = requiredFiles(profile);
+    await Promise.all(required.map(async (name) => {
       const expected = manifest.artifacts?.[name]?.sha256;
       if (!expected) throw new Error(`Prebuilt checksum is missing for ${scanId}/${name}.`);
       const destination = path.join(temporaryDirectory, name);
-      await execFileAsync("aws", aws(`${prefix}/${name}`, destination), {
+      await execFileAsync("aws", awsCopyArguments(`${prefix}/${name}`, destination), {
         cwd: process.cwd(), timeout: 900_000, maxBuffer: 2 * 1024 * 1024,
       });
       const actual = createHash("sha256").update(await readFile(destination)).digest("hex");
       if (actual !== expected) throw new Error(`Prebuilt checksum failed for ${scanId}/${name}.`);
-    }
-    const finalDirectory = outputDirectory(scanId);
+    }));
+    const finalDirectory = outputDirectory(scanId, profile);
     await mkdir(finalDirectory, { recursive: true });
     await Promise.all(required.map((name) => copyFile(path.join(temporaryDirectory, name), path.join(finalDirectory, name))));
-    return cachedMetadata(scanId);
+    return cachedMetadata(scanId, profile);
   } finally {
     await rm(temporaryDirectory, { recursive: true, force: true });
   }
+}
+
+async function persistGeneratedArtifact(scanId: string, directory: string, profile: RenderProfile) {
+  if (process.env.PRIMESTYLE_WEAR_PERSIST_GENERATED_S3 === "0") return;
+  const required = requiredFiles(profile);
+  const version = artifactVersion(profile);
+  const artifacts: Record<string, { bytes: number; sha256: string; key: string }> = {};
+  for (const name of required) {
+    const filePath = path.join(directory, name);
+    const file = await readFile(filePath);
+    artifacts[name] = {
+      bytes: file.length,
+      sha256: createHash("sha256").update(file).digest("hex"),
+      key: `processed/${version}/people/${scanId}/${name}`,
+    };
+  }
+  const manifestPath = path.join(directory, "artifact-manifest.json");
+  await writeFile(manifestPath, JSON.stringify({
+    schema: "wear-blender-s3-artifact-v1",
+    version,
+    scanId,
+    generatedAt: new Date().toISOString(),
+    artifacts,
+  }));
+  for (const [name, artifact] of Object.entries({
+    ...Object.fromEntries(required.map((name) => [name, artifacts[name]!])),
+    "artifact-manifest.json": { key: `processed/${version}/people/${scanId}/artifact-manifest.json` },
+  })) {
+    await execFileAsync("aws", awsCopyArguments(path.join(directory, name), `s3://${PREBUILT_BUCKET}/${artifact.key}`), {
+      cwd: process.cwd(), timeout: 900_000, maxBuffer: 2 * 1024 * 1024,
+    });
+  }
+}
+
+async function reuseFullArtifactForComparison(scanId: string) {
+  const fullMetadata = await cachedMetadata(scanId, "full")
+    ?? await restorePrebuiltArtifact(scanId, "full");
+  if (!fullMetadata) return null;
+
+  const sourceDirectory = outputDirectory(scanId, "full");
+  const comparisonDirectory = outputDirectory(scanId, "browser-comparison");
+  await mkdir(comparisonDirectory, { recursive: true });
+  await copyFile(path.join(sourceDirectory, "model.glb"), path.join(comparisonDirectory, "model.glb"));
+  await writeFile(path.join(comparisonDirectory, "metadata.json"), JSON.stringify({
+    ...fullMetadata,
+    renderProfile: "browser-comparison",
+    cameraCards: [],
+  }, null, 2));
+  await persistGeneratedArtifact(scanId, comparisonDirectory, "browser-comparison").catch((error) => {
+    console.warn(`Could not save the reused ${scanId} comparison package to S3.`, error);
+  });
+  return cachedMetadata(scanId, "browser-comparison");
 }
 
 async function blenderBinary() {
@@ -153,10 +243,14 @@ async function blenderBinary() {
   return "blender";
 }
 
-async function pruneWearBlenderCache(currentScanId: string) {
-  const cacheRoot = path.join(process.cwd(), ".local-ml", "wear-sdk-heldout", "blender");
+async function pruneWearBlenderCache(currentScanId: string, profile: RenderProfile) {
+  const directory = profile === "browser-comparison" ? "blender-comparison" : "blender";
+  const cacheRoot = path.join(process.cwd(), ".local-ml", "wear-sdk-heldout", directory);
   const protectedDirectories = new Set(
-    [currentScanId, ...renderPromises.keys()].map((scanId) => scanId.toLowerCase()),
+    [currentScanId, ...[...renderPromises.keys()]
+      .filter((key) => key.startsWith(`${profile}:`))
+      .map((key) => key.slice(profile.length + 1))]
+      .map((scanId) => scanId.toLowerCase()),
   );
   const entries = await readdir(cacheRoot, { withFileTypes: true });
   const candidates = await Promise.all(entries
@@ -172,18 +266,22 @@ async function pruneWearBlenderCache(currentScanId: string) {
   )));
 }
 
-async function renderWearScan(scanId: string, heightCm: number, weightKg: number) {
-  const cached = await cachedMetadata(scanId);
+async function renderWearScan(scanId: string, heightCm: number, weightKg: number, profile: RenderProfile) {
+  const cached = await cachedMetadata(scanId, profile);
   if (cached) return cached;
-  const restored = await restorePrebuiltArtifact(scanId);
+  const restored = await restorePrebuiltArtifact(scanId, profile);
   if (restored) return restored;
+  if (profile === "browser-comparison") {
+    const reused = await reuseFullArtifactForComparison(scanId);
+    if (reused) return reused;
+  }
   if (process.env.PRIMESTYLE_WEAR_REQUIRE_PREBUILT_S3 === "1") {
     throw new Error(`The prebuilt S3 mesh artifact is not ready for ${scanId} yet.`);
   }
 
   const root = process.cwd();
   const source = await loadWearSourcePair(scanId);
-  const finalDirectory = outputDirectory(scanId);
+  const finalDirectory = outputDirectory(scanId, profile);
   const temporaryDirectory = path.join(
     root,
     ".local-ml",
@@ -207,7 +305,7 @@ async function renderWearScan(scanId: string, heightCm: number, weightKg: number
         landmarks: source.landmarkPath,
       },
     }));
-    await execFileAsync(
+    const blenderResult = await execFileAsync(
       await blenderBinary(),
       [
         "--background",
@@ -229,18 +327,37 @@ async function renderWearScan(scanId: string, heightCm: number, weightKg: number
         String(weightKg),
         "--output-dir",
         temporaryDirectory,
+        "--render-profile",
+        profile,
       ],
       { cwd: root, timeout: 600_000, maxBuffer: 4 * 1024 * 1024 },
     );
-    const metadata = JSON.parse(await readFile(path.join(temporaryDirectory, "metadata.json"), "utf8")) as WearBlenderMetadata;
+    const metadataPath = path.join(temporaryDirectory, "metadata.json");
+    if (!(await exists(metadataPath))) {
+      const blenderOutput = `${blenderResult.stderr}\n${blenderResult.stdout}`;
+      const closedSectionFailure = blenderOutput.match(
+        /No closed torso cross-section was found for (waist|hips) at ([0-9.]+) cm\./,
+      );
+      if (closedSectionFailure) {
+        const [, row, height] = closedSectionFailure;
+        throw new Error(
+          `${scanId} cannot be shown because its real mesh has no complete closed ${row} curve at the recorded ${height} cm level.`,
+        );
+      }
+      throw new Error(`${scanId} did not produce a complete Blender browser body.`);
+    }
+    const metadata = JSON.parse(await readFile(metadataPath, "utf8")) as WearBlenderMetadata;
     if (metadata.scanId !== scanId || metadata.generator?.application !== "Blender" || metadata.generator.headless !== true) {
       throw new Error("The generated artifacts did not prove headless Blender use.");
     }
     await mkdir(finalDirectory, { recursive: true });
-    await Promise.all(["model.glb", "scene.blend", "metadata.json", "front-2d.json", "side-2d.json", ...CAMERA_FILES].map((name) => (
+    await Promise.all(requiredFiles(profile).map((name) => (
       copyFile(path.join(temporaryDirectory, name), path.join(finalDirectory, name))
     )));
-    await pruneWearBlenderCache(scanId).catch((error) => {
+    await persistGeneratedArtifact(scanId, finalDirectory, profile).catch((error) => {
+      console.warn(`Could not save the generated ${scanId} Blender package to S3.`, error);
+    });
+    await pruneWearBlenderCache(scanId, profile).catch((error) => {
       console.warn("Could not prune the generated WEAR Blender cache.", error);
     });
     return metadata;
@@ -254,30 +371,32 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "WEAR Blender rendering is private Test Lab only." }, { status: 403 });
   }
   try {
-    const body = await request.json() as { scanId?: unknown };
+    const body = await request.json() as { scanId?: unknown; profile?: unknown };
     const scanId = typeof body.scanId === "string" ? body.scanId.toUpperCase() : "";
+    const profile: RenderProfile = body.profile === "browser-comparison" ? "browser-comparison" : "full";
     const person = await heldoutWearPerson(scanId) ?? await wearSideCatalogPerson(scanId);
     if (!person) return NextResponse.json({ error: "Choose a valid WEAR standing scan." }, { status: 404 });
 
-    const cached = await cachedMetadata(scanId);
-    let promise = renderPromises.get(scanId);
+    const promiseKey = `${profile}:${scanId}`;
+    const cached = await cachedMetadata(scanId, profile);
+    let promise = renderPromises.get(promiseKey);
     if (!cached && !promise) {
-      promise = renderWearScan(scanId, person.heightCm, person.weightKg).finally(() => renderPromises.delete(scanId));
-      renderPromises.set(scanId, promise);
+      promise = renderWearScan(scanId, person.heightCm, person.weightKg, profile).finally(() => renderPromises.delete(promiseKey));
+      renderPromises.set(promiseKey, promise);
     }
     const metadata = cached ?? await promise!;
     const revision = Date.now();
-    const base = `/api/try-on-test/sizing-lab/sdk-wear/artifact?scanId=${encodeURIComponent(scanId)}`;
+    const base = `/api/try-on-test/sizing-lab/sdk-wear/artifact?scanId=${encodeURIComponent(scanId)}&profile=${profile}`;
     return NextResponse.json({
       ok: true,
       cached: Boolean(cached),
       metadata,
       artifacts: {
         glbUrl: `${base}&kind=glb&v=${revision}`,
-        pngUrl: `${base}&kind=png&v=${revision}`,
-        blendUrl: `${base}&kind=blend&v=${revision}`,
-        front2dUrl: `${base}&kind=front-2d&v=${revision}`,
-        side2dUrl: `${base}&kind=side-2d&v=${revision}`,
+        pngUrl: profile === "full" ? `${base}&kind=png&v=${revision}` : undefined,
+        blendUrl: profile === "full" ? `${base}&kind=blend&v=${revision}` : undefined,
+        front2dUrl: profile === "full" ? `${base}&kind=front-2d&v=${revision}` : undefined,
+        side2dUrl: profile === "full" ? `${base}&kind=side-2d&v=${revision}` : undefined,
         cameraCards: Object.fromEntries(metadata.cameraCards.map((card) => [
           card.id,
           `${base}&kind=${encodeURIComponent(`camera-${card.id}`)}&v=${revision}`,

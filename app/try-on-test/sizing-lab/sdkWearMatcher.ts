@@ -79,10 +79,6 @@ function finite(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
-function mean(values: number[]) {
-  return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : Number.POSITIVE_INFINITY;
-}
-
 function resampleClosed(points: number[][], count = 64): number[][] {
   if (points.length < 3) return points;
   const distances = [0];
@@ -103,6 +99,81 @@ function resampleClosed(points: number[][], count = 64): number[][] {
     const t = (target - distances[segment]!) / span;
     return [start[0]! + (end[0]! - start[0]!) * t, start[1]! + (end[1]! - start[1]!) * t];
   });
+}
+
+/**
+ * Trace the complete person-mask boundary for display only. Unlike the torso
+ * measurement outline, this keeps arms, hands, feet, and concave gaps. It is
+ * still a photo boundary—not reconstructed 3D body topology.
+ */
+export function buildFullPersonOutlineFromMask(
+  mask: Uint8ClampedArray | null,
+  maskWidth: number,
+  maskHeight: number,
+): number[][] | null {
+  if (!mask || maskWidth < 2 || maskHeight < 2) return null;
+  type Point = readonly [number, number];
+  type Edge = { start: Point; end: Point };
+  const edges: Edge[] = [];
+  const on = (x: number, y: number) => (
+    x >= 0
+    && x < maskWidth
+    && y >= 0
+    && y < maskHeight
+    && (mask[y * maskWidth + x] ?? 0) > 32
+  );
+  const add = (start: Point, end: Point) => edges.push({ start, end });
+  for (let y = 0; y < maskHeight; y += 1) {
+    for (let x = 0; x < maskWidth; x += 1) {
+      if (!on(x, y)) continue;
+      if (!on(x, y - 1)) add([x, y], [x + 1, y]);
+      if (!on(x + 1, y)) add([x + 1, y], [x + 1, y + 1]);
+      if (!on(x, y + 1)) add([x + 1, y + 1], [x, y + 1]);
+      if (!on(x - 1, y)) add([x, y + 1], [x, y]);
+    }
+  }
+  if (edges.length < 12) return null;
+  const key = ([x, y]: Point) => `${x},${y}`;
+  const outgoing = new Map<string, number[]>();
+  edges.forEach((edge, index) => {
+    const edgeKey = key(edge.start);
+    outgoing.set(edgeKey, [...(outgoing.get(edgeKey) ?? []), index]);
+  });
+  const unused = new Set(edges.map((_, index) => index));
+  const loops: number[][][] = [];
+  while (unused.size) {
+    const firstIndex = unused.values().next().value as number;
+    const first = edges[firstIndex]!;
+    const loop: number[][] = [[first.start[0], first.start[1]]];
+    let currentIndex = firstIndex;
+    let closed = false;
+    for (let step = 0; step <= edges.length; step += 1) {
+      const current = edges[currentIndex]!;
+      unused.delete(currentIndex);
+      loop.push([current.end[0], current.end[1]]);
+      if (key(current.end) === key(first.start)) {
+        closed = true;
+        break;
+      }
+      const next = (outgoing.get(key(current.end)) ?? []).find((index) => unused.has(index));
+      if (next == null) break;
+      currentIndex = next;
+    }
+    if (closed && loop.length >= 12) loops.push(loop.slice(0, -1));
+  }
+  if (!loops.length) return null;
+  const area = (points: number[][]) => Math.abs(points.reduce((sum, point, index) => {
+    const next = points[(index + 1) % points.length]!;
+    return sum + point[0]! * next[1]! - next[0]! * point[1]!;
+  }, 0) / 2);
+  const largest = loops.sort((left, right) => area(right) - area(left))[0]!;
+  const ys = largest.map((point) => point[1]! / maskHeight);
+  const top = Math.min(...ys);
+  const bottom = Math.max(...ys);
+  const span = bottom - top;
+  if (!(span > 0.05)) return null;
+  const normalized = largest.map(([x, y]) => [x! / maskWidth, (y! / maskHeight - top) / span]);
+  return resampleClosed(normalized, Math.min(512, Math.max(128, Math.round(largest.length / 4))));
 }
 
 export function fixedTopologyMesh(outline: number[][], count = 64) {
@@ -212,43 +283,89 @@ export function rankSdkWearPart(index: SdkWearIndex, query: SdkWearQuery, part: 
 
 export function buildQueryFromMask(mask: Uint8ClampedArray | null, maskWidth: number, maskHeight: number, heightCm: number): SdkWearQuery | null {
   if (!mask || maskWidth < 2 || maskHeight < 2 || !(heightCm > 0)) return null;
+  const runsAt = (y: number) => {
+    const runs: Array<[number, number]> = [];
+    let start = -1;
+    for (let x = 0; x <= maskWidth; x += 1) {
+      const on = x < maskWidth && (mask[y * maskWidth + x] ?? 0) > 32;
+      if (on && start < 0) start = x;
+      if ((!on || x === maskWidth) && start >= 0) {
+        const end = x - 1;
+        if (end - start >= 3) runs.push([start, end]);
+        start = -1;
+      }
+    }
+    return runs;
+  };
+  const rawRows: Array<{ y: number; min: number; max: number }> = [];
+  for (let y = 0; y < maskHeight; y += 2) {
+    const runs = runsAt(y);
+    if (runs.length) rawRows.push({ y, min: runs[0]![0], max: runs[runs.length - 1]![1] });
+  }
+  if (rawRows.length < 8) return null;
+  const top = rawRows[0]!.y / maskHeight;
+  const bottom = rawRows[rawRows.length - 1]!.y / maskHeight;
+  const span = bottom - top || 1;
+  const median = (values: number[]) => {
+    const sorted = [...values].sort((a, b) => a - b);
+    return sorted.length % 2
+      ? sorted[Math.floor(sorted.length / 2)]!
+      : ((sorted[sorted.length / 2 - 1] ?? 0) + (sorted[sorted.length / 2] ?? 0)) / 2;
+  };
+  const lowerBodyRows = rawRows.filter(({ y }) => {
+    const fraction = (y / maskHeight - top) / span;
+    return fraction >= 0.5 && fraction <= 0.86;
+  });
+  const centreRows = lowerBodyRows.length ? lowerBodyRows : rawRows;
+  const bodyCentrePx = median(centreRows.map(({ min, max }) => (min + max) / 2));
+  const bodyCentreX = bodyCentrePx / maskWidth;
+  const coreRows = rawRows.filter(({ y }) => {
+    const fraction = (y / maskHeight - top) / span;
+    return fraction >= 0.42 && fraction <= 0.72;
+  });
+  const coreWidthPx = Math.max(4, median((coreRows.length ? coreRows : rawRows).map(({ min, max }) => max - min + 1)));
+  const maximumUpperBodyWidth = coreWidthPx * 1.18;
+  const armRemovalEndFraction = 0.64;
+  const compactUpperRows = rawRows.filter(({ y, min, max }) => (
+    (y / maskHeight - top) / span < armRemovalEndFraction
+    && max - min + 1 <= maximumUpperBodyWidth
+  ));
   const left: number[][] = [];
   const right: number[][] = [];
-  for (let y = 0; y < maskHeight; y += 2) {
-    let min = maskWidth;
-    let max = -1;
-    for (let x = 0; x < maskWidth; x += 1) {
-      if ((mask[y * maskWidth + x] ?? 0) > 32) { min = Math.min(min, x); max = Math.max(max, x); }
+  for (const raw of rawRows) {
+    const fraction = (raw.y / maskHeight - top) / span;
+    let min = raw.min;
+    let max = raw.max;
+    if (fraction < armRemovalEndFraction) {
+      const runs = runsAt(raw.y);
+      const central = runs.find(([a, b]) => bodyCentrePx >= a && bodyCentrePx <= b)
+        ?? [...runs].sort((a, b) => Math.abs((a[0] + a[1]) / 2 - bodyCentrePx) - Math.abs((b[0] + b[1]) / 2 - bodyCentrePx))[0];
+      if (central) [min, max] = central;
+      if (max - min + 1 > maximumUpperBodyWidth) {
+        const before = [...compactUpperRows].reverse().find((row) => row.y < raw.y) ?? null;
+        const after = compactUpperRows.find((row) => row.y > raw.y) ?? null;
+        if (before || after) {
+          const first = before ?? after!;
+          const second = after ?? before!;
+          const progress = first.y === second.y ? 0 : (raw.y - first.y) / (second.y - first.y);
+          min = first.min + (second.min - first.min) * progress;
+          max = first.max + (second.max - first.max) * progress;
+        } else {
+          min = Math.max(0, bodyCentrePx - maximumUpperBodyWidth / 2);
+          max = Math.min(maskWidth - 1, bodyCentrePx + maximumUpperBodyWidth / 2);
+        }
+      }
     }
-    if (max >= min) {
-      left.push([min / maskWidth, y / maskHeight]);
-      right.push([max / maskWidth, y / maskHeight]);
-    }
+    left.push([min / maskWidth, raw.y / maskHeight]);
+    right.push([max / maskWidth, raw.y / maskHeight]);
   }
-  if (left.length < 8) return null;
   const outline = [...left, ...right.reverse()];
-  const top = Math.min(...outline.map((point) => point[1]!));
-  const bottom = Math.max(...outline.map((point) => point[1]!));
-  const span = bottom - top || 1;
   const normalized = outline.map(([x, y]) => [x, (y - top) / span]);
-  const bodyMinX = Math.min(...left.map(([x]) => x));
-  const bodyMaxX = Math.max(...right.map(([x]) => x));
-  const bodyCentreX = (bodyMinX + bodyMaxX) / 2;
   const centralRunWidth = (targetY: number) => {
     const targetPx = Math.round(targetY * maskHeight);
     const rows: number[] = [];
     for (let y = Math.max(0, targetPx - Math.round(maskHeight * 0.012)); y <= Math.min(maskHeight - 1, targetPx + Math.round(maskHeight * 0.012)); y += 1) {
-      const runs: Array<[number, number]> = [];
-      let start = -1;
-      for (let x = 0; x <= maskWidth; x += 1) {
-        const on = x < maskWidth && (mask[y * maskWidth + x] ?? 0) > 32;
-        if (on && start < 0) start = x;
-        if ((!on || x === maskWidth) && start >= 0) {
-          const end = x - 1;
-          if (end - start >= 3) runs.push([start, end]);
-          start = -1;
-        }
-      }
+      const runs = runsAt(y);
       if (runs.length) {
         const central = runs.find(([a, b]) => bodyCentreX >= a / maskWidth && bodyCentreX <= b / maskWidth)
           ?? runs.sort((a, b) => Math.abs((a[0] + a[1]) / 2 - bodyCentreX * maskWidth) - Math.abs((b[0] + b[1]) / 2 - bodyCentreX * maskWidth))[0];

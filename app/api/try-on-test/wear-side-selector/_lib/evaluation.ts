@@ -15,8 +15,9 @@ function evaluateMetric(
   input: WearSideCatalogPerson,
   candidate: WearSideCatalogPerson,
   selector: ValueSelector,
+  parts: readonly SdkWearPart[] = SDK_WEAR_PARTS,
 ): WearEvaluationMetric {
-  const availableInputParts = SDK_WEAR_PARTS.filter((part) => typeof selector(input, part) === "number");
+  const availableInputParts = parts.filter((part) => typeof selector(input, part) === "number");
   const rows = availableInputParts.flatMap((part): WearEvaluationRow[] => {
     const inputCm = selector(input, part);
     const candidateCm = selector(candidate, part);
@@ -41,11 +42,15 @@ function evaluateMetric(
   };
 }
 
-export function evaluateSideAndTape(input: WearSideCatalogPerson, candidate: WearSideCatalogPerson) {
+export function evaluateSideAndTape(
+  input: WearSideCatalogPerson,
+  candidate: WearSideCatalogPerson,
+  parts: readonly SdkWearPart[] = SDK_WEAR_PARTS,
+) {
   return {
     scanId: candidate.scanId,
-    side: evaluateMetric(input, candidate, (person, part) => person.rows[part]?.sideDepthCm),
-    tape: evaluateMetric(input, candidate, (person, part) => person.rows[part]?.tapeCm),
+    side: evaluateMetric(input, candidate, (person, part) => person.rows[part]?.sideDepthCm, parts),
+    tape: evaluateMetric(input, candidate, (person, part) => person.rows[part]?.tapeCm, parts),
   };
 }
 

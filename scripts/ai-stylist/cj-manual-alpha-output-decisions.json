@@ -1,0 +1,39 @@
+{
+  "reviewedAt": "2026-09-16T05:34:30.000Z",
+  "localOnly": true,
+  "stage": "local-background-removal-alpha-output",
+  "reviewMethod": "Rendered 25-card raw-versus-alpha browser board plus full-resolution inspection of white and perforated garments and the repaired ivory trouser",
+  "summary": {
+    "reviewed": 25,
+    "alphaPass": 25,
+    "alphaReject": 0,
+    "outfitReady": 0
+  },
+  "decisions": [
+    { "index": 1, "productId": "2406240246461620500", "decision": "alpha-pass", "reason": "Complete loafer retained with clean toe, apron, strap, heel and sole edges; no source scene remains." },
+    { "index": 2, "productId": "2510060252201615900", "decision": "alpha-pass", "reason": "Complete long-sleeve polo retained with clean collar, cuffs, side seams and hem." },
+    { "index": 3, "productId": "1763829130497372160", "decision": "alpha-pass-style-revoked", "reason": "The alpha extraction is technically clean, but the original dropped-shoulder boxy lounge silhouette is style-revoked and cannot be allocated to any outfit." },
+    { "index": 4, "productId": "2505030853171607400", "decision": "alpha-pass", "reason": "Full-resolution check confirms the white linen shirt is complete; collar, button placket, rolled cuffs and curved hem remain intact without a white box." },
+    { "index": 5, "productId": "2503120536241602800", "decision": "alpha-pass", "reason": "Complete linen overshirt retained with clean collar, placket, cuffs and hem." },
+    { "index": 6, "productId": "2504281547131609000", "decision": "alpha-pass", "reason": "Complete summer short retained with clean waistband, drawstring, leg openings and turn-up hems." },
+    { "index": 7, "productId": "2505230844101616100", "decision": "alpha-pass", "reason": "Complete bomber retained with clean collar, zipper, cuffs and ribbed lower edge; dark inner opening is product detail." },
+    { "index": 10, "productId": "2507040639261602000", "decision": "alpha-pass", "reason": "Complete soft-white knit polo retained with clean collar, sleeves and ribbed hem." },
+    { "index": 11, "productId": "2505250900531609500", "decision": "alpha-pass", "reason": "Complete repaired sage polo retained with clean collar, three-button placket, sleeves and ribbed hem." },
+    { "index": 12, "productId": "2501150834271620600", "decision": "alpha-pass", "reason": "Complete mint heavyweight T-shirt retained with clean neckline, sleeves, side seams and hem." },
+    { "index": 13, "productId": "2406110219091605300", "decision": "alpha-pass", "reason": "Complete tailored short retained with clean waistband, pleats, fly and both leg openings." },
+    { "index": 14, "productId": "2503070647481600500", "decision": "alpha-pass", "reason": "Complete desert-yellow T-shirt retained with clean neckline, sleeves and boxy hem." },
+    { "index": 15, "productId": "2502100925531621600", "decision": "alpha-pass", "reason": "Complete light-teal polo retained with clean open placket, sleeves, sides and hem." },
+    { "index": 17, "productId": "2411230856521607100", "decision": "alpha-pass", "reason": "Complete warm-khaki trouser retained with clean waistband, pleats, legs and cropped hems." },
+    { "index": 19, "productId": "2502130357161608600", "decision": "alpha-pass", "reason": "Belt loop, strap coil, holes and buckle geometry are complete with clean transparent separation." },
+    { "index": 20, "productId": "2503280137551608300", "decision": "alpha-pass", "reason": "Cap crown, button, brim and underside are complete; the former source shadow has been removed cleanly." },
+    { "index": 21, "productId": "2505140753031625700", "decision": "alpha-pass", "reason": "Complete repaired single loafer retained with clean apron, strap, toe, heel and sole edges." },
+    { "index": 22, "productId": "2504220944511605800", "decision": "alpha-pass", "reason": "Complete Chelsea boot retained with clean shaft, pull tab, elastic gore, toe, heel and sole." },
+    { "index": 23, "productId": "2506231532431626500", "decision": "alpha-pass", "reason": "Complete linen-cotton knit polo retained with clean collar, placket, sleeves and hem." },
+    { "index": 24, "productId": "2505191522541624600", "decision": "alpha-pass", "reason": "Full-resolution check confirms the warm-white pointelle shirt is complete; collar, cuffs, curved hem and perforated fabric detail are retained without a white box." },
+    { "index": 25, "productId": "2411110358151627900", "decision": "alpha-pass", "reason": "Complete wine-red blouson retained with clean collar, sleeves, pockets and hem." },
+    { "index": 26, "productId": "1716804667801350144", "decision": "alpha-pass", "reason": "Complete rust corduroy field jacket retained with clean collar, sleeves, pocket flaps and hem." },
+    { "index": 27, "productId": "2502280543221601200", "decision": "alpha-pass", "reason": "Browser board and full-resolution gray-background check confirm the repaired ivory trouser is complete with clean waistband, side tabs, pleats, leg gap and cuffed hems; no color fringe remains." },
+    { "index": 28, "productId": "2504270652341610800", "decision": "alpha-pass", "reason": "Complete sky-blue shirt retained with clean draped collar, placket, cuffs and hem." },
+    { "index": 29, "productId": "736610CB-75F0-45C7-9225-A3F4860A9CA4", "decision": "alpha-pass", "reason": "Complete single low-top sneaker retained with clean laces, collar, toe and outsole; the soft source shadow is removed." }
+  ]
+}

@@ -1,23 +1,29 @@
 import type { Metadata } from "next";
-import { Bodoni_Moda } from "next/font/google";
+import { Manrope, Oswald } from "next/font/google";
 import { SupplierLandingExperience } from "../partner-landing/supplier/components/SupplierLandingExperience";
 
-const supplierSerif = Bodoni_Moda({
-  variable: "--font-supplier-serif",
+const supplierDisplay = Oswald({
+  variable: "--font-supplier-display",
   subsets: ["latin"],
-  style: ["normal", "italic"],
+  weight: "400",
+  display: "swap",
+});
+
+const supplierBody = Manrope({
+  variable: "--font-supplier-body",
+  subsets: ["latin"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "PrimeStyleAI | Connect Your Collection With Merchants",
+  title: "PrimeStyleAI | Grow Through One Connected Shopping Network",
   description:
-    "PrimeStyleAI connects fashion suppliers and manufacturers with retailers, boutiques, ecommerce merchants, dropship sellers, and optional creator demand.",
+    "PrimeStyleAI connects fashion suppliers with merchants, influencers, and customers through one global shopping network and supplier dashboard.",
 };
 
 export default function SupplierLandingPage() {
   return (
-    <div className={supplierSerif.variable}>
+    <div className={`${supplierDisplay.variable} ${supplierBody.variable}`}>
       <SupplierLandingExperience />
     </div>
   );

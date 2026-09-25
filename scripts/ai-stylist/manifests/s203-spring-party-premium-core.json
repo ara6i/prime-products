@@ -1,0 +1,27 @@
+{
+  "outputDir": "spring-party-premium-pilot-s203",
+  "scenarioId": "S203",
+  "occasion": "Party / Night Out",
+  "season": "Spring",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s202-spring-party-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-watch",
+  "comparisonTitle": "S203 · Spring Party / Night Out · Premium local screen",
+  "comparisonSubtitle": "The 12 unique Spring Party candidates re-evaluated for Premium fiber, construction and drape",
+  "comparisonNote": "Require silk-cotton, wool-silk or supple suede proof, expressive color and polished controlled ease · no promotion of mass-market basics or unproven product forms · not UI integrated",
+  "coreTitle": "S203 · provisional Spring Party Premium core",
+  "coreSubtitle": "No local garment reaches the Spring Premium Party visual bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Premium re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men saffron silk cotton fine gauge knit polo premium spring party","targetProduct":"soft-saffron silk-cotton fine-gauge knit polo with hand-finished open collar","customerRetailTarget":"$180-$240"},
+    {"category":"bottom","searchPhrase":"men ecru wool silk double pleat straight trouser premium spring party","targetProduct":"ecru wool-silk high-rise double-pleat trouser with exact break","customerRetailTarget":"$220-$300"},
+    {"category":"outerwear","searchPhrase":"men light sage supple suede cropped blouson premium spring party","targetProduct":"light-sage supple-suede cropped blouson with restrained hardware","customerRetailTarget":"$280-$380"},
+    {"category":"shoe","searchPhrase":"men oxblood calf suede handmade loafer premium spring party","targetProduct":"oxblood calf-suede handmade low-profile round-toe loafer","customerRetailTarget":"$220-$300"},
+    {"category":"watch","searchPhrase":"men pale green dial cognac leather thin case premium watch party","targetProduct":"pale-green-dial thin-case Premium watch with fine cognac leather strap","customerRetailTarget":"$120-$180"}
+  ]
+}

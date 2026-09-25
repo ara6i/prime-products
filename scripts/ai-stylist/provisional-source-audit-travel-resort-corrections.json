@@ -1,0 +1,69 @@
+{
+  "scope": "Seven S233/S237/S241/S249/S253/S257 Travel and Resort products checked at their full source resolution",
+  "outputSlug": "provisional-source-audit-travel-resort-corrections",
+  "boardFilename": "seven-travel-resort-source-corrections.jpg",
+  "boardTitle": "Seven Travel and Resort products · full-source audit",
+  "boardNote": "Three identities rejected from catalog · one removed from Resort only · three retained with corrected labels and strict companions · no outfit approval or UI integration",
+  "minimumWidth": 1000,
+  "minimumHeight": 1333,
+  "localOnly": true,
+  "weddingExcluded": true,
+  "entries": [
+    {
+      "scenarioId": "S233",
+      "identity": "shopify_supplier:a105b728168f3b3d11d4c583d252240af3062227",
+      "label": "Deep-Olive Relaxed-Taper Travel Chino",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/02d987b6e56640c697694ce6ffab644f-Max-Origin.webp?v=1786120865",
+      "verdict": "pass-with-correction",
+      "reason": "The full source is not truly straight: it has comfortable upper-leg ease and a controlled taper with styled rolled cuffs. Keep only as a casual Travel chino with a regular washed-blue top and low-profile light shoe; no oversized layer, bulky sneaker or second muddy olive piece."
+    },
+    {
+      "scenarioId": "S237",
+      "identity": "shopify_supplier:8af50b74a00f0e4370f86a1d88f51b3ae4cb19b2",
+      "label": "Dusty-Periwinkle Contrast-Trim Fine Knit",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/d3e5f39a-9f95-4b4d-ba27-2e9ebcbd9d69-Max-Origin.webp?v=1786122386",
+      "verdict": "pass-with-correction",
+      "reason": "The worn source proves a natural shoulder, upper-hip rib hem and regular body with fine openwork texture. Correct the generic blue label to dusty periwinkle and keep with the airy jute overshirt, controlled olive trouser and ecru court shoe."
+    },
+    {
+      "scenarioId": "S241",
+      "identity": "shopify_supplier:51c87f41338c4d595744732f03848b530c69637a",
+      "label": "Long Light-Blue Roll-Tab Shirt",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/f5e37b55-6cf1-4408-b2e8-27be0486f61e-Max.webp?v=1786167489",
+      "verdict": "reject-from-catalog",
+      "reason": "The full source shows a long curved untucked body, roll-tab sleeve hardware and generic shiny-crinkled finish. It would protrude beneath S241's short field jacket and repeats the dated roll-tab shirt problem, so the good sky-blue color does not save it."
+    },
+    {
+      "scenarioId": "S249",
+      "identity": "shopify_supplier:7c6e6808375d2a6074514ff2d3add76b31701e21",
+      "label": "Knee-Length Loose Stone Bermuda",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/574a71bd245843c5ad4260092ac18d8e-Max-Origin.webp?v=1786165612",
+      "verdict": "reject-from-catalog",
+      "reason": "The actual color is ordinary stone, not earthy yellow, and the long loose leg finishes at the knee. Its broad generic Bermuda silhouette looks dated beside the openwork shirt and fails the clean above-knee modern Resort gate."
+    },
+    {
+      "scenarioId": "S249",
+      "identity": "shopify_supplier:a2dbad98e6018465ae5b6de9731b74d970b0e3f6",
+      "label": "Sunny-Yellow Openwork Camp-Collar Shirt",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/86c14715-86a9-499b-94ee-57708ce78a02-Max.webp?v=1786264297",
+      "verdict": "pass-with-correction",
+      "reason": "The full source proves a breathable openwork surface, relaxed but controlled upper-hip body and joyful sunny yellow. Keep only with a clean tonal base when needed, tailored above-knee neutral short and cream low-profile footwear; no baggy cargo or dark bulky shoe."
+    },
+    {
+      "scenarioId": "S253",
+      "identity": "shopify_supplier:0759058bff9bafc27850609f6ef1d743903918b7",
+      "label": "Terracotta Sport Drawstring Short",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/c05780db-eba9-470e-ab8c-919133a185cf-Max-Origin.webp?v=1786125769",
+      "verdict": "revoke-from-s253-only",
+      "reason": "The color is useful and the leg is controlled, but the exposed contrast rope drawcord, elastic waist and technical-lounge finish do not work with S253's refined white linen Resort shirt. Keep only for casual Travel, Sports or relaxed Everyday use with a compact top."
+    },
+    {
+      "scenarioId": "S257",
+      "identity": "shopify_supplier:9d9216465f62b4b60ea7a3eca978edb5f2d19159",
+      "label": "Oversized Four-Pocket Cargo Bomber",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/bffaebe1-fb72-4f42-8793-ade4f3b12d20-Max-Origin.webp?v=1786201533",
+      "verdict": "reject-from-catalog",
+      "reason": "The worn source proves strongly dropped shoulders, a broad body and four oversized protruding cargo pockets. It is a bulky utility statement rather than the claimed controlled minimal bomber and fails the no-oversized Fall Resort gate."
+    }
+  ]
+}

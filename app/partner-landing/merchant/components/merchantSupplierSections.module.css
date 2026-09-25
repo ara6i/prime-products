@@ -186,7 +186,7 @@
 }
 
 .catalogMover {
-  --catalog-duration: 14.4s;
+  --catalog-duration: 21.6s;
   --catalog-start-x: -2vw;
   --catalog-end-x: 102vw;
   position: absolute;

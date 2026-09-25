@@ -124,7 +124,7 @@ export function MerchantNetworkJourney({ onPrimaryAction }: MerchantNetworkJourn
           <header className={styles.creatorShowcaseHeader}>
             <div className={styles.creatorShowcaseIndex}>
               <span>03</span>
-              <p><b>Influencer Network</b><small>Trusted discovery</small></p>
+              <p><b>Global Influencer Network</b><small>Trusted discovery</small></p>
             </div>
             <div className={styles.creatorCommunity}>
               <div className={styles.creatorAvatars} aria-label="PrimeStyleAI creator community">
@@ -174,7 +174,7 @@ export function MerchantNetworkJourney({ onPrimaryAction }: MerchantNetworkJourn
               <cite>— Maya Laurent, Fashion Creator</cite>
             </blockquote>
             <div className={styles.creatorStatement}>
-              <div><span>03</span><small>Influencer Network</small></div>
+              <div><span>03</span><small>Global Influencer Network</small></div>
               <h3>From creator story<br />to measurable sale.</h3>
               <p>Creators turn products into trusted stories, shoppable inspiration, and measurable demand.</p>
               <BenefitList items={["Match products to relevant creators", "Publish shoppable content at scale", "Track creator-driven demand"]} />
@@ -201,7 +201,7 @@ export function MerchantNetworkJourney({ onPrimaryAction }: MerchantNetworkJourn
                 </button>
               ))}
               <span className={styles.creatorDirectoryLocation}><MapPin size={13} weight="fill" /> London, UK</span>
-              <button type="button" className={styles.creatorDirectoryBell} aria-label="Creator network notifications"><Bell size={15} /></button>
+              <button type="button" className={styles.creatorDirectoryBell} aria-label="Global creator network notifications"><Bell size={15} /></button>
               <span className={styles.creatorDirectoryUser}>Evelyn Munoz</span>
               <Image
                 src="/media/partner-landing/merchant-network/creator-discovery/creator-susan.webp"

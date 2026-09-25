@@ -1,0 +1,117 @@
+{
+  "outputDir": "winter-sports-budget-pilot-s229",
+  "scenarioId": "S229",
+  "occasion": "Sports / Workout",
+  "season": "Winter",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "full-source-corrected-base-layer-only-awaiting-bottom-outerwear-and-shoe",
+  "comparisonTitle": "S229 · Winter Sports / Workout · existing base-layer screen",
+  "comparisonSubtitle": "Six cold-weather active tops · four remaining full-length joggers · rejected dark-navy B3 removed from the catalog",
+  "comparisonNote": "Dark-navy B3 also rejected after full-source review · lighter controlled-straight trouser, cream short technical puffer and cream-gray trainer still queued · not UI integrated",
+  "coreTitle": "S229 · provisional Winter Sports base layer",
+  "coreSubtitle": "gray-sage regular stand-collar half-zip only",
+  "coreNote": "The former dark-navy jogger narrows below the knee and stacks over both shoes, so it is removed from the catalog · a lighter controlled-straight technical trouser, cream short technical puffer and cream-gray weather-resistant trainer are still missing · one uniqueness hold only · no complete outfit · not UI integrated",
+  "frontRunnerKeys": ["T1"],
+  "missingSlots": ["bottom", "outerwear", "shoe"],
+  "queuedRoles": [
+    {
+      "category": "bottom",
+      "searchPhrase": "men winter active trousers light stone gray controlled straight leg no cuff",
+      "targetProduct": "light stone-gray controlled-straight Winter training trouser"
+    },
+    {
+      "category": "outerwear",
+      "searchPhrase": "men cream technical puffer jacket short regular fit",
+      "targetProduct": "cream short technical puffer"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men cream gray weather resistant training shoes low profile gum sole",
+      "targetProduct": "cream-gray weather-resistant trainer"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:e5b94283fe9808da58aa712e17b33289ce633ec7",
+      "name": "Gray-Sage Stand-Collar Half-Zip Active Base",
+      "decision": "visual-front-runner-awaiting-bottom-outerwear-and-shoe",
+      "decisionReason": "Full-source body proof shows a clean stand collar, regular shoulder and straight movement-friendly torso. The longer plain body is acceptable only as a supporting Winter base beneath a short cream technical puffer, never with a dark bottom or dark outer layer."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:6d0c6f6f1028eb77e12773dd77de5a3b597b6b78",
+      "name": "Bean-Green Half-Zip",
+      "decision": "reject-for-s229",
+      "decisionReason": "It repeats nearly the same bean-green role as T1 while the more exposed zip and slightly shaped torso make it less clean and less useful for the cream-puffer direction."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:ed194cd98e3cdb2ae344ab076e5bd665dbda210f",
+      "name": "Light-Green Athletic Hoodie",
+      "decision": "reject-for-s229",
+      "decisionReason": "The floating product image provides no body or movement proof, and the high-contrast black cords make the piece look more generic than the clean Zara-led active layer required here."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:275a738cb5f88c0828e599c51834fe10db3ae6e3",
+      "name": "French-Blue Textured Quarter-Zip",
+      "decision": "reject-for-s229",
+      "decisionReason": "This product-only image does not prove shoulder, torso or sleeve proportion, and the dark textured blue would return the outfit to a conventional cold-weather default."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:d96901e0ac30be7968a06da5904c90f342d70091",
+      "name": "Light-Blue Quick-Dry Quarter-Zip",
+      "decision": "reject-for-s229",
+      "decisionReason": "The close torso, contrast paneling and dated quick-dry styling reproduce the skinny technical top problem instead of a modern clean active silhouette."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:0ae1b8390f88851ec82739efb73704f9d134321e",
+      "name": "Mustard Half-Zip",
+      "decision": "reject-for-s229",
+      "decisionReason": "Mustard is a welcome color, but the close body and lifestyle rather than movement-focused presentation are too fitted for this Winter workout core and would exaggerate any jogger volume."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:1a666f5be35d5c8b71d25f4cbf709b11f941d134",
+      "name": "Sand-Gray Jogger",
+      "decision": "reject-for-s229",
+      "decisionReason": "The isolated image lacks on-body proportion proof; the synthetic sheen and visibly stacked ankle fabric risk a cheap puddled shape."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:3082643e1c10cb4b0af5c42ab29d589195d00dcf",
+      "name": "Khaki Clean Jogger",
+      "decision": "reject-after-full-resolution-for-s229",
+      "decisionReason": "The full worn image is much tighter than the product label suggests: it clings from thigh through calf and creates the skinny technical-pant silhouette the rebuild is removing."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:f3c07fc2e1f6106c028c1f8c44d239a552272766",
+      "name": "Paris-Gray Utility Jogger",
+      "decision": "reject-for-s229",
+      "decisionReason": "Although the light gray is useful, the fuller utility volume, cargo-like zip seams and elastic cuffs create a baggier bottom than this clean active core can support."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:5e223289e1c188fee9ac946ad1ae5bf0cc95fa20",
+      "name": "Khaki Tapered Jogger",
+      "decision": "reject-for-s229",
+      "decisionReason": "The beach-oriented styling, exposed black drawstring and short gathered cuff read casual-lounge rather than a polished Winter training outfit."
+    }
+  ]
+}

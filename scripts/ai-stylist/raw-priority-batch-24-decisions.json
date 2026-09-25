@@ -1,0 +1,134 @@
+{
+  "batch": "24",
+  "approvals": {
+    "14": {
+      "color": "Apricot",
+      "constraint": "Use the warm-apricot ribbed henley knit once only for Fall or Winter Casual Everyday, Weekend, Travel, Campus, creative Work, or a relaxed daytime Date Night. Pair with one controlled straight bottom in charcoal, chocolate, stone, ecru or muted olive and a low-profile cream, tan or brown shoe; no oversized or puddled bottom, second ribbed layer, loud print or bulky sneaker."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "The product-only black plaid shirt is covered with pseudo-brand text and offers no adult fit proof."
+    },
+    {
+      "cards": [2],
+      "reason": "The lemon-and-palm print is cheerful, but the on-body shirt is visibly narrow through the torso and styled with a deep open chest, making it a novelty skinny resort top rather than a versatile modern shirt."
+    },
+    {
+      "cards": [3, 11],
+      "reason": "These black lace shirts are transparent, body-hugging and nightlife-costume driven rather than polished modern layers."
+    },
+    {
+      "cards": [4],
+      "reason": "The black shirt has a narrow body, dated plaid collar and cuff trim, and no useful color role."
+    },
+    {
+      "cards": [5],
+      "reason": "The single orange floral product view is synthetic-looking, hanger-only and too busy to approve without adult fit or drape proof."
+    },
+    {
+      "cards": [6, 15],
+      "reason": "These recolored V-neck sweaters are visibly muscle-fit or product-only slim basics and repeat the skinny-top problem."
+    },
+    {
+      "cards": [7],
+      "reason": "All eight textured crew-neck variants visibly cling through the chest, waist and arms; the useful apricot and wine colors do not rescue the skinny silhouette."
+    },
+    {
+      "cards": [8],
+      "reason": "The black horizontal-stripe T-shirt is intentionally transparent and oversized, with no general modern outfit role."
+    },
+    {
+      "cards": [9],
+      "reason": "The square-neck ribbed tank uses a cropped, body-hugging and likely gender-misclassified product shape without reliable adult-male fit proof."
+    },
+    {
+      "cards": [10],
+      "reason": "The white product-only sweater carries large imitation-brand text across its striped front and lacks fit proof."
+    },
+    {
+      "cards": [12],
+      "reason": "The all-over red pepper print is a cheap novelty motif on a hanger-only shirt."
+    },
+    {
+      "cards": [13],
+      "reason": "The tropical floral shirt is visibly tight through the torso and arms and is presented with an excessively deep open neckline."
+    },
+    {
+      "cards": [16],
+      "reason": "Seven product-only solid sweaters add no trustworthy shoulder, torso, sleeve or hem proof and repeat already approved basic knit roles."
+    },
+    {
+      "cards": [17],
+      "reason": "The elastic-waist active pant is shown being stretched away from the leg, reads as generic synthetic training wear and adds no missing silhouette or color role."
+    },
+    {
+      "cards": [18],
+      "reason": "Black, khaki and light-gray joggers remain very loose, cuff-bunched and logo-tagged, repeating the rejected baggy technical-pant shape."
+    },
+    {
+      "cards": [19],
+      "reason": "The black, dark-gray and navy trousers have a clean line but supply only generic dark synthetic basics and no missing color, texture or construction role."
+    },
+    {
+      "cards": [20],
+      "reason": "All three cropped pants use an asymmetric layered hem, exaggerated volume and costume-like proportion."
+    },
+    {
+      "cards": [21],
+      "reason": "The product-only harem pants have a ballooned leg, dropped volume and excessive knee gathering in every color."
+    },
+    {
+      "cards": [22],
+      "reason": "Black, navy and olive product-only pants use generic zip-pocket construction without adult rise, seat, leg or break proof."
+    },
+    {
+      "cards": [23],
+      "reason": "The loose pants use an overlong hanging belt, excess leg volume and visible pooling over the shoes."
+    },
+    {
+      "cards": [24],
+      "reason": "The multicolor ethnic stripe jogger has a ballooned harem-like shape and reads as novelty costume wear rather than a versatile modern bottom."
+    },
+    {
+      "cards": [25],
+      "reason": "The wide track pants use branded side stripes, giant drawstrings and heavy shoe pooling."
+    },
+    {
+      "cards": [26],
+      "reason": "The product-only faded jeans are explicitly high-waist and baggy with an uncontrolled wide leg and no on-body break proof."
+    },
+    {
+      "cards": [27],
+      "reason": "The active leggings are skin-tight, waistband-logo led and unsuitable as a general men's outfit bottom."
+    },
+    {
+      "cards": [28],
+      "reason": "Black and gray product-only sweatpants use an exaggerated wide leg and provide no adult fit or movement proof."
+    },
+    {
+      "cards": [29, 30],
+      "reason": "These digitally composited sweater vests use tight office styling, dated formal layering and synthetic-looking cable or argyle patterns."
+    },
+    {
+      "cards": [31, 32],
+      "reason": "The product-only puffers are shiny generic supplier jackets with dark repetition, bulky hoods and no adult fit proof."
+    },
+    {
+      "cards": [33, 34, 36, 37, 38, 39, 40],
+      "reason": "These product-only nylon and mesh layers are repetitive fishing or workwear vests with excessive utility pockets, visible supplier labels and no polished modern outfit role."
+    },
+    {
+      "cards": [35],
+      "reason": "The blue, yellow, orange and red product-only pocket vest reads as safety or uniform workwear and provides no adult fit proof."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 130 recorded color images rendered; 170 displayed images loaded with zero broken files.",
+    "1 accepted with one exact color and variant selected: a warm-apricot regular-relaxed ribbed henley knit.",
+    "39 rejected after the base pass and close inspection of 16 promising color variants across three identities.",
+    "The selected identity, source product, variant and image have zero collision with every prior accepted or conditional item.",
+    "Rejections include novelty and transparent shirts, skinny sweaters, gender-misclassified tanks, harem and puddled bottoms, generic dark synthetic trousers, dated sweater vests, puffers and fishing vests."
+  ]
+}

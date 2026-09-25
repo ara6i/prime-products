@@ -1,0 +1,28 @@
+{
+  "outputDir": "spring-resort-midrange-pilot-s250",
+  "scenarioId": "S250",
+  "occasion": "Vacation / Resort",
+  "season": "Spring",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceSpec": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/spring-resort-budget-pilot-s249/core-comparison.json",
+  "excludeCandidateKeys": ["T1", "B6"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S250 · Spring Vacation / Resort · Mid-Range local screen",
+  "comparisonSubtitle": "Remaining unique Spring Resort candidates after the S249 two-piece holds",
+  "comparisonNote": "Require breathable texture, happy controlled color and polished above-knee proportion · no gym tank, close armhole, product-only short, long conservative short or washed jersey · not UI integrated",
+  "coreTitle": "S250 · provisional Spring Resort Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Mid-Range Resort bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men soft coral openwork camp shirt spring resort mid range", "targetProduct": "soft-coral openwork camp shirt with controlled regular ease", "customerRetailTarget": "$100-$140"},
+    {"category": "bottom", "searchPhrase": "men soft sage tailored resort shorts spring mid range", "targetProduct": "soft-sage clean tailored above-knee resort short", "customerRetailTarget": "$110-$150"},
+    {"category": "shoe", "searchPhrase": "men ecru suede rope sole espadrille spring resort", "targetProduct": "ecru suede rope-sole low-profile espadrille", "customerRetailTarget": "$140-$190"},
+    {"category": "bag", "searchPhrase": "men powder blue canvas leather resort tote spring", "targetProduct": "powder-blue canvas-and-cognac-leather compact resort tote", "customerRetailTarget": "$110-$160"},
+    {"category": "accessory", "searchPhrase": "men amber tortoiseshell sunglasses spring resort", "targetProduct": "amber-tortoiseshell minimal rectangular sunglasses", "customerRetailTarget": "$60-$90"}
+  ]
+}

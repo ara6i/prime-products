@@ -1,0 +1,54 @@
+{
+  "batch": "47",
+  "approvals": {
+    "33": {
+      "color": "Camel",
+      "constraint": "Use this camel relaxed-straight cotton trouser once only for Spring/Fall Casual Everyday, creative Office, Travel, Weekend, Campus or a daytime Date. Balance its easy leg with a regular-fit or softly relaxed waist-length top in white, sky blue, burgundy, forest green, navy or charcoal and low-profile cream, brown, burgundy or muted-green footwear; never pair it with an oversized long top, another loose layer, chunky trainer, all-beige palette, formal business styling or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 6, 13],
+      "reason": "These denim, knit, hoodie and washed-tee tops are visibly oversized, long or sleeve-heavy and recreate uncontrolled upper-body proportions."
+    },
+    {
+      "cards": [3, 4, 5],
+      "reason": "These turtleneck and ribbed tops are visibly body-tight or bodybuilding-focused and directly repeat the skinny-shirt failure."
+    },
+    {
+      "cards": [7],
+      "reason": "The product-only pleated bow-tie shirt is costume-formal, supplies no trustworthy adult fit proof and is ineligible for the non-wedding wardrobe."
+    },
+    {
+      "cards": [8, 9, 18],
+      "reason": "These sweatshirts, T-shirts and shirts use visible lettering or pseudo-brand graphics that make them less versatile and less refined."
+    },
+    {
+      "cards": [10, 11, 12, 15, 16, 17, 19, 20],
+      "reason": "These angel, butterfly, graffiti, slogan, star and dragon graphics are loud, novelty-led and product-only rather than clean modern Zara-led pieces."
+    },
+    {
+      "cards": [14],
+      "reason": "All six resort-shirt variants are product-only novelty prints, including mushrooms, tie-dye and cartoon scenes; none provides clean adult fit proof."
+    },
+    {
+      "cards": [21, 24, 25, 26, 28, 29, 30, 31, 34, 37, 38, 39, 40],
+      "reason": "These photographed trousers and jeans are excessively wide, ballooned, puddled, tie-waisted or technical and fail the controlled-leg requirement."
+    },
+    {
+      "cards": [22],
+      "reason": "The product-only cropped denim is extremely wide and below-knee, creating an awkward dated proportion without on-body proof."
+    },
+    {
+      "cards": [23, 27, 32, 35, 36],
+      "reason": "These product-only wide jeans and trousers lack reliable on-body proof through the waist, thigh and shoe break; several also use synthetic or gradient finishing."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 168 recorded color images rendered and loaded with zero broken files.",
+    "1 bottom accepted in one exact color: a camel relaxed-straight cotton trouser whose photographed line remains controlled rather than ballooned or puddled.",
+    "39 rejected after the base pass and close inspection of all 13 variants across three borderline identities; every top failed.",
+    "The selected identity, variant and image have zero collision with every prior accepted or conditional item.",
+    "The batch mostly failed for tight/bodybuilding tops, uncontrolled oversized layers, visible lettering, novelty graphics, product-only proof gaps, and wide, cropped, ballooned or puddled bottoms."
+  ]
+}

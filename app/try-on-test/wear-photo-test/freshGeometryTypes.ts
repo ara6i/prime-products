@@ -1,3 +1,5 @@
+import type { AiadLevel, AiadRowEndpoints } from "./aiadPreprocessing";
+
 export interface FreshQualityGates {
   [key: string]: unknown;
   rows?: Partial<Record<"waist" | "hips", boolean>>;
@@ -62,6 +64,11 @@ export type FreshGeometryLineOverride = {
   y: number;
 };
 
+/** Aiad's six levels are kept separate from the legacy five-row model schema. */
+export type AiadGeometryLevel = Pick<FreshGeometryRow,
+  "label" | "color" | "line" | "widthCm" | "depthCm" | "depthWidthRatio" | "tapeCm"
+> & { kind: AiadLevel; endpoints: AiadRowEndpoints | null };
+
 export type FreshGeometryLineOverrideMap = Partial<Record<
   FreshGeometryRow["kind"],
   FreshGeometryLineOverride
@@ -77,6 +84,8 @@ export interface FreshCameraFusionRow {
   fusedDepthCm: number | null;
   learnedDepthWidthRatio: number | null;
   directTapeCm: number | null;
+  rawGeometryCircumferenceCm: number | null;
+  cameraGeometryCircumferenceCm: number | null;
   widthSource: "apple-depth" | "apple-vision" | "fresh-onnx";
   confidence: "high" | "medium" | "low";
   widthChangePct: number | null;
@@ -99,7 +108,7 @@ export interface FreshCameraFusion {
     scaleFactor: number | null;
   };
   rows: FreshCameraFusionRow[];
-  rowPositionSource: "fresh-onnx" | "manual";
+  rowPositionSource: "fresh-onnx" | "height-fraction-guide" | "manual";
   manuallyEditedRows: FreshGeometryRow["kind"][];
   warnings: string[];
   tapeHandling: "direct-fresh-head-unchanged";
@@ -112,10 +121,10 @@ export interface FreshGeometryPrediction {
     version: string;
     sha256: string;
     targetCount: number;
-    bestEpoch: number;
-    bestValidationLoss: number;
-    train: { subjects: number; records: number };
-    validation: { subjects: number; records: number };
+    bestEpoch: number | null;
+    bestValidationLoss: number | null;
+    train: { subjects: number; records: number } | null;
+    validation: { subjects: number; records: number } | null;
     qualityGates: FreshQualityGates;
     syntheticWearValidated: boolean;
     realPhotoValidated: boolean;
@@ -158,11 +167,29 @@ export interface FreshGeometryPrediction {
     removedForegroundPixels: number;
     warnings: string[];
     quality: "transfer-test" | "review";
+    framingRevision?: string;
   };
   canonicalMaskDataUrl: string;
   rows: FreshGeometryRow[];
   ratios: Array<{ key: string; value: number | null }>;
   camera: Record<string, number | null>;
   cameraFusion?: FreshCameraFusion;
+  aiad?: {
+    ensembleSize: 4;
+    segmentation: "aiad-rembg-photo" | "mediapipe-photo" | "thresholded-WEAR-render";
+    lineSource: "height-fraction-guide";
+    maskFill: number;
+    measurements: Array<{
+      kind: "waist" | "hips" | "chest" | "underbust" | "neck" | "thigh";
+      valueCm: number | null;
+      sigmaCm: number | null;
+    }>;
+    shoulder: { widthCm: number; depthCm: number };
+    /** All six original helper outputs, including shoulder and male under-bust geometry. */
+    levels?: AiadGeometryLevel[];
+    guideSource?: "deployment/wear_measure/predict.py:row_endpoints";
+    shapeCode: number[];
+    manuallyEditedRows?: FreshGeometryRow["kind"][];
+  };
   timing: { inferenceMs: number; totalMs: number };
 }

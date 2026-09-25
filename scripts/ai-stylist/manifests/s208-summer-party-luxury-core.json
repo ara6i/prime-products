@@ -1,0 +1,27 @@
+{
+  "outputDir": "summer-party-luxury-pilot-s208",
+  "scenarioId": "S208",
+  "occasion": "Party / Night Out",
+  "season": "Summer",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s206-summer-party-midrange-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-shoe-bag-and-watch",
+  "comparisonTitle": "S208 · Summer Party / Night Out · Luxury local screen",
+  "comparisonSubtitle": "The 15 unique Summer Party candidates re-evaluated for Luxury fiber, hand construction and exact drape",
+  "comparisonNote": "Require silk-cashmere, linen-silk-wool, handmade calf suede and full-grain leather proof with fresh Summer color · no relabeling of mass-market pieces · not UI integrated",
+  "coreTitle": "S208 · provisional Summer Party Luxury core",
+  "coreSubtitle": "No local garment reaches the Summer Luxury Party visual bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Luxury re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men pale lemon silk cashmere open knit polo luxury summer party","targetProduct":"pale-lemon silk-cashmere open-knit polo with hand-finished collar","customerRetailTarget":"$300-$450"},
+    {"category":"bottom","searchPhrase":"men washed teal linen silk wool pleated trouser luxury summer party","targetProduct":"washed-teal linen-silk-wool hand-finished single-pleat trouser","customerRetailTarget":"$380-$550"},
+    {"category":"shoe","searchPhrase":"men sand woven calf suede handmade luxury loafer summer party","targetProduct":"sand woven-calf-and-suede handmade Luxury loafer","customerRetailTarget":"$420-$600"},
+    {"category":"bag","searchPhrase":"men ivory tan full grain leather compact crossbody luxury party","targetProduct":"ivory-and-tan full-grain leather compact crossbody","customerRetailTarget":"$650-$900"},
+    {"category":"watch","searchPhrase":"men sky blue dial tan leather luxury thin case watch summer party","targetProduct":"sky-blue-dial thin-case Luxury watch with fine tan leather strap","customerRetailTarget":"$350-$700"}
+  ]
+}

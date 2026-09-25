@@ -1,0 +1,27 @@
+{
+  "outputDir": "spring-date-luxury-pilot-s188",
+  "scenarioId": "S188",
+  "occasion": "Date Night",
+  "season": "Spring",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s186-spring-date-midrange-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-watch",
+  "comparisonTitle": "S188 · Spring Date Night · Luxury local screen",
+  "comparisonSubtitle": "The 18 unique unreserved Spring Date candidates re-evaluated for Luxury fiber, hand construction and exact drape",
+  "comparisonNote": "Require silk-cashmere, wool-silk, supple suede or equivalent Luxury proof, romantic color and hand-finished controlled proportion · no relabeling of mass-market pieces · not UI integrated",
+  "coreTitle": "S188 · provisional Spring Date Night Luxury core",
+  "coreSubtitle": "No local garment reaches the Spring Luxury Date visual bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Luxury re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men dusty rose silk cashmere fine gauge short sleeve knit polo luxury spring date","targetProduct":"dusty-rose silk-cashmere fine-gauge short-sleeve knit polo with hand-finished collar","customerRetailTarget":"$300-$450"},
+    {"category":"bottom","searchPhrase":"men warm ivory wool silk high rise double pleat trouser luxury spring date","targetProduct":"warm-ivory wool-silk high-rise double-pleat trouser with hand-finished waistband and exact break","customerRetailTarget":"$380-$550"},
+    {"category":"outerwear","searchPhrase":"men powder blue lamb suede hand finished cropped blouson luxury spring date","targetProduct":"powder-blue lamb-suede hand-finished cropped blouson with minimal hardware","customerRetailTarget":"$650-$900"},
+    {"category":"shoe","searchPhrase":"men cream calf leather handmade luxury low profile court sneaker spring date","targetProduct":"cream calf-leather handmade Luxury low-profile rounded court sneaker","customerRetailTarget":"$420-$600"},
+    {"category":"watch","searchPhrase":"men champagne dial cognac leather thin case luxury dress watch date","targetProduct":"champagne-dial thin-case Luxury watch with fine cognac leather strap","customerRetailTarget":"$350-$700"}
+  ]
+}

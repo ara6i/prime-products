@@ -27,7 +27,10 @@ describe("creator profile validation route", () => {
   });
 
   it("accepts a valid link when a platform blocks automated checks", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("", { status: 403 })));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(new Response("", { status: 403 })),
+    );
 
     const response = await POST(request("instagram", "instagram.com/creator"));
     const body = await response.json();
@@ -43,11 +46,15 @@ describe("creator profile validation route", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(
-        new Response("<html>This page isn't available</html>", { status: 200 }),
+        new Response("<html>This page isn't available</html>", {
+          status: 200,
+        }),
       ),
     );
 
-    const response = await POST(request("threads", "threads.net/@missing-person"));
+    const response = await POST(
+      request("threads", "threads.net/@missing-person"),
+    );
     const body = await response.json();
 
     expect(response.status).toBe(422);
@@ -58,9 +65,12 @@ describe("creator profile validation route", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(
-        new Response('<script>{"username":"creator","is_private":false}</script>', {
-          status: 200,
-        }),
+        new Response(
+          '<script>{"username":"creator","is_private":false}</script>',
+          {
+            status: 200,
+          },
+        ),
       ),
     );
 
@@ -78,12 +88,14 @@ describe("creator profile validation route", () => {
   it("rejects an Instagram profile when its privacy marker appears late in the page", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(
-        new Response(
-          `<script>{"username":"cristian"}${"x".repeat(220_000)}"is_private":true</script>`,
-          { status: 200 },
+      vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            `<script>{"username":"cristian"}${"x".repeat(220_000)}"is_private":true</script>`,
+            { status: 200 },
+          ),
         ),
-      ),
     );
 
     const response = await POST(request("instagram", "instagram.com/cristian"));
@@ -92,7 +104,8 @@ describe("creator profile validation route", () => {
     expect(response.status).toBe(422);
     expect(body).toMatchObject({
       status: "invalid",
-      message: "Instagram profile appears private. Make it public, then try again.",
+      message:
+        "Instagram profile appears private. Make it public, then try again.",
     });
   });
 
@@ -136,19 +149,22 @@ describe("creator profile validation route", () => {
     expect(response.status).toBe(422);
     expect(body).toMatchObject({
       status: "invalid",
-      message: "No public TikTok profile was found at this link. Check the username.",
+      message:
+        "No public TikTok profile was found at this link. Check the username.",
     });
   });
 
   it("confirms a public Threads profile and normalizes the former threads.net domain", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(
-        new Response(
-          '<meta property="og:title" content="Mark Zuckerberg (@zuck)"><script>{"username":"zuck","is_private":false}</script>',
-          { status: 200 },
+      vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            '<meta property="og:title" content="Mark Zuckerberg (@zuck)"><script>{"username":"zuck","is_private":false}</script>',
+            { status: 200 },
+          ),
         ),
-      ),
     );
 
     const response = await POST(request("threads", "threads.net/@zuck"));
@@ -165,12 +181,14 @@ describe("creator profile validation route", () => {
   it("confirms a public YouTube channel from its matching channel payload", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(
-        new Response(
-          '<link rel="canonical" href="https://www.youtube.com/channel/UC123"><script>{"canonicalBaseUrl":"/@MrBeast","channelId":"UC123"}</script>',
-          { status: 200 },
+      vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            '<link rel="canonical" href="https://www.youtube.com/channel/UC123"><script>{"canonicalBaseUrl":"/@MrBeast","channelId":"UC123"}</script>',
+            { status: 200 },
+          ),
         ),
-      ),
     );
 
     const response = await POST(request("youtube", "youtube.com/@MrBeast"));
@@ -186,12 +204,14 @@ describe("creator profile validation route", () => {
   it("confirms a public Pinterest profile from its matching profile metadata", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue(
-        new Response(
-          '<meta property="og:title" content="Pinterest"><script>{"username":"pinterest"}</script>',
-          { status: 200 },
+      vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            '<meta property="og:title" content="Pinterest"><script>{"username":"pinterest"}</script>',
+            { status: 200 },
+          ),
         ),
-      ),
     );
 
     const response = await POST(
@@ -206,11 +226,41 @@ describe("creator profile validation route", () => {
     });
   });
 
+  it("resolves a Pinterest pin.it short link to its canonical creator profile", async () => {
+    const publicFetch = vi.fn().mockResolvedValue(
+      new Response(null, {
+        status: 302,
+        headers: {
+          location: "https://www.pinterest.com/stylemyysoul/?invite_code=test",
+        },
+      }),
+    );
+    vi.stubGlobal("fetch", publicFetch);
+
+    const response = await POST(
+      request("pinterest", "https://pin.it/1Z5MkCfl3"),
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      status: "verified",
+      normalizedUrl: "https://www.pinterest.com/stylemyysoul",
+      message: "Pinterest profile link confirmed.",
+    });
+    expect(publicFetch).toHaveBeenCalledWith(
+      new URL("https://api.pinterest.com/url_shortener/1Z5MkCfl3/redirect/"),
+      expect.objectContaining({ redirect: "manual" }),
+    );
+  });
+
   it("does not show Instagram as verified from the username alone", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(
-        new Response('<script>{"username":"creator"}</script>', { status: 200 }),
+        new Response('<script>{"username":"creator"}</script>', {
+          status: 200,
+        }),
       ),
     );
 

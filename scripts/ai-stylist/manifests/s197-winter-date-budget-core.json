@@ -1,0 +1,96 @@
+{
+  "outputDir": "winter-date-budget-pilot-s197",
+  "scenarioId": "S197",
+  "occasion": "Date Night",
+  "season": "Winter",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "full-resolution-correction-top-only-core-awaiting-bottom-and-shoe",
+  "comparisonTitle": "S197 · Winter Date Night · existing core screen",
+  "comparisonSubtitle": "Six colorful cold-weather knits · three remaining straight or controlled bottoms · all unique and available",
+  "comparisonNote": "Prefer tactile color, date-worthy polish and controlled proportion · unique winter shoe still missing · not UI integrated",
+  "coreTitle": "S197 · provisional Winter Date core",
+  "coreSubtitle": "warm-apricot relaxed rib Henley · replacement controlled-straight trouser required",
+  "coreNote": "Former narrow gray trouser rejected after full-source review · bottom and dark-chocolate suede side-zip boot still missing · one uniqueness hold only · no complete outfit · not UI integrated",
+  "frontRunnerKeys": ["T3"],
+  "missingSlots": ["bottom", "shoe"],
+  "queuedRoles": [
+    {
+      "category": "bottom",
+      "searchPhrase": "men winter light gray wool blend trousers controlled straight leg regular fit",
+      "targetProduct": "light-gray wool-blend controlled-straight winter trouser"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men dark chocolate suede side zip ankle boots round toe slim sole",
+      "targetProduct": "dark-chocolate suede side-zip ankle boot"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:fbfc103acc2f63512ef6f1c5b1038a150ab8c1db",
+      "name": "Peacock-Blue Mock Neck",
+      "decision": "reject-for-s197",
+      "decisionReason": "The narrow shoulder, compressed chest, long tight torso and bunched sleeves reproduce the skinny-top silhouette explicitly excluded from the rebuild."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:e072509bbb39ee226b308bb09215ba9116bf6fe5",
+      "name": "Orange Fuzzy Stripe Knit",
+      "decision": "reject-for-s197",
+      "decisionReason": "The bold orange is useful, but the floating product image provides no body proof and the fuzzy oversized shape risks novelty volume rather than date polish."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:cb33c4009241bb7122bb5389f3ca1452f341618d",
+      "name": "Warm-Apricot Knit Henley",
+      "decision": "visual-front-runner-awaiting-shoe",
+      "decisionReason": "The warm blush-apricot rib knit has tactile Winter interest, a clean button neckline and controlled relaxed ease without a skinny body or exaggerated drop shoulder."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:9e8719479f6d34233b8dfd557767f52a1bffa7b4",
+      "name": "Peacock-Blue Fine Knit",
+      "decision": "reject-for-s197",
+      "decisionReason": "Original resolution shows a narrow fitted torso and close sleeves; the attractive blue does not justify repeating the tight-top problem."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:2984c73a22084c0ed6a3de38270524b2b9a5f582",
+      "name": "Camel Cable Quarter-Zip",
+      "decision": "reject-for-s197",
+      "decisionReason": "The close body, traditional cable layout and camel tone feel conventional and would create a muddy neutral Winter Date look."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:0ae1b8390f88851ec82739efb73704f9d134321e",
+      "name": "Mustard Half-Zip",
+      "decision": "reject-for-s197",
+      "decisionReason": "The mustard color is welcome, but the plain technical half-zip reads like a fitted outdoor base layer rather than tactile, date-worthy knitwear."
+    },
+    {
+      "group": "bottom",
+      "key": "B3",
+      "identity": "shopify_supplier:fabf15cd2935c7ad9c6fc6909dbdb8e94ea7f169",
+      "name": "Light-Gray Washed Jean",
+      "decision": "reject-for-s197",
+      "decisionReason": "The broad washed leg visibly stacks and cuffs around the shoe, producing the baggy puddled denim silhouette the rebuild is removing."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:8d9fb6dd4f6289a656e655b8b9b0e6efe6005a3d",
+      "name": "Dark Zip-Detail Jean",
+      "decision": "reject-for-s197",
+      "decisionReason": "The dark marbled wash, hip zip details and heavy black-and-white sneaker styling look dated and reintroduce a dark-default lower half."
+    }
+  ]
+}

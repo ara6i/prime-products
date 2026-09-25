@@ -1,0 +1,27 @@
+{
+  "outputDir": "summer-resort-luxury-pilot-s256",
+  "scenarioId": "S256",
+  "occasion": "Vacation / Resort",
+  "season": "Summer",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s255-summer-resort-premium-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S256 · Summer Vacation / Resort · Luxury local screen",
+  "comparisonSubtitle": "The unique Summer Resort remainder re-evaluated for Luxury textile and hand finish",
+  "comparisonNote": "Require silk-cashmere jacquard, linen-silk tailoring, handwoven calf and full-grain leather or equivalent Luxury proof · not UI integrated",
+  "coreTitle": "S256 · provisional Summer Resort Luxury core",
+  "coreSubtitle": "No remaining local garment reaches the Luxury Resort bar · five roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men turquoise silk cashmere jacquard camp shirt luxury", "targetProduct": "turquoise silk-cashmere jacquard Luxury camp shirt", "customerRetailTarget": "$300-$450"},
+    {"category": "bottom", "searchPhrase": "men warm ecru linen silk tailored resort shorts luxury", "targetProduct": "warm-ecru linen-silk Luxury tailored resort short", "customerRetailTarget": "$350-$500"},
+    {"category": "shoe", "searchPhrase": "men tobacco handwoven calf resort loafer luxury", "targetProduct": "tobacco handwoven-calf Luxury resort loafer", "customerRetailTarget": "$420-$600"},
+    {"category": "bag", "searchPhrase": "men soft coral full grain leather resort crossbody luxury", "targetProduct": "soft-coral full-grain leather Luxury resort crossbody", "customerRetailTarget": "$650-$900"},
+    {"category": "accessory", "searchPhrase": "men honey tortoiseshell handmade sunglasses luxury", "targetProduct": "honey-tortoiseshell handmade Luxury sunglasses", "customerRetailTarget": "$350-$700"}
+  ]
+}

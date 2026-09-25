@@ -23,7 +23,6 @@ type CategoryShopHeaderProps = {
 const navigation: { id: ShopCategoryId; label: string }[] = [
   { id: "women", label: "Women" },
   { id: "men", label: "Men" },
-  { id: "denim", label: "Denim" },
   { id: "accessories", label: "Accessories" },
 ];
 

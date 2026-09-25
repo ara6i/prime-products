@@ -1,0 +1,28 @@
+{
+  "outputDir": "summer-travel-midrange-pilot-s238",
+  "scenarioId": "S238",
+  "occasion": "Travel",
+  "season": "Summer",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceSpec": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/summer-travel-budget-pilot-s237/top-comparison.json",
+  "excludeCandidateKeys": ["E"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S238 · Summer Travel · Mid-Range local screen",
+  "comparisonSubtitle": "Remaining unique Summer Travel tops after the S237 knit hold",
+  "comparisonNote": "Require breathable polish, dry trustworthy product proof and controlled warm-weather ease · no wet lifestyle crop, fitted synthetic tee or gymwear detailing · not UI integrated",
+  "coreTitle": "S238 · provisional Summer Travel Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Mid-Range Travel bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men pale apricot open collar knit polo summer travel mid range", "targetProduct": "pale-apricot breathable open-collar knit polo", "customerRetailTarget": "$90-$130"},
+    {"category": "bottom", "searchPhrase": "men washed teal linen viscose travel trouser summer straight", "targetProduct": "washed-teal linen-viscose controlled-straight travel trouser", "customerRetailTarget": "$110-$160"},
+    {"category": "outerwear", "searchPhrase": "men warm ivory linen overshirt summer travel mid range", "targetProduct": "warm-ivory lightweight linen travel overshirt", "customerRetailTarget": "$120-$180"},
+    {"category": "shoe", "searchPhrase": "men tobacco woven leather low profile travel sneaker summer", "targetProduct": "tobacco woven-leather low-profile travel sneaker", "customerRetailTarget": "$130-$180"},
+    {"category": "bag", "searchPhrase": "men soft sage canvas leather crossbody summer travel", "targetProduct": "soft-sage canvas-and-leather compact travel crossbody", "customerRetailTarget": "$70-$110"}
+  ]
+}

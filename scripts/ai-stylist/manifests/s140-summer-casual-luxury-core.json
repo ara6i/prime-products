@@ -1,0 +1,57 @@
+{
+  "outputDir": "summer-casual-luxury-pilot-s140",
+  "scenarioId": "S140",
+  "occasion": "Casual Everyday",
+  "season": "Summer",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "full-resolution-correction-no-luxury-core-awaiting-replacement-top-bottom-shoe-bag-accessory",
+  "comparisonTitle": "S140 · Summer Casual Everyday · Luxury local screen",
+  "comparisonSubtitle": "Eight warm-weather color and texture tops · eight controlled shorts · all unique and unreserved",
+  "comparisonNote": "Require breathable Zara-led polish, purposeful happy color and controlled proportions · no jacket, winter fabric, skinny top, cargo bulk, basketball width, long puddled trouser or dark monotony · not UI integrated",
+  "coreTitle": "S140 · corrected Summer Casual Everyday Luxury empty core",
+  "coreSubtitle": "previous Mid-Range-looking top and technical short revoked from Luxury",
+  "coreNote": "Zero provisional holds · both products remain lower-tier candidates only · top, bottom, shoe, bag and accessory missing · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "shoe",
+      "searchPhrase": "men natural raffia cream suede woven slip on espadrille almond toe minimal",
+      "targetProduct": "natural-raffia and cream-suede woven almond-toe slip-on espadrille",
+      "customerRetailTarget": "$450-$700"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men cognac woven full grain leather compact crossbody minimalist no logo",
+      "targetProduct": "cognac woven full-grain-leather compact minimalist crossbody",
+      "customerRetailTarget": "$700-$1100"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men olive sage lens thin brushed gold oval sunglasses luxury minimal",
+      "targetProduct": "sage-lens thin brushed-gold oval luxury sunglasses",
+      "customerRetailTarget": "$400-$750"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:c1d7e0ae691889e61edf338a9b90f0e8389415d6","name":"Apricot Contrast-Trim Knit Shirt","decision":"keep-available-for-non-luxury-scenario","decisionReason":"The regular body and color are useful, but white piping, ordinary buttons and basic knit finishing read Mid-Range rather than Luxury. Remove it from S140 and preserve it only for a lower-tier Summer scenario."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:23fad7d8c89e1ea3b24c130f572debc4d738ed9e","name":"Burnt-Coral Relaxed Cotton T-Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The washed coral is cheerful and the source proves a relaxed cotton tee, but its very long torso, dropped shoulder and broad sleeve create a streetwear silhouette rather than a polished Luxury core. Preserve it as the single relaxed-volume piece in a lower-tier Weekend, Travel or Festival outfit with a sharply controlled bottom."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:6e957afe8af083c4d271deacbc7c2860306da68f","name":"Washed-Tangerine Relaxed T-Shirt","decision":"reject-for-s140","decisionReason":"The tangerine wash is energetic, but the tee is extremely dropped, long and wide and is shown with matching loose sweat bottoms. It reproduces the oversized-on-oversized streetwear proportion the rebuild is removing and lacks Luxury refinement."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:7c40cbcdae439432e35573190c8d60bfd6d86d7e","name":"Washed-Orange Relaxed T-Shirt","decision":"reject-for-s140","decisionReason":"The pale-orange dip dye is useful, but the worn body is broad, dropped and long to the upper thigh with very wide sleeves. Its distressed wash and oversized tube shape are too casual and uncontrolled for this Luxury outfit."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:9ce0f523048c1d96bc2122c732f5d8c921eae5b4","name":"Light-Blue Button-Detail Sleeveless Top","decision":"keep-available-for-other-scenario","decisionReason":"The light blue is fresh and the clean sleeveless mandarin collar is distinct, but the synthetic crinkle surface, long torso and athletic beach presentation read Resort or Travel rather than elevated Luxury Casual Everyday. Preserve it for the appropriate unique warm-weather scenario."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:4b02fa1f08581096e185ad135f7fb00d6d622f3d","name":"Pea-Green Textured Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The pea-green texture is attractive and the source proves credible fabric, but the shirt is a long dropped-shoulder layer worn over a separate white tee. It is too much upper-body coverage for hot Summer and belongs in Spring Travel, Casual or creative Office with a narrow base."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:c088c69f9f54b34e8066d0bfb29314b31c32c1f0","name":"Light-Blue Ribbed Short-Sleeve Knit","decision":"reject-for-s140","decisionReason":"Only a cropped product image exists, so the torso, hem and full worn proportion cannot be verified. The narrow sleeve opening, fitted ribbed body and conventional crew neckline also risk the dated skinny-knit look the user rejected."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:696e2d08fa20656b30ab563e2144d6dc8e7f86bd","name":"White Short-Sleeve Button-Up","decision":"reject-for-s140","decisionReason":"The hanger source layers the shirt over an unrelated white tee and supplies no body-fit evidence. The shiny crinkled surface, oversized pocket and bamboo embroidery look inexpensive and add neither purposeful color nor Luxury finish."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:5885f4c061597eb1156da3b9b4485892074cd9d8","name":"Warm-Beige Controlled Bermuda","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a clean controlled leg with no cargo bulk, but the low rise, long narrow Bermuda proportion and small branded pocket tab read conventional mass-market chino rather than current Luxury. Preserve it for a lower price-tier Summer look."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:0bbeb659ea8c838f7cdf606adeccf36a188247e0","name":"Light-Blue Toile Tailored Short","decision":"keep-available-for-other-scenario","decisionReason":"The tailored knee-length line is controlled and the pale-blue botanical print is visually credible, but it is a strong destination pattern that belongs in Vacation or Resort. Pairing it with the textured shirt would create two competing statements."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:8120446bbea5a8cfc540c46688949ac4a2a35a36","name":"Light-Green Casual Short","decision":"keep-available-for-non-luxury-scenario","decisionReason":"The controlled hem is acceptable, but the synthetic surface and curved technical thigh seams read Casual or Travel rather than Luxury. Remove it from S140 and retain it only as a lower-tier possibility."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:794e37299b82a5d3beae6b9aa304eb2516119885","name":"Apricot Linen-Blend Short","decision":"keep-available-for-other-scenario","decisionReason":"The linen texture and easy knee-length shape are seasonally valid, but the gathered drawstring waist and matching loose shirt create a tonal resort-lounge set. Keep the short for Vacation or relaxed Travel rather than making this Luxury Casual core loose and monochrome."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:a42161e9935fce9fc1afd03046053621c70ef15c","name":"Dusty-Pink Set Short","decision":"reject-for-s140","decisionReason":"The supplier identity and image represent a matching two-piece set rather than a clearly isolated bottom. The long dusty-pink short, open shirt and visible tank create a coordinated lounge costume; it cannot serve as a clean independent Luxury garment."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:b403185b6262eeb761995310623f2c018c6485a3","name":"Khaki Loose Pocket Short","decision":"reject-for-s140","decisionReason":"The pressed khaki short is visually narrow through the thigh with a long dated knee line, low conventional waist and formal black belt styling. It reads old business-casual rather than modern relaxed tailoring."},
+    {"group":"bottom","key":"B7","identity":"shopify_supplier:46530cf6f85c16a40d2139332032a8a81e18ce51","name":"White Drawstring Short","decision":"reject-for-s140","decisionReason":"Only a clipped hanger packshot exists, with no proof of rise, thigh ease or hem length. The exposed drawstring and prominent black globe wordmark make it an active/lounge short rather than a clean Luxury bottom."},
+    {"group":"bottom","key":"B8","identity":"shopify_supplier:fae21d8bba9f84bf873a84618d4452d1906ad980","name":"Lake-Blue Controlled Cargo Short","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a controlled knee-length leg and the lake-blue color is useful, but the twin cargo pockets, synthetic finish and low-rise technical styling belong in Travel, Outdoor Errands or Festival. They would add utility bulk to a pared-back Luxury look."}
+  ]
+}

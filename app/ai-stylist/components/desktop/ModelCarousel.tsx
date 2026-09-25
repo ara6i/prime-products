@@ -86,6 +86,8 @@ function modelFilter(layout: SlotLayout): string {
 
 interface ModelCarouselProps {
   images: string[];
+  imageScales?: readonly number[];
+  imageAlt?: (index: number) => string;
   rotationRef: React.RefObject<number>;
   selectedIndex?: number;
   modelBottom: number;
@@ -100,6 +102,8 @@ interface ModelCarouselProps {
 
 export function ModelCarousel({
   images,
+  imageScales,
+  imageAlt = (index) => `Style model ${index + 1}`,
   rotationRef,
   selectedIndex = 0,
   modelBottom,
@@ -161,12 +165,13 @@ export function ModelCarousel({
         );
 
         const el = children[i];
+        const imageScale = imageScales?.[i] ?? 1;
         el.style.opacity         = hasImage ? `${layout.wrapFade}` : "0";
         el.style.filter          = modelFilter(layout);
         el.style.left            = `${layout.leftPercent}%`;
         el.style.bottom          = `${layout.bottomPercent}%`;
         el.style.height          = `${layout.heightPercent}%`;
-        el.style.transform       = "translateX(-50%)";
+        el.style.transform       = `translateX(-50%) scale(${imageScale})`;
         el.style.zIndex          = `${layout.zIndex}`;
 
         // Contact shadow at model feet
@@ -207,6 +212,7 @@ export function ModelCarousel({
     modelDepth,
     modelOffsetX,
     activeBrightness,
+    imageScales,
   ]);
 
   return (
@@ -215,6 +221,7 @@ export function ModelCarousel({
       <div ref={spotlightRef} className="pointer-events-none">
         {images.map((src, i) => {
           const layout = initialLayouts[i];
+          const imageScale = imageScales?.[i] ?? 1;
           return (
             <div
               key={`spotlight-${i}`}
@@ -225,7 +232,7 @@ export function ModelCarousel({
                 left: percent(layout.leftPercent),
                 mixBlendMode: "screen",
                 opacity: src ? (layout.activeLight * 0.9).toFixed(4) : "0",
-                transform: "translateX(-50%)",
+                transform: `translateX(-50%) scale(${imageScale})`,
                 transformOrigin: "bottom center",
                 width: percent(layout.heightPercent * 0.82),
                 willChange: "transform, left, bottom, width, height, opacity",
@@ -263,6 +270,7 @@ export function ModelCarousel({
       <div ref={containerRef}>
         {images.map((src, i) => {
           const layout = initialLayouts[i];
+          const imageScale = imageScales?.[i] ?? 1;
 
           return (
             <div
@@ -275,7 +283,7 @@ export function ModelCarousel({
                 height: percent(layout.heightPercent),
                 left: percent(layout.leftPercent),
                 opacity: src ? layout.wrapFade.toFixed(4) : "0",
-                transform: "translateX(-50%)",
+                transform: `translateX(-50%) scale(${imageScale})`,
                 transformOrigin: "bottom center",
                 willChange: "transform, filter, left, bottom",
                 zIndex: layout.zIndex,
@@ -286,7 +294,7 @@ export function ModelCarousel({
                   <motion.img
                     key={src}
                     src={src}
-                    alt={`Style model ${i + 1}`}
+                    alt={imageAlt(i)}
                     className="absolute inset-0 h-full w-full max-w-none object-contain"
                     decoding="async"
                     draggable={false}

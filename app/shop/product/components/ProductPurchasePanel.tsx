@@ -57,12 +57,6 @@ export function ProductPurchasePanel({
 
       <p className={styles.productDescription}>{product.description}</p>
 
-      {product.isMock ? (
-        <p className={styles.mockProductNotice}>
-          Concept product · AI-generated gallery and sample sizing. Not for sale.
-        </p>
-      ) : null}
-
       {product.imageNotice ? (
         <p className={styles.mockProductNotice}>{product.imageNotice}</p>
       ) : null}
@@ -87,7 +81,7 @@ export function ProductPurchasePanel({
         />
       </div>
 
-      <div className={styles.sizeField}>
+      <div className={styles.sizeField} id="size">
         <div className={styles.sizeFieldHeader}>
           <span>{product.sizes.length > 0 ? "Select size" : "Sizes"}</span>
           {product.sizes.length > 0 ? (

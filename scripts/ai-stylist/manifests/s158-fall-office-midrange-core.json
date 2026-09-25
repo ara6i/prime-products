@@ -1,0 +1,72 @@
+{
+  "outputDir": "fall-office-midrange-pilot-s158",
+  "scenarioId": "S158",
+  "occasion": "Work / Office",
+  "season": "Fall",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-screen-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-shoe-bag-watch",
+  "comparisonTitle": "S158 · Fall Work / Office · Mid-Range local screen",
+  "comparisonSubtitle": "Eight expressive Fall knits · five controlled trouser candidates · six possible layers · all unique and unreserved",
+  "comparisonNote": "Require modern creative-office polish, controlled ease and a warm happy color story · no skinny knit, puddled leg, lounge waist, costume pattern or dark monotony · not UI integrated",
+  "coreTitle": "S158 · provisional Fall Work / Office Mid-Range core",
+  "coreSubtitle": "No local top reaches the Fall Mid-Range Office visual bar · all five roles unresolved",
+  "coreNote": "Zero provisional holds after full-size borderline re-audit · Mid-Range retail proof plus top, bottom, shoe, bag and watch remain unresolved · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men burnt coral merino fine gauge button neck sweater regular fit fall office",
+      "targetProduct": "burnt-coral fine-gauge merino button-neck knit with a controlled regular fit",
+      "customerRetailTarget": "$100-$150"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men warm ivory stone double pleat controlled straight trouser fall creative office modern",
+      "targetProduct": "warm-ivory or light-stone double-pleat trouser with a controlled straight leg and precise break",
+      "customerRetailTarget": "$130-$190"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men burgundy suede low profile round toe penny loafer fall office modern",
+      "targetProduct": "burgundy-suede low-profile round-toe penny loafer",
+      "customerRetailTarget": "$150-$210"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men muted sage canvas cognac leather compact office crossbody briefcase minimal",
+      "targetProduct": "muted-sage canvas-and-cognac-leather compact briefcase or structured crossbody",
+      "customerRetailTarget": "$120-$170"
+    },
+    {
+      "category": "watch",
+      "searchPhrase": "men cream dial burgundy leather minimal watch fall office",
+      "targetProduct": "cream-dial minimalist watch with a burgundy leather strap",
+      "customerRetailTarget": "$60-$100"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:9e8719479f6d34233b8dfd557767f52a1bffa7b4","name":"Peacock-Blue Long-Sleeve Knit Top","decision":"reject-for-s158","decisionReason":"The color reads dusty steel blue rather than the listed peacock, while the narrow shoulder, close torso, tight sleeves and long ribbed hem reproduce the dated skinny-knit shape being removed."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:2984c73a22084c0ed6a3de38270524b2b9a5f582","name":"Camel Cable-Knit Quarter-Zip","decision":"reject-for-s158","decisionReason":"The cable texture is credible, but the high bulky zip neck, close arm and torso fit, overlong sleeves and generic camel color read dated rather than modern relaxed creative Office."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:65c1781808a6d16c8113a9839cb77a38926cf9fe","name":"Dark-Green Argyle Knit","decision":"keep-available-for-other-scenario","decisionReason":"The red, green and oatmeal palette is joyful, but the extremely fuzzy yarn, giant distressed argyle, dropped shoulder and very oversized body read statement Party or Casual rather than controlled Office."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:8df09bb84b2fc7ce594c34d8dfc116fb2c862376","name":"Coffee Button-Detail Sweater","decision":"reject-for-s158","decisionReason":"The full-size source shows a heavily dropped shoulder, bulky coarse knit, wide sleeves and a broad casual body. Its muddy coffee tone also makes the Office direction too dark; the button neck does not make the silhouette polished enough for this Mid-Range role."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:0ae1b8390f88851ec82739efb73704f9d134321e","name":"Mustard Half-Zip Sweatshirt","decision":"reject-for-s158","decisionReason":"The mustard is welcome, but the thin performance-fleece surface, athletic half-zip collar, narrow straight torso and slim dark-jean styling read sportswear and reproduce the fitted-top problem."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:a286644bd6cead92f5ec66950a3c81eec1186009","name":"Ivory Striped Crewneck Sweater","decision":"reject-for-s158","decisionReason":"The burgundy and ivory could brighten Fall, but this is a product-only composite with no reliable worn drape, a dated narrow horizontal-stripe layout and a small chest badge that weakens the modern Office finish."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:fbfc103acc2f63512ef6f1c5b1038a150ab8c1db","name":"Peacock-Blue Mock-Neck Sweater","decision":"reject-for-s158","decisionReason":"The saturated blue is useful, but the product-only image depicts an artificially muscle-sculpted, skin-tight mock neck with a long tapered torso. It directly conflicts with the requested modern controlled ease."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:c718a3072a23b5f3daffd582a98373e700ff8129","name":"White Cable-Knit Turtleneck","decision":"reject-for-s158","decisionReason":"The white cable texture is clean, but only a narrow product form is shown; the sharply tapered waist, slim sleeves and tall tight neck offer no credible relaxed worn fit and risk another dated skinny knit."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320","name":"Light-Gray Relaxed Trouser","decision":"reject-for-s158","decisionReason":"The product-only image supplies no rise, thigh, drape or shoe-break proof, while the diagonal knee seams and smooth synthetic surface make the trouser read technical rather than tailored Office."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265","name":"Military-Green Casual Trouser","decision":"reject-for-s158","decisionReason":"Only a flat-lay crop is available, so fit and hem are unproven. The shiny wrinkled olive surface and novelty multicolor bead attachment undermine polished Office styling."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:0706cc59d6cccb0e2018c17d2d73768af8afa55e","name":"Gray Drawstring Straight Trouser","decision":"reject-for-s158","decisionReason":"The controlled leg is not enough to overcome the fully gathered waistband, oversized exposed drawcord, black D-ring and synthetic sheen. It reads lounge or technical casual, and the source hides the shoe break."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:04d7241016fbcf860f5b98ce77b100cd3efa1689","name":"Camel Wide-Leg Casual Trouser","decision":"keep-available-for-other-scenario","decisionReason":"The camel cotton can serve Fall Casual or Travel, but the broad leg runs long enough to fold and pool over a chunky sneaker. With the relaxed T4 knit it would recreate the baggy-bottom silhouette the user rejected."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:bd9eb3e71ff44da3314d188440d5608833ddeaae","name":"Army-Green Corduroy Wide-Leg Trouser","decision":"keep-available-for-other-scenario","decisionReason":"The pleats and corduroy texture are promising for a deliberate Premium Fall look, but the flat product image cannot prove rise or drape and shows a balloon-taper leg with rolled cuffs. It is too dark and uncertain for this Mid-Range Office core."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:5d5eb7a403cdcbaab147934e34260021d12d0dba","name":"Khaki Relaxed Blazer","decision":"reject-for-s158","decisionReason":"The pale khaki is useful, but the jacket is very long and broad through the body with low patch pockets and a slack shoulder. Layering it over T4 would stack oversized volumes instead of creating controlled Office proportion."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:2f30cccc9b77808ce60e8aef94ba5ed6271a4556","name":"Taupe Faux-Leather Shacket","decision":"keep-available-for-other-scenario","decisionReason":"The cropped relaxed body can work for Fall Casual or Date Night, but the mottled faux-leather finish, elastic bomber hem and silver zip read casual. It would also create a muddy brown-on-brown S158 palette."},
+    {"group":"outerwear","key":"O3","identity":"shopify_supplier:5ab0310ae9053fa971557c673b0ef3ddd136b573","name":"White Lightweight Blazer","decision":"keep-available-for-other-scenario","decisionReason":"The controlled blazer shape can serve Spring or Summer, but the translucent crinkled cloth and all-white T-shirt styling look deliberately ultralight rather than credible Fall outerwear."},
+    {"group":"outerwear","key":"O4","identity":"shopify_supplier:f23bed156981c3eefb1fe37ab832a7e947f07775","name":"Sky-Blue Lightweight Shacket","decision":"keep-available-for-other-scenario","decisionReason":"The sky blue is cheerful, but the rumpled linen-like fabric, rolled cuffs, open resort shirt and jeans make this a warm-weather Casual or Resort layer, not Fall Office."},
+    {"group":"outerwear","key":"O5","identity":"shopify_supplier:6fc1345a5afac5435b7b137404be37b0770de2f5","name":"Blue Denim Jacket","decision":"keep-available-for-other-scenario","decisionReason":"The brown contrast collar and washed denim suit Fall Casual, but the product-only image offers no worn proportion proof and the large flap pockets plus faded finish are not Office-polished."},
+    {"group":"outerwear","key":"O6","identity":"shopify_supplier:881a65e9f9d80311bf1b074fec346f7eb5c53887","name":"Khaki Relaxed Button-Down Jacket","decision":"keep-available-for-other-scenario","decisionReason":"The sturdy twill and camel color can serve Casual or Travel, but the long oversized body, large chest and hip pockets and exaggerated cuffs make it a utility overshirt rather than a controlled Office layer."}
+  ]
+}

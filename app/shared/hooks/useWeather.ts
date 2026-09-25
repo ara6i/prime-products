@@ -21,6 +21,7 @@ function mapConditionToIcon(
 function toWeatherData(res: WeatherResponse): WeatherData {
   return {
     location: res.weather.city,
+    country: res.weather.country,
     temperature: `${Math.round(res.weather.temperature)}°C`,
     icon: mapConditionToIcon(res.weather.condition),
     condition: res.weather.description
@@ -52,7 +53,13 @@ interface UseWeatherReturn {
   isLoading: boolean;
 }
 
-export function useWeather(): UseWeatherReturn {
+interface UseWeatherOptions {
+  locationSource?: "device" | "ip";
+}
+
+export function useWeather(
+  { locationSource = "device" }: UseWeatherOptions = {},
+): UseWeatherReturn {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherContext, setWeatherContext] = useState<Record<string, unknown> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,8 +71,9 @@ export function useWeather(): UseWeatherReturn {
 
     async function fetchWeather() {
       try {
-        // Try browser geolocation first for accuracy
-        if ("geolocation" in navigator) {
+        // The full AI Stylist prefers device coordinates. Public experiences
+        // can explicitly use IP detection without opening a permission prompt.
+        if (locationSource === "device" && "geolocation" in navigator) {
           const pos = await new Promise<GeolocationPosition>(
             (resolve, reject) =>
               navigator.geolocation.getCurrentPosition(resolve, reject, {
@@ -98,7 +106,7 @@ export function useWeather(): UseWeatherReturn {
     }
 
     fetchWeather();
-  }, []);
+  }, [locationSource]);
 
   return { weather, weatherContext, isLoading };
 }

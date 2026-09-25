@@ -1,0 +1,75 @@
+{
+  "scope": "Eight questionable provisional men products across S136, S140, S142, S145 and S146 checked at full 1350x1800 source resolution",
+  "outputSlug": "provisional-source-audit-casual-core-corrections",
+  "boardFilename": "eight-casual-core-source-corrections.jpg",
+  "boardTitle": "Eight Casual cores · full-source correction audit",
+  "boardNote": "Three Luxury scenario holds revoked · four catalog products rejected · one controlled jean retained · no outfit approval or UI integration",
+  "localOnly": true,
+  "weddingExcluded": true,
+  "entries": [
+    {
+      "scenarioId": "S136",
+      "identity": "shopify_supplier:4dc95126d60f966f014ad4ca38177a3a6f88e1c6",
+      "label": "Apricot Zip-Neck Knit Tank",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/a8632c24-99d6-4708-adaf-08a2aa6501df-Max-Origin.webp?v=1786232636",
+      "verdict": "revoke-from-s136-luxury",
+      "reason": "The clean texture and color can work at Mid-Range, but the long rectangular body, basic exposed zipper and simple rib finishing do not carry a Luxury scenario. Remove the S136 hold and leave it unassigned for a lower tier."
+    },
+    {
+      "scenarioId": "S140",
+      "identity": "shopify_supplier:c1d7e0ae691889e61edf338a9b90f0e8389415d6",
+      "label": "Apricot Contrast-Trim Knit Shirt",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/15a74b6ad3f74f888f6ea409c1e14c33-Max-Origin.webp?v=1786140612",
+      "verdict": "revoke-from-s140-luxury",
+      "reason": "The regular body, warm color and chevron texture are usable, but the white piping, ordinary buttons and basic knit finishing read Mid-Range Zara rather than Luxury. Remove the S140 hold and keep it available for a lower tier."
+    },
+    {
+      "scenarioId": "S140",
+      "identity": "shopify_supplier:8120446bbea5a8cfc540c46688949ac4a2a35a36",
+      "label": "Light-Sage Technical Casual Short",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/6db4a87f543546048270f5e29188cc61-Max-Origin.webp?v=1786230949",
+      "verdict": "revoke-from-s140-luxury",
+      "reason": "The controlled above-knee line is acceptable, but the synthetic surface, curved technical thigh seams and ordinary fly construction read Casual or Travel, not Luxury. Remove it from S140 and retain only as a lower-tier possibility."
+    },
+    {
+      "scenarioId": "S142",
+      "identity": "shopify_supplier:752395491866d0670ef31bbae7df713c451b4866",
+      "label": "Lavender Ribbed Half-Zip",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/82e4b3e1b167414292023b177bd20880-Max-Origin.webp?v=1786271183",
+      "verdict": "reject-from-catalog",
+      "reason": "The full view contradicts the earlier board judgment: shoulders are strongly dropped, sleeves are broad, and the body hangs long over the hips. It recreates the oversized-top problem and leaves the accepted catalog."
+    },
+    {
+      "scenarioId": "S142",
+      "identity": "shopify_supplier:d38c480b9f56c27ada2ad07ecfe6f1d0669e5dbc",
+      "label": "Blue-Gray Washed Straight Jean",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/a8fabfb8-0b1f-488b-9091-5c7302787888-Max-Origin.webp?v=1786203469",
+      "verdict": "pass-with-constraint",
+      "reason": "The jean has controlled thigh ease and a straight ankle without pooling. Keep it as S142's only hold, but style it uncuffed with a regular-length colorful knit and low-profile shoe so the outfit does not become bulky or streetwear-heavy."
+    },
+    {
+      "scenarioId": "S145",
+      "identity": "shopify_supplier:8ba55c759ac0949bf836503ee10b580ec8961221",
+      "label": "Lavender Button-Neck Sweatshirt",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/3d4fac5cccac4f76ad113d382a85b190-Max-Origin.webp?v=1786223193",
+      "verdict": "reject-from-catalog",
+      "reason": "The washed fleece, tall button stand, chunky pale buttons and loose sleeve stacking read dated basic sportswear rather than modern Zara taste. The cheerful color cannot rescue the construction; remove it from the accepted catalog."
+    },
+    {
+      "scenarioId": "S145",
+      "identity": "shopify_supplier:6ed12df02cc7b5fa23800b3172c7330da056cde6",
+      "label": "Dark-Navy Faded Jean",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/e8b6a5a3b84a49b9aa88de45b93ad5b7-Max-Origin.webp?v=1786287607",
+      "verdict": "reject-from-catalog",
+      "reason": "The thigh and knee are visibly narrow, the dark whisker fade and orange stitching look dated, and the hem sits heavily on the shoe. It is not the clean controlled-straight denim required for the rebuild."
+    },
+    {
+      "scenarioId": "S146",
+      "identity": "shopify_supplier:4afedfe7709f20a71101a7cdc3f5e6ee434aa057",
+      "label": "Peacock-Blue Waffle Half-Zip Hoodie",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/3c528af66a584af590bb08ee6ee1529b-Max-Origin.webp?v=1786256059",
+      "verdict": "reject-from-catalog",
+      "reason": "The full source proves a deeply dropped shoulder, broad sleeves, large pouch and long rounded body. It is exactly the oversized hoodie proportion the user rejected, so the strong color does not justify keeping it."
+    }
+  ]
+}

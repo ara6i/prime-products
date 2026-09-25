@@ -1,11 +1,11 @@
 export const SHOP_CATEGORY_IDS = [
   "women",
   "men",
-  "denim",
   "accessories",
 ] as const;
 
 export type ShopCategoryId = (typeof SHOP_CATEGORY_IDS)[number];
+export type LegacyShopCategoryId = "denim";
 
 export type CategorySortId = "featured" | "price-low" | "price-high" | "newest";
 
@@ -14,15 +14,41 @@ export type CategoryProductFacet = {
   value: string;
 };
 
+export type CategoryProductSizeGuide = {
+  title: string;
+  headers: string[];
+  rows: string[][];
+};
+
 export type RawCategoryProduct = {
   id: string;
   name: string;
   brand: string;
   priceCents: number;
   image: string;
+  hoverImage?: string;
   note: string;
   position: number;
   facets: CategoryProductFacet[];
+  gender?: "women" | "men";
+  slot?: "top" | "bottom" | "shoe" | "bag" | "accessory";
+  fitType?: "apparel" | "shoe" | "bag" | "accessory";
+  sizes?: string[];
+  measurements?: string;
+  description?: string;
+  material?: string;
+  details?: string[];
+  materialDetails?: string[];
+  careInstructions?: string[];
+  fitDescription?: string;
+  fitNotes?: string[];
+  sizeGuide?: CategoryProductSizeGuide;
+  showcaseNotes?: string[];
+  colorHex?: string;
+  displayColor?: string;
+  gallery?: Array<{ src: string; alt: string; caption?: string }>;
+  garmentReferenceImage?: string;
+  garmentDetailImage?: string;
 };
 
 export type RawCategoryFilter = {
@@ -32,7 +58,7 @@ export type RawCategoryFilter = {
 };
 
 export type RawCategoryCatalog = {
-  id: ShopCategoryId;
+  id: ShopCategoryId | LegacyShopCategoryId;
   label: string;
   seasonTitle: string;
   intro: string;
@@ -45,6 +71,10 @@ export type RawCategoryCatalog = {
   products: RawCategoryProduct[];
 };
 
+export type ActiveRawCategoryCatalog = Omit<RawCategoryCatalog, "id"> & {
+  id: ShopCategoryId;
+};
+
 export type CategoryProduct = RawCategoryProduct & {
   priceLabel: string;
 };
@@ -55,8 +85,9 @@ export type CategoryFilter = RawCategoryFilter & {
 
 export type CategoryCatalog = Omit<
   RawCategoryCatalog,
-  "filters" | "products"
+  "id" | "filters" | "products"
 > & {
+  id: ShopCategoryId;
   filters: CategoryFilter[];
   products: CategoryProduct[];
 };

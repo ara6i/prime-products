@@ -1,0 +1,58 @@
+{
+  "batch": "40",
+  "approvals": {
+    "12": {
+      "color": "Beige",
+      "constraint": "Use this beige eyelet sleeveless knit once only for Spring/Summer Vacation, Resort, Festival, Travel, daytime Date or a restrained warm-weather Party. Treat it as the outfit's single textured statement with controlled white, ecru, tobacco, washed-blue or muted-olive tailored shorts or straight trousers and minimal cream, tan or brown footwear; add a tonal cream base layer if opacity requires it; never combine it with another openwork layer, baggy cargo, chunky trainer or any Wedding/Wedding Guest use."
+    },
+    "17": {
+      "color": "Floral Coffee Color",
+      "constraint": "Use this warm coffee textured button-neck sweater once only for Fall/Winter Casual Everyday, Weekend, Travel, Campus, creative Office, daytime Date or a restrained Party. Balance it with straight ecru, stone, charcoal, olive or dark-denim bottoms and light cream, tan, brown or gray shoes; never combine it with a baggy bottom, another brown oversized layer, a muddy all-brown palette, bulky black trainer or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 3, 4, 5, 9, 11, 13, 14, 16],
+      "reason": "These tight/bodybuilding tanks and tees use deep scoops, cutouts, shiny synthetic fabric or visible transparency and fail the modern versatile menswear bar."
+    },
+    {
+      "cards": [2, 8],
+      "reason": "The deep-V and asymmetric cutout tanks are revealing costume pieces rather than credible Zara-led warm-weather separates."
+    },
+    {
+      "cards": [6],
+      "reason": "The asymmetric-collar shirt reads theatrical and costume-like rather than modern, versatile menswear."
+    },
+    {
+      "cards": [7],
+      "reason": "The plaid hooded shirt is visually dated, busy and incompatible with the clean modern direction."
+    },
+    {
+      "cards": [10],
+      "reason": "The knit tee remains generic and too closely fitted through the sleeves across the inspected colors."
+    },
+    {
+      "cards": [15, 20],
+      "reason": "These product-only openwork and pocket tops do not provide trustworthy adult fit or opacity proof and add generic repetition."
+    },
+    {
+      "cards": [18, 19],
+      "reason": "These active and quarter-zip tops are generic technical repeats with narrow or dark presentation and no sufficiently strong color-level fit proof."
+    },
+    {
+      "cards": [21, 26, 29, 30, 31, 34],
+      "reason": "These striped, plaid, novelty or gender-misaligned bottoms fail the clean contemporary men's styling direction."
+    },
+    {
+      "cards": [22, 23, 24, 25, 27, 28, 32, 33, 35, 36, 37, 38, 39, 40],
+      "reason": "These trousers and shorts have uncontrolled wide, balloon, cropped or puddled silhouettes, or only weak product-only fit proof; they recreate the baggy-bottom failure."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 141 recorded color images rendered and loaded with zero broken files.",
+    "2 tops accepted with one exact color and variant selected each: beige eyelet sleeveless knit and warm coffee textured button-neck sweater.",
+    "38 rejected after the base pass and close inspection of all 15 variants across five borderline identities; every bottom failed.",
+    "Every selected identity, variant and image has zero collision with every prior accepted or conditional item.",
+    "The batch mostly failed for tight or transparent bodybuilding tops, revealing cutouts, weak product-only proof, generic technical repetition, and wide or puddled bottoms."
+  ]
+}

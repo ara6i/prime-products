@@ -1,0 +1,28 @@
+{
+  "outputDir": "fall-sports-midrange-pilot-s226",
+  "scenarioId": "S226",
+  "occasion": "Sports / Workout",
+  "season": "Fall",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceSpec": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/winter-sports-budget-pilot-s229/core-comparison.json",
+  "excludeCandidateKeys": ["T1", "B2"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-bag",
+  "comparisonTitle": "S226 · Fall Sports / Workout · Mid-Range local screen",
+  "comparisonSubtitle": "Nine unique cool-weather active candidates after the S229 base-core holds",
+  "comparisonNote": "Require lively Fall color, credible movement proof, controlled technical taper and weather-ready finish · no product-only hoodie, skinny contrast quarter-zip, dark default top, shiny jogger or cargo-heavy cuff · not UI integrated",
+  "coreTitle": "S226 · provisional Fall Sports Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Fall Mid-Range activewear bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men cerulean merino tech half zip regular fit fall workout mid range","targetProduct":"cerulean merino-tech half-zip with controlled regular movement ease","customerRetailTarget":"$100-$140"},
+    {"category":"bottom","searchPhrase":"men warm stone technical straight tapered trouser fall workout","targetProduct":"warm-stone technical straight-to-tapered training trouser","customerRetailTarget":"$120-$170"},
+    {"category":"outerwear","searchPhrase":"men paprika lightweight weather shell fall workout regular fit","targetProduct":"paprika-red lightweight weather shell with restrained hardware","customerRetailTarget":"$140-$200"},
+    {"category":"shoe","searchPhrase":"men gray sage low profile trail trainer fall workout","targetProduct":"gray-and-sage low-profile trail trainer","customerRetailTarget":"$130-$180"},
+    {"category":"bag","searchPhrase":"men camel technical crossbody sling fall workout","targetProduct":"camel technical workout crossbody sling","customerRetailTarget":"$80-$120"}
+  ]
+}

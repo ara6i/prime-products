@@ -1,0 +1,77 @@
+{
+  "outputDir": "spring-office-luxury-pilot-s152",
+  "scenarioId": "S152",
+  "occasion": "Work / Office",
+  "season": "Spring",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-bag-accessory",
+  "comparisonTitle": "S152 · Spring Work / Office · Luxury local screen",
+  "comparisonSubtitle": "Six refined-top candidates · six controlled-bottom candidates · six Spring layer candidates · all unique and unreserved",
+  "comparisonNote": "Require Luxury textile, drape and finish proof, modern Zara-led proportion and purposeful Spring color · no skinny knit, puddled leg, lounge waist, utility clutter or dark monotony · not UI integrated",
+  "coreTitle": "S152 · provisional Spring Work / Office Luxury core",
+  "coreSubtitle": "No local garment reaches the Spring Luxury Office visual bar · all six roles unresolved",
+  "coreNote": "Zero provisional holds after all 18 originals were checked at full resolution · Luxury customer-retail proof and all companion roles remain unresolved · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men dusty coral sage silk cashmere fine gauge knit polo luxury spring office",
+      "targetProduct": "dusty-coral or soft-sage silk-cashmere fine-gauge knit polo with controlled regular-relaxed ease",
+      "customerRetailTarget": "$300-$450"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men warm ivory wool silk double pleat controlled straight trouser luxury spring office",
+      "targetProduct": "warm-ivory wool-silk double-pleat trouser with a controlled straight leg and precise break",
+      "customerRetailTarget": "$380-$550"
+    },
+    {
+      "category": "outerwear",
+      "searchPhrase": "men sky blue light sage wool silk unstructured blazer luxury spring office",
+      "targetProduct": "sky-blue or light-sage wool-silk unstructured blazer with clean relaxed tailoring",
+      "customerRetailTarget": "$650-$900"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men burgundy suede handmade low profile round toe penny loafer luxury office",
+      "targetProduct": "burgundy-suede handmade low-profile round-toe penny loafer",
+      "customerRetailTarget": "$420-$600"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men cognac full grain leather slim briefcase luxury office minimal",
+      "targetProduct": "cognac full-grain-leather slim briefcase with quiet hardware and minimal branding",
+      "customerRetailTarget": "$650-$900"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men cream dial sage leather minimal watch luxury office thin case",
+      "targetProduct": "cream-dial minimalist luxury watch with a thin case and soft-sage leather strap",
+      "customerRetailTarget": "$350-$700"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:3c8baacfaca7fe2715165e06af8f0c00d5a68cd4","name":"Coffee Textured Long-Sleeve Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The woven surface and controlled relaxed body are credible for Casual or Travel, but the long open overshirt, large patch pocket, backpack styling and visible base T-shirt do not communicate a self-contained Luxury Office garment."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:29a34029f06f4434c133662c2e7a2cacdef8d2c5","name":"Green Textured Long-Sleeve Shirt","decision":"reject-for-s152","decisionReason":"The saturated green is lively, but the hanger composition provides no body-fit proof and the shiny crinkled surface looks inexpensive. It cannot establish Luxury textile, drape or construction."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:99c29ea832577fba8e2f28594b32b18c09c741f5","name":"Muted-Blue Twin-Pocket Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves regular ease, but the washed muted finish, two large flap pockets, long open body and dark base T-shirt make this a utility overshirt for Casual or Travel rather than Luxury Office."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:c088c69f9f54b34e8066d0bfb29314b31c32c1f0","name":"Light-Blue Ribbed Short-Sleeve Knit","decision":"reject-for-s152","decisionReason":"The cropped isolated image cannot prove full-body proportion, while the narrow sleeve opening, close torso and bunched waist suggest a fitted dated knit. No Luxury fiber or finish is visually demonstrated."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:3da4c00c5788b8cb3a84fe448d95335ed2281f94","name":"Brown Long-Sleeve Knit Polo","decision":"reject-for-s152","decisionReason":"The body has reasonable ease, but the dark flat knit, bright oversized buttons and heavily bunched cuffs read mass-market rather than Luxury, while the brown adds more gloom to a Spring palette."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:628b14cf9051f8ade734e81412d141c75b497aad","name":"White Textured Knit Crew T-Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The clean texture and relaxed body suit Summer Casual, but the broad dropped-shoulder T-shirt shape and casual five-pocket styling lack the refined collar, fiber and structure required for Luxury Office."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320","name":"Light-Gray Relaxed Trouser","decision":"reject-for-s152","decisionReason":"Only a product image is available, so rise, drape and shoe break remain unknown. Diagonal knee seams, a snap waist and a wrinkled synthetic-looking surface read technical rather than Luxury tailoring."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:bf7fa4e61eb13d0ac96cfca0028b90814633535c","name":"Ivory Straight-Leg Jean","decision":"keep-available-for-other-scenario","decisionReason":"The warm ivory can serve Spring Casual, but the product-only image gives no worn fit or hem proof and the broad five-pocket denim construction is not the wool-silk tailored trouser required here."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:c4694a3740fce46e4cb36568c29f9bd341398236","name":"Medium-Blue Straight-Leg Jean","decision":"reject-for-s152","decisionReason":"The leg is broad and long enough to stack over the sneaker, while the conventional denim finish is casual. It fails the precise controlled drape expected of Luxury Office tailoring."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265","name":"Military-Green Casual Trouser","decision":"reject-for-s152","decisionReason":"The flat product source offers no fit proof, and the shiny wrinkled olive fabric plus novelty multicolor bead attachment visibly reduce refinement."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:3095c87326ee7556a98852b611d3737df02b04a4","name":"Flax-Coffee Lightweight Trouser","decision":"reject-for-s152","decisionReason":"The gathered elastic waist, exposed black drawstring, crinkled lounge fabric, broad leg and puddled hem are incompatible with Luxury Office tailoring."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:aabdffc99d8e26c94746c17f630f60a6bb135e66","name":"Yellow-Green Straight-Leg Jean","decision":"reject-for-s152","decisionReason":"The dirty acid wash, streetwear finish, extremely broad leg and heavy sneaker puddling directly violate the clean controlled Luxury silhouette."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:f23bed156981c3eefb1fe37ab832a7e947f07775","name":"Sky-Blue Unstructured Button-Up Jacket","decision":"keep-available-for-other-scenario","decisionReason":"The sky blue is the right emotional direction, but the rumpled thin linen-like surface, casual rolled cuffs, chest pocket and jeans presentation look Resort-level rather than Luxury Office tailoring."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:5d5eb7a403cdcbaab147934e34260021d12d0dba","name":"Khaki Single-Breasted Blazer","decision":"reject-for-s152","decisionReason":"The body is extremely long and boxy, the sleeves overrun the wrist, and the thin flat fabric with low patch pockets lacks Luxury drape and construction."},
+    {"group":"outerwear","key":"O3","identity":"shopify_supplier:5ab0310ae9053fa971557c673b0ef3ddd136b573","name":"White Button-Up Blazer","decision":"keep-available-for-other-scenario","decisionReason":"The cleaner regular line can serve Summer Smart Casual, but the washed lightweight surface, long bunched sleeves, T-shirt pairing and generic patch-pocket build do not prove Luxury fiber or finish."},
+    {"group":"outerwear","key":"O4","identity":"shopify_supplier:16979789931509ee789c04fefffd07da8162def5","name":"Green Striped Button-Up Cardigan","decision":"reject-for-s152","decisionReason":"The fitted waist and sleeves recreate a dated skinny silhouette, and the heavy green, burgundy, black and cream stripes are visually busy rather than quiet modern Luxury."},
+    {"group":"outerwear","key":"O5","identity":"shopify_supplier:2f30cccc9b77808ce60e8aef94ba5ed6271a4556","name":"Taupe Faux-Leather Zip Shacket","decision":"keep-available-for-other-scenario","decisionReason":"The controlled hip-length shape can work in Fall Casual, but the mottled faux-leather surface, exposed zipper, snap hardware and graphic T-shirt styling cannot meet a Luxury Office material gate."},
+    {"group":"outerwear","key":"O6","identity":"shopify_supplier:2349a25ac0e2ed693d29d058a48f7be7233b84f7","name":"Khaki Double-Breasted Trench","decision":"keep-available-for-other-scenario","decisionReason":"The trench belongs in Rainy Day or Travel: its strongly dropped shoulder, very long oversized body and streetwear styling overwhelm the controlled Luxury Office proportion."}
+  ]
+}

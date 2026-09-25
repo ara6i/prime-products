@@ -1,0 +1,51 @@
+{
+  "scope": "Five questionable provisional men products checked at full 1350x1800 source resolution",
+  "outputSlug": "remaining-provisional-source-audit",
+  "boardFilename": "five-provisional-source-audit.jpg",
+  "boardTitle": "Five provisional products · full-source correction audit",
+  "boardNote": "One S139 Premium hold revoked · four retained with exact constraints or metadata correction · no outfit approval or UI integration",
+  "localOnly": true,
+  "weddingExcluded": true,
+  "entries": [
+    {
+      "scenarioId": "S138",
+      "identity": "shopify_supplier:0820784edec4aa8490134ab11c411b8692a0e4bc",
+      "label": "Light-Blue Straight Drawstring Trouser",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/3c562f0725e04bbfb2c1dea075afff38-Max-Origin.webp?v=1786357386",
+      "verdict": "pass-with-constraint",
+      "reason": "The full worn view proves a controlled straight ankle line, clean thigh and cheerful Summer blue without pooling. Keep only for Casual Everyday Mid-Range; the exposed drawcord and simple finishing exclude Office and Premium use."
+    },
+    {
+      "scenarioId": "S139",
+      "identity": "shopify_supplier:ce23752d32f430e7cacb464585a1c4cf3dffc3ea",
+      "label": "Dusty-Blue Open-Knit Sleeveless Polo",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/6a2f33b8-09b5-4dec-9270-b8a2ba8fd7a7-Max-Origin.webp?v=1786234750",
+      "verdict": "revoke-from-s139-premium",
+      "reason": "The useful color and regular body do not overcome the deep armholes, visible metal chest plaque and basic open-knit finishing. It cannot carry a Premium Zara-led outfit; retain only as an unassigned Mid-Range Casual or Resort possibility."
+    },
+    {
+      "scenarioId": "S143",
+      "identity": "shopify_supplier:beacbb3827e6eb7d02fe7ed511e1648aa3e2da0b",
+      "label": "Light-Apricot Asymmetric Cable Sweater",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/477f0cbf-d346-4b9e-9c22-5058489941ea-Max-Origin.webp?v=1786180746",
+      "verdict": "pass-with-constraint",
+      "reason": "The source proves an upper-hip hem and intentional one-sided cable texture rather than an extra-long body. Keep only with the controlled dusty-blue straight jean and a light minimal shoe; no oversized outerwear or second loose layer."
+    },
+    {
+      "scenarioId": "S149",
+      "identity": "shopify_supplier:b4417a8d32930a1455257578c5ba2547279f0c7b",
+      "label": "Medium-Gray Controlled-Straight Tailored Trouser",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/3e5ef3674187467bbe0da40710263393-Max-Origin.webp?v=1786183734",
+      "verdict": "pass",
+      "reason": "Despite the supplier title loose fit, the full worn view shows a clean waist, controlled straight leg and one restrained shoe break. It is suitable for Budget-Friendly Office when color is added above and the shoe is brown or oxblood."
+    },
+    {
+      "scenarioId": "S245",
+      "identity": "shopify_supplier:143a731a5392ce7a45ec9edd9ef5cf5e13b9c268",
+      "label": "Pale Sage-Wash Straight Jean",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/4cbbe641f62f447fb5665cd30b1f7d95-Max-Origin.webp?v=1786198758",
+      "verdict": "pass-with-correction",
+      "reason": "The full source is controlled straight with one clean break, not broad or puddled. Correct the color from meaningless trousers/stone-gray to pale sage wash and anchor it with a darker knit plus the dusty-blue puffer for Winter Travel."
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "batch": "54",
+  "approvals": {
+    "37": {
+      "color": "Brown",
+      "constraint": "Use this warm-brown controlled tapered-straight trouser once only for Fall/Spring Office, Interview, Date Night, smart Casual Everyday or city Travel. Pair with a regular-fit cream, white, pale-blue, sage, soft-pink, burgundy or dark-green top and low-profile off-white, tobacco, dark-brown or oxblood footwear; never use an oversized top, bulky trainer, all-dark brown palette, Sports/Workout, beach Resort, formal black-tie styling, or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [8, 10],
+      "reason": "These identities fail the hard image-proof gate because five recorded supplier images are broken and their full front/back product details cannot be verified."
+    },
+    {
+      "cards": [1, 2, 3, 4, 5, 6, 7, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+      "reason": "These tops are graphic, slogan, pseudo-brand, tactical, sport-jersey, costume or novelty-led, often dark and oversized, and cannot support a clean versatile Zara-led wardrobe."
+    },
+    {
+      "cards": [9],
+      "reason": "The color-block T-shirt has a long generic cut, a visible pseudo-brand chest mark and a mostly-polyester construction, so it does not meet the modern premium gate."
+    },
+    {
+      "cards": [21, 22, 24, 26, 27, 32, 40],
+      "reason": "These product-only wide jeans and trousers lack reliable on-body proof through the rise, thigh and shoe break; several also use dated plaid or contrast washes."
+    },
+    {
+      "cards": [23, 25],
+      "reason": "The black relaxed trouser remains too wide and dark-repetitive, while the paint-splatter jean is novelty-led and puddled."
+    },
+    {
+      "cards": [28, 30, 31, 33, 34, 35, 36, 38],
+      "reason": "These dress and casual trousers are visibly skinny, ankle-cropped, thigh-clinging, artificial-looking or repetitive in black/navy and fail the balanced regular-fit gate."
+    },
+    {
+      "cards": [29],
+      "reason": "The elastic-waist stretch pant reads as a generic synthetic athletic trouser rather than a polished Zara-led casual or office garment."
+    },
+    {
+      "cards": [39],
+      "reason": "The ripped black straight jean is heavily distressed, stacked and visually dated."
+    }
+  ],
+  "qaSummary": [
+    "40 identities requested 124 recorded color images; 119 loaded and five supplier images were broken across two rejected identities.",
+    "1 bottom accepted in one exact color: a warm-brown controlled tapered-straight business-casual trouser.",
+    "39 rejected after the base pass and close inspection of all 15 variants across five plausible bottom identities; every top failed.",
+    "The selected identity, variant and image have zero collision with every prior accepted or conditional item.",
+    "The batch mostly failed for broken proof, graphic novelty tops, wide or gimmick jeans, and skinny, synthetic or dark-repetitive trousers."
+  ]
+}

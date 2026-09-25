@@ -1,0 +1,142 @@
+{
+  "outputDir": "winter-office-budget-pilot-s161",
+  "scenarioId": "S161",
+  "occasion": "Work / Office",
+  "season": "Winter",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "full-resolution-bottom-front-runner-awaiting-light-top-camel-coat-and-burgundy-shoe",
+  "comparisonTitle": "S161 · Winter Work / Office · existing core screen",
+  "comparisonSubtitle": "Seven cold-weather knit tops · six office-capable trousers · all unique and available",
+  "comparisonNote": "Deep-brown trouser retained only with soft-blue, camel and burgundy balance · not UI integrated",
+  "coreTitle": "S161 · controlled deep-brown Winter Office direction",
+  "coreSubtitle": "Full worn proof confirms the double-pleat trouser; lighter colorful companions remain mandatory",
+  "coreNote": "Soft sky-blue fine-knit polo, camel wool car coat and burgundy suede derby are still missing · one provisional uniqueness hold · no complete outfit · not UI integrated",
+  "frontRunnerKeys": ["B1"],
+  "excludeCandidateKeys": ["T1", "T4", "B2"],
+  "missingSlots": ["outerwear", "top", "shoe"],
+  "queuedRoles": [
+    {
+      "category": "outerwear",
+      "searchPhrase": "men camel wool car coat regular fit",
+      "targetProduct": "camel wool car coat"
+    },
+    {
+      "category": "top",
+      "searchPhrase": "men soft sky blue merino fine knit long sleeve polo regular fit",
+      "targetProduct": "soft sky-blue fine-knit long-sleeve polo"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men burgundy suede derby shoes round toe slim rubber sole",
+      "targetProduct": "burgundy suede round-toe derby"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:c718a3072a23b5f3daffd582a98373e700ff8129",
+      "name": "White Cable Turtleneck",
+      "decision": "reject-for-s161",
+      "decisionReason": "The isolated product image provides no shoulder, torso or sleeve proof, while the slim cable layout reads traditional and risks a fitted dated office silhouette."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:5c758ac61260c421f746e98c9c2f2e01b4ade9d0",
+      "name": "Light-Green Long-Sleeve Polo",
+      "decision": "reject-for-s161",
+      "decisionReason": "The green is welcome, but full-resolution review shows heavily dropped shoulders, washed sweatshirt fabric, long sleeves and a rounded untucked hem that read Casual rather than polished Office."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:3da4c00c5788b8cb3a84fe448d95335ed2281f94",
+      "name": "Brown Long-Sleeve Knit Polo",
+      "decision": "reject-for-s161",
+      "decisionReason": "The controlled boxy knit is wearable, but its very dark brown would combine with the planned camel coat into the muddy brown-heavy palette this rebuild is removing."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:be3d8e8b3c2378e5b61eabc19a922df12ab5eabd",
+      "name": "Beige Turtleneck",
+      "decision": "reject-for-s161",
+      "decisionReason": "The product-only image does not prove body ease, and beige under a camel coat with a khaki trouser would create a washed-out all-neutral outfit without the requested happier color."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:8df09bb84b2fc7ce594c34d8dfc116fb2c862376",
+      "name": "Coffee Textured Button-Neck Knit",
+      "decision": "reject-for-s161",
+      "decisionReason": "The dropped shoulder, fuzzy oversized body and obstructing backpack strap weaken fit proof, while coffee brown repeats the planned camel outerwear instead of adding color."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:65c1781808a6d16c8113a9839cb77a38926cf9fe",
+      "name": "Dark-Green Argyle Knit",
+      "decision": "reject-for-s161",
+      "decisionReason": "The red and green argyle adds color, but the full-resolution body is extremely dropped, long and voluminous; it would bunch under a coat and recreate the oversized-top imbalance."
+    },
+    {
+      "group": "top",
+      "key": "T7",
+      "identity": "shopify_supplier:0ae1b8390f88851ec82739efb73704f9d134321e",
+      "name": "Mustard Clean Half-Zip",
+      "decision": "reject-for-s161",
+      "decisionReason": "Mustard is useful, but the narrow torso, tight sleeves and technical half-zip construction reproduce the skinny sporty top problem rather than modern Winter Office knitwear."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:5ee70df61299c873a76cd10ed93b206f97430c23",
+      "name": "Brown Double-Pleat Trouser",
+      "decision": "visual-front-runner-for-s161",
+      "decisionReason": "The full worn source proves a clean high rise, restrained double pleat, controlled thigh ease, pressed straight-to-tapered leg and full hem. It passes only with the soft-blue, camel, burgundy and winter-cream balance defined for this direction."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320",
+      "name": "Light-Gray Relaxed Trouser",
+      "decision": "reject-for-s161",
+      "decisionReason": "The floating product image omits rise, seat, full hem and on-body drape, so the apparently cropped light trouser cannot support an Office approval."
+    },
+    {
+      "group": "bottom",
+      "key": "B3",
+      "identity": "shopify_supplier:cb7bce975c76e67d2947ed32d70475518334f55a",
+      "name": "Khaki Relaxed Trouser",
+      "decision": "reject-after-full-resolution-for-s161",
+      "decisionReason": "The full worn image contradicts the relaxed product label: the trouser clings through the thigh, narrows sharply below the knee and reads like a dated skinny office pant. It cannot remain a hold under the no-skinny silhouette rule."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:bd9eb3e71ff44da3314d188440d5608833ddeaae",
+      "name": "Army-Green Pleated Corduroy Trouser",
+      "decision": "reject-for-s161",
+      "decisionReason": "The product-only image shows a very broad corduroy leg collapsing and stacking at the hem, with no trustworthy on-body Office fit proof."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:04d7241016fbcf860f5b98ce77b100cd3efa1689",
+      "name": "Camel Relaxed-Straight Trouser",
+      "decision": "reject-for-s161",
+      "decisionReason": "The low casual rise, broad leg and heavy sneaker-level stacking create the baggy bottom problem, and camel would duplicate the planned coat."
+    },
+    {
+      "group": "bottom",
+      "key": "B6",
+      "identity": "shopify_supplier:36775b09ed8cf6af570dd58f177804a5200ce70c",
+      "name": "Khaki Regular Straight Trouser",
+      "decision": "reject-for-s161",
+      "decisionReason": "It is clean but visibly narrower and more conventional through the thigh and ankle, making it less modern and less balanced than B3."
+    }
+  ]
+}

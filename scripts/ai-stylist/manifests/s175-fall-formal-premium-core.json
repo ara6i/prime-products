@@ -1,0 +1,28 @@
+{
+  "outputDir": "fall-formal-premium-pilot-s175",
+  "scenarioId": "S175",
+  "occasion": "Formal Evening",
+  "season": "Fall",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s174-fall-formal-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-watch-and-suit",
+  "comparisonTitle": "S175 · Fall Formal Evening · Premium local screen",
+  "comparisonSubtitle": "The 21 unique unreserved Fall Formal candidates re-evaluated for Premium fiber, construction and drape",
+  "comparisonNote": "Require refined expressive Fall color, natural-shoulder tailoring, exact controlled proportion and credible Premium finish · no promotion of utility, lounge, bulky or product-only garments · not UI integrated",
+  "coreTitle": "S175 · provisional Fall Formal Evening Premium core",
+  "coreSubtitle": "No local garment reaches the Fall Premium Formal Evening visual bar · all roles unresolved",
+  "coreNote": "Zero provisional holds after immediate full-resolution Premium re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch", "suit"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men dusty coral silk cotton fine gauge long sleeve knit polo premium fall formal evening","targetProduct":"dusty-coral or burnished-apricot silk-cotton fine-gauge long-sleeve knit polo","customerRetailTarget":"$170-$230"},
+    {"category":"bottom","searchPhrase":"men warm stone wool silk double pleat controlled straight trouser premium fall formal evening","targetProduct":"warm-stone wool-silk high-rise double-pleat trouser with exact controlled-straight break","customerRetailTarget":"$220-$300"},
+    {"category":"outerwear","searchPhrase":"men soft olive wool silk unstructured blazer natural shoulder premium fall formal evening","targetProduct":"soft-olive wool-silk natural-shoulder unstructured blazer with refined drape","customerRetailTarget":"$280-$380"},
+    {"category":"shoe","searchPhrase":"men dark brown calf leather handmade low profile round toe loafer premium formal evening","targetProduct":"dark-brown calf-leather handmade low-profile round-toe loafer","customerRetailTarget":"$220-$300"},
+    {"category":"watch","searchPhrase":"men cream dial coffee leather thin silver case premium dress watch formal evening","targetProduct":"cream-dial thin silver-case Premium dress watch with dark-coffee leather strap","customerRetailTarget":"$120-$180"},
+    {"category":"suit","searchPhrase":"men soft olive wool silk two piece suit premium fall formal evening straight trousers","targetProduct":"soft-olive wool-silk two-piece suit with natural shoulders and controlled straight trousers","customerRetailTarget":"$600-$800"}
+  ]
+}

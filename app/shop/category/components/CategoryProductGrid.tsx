@@ -42,8 +42,20 @@ export function CategoryProductGrid({
                   src={product.image}
                   alt={product.name}
                   fill
+                  className={styles.productFrontImage}
                   sizes="(max-width: 760px) 88vw, (max-width: 1100px) 40vw, 25vw"
+                  unoptimized={product.image.startsWith("http")}
                 />
+                {product.hoverImage ? (
+                  <Image
+                    src={product.hoverImage}
+                    alt=""
+                    fill
+                    className={styles.productHoverImage}
+                    sizes="(max-width: 760px) 88vw, (max-width: 1100px) 40vw, 25vw"
+                    unoptimized={product.hoverImage.startsWith("http")}
+                  />
+                ) : null}
               </Link>
               <Button
                 type="button"

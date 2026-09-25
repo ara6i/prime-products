@@ -1,0 +1,28 @@
+{
+  "outputDir": "winter-resort-premium-pilot-s263",
+  "scenarioId": "S263",
+  "occasion": "Vacation / Resort",
+  "season": "Winter",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s262-winter-resort-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-six-unique-roles",
+  "comparisonTitle": "S263 · Winter Vacation / Resort · Premium local screen",
+  "comparisonSubtitle": "The unique Winter Resort remainder re-evaluated for Premium warmth and finish",
+  "comparisonNote": "Require silk-merino knit, wool-silk or fine corduroy drape, traceable down, handmade suede and Premium accessories · not UI integrated",
+  "coreTitle": "S263 · provisional Winter Resort Premium core",
+  "coreSubtitle": "No remaining local garment reaches the Premium Resort bar · six roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men paprika silk merino mock neck winter resort premium", "targetProduct": "paprika silk-merino fine-gauge mock-neck sweater", "customerRetailTarget": "$180-$240"},
+    {"category": "bottom", "searchPhrase": "men winter cream premium corduroy trouser straight resort", "targetProduct": "winter-cream Premium fine-corduroy Resort trouser", "customerRetailTarget": "$200-$280"},
+    {"category": "outerwear", "searchPhrase": "men dusty blue traceable down short puffer resort premium", "targetProduct": "dusty-blue Premium traceable-down short Resort puffer", "customerRetailTarget": "$280-$380"},
+    {"category": "shoe", "searchPhrase": "men cognac handmade suede cream sole winter boot premium", "targetProduct": "cognac handmade calf-suede cream-sole winter boot", "customerRetailTarget": "$220-$300"},
+    {"category": "bag", "searchPhrase": "men chocolate premium canvas leather weekender", "targetProduct": "chocolate Premium canvas-and-leather compact weekender", "customerRetailTarget": "$160-$220"},
+    {"category": "accessory", "searchPhrase": "men ivory sage premium merino scarf", "targetProduct": "ivory-and-sage Premium merino colorblock scarf", "customerRetailTarget": "$100-$160"}
+  ]
+}

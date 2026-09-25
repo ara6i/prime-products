@@ -39,6 +39,21 @@ function ProductHarness({ product, mobile = false }: { product: ProductDetailVie
 }
 
 beforeEach(() => {
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches: true,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+
   const values = new Map<string, string>();
   storage = {
     getItem: (key) => values.get(key) ?? null,
@@ -53,7 +68,7 @@ describe.each([false, true])("Daily Edit PDP interactions (mobile: %s)", (mobile
     const user = userEvent.setup();
     render(<ProductHarness product={product} mobile={mobile} />);
     expect(screen.getByRole("heading", { level: 1, name: product.name })).toBeTruthy();
-    expect(screen.getByText(/Concept product · AI-generated gallery/)).toBeTruthy();
+    expect(screen.queryByText(/Concept product · AI-generated gallery/)).toBeNull();
     expect(screen.queryByLabelText("Shopping benefits")).toBeNull();
     for (let index = 0; index < product.gallery.length; index++) {
       await user.click(screen.getByRole("button", { name: `Show product view ${index + 1}` }));

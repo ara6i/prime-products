@@ -17,6 +17,8 @@ const ARTIFACTS = {
   "camera-yaw-right-12": { fileName: "camera-yaw-right-12.png", contentType: "image/png", disposition: "inline" },
   "camera-pitch-up-6": { fileName: "camera-pitch-up-6.png", contentType: "image/png", disposition: "inline" },
   "camera-roll-right-3": { fileName: "camera-roll-right-3.png", contentType: "image/png", disposition: "inline" },
+  "camera-side-left-90": { fileName: "camera-side-left-90.png", contentType: "image/png", disposition: "inline" },
+  "camera-side-right-90": { fileName: "camera-side-right-90.png", contentType: "image/png", disposition: "inline" },
 } as const;
 
 type ArtifactKind = keyof typeof ARTIFACTS;

@@ -25,8 +25,7 @@ export function TabNav() {
   const pathname = usePathname();
   return (
     <nav aria-label="Test Lab" className="mx-auto w-full max-w-6xl px-6 pt-6">
-      <div className="overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="inline-flex min-w-max rounded-lg border border-gray-200 bg-white p-1 shadow-sm">
+      <div className="flex w-full flex-wrap gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-sm">
           {TABS.map((t) => {
             const active =
               t.href === "/try-on-test"
@@ -36,8 +35,9 @@ export function TabNav() {
               <Link
                 key={t.href}
                 href={t.href}
+                aria-current={active ? "page" : undefined}
                 className={cn(
-                  "rounded-md px-4 py-2 text-sm font-medium transition-colors",
+                  "rounded-md px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors",
                   active
                     ? "bg-brand-blue text-white"
                     : "text-text-secondary hover:bg-gray-50 hover:text-text-primary",
@@ -47,7 +47,6 @@ export function TabNav() {
               </Link>
             );
           })}
-        </div>
       </div>
     </nav>
   );

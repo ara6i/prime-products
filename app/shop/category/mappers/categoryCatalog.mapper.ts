@@ -1,17 +1,16 @@
 import type {
+  ActiveRawCategoryCatalog,
   CategoryCatalog,
-  RawCategoryCatalog,
   ShopCategoryId,
 } from "../types/categoryCatalog.types";
 
 const labelToId: Record<string, ShopCategoryId> = {
   women: "women",
   men: "men",
-  denim: "denim",
   accessories: "accessories",
 };
 
-export function mapCategoryCatalog(raw: RawCategoryCatalog): CategoryCatalog {
+export function mapCategoryCatalog(raw: ActiveRawCategoryCatalog): CategoryCatalog {
   return {
     ...raw,
     filters: raw.filters.map((filter) => ({

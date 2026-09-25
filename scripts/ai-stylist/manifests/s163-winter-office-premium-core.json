@@ -1,0 +1,38 @@
+{
+  "outputDir": "winter-office-premium-pilot-s163",
+  "scenarioId": "S163",
+  "occasion": "Work / Office",
+  "season": "Winter",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-bag-accessory",
+  "comparisonTitle": "S163 · Winter Work / Office · Premium local screen",
+  "comparisonSubtitle": "Eight remaining Winter-capable tops · one remaining trouser · all unique and unreserved",
+  "comparisonNote": "Require Premium yarn, warm construction, precise Office drape and a brighter Winter color plan · no product-only guess, skinny knit, oversized overshirt or rolled-cuff balloon trouser · no valid local Winter Office layer remains · not UI integrated",
+  "coreTitle": "S163 · provisional Winter Work / Office Premium core",
+  "coreSubtitle": "No local garment reaches the Winter Premium Office visual bar · all six roles unresolved",
+  "coreNote": "Zero provisional holds after the freshly checked nine-piece pool was re-evaluated for Premium · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men dusty coral merino cashmere fine gauge long sleeve knit polo winter premium office relaxed","targetProduct":"dusty-coral merino-cashmere fine-gauge long-sleeve knit polo with controlled ease","customerRetailTarget":"$160-$210"},
+    {"category":"bottom","searchPhrase":"men warm ivory wool blend double pleat controlled straight trouser winter premium office","targetProduct":"warm-ivory wool-blend double-pleat trouser with controlled straight drape","customerRetailTarget":"$180-$240"},
+    {"category":"outerwear","searchPhrase":"men light camel wool blend short car coat winter premium office modern","targetProduct":"light-camel wool-blend short car coat with clean shoulders and restrained hardware","customerRetailTarget":"$220-$300"},
+    {"category":"shoe","searchPhrase":"men burgundy dark brown suede handmade round toe derby winter premium office","targetProduct":"burgundy or dark-brown suede handmade round-toe derby with a low weather-ready sole","customerRetailTarget":"$180-$240"},
+    {"category":"bag","searchPhrase":"men muted sage cognac pebbled leather slim briefcase winter premium office","targetProduct":"muted-sage and cognac pebbled-leather slim office briefcase or compact crossbody","customerRetailTarget":"$140-$200"},
+    {"category":"accessory","searchPhrase":"men cream dial burgundy leather minimal watch winter premium office","targetProduct":"cream-dial minimalist watch with a burgundy leather strap","customerRetailTarget":"$80-$120"}
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:c718a3072a23b5f3daffd582a98373e700ff8129","name":"White Cable-Knit Turtleneck","decision":"reject-for-s163","decisionReason":"The narrow product form cannot prove Premium yarn, shoulder line or drape, and its sharply tapered waist plus slim sleeves risk a dated skinny silhouette."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:fbfc103acc2f63512ef6f1c5b1038a150ab8c1db","name":"Peacock-Blue Mock-Neck Sweater","decision":"reject-for-s163","decisionReason":"The saturated color is useful, but the artificially muscle-sculpted product image shows a skin-tight torso and sleeves without credible Premium fit proof."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:be3d8e8b3c2378e5b61eabc19a922df12ab5eabd","name":"Beige Turtleneck","decision":"reject-for-s163","decisionReason":"A product-only basic beige turtleneck supplies no worn drape, material or Premium construction proof and would flatten the planned camel palette."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:7b959d24fb23eafe687761871356bdbb13a615b4","name":"Light-Khaki Textured Henley Knit","decision":"reject-for-s163","decisionReason":"The clean henley is promising, but the isolated product form cannot establish Premium yarn, shoulder behavior, sleeve volume or hem recovery."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:0794e5a5d5baa6332657d5add9661ae7a433d05c","name":"Dusty-Blue Corduroy Shirt","decision":"reject-for-s163","decisionReason":"The long open-over-tee shirt with cap styling reads mild-weather Casual or Travel and does not prove warm Premium Office finishing."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:9e8719479f6d34233b8dfd557767f52a1bffa7b4","name":"Steel-Blue Fine-Knit Crew","decision":"reject-for-s163","decisionReason":"The actual steel-blue color is quieter than listed, while the narrow shoulder, close torso and tight sleeves directly conflict with the required modern ease."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:2984c73a22084c0ed6a3de38270524b2b9a5f582","name":"Camel Cable-Knit Quarter-Zip","decision":"reject-for-s163","decisionReason":"The dense cable offers warmth, but the close torso and arms, bulky high zip neck and muddy camel direction feel dated rather than Premium modern Office."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:0ddafa2ad2660d3d70d8956732d8421c65ac55f6","name":"White-and-Black Grid Overshirt","decision":"reject-for-s163","decisionReason":"The graphic relaxed overshirt depends on a separate base layer and reads Casual utility; it does not provide fine-gauge Premium Office polish."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:bd9eb3e71ff44da3314d188440d5608833ddeaae","name":"Army-Green Corduroy Wide-Leg Trouser","decision":"reject-for-s163","decisionReason":"The product-only balloon-taper corduroy with rolled cuffs offers no worn rise, drape or precise shoe-break proof and cannot establish Premium tailoring."}
+  ]
+}

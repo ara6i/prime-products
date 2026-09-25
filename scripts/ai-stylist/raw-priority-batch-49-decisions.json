@@ -1,0 +1,45 @@
+{
+  "batch": "49",
+  "approvals": {},
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 3, 4, 5, 8, 11, 12],
+      "reason": "These graphic tanks are band-, slogan- or bodybuilding-led, frequently long or deeply cut, and cannot support a clean versatile wardrobe."
+    },
+    {
+      "cards": [6, 9, 10, 13, 14, 15, 16, 17, 18, 19, 20],
+      "reason": "These T-shirts rely on cheap cartoons, misspelled pseudo-brand text, crosses, cars, cassettes, portraits or giant graphics and read novelty-led rather than modern Zara-led."
+    },
+    {
+      "cards": [7],
+      "reason": "The product-only abstract-print short-sleeve shirt is visually busy, synthetic-looking and lacks trustworthy adult fit proof."
+    },
+    {
+      "cards": [21, 22, 25, 29, 30, 34, 35, 36, 38, 40],
+      "reason": "These photographed bottoms are excessively wide, ballooned, puddled, camouflage or novelty-colored and fail the controlled-leg requirement."
+    },
+    {
+      "cards": [23],
+      "reason": "Despite the wide-leg title, both photographed variants are visibly skinny-tapered office pants and the metadata-to-image mismatch makes the identity unreliable."
+    },
+    {
+      "cards": [24],
+      "reason": "The generic drawstring trouser changes from a controlled dark leg to a wider crinkled light-gray shape and does not provide a consistent premium silhouette."
+    },
+    {
+      "cards": [26, 27, 28, 31, 33, 37, 39],
+      "reason": "These product-only wide jeans and trousers lack reliable on-body fit proof through the waist, thigh and shoe break; several use dated washes, bulbous shaping or gimmick buttons."
+    },
+    {
+      "cards": [32],
+      "reason": "The below-knee cropped wide trouser creates an awkward dated proportion and is not versatile enough for the modern scenario matrix."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 135 recorded color images rendered and loaded with zero broken files.",
+    "0 accepted; no top or bottom survived the full visual gate.",
+    "40 rejected after the base pass and close inspection of all four variants across two borderline bottom identities.",
+    "No candidate entered the usable pool, so no new identity, variant or image collision was introduced.",
+    "The batch failed for graphic and bodybuilding tops, misspelled pseudo-brand text, skinny metadata mismatch, and wide, cropped, ballooned, puddled, camo or insufficiently proven bottoms."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "outputDir": "winter-travel-luxury-pilot-s248",
+  "scenarioId": "S248",
+  "occasion": "Travel",
+  "season": "Winter",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s247-winter-travel-premium-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S248 · Winter Travel · Luxury local screen",
+  "comparisonSubtitle": "The unique Winter Travel remainder re-evaluated for Luxury warmth and hand finish",
+  "comparisonNote": "Require silk-cashmere, wool-cashmere, traceable down, handmade calf leather and full-grain luggage or equivalent Luxury proof · not UI integrated",
+  "coreTitle": "S248 · provisional Winter Travel Luxury core",
+  "coreSubtitle": "No remaining local garment reaches the Luxury Travel bar · five roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men plum silk cashmere travel crew winter luxury", "targetProduct": "plum silk-cashmere fine-gauge Luxury travel crew", "customerRetailTarget": "$300-$450"},
+    {"category": "bottom", "searchPhrase": "men pale taupe wool cashmere travel trouser winter luxury", "targetProduct": "pale-taupe wool-cashmere Luxury travel trouser", "customerRetailTarget": "$380-$550"},
+    {"category": "outerwear", "searchPhrase": "men winter white traceable down short puffer travel luxury", "targetProduct": "winter-white Luxury traceable-down short travel puffer", "customerRetailTarget": "$800-$1,200"},
+    {"category": "shoe", "searchPhrase": "men cream sage handmade calf weather resistant sneaker boot luxury", "targetProduct": "cream-and-sage handmade calf-leather Luxury sneaker boot", "customerRetailTarget": "$420-$600"},
+    {"category": "bag", "searchPhrase": "men saffron full grain leather compact weekender luxury", "targetProduct": "saffron full-grain leather Luxury compact weekender", "customerRetailTarget": "$650-$900"}
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "batch": "26",
+  "approvals": {
+    "1": {
+      "color": "Lavender",
+      "constraint": "Use this clean lavender regular-relaxed crew-neck T-shirt once only for Spring/Summer Casual Everyday, Weekend, Campus, Travel or a relaxed daytime Date. Pair with one controlled straight or tailored bottom in ecru, stone, charcoal, chocolate or muted olive and a cream, tan or low-profile gray shoe; never combine it with an oversized bottom, second pastel statement, bulky running shoe or dark monotone layer."
+    },
+    "2": {
+      "color": "Light Apricot",
+      "constraint": "Use this light-apricot mandarin-collar cotton shirt once only for Spring/Summer Casual Everyday, relaxed Office, Travel, Resort or a daytime Date. Pair with a clean straight trouser or tailored short in chocolate, tobacco, stone, olive or medium gray and a cream, tan or brown shoe; avoid skinny bottoms, oversized outerwear, another collarless shirt layer or an all-cream washed-out board."
+    },
+    "9": {
+      "color": "Pink",
+      "constraint": "Use this dusty-pink regular-relaxed button-up once only for Spring/Summer Casual Everyday, creative Office, Travel, Date or restrained daytime Party styling. Pair with one straight bottom in ecru, charcoal, chocolate, stone or muted olive and an off-white, tan, brown or burgundy low-profile shoe; no second pink garment, baggy trouser, loud print or all-dark layering."
+    },
+    "10": {
+      "color": "Gum Leaf",
+      "constraint": "Use this mint-gum-leaf roll-sleeve summer henley once only for warm-Spring/Summer Resort, Vacation, Travel, Casual Everyday or a relaxed daytime Date. Pair with ecru, white, cocoa, stone or tobacco tailored shorts or controlled straight trousers and a cream, tan or tobacco shoe; keep the open neckline polished and never add a second loose top, baggy bottom, technical sneaker or formal layer."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [3, 5],
+      "reason": "These contrast-trim henley and raglan tops are visibly narrow through the chest, waist or sleeves and repeat the rejected skinny casual-top problem."
+    },
+    {
+      "cards": [4],
+      "reason": "The product-only sweatshirt has an exaggerated dropped shoulder and boxy oversized body, no adult drape proof and an unjustifiably high price."
+    },
+    {
+      "cards": [6, 7, 15, 16],
+      "reason": "These hoodies use oversized drop shoulders, excessive sleeve or body volume, long layered hems or bulky sherpa construction rather than controlled modern proportions."
+    },
+    {
+      "cards": [8],
+      "reason": "The beige long-sleeve shirt is narrow through the arms and torso and uses an overlong button placket with a deep-open chest, reading as dated resort styling rather than a clean modern shirt."
+    },
+    {
+      "cards": [11],
+      "reason": "The product-only lace-up long-sleeve shirt uses a costume-like neckline, narrow elongated body and no adult fit proof."
+    },
+    {
+      "cards": [12, 14],
+      "reason": "These color-block and asymmetric-cutout tops are skin-tight, body-exposing and costume-led rather than versatile modern men's garments."
+    },
+    {
+      "cards": [13],
+      "reason": "The product-only quarter-snap pullover uses dated faux-suede side panels, contrast placket and elbow patches with no adult fit proof."
+    },
+    {
+      "cards": [17],
+      "reason": "The light-wash whiskered jeans are product-only with a flared or bootcut outline and no adult rise, seat, leg or shoe-break proof."
+    },
+    {
+      "cards": [18, 19, 22, 26, 27],
+      "reason": "These bootcut and loose jeans use exaggerated volume, flared hems, fraying or visible shoe pooling, directly repeating the rejected baggy-bottom problem."
+    },
+    {
+      "cards": [20],
+      "reason": "The branded active leggings are skin-tight and unsuitable as a general men's outfit bottom."
+    },
+    {
+      "cards": [21],
+      "reason": "The camouflage jeans combine a loud novelty print with a very wide leg and heavy shoe pooling."
+    },
+    {
+      "cards": [23, 24, 25],
+      "reason": "These product-only jeans use extreme shredding, multiple distress cuts, washed-black fading or visibly uncontrolled wide legs without adult fit proof."
+    },
+    {
+      "cards": [28],
+      "reason": "The black-to-gray gradient jeans are excessively wide and pooled and turn a basic bottom into a gimmicky dark statement."
+    },
+    {
+      "cards": [29],
+      "reason": "The light-denim product-only vest uses excessive tactical pockets, zip hardware and workwear straps with no polished adult fit proof."
+    },
+    {
+      "cards": [30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
+      "reason": "These product-only winter puffers and parkas are repetitive, bulky and utility-heavy, with oversized faux-fur hoods, generic supplier construction or dark repetition and no adult fit or movement proof."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 171 recorded color images rendered; 211 displayed images loaded with zero broken files.",
+    "4 accepted with one exact color and variant selected each: a lavender regular-relaxed crew-neck T-shirt, light-apricot mandarin-collar cotton shirt, dusty-pink regular-relaxed button-up and mint-gum-leaf summer henley.",
+    "36 rejected after the base pass and close inspection of 34 promising color variants across four identities; every bottom and outerwear product failed.",
+    "Every selected identity, source product, variant and image has zero collision with every prior accepted or conditional item.",
+    "Rejections include skinny contrast tops, oversized hoodies, costume necklines, bootcut and puddled jeans, leggings, camo and distressed bottoms, tactical vests, repetitive puffers and dated fur-trim parkas."
+  ]
+}

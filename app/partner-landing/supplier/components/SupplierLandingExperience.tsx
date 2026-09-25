@@ -3,115 +3,159 @@
 import {
   ArrowRight,
   ArrowUpRight,
-  Buildings,
+  Bell,
+  CalendarBlank,
+  CaretDown,
   ChartLineUp,
-  Check,
-  GlobeSimple,
+  CheckCircle,
+  Clock,
+  Coins,
+  DotsThree,
+  DownloadSimple,
+  EnvelopeSimple,
+  Funnel,
+  GlobeHemisphereWest,
+  InstagramLogo,
+  LinkedinLogo,
   List,
+  MagnifyingGlass,
+  MapPin,
   Package,
-  Play,
-  ShoppingBagOpen,
-  Sparkle,
+  Plus,
+  SlidersHorizontal,
   Storefront,
-  Truck,
   UsersThree,
+  YoutubeLogo,
   X,
 } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState, type CSSProperties } from "react";
 import { useLandingNavigation } from "../../hooks/useLandingNavigation";
+import { usePartnerInterest } from "../../hooks/usePartnerInterest";
+import { SupplierInterestDialog } from "./SupplierInterestDialog";
 import styles from "./supplierLanding.module.css";
 
-const journeySteps = [
+const ASSET_ROOT = "/media/partner-landing/supplier";
+
+const SOCIAL_LINKS = [
   {
-    number: "01",
-    eyebrow: "Supplier profile",
-    title: "Publish the collection merchants need.",
-    copy: "Share verified products, pricing, MOQs, stock, lead times, shipping regions, and the selling models you support.",
+    href: "https://www.instagram.com/primestyleai/",
+    label: "Instagram",
+    Icon: InstagramLogo,
   },
   {
-    number: "02",
-    eyebrow: "Merchant discovery",
-    title: "Get discovered by the right buyers.",
-    copy: "Retailers, boutiques, ecommerce teams, and dropship sellers can find, save, and shortlist your styles.",
+    href: "https://www.linkedin.com/company/primestyleai/posts/?feedView=all",
+    label: "LinkedIn",
+    Icon: LinkedinLogo,
   },
   {
-    number: "03",
-    eyebrow: "Samples + quotes",
-    title: "Move from interest to a real conversation.",
-    copy: "Receive sample requests, quote enquiries, and merchant questions in one connected workflow.",
-  },
-  {
-    number: "04",
-    eyebrow: "Orders + reorders",
-    title: "Turn approved products into repeat business.",
-    copy: "Manage wholesale and dropship orders while keeping availability and fulfillment expectations visible.",
+    href: "https://www.youtube.com/@PrimeStyleAI",
+    label: "YouTube",
+    Icon: YoutubeLogo,
   },
 ] as const;
 
-function PrimeStyleBrand() {
-  return (
-    <span className={styles.brandLockup}>
-      <Image
-        src="/media/partner-landing/optimized/primestyleai-mark-256.webp"
-        alt=""
-        width={256}
-        height={256}
-        sizes="42px"
-        quality={90}
-      />
-      <span>Prime Style AI</span>
-    </span>
-  );
-}
+const DASHBOARD_PARTNERS = [
+  "/images/landing/avatar-elena.png",
+  "/images/landing/avatar-sarah.png",
+  "/images/landing/avatar-david.png",
+  "/images/landing/avatar-marcus.png",
+] as const;
+
+const DASHBOARD_ORDERS = [
+  {
+    id: "PS-427-012",
+    partner: "Atelier North",
+    customer: "Maria Jones",
+    amount: "$53,154.00",
+    status: "Unsent",
+    avatar: DASHBOARD_PARTNERS[0],
+  },
+  {
+    id: "PS-426-001",
+    partner: "BlueRock",
+    customer: "David Chen",
+    amount: "$27,114.00",
+    status: "Review",
+    avatar: DASHBOARD_PARTNERS[2],
+  },
+  {
+    id: "PS-424-112",
+    partner: "Maison Eight",
+    customer: "Sarah Hall",
+    amount: "$61,223.00",
+    status: "Ready",
+    avatar: DASHBOARD_PARTNERS[1],
+  },
+  {
+    id: "PS-417-020",
+    partner: "Studio Loop",
+    customer: "Marcus Lee",
+    amount: "$7,311.00",
+    status: "Draft",
+    avatar: DASHBOARD_PARTNERS[3],
+  },
+] as const;
+
+type SectionSelect = (id: string) => void;
 
 function SupplierHeader({
   mobileMenuOpen,
   onMenuClose,
   onMenuToggle,
+  onPrimaryAction,
   onSectionSelect,
 }: {
   mobileMenuOpen: boolean;
   onMenuClose: () => void;
   onMenuToggle: () => void;
-  onSectionSelect: (id: string) => void;
+  onPrimaryAction: () => void;
+  onSectionSelect: SectionSelect;
 }) {
   return (
     <header className={styles.header}>
       <Link
-        href="/"
+        href="/suppliers"
         className={styles.logoLink}
-        aria-label="Prime Style AI home"
+        aria-label="PrimeStyleAI suppliers home"
       >
-        <PrimeStyleBrand />
+        <Image
+          src="/media/partner-landing/optimized/primestyleai-mark-256.webp"
+          alt=""
+          width={1254}
+          height={1254}
+          sizes="42px"
+          priority
+        />
+        <span>Prime Style AI</span>
       </Link>
 
       <nav className={styles.desktopNav} aria-label="Supplier navigation">
+        <Link href="/suppliers" aria-current="page">
+          Suppliers
+        </Link>
+        <button type="button" onClick={() => onSectionSelect("global-network")}>
+          Global network
+        </button>
+        <button type="button" onClick={() => onSectionSelect("merchants")}>
+          Merchants
+        </button>
+        <button type="button" onClick={() => onSectionSelect("influencers")}>
+          Influencers
+        </button>
         <button
           type="button"
-          onClick={() => onSectionSelect("merchant-network")}
+          onClick={() => onSectionSelect("supplier-dashboard")}
         >
-          Merchant network
-        </button>
-        <button type="button" onClick={() => onSectionSelect("how-it-works")}>
-          How it works
-        </button>
-        <button type="button" onClick={() => onSectionSelect("selling-models")}>
-          Ways to sell
-        </button>
-        <button type="button" onClick={() => onSectionSelect("creator-demand")}>
-          Creator demand
+          Dashboard
         </button>
       </nav>
 
       <div className={styles.headerActions}>
-        <Link href="/suppliers/dashboard" className={styles.signIn}>
-          Sign in
-        </Link>
-        <Link href="/suppliers/dashboard" className={styles.headerCta}>
-          Join the network
-          <ArrowUpRight size={15} weight="bold" />
-        </Link>
+        <button type="button" className={styles.headerCta} onClick={onPrimaryAction}>
+          Join waitlist
+        </button>
         <button
           type="button"
           className={styles.menuButton}
@@ -124,421 +168,558 @@ function SupplierHeader({
       </div>
 
       {mobileMenuOpen ? (
-        <nav
-          className={styles.mobileNav}
-          aria-label="Mobile supplier navigation"
-        >
-          <button
-            type="button"
-            onClick={() => onSectionSelect("merchant-network")}
-          >
-            Merchant network
+        <nav className={styles.mobileNav} aria-label="Mobile supplier navigation">
+          <button type="button" onClick={() => onSectionSelect("global-network")}>
+            Global network
           </button>
-          <button type="button" onClick={() => onSectionSelect("how-it-works")}>
-            How it works
+          <button type="button" onClick={() => onSectionSelect("merchants")}>
+            Merchant connections
+          </button>
+          <button type="button" onClick={() => onSectionSelect("influencers")}>
+            Influencer partnerships
           </button>
           <button
             type="button"
-            onClick={() => onSectionSelect("selling-models")}
+            onClick={() => onSectionSelect("supplier-dashboard")}
           >
-            Ways to sell
+            Supplier dashboard
           </button>
           <button
             type="button"
-            onClick={() => onSectionSelect("creator-demand")}
-          >
-            Creator demand
-          </button>
-          <Link href="/suppliers/dashboard" onClick={onMenuClose}>
-            Sign in
-          </Link>
-          <Link
-            href="/suppliers/dashboard"
             className={styles.mobileCta}
-            onClick={onMenuClose}
+            onClick={() => {
+              onMenuClose();
+              onPrimaryAction();
+            }}
           >
-            Join the supplier network
-            <ArrowRight size={17} weight="bold" />
-          </Link>
+            Join waitlist
+          </button>
         </nav>
       ) : null}
     </header>
   );
 }
 
-function NetworkFlow() {
+function SupplierAsset({
+  src,
+  alt,
+  className = "",
+  priority = false,
+  sizes = "(max-width: 800px) 100vw, 92vw",
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  priority?: boolean;
+  sizes?: string;
+}) {
   return (
-    <div
-      className={styles.networkFlow}
-      aria-label="Supplier to merchant to order flow"
-    >
-      <div className={styles.flowNode}>
-        <span className={styles.flowIcon}>
-          <Buildings size={19} />
-        </span>
-        <span>Suppliers</span>
-      </div>
-      <span className={styles.flowLine} aria-hidden="true" />
-      <div className={styles.flowNode}>
-        <span className={styles.flowIcon}>
-          <Storefront size={19} />
-        </span>
-        <span>Merchants</span>
-      </div>
-      <span className={styles.flowLine} aria-hidden="true" />
-      <div className={styles.flowNode}>
-        <span className={styles.flowIcon}>
-          <ShoppingBagOpen size={19} />
-        </span>
-        <span>Orders</span>
-      </div>
-    </div>
+    <Image
+      src={`${ASSET_ROOT}/${src}`}
+      alt={alt}
+      width={1586}
+      height={992}
+      sizes={sizes}
+      className={className}
+      priority={priority}
+      quality={90}
+    />
   );
 }
 
 function Hero() {
   return (
-    <section className={styles.hero} id="merchant-network">
-      <span className={styles.heroMonogram} aria-hidden="true">
-        PS
-      </span>
-      <div className={styles.heroMedia}>
-        <Image
-          src="/media/partner-landing/supplier/supplier-merchant-hero.png"
-          alt="Fashion supplier collection prepared for merchant discovery"
-          fill
-          preload
-          quality={90}
-          sizes="(max-width: 900px) 100vw, 61vw"
-          className={styles.coverImage}
-        />
-        <div className={styles.productTag}>
-          <span className={styles.productTagLabel}>Mint puffer</span>
-          <span>Ready for merchant discovery</span>
-          <Check size={15} weight="bold" />
+    <section className={styles.hero} aria-labelledby="supplier-hero-title">
+      <div className={styles.heroCanvas}>
+        <div className={styles.heroMedia}>
+          <SupplierAsset
+            src="supplier-merchant-influencer-wide-cast-v4.png"
+            alt="Individual merchant and influencer fashion figures arranged as a spacious editorial cast"
+            className={styles.heroImage}
+            priority
+            sizes="(max-width: 800px) 100vw, 62vw"
+          />
+          <div className={styles.heroRoleLabels} aria-hidden="true">
+            <span className={`${styles.heroRoleLabel} ${styles.merchantLabel}`}>
+              Merchant
+            </span>
+            <span className={`${styles.heroRoleLabel} ${styles.creatorLabel}`}>
+              Creator
+            </span>
+            <span className={`${styles.heroRoleLabel} ${styles.boutiqueLabel}`}>
+              Boutique
+            </span>
+            <span className={`${styles.heroRoleLabel} ${styles.liveSellerLabel}`}>
+              Live seller
+            </span>
+          </div>
         </div>
+        <div className={styles.heroCopy}>
+          <p className={styles.eyebrow}>The supplier network for modern fashion</p>
+          <h1 id="supplier-hero-title">
+            One product.
+            <span>Everywhere.</span>
+          </h1>
+          <p className={styles.heroLead}>
+            Place your collection inside one connected shopping network—then let
+            merchants sell it, creators show it, and customers discover it.
+          </p>
+          <div className={styles.heroActions}>
+            <Link href="/suppliers/dashboard" className={styles.primaryCta}>
+              Join the network <ArrowRight size={16} weight="bold" />
+            </Link>
+            <a href="#catalog-story" className={styles.textCta}>
+              Explore the system
+            </a>
+          </div>
+        </div>
+        <span className={styles.heroDirection}>01 / one product, one promise</span>
       </div>
 
-      <div className={styles.heroContent}>
-        <p className={styles.eyebrow}>Supplier × merchant network</p>
-        <h1>
-          Meet the merchants <br />
-          ready to sell <em>your collection.</em>
-        </h1>
-        <p className={styles.heroCopy}>
-          PrimeStyleAI connects fashion suppliers and manufacturers with
-          retailers, boutiques, ecommerce merchants, and dropship sellers ready
-          to source, sample, and sell.
-        </p>
-        <div className={styles.heroActions}>
-          <Link href="/suppliers/dashboard" className={styles.primaryButton}>
-            Join the supplier network
-            <span className={styles.buttonIcon}>
-              <ArrowRight size={17} weight="bold" />
-            </span>
-          </Link>
-          <Link href="/suppliers/dashboard" className={styles.textButton}>
-            Meet the merchant network
-            <span className={styles.playIcon}>
-              <Play size={12} weight="fill" />
-            </span>
-          </Link>
+      <div className={styles.valueStrip} aria-label="Supplier value">
+        <p>From catalog to customer</p>
+        <div>
+          <span>Merchant-ready</span>
+          <span>Creator-ready</span>
+          <span>Globally connected</span>
         </div>
-        <NetworkFlow />
       </div>
     </section>
   );
 }
 
-function ProfilePreview() {
+function CatalogStory() {
   return (
-    <div className={styles.profilePreview}>
-      <div className={styles.profilePreviewTop}>
-        <span className={styles.profileBadge}>
-          <Check size={13} weight="bold" /> Verified supplier
-        </span>
-        <span>AW26</span>
-      </div>
-      <div className={styles.profileProduct}>
-        <span className={styles.miniGarment}>
-          <Package size={35} weight="thin" />
-        </span>
-        <div>
-          <strong>Quilted outerwear</strong>
-          <span>48 styles · Global shipping</span>
-        </div>
-      </div>
-      <div className={styles.profileFacts}>
-        <span>Wholesale</span>
-        <span>Dropship</span>
-        <span>Samples</span>
-      </div>
-    </div>
-  );
-}
-
-function HowItWorks() {
-  return (
-    <section className={styles.journeySection} id="how-it-works">
+    <section
+      className={styles.catalogStory}
+      id="catalog-story"
+      aria-labelledby="catalog-story-title"
+    >
       <div className={styles.sectionIntro}>
-        <p className={styles.sectionNumber}>01</p>
-        <h2>
-          From discovery <br />
-          <em>to a merchant relationship.</em>
+        <p className={styles.eyebrow}>02 / Digital-native collection</p>
+        <h2 id="catalog-story-title">
+          Your catalog should feel <span>alive.</span>
         </h2>
-        <p>
-          A clear path from a qualified supplier profile to the samples, quotes,
-          orders, and reorders that grow the relationship.
-        </p>
-        <Link href="/suppliers/dashboard" className={styles.primaryButton}>
-          Meet the merchant network
-          <span className={styles.buttonIcon}>
-            <ArrowRight size={17} weight="bold" />
-          </span>
-        </Link>
-      </div>
-
-      <div className={styles.journeyGrid}>
-        <article className={`${styles.journeyCard} ${styles.profileCard}`}>
-          <div className={styles.cardHeading}>
-            <span>{journeySteps[0].number}</span>
-            <p>{journeySteps[0].eyebrow}</p>
-          </div>
-          <h3>{journeySteps[0].title}</h3>
-          <p>{journeySteps[0].copy}</p>
-          <ProfilePreview />
-        </article>
-
-        <article className={`${styles.journeyCard} ${styles.photoCard}`}>
-          <div className={styles.photoFrame}>
-            <Image
-              src="/media/partner-landing/supplier/merchant-discovery.png"
-              alt="Boutique merchant reviewing a supplier collection"
-              fill
-              quality={90}
-              sizes="(max-width: 720px) 100vw, 36vw"
-              className={styles.coverImage}
-            />
-          </div>
-          <div className={styles.photoCardCopy}>
-            <div className={styles.cardHeading}>
-              <span>{journeySteps[1].number}</span>
-              <p>{journeySteps[1].eyebrow}</p>
-            </div>
-            <h3>{journeySteps[1].title}</h3>
-            <p>{journeySteps[1].copy}</p>
-          </div>
-        </article>
-
-        <article className={`${styles.journeyCard} ${styles.photoCard}`}>
-          <div className={styles.photoFrame}>
-            <Image
-              src="/media/partner-landing/supplier/samples-quotes.png"
-              alt="Fashion sample package with garments and material swatches"
-              fill
-              quality={90}
-              sizes="(max-width: 720px) 100vw, 36vw"
-              className={styles.coverImage}
-            />
-          </div>
-          <div className={styles.photoCardCopy}>
-            <div className={styles.cardHeading}>
-              <span>{journeySteps[2].number}</span>
-              <p>{journeySteps[2].eyebrow}</p>
-            </div>
-            <h3>{journeySteps[2].title}</h3>
-            <p>{journeySteps[2].copy}</p>
-          </div>
-        </article>
-
-        <article className={`${styles.journeyCard} ${styles.photoCard}`}>
-          <div className={styles.photoFrame}>
-            <Image
-              src="/media/partner-landing/supplier/orders-reorders.png"
-              alt="Boutique owner preparing a supplier collection for customers"
-              fill
-              quality={90}
-              sizes="(max-width: 720px) 100vw, 36vw"
-              className={styles.coverImage}
-            />
-            <span className={styles.orderPill}>
-              <ChartLineUp size={17} /> Orders return to you
-            </span>
-          </div>
-          <div className={styles.photoCardCopy}>
-            <div className={styles.cardHeading}>
-              <span>{journeySteps[3].number}</span>
-              <p>{journeySteps[3].eyebrow}</p>
-            </div>
-            <h3>{journeySteps[3].title}</h3>
-            <p>{journeySteps[3].copy}</p>
-          </div>
-        </article>
-      </div>
-    </section>
-  );
-}
-
-function SellingModels() {
-  return (
-    <section className={styles.sellingSection} id="selling-models">
-      <div className={styles.sellingHeading}>
-        <div>
-          <p className={styles.sectionNumber}>02</p>
-          <h2>
-            One collection. <br />
-            <em>More merchant opportunities.</em>
-          </h2>
-        </div>
-        <p>
-          You decide which commercial models each collection supports. Merchants
-          can then approach you through the route that fits their business.
-        </p>
-      </div>
-
-      <div className={styles.sellingGrid}>
-        <article className={`${styles.sellingCard} ${styles.wholesaleCard}`}>
-          <div className={styles.sellingCardTop}>
-            <span className={styles.sellingIcon}>
-              <Buildings size={24} />
-            </span>
-            <span className={styles.modeTag}>Core channel</span>
-          </div>
-          <h3>Bulk wholesale</h3>
+        <div className={styles.introAside}>
           <p>
-            Sell volume to retailers and boutiques with clear MOQs, tiered
-            pricing, samples, lead times, and reorder terms.
+            Publish product stories, inventory, variants, terms, and campaign-ready
+            assets once. Keep every selling partner working from the same source.
           </p>
-          <ul>
-            <li>
-              <Check size={15} weight="bold" /> Retailer and boutique discovery
-            </li>
-            <li>
-              <Check size={15} weight="bold" /> Sample and quote requests
-            </li>
-            <li>
-              <Check size={15} weight="bold" /> Purchase orders and reorders
-            </li>
-          </ul>
-          <div className={styles.channelMark}>
-            <span>MOQ</span>
-            <ArrowRight size={18} />
-            <span>Merchant order</span>
-          </div>
-        </article>
-
-        <article className={`${styles.sellingCard} ${styles.dropshipCard}`}>
-          <div className={styles.sellingCardTop}>
-            <span className={styles.sellingIcon}>
-              <Truck size={24} />
-            </span>
-            <span className={styles.modeTag}>Flexible channel</span>
-          </div>
-          <h3>Dropship</h3>
-          <p>
-            Let approved merchants list selected products while you fulfill
-            individual customer orders from available stock.
-          </p>
-          <ul>
-            <li>
-              <Check size={15} weight="bold" /> Merchant-ready product details
-            </li>
-            <li>
-              <Check size={15} weight="bold" /> Inventory and shipping
-              expectations
-            </li>
-            <li>
-              <Check size={15} weight="bold" /> Orders routed to your workflow
-            </li>
-          </ul>
-          <div className={styles.channelMark}>
-            <span>1 unit</span>
-            <ArrowRight size={18} />
-            <span>Fulfilled by you</span>
-          </div>
-        </article>
-
-        <article className={`${styles.sellingCard} ${styles.directCard}`}>
-          <div className={styles.directIcon}>
-            <GlobeSimple size={25} />
-          </div>
-          <div>
-            <span className={styles.modeTag}>Optional channel</span>
-            <h3>Direct-to-consumer</h3>
-            <p>
-              Activate selected products for direct sales and add matched
-              creator campaigns when you want consumer demand around the
-              collection.
-            </p>
-          </div>
-          <ArrowUpRight size={22} />
-        </article>
-      </div>
-    </section>
-  );
-}
-
-function CreatorDemand() {
-  return (
-    <section className={styles.creatorSection} id="creator-demand">
-      <div className={styles.creatorCopy}>
-        <p className={styles.sectionNumber}>03</p>
-        <span className={styles.optionalLabel}>
-          <Sparkle size={15} weight="fill" /> Optional DTC layer
-        </span>
-        <h2>
-          Add creator demand <br />
-          <em>when it supports the sale.</em>
-        </h2>
-        <p className={styles.creatorLead}>
-          PrimeStyleAI can connect your selected products with relevant fashion
-          creators. You choose what to activate; content helps generate demand
-          and attributed orders come back to you.
-        </p>
-        <div className={styles.creatorSteps}>
-          <div>
-            <span>1</span>
-            <p>
-              <strong>Choose products</strong>Activate only the styles you want
-              creators to feature.
-            </p>
-          </div>
-          <div>
-            <span>2</span>
-            <p>
-              <strong>Connect with creators</strong>Review matched creators and
-              start the right partnership.
-            </p>
-          </div>
-          <div>
-            <span>3</span>
-            <p>
-              <strong>Track the result</strong>See content-led demand and
-              attributed orders.
-            </p>
-          </div>
+          <Link href="/suppliers/dashboard" className={styles.inlineLink}>
+            Build your supplier catalog <ArrowUpRight size={15} weight="bold" />
+          </Link>
         </div>
-        <Link href="/suppliers/dashboard" className={styles.darkButton}>
-          Add creators to my growth plan
-          <ArrowRight size={17} weight="bold" />
-        </Link>
       </div>
 
-      <div className={styles.creatorMedia}>
-        <Image
-          src="/media/partner-landing/supplier/creator-demand.png"
-          alt="Fashion creator filming a supplier product"
-          fill
-          quality={90}
-          sizes="(max-width: 900px) 100vw, 50vw"
-          className={styles.coverImage}
+      <div className={styles.catalogVisual}>
+        <SupplierAsset
+          src="supplier-catalog-digital-native-3d-brand-v2.png"
+          alt="Fashion collection presented through colorful digital commerce cards"
         />
-        <div className={styles.creatorOverlay}>
-          <span>
-            <UsersThree size={18} /> Creator connection
-          </span>
-          <strong>Selected by you</strong>
+        <div className={styles.catalogBadge}>
+          <span>One upload</span>
+          <strong>Many storefronts</strong>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function GlobalNetwork() {
+  return (
+    <section
+      className={styles.globalNetwork}
+      id="global-network"
+      aria-labelledby="global-network-title"
+    >
+      <div className={styles.networkCopy}>
+        <p className={styles.eyebrow}>03 / Expressive logistics</p>
+        <h2 id="global-network-title">
+          Sell global.
+          <span>Ship connected.</span>
+        </h2>
+        <p>
+          PrimeStyleAI brings suppliers, merchants, influencers, and customers into
+          one coordinated route to market. You stay visible from discovery to order,
+          fulfillment, and repeat demand.
+        </p>
+        <a href="#selling-routes" className={styles.orangeLink}>
+          See every route <ArrowRight size={16} weight="bold" />
+        </a>
+      </div>
+
+      <div className={styles.networkVisual}>
+        <SupplierAsset
+          src="supplier-global-network-3d-brand-v2.png"
+          alt="Global fashion logistics network with shipping routes, parcels, and delivery transport"
+        />
+      </div>
+
+      <div className={styles.networkRail} aria-label="Network capabilities">
+        <article>
+          <GlobeHemisphereWest size={23} weight="duotone" />
+          <span>Market reach</span>
+          <strong>Discover demand beyond your current channels.</strong>
+        </article>
+        <article>
+          <Package size={23} weight="duotone" />
+          <span>Order visibility</span>
+          <strong>Keep products, partners, and fulfillment aligned.</strong>
+        </article>
+        <article>
+          <ChartLineUp size={23} weight="duotone" />
+          <span>Repeat growth</span>
+          <strong>See what moves and build on real performance.</strong>
+        </article>
+      </div>
+    </section>
+  );
+}
+
+function Connections() {
+  return (
+    <section className={styles.connections} aria-labelledby="connections-title">
+      <div className={styles.connectionsHeading}>
+        <p className={styles.eyebrow}>04 / Product plus performance</p>
+        <h2 id="connections-title">Get your products into the right hands.</h2>
+      </div>
+
+      <div className={styles.connectionsVisual}>
+        <SupplierAsset
+          src="supplier-merchant-creator-3d-brand-v2.png"
+          alt="Supplier products connected to merchant storefronts and creator content"
+        />
+      </div>
+
+      <div className={styles.connectionCards}>
+        <article className={styles.merchantCard} id="merchants">
+          <div className={styles.cardIcon}>
+            <Storefront size={24} weight="duotone" />
+          </div>
+          <span>For merchant growth</span>
+          <h3>Meet sellers who can move your collection.</h3>
+          <p>
+            Share live products with boutiques, ecommerce teams, and retailers.
+            Review interest, answer requests, and grow long-term accounts.
+          </p>
+          <Link href="/suppliers/dashboard/merchant-matches">
+            Find merchant matches <ArrowUpRight size={15} weight="bold" />
+          </Link>
+        </article>
+
+        <article className={styles.creatorCard} id="influencers">
+          <div className={styles.cardIcon}>
+            <UsersThree size={24} weight="duotone" />
+          </div>
+          <span>For creator demand</span>
+          <h3>Let creators turn products into momentum.</h3>
+          <p>
+            Connect with influencers who can wear, explain, and showcase your
+            products—then track the attention and sales their work creates.
+          </p>
+          <Link href="/suppliers/dashboard/influencer-matches">
+            Find creator matches <ArrowUpRight size={15} weight="bold" />
+          </Link>
+        </article>
+      </div>
+    </section>
+  );
+}
+
+function SupplierDashboard() {
+  const [selectedOrderIndex, setSelectedOrderIndex] = useState(0);
+  const [activeOrderFilter, setActiveOrderFilter] = useState("Unsent");
+  const selectedOrder = DASHBOARD_ORDERS[selectedOrderIndex];
+
+  return (
+    <section
+      className={styles.dashboardStory}
+      id="supplier-dashboard"
+      aria-labelledby="supplier-dashboard-title"
+    >
+      <div className={styles.dashboardStoryIntro}>
+        <p className={styles.eyebrow}>One command center</p>
+        <h2 id="supplier-dashboard-title">
+          Control your entire network from one dashboard.
+        </h2>
+        <p>
+          Find and manage influencers, connect with merchants, publish products,
+          run campaigns, keep orders and shipping moving, and track every sale
+          and payout as it happens.
+        </p>
+      </div>
+
+      <div className={styles.dashboardCanvas}>
+        <div className={styles.dashboardAppBar}>
+          <div className={styles.dashboardBrand}>
+            <Image
+              src="/media/partner-landing/optimized/primestyleai-mark-256.webp"
+              alt=""
+              width={28}
+              height={28}
+            />
+            <strong>PrimeStyleAI</strong>
+          </div>
+
+          <nav className={styles.dashboardNav} aria-label="Dashboard preview navigation">
+            <button type="button">Overview</button>
+            <button type="button">Catalog</button>
+            <button type="button" aria-current="page">
+              Orders
+            </button>
+            <button type="button">Campaigns</button>
+            <button type="button">Payouts</button>
+          </nav>
+
+          <div className={styles.dashboardUtilities} aria-label="Dashboard tools">
+            <button type="button" aria-label="Download report">
+              <DownloadSimple size={15} weight="bold" />
+            </button>
+            <button type="button" aria-label="Notifications">
+              <Bell size={15} weight="bold" />
+            </button>
+            <Image
+              src="/images/landing/avatar-marcus.png"
+              alt="Supplier account"
+              width={32}
+              height={32}
+            />
+          </div>
+        </div>
+
+        <div className={styles.dashboardTitleRow}>
+          <div>
+            <p className={styles.eyebrow}>05 / Operational detail</p>
+            <h3>Supplier operations</h3>
+          </div>
+          <div className={styles.dashboardTitleActions}>
+            <button type="button" aria-label="Adjust dashboard view">
+              <SlidersHorizontal size={15} weight="bold" />
+            </button>
+            <Link href="/suppliers/dashboard">
+              <Plus size={14} weight="bold" /> Open dashboard
+            </Link>
+          </div>
+        </div>
+
+        <div className={styles.dashboardOverview}>
+          <article className={styles.performanceCard}>
+            <div className={styles.metricGrid}>
+              <div>
+                <span>Open order value</span>
+                <strong>$31,211.00</strong>
+              </div>
+              <div>
+                <span>Due this month</span>
+                <strong>$172,560.00</strong>
+              </div>
+              <div>
+                <span>Average ship time</span>
+                <strong>12<small> days</small></strong>
+              </div>
+            </div>
+
+            <div className={styles.monthlyProgress} aria-label="Monthly partner performance">
+              {[
+                ["Sep", 5],
+                ["Oct", 3],
+                ["Nov", 2],
+                ["Dec", 1],
+              ].map(([month, count], monthIndex) => (
+                <div className={styles.monthTrack} key={month}>
+                  <span>{month}</span>
+                  <span className={styles.progressBar}>
+                    <span
+                      style={{
+                        "--progress": `${35 + monthIndex * 17}%`,
+                      } as CSSProperties}
+                    />
+                  </span>
+                  <div className={styles.partnerFaces}>
+                    {DASHBOARD_PARTNERS.slice(0, Number(count)).map((avatar, avatarIndex) => (
+                      <Image
+                        key={`${month}-${avatar}`}
+                        src={avatar}
+                        alt=""
+                        width={26}
+                        height={26}
+                        style={{ zIndex: 8 - avatarIndex }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className={styles.payoutCard}>
+            <div className={styles.payoutHeading}>
+              <span>Available for instant payout</span>
+              <ArrowUpRight size={16} weight="bold" />
+            </div>
+            <strong>$214,390.00</strong>
+            <div className={styles.payoutMethods}>
+              <button type="button">
+                <span>••443</span>
+                <small>Direct</small>
+              </button>
+              <button type="button" aria-pressed="true">
+                <span>#77210</span>
+                <small>Creator</small>
+              </button>
+              <button type="button">
+                <span>#71121</span>
+                <small>Retail</small>
+              </button>
+              <button type="button" className={styles.payNowButton}>
+                Pay out now
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <div className={styles.dashboardFilters}>
+          <strong>Active filters <Funnel size={13} weight="fill" /></strong>
+          <button type="button">All partners <CaretDown size={12} weight="bold" /></button>
+          <button type="button">All channels <CaretDown size={12} weight="bold" /></button>
+          <button type="button"><CalendarBlank size={13} /> November 2026</button>
+          <button type="button"><CalendarBlank size={13} /> December 2026</button>
+          <label>
+            <span>Search orders</span>
+            <input type="search" aria-label="Search orders" />
+            <MagnifyingGlass size={14} weight="bold" />
+          </label>
+        </div>
+
+        <div className={styles.ordersConsole}>
+          <div className={styles.orderList}>
+            <div className={styles.orderListHeader}>
+              <strong>Live orders</strong>
+              <div>
+                {["All orders", "Draft", "Unsent"].map((filter) => (
+                  <button
+                    type="button"
+                    key={filter}
+                    aria-pressed={activeOrderFilter === filter}
+                    onClick={() => setActiveOrderFilter(filter)}
+                  >
+                    {filter}{filter === "Draft" ? " 3" : filter === "Unsent" ? " 5" : ""}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.orderRows}>
+              {DASHBOARD_ORDERS.map((order, index) => (
+                <button
+                  type="button"
+                  key={order.id}
+                  className={index === selectedOrderIndex ? styles.activeOrder : undefined}
+                  aria-pressed={index === selectedOrderIndex}
+                  onClick={() => setSelectedOrderIndex(index)}
+                >
+                  <Image src={order.avatar} alt="" width={31} height={31} />
+                  <span>
+                    <strong>{order.id}</strong>
+                    <small>{order.partner}</small>
+                  </span>
+                  <em>{order.status}</em>
+                  <b>{order.amount}</b>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <article className={styles.orderDetail} aria-live="polite">
+            <div className={styles.detailHeading}>
+              <div>
+                <span>Order details</span>
+                <strong>#{selectedOrder.id.replace("PS-", "")}</strong>
+                <small>Current</small>
+              </div>
+              <div>
+                <span>Merchant</span>
+                <strong>{selectedOrder.partner}</strong>
+              </div>
+              <div className={styles.detailCustomer}>
+                <span>Customer</span>
+                <Image src={selectedOrder.avatar} alt="" width={30} height={30} />
+                <p><strong>{selectedOrder.customer}</strong><small>Prime network buyer</small></p>
+              </div>
+            </div>
+
+            <div className={styles.detailCards}>
+              <button type="button">
+                <span>$10,630.80</span>
+                <small>Products</small>
+                <ArrowUpRight size={12} />
+              </button>
+              <button type="button">
+                <span>$31,892.40</span>
+                <small>Merchant order</small>
+                <ArrowUpRight size={12} />
+              </button>
+              <button type="button">
+                <span>$10,630.80</span>
+                <small>Creator campaign</small>
+                <ArrowUpRight size={12} />
+              </button>
+              <button type="button" aria-label="Add order item">
+                <Plus size={18} weight="bold" />
+              </button>
+            </div>
+
+            <div className={styles.detailFooter}>
+              <div><span>Order total</span><strong>{selectedOrder.amount}</strong></div>
+              <div><span>Paid</span><strong>{selectedOrder.amount}</strong></div>
+              <div><span>Balance</span><strong>$0.00</strong></div>
+              <button type="button" aria-label="Order paid">
+                <CheckCircle size={14} weight="fill" /> Paid now
+              </button>
+              <button type="button" aria-label="More order actions">
+                <DotsThree size={18} weight="bold" />
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <div className={styles.dashboardFootnote}>
+          <span><Clock size={13} weight="fill" /> Updated live</span>
+          <span><Coins size={13} weight="fill" /> Catalog, partners, orders, shipping and payments connected</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SellingRoutes() {
+  return (
+    <section
+      className={styles.sellingRoutes}
+      id="selling-routes"
+      aria-labelledby="selling-routes-title"
+    >
+      <div className={styles.routesTitle}>
+        <p className={styles.eyebrow}>One connected system</p>
+        <h2 id="selling-routes-title">List once. Sell through every route.</h2>
+      </div>
+
+      <div className={styles.routeGrid}>
+        <article>
+          <span>01</span>
+          <h3>Wholesale</h3>
+          <p>Supply merchants with clear terms, live inventory, and reorder visibility.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h3>Dropship</h3>
+          <p>Let approved sellers offer your products without carrying stock.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h3>Creator-led</h3>
+          <p>Turn showcases, campaigns, and trusted recommendations into demand.</p>
+        </article>
       </div>
     </section>
   );
@@ -546,77 +727,147 @@ function CreatorDemand() {
 
 function FinalCta() {
   return (
-    <section className={styles.finalCta}>
-      <div>
-        <p>Ready for better distribution?</p>
-        <h2>
-          Put your collection in front of <br />
-          <em>merchants ready to sell it.</em>
-        </h2>
+    <section className={styles.finalCta} aria-labelledby="supplier-final-title">
+      <p className={styles.eyebrow}>Your next market is already connected</p>
+      <h2 id="supplier-final-title">Bring the products. We’ll connect the growth.</h2>
+      <div className={styles.finalAction}>
+        <Link href="/suppliers/dashboard" className={styles.finalButton}>
+          Join the supplier network <ArrowRight size={18} weight="bold" />
+        </Link>
+        <span>Free to get started</span>
       </div>
-      <Link href="/suppliers/dashboard" className={styles.primaryButton}>
-        Join the supplier network
-        <span className={styles.buttonIcon}>
-          <ArrowRight size={17} weight="bold" />
-        </span>
-      </Link>
     </section>
   );
 }
 
-function SupplierFooter({
-  onSectionSelect,
-}: {
-  onSectionSelect: (id: string) => void;
-}) {
+function SupplierFooter({ onSectionSelect }: { onSectionSelect: SectionSelect }) {
   return (
-    <footer className={styles.footer}>
-      <div className={styles.footerBrand}>
-        <Link
-          href="/"
-          className={styles.footerLogoLink}
-          aria-label="Prime Style AI home"
-        >
-          <PrimeStyleBrand />
-        </Link>
-        <p>
-          One connected fashion network for suppliers, merchants, and creators.
-        </p>
+    <footer className={styles.networkFooter} id="site-footer">
+      <div className={styles.footerFrame}>
+        <section className={styles.footerMain} aria-label="PrimeStyleAI supplier footer">
+          <Link href="/" className={styles.footerMark} aria-label="PrimeStyleAI home">
+            <Image
+              src="/media/partner-landing/optimized/primestyleai-mark-256.webp"
+              alt="PrimeStyleAI"
+              width={1254}
+              height={1254}
+              sizes="120px"
+            />
+          </Link>
+
+          <div className={styles.footerBrand}>
+            <h2>Prime Style AI</h2>
+            <p>Where every product finds more ways to sell.</p>
+          </div>
+
+          <div className={styles.footerContent}>
+            <div className={styles.footerContact}>
+              <h3>Contact</h3>
+              <a href="mailto:support@primestyleai.com">
+                <EnvelopeSimple size={16} /> support@primestyleai.com
+              </a>
+              <span>
+                <MapPin size={16} /> Laguna Niguel, California
+              </span>
+              <nav aria-label="Social links">
+                {SOCIAL_LINKS.map(({ href, label, Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={label}
+                  >
+                    <Icon size={17} weight="fill" />
+                  </a>
+                ))}
+              </nav>
+            </div>
+
+            <div className={styles.footerActions}>
+              <Link href="/suppliers/dashboard">
+                Join the network <ArrowUpRight size={14} weight="bold" />
+              </Link>
+            </div>
+
+            <nav className={styles.footerQuickLinks} aria-label="Footer navigation">
+              <h3>Quick links</h3>
+              <button type="button" onClick={() => onSectionSelect("global-network")}>
+                Global network
+              </button>
+              <button type="button" onClick={() => onSectionSelect("merchants")}>
+                Merchants
+              </button>
+              <button type="button" onClick={() => onSectionSelect("influencers")}>
+                Influencers
+              </button>
+              <button
+                type="button"
+                onClick={() => onSectionSelect("supplier-dashboard")}
+              >
+                Dashboard
+              </button>
+            </nav>
+          </div>
+
+          <div className={styles.footerLegal}>
+            <span>© {new Date().getFullYear()} Prime Style AI</span>
+            <nav aria-label="Legal links">
+              <Link href="/privacy-policy">Privacy policy</Link>
+              <Link href="/terms">Terms</Link>
+              <a href="https://primestyleai.com/help-center">Supplier help</a>
+            </nav>
+          </div>
+        </section>
       </div>
-      <nav aria-label="Supplier footer">
-        <button type="button" onClick={() => onSectionSelect("how-it-works")}>
-          How it works
-        </button>
-        <Link href="/merchants">For merchants</Link>
-        <Link href="/influencers">For creators</Link>
-        <Link href="/suppliers/dashboard">Supplier dashboard</Link>
-      </nav>
-      <p className={styles.copyright}>
-        © {new Date().getFullYear()} PrimeStyleAI
-      </p>
     </footer>
+  );
+}
+
+export function SupplierNetworkSections() {
+  return (
+    <div className={styles.page} data-audience="supplier">
+      <CatalogStory />
+      <GlobalNetwork />
+      <Connections />
+      <SupplierDashboard />
+      <SellingRoutes />
+    </div>
   );
 }
 
 export function SupplierLandingExperience() {
   const navigation = useLandingNavigation();
+  const interest = usePartnerInterest("supplier");
 
   return (
     <div className={styles.page} data-audience="supplier">
-      <SupplierHeader
-        mobileMenuOpen={navigation.mobileMenuOpen}
-        onMenuClose={navigation.closeMobileMenu}
-        onMenuToggle={navigation.toggleMobileMenu}
-        onSectionSelect={navigation.scrollToSection}
-      />
+      <div className={styles.headerShell}>
+        <SupplierHeader
+          mobileMenuOpen={navigation.mobileMenuOpen}
+          onMenuClose={navigation.closeMobileMenu}
+          onMenuToggle={navigation.toggleMobileMenu}
+          onPrimaryAction={interest.open}
+          onSectionSelect={navigation.scrollToSection}
+        />
+      </div>
       <main>
         <Hero />
-        <HowItWorks />
-        <SellingModels />
-        <CreatorDemand />
+        <CatalogStory />
+        <GlobalNetwork />
+        <Connections />
+        <SupplierDashboard />
+        <SellingRoutes />
         <FinalCta />
       </main>
       <SupplierFooter onSectionSelect={navigation.scrollToSection} />
+      <SupplierInterestDialog
+        isOpen={interest.isOpen}
+        message={interest.message}
+        submissionState={interest.submissionState}
+        onClose={interest.close}
+        onSubmit={interest.submit}
+      />
     </div>
   );
 }

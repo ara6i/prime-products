@@ -1,0 +1,21 @@
+{
+  "scope": "The final unaudited provisional hold, S143's Fall Casual jean, checked at its full 1350x1800 source resolution",
+  "outputSlug": "provisional-source-audit-s143-bottom-correction",
+  "boardFilename": "s143-jean-full-source-correction.jpg",
+  "boardTitle": "S143 jean · final provisional-hold source audit",
+  "boardNote": "Visually retained with strict proportion constraints · Premium material and customer-retail proof still missing · no outfit approval or UI integration",
+  "minimumWidth": 1000,
+  "minimumHeight": 1333,
+  "localOnly": true,
+  "weddingExcluded": true,
+  "entries": [
+    {
+      "scenarioId": "S143",
+      "identity": "shopify_supplier:048f91fa8b67f16175d1ad88b171fbd87340e32c",
+      "label": "Clean Mid-Blue Regular-Straight Jean",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/ee6cff3e1fd84e8a954243951c49273d-Max-Origin.webp?v=1786298407",
+      "verdict": "pass-with-correction",
+      "reason": "The full source proves regular thigh ease, a straight leg and one small natural shoe break rather than a broad or puddled lower half. Correct the vague dusty-blue label to clean mid blue and keep only with S143's upper-hip warm-ivory knit plus a light minimal shoe; no oversized outerwear, bulky trainer or second loose layer. This is a visual hold only until Premium fiber, construction and customer-retail price are verified."
+    }
+  ]
+}

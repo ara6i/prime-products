@@ -1,0 +1,118 @@
+{
+  "reviewedAt": "2026-09-19",
+  "scope": "One-by-one visual recheck of all accepted but unreserved men's shoes, bags, accessories and watches.",
+  "localOnly": true,
+  "weddingAndWeddingGuestExcluded": true,
+  "paidGenerationCallsMade": 0,
+  "decisionRule": "Retain means eligible only for complete-outfit pairing. It is not an outfit approval, scenario reservation, refinement approval or UI integration.",
+  "entries": [
+    {
+      "identity": "cj:1755140342032113664",
+      "category": "shoe",
+      "decision": "retain-for-complete-outfit-pairing",
+      "reason": "The tobacco suede and cream leather penny-loafer composition is polished, distinctive and genuinely warm-weather. Keep once for a Premium Summer Date, Office, Party or Resort board with restrained clothing; it is a statement shoe, not a universal neutral."
+    },
+    {
+      "identity": "cj:2406240312071601600",
+      "category": "shoe",
+      "decision": "retain-for-complete-outfit-pairing",
+      "reason": "The off-white pebbled-leather unstructured loafer has a clean apron-free upper, rounded almond toe and light gum edge. Keep once for a Premium Summer Date, Office or Resort board."
+    },
+    {
+      "identity": "cj:1364923599282114560",
+      "category": "bag",
+      "decision": "reject-after-closer-visual-review",
+      "reason": "The large rigid briefcase, vertical reinforcement strips, multiple outlined panels and visible CONTACTS branding read dated corporate rather than modern Zara-led minimalism."
+    },
+    {
+      "identity": "cj:1422513896153026560",
+      "category": "bag",
+      "decision": "reject-after-closer-visual-review",
+      "reason": "The bulky distressed-brown weekender, black webbing, double buckle straps, contrast zips and heavy vintage construction are visually busy and dark; it fails the lighter modern Travel direction."
+    },
+    {
+      "identity": "cj:2508151158371607100",
+      "category": "bag",
+      "decision": "retain-for-complete-outfit-pairing",
+      "reason": "The black backpack has a controlled rectangular profile and restrained hardware. Keep once for Office or Travel only when the complete outfit is light or colorful; never use it to create another all-dark board."
+    },
+    {
+      "identity": "cj:1767118795111407616",
+      "category": "accessory",
+      "decision": "retain-for-complete-outfit-pairing",
+      "reason": "The smoke-gray woven belt has a clean tonal texture and simple silver buckle. Keep once for Casual, Travel or Resort with a light palette; the source label must be removed before UI use."
+    },
+    {
+      "identity": "cj:1524563155207335936",
+      "category": "accessory",
+      "decision": "reject-after-closer-visual-review",
+      "reason": "The shiny orange-tobacco faux leather, oversized brushed pin buckle and low-cost finish look dated and cheap rather than contemporary Zara-led menswear."
+    },
+    {
+      "identity": "cj:1759134611101200384",
+      "category": "accessory",
+      "decision": "retain-for-complete-outfit-pairing",
+      "reason": "The thick rectangular black sunglasses have a clean fashion-forward silhouette. Keep once as a deliberate contrast accessory on a light Spring or Summer Casual, Date, Party or Resort board."
+    },
+    {
+      "identity": "cj:1581208141910519808",
+      "category": "accessory",
+      "decision": "retain-for-complete-outfit-pairing",
+      "reason": "The shield-style black sunglasses are functionally credible for one Sports / Workout outfit. They are not suitable for Casual, Office, Date, Formal or Resort styling."
+    },
+    {
+      "identity": "cj:1227fb03-a689-4811-bf2c-1d88fa4579a1",
+      "category": "accessory",
+      "decision": "retain-for-complete-outfit-pairing",
+      "reason": "The plain light-khaki six-panel cap has clean proportions, no visible branding and a useful warm neutral. Keep once for Casual, Travel, Sports or Resort."
+    },
+    {
+      "identity": "cj:2501180411371604300",
+      "category": "accessory",
+      "decision": "retain-for-complete-outfit-pairing",
+      "reason": "The muted olive suede-texture cap is visually clean and provides a useful soft-color accent. Keep once for Fall Casual or Travel, subject to a complete-board texture check."
+    },
+    {
+      "identity": "cj:e6ffd1b8-754b-4938-8ff9-e8e7ba8f90a2",
+      "category": "accessory",
+      "decision": "reject-after-closer-visual-review",
+      "reason": "The brimless olive-and-black sailor cap reads as a niche novelty and would make the outfit feel costume-like rather than broadly modern and commercially Zara-led."
+    },
+    {
+      "identity": "cj:1451847697836412928",
+      "category": "accessory",
+      "decision": "retain-for-complete-outfit-pairing",
+      "reason": "The solid charcoal scarf is clean and versatile. Keep once for Winter only, and require a light or happy-color coat and top so the board is not dark-dominant."
+    },
+    {
+      "identity": "cj:2412100223321620400",
+      "category": "accessory",
+      "decision": "retain-for-complete-outfit-pairing",
+      "reason": "The matte burgundy tie is simple, rich in color and useful for one non-wedding Office or Formal outfit. Pair with pale blue, soft gray, cream or camel rather than a black-heavy suit board."
+    },
+    {
+      "identity": "shopify_supplier:7b507e7544d4888f53d46a6759769e663fa4ecca",
+      "category": "watch",
+      "decision": "reject-after-closer-visual-review",
+      "reason": "The black-on-black dial and strap, gold markers and prominent OLEVS logo read like low-cost imitation luxury and reinforce the dark styling problem."
+    },
+    {
+      "identity": "shopify_supplier:99d198e1c97527c2d831b685dcf31464db5d7054",
+      "category": "watch",
+      "decision": "retain-for-complete-outfit-pairing",
+      "reason": "The deep-blue minimalist dial and silver mesh bracelet are clean and contemporary. Keep once for Office, Date, Party or Formal with a light blue, cream, camel, gray or burgundy board; require a better-detail source before any later refinement."
+    },
+    {
+      "identity": "cj:4d89d632-524a-45b9-9f57-e626971fb00e",
+      "category": "watch",
+      "decision": "retain-for-complete-outfit-pairing",
+      "reason": "The white dial, thin silver case, restrained markers and fine mesh bracelet are the cleanest contemporary watch direction in the current pool. Keep once for Office, Date or Formal."
+    },
+    {
+      "identity": "cj:a9ecb7fa-55ec-4118-b1ce-23019758cd48",
+      "category": "watch",
+      "decision": "retain-for-complete-outfit-pairing",
+      "reason": "The white dial and simple black leather strap are restrained and usable once for Office, Date or Formal. The lifestyle background is not refinement-ready and must not be treated as a final AI Stylist asset."
+    }
+  ]
+}

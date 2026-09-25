@@ -1,0 +1,54 @@
+{
+  "batch": "48",
+  "approvals": {
+    "25": {
+      "color": "Navy Blue",
+      "constraint": "Use this navy lightweight relaxed-straight trouser once only for Spring/Summer creative Office, Travel, Casual Everyday, Weekend, a daytime Date or a polished Vacation city look. Keep the outfit light with a regular-fit white, ecru, sky-blue, coral, sage or pale-yellow top and low-profile cream, tan, burgundy or muted-green footwear; never pair it with a long oversized top, another dark dominant layer, bulky trainer, puddled hem, all-navy palette, formal evening styling or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 3],
+      "reason": "These newspaper, graffiti and handwriting shirts are busy novelty pieces with synthetic-looking construction or no reliable adult fit proof."
+    },
+    {
+      "cards": [4, 5, 7, 8],
+      "reason": "These ace-of-spades and patriotic graphic tops are loud, dated and costume-like rather than modern versatile menswear."
+    },
+    {
+      "cards": [6, 12, 14, 15],
+      "reason": "These graphic tanks are bodybuilding-focused, logo-led or novelty-printed and cannot support a clean modern wardrobe."
+    },
+    {
+      "cards": [9, 13, 16, 18, 19, 20],
+      "reason": "These T-shirts rely on large cartoons, slogans, letters or portrait graphics and read cheap or youth-novelty rather than Zara-led."
+    },
+    {
+      "cards": [10],
+      "reason": "The colored washed hoodie options have no on-body proportion proof and all carry small pseudo-brand chest text, so none passes the fidelity and versatility gate."
+    },
+    {
+      "cards": [11],
+      "reason": "Although the sweatshirt fit is controlled, every color has a large embossed ENJOY wordmark that makes the piece generic and less versatile."
+    },
+    {
+      "cards": [17],
+      "reason": "The oversized bird-print hoodie is sleeve-heavy, dark and graphic-led, creating uncontrolled proportions and weak versatility."
+    },
+    {
+      "cards": [21, 22, 23, 26, 28, 30, 31, 32, 34, 35, 36, 37, 38, 39, 40],
+      "reason": "These photographed jeans and trousers are excessively wide, ballooned, high-waisted or puddled and fail the controlled-leg requirement."
+    },
+    {
+      "cards": [24, 27, 29, 33],
+      "reason": "These fringe, bandana-snap and distressed wide bottoms are gimmick-led, visibly wide or puddled and unsuitable for a clean versatile wardrobe."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 155 recorded color images rendered and loaded with zero broken files.",
+    "1 bottom accepted in one exact color: a navy lightweight relaxed-straight trouser whose on-body line has only one clean shoe break.",
+    "39 rejected after the base pass and close inspection of all 10 variants across three borderline identities; every top failed.",
+    "The selected identity, variant and image have zero collision with every prior accepted or conditional item.",
+    "The batch mostly failed for cheap graphics, patriotic and bodybuilding tops, lettering, product-only proof gaps, and wide, ballooned, fringe, belted or puddled bottoms."
+  ]
+}

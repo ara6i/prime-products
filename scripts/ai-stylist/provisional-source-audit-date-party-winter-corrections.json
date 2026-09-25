@@ -1,0 +1,61 @@
+{
+  "scope": "Six S197/S201/S209/S245/S261 provisional men products checked at their full source resolution",
+  "outputSlug": "provisional-source-audit-date-party-winter-corrections",
+  "boardFilename": "six-date-party-winter-source-corrections.jpg",
+  "boardTitle": "Six Date, Party and Winter products · full-source audit",
+  "boardNote": "Three weak identities rejected from catalog · three retained only with controlled-companion constraints · no outfit approval or UI integration",
+  "minimumWidth": 1000,
+  "minimumHeight": 1500,
+  "localOnly": true,
+  "weddingExcluded": true,
+  "entries": [
+    {
+      "scenarioId": "S197",
+      "identity": "shopify_supplier:4c1d90dd23491c9cc97274b13ffa10a108758061",
+      "label": "Gray Narrow Wool-Look Trouser",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/6fbc2c24-9abf-4c89-8f10-e743589f30d9-Max-Origin.webp?v=1786191746",
+      "verdict": "reject-from-catalog",
+      "reason": "The full worn source contradicts the straight label: the thigh and lower leg are narrow, and the long hem bunches on both shoes. It recreates the skinny, stacked trouser problem and is removed from S197 and the accepted catalog."
+    },
+    {
+      "scenarioId": "S197",
+      "identity": "shopify_supplier:cb33c4009241bb7122bb5389f3ca1452f341618d",
+      "label": "Warm-Apricot Relaxed Rib Henley",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/a953f28a-b30f-4545-9bdb-2a9f2980d2e6-Max-Origin.webp?v=1786230647",
+      "verdict": "pass-with-constraint",
+      "reason": "The warm knit has useful rib texture, a clean button neck and relaxed regular body without clinging. Keep only with a truly controlled straight trouser and low-profile shoe; no second bulky layer, loose bottom or beige-on-beige palette."
+    },
+    {
+      "scenarioId": "S201",
+      "identity": "shopify_supplier:4f4a7eebc30bc9df4caf12c850e7c124d44c4a81",
+      "label": "Dusty-Rose Cropped-Proof Shirt",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/0043838366e54d3a9b8224b0dcdd0f5f-Max-Origin.webp?v=1786275144",
+      "verdict": "reject-from-catalog",
+      "reason": "The color and shoulder are promising, but the source cuts off the full body and hem. Length, taper and untucked proportion cannot be verified, so it cannot support a strict Party hold or remain in the visually accepted catalog."
+    },
+    {
+      "scenarioId": "S209",
+      "identity": "shopify_supplier:3b43cf4d65c3daa6ca5a3cb7830e0a757f839085",
+      "label": "White Oversized Rib Mock-Neck",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/422d47cd-761e-4301-a5a5-5ecf63f302bc-Max-Origin.webp?v=1786266608",
+      "verdict": "reject-from-catalog",
+      "reason": "The full source proves a dropped shoulder, broad torso and long ribbed body. It would bunch under S209's short blouson and repeats the oversized-top problem, so the white color does not justify keeping it."
+    },
+    {
+      "scenarioId": "S245",
+      "identity": "shopify_supplier:4053ab1a30e1f7ad07258026caf87816c082c008",
+      "label": "Dusty-Blue Regular Puffer",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/da45650d48cf47008db9c0e8136384de-Max-Origin.webp?v=1786184113",
+      "verdict": "pass-with-constraint",
+      "reason": "The source shows expected puffer volume but a clean hip length, controlled sleeve and logo-free dusty-blue surface. Keep for S245 only with a fine-gauge plum top, controlled jean and low-profile sneaker boot; no wide bottom or bulky layer."
+    },
+    {
+      "scenarioId": "S261",
+      "identity": "shopify_supplier:99f159b474cc44ba3d3e7eafbc1275c2fc62f43c",
+      "label": "Soft-Sage Regular Puffer",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/7805d7f5-27bf-42e1-b8d5-3252e6f88a56-Max-Origin.webp?v=1786231618",
+      "verdict": "pass-with-constraint",
+      "reason": "The worn source confirms a regular hip-length puffer with a controlled shoulder and useful soft-sage color. Keep only as one Winter Resort anchor with paprika, cream and cognac companions; never add another green, bulky or dark piece."
+    }
+  ]
+}

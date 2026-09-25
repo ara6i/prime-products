@@ -310,6 +310,106 @@ export function rankWearSideCandidates(
   };
 }
 
+/**
+ * Builds the simple WEAR-only scenarios used by Front + Side Proof.
+ * A scenario of ±N is one non-cumulative height/weight band. For example,
+ * ±3 contains people whose largest absolute height/weight difference is
+ * greater than 2 and no more than 3. It does not also contain the ±1/±2 bands.
+ * Front ranking uses only waist and hip A-to-B widths. Side depth and tape
+ * stay unopened until the user chooses one of the frozen candidates.
+ */
+export function rankWearWaistHipScenarios(
+  people: readonly WearSideCatalogPerson[],
+  query: WearSideQuery,
+): WearRankedResult {
+  const overallRows: SdkWearPart[] = ["waist", "hips"];
+  if (!overallRows.every((part) => Number.isFinite(query.rowWidths[part]))) {
+    throw new Error("Waist and hip front A-to-B widths are required.");
+  }
+
+  const eligible = people.flatMap((person): WearFrontCandidate[] => {
+    if (person.gender !== query.gender || person.scanId === query.excludeScanId) return [];
+    if (!overallRows.every((part) => typeof person.rows[part]?.frontWidthCm === "number")) return [];
+    const heightDifferenceCm = person.heightCm - query.heightCm;
+    const weightDifferenceKg = person.weightKg - query.weightKg;
+    const profileDifference = Math.max(Math.abs(heightDifferenceCm), Math.abs(weightDifferenceKg));
+    if (profileDifference > MAX_TOLERANCE + 1e-9) return [];
+    const frontWidthCmByPart = Object.fromEntries(overallRows.map((part) => [part, person.rows[part]!.frontWidthCm])) as Partial<Record<SdkWearPart, number>>;
+    const frontDifferenceCmByPart = Object.fromEntries(overallRows.map((part) => [
+      part,
+      Math.abs(person.rows[part]!.frontWidthCm - query.rowWidths[part]!),
+    ])) as Partial<Record<SdkWearPart, number>>;
+    const differences = overallRows.map((part) => frontDifferenceCmByPart[part]!);
+    return [{
+      scanId: person.scanId,
+      gender: person.gender,
+      heightCm: person.heightCm,
+      weightKg: person.weightKg,
+      ring: 10,
+      heightDifferenceCm,
+      weightDifferenceKg,
+      profileDifference,
+      frontWidthCmByPart,
+      frontDifferenceCmByPart,
+      overallMeanGapCm: differences.reduce((sum, value) => sum + value, 0) / differences.length,
+      overallWorstGapCm: Math.max(...differences),
+      overallRowsCompared: differences.length,
+      overallCoverage: "2/2",
+      artifact: artifactReference(person.scanId, ["front", "side"]),
+    }];
+  });
+
+  const rings = Array.from({ length: MAX_TOLERANCE + 1 }, (_, tolerance): WearFrontRing => {
+    const lowerExclusive = tolerance === 0 ? 0 : tolerance - 1;
+    const withinScenario = eligible
+      .filter((candidate) => tolerance === 0
+        ? candidate.profileDifference <= 0.05
+        : candidate.profileDifference > lowerExclusive + 1e-9
+          && candidate.profileDifference <= tolerance + 1e-9)
+      .map((candidate) => ({ ...candidate, ring: tolerance }));
+    const leaderboards = Object.fromEntries(WEAR_RANKING_MODES.map((mode) => {
+      const ordered = mode === "overall"
+        ? [...withinScenario].sort(compareOverall)
+        : [...withinScenario]
+          .filter((candidate) => candidate.frontDifferenceCmByPart[mode] != null)
+          .sort(comparePart(mode));
+      return [mode, { mode, candidateIds: ordered.map((candidate) => candidate.scanId) }];
+    })) as WearFrontRing["leaderboards"];
+    return {
+      ring: tolerance,
+      label: tolerance === 0 ? "±0 cm / kg" : `>${lowerExclusive} to ±${tolerance} cm / kg`,
+      lowerExclusive,
+      upperInclusive: tolerance,
+      candidateCount: withinScenario.length,
+      candidates: withinScenario.sort((left, right) => left.scanId.localeCompare(right.scanId)),
+      leaderboards,
+    };
+  });
+
+  const best = rings.flatMap((ring) => {
+    const bestId = ring.leaderboards.overall.candidateIds[0];
+    const candidate = ring.candidates.find((entry) => entry.scanId === bestId);
+    return candidate ? [candidate] : [];
+  }).sort(compareOverall)[0] ?? null;
+  const globalFrontWinner = best && best.overallMeanGapCm != null && best.overallWorstGapCm != null
+    ? {
+      scanId: best.scanId,
+      ring: best.ring,
+      overallMeanGapCm: best.overallMeanGapCm,
+      overallWorstGapCm: best.overallWorstGapCm,
+      overallRowsCompared: best.overallRowsCompared,
+    }
+    : null;
+
+  return {
+    rings,
+    globalFrontWinner,
+    candidateCount: eligible.length,
+    overallRows,
+    internalById: new Map(people.map((person) => [person.scanId, person])),
+  };
+}
+
 export async function loadWearInput(scanId: string) {
   const person = await wearSideCatalogPerson(scanId);
   if (!person) return null;

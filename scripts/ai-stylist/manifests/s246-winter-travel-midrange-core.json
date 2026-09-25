@@ -1,0 +1,28 @@
+{
+  "outputDir": "winter-travel-midrange-pilot-s246",
+  "scenarioId": "S246",
+  "occasion": "Travel",
+  "season": "Winter",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceSpec": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/winter-travel-budget-pilot-s245/core-comparison.json",
+  "excludeCandidateKeys": ["O3", "B6"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S246 · Winter Travel · Mid-Range local screen",
+  "comparisonSubtitle": "Remaining unique Winter Travel candidates after the S245 puffer and jean holds",
+  "comparisonNote": "Require warm packable construction, lively Winter color and controlled cuffs · no logo puffer, bulky corduroy, dark default sweatshirt, short-sleeve layer or stacked denim · not UI integrated",
+  "coreTitle": "S246 · provisional Winter Travel Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Mid-Range Travel bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men plum merino fine knit travel crew winter mid range", "targetProduct": "plum merino fine-knit travel crew with controlled regular ease", "customerRetailTarget": "$110-$150"},
+    {"category": "bottom", "searchPhrase": "men pale taupe wool blend travel trouser winter straight", "targetProduct": "pale-taupe wool-blend controlled-straight travel trouser", "customerRetailTarget": "$130-$180"},
+    {"category": "outerwear", "searchPhrase": "men winter white short technical puffer travel mid range", "targetProduct": "winter-white short technical travel puffer with controlled volume", "customerRetailTarget": "$170-$240"},
+    {"category": "shoe", "searchPhrase": "men cream sage weather resistant sneaker boot winter travel", "targetProduct": "cream-and-sage low-profile weather-resistant sneaker boot", "customerRetailTarget": "$150-$200"},
+    {"category": "bag", "searchPhrase": "men saffron canvas leather weekender winter travel", "targetProduct": "saffron canvas-and-leather compact weekender", "customerRetailTarget": "$80-$120"}
+  ]
+}

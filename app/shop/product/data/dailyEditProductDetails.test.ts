@@ -31,7 +31,7 @@ describe("Daily Edit mock product catalog", () => {
     expect(product.canonicalHref).toBe(`/shop/product/${card.id}`);
     expect(product.canonicalHref).toBe(card.href);
     expect(product.isMock).toBe(true);
-    expect(product.tryOnSupported).toBe(false);
+    expect(product.tryOnSupported).toBe(true);
     expect(product.ratingLabel).toBeUndefined();
     expect(product.reviewLabel).toBeUndefined();
   });

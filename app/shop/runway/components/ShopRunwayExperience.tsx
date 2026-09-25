@@ -4,7 +4,7 @@ import { useShopRunway } from "../hooks/useShopRunway";
 import { useShopBag } from "../../bag/useShopBag";
 import { ShopRunwayView } from "./ShopRunwayView";
 
-type RunwayCategory = "Women" | "Men" | "Denim" | "Accessories";
+type RunwayCategory = "Women" | "Men" | "Accessories";
 
 type ShopRunwayExperienceProps = {
   onOpenCategory: (category: RunwayCategory) => void;

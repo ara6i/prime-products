@@ -1,0 +1,28 @@
+{
+  "outputDir": "summer-party-midrange-pilot-s206",
+  "scenarioId": "S206",
+  "occasion": "Party / Night Out",
+  "season": "Summer",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s190-summer-date-midrange-core.json",
+  "excludeCandidateKeys": ["T4"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-shoe-bag-and-watch",
+  "comparisonTitle": "S206 · Summer Party / Night Out · Mid-Range local screen",
+  "comparisonSubtitle": "Fifteen unique warm-weather candidates after the S190 pale-apricot shirt hold",
+  "comparisonNote": "Require breathable evening texture, happier Summer color and controlled ankle-clearing proportion · no hanger guess, grunge plaid, utility pockets, lounge waist, puddled leg or generic pale basic · not UI integrated",
+  "coreTitle": "S206 · provisional Summer Party Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Summer Mid-Range Party bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men pale lemon open knit polo regular fit summer party mid range","targetProduct":"pale-lemon breathable open-knit polo with controlled regular ease","customerRetailTarget":"$90-$130"},
+    {"category":"bottom","searchPhrase":"men washed teal linen viscose pleated straight trouser summer party","targetProduct":"washed-teal linen-viscose single-pleat trouser with a clean ankle break","customerRetailTarget":"$110-$160"},
+    {"category":"shoe","searchPhrase":"men sand woven suede low profile loafer summer party","targetProduct":"sand woven-suede low-profile round-toe loafer","customerRetailTarget":"$130-$180"},
+    {"category":"bag","searchPhrase":"men ivory tan compact leather canvas crossbody summer party","targetProduct":"ivory canvas-and-tan-leather compact crossbody","customerRetailTarget":"$110-$160"},
+    {"category":"watch","searchPhrase":"men sky blue dial tan leather thin case watch summer party","targetProduct":"sky-blue-dial thin-case watch with tan leather strap","customerRetailTarget":"$70-$100"}
+  ]
+}

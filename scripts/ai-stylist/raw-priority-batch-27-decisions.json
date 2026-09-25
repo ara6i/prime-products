@@ -1,0 +1,86 @@
+{
+  "batch": "27",
+  "approvals": {
+    "1": {
+      "color": "Terracotta",
+      "constraint": "Use this terracotta linen-like half-button hooded pullover once only for Spring, mild-Fall or cool-Summer Casual Everyday, Weekend, Travel, Resort evening or a relaxed daytime Date. Pair with one controlled straight or tailored bottom in ecru, stone, charcoal, chocolate or muted olive and a cream, tan or tobacco shoe; avoid another hood, loose drawstring bottom, bulky sneaker or all-brown styling."
+    },
+    "6": {
+      "color": "Apricot",
+      "constraint": "Use this apricot notched linen-like long-sleeve shirt once only for Spring/Summer Resort, Vacation, Travel, Casual Everyday, creative Office or a daytime Date. Pair with a straight trouser or tailored short in charcoal, chocolate, tobacco, stone or muted olive and a cream, tan or brown low-profile shoe; keep the neckline polished and do not add an oversized bottom, second loose shirt layer or loud print."
+    },
+    "13": {
+      "color": "Peacock  Blue",
+      "constraint": "Use this saturated peacock-blue waffle half-zip hoodie once only for Fall/Winter Casual Everyday, Weekend, Campus, Travel or a deliberate daytime Party look. Balance it with one controlled straight bottom in ecru, stone, charcoal, cocoa or deep olive and an off-white, tan or gray low-profile shoe; never pair it with baggy jeans, another bright blue garment, a technical running shoe or a dark monotone coat."
+    },
+    "23": {
+      "color": "Blue",
+      "constraint": "Use this washed-blue relaxed-tapered cropped jean once only for Spring/Summer Casual Everyday, Weekend, Travel, Campus or a relaxed daytime Date. Pair with a regular-fit or lightly relaxed top in cream, terracotta, sage, dusty pink or warm navy and a low-profile cream, tan or brown shoe; keep the single rolled hem clean and never add an oversized top, chunky sneaker, distressed layer or second washed-denim statement."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [2],
+      "reason": "The synthetic half-button shirt is visually near-duplicate to the mint summer henley already accepted in batch 26, so another recolored version would add identity without useful style diversity."
+    },
+    {
+      "cards": [3],
+      "reason": "The flax half-button shirt is narrow and elongated through the torso with a deep-open neckline, repeating the rejected skinny resort-top problem."
+    },
+    {
+      "cards": [4, 15],
+      "reason": "These product-only hoodies provide no adult shoulder, torso, sleeve or hem proof and repeat already reviewed basic hoodie roles."
+    },
+    {
+      "cards": [5],
+      "reason": "The lace-up short-sleeve top is visibly tight through the chest, waist and arms and uses a dated costume-like neckline."
+    },
+    {
+      "cards": [7],
+      "reason": "The pastel leaf-print shirt is product-only, busy and unproven on an adult body; a soft palette does not rescue weak fit proof and novelty repetition."
+    },
+    {
+      "cards": [8, 11],
+      "reason": "These product-only long-sleeve henley or crew tops have visibly narrow elongated bodies and no trustworthy adult fit proof."
+    },
+    {
+      "cards": [9, 14],
+      "reason": "The cap-sleeve tank and deep-V pocket tee are body-hugging, arm- and chest-emphasizing tops rather than versatile modern layers."
+    },
+    {
+      "cards": [10, 12],
+      "reason": "These product-only short-sleeve T-shirts use boxy oversized outlines and provide no adult drape or proportion proof across their recolors."
+    },
+    {
+      "cards": [16],
+      "reason": "The product-only lace-up long blouse is overlong, theatrical and costume-led, with no credible general outfit role."
+    },
+    {
+      "cards": [17, 18, 19, 20, 22, 24, 25, 26, 28],
+      "reason": "These wide, loose, flared or contrast-panel jeans and pants carry excessive leg volume, visible shoe pooling or distorted dark washes, directly repeating the rejected baggy-bottom problem."
+    },
+    {
+      "cards": [21],
+      "reason": "The black technical joggers are extremely wide through the thigh and lower leg, cuff-bunched and styled with a bulky performance sneaker."
+    },
+    {
+      "cards": [27],
+      "reason": "The bright bohemian harem pants combine ballooned volume, a dropped shape and loud novelty print rather than controlled modern proportion."
+    },
+    {
+      "cards": [29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39],
+      "reason": "These product-only winter coats and puffers are repetitive, bulky or utility-heavy, with faux-fur, shiny shells, visible pseudo-brand details, dark repetition or no adult fit and movement proof."
+    },
+    {
+      "cards": [40],
+      "reason": "The banquet suit is explicitly wedding-styled, uses a tight artificial-looking cut and loud recolors, and remains outside the non-wedding scope."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 155 recorded color images rendered; 195 displayed images loaded with zero broken files.",
+    "4 accepted with one exact color and variant selected each: a terracotta linen-like hooded pullover, apricot notched resort shirt, peacock-blue waffle half-zip hoodie and washed-blue relaxed-tapered cropped jean.",
+    "36 rejected after the base pass and close inspection of 25 promising color variants across five identities; every outerwear product failed.",
+    "Every selected identity, source product, variant and image has zero collision with every prior accepted or conditional item.",
+    "Rejections include skinny and costume tops, product-only oversized basics, visual redundancy, wide and puddled jeans, harem pants, repetitive puffers and one wedding-specific banquet suit."
+  ]
+}

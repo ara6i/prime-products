@@ -1,0 +1,98 @@
+{
+  "batch": "07",
+  "approvals": {
+    "12": {
+      "color": "Apricot",
+      "constraint": "Use the apricot textured short-sleeve button-down once only for Spring or Summer Casual Everyday, Date Night, Travel, or Vacation / Resort. Pair with stone, ecru, olive, or controlled light-blue straight bottoms and keep footwear low-profile."
+    },
+    "15": {
+      "color": "Pink",
+      "constraint": "Use the muted pink regular-fit cotton-look shirt once only for Spring or Fall Office, Casual Everyday, Date Night, or Travel. Pair with ecru, stone, medium gray, or dark olive straight bottoms and avoid another pink layer."
+    },
+    "17": {
+      "color": "Anchor Red",
+      "constraint": "Use the anchor-red striped casual short once only for Summer Sports / Workout, Travel, or Casual Everyday. Pair with a clean white, ecru, pale-gray, or restrained navy top and low-profile trainers."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 4, 5, 6],
+      "reason": "Product-only or hanger-only imagery does not prove adult-male fit, and the loud or dated stripe and polka treatments are weaker than the clean modern wardrobe brief."
+    },
+    {
+      "cards": [3],
+      "reason": "The visible chest logo and hanger-only presentation do not prove fit or provide a clean versatile shirt identity."
+    },
+    {
+      "cards": [7, 8, 9, 11, 13],
+      "reason": "Narrow fitted marketplace cuts, contrast trims, busy pockets, or visible marks recreate the skinny-shirt and overdesigned-product problems."
+    },
+    {
+      "cards": [10],
+      "reason": "The large Faith script, tight fit, and dark styling make the shirt logo-led, repetitive, and unsuitable for the restrained Zara-led direction."
+    },
+    {
+      "cards": [14, 16],
+      "reason": "Hanger-only imagery does not prove adult-male shoulder, torso, sleeve, or hem behavior."
+    },
+    {
+      "cards": [18],
+      "reason": "The bodybuilding-oriented short has a visible XENO mark and inconsistent source poses, making both fit and product identity unreliable."
+    },
+    {
+      "cards": [19, 20, 21],
+      "reason": "Long or below-knee loose cuts, excessive drawstrings, and visible marks recreate the baggy-long-short problem."
+    },
+    {
+      "cards": [22, 23],
+      "reason": "Product-only shorts with giant drawstrings, labels, or text do not prove rise, thigh volume, length, or adult-male fit."
+    },
+    {
+      "cards": [24],
+      "reason": "The only on-body black image is a cropped action view that does not prove rise, waistband, or front fit; the navy and gray alternatives are product-only, while the role is already covered by stronger active shorts."
+    },
+    {
+      "cards": [25, 26, 27, 28],
+      "reason": "Novelty floral or panda graphics, long washed denim proportions, giant drawstrings, and shiny product-only imagery are incompatible with the clean modern brief."
+    },
+    {
+      "cards": [29, 30, 31, 32],
+      "reason": "Oversized dark denim, heavy washes, gradient panels, and excessively long sleeves create uncontrolled or overdesigned silhouettes rather than balanced modern layers."
+    },
+    {
+      "cards": [33],
+      "reason": "The hanger-only tan zip jacket has pseudo text and patches, no adult fit proof, and a generic marketplace presentation."
+    },
+    {
+      "cards": [34],
+      "reason": "The product-only hooded corduroy jacket is bulky and dated, with no proof of shoulder, torso, sleeve, or hem behavior."
+    },
+    {
+      "cards": [35],
+      "reason": "The generic product-only fleece and sleeve pocket do not prove adult fit or add a distinctive modern role."
+    },
+    {
+      "cards": [36, 37],
+      "reason": "The fitted dark zip jackets are body-hugging, marketplace-generic, and repeat the narrow dark outerwear problem."
+    },
+    {
+      "cards": [38],
+      "reason": "Despite the brighter color options, product-only fleece imagery does not prove adult fit and the design remains generic."
+    },
+    {
+      "cards": [39],
+      "reason": "The Norway logo and generic fleece treatment are brand-like and weaker than clean logo-free layering options."
+    },
+    {
+      "cards": [40],
+      "reason": "The generic product-only snap jacket with plaid lining has no adult fit proof and reads dated rather than modern."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 153 recorded color images rendered; 193 displayed images loaded with zero broken files.",
+    "3 accepted with one exact color and variant selected: two tops and one bottom identity.",
+    "37 rejected.",
+    "Accepted colors are apricot, muted pink, and anchor red.",
+    "Rejections include unproven product-only imagery, skinny shirts, loud or logo-led styling, baggy long shorts, giant drawstrings, novelty graphics, uncontrolled denim, and generic dark outerwear."
+  ]
+}

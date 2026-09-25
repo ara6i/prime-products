@@ -1,0 +1,118 @@
+{
+  "batch": "18",
+  "approvals": {
+    "14": {
+      "color": "Pink",
+      "constraint": "Use the warm pink tonal-plaid regular-relaxed overshirt once only for Spring or mild Fall Casual Everyday, Travel, Date Night, Creative Office, or a deliberate daytime Party look. Pair with ecru, cream, stone, light gray, washed light blue, cocoa, olive or clean black straight bottoms and minimal white, cream, tan or brown footwear; keep the base layer solid, control the trouser volume, and do not add another pink or patterned item."
+    },
+    "18": {
+      "color": "Pastel  Blue",
+      "constraint": "Use the pastel-blue clean elastic-side chino shorts once only for Summer Casual Everyday, Travel, Vacation / Resort, Date Night, or a polished daytime Social event. Pair with a regular-proportion white, ecru, sand, cocoa, soft yellow, muted coral, sage or restrained navy shirt, knit polo or structured tee and low-profile white, cream, tan or brown footwear; avoid a long oversized top, a second bright blue piece, or bulky shoes."
+    },
+    "32": {
+      "color": "Caramel",
+      "constraint": "Use the saturated caramel-orange regular technical hooded shell once only for Spring or Fall wet-weather Travel, Sports / Workout, Outdoor, Festival, or a deliberate Casual Everyday look. Pair with ecru, cream, stone, light gray, restrained navy, charcoal, muted olive or clean black straight or tapered garments and simple neutral technical footwear; the jacket must be the only bright and loose-volume piece, with no cargo-heavy bottom or second orange item."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 3, 4],
+      "reason": "These hanger-only shirts provide no adult fit proof and use large geometric contrast panels that read as dated supplier color blocking rather than clean modern tailoring."
+    },
+    {
+      "cards": [5],
+      "reason": "The product-only floral shirt has a shiny synthetic-looking surface and oversized blurred blossoms, with no shoulder, torso or hem proof for a controlled adult fit."
+    },
+    {
+      "cards": [6],
+      "reason": "The basic gingham shirt is product-only, carries a visible lower-placket label and adds another black or gray checked role already covered by stronger on-body options."
+    },
+    {
+      "cards": [7, 8],
+      "reason": "Both blue gradient shirts use an artificial white-to-dark fade that looks dated and difficult to coordinate; the hanger-only images also do not prove adult fit."
+    },
+    {
+      "cards": [9, 13],
+      "reason": "These separate supplier identities use the same or near-identical blue-and-white plaid presentation with an oversized contrast flap pocket, so accepting either would create an obvious visual repeat."
+    },
+    {
+      "cards": [10, 11],
+      "reason": "These product-only brown plaids provide no adult fit proof and repeat dark, conventional checks without a cleaner construction or useful modern color advantage."
+    },
+    {
+      "cards": [12],
+      "reason": "The regular-fit plaid is acceptable in isolation, but both muted blue and green-grid roles are already represented by visually approved shirts, so it would add another near-repeat rather than a real wardrobe gap."
+    },
+    {
+      "cards": [15, 16],
+      "reason": "These near-duplicate fleece-lined plaid shirts are bulky winter hybrids with conspicuous tan lining, hanger-only proof and insufficiently distinct styling to justify two more neutral checked layers."
+    },
+    {
+      "cards": [17],
+      "reason": "The active-short image is tightly cropped at the waist and upper thigh, so it does not prove full length, leg opening or complete silhouette; black and gray also repeat crowded activewear roles."
+    },
+    {
+      "cards": [19, 20, 22],
+      "reason": "These long bottoms are visibly over-wide or heavily pooled at the shoe, reproducing the baggy and puddled silhouette specifically excluded from the men’s styling brief."
+    },
+    {
+      "cards": [21],
+      "reason": "The lightweight shorts are long and narrow through the leg and repeat already approved white, khaki and neutral casual-short roles without a stronger modern shape."
+    },
+    {
+      "cards": [23, 24, 26],
+      "reason": "These all-black joggers use tight cuffs, long contrast drawcords, stripes or extra trim and read as dated supplier gymwear rather than clean modern active bottoms."
+    },
+    {
+      "cards": [25],
+      "reason": "The product-only navy drawstring trouser has no rise, seat, thigh or shoe-break proof, while the oversized white rope cord dominates an otherwise generic silhouette."
+    },
+    {
+      "cards": [27],
+      "reason": "The very short gym silhouette carries a conspicuous GYMBULL waistband mark and repeats active-short roles already represented by cleaner, less logo-led pieces."
+    },
+    {
+      "cards": [28],
+      "reason": "The double-layer camo compression short combines a visible supplier logo, busy print and bulky mesh overlay, making it unsuitable for the clean premium activewear direction."
+    },
+    {
+      "cards": [29],
+      "reason": "The product-only parka is a generic technical shape with SPORTMENS chest text, sleeve patch and multiple decorative zipper details rather than a clean versatile winter layer."
+    },
+    {
+      "cards": [30, 33, 35],
+      "reason": "These product-only stand-collar puffers are visually near-duplicate basics, and the approved inventory already contains multiple beige, green, blue and light puffer roles with stronger differentiation."
+    },
+    {
+      "cards": [31],
+      "reason": "The hooded shell uses stark chevrons, contrast cargo pockets, hanging tabs and multiple drawcord details, creating a busy utility look without adult fit proof."
+    },
+    {
+      "cards": [34],
+      "reason": "The tactical softshell is a generic dark outdoor jacket with small contrast zipper pulls and no on-body evidence for shoulder, torso or hem proportions."
+    },
+    {
+      "cards": [36, 40],
+      "reason": "These heavy parkas use dated multi-pocket military construction, faux-fur or fleece bulk, sleeve patches and excessive trim, producing an older supplier look rather than modern Zara-led outerwear."
+    },
+    {
+      "cards": [37],
+      "reason": "The minimal shell is clean, but its product-only khaki, white and navy variants repeat windbreaker roles already approved and do not add new on-body fit evidence."
+    },
+    {
+      "cards": [38],
+      "reason": "The color-block windbreaker is visibly wrinkled, uses a conspicuous white chest zipper and has no adult fit proof; the purple recolor intensifies the cheap technical appearance."
+    },
+    {
+      "cards": [39],
+      "reason": "The camouflage faux-leather jacket combines glossy synthetic camo, a sweatshirt hood and multiple angled zippers into a dated, costume-like outerwear piece."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 119 recorded color images rendered; 159 displayed images loaded with zero broken files.",
+    "3 accepted with one exact color and variant selected: one fashion-forward pink overshirt, one clean pastel-blue Summer short and one bright caramel technical shell.",
+    "37 rejected after the base pass and close inspection of 36 promising color variants across 12 identities.",
+    "The three selected identities, variants and images have zero collision with every prior accepted or conditional item.",
+    "Rejections include obvious plaid and puffer repeats, gimmicky gradient or color-block shirts, every baggy or puddled trouser, logo-led activewear and dated utility-heavy outerwear."
+  ]
+}

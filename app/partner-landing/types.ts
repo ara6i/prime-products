@@ -35,6 +35,13 @@ export interface PartnerInterestPayload {
   name: string;
   email: string;
   website?: string;
+  companyName?: string;
+  productCategory?: string;
+  catalogSize?: string;
+  sellingModel?: string;
+  shippingReach?: string;
+  connectionGoals?: string[];
+  notes?: string;
   primaryChannel?: CreatorPrimaryChannel;
   creatorProfiles?: Array<{
     platform: CreatorPrimaryChannel;

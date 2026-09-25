@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="color-scheme" content="light">
+  <title>Own-Photo Sizing Reports · PrimeStyleAI</title>
+  <style>
+    :root{--ink:#17231f;--muted:#65716b;--line:#dbe4df;--paper:#fff;--wash:#f4f7f5;--green:#145c43;--green2:#2f8a68;--lime:#d8f5e7;--amber:#d18b24;--red:#b94747;--blue:#315f8d;--shadow:0 18px 50px rgba(21,52,40,.1)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#e9f2ed 0,#f6f8f7 280px,#edf2ef 100%);color:var(--ink);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.5;font-variant-numeric:tabular-nums}
+    button,select,input{font:inherit}a{color:inherit}.shell{max-width:1520px;margin:0 auto;padding:30px 28px 80px}[hidden]{display:none!important}
+    .mode-picker-label{font-size:14px;font-weight:800;margin:0 0 10px;color:#365345}.report-modes{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}.report-modes .btn{text-align:left;padding:12px 16px}.report-modes .btn span,.report-modes .btn small{display:block}.report-modes .btn small{font-size:12px;font-weight:500;margin-top:5px;opacity:.8}.report-modes button[aria-selected="true"]{background:#145c43;color:#fff}
+    .report-link-row{display:flex;justify-content:flex-end;margin:0 0 20px}.wear-link{display:inline-flex;align-items:center;gap:7px;color:var(--green);font-weight:800;text-decoration:none}.wear-link:hover{text-decoration:underline}
+    .hero{background:#102c22;color:#fff;border-radius:28px;padding:34px 38px;box-shadow:var(--shadow);position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:430px;height:430px;border-radius:50%;right:-150px;top:-230px;background:radial-gradient(circle,rgba(131,230,185,.36),transparent 66%)}
+    .hero-grid{display:grid;grid-template-columns:1fr auto;gap:28px;position:relative;z-index:1}.eyebrow{margin:0 0 7px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;font-size:11px;color:#145c43}.hero .eyebrow{color:#73d3aa}.hero h1{font-size:clamp(30px,4vw,56px);line-height:1.02;letter-spacing:-.045em;max-width:920px;margin:0}.hero-copy{max-width:900px;color:#d3e4dc;font-size:17px;margin:18px 0 0}.private-mark{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.08);border-radius:18px;padding:15px 18px;min-width:210px;height:max-content}.private-mark strong,.private-mark span{display:block}.private-mark span{font-size:12px;color:#c5dbd1;margin-top:4px}
+    .audit-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:rgba(255,255,255,.16);margin-top:30px;border:1px solid rgba(255,255,255,.14);border-radius:16px;overflow:hidden;position:relative;z-index:1}.audit-strip div{padding:12px 14px;background:rgba(0,0,0,.13)}.audit-strip span{display:block;color:#b9cec5;font-size:10px;text-transform:uppercase;letter-spacing:.08em}.audit-strip strong{font-size:13px;word-break:break-word}
+    .btn{border:1px solid var(--line);background:#fff;border-radius:11px;padding:9px 13px;font-weight:750;cursor:pointer;color:var(--ink)}.btn:hover{border-color:#8dad9f;background:#f8fbf9}.btn:disabled{opacity:.45;cursor:default}.btn.primary{background:var(--green);color:#fff;border-color:var(--green)}
+    .section{margin-top:22px;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:22px;padding:25px;box-shadow:0 8px 30px rgba(28,59,47,.05)}.section h2{margin:0;font-size:25px;letter-spacing:-.025em}.section h3{margin:0}.quick-report{border:2px solid #c6ded1;background:#fff}.quick-report>h2{font-size:28px}.quick-intro{margin:5px 0 18px;color:#586b61}
+    .quick-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;align-items:end}.quick-controls label{display:block;font-size:12px;font-weight:750;color:#465e52}.quick-controls select,.quick-controls input{display:block;width:100%;border:1px solid #cad9d0;border-radius:12px;background:#fff;padding:12px;margin-top:6px;min-height:47px;color:var(--ink)}.quick-controls select:focus,.quick-controls input:focus{outline:3px solid #dcefe5;border-color:#2f8a68}
+    .quick-summary{margin-top:20px}.quick-context{margin:0 0 14px;font-size:14px;color:#465e52}.quick-model-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.quick-model-grid.one{grid-template-columns:minmax(0,760px)}
+    .quick-card{border:1px solid #cdded3;border-radius:18px;padding:22px;background:#f8fcf9}.quick-card.v8{background:#f2f6fc;border-color:#cddbeb}.quick-card h3{font-size:17px;margin:0 0 10px}.quick-main{font-size:44px;line-height:1.1;font-weight:850;letter-spacing:-.04em;color:#145c43}.quick-card.v8 .quick-main{color:#294f83}.quick-main-label{font-weight:750;margin:8px 0 4px}.quick-denominator{font-size:13px;color:#586b61;margin:0 0 16px;max-width:720px}.quick-breakdown{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.quick-breakdown div{background:#ffffffb8;border:1px solid #dae5de;border-radius:10px;padding:10px}.quick-breakdown strong,.quick-breakdown span{display:block}.quick-breakdown strong{font-size:20px}.quick-breakdown span{font-size:11px;color:#52665a;margin-top:3px}.quick-bar{height:9px;display:flex;border-radius:10px;overflow:hidden;background:#e4eae6}.quick-bar span{height:100%;display:block}.quick-bar .same{background:#2f8a68}.quick-bar .adjacent{background:#d5a548}.quick-bar .severe{background:#b94747}.quick-bar .unavailable{background:#7b8790}
+    .measurement-strip{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 0}.measurement-strip div{padding:11px 12px;border-radius:11px;background:#fff;border:1px solid var(--line)}.measurement-strip strong,.measurement-strip span{display:block}.measurement-strip strong{font-size:21px}.measurement-strip span{font-size:11px;color:var(--muted)}
+    .person-evidence{display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:16px;margin-top:20px}.person-evidence-card{display:grid;grid-template-columns:180px minmax(0,1fr);overflow:hidden;border:1px solid #cdded3;border-radius:18px;background:#f8fcf9}.person-photo-button{position:relative;display:block;width:100%;min-height:315px;padding:0;border:0;background:#e8efeb;cursor:zoom-in;overflow:hidden}.person-photo{display:block;width:100%;height:100%;min-height:315px;object-fit:cover;object-position:center top}.person-photo-open{position:absolute;left:10px;right:10px;bottom:10px;padding:7px 9px;border-radius:9px;background:rgba(7,24,17,.88);color:#fff;font-size:10px;font-weight:850;text-align:center}.person-evidence-copy{padding:18px}.person-evidence-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.person-evidence-head h3{font-size:19px}.angle-badge{display:inline-block;border-radius:999px;background:#e5efe9;color:#315345;padding:5px 9px;font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.04em}.angle-badge.flagged{background:#fff0d8;color:#805711}.evidence-meta{margin:5px 0 14px;color:var(--muted);font-size:12px}.tape-compare{display:grid;gap:7px}.tape-row{display:grid;grid-template-columns:112px 1fr;gap:10px;padding:9px 10px;border-radius:10px;background:#fff;border:1px solid var(--line)}.tape-row>span{font-size:11px;color:var(--muted)}.tape-row strong{font-size:13px}.model-direct-compare{display:grid;gap:5px;margin-top:10px;padding:10px 12px;border:1px solid #b9cfe4;border-radius:10px;background:#f3f8fd}.model-direct-compare span{font-size:11px;color:#485d6d}.model-direct-compare strong{color:#234762}.photo-impact{margin-top:14px;padding-top:13px;border-top:1px solid var(--line)}.photo-impact-main{font-size:31px;font-weight:850;letter-spacing:-.03em;color:var(--green)}.photo-impact p{font-size:12px;color:#53645b;margin:2px 0 0}.photo-impact-counts{margin-top:7px;font-size:11px;color:#53645b}.impact-heading{margin:24px 0 10px;font-size:20px}.raw-note{padding:13px 15px;border-radius:12px;background:#e9f3ed;color:#173d29;margin:14px 0 0;font-size:13px;font-weight:650}
+    .quick-takeaway{padding:15px 17px;border-radius:12px;background:#e9f3ed;color:#173d29;margin-top:14px;font-weight:650}.quick-note{font-size:12px;color:#617269;margin:12px 0 0}.quick-empty{padding:25px;background:#f4f7f5;border-radius:12px;text-align:center;color:#586b61}.camera-note{border-left:5px solid var(--amber);background:#fff7e8}.camera-note strong{display:block;font-size:17px;margin-bottom:5px}.camera-note p{margin:0;color:#6a5937}
+    details.full-results{margin-top:18px}details.full-results>summary{cursor:pointer;background:#f7faf8;border:1px solid #cbded1;border-radius:12px;padding:14px 17px;font-weight:750}details.full-results[open]>summary{margin-bottom:12px}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#fff}table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid #e6ece8;white-space:nowrap}thead th{position:sticky;top:0;background:#edf4f0;color:#3d5148;font-size:11px;text-transform:uppercase;letter-spacing:.045em;z-index:2}tbody tr:last-child td{border-bottom:0}tbody tr:hover{background:#f7faf8}.person-cell{display:flex;align-items:center;gap:10px}.person-cell img{width:42px;height:54px;object-fit:cover;object-position:center top;border-radius:9px;background:#eef1ef}.person-cell strong,.person-cell small{display:block}.person-cell small,.muted{color:var(--muted)}.result{font-size:11px;font-weight:850;border-radius:999px;padding:4px 8px;display:inline-block}.result-same{background:#dff4e9;color:#176044}.result-adjacent{background:#fff1ce;color:#77530f}.result-severe,.result-unavailable{background:#ffe4e1;color:#8a2828}.photo-error{font-weight:800}.good{color:#176044}.mid{color:#8a6218}.bad{color:#a23535}
+    .gap-settings{margin-top:16px;padding:16px;border:1px solid #dfc997;border-radius:12px;background:#fffaf0}.gap-settings>p{margin:0 0 12px;font-size:13px}.gap-controls{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end}.gap-controls label{font-size:12px;font-weight:750}.gap-controls input,.gap-controls select{display:block;min-height:47px;width:100%;margin-top:6px;padding:12px;border:1px solid #cad9d0;border-radius:12px;background:#fff}.gap-status{font-size:13px;margin:12px 0 0}.simulation-label{background:#fff1d3;border:1px solid #e3c17e;border-radius:12px;padding:14px;line-height:1.5;font-size:13px;margin-bottom:14px}.range-table{margin-top:18px}.range-table h3{margin:0 0 10px;font-size:17px}
+    .sweet-spot{margin:18px 0 24px;padding:22px;border:2px solid #9ccfb8;border-radius:18px;background:linear-gradient(135deg,#f2fbf6,#fbf8ed)}.sweet-spot-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}.sweet-spot-head h3{font-size:23px}.sweet-spot-head p{max-width:780px;margin:5px 0 0;color:#53645b}.sweet-target-actions{display:flex;align-items:end;gap:9px;flex:0 0 auto}.sweet-target-actions label{font-size:11px;font-weight:800;color:#465e52}.sweet-target-actions input{display:block;width:150px;min-height:43px;margin-top:5px;padding:10px 12px;border:1px solid #9fc3af;border-radius:10px;background:#fff;color:var(--ink);font-weight:800}.sweet-target-actions input:focus{outline:3px solid #dcefe5;border-color:#2f8a68}.sweet-target-actions .btn{min-height:43px}.sweet-result{margin-top:17px}.sweet-card{padding:20px;border:1px solid #b7d9c7;border-radius:16px;background:#fff}.sweet-badge{display:inline-block;margin-bottom:13px;padding:5px 9px;border-radius:999px;background:#dff4e9;color:#176044;font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.04em}.sweet-equation{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center}.sweet-value{padding:16px;border:1px solid #d8e6de;border-radius:13px;background:#f8fbf9}.sweet-value strong,.sweet-value span{display:block}.sweet-value strong{font-size:30px;letter-spacing:-.035em;color:#145c43}.sweet-value span{font-size:12px;color:#596b61}.sweet-operator{font-size:24px;font-weight:850;color:#718078}.sweet-directions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}.sweet-directions div{padding:11px 13px;border-radius:11px;background:#eef6f1}.sweet-directions strong,.sweet-directions span{display:block}.sweet-directions span{font-size:11px;color:#586b61}.sweet-note{margin:13px 0 0;color:#53645b;font-size:12px}.sweet-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:15px}.sweet-search-table{margin-top:16px}.sweet-search-table td:last-child,.sweet-search-table th:last-child{text-align:right}.sweet-miss{color:#8a6218;font-weight:750}
+    .method-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.method-card{padding:18px;border:1px solid var(--line);border-radius:15px;background:#f8fbf9}.method-card h3{margin-bottom:8px}.method-card p,.method-card li{color:#53645b}.method-card ul{margin:0;padding-left:20px}.footer{text-align:center;color:#718078;font-size:12px;margin-top:28px}
+    .camera-controls{margin-top:16px;padding:17px;border:1px solid #b9cfe4;border-radius:15px;background:#f3f8fd}.switches{display:flex;gap:18px;flex-wrap:wrap}.switch{display:flex;align-items:center;gap:9px;font-weight:800}.switch input{width:20px;height:20px;accent-color:var(--blue)}.camera-explain{margin:11px 0 0;color:#485d6d;font-size:13px}.camera-result{margin-top:12px;padding:13px 15px;border-radius:12px;background:#e7f0f8;color:#234762;font-size:13px}.camera-result.warn{background:#fff2dc;color:#6d4d18}.camera-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.camera-row{padding:10px;border:1px solid #cad9e6;border-radius:10px;background:#fff}.camera-row strong,.camera-row span{display:block}.camera-row span{font-size:11px;color:#60717c}.photo-line-dialog{position:fixed;inset:0;width:100vw;height:100vh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#07100c;color:#fff}.photo-line-dialog::backdrop{background:#07100c}.photo-line-shell{display:grid;grid-template-columns:minmax(0,1fr) 390px;width:100%;height:100%}.photo-line-main{display:flex;min-width:0;min-height:0;align-items:center;justify-content:center;padding:22px;background:#020806}.photo-line-stage{position:relative;display:inline-block;max-width:100%;max-height:100%}.photo-line-stage img{display:block;width:auto;height:auto;max-width:100%;max-height:calc(100vh - 44px);object-fit:contain}.ab-line{position:absolute;height:0;border-top:4px solid #34d399;filter:drop-shadow(0 1px 2px #000);z-index:2}.ab-line.hips{border-color:#60a5fa}.ab-line.camera{border-color:#c084fc}.ab-end{position:absolute;top:-12px;display:flex;width:22px;height:22px;align-items:center;justify-content:center;border:2px solid #fff;border-radius:999px;background:#0f172a;color:#fff;font:800 10px/1 ui-sans-serif}.ab-end.a{left:-11px}.ab-end.b{right:-11px}.ab-width{position:absolute;left:50%;top:-34px;transform:translateX(-50%);white-space:nowrap;padding:4px 7px;border-radius:7px;background:rgba(2,8,6,.88);color:#fff;font-size:10px;font-weight:850}.photo-line-sidebar{min-height:0;overflow-y:auto;padding:22px;background:#fff;color:var(--ink)}.photo-line-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.photo-line-head h2{margin:0;font-size:22px}.photo-line-close{border:1px solid var(--line);border-radius:9px;background:#fff;padding:8px 11px;cursor:pointer;font-weight:800}.photo-line-mode{margin-top:18px;padding:14px;border:1px solid #c8b6e8;border-radius:13px;background:#f7f2ff}.photo-line-mode button{width:100%;margin-top:10px}.photo-line-rows{display:grid;gap:9px;margin-top:16px}.photo-line-row{padding:12px;border:1px solid var(--line);border-radius:11px;background:#f8fbf9}.photo-line-row strong,.photo-line-row span{display:block}.photo-line-row span{margin-top:4px;color:var(--muted);font-size:12px}.photo-line-limit{margin-top:16px;padding:13px;border-left:4px solid var(--amber);border-radius:9px;background:#fff6e6;color:#5f4b27;font-size:12px}.share-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}.copy-state{color:var(--green);font-weight:800}.plain-flow{display:grid;grid-template-columns:repeat(6,minmax(130px,1fr));gap:8px;margin:16px 0}.plain-step{padding:14px;border:1px solid var(--line);border-radius:13px;background:#f8fbf9}.plain-step strong,.plain-step span{display:block}.plain-step strong{font-size:14px}.plain-step span{margin-top:5px;color:#53645b;font-size:12px}.truth-box{padding:15px 17px;border-left:5px solid var(--blue);border-radius:11px;background:#eff5fb}.truth-box strong{display:block;margin-bottom:4px}.product-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:16px}.product-guide{border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}.product-guide summary{padding:14px 16px;cursor:pointer;font-weight:800}.product-guide-content{padding:0 16px 16px}.product-links{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 12px}.product-links a{color:var(--green);font-weight:800}.product-guide table th,.product-guide table td{padding:8px;font-size:12px}.product-guide table th{position:static}.product-filter-note{color:var(--muted);font-size:13px}
+    @media(max-width:980px){.hero-grid,.quick-model-grid,.method-grid{grid-template-columns:1fr}.audit-strip{grid-template-columns:1fr 1fr}.quick-model-grid.one{grid-template-columns:1fr}.quick-breakdown{grid-template-columns:1fr 1fr}.gap-controls{grid-template-columns:1fr 1fr}.plain-flow{grid-template-columns:repeat(3,1fr)}.private-mark{max-width:270px}.photo-line-shell{grid-template-columns:1fr;grid-template-rows:minmax(300px,55vh) minmax(0,1fr)}.photo-line-main{padding:10px}.photo-line-stage img{max-height:calc(55vh - 20px)}.photo-line-sidebar{border-top:1px solid var(--line)}}
+    @media(max-width:620px){.shell{padding:14px 10px 50px}.hero,.section{border-radius:17px;padding:20px}.audit-strip,.quick-controls,.quick-breakdown,.measurement-strip,.gap-controls,.camera-grid,.plain-flow,.sweet-equation,.sweet-directions{grid-template-columns:1fr}.hero h1{font-size:35px}.report-link-row{justify-content:flex-start}.quick-main{font-size:38px}.person-evidence{grid-template-columns:1fr}.person-evidence-card{grid-template-columns:1fr}.person-photo-button,.person-photo{height:auto;min-height:0;aspect-ratio:4/5}.tape-row{grid-template-columns:1fr}.photo-line-sidebar{padding:15px}.sweet-spot{padding:17px}.sweet-spot-head{display:block}.sweet-target-actions{align-items:end;margin-top:12px}.sweet-target-actions label{flex:1}.sweet-target-actions input{width:100%}.sweet-operator{text-align:center;line-height:1}}
+  </style>
+</head>
+<body>
+<main class="shell">
+  <p class="mode-picker-label">Choose a report</p>
+  <nav class="report-modes" role="tablist" aria-label="Report mode">
+    <button class="btn" role="tab" id="tab-compare" aria-controls="mode-compare"><span>Aiad vs V8</span><small>__IDENTITY_COUNT__ people · __CAPTURE_COUNT__ photos</small></button>
+    <button class="btn" role="tab" id="tab-error" aria-controls="mode-error"><span>Tape error test</span><small>Saved tape · ±0–7 cm</small></button>
+    <button class="btn" role="tab" id="tab-gap" aria-controls="mode-gap"><span>Size-guide gap test</span><small>Made-up chart spacing</small></button>
+    <button class="btn" role="tab" id="tab-photos" aria-controls="mode-photos"><span>Own-person error report</span><small>Photo → tape error → size</small></button>
+  </nav>
+  <div class="report-link-row"><a class="wear-link" href="/try-on-test/wear-photo-test/commercial-report#error">Open the original WEAR-data report →</a></div>
+
+  <div id="mode-compare" role="tabpanel" aria-labelledby="tab-compare">
+    <header class="hero">
+      <div class="hero-grid"><div><p class="eyebrow">Own photos · saved tape · product size charts</p><h1>Aiad and V8 on your own people</h1><p class="hero-copy">Choose one model, a person, and a camera group. Every number below follows that selection.</p></div><div class="private-mark"><strong>Private test</strong><span>__CAPTURE_COUNT__ photos · __IDENTITY_COUNT__ people</span></div></div>
+      <div class="audit-strip"><div><span>People</span><strong>Shahnaz, Shane + 7</strong></div><div><span>Photos</span><strong>__CAPTURE_COUNT__ saved captures</strong></div><div><span>Products</span><strong>100 per photo</strong></div><div><span>Camera</span><strong>Filter only</strong></div></div>
+    </header>
+    <section class="section quick-report">
+      <h2>Your selected result</h2><p class="quick-intro">“Same product size” means the model chose the exact same label as saved tape.</p>
+      <div class="quick-controls">
+        <label>Model<select id="compare-model"><option value="v8">V8 only</option><option value="aiad">Aiad only</option><option value="both">Aiad + V8</option></select></label>
+        <label>Camera view<select id="compare-camera"><option value="all">All photos</option><option value="near-straight">Near-straight · ≤ 5°</option><option value="angle-flagged">Angle-flagged · &gt; 5°</option></select></label>
+        <label>Person<select id="compare-person"><option value="all">Everyone</option></select></label>
+        <label>Products<select id="compare-category"><option value="all">All products</option><option value="pants">Pants / trousers</option><option value="shorts">Shorts</option><option value="skirts">Skirts</option></select></label>
+      </div>
+      <div id="compare-summary" class="quick-summary" aria-live="polite"></div>
+      <details class="full-results"><summary>Show product-by-product checks</summary><div id="compare-table"></div></details>
+    </section>
+    <section class="section camera-note"><strong>Camera view does not change Aiad or V8 tape here.</strong><p>It only separates photos using V8’s angle diagnostic. This is useful for inspection, but it is not proof that a camera correction improved either model.</p></section>
+  </div>
+
+  <div id="mode-error" role="tabpanel" aria-labelledby="tab-error" hidden>
+    <header class="hero">
+      <div class="hero-grid"><div><p class="eyebrow">Own saved tape · product size charts</p><h1>How much tape error changes the size?</h1><p class="hero-copy">Start with each person’s saved waist and hip. Add or subtract 0–7 cm, then check the same product chart again.</p></div><div class="private-mark"><strong>Same method as WEAR</strong><span>Your own people replace WEAR people</span></div></div>
+      <div class="audit-strip"><div><span>Photos</span><strong>__CAPTURE_COUNT__</strong></div><div><span>Products</span><strong>200 frozen charts</strong></div><div><span>Checks / error</span><strong>__CHECK_COUNT__ attempted</strong></div><div><span>Errors</span><strong>0 to ±7 cm</strong></div></div>
+    </header>
+    <section class="section">
+      <h2>How we calculate it</h2>
+      <ol><li>Use a person’s saved waist and hip to choose a starting size from the real product chart.</li><li>Add the selected error to waist, hip, or both. For example, 80 cm becomes 83 cm at +3 cm.</li><li>Run the same sizing rule on that same product again.</li><li>Count the result as same size, size up, size down, or no size.</li></ol>
+      <p><strong>0 cm is the unchanged baseline.</strong> It must reproduce the starting size. Aiad and V8 predictions are not used in this tab.</p>
+    </section>
+    <section class="section quick-report">
+      <h2>Your selected tape-error result</h2><p class="quick-intro">This test uses saved tape—not Aiad or V8 predictions—so you can see how measurement error alone moves product sizes.</p>
+      <div class="quick-controls">
+        <label>Measurement<select id="error-axis"><option value="both">Waist and hip together</option><option value="waist">Waist only</option><option value="hips">Hip only</option></select></label>
+        <label>Tape error<select id="error-delta"><option value="0">0 cm · unchanged</option><option value="1" selected>+1 cm</option><option value="2">+2 cm</option><option value="3">+3 cm</option><option value="4">+4 cm</option><option value="5">+5 cm</option><option value="6">+6 cm</option><option value="7">+7 cm</option><option value="-1">−1 cm</option><option value="-2">−2 cm</option><option value="-3">−3 cm</option><option value="-4">−4 cm</option><option value="-5">−5 cm</option><option value="-6">−6 cm</option><option value="-7">−7 cm</option></select></label>
+        <label>Camera view<select id="error-camera"><option value="all">All photos</option><option value="near-straight">Near-straight · ≤ 5°</option><option value="angle-flagged">Angle-flagged · &gt; 5°</option></select></label>
+        <label>Person<select id="error-person"><option value="all">Everyone</option></select></label>
+        <label>Products<select id="error-category"><option value="all">All products</option><option value="pants">Pants / trousers</option><option value="shorts">Shorts</option><option value="skirts">Skirts</option></select></label>
+      </div>
+      <div id="error-summary" class="quick-summary" aria-live="polite"></div>
+      <details class="full-results"><summary>Show product-by-product checks</summary><div id="error-table"></div></details>
+    </section>
+  </div>
+
+  <div id="mode-gap" role="tabpanel" aria-labelledby="tab-gap" hidden>
+    <header class="hero">
+      <div class="hero-grid"><div><p class="eyebrow">Own saved tape · made-up size-guide spacing</p><h1>Find your size-guide sweet spot</h1><p class="hero-copy">Enter the size accuracy you want. The report finds which tape-error tolerance and gap between adjacent sizes reaches it.</p></div><div class="private-mark"><strong>Your accuracy target</strong><span>Both + and − error must pass</span></div></div>
+      <div class="audit-strip"><div><span>Photos</span><strong>__CAPTURE_COUNT__</strong></div><div><span>Chart copies</span><strong>200</strong></div><div><span>Checks / error</span><strong>__CHECK_COUNT__ attempted</strong></div><div><span>Default gap</span><strong>3 cm</strong></div></div>
+    </header>
+    <section class="section">
+      <h2>How we calculate it</h2>
+      <ol><li>Copy each real product chart. The original chart is never changed.</li><li>Keep the first measured size fixed, then place every next size at your chosen gap.</li><li>Use saved tape to choose a new starting size from this made-up chart.</li><li>Add the selected tape error and check that same made-up chart again.</li></ol>
+      <p><strong>This is a chart-spacing simulation.</strong> It does not use Aiad or V8 predictions and it does not claim these are good size guides. Use the “Aiad vs V8” tab for model results.</p>
+    </section>
+    <section class="section quick-report">
+      <h2>Your accuracy answer</h2><p class="quick-intro">The finder tests ±1–7 cm tape errors against gaps from 0.5–15 cm. It uses waist and hip together and reports the smallest 0.5 cm gap where both error directions reach your target.</p>
+      <div class="quick-controls">
+        <label>Gap between sizes<input id="gap-value" type="number" min="0.1" step="any" value="3" inputmode="decimal"></label>
+        <label>Gap unit<select id="gap-unit"><option value="cm">Centimetres (cm)</option><option value="in">Inches (in)</option></select></label>
+        <label>Change chart gap for<select id="gap-axis"><option value="both">Waist and hip</option><option value="waist">Waist only</option><option value="hips">Hip only</option></select></label>
+        <label>Tape error on<select id="gap-error-axis"><option value="both">Waist and hip together</option><option value="waist">Waist only</option><option value="hips">Hip only</option></select></label>
+        <label>Tape error<select id="gap-error-delta"><option value="0">0 cm · unchanged</option><option value="1" selected>+1 cm</option><option value="2">+2 cm</option><option value="3">+3 cm</option><option value="4">+4 cm</option><option value="5">+5 cm</option><option value="6">+6 cm</option><option value="7">+7 cm</option><option value="-1">−1 cm</option><option value="-2">−2 cm</option><option value="-3">−3 cm</option><option value="-4">−4 cm</option><option value="-5">−5 cm</option><option value="-6">−6 cm</option><option value="-7">−7 cm</option></select></label>
+        <label>Camera view<select id="gap-camera"><option value="all">All photos</option><option value="near-straight">Near-straight · ≤ 5°</option><option value="angle-flagged">Angle-flagged · &gt; 5°</option></select></label>
+        <label>Person<select id="gap-person"><option value="all">Everyone</option></select></label>
+        <label>Products<select id="gap-category"><option value="all">All products</option><option value="pants">Pants / trousers</option><option value="shorts">Shorts</option><option value="skirts">Skirts</option></select></label>
+      </div>
+      <div class="sweet-spot" id="gap-sweet-spot">
+        <div class="sweet-spot-head"><div><h3>Accuracy sweet-spot finder</h3><p>A result passes only when both a smaller tape reading and a larger tape reading keep the same size at your chosen accuracy. Hip-only is not used because waist-first sizing can make that result look safer than it is.</p></div><div class="sweet-target-actions"><label>Desired size accuracy (%)<input id="gap-sweet-target" type="number" min="1" max="100" step="0.1" value="90" inputmode="decimal"></label><button class="btn primary" id="gap-sweet-run" type="button">Calculate</button></div></div>
+        <p id="gap-sweet-status" class="gap-status" role="status"></p>
+        <div id="gap-sweet-result" class="sweet-result" aria-live="polite"><div class="quick-empty">Calculating the real answer from your own saved-tape people…</div></div>
+      </div>
+      <h2>Test one combination</h2><p class="quick-intro">Use the sweet spot automatically, or choose another chart gap and tape error below.</p>
+      <div class="gap-settings"><button class="btn primary" id="gap-run" type="button">Run this size-gap test</button><p id="gap-status" class="gap-status" role="status"></p></div>
+      <div id="gap-summary" class="quick-summary" aria-live="polite"></div>
+      <details class="full-results"><summary>Show product-by-product checks</summary><div id="gap-table"></div></details>
+    </section>
+  </div>
+
+  <div id="mode-photos" role="tabpanel" aria-labelledby="tab-photos" hidden>
+    <header class="hero">
+      <div class="hero-grid"><div><p class="eyebrow">Your people · their photos · real model errors</p><h1>Choose a person. See the tape error. See the size result.</h1><p class="hero-copy">Select Shane, Shahnaz, or another person. The report shows their photos, the selected Aiad/V8 prediction, its exact waist and hip error, and what that prediction does to product sizes.</p></div><div class="private-mark"><strong>Private evidence</strong><span>__CAPTURE_COUNT__ photos · __IDENTITY_COUNT__ people</span></div></div>
+      <div class="audit-strip"><div><span>Start with</span><strong>One selected person</strong></div><div><span>See</span><strong>Their real photos</strong></div><div><span>Compare</span><strong>Saved tape vs Aiad/V8</strong></div><div><span>Result</span><strong>Same-size agreement</strong></div></div>
+    </header>
+    <section class="section">
+      <h2>How we calculate it</h2>
+      <ol><li>Choose one person and one AI measurement model: Aiad or V8.</li><li>For every photo, compare the model’s waist and hip answer with that photo’s saved real tape.</li><li>Show the centimetre error. Example: real waist 94 cm and AI waist 96 cm means the AI is <strong>2 cm too large</strong>.</li><li>On each product, use the real tape to choose the starting size. Then use the AI measurements on the <strong>same product chart</strong>.</li><li>If both choose M, that product is one “same size” match. If real tape chooses M and AI chooses L, it is not a match.</li></ol>
+      <div class="truth-box"><strong>What the percentage means</strong>The percentage is <strong>product-size agreement</strong>, not measurement accuracy. Example: if real tape can choose a size on 90 products and the AI chooses the same size label on 72, the report shows <strong>72 ÷ 90 = 80%</strong>. A smaller tape error can still cross a chart boundary. A 2 cm error can keep the same size on one chart and cross into another size on a different chart.</div>
+      <p><strong>No extra ±1–7 cm error is added to Aiad or V8.</strong> This report uses each model’s actual saved prediction. The camera option only shows separate A-to-B and pose diagnostics; it does not change the official measurement or size result.</p>
+    </section>
+    <section class="section quick-report">
+      <h2>Your selected person’s result</h2><p class="quick-intro">Choose the person first. Their photos and measurement errors appear before the product-size result.</p>
+      <div class="quick-controls">
+        <label>Your person / photo model<select id="photo-person"></select></label>
+        <label>AI measurement model<select id="photo-model"><option value="v8">V8</option><option value="aiad">Aiad</option></select></label>
+        <label>Products<select id="photo-category"><option value="all">All products</option><option value="pants">Pants / trousers</option><option value="shorts">Shorts</option><option value="skirts">Skirts</option></select></label>
+        <label>Size charts<select id="photo-chart-mode"><option value="real">Real product charts</option><option value="simulated">Made-up size gap</option></select></label>
+      </div>
+      <div class="camera-controls">
+        <div class="switches"><label class="switch"><input id="photo-camera" type="checkbox" autocomplete="off">Show Apple Vision + Depth Pro lines only — model measurements stay unchanged</label></div>
+        <p class="camera-explain">Apple/Depth A-to-B is not an input to either frozen model. It measures camera pose and visible A-to-B width after the model runs. <strong>It is not used to change waist, hip, or the official product-size percentage.</strong> Converting one visible width into a full body circumference would require a separately trained and tape-validated fusion model.</p>
+        <div id="photo-camera-result" aria-live="polite"></div>
+      </div>
+      <div id="photo-gap-settings" class="gap-settings" hidden>
+        <p><strong>Made-up chart gap.</strong> The reference size and model size are both recalculated on the same hypothetical chart.</p>
+        <div class="gap-controls">
+          <label>Gap between sizes<input id="photo-gap-value" type="number" min="0.1" step="any" value="3" inputmode="decimal"></label>
+          <label>Gap unit<select id="photo-gap-unit"><option value="cm">Centimetres (cm)</option><option value="in">Inches (in)</option></select></label>
+          <label>Change chart gap for<select id="photo-gap-axis"><option value="both">Waist and hip</option><option value="waist">Waist only</option><option value="hips">Hip only</option></select></label>
+          <button class="btn primary" id="photo-run" type="button">Run this person test</button>
+        </div>
+        <p id="photo-status" class="gap-status" role="status"></p>
+      </div>
+      <h3 class="impact-heading">Photos and real tape errors</h3>
+      <div id="photo-evidence" class="person-evidence" aria-live="polite"></div>
+      <h3 class="impact-heading">How those errors affect product sizes</h3>
+      <div id="photo-summary" class="quick-summary" aria-live="polite"></div>
+      <div class="share-row"><button class="btn primary" id="photo-share" type="button">Share with ChatGPT</button><span id="photo-copy-state" class="copy-state" role="status"></span></div>
+      <details class="full-results"><summary>Show every product-size check for this person</summary><div id="photo-table"></div></details>
+    </section>
+    <section class="section" id="rustin">
+      <p class="eyebrow">Simple explanation for Rustin</p>
+      <h2>What we built and tested</h2>
+      <p>V8 learned from real answers, then this report checks its finished answers. The report does not train V8.</p>
+      <div class="plain-flow">
+        <article class="plain-step"><strong>1. Input</strong><span>V8 receives the black-and-white body mask plus height, weight, BMI, and gender.</span></article>
+        <article class="plain-step"><strong>2. Teacher</strong><span>WEAR’s real waist and hip tape answers, plus the checked 3D training geometry.</span></article>
+        <article class="plain-step"><strong>3. Student</strong><span>V8, the computer model learning to predict waist and hip.</span></article>
+        <article class="plain-step"><strong>4. Trainer</strong><span>Our Python program gives V8 an input, asks for an answer, and compares it with the teacher.</span></article>
+        <article class="plain-step"><strong>5. PyTorch</strong><span>The software that runs V8’s calculations on the CPU or GPU.</span></article>
+        <article class="plain-step"><strong>6. Loss</strong><span>The mistake number. If V8 says 80 cm and the teacher says 85 cm, it records that difference.</span></article>
+        <article class="plain-step"><strong>7. Gradient</strong><span>PyTorch calculates which internal numbers should move up or down to reduce that mistake.</span></article>
+        <article class="plain-step"><strong>8. AdamW</strong><span>The training tool that applies those small number changes before V8 tries again.</span></article>
+        <article class="plain-step"><strong>9. Weight</strong><span>An internal number saying how strongly one learned clue should affect V8’s answer.</span></article>
+        <article class="plain-step"><strong>10. Bias</strong><span>An internal number that adds a small starting increase or decrease inside a calculation.</span></article>
+      </div>
+      <div class="truth-box"><strong>How V8 was separated</strong>3,451 people taught V8. A different 427 people checked which saved V8 version was best. A separate 448 people were kept for the final unseen test.</div>
+      <div class="truth-box" style="margin-top:10px"><strong>What this page is doing now</strong>It compares frozen Aiad or V8 answers with saved tape on __CAPTURE_COUNT__ photos from __IDENTITY_COUNT__ people, then tries those measurements against 100 gender-matched products per photo. AdamW is not running on this page. We run Aiad’s frozen package here; we did not retrain it and its original training loop was not provided.</div>
+    </section>
+    <section class="section" id="product-guides">
+      <p class="eyebrow">Frozen test products</p>
+      <h2>Products and size charts</h2>
+      <p class="product-filter-note">These are the same 200 products used by the report: 100 women’s products and 100 men’s products. Open a product to see its waist/hip chart and links.</p>
+      <div id="photo-products" class="product-list"></div>
+    </section>
+    <section class="section"><h2>Method and limits</h2><div class="method-grid"><article class="method-card"><h3>What is fixed</h3><p id="method-tape"></p><p id="method-products"></p><p>The same saved segmentation mask is used for Aiad and V8.</p></article><article class="method-card"><h3>What this does not prove</h3><ul id="limitations"></ul></article></div></section>
+  </div>
+  <dialog id="photo-line-dialog" class="photo-line-dialog" aria-label="Full-screen A-to-B camera comparison"><div id="photo-line-dialog-content"></div></dialog>
+  <p class="footer" id="footer"></p>
+</main>
+
+<script id="report-data" type="application/json">__REPORT_DATA__</script>
+<script>
+  (function(){
+    'use strict';
+    var data=JSON.parse(document.getElementById('report-data').textContent);
+    var report=data.report;
+    var cameraByCapture=new Map((data.cameras&&data.cameras.captures||[]).map(function(capture){return [capture.captureId,capture]}));
+    var gapSizing=__GAP_ENGINE__;
+    var createGapSimulation=__GAP_SIMULATION__;
+    var gapSimulation=createGapSimulation(data,gapSizing);
+    var gapCache=new Map(),modelCache=new Map(),appliedGap={gapCm:3,gapAxis:'both'},photoAppliedGap={gapCm:3,gapAxis:'both'},errorData=data,errorToken=0,photoToken=0,sweetToken=0,sweetHasRun=false;
+    var $=function(id){return document.getElementById(id)};
+    var esc=function(value){return String(value==null?'':value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')};
+    var number=function(value,digits){return value==null||!Number.isFinite(Number(value))?'—':Number(value).toFixed(digits==null?2:digits)};
+    var percent=function(value,total){return total?(100*value/total).toFixed(2)+'%':'—'};
+    var count=function(value){return Number(value||0).toLocaleString('en-US')};
+    var mean=function(values){return values.length?values.reduce(function(sum,value){return sum+value},0)/values.length:null};
+    var modelName=function(model){return model==='aiad'?'Aiad':'V8'};
+    var columnFor=function(model){return model==='aiad'?4:5};
+    var identities=Array.from(new Set(data.people.map(function(person){return person.identity}))).sort(function(a,b){return a.localeCompare(b)});
+
+    ['compare-person','error-person','gap-person'].forEach(function(id){identities.forEach(function(identity){var option=document.createElement('option');option.value=identity;option.textContent=identity;$(id).appendChild(option)})});
+    identities.forEach(function(identity){var option=document.createElement('option');option.value=identity;option.textContent=identity==='Shahnaz'?'Shahnaz 2':identity;$('photo-person').appendChild(option)});$('photo-person').value=identities.includes('Shane')?'Shane':identities[0];
+
+    function selectedPeople(camera,identity){
+      return new Set(data.people.map(function(person,index){return {person:person,index:index}}).filter(function(entry){return (camera==='all'||entry.person.cameraGroup===camera)&&(identity==='all'||entry.person.identity===identity)}).map(function(entry){return entry.index}));
+    }
+    function selectedRows(camera,identity,category,activeData){
+      var people=selectedPeople(camera,identity);
+      return activeData.pairs.map(function(pair,index){return {pair:pair,index:index}}).filter(function(entry){var product=activeData.products[entry.pair[1]];return people.has(entry.pair[0])&&(category==='all'||product.groupId.endsWith('-'+category))});
+    }
+    function selectedCaptures(camera,identity){var indices=selectedPeople(camera,identity);return report.captures.filter(function(capture,index){return indices.has(index)})}
+    function photoIdentityLabel(identity){return identity==='Shahnaz'?'Shahnaz 2':identity}
+    function selectedPhotoPeople(identity){return new Set(data.people.map(function(person,index){return {person:person,index:index}}).filter(function(entry){return entry.person.identity===identity&&(identity!=='Shahnaz'||entry.person.scanId==='shahnaz-2')}).map(function(entry){return entry.index}))}
+    function selectedPhotoRows(identity,category,activeData){var people=selectedPhotoPeople(identity);return activeData.pairs.map(function(pair,index){return {pair:pair,index:index}}).filter(function(entry){var product=activeData.products[entry.pair[1]];return people.has(entry.pair[0])&&(category==='all'||product.groupId.endsWith('-'+category))})}
+    function selectedPhotoCaptures(identity){var indices=selectedPhotoPeople(identity);return report.captures.filter(function(capture,index){return indices.has(index)})}
+    function resultFrom(pair,index){if(index===-3)return 'Unused measurement';if(index===-2||pair[3]==null)return 'No saved-tape size';if(index<0)return 'No size';if(index===pair[3])return 'Same';if(Math.abs(index-pair[3])===1)return 'One size away';return 'Two+ sizes away'}
+    function tallyModel(rows,model){
+      var column=columnFor(model),out={attempted:rows.length,scorable:0,same:0,adjacent:0,severe:0,unavailable:0};
+      rows.forEach(function(entry){var pair=entry.pair;if(pair[3]==null)return;out.scorable++;var index=pair[column][0];if(index<0)out.unavailable++;else if(index===pair[3])out.same++;else if(Math.abs(index-pair[3])===1)out.adjacent++;else out.severe++});return out;
+    }
+    function measurement(captures,model){return {waist:mean(captures.map(function(c){return c.models[model].errors.waist.absoluteCm})),hips:mean(captures.map(function(c){return c.models[model].errors.hips.absoluteCm}))}}
+    function modelCard(model,tally,measurementStats){
+      var unavailable=tally.unavailable,severe=tally.severe,denominator=tally.scorable;
+      return '<article class="quick-card '+model+'"><h3>'+modelName(model)+'</h3><div class="quick-main">'+percent(tally.same,denominator)+'</div><p class="quick-main-label">same product size</p><p class="quick-denominator"><strong>'+count(tally.same)+' of '+count(denominator)+'</strong> product checks where saved tape could choose a size. '+modelName(model)+' chose the exact same size label.</p><div class="quick-bar" aria-hidden="true"><span class="same" style="width:'+percent(tally.same,denominator)+'"></span><span class="adjacent" style="width:'+percent(tally.adjacent,denominator)+'"></span><span class="severe" style="width:'+percent(severe,denominator)+'"></span><span class="unavailable" style="width:'+percent(unavailable,denominator)+'"></span></div><div class="quick-breakdown"><div><strong>'+count(tally.same)+'</strong><span>Same size</span></div><div><strong>'+count(tally.adjacent)+'</strong><span>One size away</span></div><div><strong>'+count(severe)+'</strong><span>Two+ sizes away</span></div><div><strong>'+count(unavailable)+'</strong><span>No size from model</span></div></div><div class="measurement-strip"><div><strong>'+number(measurementStats.waist)+' cm</strong><span>Average waist difference from saved tape</span></div><div><strong>'+number(measurementStats.hips)+' cm</strong><span>Average hip difference from saved tape</span></div></div></article>';
+    }
+    function selectionContext(rows,captures){var people=new Set(captures.map(function(c){return c.identity})).size,products=new Set(rows.map(function(entry){return entry.pair[1]})).size;return '<p class="quick-context"><strong>'+count(captures.length)+' '+(captures.length===1?'photo':'photos')+' · '+count(people)+' '+(people===1?'person':'people')+' · '+count(products)+' products · '+count(rows.length)+' checks</strong></p>'}
+    function compareTable(rows,models){
+      var headers=['Person','Product','Saved-tape size'].concat(models.map(function(model){return modelName(model)+' size'})).concat(models.map(function(model){return modelName(model)+' result'}));
+      var body=rows.slice(0,100).map(function(entry){var pair=entry.pair,person=data.people[pair[0]],product=data.products[pair[1]],reference=pair[3]==null?'—':product.chart.orderedSizes[pair[3]];var cells=[person.identity+' · '+person.scanId,product.title,reference].concat(models.map(function(model){var index=pair[columnFor(model)][0];return index<0?'—':product.chart.orderedSizes[index]})).concat(models.map(function(model){return resultFrom(pair,pair[columnFor(model)][0])}));return '<tr>'+cells.map(function(cell){return '<td>'+esc(cell)+'</td>'}).join('')+'</tr>'}).join('');
+      return '<p class="quick-note">Showing the first '+count(Math.min(100,rows.length))+' of '+count(rows.length)+' selected checks.</p><div class="table-wrap"><table><thead><tr>'+headers.map(function(header){return '<th>'+esc(header)+'</th>'}).join('')+'</tr></thead><tbody>'+body+'</tbody></table></div>';
+    }
+    function renderCompare(){
+      var model=$('compare-model').value,camera=$('compare-camera').value,identity=$('compare-person').value,category=$('compare-category').value;
+      var rows=selectedRows(camera,identity,category,data),captures=selectedCaptures(camera,identity),models=model==='both'?['aiad','v8']:[model];
+      if(!rows.length){$('compare-summary').innerHTML='<div class="quick-empty">No checks match this selection.</div>';$('compare-table').innerHTML='';return}
+      $('compare-summary').innerHTML=selectionContext(rows,captures)+'<div class="quick-model-grid '+(models.length===1?'one':'')+'">'+models.map(function(active){return modelCard(active,tallyModel(rows,active),measurement(captures,active))}).join('')+'</div><p class="quick-takeaway">The four counts add up to every product where saved tape could choose a reference size. No “within one size” number is hiding the difference.</p>';
+      $('compare-table').innerHTML=compareTable(rows,models);
+    }
+
+    function tallyError(rows,scenario){var out={eligible:0,same:0,up:0,down:0,unavailable:0,notScorable:0,unaffected:0};rows.forEach(function(entry){var pair=entry.pair,index=scenario.sizeIndices[entry.index];if(index===-2||pair[3]==null){out.notScorable++;return}if(index===-3){out.unaffected++;return}out.eligible++;if(index<0)out.unavailable++;else if(index===pair[3])out.same++;else if(index>pair[3])out.up++;else out.down++});return out}
+    function errorResult(pair,index){if(index===-3)return 'Unused measurement';if(index===-2||pair[3]==null)return 'No saved-tape size';if(index<0)return 'No size';if(index===pair[3])return 'Same';return index>pair[3]?'Size up':'Size down'}
+    function errorRangeTable(rows,active,axis){
+      var scenarios=new Map(active.scenarios.filter(function(s){return s.axis===axis}).map(function(s){return [s.deltaCm,s]}));
+      return '<div class="range-table"><h3>All errors for this same selection</h3><div class="table-wrap"><table><thead><tr><th>Error</th><th>Smaller tape: same size</th><th>Larger tape: same size</th></tr></thead><tbody>'+[0,1,2,3,4,5,6,7].map(function(cm){var minus=scenarios.get(-cm),plus=scenarios.get(cm),m=tallyError(rows,minus),p=tallyError(rows,plus);return '<tr><td>'+cm+' cm'+(cm===0?' · unchanged':'')+'</td><td>'+percent(m.same,m.eligible)+' · '+count(m.same)+' / '+count(m.eligible)+'</td><td>'+percent(p.same,p.eligible)+' · '+count(p.same)+' / '+count(p.eligible)+'</td></tr>'}).join('')+'</tbody></table></div></div>';
+    }
+    function errorTable(rows,scenario,active,axis,delta){
+      var body=rows.slice(0,100).map(function(entry){var pair=entry.pair,person=data.people[pair[0]],product=active.products[pair[1]],index=scenario.sizeIndices[entry.index],changed={waist:person.actuals.waist,hips:person.actuals.hips};['waist','hips'].forEach(function(field){if(axis==='both'||axis===field)changed[field]+=delta});var reference=pair[3]==null?'—':product.chart.orderedSizes[pair[3]],after=index<0?'—':product.chart.orderedSizes[index];return '<tr><td>'+esc(person.identity+' · '+person.scanId)+'</td><td>'+esc(product.title)+'</td><td>'+number(person.actuals.waist)+' / '+number(person.actuals.hips)+' cm</td><td>'+number(changed.waist)+' / '+number(changed.hips)+' cm</td><td>'+esc(reference)+'</td><td>'+esc(after)+'</td><td>'+esc(errorResult(pair,index))+'</td></tr>'}).join('');
+      return '<p class="quick-note">Showing the first '+count(Math.min(100,rows.length))+' of '+count(rows.length)+' selected checks.</p><div class="table-wrap"><table><thead><tr><th>Person</th><th>Product</th><th>Saved waist / hip</th><th>After error</th><th>Saved-tape size</th><th>Size after error</th><th>Result</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+    }
+    async function findSweetSpot(){
+      var token=++sweetToken,camera=$('gap-camera').value,identity=$('gap-person').value,category=$('gap-category').value,target=Number($('gap-sweet-target').value),maxGap=15,stepCm=.5,found={},firstRows=null,button=$('gap-sweet-run');
+      if(!Number.isFinite(target)||target<1||target>100){$('gap-sweet-status').textContent='Enter an accuracy from 1% to 100%.';$('gap-sweet-result').innerHTML='<div class="quick-empty">Choose a valid desired size accuracy.</div>';return}
+      var targetLabel=number(target,target%1?1:0);
+      sweetHasRun=true;button.disabled=true;$('gap-sweet-status').textContent='Finding a combination that reaches '+targetLabel+'%…';$('gap-sweet-result').innerHTML='<div class="quick-empty">Checking both − and + tape-error directions…</div>';
+      try{
+        for(var step=1;step<=maxGap/stepCm;step++){
+          if(token!==sweetToken)return;
+          var gapCm=step*stepCm,key=[gapCm,'both','both'].join(':'),active=gapCache.get(key);
+          $('gap-sweet-status').textContent='Testing '+number(gapCm,1)+' cm gap · '+count(step)+' of '+count(maxGap/stepCm)+'…';
+          if(!active){
+            active=await gapSimulation.run({gapCm:gapCm,gapAxis:'both',errorAxis:'both',cancelled:function(){return token!==sweetToken}});
+            if(!active||token!==sweetToken)return;
+            gapCache.set(key,active);
+          }
+          var rows=selectedRows(camera,identity,category,active);if(!firstRows)firstRows=rows;
+          if(!rows.length){$('gap-sweet-result').innerHTML='<div class="quick-empty">No checks match this person and product selection.</div>';$('gap-sweet-status').textContent='Choose a different person or product group.';return}
+          for(var errorCm=1;errorCm<=7;errorCm++){
+            if(found[errorCm])continue;
+            var minusScenario=active.scenarios.find(function(s){return s.deltaCm===-errorCm}),plusScenario=active.scenarios.find(function(s){return s.deltaCm===errorCm}),minus=tallyError(rows,minusScenario),plus=tallyError(rows,plusScenario),minusRate=minus.eligible?100*minus.same/minus.eligible:0,plusRate=plus.eligible?100*plus.same/plus.eligible:0,worst=Math.min(minusRate,plusRate);
+            if(minus.eligible&&plus.eligible&&minusRate>=target&&plusRate>=target)found[errorCm]={errorCm:errorCm,gapCm:gapCm,minus:minus,plus:plus,minusRate:minusRate,plusRate:plusRate,worst:worst};
+          }
+        }
+        if(token!==sweetToken)return;
+        var passing=Object.keys(found).map(function(key){return found[key]}).sort(function(a,b){return a.gapCm-b.gapCm||b.errorCm-a.errorCm}),best=passing[0],captures=selectedCaptures(camera,identity),rows=firstRows||[],tableRows=[];
+        for(var errorCm=1;errorCm<=7;errorCm++){
+          var result=found[errorCm];
+          tableRows.push('<tr><td>±'+errorCm+' cm</td><td>'+(result?number(result.gapCm,1)+' cm':'<span class="sweet-miss">Not found up to 15 cm</span>')+'</td><td>'+(result?number(result.worst,2)+'%':'—')+'</td></tr>');
+        }
+        if(!best){
+          $('gap-sweet-result').innerHTML=selectionContext(rows,captures)+'<div class="quick-empty"><strong>No '+targetLabel+'% combination found.</strong><br>None of the ±1–7 cm tape errors reached '+targetLabel+'% in both directions with the tested 0.5–15 cm chart gaps.</div><div class="sweet-search-table table-wrap"><table><thead><tr><th>Tape error</th><th>Smallest passing gap</th><th>Worse direction</th></tr></thead><tbody>'+tableRows.join('')+'</tbody></table></div>';
+        }else{
+          var notCounted=Math.max(best.minus.notScorable,best.plus.notScorable),counted=Math.min(best.minus.eligible,best.plus.eligible);
+          $('gap-sweet-result').innerHTML=selectionContext(rows,captures)+'<article class="sweet-card"><span class="sweet-badge">'+targetLabel+'% target reached</span><div class="sweet-equation"><div class="sweet-value"><strong>±'+best.errorCm+' cm</strong><span>tape-error tolerance</span></div><div class="sweet-operator">+</div><div class="sweet-value"><strong>'+number(best.gapCm,1)+' cm</strong><span>gap between adjacent size centres</span></div><div class="sweet-operator">=</div><div class="sweet-value"><strong>'+number(best.worst,2)+'%</strong><span>worse of the two directions</span></div></div><div class="sweet-directions"><div><strong>−'+best.errorCm+' cm: '+percent(best.minus.same,best.minus.eligible)+'</strong><span>'+count(best.minus.same)+' of '+count(best.minus.eligible)+' countable checks kept the same size</span></div><div><strong>+'+best.errorCm+' cm: '+percent(best.plus.same,best.plus.eligible)+'</strong><span>'+count(best.plus.same)+' of '+count(best.plus.eligible)+' countable checks kept the same size</span></div></div><p class="sweet-note"><strong>'+count(notCounted)+' of '+count(rows.length)+' attempted checks had no saved-tape starting size on this made-up chart.</strong> They are shown here and are not silently counted as matches. This is a sensitivity result, not a recommended supplier chart.</p><div class="sweet-actions"><button class="btn primary" type="button" data-use-sweet-gap="'+best.gapCm+'" data-use-sweet-error="'+best.errorCm+'">Use this combination below</button><span>Waist and hip move together in both the chart and tape test.</span></div></article><div class="sweet-search-table table-wrap"><table><thead><tr><th>Tape error</th><th>Smallest gap reaching '+targetLabel+'%</th><th>Worse direction</th></tr></thead><tbody>'+tableRows.join('')+'</tbody></table></div>';
+        }
+        $('gap-sweet-status').textContent='Finished for a '+targetLabel+'% target. Tested ±1–7 cm tape error and 0.5–15 cm size-guide gaps.';
+      }catch(error){if(token===sweetToken){$('gap-sweet-status').textContent='The sweet-spot calculation could not finish.';$('gap-sweet-result').innerHTML='<div class="quick-empty">'+esc(error&&error.message||error)+'</div>'}}
+      finally{if(token===sweetToken)button.disabled=false}
+    }
+    async function resolveGapData(axis,token){
+      if(!appliedGap)return null;
+      var key=[appliedGap.gapCm,appliedGap.gapAxis,axis].join(':');
+      if(gapCache.has(key)){errorData=gapCache.get(key);if(token===errorToken)$('gap-status').textContent='Finished. The result below uses the made-up '+number(appliedGap.gapCm)+' cm gap.';return errorData}
+      if(token===errorToken)$('gap-status').textContent='Calculating all 15 errors for '+count(data.pairs.length)+' checks…';
+      var result=await gapSimulation.run({gapCm:appliedGap.gapCm,gapAxis:appliedGap.gapAxis,errorAxis:axis,cancelled:function(){return token!==errorToken},onProgress:function(done,total){if(token===errorToken)$('gap-status').textContent='Calculating '+count(done)+' / '+count(total)+' checks…'}});
+      if(!result||token!==errorToken)return null;
+      gapCache.set(key,result);errorData=result;$('gap-status').textContent='Finished. The result below uses the made-up '+number(appliedGap.gapCm)+' cm gap.';return result;
+    }
+    function outcomeSummary(rows,active,scenario,captures,axis,delta,isGap){
+      var t=tallyError(rows,scenario),signed=delta>0?'+'+delta:String(delta),simulation=isGap?'<p class="simulation-label"><strong>Made-up size chart: '+number(active.simulation.gapCm)+' cm between sizes.</strong> The chart gap changes for '+({both:'waist and hip',waist:'waist only',hips:'hip only'}[active.simulation.gapAxis])+'. The tape error changes '+({both:'waist and hip together',waist:'waist only',hips:'hip only'}[axis])+'.</p>':'';
+      return simulation+selectionContext(rows,captures)+'<article class="quick-card"><h3>Product size after '+(delta===0?'no tape change':signed+' cm tape error')+'</h3><div class="quick-main">'+percent(t.same,t.eligible)+'</div><p class="quick-main-label">keep the same product size</p><p class="quick-denominator"><strong>'+count(t.same)+' of '+count(t.eligible)+'</strong> counted checks kept the same size. '+count(t.notScorable)+' had no starting size from saved tape; '+count(t.unaffected)+' charts do not use this measurement.</p><div class="quick-bar"><span class="same" style="width:'+percent(t.same,t.eligible)+'"></span><span class="adjacent" style="width:'+percent(t.up,t.eligible)+'"></span><span class="severe" style="width:'+percent(t.down,t.eligible)+'"></span><span class="unavailable" style="width:'+percent(t.unavailable,t.eligible)+'"></span></div><div class="quick-breakdown"><div><strong>'+count(t.same)+'</strong><span>Same size</span></div><div><strong>'+count(t.up)+'</strong><span>Move one or more sizes up</span></div><div><strong>'+count(t.down)+'</strong><span>Move one or more sizes down</span></div><div><strong>'+count(t.unavailable)+'</strong><span>No size after error</span></div></div></article><p class="quick-takeaway">'+(isGap?'This result uses a made-up chart gap. It is a sensitivity test, not a proposed size guide.':'This is the same real-chart tape-error calculation used in the WEAR report, but the people and saved tape here come from your own-photo set.')+'</p>'+errorRangeTable(rows,active,axis);
+    }
+    function renderError(){
+      var axis=$('error-axis').value,delta=Number($('error-delta').value),active=data,camera=$('error-camera').value,identity=$('error-person').value,category=$('error-category').value,rows=selectedRows(camera,identity,category,active),scenario=active.scenarios.find(function(s){return s.axis===axis&&s.deltaCm===delta}),captures=selectedCaptures(camera,identity);
+      if(!rows.length){$('error-summary').innerHTML='<div class="quick-empty">No checks match this selection.</div>';$('error-table').innerHTML='';return}
+      $('error-summary').innerHTML=outcomeSummary(rows,active,scenario,captures,axis,delta,false);
+      $('error-table').innerHTML=errorTable(rows,scenario,active,axis,delta);
+    }
+    async function renderGap(){
+      var token=++errorToken,axis=$('gap-error-axis').value,delta=Number($('gap-error-delta').value),active=await resolveGapData(axis,token);if(token!==errorToken)return;
+      if(!active){$('gap-summary').innerHTML='<p class="simulation-label">Choose a positive gap and run the test.</p>';$('gap-table').innerHTML='';return}
+      var camera=$('gap-camera').value,identity=$('gap-person').value,category=$('gap-category').value,rows=selectedRows(camera,identity,category,active),scenario=active.scenarios.find(function(s){return s.axis===axis&&s.deltaCm===delta}),captures=selectedCaptures(camera,identity);
+      if(!rows.length){$('gap-summary').innerHTML='<div class="quick-empty">No checks match this selection.</div>';$('gap-table').innerHTML='';return}
+      $('gap-summary').innerHTML=outcomeSummary(rows,active,scenario,captures,axis,delta,true);
+      $('gap-table').innerHTML=errorTable(rows,scenario,active,axis,delta);
+    }
+
+    function productWithGuide(product){
+      var fields=product.chart.relevantMeasurements.filter(function(field){return field==='waist'||field==='hips'}),format=function(value){if(!value)return '';return value.min===value.max?String(value.min):value.min+'-'+value.max};
+      return Object.assign({},product,{simulationGuide:{headers:['Size'].concat(fields.map(function(field){return field==='waist'?'Waist (cm)':'Hip (cm)'})),rows:product.chart.orderedSizes.map(function(size){return [size].concat(fields.map(function(field){return format(product.chart.valuesBySizeCm[size]&&product.chart.valuesBySizeCm[size][field])}))})}});
+    }
+    async function modelAccuracyData(model,chartMode,gap,errorAxis){
+      var key=[model,chartMode,gap&&gap.gapCm,gap&&gap.gapAxis,errorAxis].join(':');
+      if(modelCache.has(key))return modelCache.get(key);
+      if(chartMode==='real'){
+        var realResult=Object.assign({},data,{products:data.products,pairs:data.pairs.map(function(pair){return pair.slice()}),scenarios:data.modelScenarios[model],modelAccuracy:{model:model,chartMode:'real',gap:null,errorAxis:errorAxis}});
+        modelCache.set(key,realResult);$('photo-status').textContent='Finished. This person uses the real product charts.';return realResult;
+      }
+      var products=data.products.map(function(product){return gapSimulation.makeProduct(product,gap.gapCm,gap.gapAxis)}),pairs=data.pairs.map(function(pair){return pair.slice()}),scenarios=[{id:'both:0',axis:'both',deltaCm:0,sizeIndices:Array(pairs.length).fill(-2)}];
+      for(var index=0;index<pairs.length;index++){
+        if(index%80===0){$('photo-status').textContent='Calculating '+count(index)+' / '+count(pairs.length)+' product checks at all 15 errors…';await new Promise(function(resolve){setTimeout(resolve,0)})}
+        var pair=pairs[index],person=data.people[pair[0]],product=products[pair[1]],reference=gapSimulation.choose(product,person.actuals,person.gender);
+        pair[3]=reference>=0?reference:null;
+        if(reference<0)continue;
+        var affected=errorAxis==='both'||product.chart.relevantMeasurements.includes(errorAxis);
+        for(var scenario of scenarios){
+          if(!affected){scenario.sizeIndices[index]=-3;continue}
+          scenario.sizeIndices[index]=gapSimulation.choose(product,person.predictions[model],person.gender);
+        }
+      }
+      var result=Object.assign({},data,{products:products,pairs:pairs,scenarios:scenarios,modelAccuracy:{model:model,chartMode:chartMode,gap:gap,errorAxis:errorAxis}});
+      modelCache.set(key,result);$('photo-status').textContent='Finished. This person uses the made-up '+number(gap.gapCm)+' cm chart gap with the model’s real prediction.';return result;
+    }
+    function tallyAccuracy(rows,scenario){var out={eligible:0,same:0,adjacent:0,severe:0,unavailable:0,notScorable:0,unaffected:0};rows.forEach(function(entry){var pair=entry.pair,index=scenario.sizeIndices[entry.index];if(pair[3]==null||index===-2){out.notScorable++;return}if(index===-3){out.unaffected++;return}out.eligible++;if(index<0)out.unavailable++;else if(index===pair[3])out.same++;else if(Math.abs(index-pair[3])===1)out.adjacent++;else out.severe++});return out}
+    function signedCm(value){return (value>0?'+':'')+number(value)+' cm'}
+    function errorTone(value){var absolute=Math.abs(value);return absolute<=1.27?'good':absolute<=2.54?'mid':'bad'}
+    function cameraLineValue(result,field,cameraOn,model){
+      var raw=result&&result.raw&&result.raw[field],row=result&&result.rows&&result.rows[field];
+      if(cameraOn&&result&&result.ok&&row&&row.depthProValid&&Number.isFinite(row.depthProWidthCm))return {value:row.depthProWidthCm,source:'Apple + Depth Pro',confidence:row.depthProConfidence||'unknown'};
+      if(cameraOn&&result&&result.ok&&row&&Number.isFinite(row.appleVisionWidthCm))return {value:row.appleVisionWidthCm,source:'Apple Vision fallback · Depth Pro rejected',confidence:row.depthProConfidence||'low'};
+      return {value:raw&&raw.widthCm,source:'Original '+modelName(model),confidence:null};
+    }
+    function cameraEvidence(captures,model){
+      var cameraOn=$('photo-camera').checked;
+      if(!cameraOn)return captures.map(function(capture){var person=data.people[report.captures.indexOf(capture)],predicted=person.predictions[model],name=capture.captureId==='shahnaz-2'?'Shahnaz 2':capture.identity;return '<div class="camera-result"><strong>'+esc(name+' · result without Apple/Depth')+'</strong><div class="camera-grid"><div class="camera-row"><strong>Original '+modelName(model)+' prediction</strong><span>'+number(predicted.waist)+' cm waist · '+number(predicted.hips)+' cm hip</span></div><div class="camera-row"><strong>Final result used</strong><span>The original '+modelName(model)+' prediction and its product-size result</span></div></div></div>'}).join('');
+      return captures.map(function(capture){
+        var person=data.people[report.captures.indexOf(capture)],predicted=person.predictions[model],saved=cameraByCapture.get(capture.captureId),result=saved&&saved.models&&saved.models[model],name=capture.captureId==='shahnaz-2'?'Shahnaz 2':capture.identity;
+        if(!result||!result.ok){var reason=result&&String(result.error||'').toLowerCase().includes('no reliable body pose detected')?'Apple Vision could not detect a reliable 3D body pose in this photo.':'The combined camera check failed for this photo.';return '<div class="camera-result warn"><strong>'+esc(capture.identity+' · '+capture.captureId)+': Apple Vision + Depth Pro not available.</strong> '+reason+' The original '+modelName(model)+' result remains below.</div>'}
+        var rejected=result.appleVision.geometryQuality!=='pass'||Number(result.depthPro.validRows||0)<2;
+        var blocks=['<div class="camera-row"><strong>Result without Apple/Depth · Original '+modelName(model)+' prediction</strong><span>'+number(predicted.waist)+' cm waist · '+number(predicted.hips)+' cm hip</span></div>','<div class="camera-row"><strong>Apple Vision camera check</strong><span>Yaw '+number(result.appleVision.estimatedCameraYawDeg)+'° · pitch '+number(result.appleVision.estimatedCameraPitchDeg)+'° · roll '+number(result.appleVision.estimatedCameraRollDeg)+'° · quality '+esc(result.appleVision.geometryQuality)+' · focal mismatch '+number(result.appleVision.focalMismatchPct)+'%</span></div>'];
+        blocks.push(['waist','hips'].map(function(field){var row=result.rows[field],active=cameraLineValue(result,field,true,model);return '<div class="camera-row"><strong>'+esc(field==='hips'?'Hip':'Waist')+' A-to-B · '+esc(active.source)+'</strong><span>Same A and B endpoints · original '+number(row.rawWidthCm)+' cm → '+number(active.value)+' cm'+(active.confidence?' · '+esc(active.confidence)+' confidence':'')+'</span></div>'}).join(''));
+        blocks.push('<div class="camera-row"><strong>Result with Apple Vision + Depth Pro</strong><span>'+(rejected?'Rejected for this photo — Depth Pro returned '+count(result.depthPro.validRows)+' of '+count(result.depthPro.totalRows)+' valid rows and Apple geometry quality was '+esc(result.appleVision.geometryQuality)+'. No corrected waist or hip was produced.':'No corrected waist or hip yet — a trained and tape-tested fusion model is required.')+'</span></div>');
+        return '<div class="camera-result '+(rejected?'warn':'')+'"><strong>'+esc(name+' · with Apple/Depth diagnostics')+'</strong><div class="camera-grid">'+blocks.join('')+'</div><p><strong>The original '+modelName(model)+' prediction is included in both modes.</strong> Apple/Depth adds camera and A-to-B evidence. It does not change the official waist, hip, error, or product-size percentage.</p></div>';
+      }).join('');
+    }
+    function photoLineStage(capture,model,cameraOn){
+      var saved=cameraByCapture.get(capture.captureId),result=saved&&saved.models&&saved.models[model];
+      if(!result||!result.raw)return '<div class="camera-result warn">No saved A-to-B lines are available for this photo.</div>';
+      var lines=['waist','hips'].map(function(field){var raw=result.raw[field],line=raw&&raw.line;if(!line)return '';var active=cameraLineValue(result,field,cameraOn,model),label=(field==='hips'?'Hip':'Waist')+' · '+active.source+' · '+number(active.value)+' cm';return '<div class="ab-line '+field+(cameraOn?' camera':'')+'" style="left:'+number(line.leftX*100,4)+'%;top:'+number(line.y*100,4)+'%;width:'+number((line.rightX-line.leftX)*100,4)+'%"><span class="ab-end a">A</span><span class="ab-width">'+esc(label)+'</span><span class="ab-end b">B</span></div>'}).join('');
+      return '<div class="photo-line-stage"><img src="'+esc(capture.imageUrl)+'" alt="'+esc(capture.identity+' full-screen A-to-B photo')+'">'+lines+'</div>';
+    }
+    var fullscreenCaptureId=null;
+    function renderPhotoLineDialog(){
+      if(!fullscreenCaptureId)return;
+      var capture=report.captures.find(function(row){return row.captureId===fullscreenCaptureId}),model=$('photo-model').value,cameraOn=$('photo-camera').checked,saved=capture&&cameraByCapture.get(capture.captureId),result=saved&&saved.models&&saved.models[model];
+      if(!capture)return;
+      var rowCards=['waist','hips'].map(function(field){var raw=result&&result.raw&&result.raw[field],active=cameraLineValue(result,field,cameraOn,model);return '<div class="photo-line-row"><strong>'+esc(field==='hips'?'Hip A-to-B':'Waist A-to-B')+'</strong><span>Original '+modelName(model)+' width: '+number(raw&&raw.widthCm)+' cm</span><span>Displayed diagnostic width: '+number(active.value)+' cm · '+esc(active.source)+'</span><span>Official '+modelName(model)+' measurement: '+number(raw&&raw.tapeCm)+' cm</span></div>'}).join('');
+      $('photo-line-dialog-content').innerHTML='<div class="photo-line-shell"><div class="photo-line-main">'+photoLineStage(capture,model,cameraOn)+'</div><aside class="photo-line-sidebar"><div class="photo-line-head"><div><p class="eyebrow">Full-screen A-to-B check</p><h2>'+esc(capture.identity+' · '+capture.captureId)+'</h2></div><button class="photo-line-close" id="photo-line-close" type="button">Close</button></div><div class="photo-line-mode"><strong>'+(cameraOn?'Apple Vision + Depth Pro diagnostics are shown':'Original '+modelName(model)+' is shown')+'</strong><p>'+(cameraOn?'Purple lines show the combined camera width at the same endpoints.':'Green/blue lines show the original model width.')+'</p><button class="btn primary" id="photo-line-camera-toggle" type="button">'+(cameraOn?'Hide Apple + Depth diagnostics':'Show Apple + Depth diagnostics')+'</button></div><div class="photo-line-rows">'+rowCards+'</div><p class="photo-line-limit"><strong>The official result stays unchanged.</strong> A visible A-to-B width is not a complete waist or hip circumference. A trained and tape-validated fusion model is required before camera geometry can change the official size result.</p></aside></div>';
+      $('photo-line-close').addEventListener('click',function(){$('photo-line-dialog').close()});
+      $('photo-line-camera-toggle').addEventListener('click',function(){$('photo-camera').checked=!cameraOn;renderPhotos()});
+    }
+    function openPhotoLineDialog(captureId){fullscreenCaptureId=captureId;renderPhotoLineDialog();var dialog=$('photo-line-dialog');if(!dialog.open)dialog.showModal()}
+    function productGuideCards(){
+      return data.products.map(function(product){
+        var fields=product.chart.relevantMeasurements.filter(function(field){return field==='waist'||field==='hips'}),rows=product.chart.orderedSizes.map(function(size){var values=product.chart.valuesBySizeCm[size]||{};return '<tr><th>'+esc(size)+'</th>'+fields.map(function(field){var value=values[field];return '<td>'+(!value?'—':number(value.min)+'–'+number(value.max)+' cm')+'</td>'}).join('')+'</tr>'}).join('');
+        return '<details class="product-guide"><summary>'+esc(product.title)+' · '+esc(product.gender)+' · '+esc(product.category)+'</summary><div class="product-guide-content"><div class="product-links"><a href="'+esc(product.url)+'" target="_blank" rel="noopener noreferrer">Open in MyAIFitting</a>'+(product.sourceUrl?'<a href="'+esc(product.sourceUrl)+'" target="_blank" rel="noopener noreferrer">Original size chart</a>':'')+'</div><div class="table-wrap"><table><thead><tr><th>Size</th>'+fields.map(function(field){return '<th>'+esc(field==='hips'?'Hip':'Waist')+'</th>'}).join('')+'</tr></thead><tbody>'+rows+'</tbody></table></div></div></details>';
+      }).join('');
+    }
+    function photoEvidenceCards(captures,rows,scenario,model,axis,delta){
+      var cameraOn=$('photo-camera').checked;
+      return captures.map(function(capture){
+        var captureIndex=report.captures.indexOf(capture),person=data.people[captureIndex],predicted=person.predictions[model],waistError=predicted.waist-person.actuals.waist,hipError=predicted.hips-person.actuals.hips,used={waist:predicted.waist,hips:predicted.hips},captureRows=rows.filter(function(entry){return entry.pair[0]===captureIndex}),t=tallyAccuracy(captureRows,scenario),flagged=person.cameraGroup==='angle-flagged',attempted=t.eligible+t.notScorable+t.unaffected;
+        ['waist','hips'].forEach(function(field){if(axis==='both'||axis===field)used[field]+=delta});
+        var extra=delta===0?'':'<div class="tape-row"><span>Used for size</span><strong>'+number(used.waist)+' waist / '+number(used.hips)+' hip cm</strong></div>',cameraLimit=cameraOn?'<div class="tape-row"><span>Apple + Depth measurement</span><strong>Visible A-to-B lines only — no validated waist or hip circumference</strong></div><p class="evidence-meta"><strong>Why the '+modelName(model)+' numbers do not change:</strong> Apple/Depth is not an input to this frozen model. A separately trained and tape-tested camera-fusion model is required before these lines can change the measurement.</p>':'';
+        var compare=function(field,label){var aiad=Math.abs(person.predictions.aiad[field]-person.actuals[field]),v8=Math.abs(person.predictions.v8[field]-person.actuals[field]),winner=aiad===v8?'Tie':aiad<v8?'Aiad':'V8';return '<span><strong>'+label+': '+winner+' has the smaller cm error.</strong> V8 '+number(v8)+' cm · Aiad '+number(aiad)+' cm.</span>'};
+        return '<article class="person-evidence-card"><button class="person-photo-button" data-open-capture="'+esc(capture.captureId)+'" type="button"><img class="person-photo" src="'+esc(capture.imageUrl)+'" alt="'+esc(person.identity+' · '+person.scanId+' photo')+'"><span class="person-photo-open">Open A-to-B full screen</span></button><div class="person-evidence-copy"><div class="person-evidence-head"><h3>'+esc(person.identity+' · '+person.scanId)+'</h3><span class="angle-badge '+(flagged?'flagged':'')+'">'+(flagged?'With angle flag':'Without angle flag')+'</span></div><p class="evidence-meta">Angle diagnostic max '+number(capture.cameraDiagnostic.maximumAbsoluteCorrectionDeg)+'° · original model measurements are used below</p><div class="tape-compare"><div class="tape-row"><span>Saved real tape</span><strong>'+number(person.actuals.waist)+' waist / '+number(person.actuals.hips)+' hip cm</strong></div><div class="tape-row"><span>'+modelName(model)+' predicted</span><strong>'+number(predicted.waist)+' waist / '+number(predicted.hips)+' hip cm</strong></div><div class="tape-row"><span>'+modelName(model)+' error</span><strong><span class="'+errorTone(waistError)+'">waist '+signedCm(waistError)+'</span> · <span class="'+errorTone(hipError)+'">hip '+signedCm(hipError)+'</span></strong></div>'+extra+cameraLimit+'</div><div class="model-direct-compare">'+compare('waist','Waist')+compare('hips','Hip')+'</div><div class="photo-impact"><div class="photo-impact-main">'+percent(t.same,t.eligible)+'</div><p><strong>'+count(t.same)+' of '+count(t.eligible)+'</strong> testable products chose the exact same size as saved tape.</p><div class="photo-impact-counts">'+count(t.eligible)+' of '+count(attempted)+' products were testable · '+count(t.adjacent)+' one size away · '+count(t.severe)+' two+ away · '+count(t.unavailable)+' no size from model</div></div></div></article>';
+      }).join('');
+    }
+    function startingSizeExplanation(identity,t,rows,captures){
+      var attempted=t.eligible+t.notScorable+t.unaffected,gender=captures[0]&&captures[0].gender==='male'?'men’s':'women’s',reasons=new Map();
+      rows.forEach(function(entry){if(entry.pair[3]!=null)return;var reason=entry.pair[2]||'No acceptable size';reasons.set(reason,(reasons.get(reason)||0)+1)});
+      var reasonText=Array.from(reasons.entries()).sort(function(a,b){return b[1]-a[1]}).map(function(entry){return '<li><strong>'+count(entry[1])+'</strong> · '+esc(entry[0])+'</li>'}).join('');
+      if(!t.notScorable)return '<div class="truth-box"><strong>Why all '+count(attempted)+' products are testable</strong>'+esc(identity)+'’s real tape produced an acceptable starting size on every selected '+gender+' product. The chosen AI model is then compared with those same starting sizes.</div>';
+      return '<div class="truth-box"><strong>Why are only '+count(t.eligible)+' of '+count(attempted)+' products testable?</strong>We attempted all <strong>'+count(attempted)+' selected '+gender+' products</strong>. Before Aiad or V8 is scored, '+esc(identity)+'’s real waist and hip must produce one acceptable starting size. The current sizing rules rejected <strong>'+count(t.notScorable)+'</strong> products, so they cannot be used in the same-size percentage.<ul>'+reasonText+'</ul><strong>This is the same starting test for Aiad and V8.</strong> Across all '+count(attempted)+' attempted products, the selected model matched '+count(t.same)+' products: <strong>'+percent(t.same,attempted)+'</strong>.</div>';
+    }
+    function modelImpactCard(identity,model,t,captures,delta,rows){var description=delta===0?'the real '+modelName(model)+' predictions shown above':modelName(model)+' prediction plus '+(delta>0?'+':'')+delta+' cm',attempted=t.eligible+t.notScorable+t.unaffected;return '<article class="quick-card '+(model==='v8'?'v8':'')+'"><h3>'+esc(identity+' · '+modelName(model)+' size result')+'</h3><p class="quick-context">'+count(captures.length)+' '+(captures.length===1?'photo':'photos')+' · '+esc(description)+'</p><div class="quick-main">'+percent(t.same,t.eligible)+'</div><p class="quick-main-label">exact size agreement among testable products</p><p class="quick-denominator"><strong>'+count(t.same)+' of '+count(t.eligible)+'</strong> testable product checks chose the same size. This is not a measurement-accuracy percentage.</p><div class="quick-breakdown"><div><strong>'+percent(t.eligible,attempted)+'</strong><span>Real-tape product coverage · '+count(t.eligible)+' / '+count(attempted)+'</span></div><div><strong>'+percent(t.same,t.eligible)+'</strong><span>Exact agreement when testable · '+count(t.same)+' / '+count(t.eligible)+'</span></div><div><strong>'+percent(t.same,attempted)+'</strong><span>Exact matches across all products · '+count(t.same)+' / '+count(attempted)+'</span></div><div><strong>'+count(t.notScorable)+'</strong><span>No starting size from real tape</span></div></div>'+startingSizeExplanation(identity,t,rows,captures)+'<div class="truth-box"><strong>Read this number like this</strong>We tried <strong>'+count(attempted)+' products</strong>. '+esc(identity)+'’s real tape could choose a stocked starting size on only <strong>'+count(t.eligible)+'</strong>. The AI chose the exact same size on <strong>'+count(t.same)+'</strong> of those products. Therefore '+count(t.same)+' ÷ '+count(t.eligible)+' = <strong>'+percent(t.same,t.eligible)+'</strong>. It does not mean this model’s centimetre error has a '+percent(t.same,t.eligible)+' chance of being correct.</div><div class="quick-bar"><span class="same" style="width:'+percent(t.same,t.eligible)+'"></span><span class="adjacent" style="width:'+percent(t.adjacent,t.eligible)+'"></span><span class="severe" style="width:'+percent(t.severe,t.eligible)+'"></span><span class="unavailable" style="width:'+percent(t.unavailable,t.eligible)+'"></span></div><div class="quick-breakdown"><div><strong>'+count(t.same)+'</strong><span>Same size</span></div><div><strong>'+count(t.adjacent)+'</strong><span>One size away</span></div><div><strong>'+count(t.severe)+'</strong><span>Two+ sizes away</span></div><div><strong>'+count(t.unavailable)+'</strong><span>No size from model</span></div></div></article>'}
+    function productBoundaryExplanation(rows,active,scenario,captures,model){
+      if(captures.length!==1||active.modelAccuracy.chartMode!=='real')return '';
+      var capture=captures[0],captureIndex=report.captures.indexOf(capture),person=data.people[captureIndex],v8=person.predictions.v8,aiad=person.predictions.aiad,v8Closer=['waist','hips'].every(function(field){return Math.abs(v8[field]-person.actuals[field])<Math.abs(aiad[field]-person.actuals[field])}),v8Scenario=data.modelScenarios.v8[0],aiadScenario=data.modelScenarios.aiad[0],v8Tally=tallyAccuracy(rows,v8Scenario),aiadTally=tallyAccuracy(rows,aiadScenario);
+      if(!v8Closer||aiadTally.same<=v8Tally.same)return '';
+      var waistBoundaryLosses=rows.filter(function(entry){var pair=entry.pair,index=v8Scenario.sizeIndices[entry.index],product=data.products[pair[1]];if(index>=0||pair[3]==null||!product.primarySizing||product.primarySizing.fields[0]!=='waist')return false;var maxima=product.chart.orderedSizes.map(function(size){var value=product.chart.valuesBySizeCm[size]&&product.chart.valuesBySizeCm[size].waist;return value&&value.max}).filter(Number.isFinite);return maxima.length&&v8.waist>Math.max.apply(Math,maxima)}).length;
+      if(!waistBoundaryLosses)return '';
+      return '<p class="simulation-label"><strong>Why Aiad’s percentage is higher even though V8’s centimetre errors are smaller:</strong> V8’s '+number(v8.waist)+' cm waist is above the largest waist on '+count(waistBoundaryLosses)+' product charts, so those charts return “No size.” Aiad stays inside those chart ranges. On the testable products, Aiad matches '+count(aiadTally.same)+' / '+count(aiadTally.eligible)+' and V8 matches '+count(v8Tally.same)+' / '+count(v8Tally.eligible)+'. Product boundaries and error direction cause this difference.</p>';
+    }
+    function modelAccuracyTable(rows,active,scenario,model,axis,delta){
+      var body=rows.map(function(entry){var pair=entry.pair,person=data.people[pair[0]],capture=report.captures[pair[0]],product=active.products[pair[1]],index=scenario.sizeIndices[entry.index],predicted=person.predictions[model],changed={waist:predicted.waist,hips:predicted.hips},waistError=predicted.waist-person.actuals.waist,hipError=predicted.hips-person.actuals.hips;['waist','hips'].forEach(function(field){if(axis==='both'||axis===field)changed[field]+=delta});var reference=pair[3]==null?'—':product.chart.orderedSizes[pair[3]],modelSize=index<0?'—':product.chart.orderedSizes[index],result=resultFrom(pair,index),resultClass=result==='Same'?'same':result==='One size away'?'adjacent':result==='Two+ sizes away'?'severe':'unavailable';return '<tr><td><div class="person-cell"><img src="'+esc(capture.imageUrl)+'" alt=""><div><strong>'+esc(person.identity)+'</strong><small>'+esc(person.scanId)+'</small></div></div></td><td>'+esc(person.cameraGroup==='angle-flagged'?'With angle flag':'Without angle flag')+'<br><span class="muted">max '+number(capture.cameraDiagnostic.maximumAbsoluteCorrectionDeg)+'°</span></td><td><a href="'+esc(product.url)+'" target="_blank" rel="noopener noreferrer">'+esc(product.title)+'</a></td><td>'+number(person.actuals.waist)+' / '+number(person.actuals.hips)+' cm</td><td>'+number(changed.waist)+' / '+number(changed.hips)+' cm</td><td><span class="photo-error '+errorTone(waistError)+'">'+signedCm(waistError)+'</span> / <span class="photo-error '+errorTone(hipError)+'">'+signedCm(hipError)+'</span></td><td>'+esc(reference)+'</td><td>'+esc(modelSize)+'</td><td><span class="result result-'+resultClass+'">'+esc(result)+'</span></td></tr>'}).join('');
+      return '<p class="quick-note">Showing all '+count(rows.length)+' selected checks. Waist / hip values are shown in centimetres. Product names open their MyAIFitting pages.</p><div class="table-wrap"><table><thead><tr><th>Photo</th><th>Camera label</th><th>Product</th><th>Saved real tape</th><th>'+modelName(model)+' used for size</th><th>Waist / hip error</th><th>Saved-tape size</th><th>Model size</th><th>Result</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+    }
+    async function renderPhotos(){
+      var token=++photoToken,model=$('photo-model').value,axis='both',delta=0,category=$('photo-category').value,identity=$('photo-person').value,chartMode=$('photo-chart-mode').value,gap=chartMode==='simulated'?photoAppliedGap:null,cameraOn=$('photo-camera').checked;
+      $('photo-evidence').innerHTML='<p class="simulation-label">Loading '+esc(identity)+' photos and '+modelName(model)+' errors…</p>';$('photo-summary').innerHTML='<p class="simulation-label">Calculating product-size accuracy…</p>';
+      var active=await modelAccuracyData(model,chartMode,gap,axis);if(token!==photoToken)return;
+      var scenario=active.scenarios.find(function(s){return s.axis===axis&&s.deltaCm===delta}),rows=selectedPhotoRows(identity,category,active),captures=selectedPhotoCaptures(identity),tally=tallyAccuracy(rows,scenario),chartLabel=chartMode==='real'?'real product charts':'made-up '+number(gap.gapCm)+' cm chart gap',errorLabel='real model output',identityLabel=photoIdentityLabel(identity);
+      $('photo-camera-result').innerHTML=cameraEvidence(captures,model);
+      if(!rows.length||!captures.length){$('photo-evidence').innerHTML='<div class="quick-empty">No photos match this selection.</div>';$('photo-summary').innerHTML='';$('photo-table').innerHTML='';return}
+      $('photo-evidence').innerHTML=photoEvidenceCards(captures,rows,scenario,model,axis,delta);
+      var resultNote=cameraOn?'Apple + Depth Pro diagnostics are shown above, but they are not used in this official result. The percentage still uses the original '+modelName(model)+' waist and hip predictions.':'No made-up measurement error is added. This size result comes directly from the original '+modelName(model)+' waist and hip errors shown beside '+esc(identityLabel)+'’s photo.';
+      $('photo-summary').innerHTML='<p class="simulation-label"><strong>'+esc(identityLabel+' · '+modelName(model)+' · '+errorLabel+' · '+chartLabel)+'</strong></p>'+productBoundaryExplanation(rows,active,scenario,captures,model)+'<div class="quick-model-grid one">'+modelImpactCard(identityLabel,model,tally,captures,delta,rows)+'</div><p class="raw-note">'+resultNote+'</p>';
+      $('photo-table').innerHTML=modelAccuracyTable(rows,active,scenario,model,axis,delta);
+      if(fullscreenCaptureId)renderPhotoLineDialog();
+    }
+    function productPlainText(product){
+      var fields=product.chart.relevantMeasurements.filter(function(field){return field==='waist'||field==='hips'}),lines=[product.title,product.url,product.sourceUrl||'Original chart link unavailable',['Size'].concat(fields.map(function(field){return field==='hips'?'Hip (cm)':'Waist (cm)'})).join('\t')];
+      product.chart.orderedSizes.forEach(function(size){var values=product.chart.valuesBySizeCm[size]||{};lines.push([size].concat(fields.map(function(field){var value=values[field];return value?number(value.min)+' to '+number(value.max):'—'})).join('\t'))});return lines.join('\n');
+    }
+    async function copyPhotoReport(){
+      var text='OWN-MODEL SIZE REPORT\n\n'+$('mode-photos').innerText+'\n\nPRODUCT LINKS AND SIZE CHARTS\n\n'+data.products.map(productPlainText).join('\n\n');
+      try{await navigator.clipboard.writeText(text)}catch(error){var area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();document.execCommand('copy');area.remove()}
+      $('photo-copy-state').textContent='✓ Copied';setTimeout(function(){$('photo-copy-state').textContent=''},4000);
+    }
+
+    function setMode(mode){['compare','error','gap','photos'].forEach(function(name){$('mode-'+name).hidden=name!==mode;$('tab-'+name).setAttribute('aria-selected',String(name===mode))});location.hash=mode;if(mode==='error')renderError();if(mode==='gap'){renderGap();if(!sweetHasRun)findSweetSpot()}if(mode==='photos')renderPhotos()}
+    ['compare','error','gap','photos'].forEach(function(name){$('tab-'+name).addEventListener('click',function(){setMode(name)})});
+    ['compare-model','compare-camera','compare-person','compare-category'].forEach(function(id){$(id).addEventListener('change',renderCompare)});
+    ['error-axis','error-delta','error-camera','error-person','error-category'].forEach(function(id){$(id).addEventListener('change',renderError)});
+    ['gap-error-axis','gap-error-delta'].forEach(function(id){$(id).addEventListener('change',renderGap)});
+    ['gap-camera','gap-person','gap-category'].forEach(function(id){$(id).addEventListener('change',function(){renderGap();findSweetSpot()})});
+    $('gap-sweet-run').addEventListener('click',findSweetSpot);
+    $('gap-sweet-target').addEventListener('change',findSweetSpot);
+    $('gap-sweet-target').addEventListener('keydown',function(event){if(event.key==='Enter'){event.preventDefault();findSweetSpot()}});
+    $('gap-sweet-result').addEventListener('click',function(event){var target=event.target instanceof Element?event.target.closest('[data-use-sweet-gap]'):null;if(!target)return;var gapCm=Number(target.getAttribute('data-use-sweet-gap')),errorCm=Number(target.getAttribute('data-use-sweet-error'));$('gap-value').value=String(gapCm);$('gap-unit').value='cm';$('gap-axis').value='both';$('gap-error-axis').value='both';$('gap-error-delta').value=String(errorCm);appliedGap={gapCm:gapCm,gapAxis:'both'};renderGap();$('gap-summary').scrollIntoView({behavior:'smooth',block:'start'})});
+    $('gap-run').addEventListener('click',function(){var value=Number($('gap-value').value);if(!Number.isFinite(value)||value<=0){$('gap-status').textContent='Enter a positive gap.';return}appliedGap={gapCm:$('gap-unit').value==='in'?value*2.54:value,gapAxis:$('gap-axis').value};renderGap()});
+    ['photo-model','photo-category','photo-person'].forEach(function(id){$(id).addEventListener('change',renderPhotos)});
+    $('photo-camera').addEventListener('change',renderPhotos);
+    $('photo-evidence').addEventListener('click',function(event){var target=event.target instanceof Element?event.target.closest('[data-open-capture]'):null;if(target)openPhotoLineDialog(target.getAttribute('data-open-capture'))});
+    $('photo-line-dialog').addEventListener('close',function(){fullscreenCaptureId=null});
+    $('photo-chart-mode').addEventListener('change',function(){$('photo-gap-settings').hidden=$('photo-chart-mode').value!=='simulated';renderPhotos()});
+    $('photo-run').addEventListener('click',function(){var value=Number($('photo-gap-value').value);if(!Number.isFinite(value)||value<=0){$('photo-status').textContent='Enter a positive gap.';return}photoAppliedGap={gapCm:$('photo-gap-unit').value==='in'?value*2.54:value,gapAxis:$('photo-gap-axis').value};renderPhotos()});
+    $('photo-share').addEventListener('click',copyPhotoReport);
+    $('method-tape').innerHTML='<strong>Saved tape:</strong> '+esc(report.method.tapeTruth);
+    $('method-products').innerHTML='<strong>Products:</strong> '+esc(report.method.products);
+    $('limitations').innerHTML=report.method.limitations.map(function(item){return '<li>'+esc(item)+'</li>'}).join('');
+    $('photo-products').innerHTML=productGuideCards();
+    $('footer').textContent='Updated '+new Date(data.generatedAt).toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Yerevan'})+' · Source model run '+new Date(report.createdAt).toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Yerevan'})+' · Private test evidence · Noindex';
+    renderCompare();
+    var initialMode=['compare','error','gap','photos'].includes(location.hash.slice(1))?location.hash.slice(1):'compare';
+    setMode(initialMode);
+    if(initialMode==='photos')setTimeout(renderPhotos,0);
+    window.addEventListener('pageshow',function(){if(location.hash.slice(1)==='photos')setTimeout(renderPhotos,0)});
+  }());
+</script>
+</body>
+</html>

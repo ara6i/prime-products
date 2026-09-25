@@ -1,0 +1,133 @@
+{
+  "outputDir": "spring-party-budget-pilot-s201",
+  "scenarioId": "S201",
+  "occasion": "Party / Night Out",
+  "season": "Spring",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "full-resolution-correction-zero-holds-awaiting-full-core",
+  "comparisonTitle": "S201 · Spring Party / Night Out · existing core screen",
+  "comparisonSubtitle": "Eight colorful tops · five light or colored full-length bottoms · all unique and available",
+  "comparisonNote": "Prefer expressive color, clean evening texture and controlled proportions without nightclub-black monotony · not UI integrated",
+  "coreTitle": "S201 · provisional Spring Party core",
+  "coreSubtitle": "former cropped-proof dusty-rose shirt rejected · replacement full-body top required",
+  "coreNote": "Dusty-rose top, ecru pleated straight trouser and dark-olive suede loafer all missing · zero uniqueness holds · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe"],
+  "queuedRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men dusty rose cotton shirt regular fit full body spring party",
+      "targetProduct": "dusty-rose regular-fit cotton shirt with full worn-body proof"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men ecru pleated trousers straight leg regular fit",
+      "targetProduct": "ecru pleated straight trouser"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men dark olive suede loafers round toe slim sole",
+      "targetProduct": "dark-olive suede round-toe loafer"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:4b02fa1f08581096e185ad135f7fb00d6d622f3d",
+      "name": "Pea-Green Textured Shirt",
+      "decision": "reject-for-s201",
+      "decisionReason": "The actual color reads muted khaki rather than pea green, while the dropped shoulder, twin-layer styling and boxy overshirt construction look daytime Casual rather than Party."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:f9c9196d870785e0b931566b5097b11a6898df94",
+      "name": "Anchor-Red Heavyweight Tee",
+      "decision": "reject-for-s201",
+      "decisionReason": "The anchor red is useful, but the very wide long tee, large chest volume and crossbody styling read generic streetwear rather than a controlled Spring evening look."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:abeb4a16f454bfc5ace81c839afd751a13e6092e",
+      "name": "Pink Button-Down Shirt",
+      "decision": "reject-for-s201",
+      "decisionReason": "Full-resolution review shows loud broad stripes, an oversized mismatched chest pocket, long rounded tails and heavily rolled cuffs; the pattern overwhelms rather than refines the outfit."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:562ef215a70cbcfd7ce173689cb66a424834d5bd",
+      "name": "Yellow Button-Down Shirt",
+      "decision": "reject-for-s201",
+      "decisionReason": "The mustard color is cheerful, but the visibly crumpled washed fabric, conventional button-down collar and rolled-sleeve denim styling read basic Casual rather than modern Night Out."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:dd0cd78c2ea2a34c4afe10d9b0b15c3117e4d4be",
+      "name": "Red Button-Up Shirt",
+      "decision": "reject-for-s201",
+      "decisionReason": "The hanger-only image gives no body proof and the shiny semi-sheer red fabric plus white underlayer looks cheap and costume-like."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:a7c85685ca8b1fcfb36a878bd4e814091c43d722",
+      "name": "Sauce-Purple Sweatshirt",
+      "decision": "reject-for-s201",
+      "decisionReason": "The purple is attractive, but the dropped shoulder, very long sweatshirt body and oversized chest pocket create the baggy-top silhouette explicitly excluded."
+    },
+    {
+      "group": "top",
+      "key": "T7",
+      "identity": "shopify_supplier:8da71f7e1638e59e5928945028ae2e449e9ee06a",
+      "name": "Gum-Leaf Roll-Sleeve Shirt",
+      "decision": "reject-for-s201",
+      "decisionReason": "The long tunic-like body, deep open neckline and rolled sleeves read Resort cover-up rather than a structured Spring Party shirt."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320",
+      "name": "Light-Gray Relaxed Trouser",
+      "decision": "reject-for-s201",
+      "decisionReason": "The isolated crop provides no rise, seat, full-leg or hem proof and appears short; it cannot support a Party approval."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:2ee1a0fbc1261c590f394c7d2529549fd8a033c9",
+      "name": "Navy Relaxed-Straight Trouser",
+      "decision": "reject-for-s201",
+      "decisionReason": "The leg is visibly broad and puddles over the sneaker, while dark navy would return the outfit to a heavy default lower half."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265",
+      "name": "Military-Green Casual Trouser",
+      "decision": "reject-for-s201",
+      "decisionReason": "The wrinkled product-only image lacks fit proof and the small multicolor hardware makes the trouser look casual and low-quality."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:aabdffc99d8e26c94746c17f630f60a6bb135e66",
+      "name": "Yellow-Green Straight Jean",
+      "decision": "reject-for-s201",
+      "decisionReason": "The acid yellow-green wash, very wide leg and heavy sneaker stacking create a loud baggy streetwear bottom instead of refined Party color."
+    },
+    {
+      "group": "bottom",
+      "key": "B6",
+      "identity": "shopify_supplier:0ea516ce4334a3e1b7d95485d902e489baa6c0c3",
+      "name": "Light-Blue Straight Trouser",
+      "decision": "reject-for-s201",
+      "decisionReason": "Full-resolution review exposes an elastic drawstring waist, loose lounge fabric and rolled barefoot hems; it is pajama-like rather than Party tailoring."
+    }
+  ]
+}

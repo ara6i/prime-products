@@ -23,20 +23,20 @@ import styles from "./merchantDashboardShowcase.module.css";
 
 const dashboardViews = {
   Overview: {
-    label: "Network sales",
+    label: "Global network sales",
     metric: "$84,620",
     change: "+18.4% this month",
-    title: "Your commerce network",
+    title: "Your global commerce network",
     summary: "Products, partners, creators, and customer demand in one live view.",
     stats: [
       ["Catalog ready", "96%", "1,248 products"],
       ["Active suppliers", "28", "4 need review"],
       ["Creator partners", "42", "18 new matches"],
-      ["Network orders", "1,904", "+16% this month"],
+      ["Global network orders", "1,904", "+16% this month"],
     ],
   },
   Suppliers: {
-    label: "Supplier network",
+    label: "Global supplier network",
     metric: "28 active",
     change: "4 new products today",
     title: "Supplier relationships",
@@ -66,12 +66,12 @@ const dashboardViews = {
     metric: "96% ready",
     change: "84 products publishable",
     title: "Product catalog",
-    summary: "Prepare products for your store, AI fitting, creators, and network discovery.",
+    summary: "Prepare products for your store, AI fitting, creators, and global network discovery.",
     stats: [
       ["Live products", "1,248", "In your storefront"],
       ["Try-on ready", "1,196", "Sizing data complete"],
       ["Needs content", "31", "Images or details missing"],
-      ["Network matched", "684", "Shown in relevant looks"],
+      ["Global network matched", "684", "Shown in relevant looks"],
     ],
   },
   Orders: {
@@ -79,11 +79,11 @@ const dashboardViews = {
     metric: "1,904",
     change: "+16% this month",
     title: "Orders and customers",
-    summary: "Track demand from storefront, creator, and shopping-network discovery.",
+    summary: "Track demand from storefront, creator, and global shopping-network discovery.",
     stats: [
       ["Storefront", "1,012", "Direct product orders"],
       ["Creator-led", "612", "Attributed to content"],
-      ["Network discovery", "280", "From matched outfits"],
+      ["Global network discovery", "280", "From matched outfits"],
       ["Repeat customers", "38%", "+4.2% this month"],
     ],
   },
@@ -145,7 +145,10 @@ export function MerchantDashboardShowcase({
 
         <div className={styles.heroCopy}>
           <div>
-            <p>Welcome to your merchant workspace</p>
+            <p className={styles.demoLabel}>
+              <span>Example merchant workspace</span>
+              <strong>Illustrative demo data</strong>
+            </p>
             <h2 id="merchant-dashboard-showcase-title">
               Keep every side of commerce moving.
             </h2>
@@ -167,7 +170,7 @@ export function MerchantDashboardShowcase({
             <span className={styles.floatingIcon}>
               <Truck size={20} weight="duotone" aria-hidden="true" />
             </span>
-            <small>Supplier network</small>
+            <small>Global supplier network</small>
             <strong>28 active</strong>
             <p><Check size={12} weight="bold" aria-hidden="true" /> 97% on-time fulfillment</p>
           </article>
@@ -309,7 +312,7 @@ export function MerchantDashboardShowcase({
 
         <div className={styles.capabilities} aria-label="Merchant dashboard capabilities">
           <span>Catalog</span>
-          <span>Supplier network</span>
+          <span>Global supplier network</span>
           <span>Creator partnerships</span>
           <span>Customer demand</span>
           <span>Orders</span>

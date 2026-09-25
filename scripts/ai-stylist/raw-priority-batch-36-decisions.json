@@ -1,0 +1,66 @@
+{
+  "batch": "36",
+  "approvals": {
+    "4": {
+      "color": "Deep Navy Blue",
+      "constraint": "Use this deep-navy funnel-neck sweatshirt once only for Fall/Winter Casual Everyday, Weekend, Travel, Campus or creative daytime work. Treat it as the outfit's single dark anchor and pair it with ecru, cream, light gray, camel, soft rust or pale-blue straight trousers and low-profile cream, tan or gray footwear; never combine it with black or navy bottoms, another oversized layer, a bulky dark trainer, a muddy all-dark palette or any Wedding/Wedding Guest use."
+    },
+    "14": {
+      "color": "Light Blue",
+      "constraint": "Use this light-blue sleeveless mandarin-collar top once only for Spring/Summer Vacation, Resort, Travel, Festival, daytime Date or a restrained warm-weather Party. Pair its clean color with controlled cream, ecru, stone, tobacco or muted-olive tailored shorts or straight trousers and minimal cream, tan or brown footwear; never use a baggy cargo bottom, sports short, heavy outerwear, bulky sneaker, black-heavy palette or any Wedding/Wedding Guest outfit."
+    },
+    "18": {
+      "color": "Bean Green",
+      "constraint": "Use this bean-green regular henley once only for Spring/Fall Casual Everyday, Weekend, Travel, Campus, daytime Date or relaxed creative work. Balance it with straight or gently tapered cream, ecru, khaki, chocolate or controlled washed-blue bottoms and low-profile cream, tan or brown footwear; never add a second loose green layer, puddled cargo, bulky shoe, dark head-to-toe palette or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 7],
+      "reason": "These hanger-only or product-only tops provide no credible adult fit, movement or hem-length proof and are too generic or long to justify a unique outfit identity."
+    },
+    {
+      "cards": [2],
+      "reason": "The black sweatshirt's attached plaid collar reads as a dated fake-layer construction and adds another unnecessary dark top."
+    },
+    {
+      "cards": [3, 5, 9, 10, 11, 12, 13, 16, 17, 19, 20],
+      "reason": "These tops are visibly muscle-tight, overlong, shiny, dark-generic, contrast-panelled, lace-up, logoed or nightlife-novelty pieces and fail the modern controlled-proportion gate."
+    },
+    {
+      "cards": [6],
+      "reason": "All eight supplier color images are broken at the recorded Shopify source, so the product has no verifiable visual identity and fails the hard image-proof gate."
+    },
+    {
+      "cards": [8],
+      "reason": "The product-only basic has visible chest and sleeve branding, no adult fit proof and no distinctive modern role."
+    },
+    {
+      "cards": [15],
+      "reason": "All hooded beach-shirt colors retain a tight torso, long curved hem, low open neckline and costume-like drawcord construction."
+    },
+    {
+      "cards": [21],
+      "reason": "This misclassified matching polo-and-shorts set is visibly slim, synthetic and generic and cannot serve as a clean independent bottom identity."
+    },
+    {
+      "cards": [22, 24, 26, 28],
+      "reason": "These wide corduroy, camouflage and cropped cargo bottoms are severely puddled, ballooned or oversized and recreate the baggy-bottom problem."
+    },
+    {
+      "cards": [23, 29, 31, 34, 35, 36],
+      "reason": "These product-only cargo shorts lack reliable adult fit proof and are additionally pocket-heavy, drawstring-heavy, distressed or generic."
+    },
+    {
+      "cards": [25, 27, 30, 32, 33, 37, 38, 39, 40],
+      "reason": "These on-body cargo and utility shorts are too long, wide, below-knee, multi-pocketed or technically overdesigned for a clean modern summer silhouette."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and 165 recorded color images were requested; 157 color images loaded, while all eight images for one drop-arm tank identity were broken at the supplier source.",
+    "3 accepted with one exact color and variant selected each: deep-navy funnel-neck sweatshirt, light-blue sleeveless mandarin-collar top and bean-green regular henley.",
+    "37 rejected after the base pass and close inspection of all 20 variants across four borderline identities.",
+    "Every selected identity, variant and image has zero collision with every prior accepted or conditional item.",
+    "Every bottom failed because it was a misclassified set, puddled wide trouser, camouflage, weak product-only cargo short or long and overdesigned utility short."
+  ]
+}

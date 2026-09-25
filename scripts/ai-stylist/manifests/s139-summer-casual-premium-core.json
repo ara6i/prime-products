@@ -1,0 +1,56 @@
+{
+  "outputDir": "summer-casual-premium-pilot-s139",
+  "scenarioId": "S139",
+  "occasion": "Casual Everyday",
+  "season": "Summer",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "full-resolution-correction-zero-premium-holds-awaiting-full-core",
+  "comparisonTitle": "S139 · Summer Casual Everyday · Premium local screen",
+  "comparisonSubtitle": "Eight elevated warm-weather tops · eight controlled light bottoms · all unique and unreserved",
+  "comparisonNote": "Require breathable Zara-led polish and purposeful color · no winter layer, skinny top, puddled trouser, fake-luxury signal or dark monotony · not UI integrated",
+  "coreTitle": "S139 · corrected Summer Casual Everyday Premium empty core",
+  "coreSubtitle": "both former holds revoked after full-source Premium finishing checks",
+  "coreNote": "Zero provisional holds · replacement top, bottom, shoe, bag and accessory required · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "shoe",
+      "searchPhrase": "men sand suede penny loafer soft almond toe slim sole",
+      "targetProduct": "sand suede soft-almond penny loafer",
+      "customerRetailTarget": "$280-$360"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men cognac woven leather crossbody minimalist no logo",
+      "targetProduct": "cognac woven-leather minimalist crossbody",
+      "customerRetailTarget": "$320-$480"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men amber lens tobacco acetate sunglasses slim rectangular premium summer",
+      "targetProduct": "amber-lens tobacco-acetate slim rectangular sunglasses",
+      "customerRetailTarget": "$180-$260"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:ce23752d32f430e7cacb464585a1c4cf3dffc3ea","name":"Dusty-Blue Open-Knit Sleeveless Polo","decision":"keep-available-for-non-premium-scenario","decisionReason":"The full-resolution worn source confirms a useful Summer color and regular-relaxed body, but the deep armholes, visible metal chest plaque and basic open-knit finishing do not support a Premium outfit. Remove it from S139; it may only be reconsidered for a Mid-Range Casual or Resort scenario."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:8f7de0e337311ae5efdcd33749694b44661e6bbc","name":"Light-Green Botanical Short-Sleeve Shirt","decision":"reject-for-s139","decisionReason":"Only a hanger styling image is available, with an unrelated white tee placed beneath it. The large botanical print, long rounded tail and unknown shoulder/chest ease read Resort and lack the fit proof required for a Premium everyday core."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:132fcd011b65635691ca428040f53556ce93e3a3","name":"White Textured Quarter-Zip Top","decision":"reject-for-s139","decisionReason":"The isolated product image does not prove body fit, and the plaid inner collar plus triangular zipper pull look like low-cost novelty details rather than minimal Premium finishing. The plain white body also adds no purposeful Summer color."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:9976d155616a8b22a906ff18f23fffd426a88db5","name":"Beige Eyelet Sleeveless Knit","decision":"reject-for-s139","decisionReason":"Although the eyelet texture is seasonally suitable, the worn source is narrow through chest and waist with a close armhole and body-conscious line. It recreates the skinny-top proportion the rebuild is removing."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:3d0d9cf2cc4575442d28636809036b15db9e6dd5","name":"Pastel-Blue Openwork Knit Tank","decision":"reject-for-s139","decisionReason":"The ornate openwork tank is visibly fitted with deep armholes and a tight torso. It reads nightlife/gym fashion rather than relaxed Premium everyday styling and would narrow the upper body too much."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:c1d7e0ae691889e61edf338a9b90f0e8389415d6","name":"Apricot Contrast-Trim Short-Sleeve Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The worn knit shirt has a credible regular line, clean collar and good warm-weather texture. Its near-cream color and white piping are lower contrast than the dusty-blue polo, so keep it unique for a later Summer Date or Resort outfit rather than weakening this color direction."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:4364e9fb40a107fbdd3db7c2b04eb9ebef44b1e2","name":"Khaki Mock-Neck Short-Sleeve Knit","decision":"reject-for-s139","decisionReason":"Only an isolated product view is available, so shoulder, chest, sleeve and body ease cannot be verified. The long narrow tube shape risks a fitted silhouette and cannot be approved as Premium without worn proof."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:2757295a71470293dac80a2c7e1e5684a21f33e3","name":"Khaki Controlled Straight Trouser","decision":"reject-for-s139","decisionReason":"The trouser has a clean ankle crop, but its elastic waist, exposed black webbing belt, zip details and technical nylon surface make it outdoor Travel wear rather than elevated Premium Casual Everyday."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:bf7fa4e61eb13d0ac96cfca0028b90814633535c","name":"Ivory Straight-Leg Jean","decision":"reject-for-s139","decisionReason":"The ivory color and nominal straight shape are promising, but the source is an isolated packshot. Rise, thigh ease, inseam and shoe break are unproven, so it cannot be visually approved for a Premium core."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:02fd40cffcd4ed8382f8fdff9b2f73376898f447","name":"Khaki Casual Summer Short","decision":"reject-for-s139","decisionReason":"The cotton short has ordinary low-rise styling, broad casual pockets and a long conventional hem. Its backpack-and-striped-tee presentation reads generic everyday rather than polished Premium Zara styling."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:8575f1ab5835288d4a116a8960cc6f1944d3f859","name":"Cool-Taupe Clean Bermuda Short","decision":"keep-available-for-non-premium-scenario","decisionReason":"The full source confirms a useful flat front and controlled knee-grazing leg, but the ordinary fabric, basic fly construction and small gold trim read clean Mid-Range rather than Premium. Remove it from S139 and keep it unassigned for a lower-tier Summer outfit."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:5885f4c061597eb1156da3b9b4485892074cd9d8","name":"Khaki Textured Casual Short","decision":"keep-available-for-other-scenario","decisionReason":"This warm-beige Bermuda has credible on-body fit and a controlled hem, but its lower rise, conventional chino surface and warmer tone feel more basic than B4. Keep it available for another solid-top Summer scenario."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:3205d0715a366816a781772d65f2020b720e45f4","name":"Sage Drawstring Summer Short","decision":"reject-for-s139","decisionReason":"The source is product-only and the gathered waist, long contrast drawstrings, heavy curved seams and visible wordmark make it a branded sweat/performance short rather than Premium casual tailoring."},
+    {"group":"bottom","key":"B7","identity":"shopify_supplier:2ee1a0fbc1261c590f394c7d2529549fd8a033c9","name":"Navy Lightweight Relaxed-Straight Trouser","decision":"reject-for-s139","decisionReason":"The navy trouser is very broad through the leg and visibly stacks over the sneaker. Its dark color and puddled hem would recreate the bottom-heavy silhouette and dark monotony the user rejected."},
+    {"group":"bottom","key":"B8","identity":"shopify_supplier:0bbeb659ea8c838f7cdf606adeccf36a188247e0","name":"Light-Blue Botanical Tailored Short","decision":"keep-available-for-other-scenario","decisionReason":"The botanical short has a credible controlled leg and useful Summer color, but its destination print belongs in Resort and would compete with the polo's open-knit texture. Preserve it for a unique solid-top vacation outfit."}
+  ]
+}

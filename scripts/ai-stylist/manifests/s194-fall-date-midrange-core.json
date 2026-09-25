@@ -1,0 +1,29 @@
+{
+  "outputDir": "fall-date-midrange-pilot-s194",
+  "scenarioId": "S194",
+  "occasion": "Date Night",
+  "season": "Fall",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s174-fall-formal-midrange-core.json",
+  "additionalCandidates": [
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:2f30cccc9b77808ce60e8aef94ba5ed6271a4556","name":"Brown Distressed Faux-Leather Collared Blouson","decision":"visual-front-runner-outerwear","decisionReason":"The full source proves a cropped hip line, clean collar and controlled boxy body that reads current high-street rather than baggy. Correct the material and color to distressed faux leather and mottled brown; coral, ivory and burgundy must keep this single-use Fall Date outfit alive rather than muddy or dark."}
+  ],
+  "status": "visual-comparison-complete-one-midrange-outerwear-held-awaiting-top-bottom-shoe-and-watch",
+  "comparisonTitle": "S194 · Fall Date Night · Mid-Range local screen",
+  "comparisonSubtitle": "Twenty-one Fall tops, bottoms and blazer candidates plus one unique taupe collared blouson",
+  "comparisonNote": "Require tactile romance, controlled relaxed proportion and expressive Fall color · no skinny basic, long utility overshirt, balloon or puddled trouser, boxy blazer or muddy brown-on-brown palette · not UI integrated",
+  "coreTitle": "S194 · provisional Fall Date Night Mid-Range core",
+  "coreSubtitle": "Brown distressed faux-leather collared blouson held · coral top, ivory trouser, burgundy shoe and sage-dial watch still missing",
+  "coreNote": "One visual front-runner only · uniqueness hold, not product selection · no complete outfit · not UI integrated",
+  "frontRunnerKeys": ["O2"],
+  "missingSlots": ["top", "bottom", "shoe", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men burnt coral merino fine gauge long sleeve knit polo mid range fall date","targetProduct":"burnt-coral merino-blend fine-gauge long-sleeve knit polo with controlled regular ease","customerRetailTarget":"$100-$140"},
+    {"category":"bottom","searchPhrase":"men warm ivory wool blend double pleat controlled straight trouser fall date","targetProduct":"warm-ivory wool-blend high-rise double-pleat trouser with a controlled straight break","customerRetailTarget":"$140-$190"},
+    {"category":"shoe","searchPhrase":"men burgundy suede round toe derby low rubber sole fall date mid range","targetProduct":"burgundy-suede round-toe derby with a slim weather-ready rubber sole","customerRetailTarget":"$150-$210"},
+    {"category":"watch","searchPhrase":"men soft sage dial dark brown leather thin case watch fall date","targetProduct":"soft-sage-dial thin-case watch with dark-brown leather strap","customerRetailTarget":"$50-$80"}
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "batch": "34",
+  "approvals": {
+    "10": {
+      "color": "Khaki",
+      "constraint": "Use this khaki textured half-button sweatshirt once only for Premium Spring/Fall/Winter Casual Everyday, Weekend, Travel, Campus, creative work or a relaxed daytime Date. Pair its controlled relaxed shape with a clean straight or gently tapered bottom in ecru, cream, charcoal, muted olive, burgundy or controlled dark denim and low-profile cream, tan, brown or gray footwear; never add a baggy or puddled bottom, oversized outer layer, muddy head-to-toe khaki palette, bulky trainer or any Wedding/Wedding Guest use."
+    },
+    "14": {
+      "color": "Coffee Color",
+      "constraint": "Use this warm coffee textured regular-relaxed button-up once only for Premium Spring/Fall Casual Everyday, Weekend, Travel, creative Office, daytime Date or a restrained Party. Wear it open over a clean white or ecru tee or buttoned with a straight or gently tapered bottom in cream, stone, light gray, muted olive or controlled washed blue and a low-profile cream, tan or brown shoe; never pair it with a baggy or puddled bottom, another brown oversized layer, bulky footwear, an all-dark palette or any Wedding/Wedding Guest outfit."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 7, 8, 11, 13, 16],
+      "reason": "These product-only or hanger-only basics, hoodies, shirts and tank provide no credible adult fit, movement or hem-length proof and are too generic, dark or repetitive to approve."
+    },
+    {
+      "cards": [3, 9],
+      "reason": "The floral washed graphic tee and pearl-star plaid zip shirt are novelty-led and visibly decorated rather than clean versatile menswear."
+    },
+    {
+      "cards": [4],
+      "reason": "Both colors of the collarless shirt are overlong with a drooping tunic-like body and fail the controlled proportion gate."
+    },
+    {
+      "cards": [5],
+      "reason": "The fully transparent open-mesh top is costume or nightlife styling rather than a useful modern wardrobe garment."
+    },
+    {
+      "cards": [6],
+      "reason": "The dark washed gradient hoodie is oversized, visually muddy and redundant beside stronger controlled hoodies already approved."
+    },
+    {
+      "cards": [12],
+      "reason": "The mustard and pink colors are useful, but both keep visible ENTHUSIASTIC BRIGHT slogan branding on the lower pocket and therefore fail the clean-product gate."
+    },
+    {
+      "cards": [15],
+      "reason": "The dark small-check plaid shirt is visually repetitive, long and muddy and adds no stronger role than cleaner accepted overshirts."
+    },
+    {
+      "cards": [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
+      "reason": "Every bottom is cargo-led, pocket-heavy, drawstring-heavy, excessively wide, cuff-bunched, logoed or visibly puddled and recreates the baggy-bottom problem."
+    },
+    {
+      "cards": [29, 35],
+      "reason": "These faux-leather moto jackets are shiny, skinny, seam-heavy or graphic and read as dated low-cost outerwear."
+    },
+    {
+      "cards": [30, 31, 32, 33, 39, 40],
+      "reason": "These are groom, wedding, host-performance or rhinestone tuxedo sets with skinny, theatrical or embellished tailoring; Wedding and Wedding Guest remain excluded and untouched."
+    },
+    {
+      "cards": [34],
+      "reason": "The oversized denim jacket is heavily distressed, patched and slogan-labeled and reads as novelty streetwear rather than a clean modern layer."
+    },
+    {
+      "cards": [36, 37, 38],
+      "reason": "These hooded, racing and bomber jackets are dominated by busy graphics, slogans, patches or synthetic technical styling rather than clean Zara-led outerwear."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 133 recorded color images rendered; 133 displayed images loaded with zero broken files.",
+    "2 accepted with one exact color and variant selected each: a khaki textured half-button sweatshirt and a warm coffee textured button-up overshirt.",
+    "38 rejected after the base pass and close inspection of all six variants across three credible top identities; every bottom and outerwear product failed.",
+    "Both selected identities, source products, variants and images have zero collision with every prior accepted or conditional item.",
+    "Rejections include unproven basics, novelty and transparent tops, slogan overshirts, repetitive plaid, twelve cargo-heavy or puddled bottoms, faux-leather and graphic jackets, distressed denim and wedding or rhinestone tuxedos."
+  ]
+}

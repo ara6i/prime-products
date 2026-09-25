@@ -44,7 +44,12 @@ const PLATFORM_HOSTS: Record<
   },
   pinterest: {
     canonical: "www.pinterest.com",
-    accepted: ["pinterest.com", "www.pinterest.com"],
+    accepted: [
+      "pinterest.com",
+      "www.pinterest.com",
+      "pin.it",
+      "api.pinterest.com",
+    ],
   },
 };
 
@@ -98,9 +103,13 @@ function buildHandleUrl(
   }
 }
 
-function prepareUrlInput(platform: CreatorPrimaryChannel, value: string): string {
+function prepareUrlInput(
+  platform: CreatorPrimaryChannel,
+  value: string,
+): string {
   const trimmed = value.trim();
-  if (trimmed.startsWith("@")) return buildHandleUrl(platform, trimmed) ?? trimmed;
+  if (trimmed.startsWith("@"))
+    return buildHandleUrl(platform, trimmed) ?? trimmed;
   if (trimmed.startsWith("//")) return `https:${trimmed}`;
   if (!/^[a-z][a-z\d+.-]*:\/\//i.test(trimmed)) return `https://${trimmed}`;
   return trimmed;
@@ -138,7 +147,9 @@ function isPublicWebsiteHostname(hostname: string): boolean {
   return true;
 }
 
-export function getCreatorPlatformLabel(platform: CreatorPrimaryChannel): string {
+export function getCreatorPlatformLabel(
+  platform: CreatorPrimaryChannel,
+): string {
   return PLATFORM_LABELS[platform];
 }
 
@@ -174,7 +185,7 @@ export function validateCreatorProfileUrl(
     return invalid(`Enter a valid ${label} profile link.`);
   }
 
-  if (!['http:', 'https:'].includes(url.protocol)) {
+  if (!["http:", "https:"].includes(url.protocol)) {
     return invalid(`Use a public http or https ${label} link.`);
   }
   if (url.username || url.password || url.port) {
@@ -182,11 +193,15 @@ export function validateCreatorProfileUrl(
   }
   if (!isCreatorPlatformHostname(platform, url.hostname)) {
     if (platform === "blog" || platform === "other") {
-      return invalid("Use a public website address, not a local or private link.");
+      return invalid(
+        "Use a public website address, not a local or private link.",
+      );
     }
     const requiredHost = PLATFORM_HOSTS[platform].accepted[0];
     const article = platform === "instagram" ? "an" : "a";
-    return invalid(`Use ${article} ${label} profile link from ${requiredHost}.`);
+    return invalid(
+      `Use ${article} ${label} profile link from ${requiredHost}.`,
+    );
   }
 
   const segments = getPathSegments(url);
@@ -194,6 +209,8 @@ export function validateCreatorProfileUrl(
 
   let handle: string | undefined;
   let normalizedPath = url.pathname;
+  const isPinterestShortLink =
+    platform === "pinterest" && url.hostname.toLowerCase() === "pin.it";
 
   if (platform === "instagram") {
     const candidate = segments[0]?.replace(/^@/, "");
@@ -206,7 +223,9 @@ export function validateCreatorProfileUrl(
       candidate.includes("..") ||
       RESERVED_INSTAGRAM_PATHS.has(candidate.toLowerCase())
     ) {
-      return invalid("Paste an Instagram profile link, not a post or Instagram page.");
+      return invalid(
+        "Paste an Instagram profile link, not a post or Instagram page.",
+      );
     }
     handle = candidate;
     normalizedPath = `/${candidate}`;
@@ -217,7 +236,9 @@ export function validateCreatorProfileUrl(
       !candidate ||
       !/^[a-z\d._-]{1,40}$/i.test(candidate)
     ) {
-      return invalid(`Paste a ${label} profile link, not a post or platform page.`);
+      return invalid(
+        `Paste a ${label} profile link, not a post or platform page.`,
+      );
     }
     handle = candidate;
     normalizedPath = `/@${candidate}`;
@@ -234,26 +255,41 @@ export function validateCreatorProfileUrl(
       /^[a-z\d._-]{2,120}$/i.test(second);
 
     if (!isHandle && !isLegacyChannel) {
-      return invalid("Paste a YouTube channel link, not a video or YouTube page.");
+      return invalid(
+        "Paste a YouTube channel link, not a video or YouTube page.",
+      );
     }
     handle = isHandle ? first.slice(1) : second;
     normalizedPath = isHandle ? `/@${handle}` : `/${first}/${second}`;
   } else if (platform === "pinterest") {
     const candidate = segments[0]?.replace(/^@/, "");
-    if (
-      segments.length !== 1 ||
-      !candidate ||
-      !/^[a-z\d_-]{1,60}$/i.test(candidate) ||
-      RESERVED_PINTEREST_PATHS.has(candidate.toLowerCase())
-    ) {
-      return invalid("Paste a Pinterest profile link, not a pin or Pinterest page.");
+    if (isPinterestShortLink) {
+      if (
+        segments.length !== 1 ||
+        !candidate ||
+        !/^[a-z\d_-]{4,100}$/i.test(candidate)
+      ) {
+        return invalid("Enter a valid Pinterest short link.");
+      }
+      normalizedPath = `/${candidate}`;
+    } else {
+      if (
+        segments.length !== 1 ||
+        !candidate ||
+        !/^[a-z\d_-]{1,60}$/i.test(candidate) ||
+        RESERVED_PINTEREST_PATHS.has(candidate.toLowerCase())
+      ) {
+        return invalid(
+          "Paste a Pinterest profile link, not a pin or Pinterest page.",
+        );
+      }
+      handle = candidate;
+      normalizedPath = `/${candidate}`;
     }
-    handle = candidate;
-    normalizedPath = `/${candidate}`;
   }
 
   url.protocol = "https:";
-  if (platform !== "blog" && platform !== "other") {
+  if (platform !== "blog" && platform !== "other" && !isPinterestShortLink) {
     url.hostname = PLATFORM_HOSTS[platform].canonical;
   }
   url.pathname = normalizedPath;

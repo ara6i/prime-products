@@ -1,0 +1,37 @@
+{
+  "reviewedAt": "2026-09-16T05:08:00.000Z",
+  "localOnly": true,
+  "batch": "batches/1m2ztwgo54bb7bb2m58shxnxtyk5bnpjm2g3",
+  "model": "models/gemini-3-pro-image-preview",
+  "stage": "raw-gemini-output-before-background-removal",
+  "summary": {
+    "reviewed": 22,
+    "rawPass": 19,
+    "regenerate": 3,
+    "outfitReady": 0
+  },
+  "decisions": [
+    { "index": 1, "productId": "2406240246461620500", "decision": "raw-pass", "reason": "Clean single tan-suede loafer; source-faithful upper, penny strap, toe and sole." },
+    { "index": 2, "productId": "2510060252201615900", "decision": "raw-pass", "reason": "Clean isolated warm-brown long-sleeve polo sweater with faithful collar, placket and knit character." },
+    { "index": 3, "productId": "1763829130497372160", "decision": "raw-pass-style-revoked", "reason": "The refinement faithfully preserves the product, but source-level styling review later revoked the dropped-shoulder boxy lounge silhouette from every scenario." },
+    { "index": 4, "productId": "2505030853171607400", "decision": "raw-pass", "reason": "Clean white linen band-collar shirt; supplier text and model removed without identity drift." },
+    { "index": 5, "productId": "2503120536241602800", "decision": "raw-pass", "reason": "Full-resolution check confirms a clean raw-jute linen overshirt with faithful texture and pockets." },
+    { "index": 6, "productId": "2504281547131609000", "decision": "raw-pass", "reason": "Clean apricot-ecru summer short; isolated and visually consistent with the selected pleated drawstring product." },
+    { "index": 7, "productId": "2505230844101616100", "decision": "raw-pass", "reason": "Near-exact washed-light-blue minimal bomber with clean isolation." },
+    { "index": 10, "productId": "2507040639261602000", "decision": "raw-pass", "reason": "Clean soft-white textured knit polo with source-faithful collar and surface." },
+    { "index": 11, "productId": "2505250900531609500", "decision": "regenerate", "reason": "Not isolated: retained the model neck/body, white trousers, bag, flowers and room scene." },
+    { "index": 14, "productId": "2503070647481600500", "decision": "raw-pass", "reason": "Clean desert-yellow heavyweight drop-shoulder T-shirt with faithful color and silhouette." },
+    { "index": 15, "productId": "2502100925531621600", "decision": "raw-pass", "reason": "Clean light-teal open-placket knit polo with faithful shape and color." },
+    { "index": 17, "productId": "2411230856521607100", "decision": "raw-pass", "reason": "Clean isolated warm-khaki tailored trouser with controlled pleated silhouette." },
+    { "index": 19, "productId": "2502130357161608600", "decision": "raw-pass", "reason": "Near-exact dark-coffee leather belt with a single clean product presentation." },
+    { "index": 20, "productId": "2503280137551608300", "decision": "raw-pass", "reason": "Near-exact plain light-khaki cap with clean isolation." },
+    { "index": 21, "productId": "2505140753031625700", "decision": "regenerate", "reason": "Composite failure: one large loafer plus a second embedded source-photo panel containing a worn shoe pair." },
+    { "index": 23, "productId": "2506231532431626500", "decision": "raw-pass", "reason": "Clean hemp-apricot linen-cotton knit polo with faithful texture and collar." },
+    { "index": 24, "productId": "2505191522541624600", "decision": "raw-pass", "reason": "Clean warm-white pointelle open-collar shirt with faithful perforated knit detail." },
+    { "index": 25, "productId": "2411110358151627900", "decision": "raw-pass", "reason": "Clean wine-red corduroy blouson with faithful cropped jacket structure." },
+    { "index": 26, "productId": "1716804667801350144", "decision": "raw-pass", "reason": "Clean rust-brown corduroy field jacket with faithful pocket construction." },
+    { "index": 27, "productId": "2502280543221601200", "decision": "regenerate", "reason": "Not isolated: retained the room, green boxes, model legs and shoes behind the trouser." },
+    { "index": 28, "productId": "2504270652341610800", "decision": "raw-pass", "reason": "Clean sky-blue draped-collar shirt with source-faithful silhouette." },
+    { "index": 29, "productId": "736610CB-75F0-45C7-9225-A3F4860A9CA4", "decision": "raw-pass", "reason": "Near-exact single light-sand low-top sneaker with faithful tonal construction." }
+  ]
+}

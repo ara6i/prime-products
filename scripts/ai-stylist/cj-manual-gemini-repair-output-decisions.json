@@ -1,0 +1,33 @@
+{
+  "reviewedAt": "2026-09-16T05:21:07.000Z",
+  "localOnly": true,
+  "batch": "batches/bdcvubmfnls0b6yz2h2l0ybv8nx6nofc25xw",
+  "model": "models/gemini-3-pro-image-preview",
+  "stage": "first-repair-raw-gemini-output-before-background-removal",
+  "summary": {
+    "reviewed": 3,
+    "rawPass": 0,
+    "regenerateAgain": 3,
+    "outfitReady": 0
+  },
+  "decisions": [
+    {
+      "index": 11,
+      "productId": "2505250900531609500",
+      "decision": "regenerate-again",
+      "reason": "The polo front is reconstructed, but the model, second worn polo, stairs, building, plants and scene remain visible behind it and the lower garment dissolves into the scene."
+    },
+    {
+      "index": 21,
+      "productId": "2505140753031625700",
+      "decision": "regenerate-again",
+      "reason": "The dominant loafer is clean, but a second worn pair, foot, rug and chair remain as a large embedded scene below it."
+    },
+    {
+      "index": 27,
+      "productId": "2502280543221601200",
+      "decision": "regenerate-again",
+      "reason": "The trouser is reconstructed, but wall panels, furniture, green boxes, floor, socks and shoes remain; it is still a lifestyle composite rather than one isolated product."
+    }
+  ]
+}

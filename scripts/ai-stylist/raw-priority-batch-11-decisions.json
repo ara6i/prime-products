@@ -1,0 +1,110 @@
+{
+  "batch": "11",
+  "approvals": {
+    "4": {
+      "color": "Coffee",
+      "constraint": "Use the coffee contrast-stitch overshirt once only for Spring or Fall Casual Everyday, Travel, Date Night, or relaxed Work / Office. Keep the rest clean with ecru, stone, soft blue, olive, or controlled dark-indigo straight bottoms; do not add another workwear pocket statement."
+    },
+    "23": {
+      "color": "Khaki",
+      "constraint": "Use the khaki clean tapered jogger once only for Spring or Fall Sports / Workout, Travel, or Casual Everyday. Pair with a white, ecru, soft sage, sky-blue, cocoa, or restrained burgundy top and low-profile sneakers; never combine it with an oversized top or bulky outerwear."
+    },
+    "25": {
+      "color": "Light Blue",
+      "constraint": "Use the light-blue straight drawstring trouser once only for Summer Casual Everyday, Travel, or Vacation / Resort. Pair with white, ecru, sand, tobacco, cocoa, or soft olive and sandals, loafers, or clean low-profile sneakers; keep the outfit light and do not add winter layers."
+    },
+    "34": {
+      "color": "Camel",
+      "constraint": "Use the camel sherpa-collar utility bomber once only for Fall or Winter Casual Everyday, Travel, or Date Night. Preserve its exact collar, sleeve pocket, ribbed hem and regular bomber proportion during refinement; final outfit QA must prove adult fit with ecru, stone, olive, brown, or clean dark-indigo straight bottoms."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 5, 6, 7, 9, 10, 11, 13, 16],
+      "reason": "Hanger-only or laid-flat imagery does not prove adult-male shoulder, chest, sleeve, body length, or hem behavior, and these plain shirt roles are already better represented by approved on-body identities."
+    },
+    {
+      "cards": [3],
+      "reason": "Although the regular overshirt proportion is usable, every color carries a conspicuous TEST chest patch and duplicates cleaner approved double-pocket shirt roles."
+    },
+    {
+      "cards": [8],
+      "reason": "The heavily crinkled product-only band-collar shirt has no adult fit proof and repeats an already approved cleaner apricot band-collar role."
+    },
+    {
+      "cards": [12],
+      "reason": "The tightly cropped torso image hides the hem and full sleeve proportion, so the short-sleeve shirt cannot be judged reliably as an adult outfit component."
+    },
+    {
+      "cards": [14],
+      "reason": "The floating product image has no fit proof and the large white R chest patch makes the otherwise plain shirt look supplier-generic."
+    },
+    {
+      "cards": [15],
+      "reason": "The folded sherpa-lined plaid shirt is bulky, dated and visually noisy, with no on-body evidence of shoulder or torso control."
+    },
+    {
+      "cards": [17, 18],
+      "reason": "The corduroy trousers are excessively wide and pool over the shoes, recreating the baggy, puddled-bottom problem."
+    },
+    {
+      "cards": [19],
+      "reason": "The long utility short combines oversized patch pockets, very long contrast drawstrings and a wide knee-length cut that reads generic rather than clean modern summer styling."
+    },
+    {
+      "cards": [20],
+      "reason": "The wide sweatpant is shown on an ambiguous cropped model, pools at the shoes and lacks the controlled adult-male taper required for the catalog."
+    },
+    {
+      "cards": [21],
+      "reason": "All inspected colors are styled as loose matching sweats and visibly puddle at the shoes, making the silhouette too long and baggy despite the useful palette."
+    },
+    {
+      "cards": [22, 24],
+      "reason": "Product-only drawstring trousers provide no adult proof of rise, seat, thigh, knee, hem or full-length behavior; the glossy synthetic rendering is also weak."
+    },
+    {
+      "cards": [26],
+      "reason": "The high-contrast side stripe, extended drawstring and wide pooled leg create dated generic sportswear rather than a versatile modern bottom."
+    },
+    {
+      "cards": [27],
+      "reason": "The loose trouser visibly pools at the shoes and combines a long drawstring with decorative waist tabs, producing the exact overlong baggy proportion being removed."
+    },
+    {
+      "cards": [28],
+      "reason": "The cropped upper-body image hides the hem and footwear relationship while the visible thigh volume is too loose to approve without full-length proof."
+    },
+    {
+      "cards": [29, 30],
+      "reason": "The shiny product-only faux-leather jackets have elasticated generic bomber proportions and no adult fit proof; black repetition is not worth the quality compromise."
+    },
+    {
+      "cards": [31, 32, 33],
+      "reason": "Military patches, high-contrast racing panels, excessive zippers, shoulder tabs and narrow synthetic shaping make these jackets dated and supplier-generic."
+    },
+    {
+      "cards": [35],
+      "reason": "The product-only black fleece jacket is dark, narrowly shaped and generic, with no adult fit proof or useful modern color contribution."
+    },
+    {
+      "cards": [36, 39, 40],
+      "reason": "These product-only faux-leather jackets use long or tightly shaped moto cuts, heavy paneling and repetitive black finishes with no reliable adult fit proof."
+    },
+    {
+      "cards": [37],
+      "reason": "Camouflage, oversized faux fur, contrast teddy panels and bulbous pockets make the jacket loud, bulky and dated."
+    },
+    {
+      "cards": [38],
+      "reason": "The floating black jacket has no fit proof and its repeated star hardware, silver zippers and dark palette make it novelty-led."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 170 recorded color images rendered; 210 displayed images loaded with zero broken files.",
+    "4 accepted with one exact color and variant selected: one top, two bottoms, and one outerwear identity.",
+    "36 rejected after the base pass and close inspection of 17 promising color variants.",
+    "Accepted colors are coffee, khaki, light blue, and camel; the set adds warm and bright options without relying on black or navy.",
+    "Rejections include unproven hanger-only shirts, visible branding, redundant band-collar roles, puddled corduroy and sweatpants, long cargo shorts, synthetic product-only trousers, dated racing leather, novelty camo and dark generic outerwear."
+  ]
+}

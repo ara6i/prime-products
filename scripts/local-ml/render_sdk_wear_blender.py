@@ -17,7 +17,7 @@ import tempfile
 from pathlib import Path
 
 from mathutils import Vector
-RENDER_SCHEMA_VERSION = 8
+RENDER_SCHEMA_VERSION = 10
 MAX_DISPLAY_SOURCE_FACES = 18_000
 CAMERA_CARDS = (
     {"id": "canonical", "yawDeg": 0.0, "pitchDeg": 0.0, "rollDeg": 0.0, "lensMm": 55.0},
@@ -40,6 +40,12 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--height-cm", type=float, required=True)
     parser.add_argument("--weight-kg", type=float, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument(
+        "--render-profile",
+        choices=("full", "browser-comparison"),
+        default="full",
+        help="Use browser-comparison to export the real body and attached curves without slow PNG camera renders.",
+    )
     return parser.parse_args(raw)
 
 
@@ -282,6 +288,210 @@ def simple_material(name: str, color: tuple[float, float, float, float]) -> bpy.
     return material
 
 
+def line_material(name: str, color: tuple[float, float, float, float]) -> bpy.types.Material:
+    material = simple_material(name, color)
+    shader = material.node_tree.nodes.get("Principled BSDF")
+    if "Emission Color" in shader.inputs:
+        shader.inputs["Emission Color"].default_value = color
+        shader.inputs["Emission Strength"].default_value = 2.2
+    elif "Emission" in shader.inputs:
+        shader.inputs["Emission"].default_value = color
+        shader.inputs["Emission Strength"].default_value = 2.2
+    return material
+
+
+def _section_segments(body: bpy.types.Object, height_m: float) -> list[tuple[np.ndarray, np.ndarray]]:
+    working = bmesh.new()
+    working.from_mesh(body.data)
+    result = bmesh.ops.bisect_plane(
+        working,
+        geom=[*working.verts, *working.edges, *working.faces],
+        dist=1e-6,
+        plane_co=Vector((0.0, 0.0, height_m)),
+        plane_no=Vector((0.0, 0.0, 1.0)),
+        use_snap_center=False,
+        clear_outer=False,
+        clear_inner=False,
+    )
+    cut_edges = [item for item in result.get("geom_cut", ()) if isinstance(item, bmesh.types.BMEdge)]
+    segments = [
+        (
+            np.asarray(edge.verts[0].co, dtype=np.float64),
+            np.asarray(edge.verts[1].co, dtype=np.float64),
+        )
+        for edge in cut_edges
+        if len(edge.verts) == 2 and (edge.verts[0].co - edge.verts[1].co).length > 1e-7
+    ]
+    working.free()
+    return segments
+
+
+def _ordered_section_loops(segments: list[tuple[np.ndarray, np.ndarray]]) -> list[np.ndarray]:
+    if not segments:
+        return []
+    precision = 5
+    points_by_key: dict[tuple[float, float, float], list[np.ndarray]] = {}
+    adjacency: dict[tuple[float, float, float], set[tuple[float, float, float]]] = {}
+    for start, end in segments:
+        start_key = tuple(round(float(value), precision) for value in start)
+        end_key = tuple(round(float(value), precision) for value in end)
+        if start_key == end_key:
+            continue
+        points_by_key.setdefault(start_key, []).append(start)
+        points_by_key.setdefault(end_key, []).append(end)
+        adjacency.setdefault(start_key, set()).add(end_key)
+        adjacency.setdefault(end_key, set()).add(start_key)
+    loops: list[np.ndarray] = []
+    remaining = set(adjacency)
+    while remaining:
+        seed = next(iter(remaining))
+        component = {seed}
+        stack = [seed]
+        while stack:
+            current = stack.pop()
+            for neighbor in adjacency.get(current, ()):
+                if neighbor not in component:
+                    component.add(neighbor)
+                    stack.append(neighbor)
+        remaining.difference_update(component)
+        if len(component) < 8:
+            continue
+        start = min(component)
+        ordered = [start]
+        previous = None
+        current = start
+        for _ in range(len(component) + 2):
+            choices = [neighbor for neighbor in adjacency.get(current, ()) if neighbor != previous]
+            if not choices:
+                break
+            unvisited = [neighbor for neighbor in choices if neighbor not in ordered]
+            next_key = unvisited[0] if unvisited else choices[0]
+            if next_key == start:
+                break
+            ordered.append(next_key)
+            previous, current = current, next_key
+        if len(ordered) < max(8, int(len(component) * 0.8)):
+            continue
+        loop = np.asarray([
+            np.mean(np.asarray(points_by_key[key], dtype=np.float64), axis=0)
+            for key in ordered
+        ])
+        loops.append(loop)
+    return loops
+
+
+def _closed_length(points: np.ndarray) -> float:
+    return float(np.linalg.norm(np.roll(points, -1, axis=0) - points, axis=1).sum())
+
+
+def _path_between(points: np.ndarray, start: int, end: int, forward: bool) -> np.ndarray:
+    size = len(points)
+    indices = [start]
+    current = start
+    step = 1 if forward else -1
+    while current != end:
+        current = (current + step) % size
+        indices.append(current)
+        if len(indices) > size + 1:
+            raise RuntimeError("Could not split the body cross-section into front and back arcs.")
+    return points[indices]
+
+
+def _open_length(points: np.ndarray) -> float:
+    return float(np.linalg.norm(np.diff(points, axis=0), axis=1).sum()) if len(points) > 1 else 0.0
+
+
+def build_body_section(
+    body: bpy.types.Object,
+    row_name: str,
+    height_m: float,
+    color: tuple[float, float, float, float],
+) -> tuple[dict[str, object], list[bpy.types.Object]]:
+    loops = _ordered_section_loops(_section_segments(body, height_m))
+    plausible = [
+        loop for loop in loops
+        if float(np.ptp(loop[:, 0])) >= 0.12 and float(np.ptp(loop[:, 1])) >= 0.08
+    ]
+    if not plausible:
+        raise RuntimeError(f"No closed torso cross-section was found for {row_name} at {height_m * 100.0:.1f} cm.")
+    loop = max(plausible, key=_closed_length)
+    a_index = int(np.argmin(loop[:, 0]))
+    b_index = int(np.argmax(loop[:, 0]))
+    forward_path = _path_between(loop, a_index, b_index, True)
+    backward_path = _path_between(loop, a_index, b_index, False)
+    # Canonical front faces negative Y (the front camera looks from -Y).
+    front_path, back_path = (
+        (forward_path, backward_path)
+        if float(np.mean(forward_path[:, 1])) <= float(np.mean(backward_path[:, 1]))
+        else (backward_path, forward_path)
+    )
+
+    curve_data = bpy.data.curves.new(f"{row_name.title()} body intersection", "CURVE")
+    curve_data.dimensions = "3D"
+    curve_data.resolution_u = 2
+    curve_data.bevel_depth = 0.0045
+    curve_data.bevel_resolution = 4
+    curve_data.materials.append(line_material(f"{row_name.title()} line material", color))
+    spline = curve_data.splines.new("POLY")
+    spline.points.add(len(loop) - 1)
+    for point, coordinate in zip(spline.points, loop):
+        point.co = (float(coordinate[0]), float(coordinate[1]), float(coordinate[2]), 1.0)
+    spline.use_cyclic_u = True
+    curve_object = bpy.data.objects.new(f"{row_name.upper()}_BODY_INTERSECTION", curve_data)
+    bpy.context.collection.objects.link(curve_object)
+
+    markers: list[bpy.types.Object] = []
+    for label, coordinate in (("A", loop[a_index]), ("B", loop[b_index])):
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=20, ring_count=12, radius=0.012, location=coordinate)
+        marker = bpy.context.object
+        marker.name = f"{row_name.upper()}_{label}"
+        marker.data.materials.append(line_material(f"{row_name.title()} {label} material", color))
+        marker["point_label"] = label
+        marker["row_name"] = row_name
+        markers.append(marker)
+
+    straight_width_m = float(loop[b_index, 0] - loop[a_index, 0])
+    front_arc_m = _open_length(front_path)
+    back_arc_m = _open_length(back_path)
+    perimeter_m = _closed_length(loop)
+    payload: dict[str, object] = {
+        "row": row_name,
+        "heightCm": round(height_m * 100.0, 4),
+        "straightABWidthCm": round(straight_width_m * 100.0, 4),
+        "frontCurvedABCm": round(front_arc_m * 100.0, 4),
+        "backCurvedBACm": round(back_arc_m * 100.0, 4),
+        "meshCircumferenceCm": round(perimeter_m * 100.0, 4),
+        "pointA": [round(float(value), 6) for value in loop[a_index]],
+        "pointB": [round(float(value), 6) for value in loop[b_index]],
+        "loopPointCount": len(loop),
+        "source": "exact horizontal triangle-plane intersection of the canonical WEAR PLY",
+    }
+    return payload, [curve_object, *markers]
+
+
+def build_waist_hip_sections(
+    body: bpy.types.Object,
+    teacher_record: dict[str, object],
+) -> tuple[list[dict[str, object]], list[bpy.types.Object]]:
+    measurements = teacher_record.get("measurements_mm") or {}
+    if not isinstance(measurements, dict):
+        raise RuntimeError("The teacher record has no measurements_mm object.")
+    specs = (
+        ("waist", "waist_height_mm", (0.08, 0.95, 0.72, 1.0)),
+        ("hips", "hip_max_height_mm", (1.0, 0.48, 0.12, 1.0)),
+    )
+    rows: list[dict[str, object]] = []
+    objects: list[bpy.types.Object] = []
+    for row_name, height_key, color in specs:
+        raw_height = measurements.get(height_key)
+        if not isinstance(raw_height, (int, float)) or not math.isfinite(float(raw_height)):
+            raise RuntimeError(f"The teacher record has no valid {height_key}.")
+        row, created = build_body_section(body, row_name, float(raw_height) / 1000.0, color)
+        rows.append(row)
+        objects.extend(created)
+    return rows, objects
+
+
 def add_area_light(name: str, location: tuple[float, float, float], energy: float, size: float, color: tuple[float, float, float]) -> None:
     data = bpy.data.lights.new(name, "AREA")
     data.energy = energy
@@ -381,10 +591,22 @@ def prepare_body(args: argparse.Namespace, temp_dir: Path) -> tuple[bpy.types.Ob
 
 def configure_scene(body_height: float, output_png: Path) -> tuple[bpy.types.Scene, bpy.types.Object, Vector]:
     scene = bpy.context.scene
-    scene.render.engine = "BLENDER_EEVEE"
-    scene.render.resolution_x = 1200
-    scene.render.resolution_y = 1500
+    # Blender 4.2+ renamed the Eevee engine identifier. Keep the renderer
+    # compatible with both the local Blender build and the test server's 4.3.
+    try:
+        scene.render.engine = "BLENDER_EEVEE_NEXT"
+    except TypeError:
+        scene.render.engine = "BLENDER_EEVEE"
+    # These images are comparison cards, while the GLB keeps the complete real
+    # body mesh. A compact render prevents first-time server generation from
+    # taking several minutes per camera on CPU-only Test Lab hosts.
+    scene.render.resolution_x = 720
+    scene.render.resolution_y = 900
     scene.render.resolution_percentage = 100
+    if hasattr(scene, "eevee"):
+        scene.eevee.taa_render_samples = 8
+        if hasattr(scene.eevee, "use_raytracing"):
+            scene.eevee.use_raytracing = False
     scene.render.image_settings.file_format = "PNG"
     scene.render.image_settings.color_mode = "RGBA"
     scene.render.filepath = str(output_png)
@@ -466,12 +688,21 @@ def main() -> None:
     clear_scene()
     with tempfile.TemporaryDirectory(prefix="primestyle-sdk-wear-") as temp:
         body, metadata = prepare_body(args, Path(temp))
-    front_2d = write_flat_projection(body, "front", output_front_2d)
-    side_2d = write_flat_projection(body, "side", output_side_2d)
-    scene, camera, camera_target = configure_scene(args.height_cm / 100.0, output_png)
+    teacher_record = json.loads(args.teacher_record.read_text())
+    cross_sections, section_objects = build_waist_hip_sections(body, teacher_record)
+    front_2d = None
+    side_2d = None
+    scene = bpy.context.scene
+    camera = None
+    camera_target = None
+    if args.render_profile == "full":
+        front_2d = write_flat_projection(body, "front", output_front_2d)
+        side_2d = write_flat_projection(body, "side", output_side_2d)
+        scene, camera, camera_target = configure_scene(args.height_cm / 100.0, output_png)
 
     bpy.ops.object.select_all(action="DESELECT")
-    body.select_set(True)
+    for export_object in (body, *section_objects):
+        export_object.select_set(True)
     bpy.context.view_layer.objects.active = body
     bpy.ops.export_scene.gltf(
         filepath=str(output_glb),
@@ -482,19 +713,22 @@ def main() -> None:
         export_yup=True,
     )
     rendered_camera_cards = []
-    for card in CAMERA_CARDS:
-        target_path = output_png if card["id"] == "canonical" else args.output_dir / f"camera-{card['id']}.png"
-        rendered_camera_cards.append(render_camera_card(
-            scene,
-            camera,
-            camera_target,
-            args.height_cm / 100.0,
-            target_path,
-            card,
-        ))
+    if args.render_profile == "full":
+        for card in CAMERA_CARDS:
+            target_path = output_png if card["id"] == "canonical" else args.output_dir / f"camera-{card['id']}.png"
+            rendered_camera_cards.append(render_camera_card(
+                scene,
+                camera,
+                camera_target,
+                args.height_cm / 100.0,
+                target_path,
+                card,
+            ))
     bpy.ops.wm.save_as_mainfile(filepath=str(output_blend))
 
     metadata["renderSchemaVersion"] = RENDER_SCHEMA_VERSION
+    metadata["renderProfile"] = args.render_profile
+    metadata["crossSections"] = cross_sections
     metadata["cameraCards"] = rendered_camera_cards
     metadata["cameraCorrectionTruth"] = {
         "input": "same exact canonical WEAR PLY rendered by Blender with a known perspective camera matrix",
@@ -504,16 +738,19 @@ def main() -> None:
     metadata["artifacts"] = {
         "blend": output_blend.name,
         "glb": output_glb.name,
-        "png": output_png.name,
-        "front2d": output_front_2d.name,
-        "side2d": output_side_2d.name,
         "cameraCards": [card["file"] for card in rendered_camera_cards],
     }
-    metadata["projection2d"] = {
-        "front": front_2d["stats"],
-        "side": side_2d["stats"],
-        "truthBoundary": "Both 2D views project existing source PLY faces and true face-turn silhouette edges. No silhouette fill, Delaunay mesh, body guess, or RGB render is used.",
-    }
+    if args.render_profile == "full":
+        metadata["artifacts"].update({
+            "png": output_png.name,
+            "front2d": output_front_2d.name,
+            "side2d": output_side_2d.name,
+        })
+        metadata["projection2d"] = {
+            "front": front_2d["stats"],
+            "side": side_2d["stats"],
+            "truthBoundary": "Both 2D views project existing source PLY faces and true face-turn silhouette edges. No silhouette fill, Delaunay mesh, body guess, or RGB render is used.",
+        }
     output_meta.write_text(json.dumps(metadata, indent=2) + "\n")
     print(f"SDK_WEAR_BLENDER_RESULT={json.dumps(metadata, separators=(',', ':'))}")
 

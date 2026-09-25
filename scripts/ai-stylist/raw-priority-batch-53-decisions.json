@@ -1,0 +1,34 @@
+{
+  "batch": "53",
+  "approvals": {
+    "34": {
+      "color": "Beige",
+      "constraint": "Use this beige relaxed-straight trouser once only for Spring/Summer Casual Everyday, Travel, Vacation/Resort, a daytime Date or creative Office. Pair with a clean regular-fit top in white, ecru, sage, sky blue, coral, terracotta, chocolate or muted navy and low-profile footwear; never combine it with an oversized long top, another wide silhouette, chunky shoe, all-neutral washed-out palette, formal evening styling, or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+      "reason": "Every top is graphic, cartoon, slogan, pseudo-brand, Halloween or novelty-led, with many oversized, dark or product-only proportions; none is a clean versatile Zara-led wardrobe piece."
+    },
+    {
+      "cards": [21, 24, 35, 37],
+      "reason": "These bottoms use snake inserts, heavy distressed panels, giant utility pockets or aggressive whiskering and fail the clean modern design gate."
+    },
+    {
+      "cards": [22, 28, 32, 33, 40],
+      "reason": "These product-only wide jeans and trousers lack reliable on-body proof through the rise, thigh and shoe break, so their proportions cannot be approved."
+    },
+    {
+      "cards": [23, 25, 26, 27, 29, 30, 31, 36, 38, 39],
+      "reason": "These photographed bottoms are visibly too wide, long, cuff-stacked or puddled; card 31 remained too spread and stacked at the shoe after close inspection."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 80 recorded color images rendered and loaded with zero broken files.",
+    "1 bottom accepted in one exact color: a clean beige relaxed-straight trouser with a controlled leg and one shoe break.",
+    "39 rejected after the base pass and close inspection of the two plausible single-color bottoms; every top failed.",
+    "The selected identity, variant and image have zero collision with every prior accepted or conditional item.",
+    "The batch mostly failed for graphic novelty tops and wide, puddled, distressed, gimmick or insufficiently proven bottoms."
+  ]
+}

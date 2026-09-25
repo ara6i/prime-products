@@ -1,0 +1,182 @@
+{
+  "outputDir": "winter-travel-budget-pilot-s245",
+  "scenarioId": "S245",
+  "occasion": "Travel",
+  "season": "Winter",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-screen-complete-outerwear-and-bottom-front-runners-top-shoe-and-bag-missing",
+  "comparisonTitle": "S245 · Winter Travel · existing core screen",
+  "comparisonSubtitle": "Six light or colored winter layers · four unique warm tops · four unique controlled full-length bottoms",
+  "comparisonNote": "Prefer warmth, movement and luggage-friendly structure without dark monotony or oversized-on-baggy volume · not UI integrated",
+  "coreTitle": "S245 · provisional Winter Travel core",
+  "coreSubtitle": "dusty-blue regular puffer · pale stone-gray clean straight jean",
+  "coreNote": "Plum fine-knit crew, taupe weather-resistant sneaker boot and camel canvas weekender still missing · two uniqueness holds only · no complete outfit · not UI integrated",
+  "frontRunnerKeys": ["O3", "B6"],
+  "excludeCandidateKeys": ["T1", "T2", "B1", "B3"],
+  "missingSlots": ["top", "shoe", "bag"],
+  "queuedRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men plum merino crew neck sweater regular fit",
+      "targetProduct": "plum fine-knit crew-neck sweater"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men taupe suede waterproof sneaker boots low profile",
+      "targetProduct": "taupe weather-resistant sneaker boot"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men camel canvas leather weekender bag minimalist",
+      "targetProduct": "camel canvas-and-leather weekender"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "outerwear",
+      "key": "O1",
+      "identity": "shopify_supplier:7df108deda150146a14be24dcf21c574ff57a096",
+      "name": "Sage Quilted Jacket",
+      "decision": "reject-for-s245",
+      "decisionReason": "The hanging product image supplies no shoulder, torso or hem proof, while the shiny horizontal quilting risks generic packable outerwear rather than a refined travel layer."
+    },
+    {
+      "group": "outerwear",
+      "key": "O2",
+      "identity": "shopify_supplier:7771fc177b9d3f64e54c30eb8b86fbfa738c0fb7",
+      "name": "White Quilted Snap Puffer",
+      "decision": "reject-for-s245",
+      "decisionReason": "Full-resolution review exposes a prominent ADVANCED chest wordmark, a long bulky body and low dropped shoulder; the light color does not justify the visible branding and excess volume."
+    },
+    {
+      "group": "outerwear",
+      "key": "O3",
+      "identity": "shopify_supplier:4053ab1a30e1f7ad07258026caf87816c082c008",
+      "name": "Dusty-Blue Quilted Puffer",
+      "decision": "visual-front-runner-awaiting-top-shoe-and-bag",
+      "decisionReason": "Full-resolution body proof shows a clean regular-length puffer with controlled shoulder and sleeve volume; dusty blue adds Winter color without a dark, logo-heavy or oversized silhouette."
+    },
+    {
+      "group": "outerwear",
+      "key": "O4",
+      "identity": "shopify_supplier:4d8999448b83e0cdd90a9a1b9590776cddcb35ac",
+      "name": "Light-Green Puffer",
+      "decision": "reject-for-s245",
+      "decisionReason": "The product-only image lacks fit proof, while the black hood lining, black hardware and multiple sleeve patches make the jacket look generic and logo-led."
+    },
+    {
+      "group": "outerwear",
+      "key": "O5",
+      "identity": "shopify_supplier:13d330b040b32bff8bdb5ef4f660a1a54df5b1b2",
+      "name": "Army-Green Puffer",
+      "decision": "reject-for-s245",
+      "decisionReason": "The black yoke, black hood and dark army-green body create a heavy dated color-block puffer rather than the lighter modern travel palette requested."
+    },
+    {
+      "group": "outerwear",
+      "key": "O6",
+      "identity": "shopify_supplier:aeec300145fdb4b330693796cf4e270f33526c42",
+      "name": "Beige Puffer",
+      "decision": "reject-for-s245",
+      "decisionReason": "The hanging image gives no body proof, and the shiny collapsed beige volume plus dangling hardware is less trustworthy and less colorful than O3."
+    },
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:8df09bb84b2fc7ce594c34d8dfc116fb2c862376",
+      "name": "Coffee Textured Button-Neck Knit",
+      "decision": "reject-for-s245",
+      "decisionReason": "The fuzzy dropped-shoulder body is too loose beneath a puffer and the coffee color would make the Winter travel look muddy instead of light and clear."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:752395491866d0670ef31bbae7df713c451b4866",
+      "name": "Lavender Corduroy Half-Zip",
+      "decision": "reject-for-s245",
+      "decisionReason": "Lavender is attractive, but full-resolution review shows a broad dropped shoulder, long bagged sleeves, an oversized body and a bulky chest pocket that would bunch under the puffer."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:f5c6e9fa5a6e29ce932dad2d8a56377ce802e6d1",
+      "name": "Sky-Blue Corduroy Quarter-Zip",
+      "decision": "reject-for-s245",
+      "decisionReason": "It repeats the same dropped, long and bulky corduroy body as T2 and would create a flat blue-on-blue combination with the winning puffer."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:2f383a80506460f5f52121264692ac41381d2f6d",
+      "name": "Deep-Navy Funnel-Neck Sweatshirt",
+      "decision": "reject-for-s245",
+      "decisionReason": "The wide dropped sweatshirt body and deep navy would add both excess layer volume and another dark default."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:f9c9196d870785e0b931566b5097b11a6898df94",
+      "name": "Anchor-Red Heavyweight Tee",
+      "decision": "reject-for-s245",
+      "decisionReason": "The anchor red is useful, but the wide long short-sleeve tee is not a credible warm Winter layer and would leave the complete outfit dependent on the puffer indoors."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:0ddafa2ad2660d3d70d8956732d8421c65ac55f6",
+      "name": "White-Grid Plaid Overshirt",
+      "decision": "reject-for-s245",
+      "decisionReason": "The boxy twin-pocket overshirt is already an outer layer; placing it under a puffer would stack two bulky layers and the black grid would dominate the pastel palette."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:9e68a94a7d4832053cbe5b8803fd273e7e5c3eea",
+      "name": "French-Blue Clean Straight Jean",
+      "decision": "reject-for-s245",
+      "decisionReason": "The narrow worn leg and heavy whiskered wash make the jean look more like dated slim denim than a clean modern travel bottom."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:c4694a3740fce46e4cb36568c29f9bd341398236",
+      "name": "Medium-Blue Straight Jean",
+      "decision": "reject-for-s245",
+      "decisionReason": "The medium-blue leg visibly stacks and puddles over the shoe, recreating the bottom-heavy silhouette excluded from this rebuild."
+    },
+    {
+      "group": "bottom",
+      "key": "B3",
+      "identity": "shopify_supplier:048f91fa8b67f16175d1ad88b171fbd87340e32c",
+      "name": "Dusty-Blue Straight Jean",
+      "decision": "reject-for-s245",
+      "decisionReason": "The narrow thigh-to-ankle line reads slim and fitted, and another saturated blue would make the outfit too monochromatic."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:7572cafda48c1fb7fd652ae7a470e2cdafb136a0",
+      "name": "Blue-Gray Jean",
+      "decision": "reject-for-s245",
+      "decisionReason": "The regular upper leg is plausible, but the dark whiskered wash, rolled cuffs and heavy work-boot styling make it more rugged Casual than clean luggage-friendly Travel."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265",
+      "name": "Military-Green Casual Trouser",
+      "decision": "reject-for-s245",
+      "decisionReason": "The isolated wrinkled image lacks rise, seat and full hem proof, while the small multicolor hardware detail looks cheap and distracting."
+    },
+    {
+      "group": "bottom",
+      "key": "B6",
+      "identity": "shopify_supplier:143a731a5392ce7a45ec9edd9ef5cf5e13b9c268",
+      "name": "Pale Sage-Wash Straight Jean",
+      "decision": "visual-front-runner-awaiting-top-shoe-and-bag",
+      "decisionReason": "Full-resolution proof shows a pale sage-wash regular straight leg with controlled ease and one clean break; it brightens the puffer and avoids both skinny taper and baggy stacking. Anchor the pale wash with a darker knit so the Winter Travel palette is not washed out."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "outputDir": "winter-date-luxury-pilot-s200",
+  "scenarioId": "S200",
+  "occasion": "Date Night",
+  "season": "Winter",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s198-winter-date-midrange-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-watch",
+  "comparisonTitle": "S200 · Winter Date Night · Luxury local screen",
+  "comparisonSubtitle": "Fourteen unique unreserved Winter Date candidates re-evaluated for Luxury fiber, hand construction and exact drape",
+  "comparisonNote": "Require silk-cashmere, wool-silk, wool-cashmere or equivalent Luxury proof, romantic Winter color and hand-finished controlled proportion · no relabeling of mass-market pieces · not UI integrated",
+  "coreTitle": "S200 · provisional Winter Date Night Luxury core",
+  "coreSubtitle": "No remaining local garment reaches the Winter Luxury Date visual bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Luxury re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men dusty lilac silk cashmere fine gauge long sleeve knit polo luxury winter date","targetProduct":"dusty-lilac silk-cashmere fine-gauge long-sleeve knit polo with hand-finished collar","customerRetailTarget":"$300-$450"},
+    {"category":"bottom","searchPhrase":"men winter cream wool silk cashmere high rise double pleat trouser luxury winter date","targetProduct":"winter-cream wool-silk-cashmere high-rise double-pleat trouser with exact break","customerRetailTarget":"$380-$550"},
+    {"category":"outerwear","searchPhrase":"men soft forest green wool cashmere hand finished short car coat luxury winter date","targetProduct":"soft-forest wool-cashmere hand-finished short car coat","customerRetailTarget":"$800-$1200"},
+    {"category":"shoe","searchPhrase":"men burgundy calf suede handmade side zip ankle boot luxury winter date","targetProduct":"burgundy calf-suede handmade Luxury almond-toe side-zip ankle boot","customerRetailTarget":"$420-$600"},
+    {"category":"watch","searchPhrase":"men champagne dial dark coffee leather thin case luxury watch winter date","targetProduct":"champagne-dial thin-case Luxury watch with fine dark-coffee leather strap","customerRetailTarget":"$350-$700"}
+  ]
+}

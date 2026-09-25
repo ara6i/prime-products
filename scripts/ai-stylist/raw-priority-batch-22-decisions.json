@@ -1,0 +1,144 @@
+{
+  "batch": "22",
+  "approvals": {},
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "Eight synthetic product-only colorways repeat dark broken-line and windowpane patterns without adult fit proof."
+    },
+    {
+      "cards": [2],
+      "reason": "All eleven colors share a narrow product-only dress-shirt shape with no drape or movement evidence."
+    },
+    {
+      "cards": [3],
+      "reason": "The ivory worn view exposes a tight chest, waist and sleeve fit; black, khaki, blue and pink cannot rescue that skinny identity."
+    },
+    {
+      "cards": [4],
+      "reason": "All four hanger-only overshirts use contrast utility pockets, visible hem labels and unproven fit while repeating approved utility-shirt roles."
+    },
+    {
+      "cards": [5, 6, 13],
+      "reason": "These narrow synthetic shirts use dated contrast plaid or paisley details at the collar, placket and cuffs."
+    },
+    {
+      "cards": [7],
+      "reason": "The on-body shirt is long and narrow and carries a conspicuous embroidered animal logo on the chest."
+    },
+    {
+      "cards": [8],
+      "reason": "Black, green, blue and mustard are cheerful, but the dense all-over daisy print and hanger-only proof read as cheap novelty resortwear rather than a polished Zara-led statement."
+    },
+    {
+      "cards": [9],
+      "reason": "The multi-stripe henley is visibly skin-tight across chest, arms and waist in every colorway."
+    },
+    {
+      "cards": [10],
+      "reason": "Beige, black, brown and gray product-only shirts are repetitive synthetic basics with no adult shoulder, torso or hem proof."
+    },
+    {
+      "cards": [11],
+      "reason": "The black, gray, khaki and white worn views have acceptable shape but add only generic neutral polyester overshirts to an already strong top pool."
+    },
+    {
+      "cards": [12],
+      "reason": "All four shiny gradient shirts carry a visible chest label and gimmicky black, blue, green, pink or magenta fades."
+    },
+    {
+      "cards": [14],
+      "reason": "Black, gray and white satin shirts are shiny and tightly stretched across the chest, waist and upper arms."
+    },
+    {
+      "cards": [15],
+      "reason": "Oversized dots on black, animal-like monochrome and yellow variants create novelty costume styling with no reliable fit proof."
+    },
+    {
+      "cards": [16],
+      "reason": "Black, mustard and red stand-collar shirts share a visibly narrow product-only shape and add no new modern silhouette."
+    },
+    {
+      "cards": [17],
+      "reason": "The camouflage cargo jean has stacked pockets, extreme width and heavy puddling around the shoe."
+    },
+    {
+      "cards": [18],
+      "reason": "Apricot and black technical cargos are wide, highly pocketed and product-only, with gathered elastic waists and no fit proof."
+    },
+    {
+      "cards": [19, 22],
+      "reason": "These dark, blue and pale-washed cargo jeans are visibly wide and puddled over the shoes."
+    },
+    {
+      "cards": [20],
+      "reason": "Black and white textured trousers use extreme wide legs, giant contrast drawstrings and uncontrolled full-length volume."
+    },
+    {
+      "cards": [21],
+      "reason": "The apricot product-only cargo has oversized knee pockets, multiple seams and visible hem puddling."
+    },
+    {
+      "cards": [23, 25],
+      "reason": "Every color uses a very wide relaxed leg with excessive thigh volume and fabric stacking at the ankle."
+    },
+    {
+      "cards": [24, 27],
+      "reason": "Wide pooled legs, giant drawstrings, side panels and colored snap buttons create dated costume-like track pants."
+    },
+    {
+      "cards": [26],
+      "reason": "Blue, khaki, light-blue and white flax trousers are product-only and visibly wrinkled at the hem, without rise, break or on-body proportion proof."
+    },
+    {
+      "cards": [28],
+      "reason": "The cropped high-waist leggings are body-hugging, logo-led and unsuitable as a general men's outfit bottom."
+    },
+    {
+      "cards": [29],
+      "reason": "The dark navy and ochre field jackets are product-only, pocket-heavy and carry visible arm patches and cuff text."
+    },
+    {
+      "cards": [30],
+      "reason": "The black puffer is extremely shiny and covered with sleeve, chest and back logos; the gray version repeats the same construction."
+    },
+    {
+      "cards": [31, 32, 33],
+      "reason": "These single-color black product-only puffers and padded jackets are generic, shiny and already covered by cleaner winter layers."
+    },
+    {
+      "cards": [34],
+      "reason": "The single all-black longline shell is product-only, visually heavy and supplies no adult silhouette or movement proof."
+    },
+    {
+      "cards": [35],
+      "reason": "The black synthetic leather-look jacket is narrow, generic and adds another dark moto-adjacent layer."
+    },
+    {
+      "cards": [36],
+      "reason": "Army, black, gray, red, khaki and navy versions remain boxy four-pocket fishing vests with visible neck branding and no on-body proof."
+    },
+    {
+      "cards": [37],
+      "reason": "The black worn shell is oversized, logo-led and visually indistinguishable from generic technical outerwear."
+    },
+    {
+      "cards": [38],
+      "reason": "Black, blue, orange, red and rust puffers are narrow, shiny and use striped lining plus contrast zip trim that looks dated."
+    },
+    {
+      "cards": [39],
+      "reason": "Mesh panels, reflective stripes and neon colors make this safety/work vest rather than a modern styling layer."
+    },
+    {
+      "cards": [40],
+      "reason": "All six product-only colors retain a bulky multi-pocket fishing-vest silhouette and visible neck label."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 147 recorded color images rendered; 187 displayed images loaded with zero broken files.",
+    "0 accepted and 40 rejected after the base pass and close inspection of 31 promising color variants across seven identities.",
+    "No identity entered the usable pool, so accepted identity, source-product, variant and image collision counts remain unchanged at zero.",
+    "Rejections include skinny or shiny shirts, cheap novelty prints, product-only basics without fit proof, puddled cargo and wide-leg pants, dated track pants, generic dark puffers, tactical vests and logo-led technical layers."
+  ]
+}

@@ -34,6 +34,22 @@ export async function submitPartnerInterest(
     };
   }
 
+  if (
+    payload.audience === "supplier" &&
+    (!payload.companyName?.trim() ||
+      !payload.website?.trim() ||
+      !payload.productCategory?.trim() ||
+      !payload.catalogSize?.trim() ||
+      !payload.sellingModel?.trim() ||
+      !payload.shippingReach?.trim() ||
+      !payload.connectionGoals?.length)
+  ) {
+    return {
+      ok: false,
+      message: "Complete the supplier profile questions before joining.",
+    };
+  }
+
   try {
     const apiBase =
       process.env.NEXT_PUBLIC_API_URL ??
@@ -47,6 +63,13 @@ export async function submitPartnerInterest(
         product: payload.audience,
         name: payload.name.trim(),
         website: payload.website?.trim() || undefined,
+        company: payload.companyName?.trim() || undefined,
+        productCategory: payload.productCategory?.trim() || undefined,
+        catalogSize: payload.catalogSize?.trim() || undefined,
+        sellingModel: payload.sellingModel?.trim() || undefined,
+        shippingReach: payload.shippingReach?.trim() || undefined,
+        connectionGoals: payload.connectionGoals,
+        notes: payload.notes?.trim() || undefined,
         primaryChannel: payload.primaryChannel,
         creatorProfiles: payload.creatorProfiles?.map((profile) => {
           const validation = validateCreatorProfileUrl(

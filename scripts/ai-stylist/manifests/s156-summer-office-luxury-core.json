@@ -1,0 +1,68 @@
+{
+  "outputDir": "summer-office-luxury-pilot-s156",
+  "scenarioId": "S156",
+  "occasion": "Work / Office",
+  "season": "Summer",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-shoe-bag-accessory",
+  "comparisonTitle": "S156 · Summer Work / Office · Luxury local screen",
+  "comparisonSubtitle": "Eight light or colorful warm-weather tops · eight trouser or tailored-short candidates · all unique and unreserved",
+  "comparisonNote": "Require Luxury breathable textile, drape, hand-finishing and construction proof, modern Zara-led proportion and purposeful happy color · no skinny shirt, puddled leg, lounge waist, cargo clutter or dark monotony · not UI integrated",
+  "coreTitle": "S156 · provisional Summer Work / Office Luxury core",
+  "coreSubtitle": "No local garment reaches the Summer Luxury Office visual bar · all five roles unresolved",
+  "coreNote": "Zero provisional holds after all 16 originals were checked at full resolution · Luxury customer-retail proof and all companion roles remain unresolved · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men soft coral seafoam silk cashmere fine gauge short sleeve knit polo luxury summer office",
+      "targetProduct": "soft-coral or seafoam silk-cashmere fine-gauge short-sleeve knit polo with controlled regular-relaxed ease",
+      "customerRetailTarget": "$300-$450"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men warm ivory linen silk wool double pleat controlled straight trouser luxury summer office",
+      "targetProduct": "warm-ivory linen-silk-wool double-pleat trouser with a controlled straight leg and precise break",
+      "customerRetailTarget": "$380-$550"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men tobacco suede handmade low profile round toe penny loafer luxury summer office",
+      "targetProduct": "tobacco-suede handmade low-profile round-toe penny loafer",
+      "customerRetailTarget": "$420-$600"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men cognac full grain leather canvas slim briefcase luxury summer office minimal",
+      "targetProduct": "cognac full-grain-leather-and-canvas slim briefcase with quiet hardware and minimal branding",
+      "customerRetailTarget": "$650-$900"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men cream dial sage leather thin case minimal watch luxury summer office",
+      "targetProduct": "cream-dial thin-case luxury watch with a soft-sage leather strap",
+      "customerRetailTarget": "$350-$700"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:4b02fa1f08581096e185ad135f7fb00d6d622f3d","name":"Pea-Green Textured Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The texture can serve Casual or Travel, but the actual muted-khaki color, long open overshirt body, large flap pocket and visible base T-shirt cannot communicate a self-contained Luxury Summer Office garment."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:0312db0cd26acade9f91f474e8b9b19311c3e778","name":"Pink Button-Up Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The lively pink is outweighed by distressed plaid, raw fraying, a dropped shoulder and a very long open body. It reads Festival grunge, not Luxury Office."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:f5800aaaef7e1a427ebc24fd5041ae95a71b003c","name":"Sky-Blue Long-Sleeve Button-Down","decision":"reject-for-s156","decisionReason":"The fresh color is shown only in a hanger composition over a separate tee, so fit, drape, fiber and hand-finishing remain unproven."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:4364e9fb40a107fbdd3db7c2b04eb9ebef44b1e2","name":"Khaki Mock-Neck Short-Sleeve Knit","decision":"reject-for-s156","decisionReason":"The product-only view provides no body-fit or drape proof, and the narrow ribbed sleeves, long tapered torso and flat muted knit read mass-market rather than Luxury."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:da767e27d71701e7343c7a356396e5a5e90d680d","name":"White Mock-Neck Short-Sleeve Top","decision":"reject-for-s156","decisionReason":"This plain product-only T-shirt shape has no visible fine-gauge character, body proof or silk-cashmere construction evidence."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:9cc79e1077cee3d17f7915da83507df07302d073","name":"White Short-Sleeve Button-Up","decision":"reject-for-s156","decisionReason":"The lightweight hanger-only shirt is styled as an open layer over a tee and cannot establish Luxury fit, drape, fiber or finishing."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:f0ad2af6c72cba6799e6543fc55abf587f53ab04","name":"Light-Green Casual Button-Up","decision":"reject-for-s156","decisionReason":"The product-only source lacks fit proof, while asymmetric utility pockets, dark buttons and a visible wordmark patch conflict with quiet Luxury Office construction."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:6531885c6d54dd5b10a585963227232ae011397c","name":"Pastel-Blue Clean Chino Short","decision":"reject-for-s156","decisionReason":"The shiny product-only fabric, elastic side waist, rolled hem and narrow conventional cut cannot prove a Luxury tailored Bermuda."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:0ea516ce4334a3e1b7d95485d902e489baa6c0c3","name":"Light-Blue Cotton-Linen Straight Trouser","decision":"reject-for-s156","decisionReason":"A gathered elastic waist, visible drawstring, crinkled surface and barefoot source read lounge or Resort rather than Luxury tailoring."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:0706cc59d6cccb0e2018c17d2d73768af8afa55e","name":"Gray Straight Drawstring Trouser","decision":"reject-for-s156","decisionReason":"The gathered waist, oversized cord, black D-ring, synthetic sheen and hidden shoe break override the otherwise controlled leg."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:2ee1a0fbc1261c590f394c7d2529549fd8a033c9","name":"Navy Lightweight Relaxed-Straight Trouser","decision":"reject-for-s156","decisionReason":"The dark technical fabric, zip detail and broad leg pooling over sneakers fail both Luxury hand-feel and precise Summer drape."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:04d7241016fbcf860f5b98ce77b100cd3efa1689","name":"Camel Relaxed-Straight Cotton Trouser","decision":"keep-available-for-other-scenario","decisionReason":"The camel cotton is useful for lower-tier Casual, but its long stacked hem and chunky-sneaker presentation do not establish a light Luxury Summer trouser."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:15d99fe892fb4b18875db9be577aaeb178bba0fd","name":"Khaki Casual Short","decision":"keep-available-for-other-scenario","decisionReason":"The light texture can serve Resort, but the wrinkled product-only source, rolled long hem and absent fit proof do not meet a Luxury tailored-short gate."},
+    {"group":"bottom","key":"B7","identity":"shopify_supplier:0bbeb659ea8c838f7cdf606adeccf36a188247e0","name":"Light-Blue Toile Knee-Length Short","decision":"keep-available-for-other-scenario","decisionReason":"The botanical toile and controlled line work for Resort or a daytime Party, but the all-over print and casual styling are not Luxury Office."},
+    {"group":"bottom","key":"B8","identity":"shopify_supplier:6f7feed8840f5ae61fdc2bdca72c77313949b833","name":"Sage Casual Short","decision":"reject-for-s156","decisionReason":"The product-only technical short uses a webbing belt, exposed zips and diagonal seams without fit proof, so it cannot serve as Luxury tailoring."}
+  ]
+}

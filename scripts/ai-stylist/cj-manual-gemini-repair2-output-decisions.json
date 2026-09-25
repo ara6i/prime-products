@@ -1,0 +1,33 @@
+{
+  "reviewedAt": "2026-09-16T05:28:13.000Z",
+  "localOnly": true,
+  "batch": "batches/k3godl6rjc4i2bezzx65nc1liglofm6jkarf",
+  "model": "models/gemini-3-pro-image-preview",
+  "stage": "second-repair-raw-gemini-output-before-background-removal",
+  "summary": {
+    "reviewed": 3,
+    "rawPass": 3,
+    "regenerate": 0,
+    "outfitReady": 0
+  },
+  "decisions": [
+    {
+      "index": 11,
+      "productId": "2505250900531609500",
+      "decision": "raw-pass",
+      "reason": "Full-resolution comparison confirms one complete front-facing light sage textured knit polo with faithful collar, three-button placket, dropped shoulder, sleeve cuffs and ribbed hem; no label, second garment, text, person or scene remains."
+    },
+    {
+      "index": 21,
+      "productId": "2505140753031625700",
+      "decision": "raw-pass",
+      "reason": "Full-resolution comparison confirms one complete coffee-brown and taupe penny loafer with faithful leather-suede color blocking, apron edge, strap, toe, heel and slim sole; no pair, wearer or room remains."
+    },
+    {
+      "index": 27,
+      "productId": "2502280543221601200",
+      "decision": "raw-pass",
+      "reason": "Full-resolution comparison confirms one complete warm-ivory trouser with faithful extended waistband, button, side tabs, double pleats, fly, center creases, controlled straight-tapered legs and cuffed hems; no person, footwear or room remains."
+    }
+  ]
+}

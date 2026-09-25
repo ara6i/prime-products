@@ -1,0 +1,57 @@
+{
+  "outputDir": "spring-office-midrange-pilot-s150",
+  "scenarioId": "S150",
+  "occasion": "Work / Office",
+  "season": "Spring",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-two-piece-spring-office-core-awaiting-midrange-price-policy-and-shoe-bag-accessory",
+  "comparisonTitle": "S150 · Spring Work / Office · Mid-Range local screen",
+  "comparisonSubtitle": "Eight brighter Spring tops · eight light or controlled full-length bottoms · all unique and unreserved",
+  "comparisonNote": "Require modern creative-office polish, joyful controlled color and Zara-led proportion · no skinny shirt, puddled leg, visible lounge waist, utility clutter or dark monotony · not UI integrated",
+  "coreTitle": "S150 · provisional Spring Work / Office Mid-Range core",
+  "coreSubtitle": "pale-aqua pinstripe regular shirt · light-khaki controlled-taper trouser",
+  "coreNote": "Two provisional uniqueness holds · Mid-Range customer-retail proof plus shoe, bag and watch still missing · no complete outfit · not UI integrated",
+  "frontRunnerKeys": ["T5", "B1"],
+  "missingSlots": ["shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "shoe",
+      "searchPhrase": "men burgundy suede leather low profile round toe penny loafer office modern",
+      "targetProduct": "burgundy suede-and-leather low-profile round-toe penny loafer",
+      "customerRetailTarget": "$160-$220"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men cognac pebbled leather slim briefcase crossbody minimal office",
+      "targetProduct": "cognac pebbled-leather slim briefcase or structured office crossbody",
+      "customerRetailTarget": "$150-$220"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men cream dial sage leather minimal watch office",
+      "targetProduct": "cream-dial minimalist watch with a muted-sage leather strap",
+      "customerRetailTarget": "$100-$160"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:3585f563acb3495d789e9eea3b68a05f6553a4d1","name":"Bean-Green Long-Sleeve Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The fresh bean-green color and regular-relaxed body are credible, but the worn source shows it only as a long open overshirt over a separate white T-shirt with backpack styling. Preserve it for Spring Casual or Travel rather than treating it as a self-contained Office top."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:47ca6448dd910b9ff3503470a65b607a5617e9fb","name":"Sky-Blue Waffle Button-Up","decision":"reject-for-s150","decisionReason":"The sky blue and waffle texture are attractive, but the torso is comparatively close, the sleeves are rolled to three-quarter length and the long curved hem reads generic resort shirt. T5 provides cleaner modern Office ease."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:876dcc2ef3f946aa19fd72de8cef44c37098aed1","name":"Sky-Blue Solid Long-Sleeve Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The bright blue and clean fabric are useful, but the dropped shoulder, long broad body and open-over-tee presentation make this an overshirt for Casual or Travel rather than the controlled Office lead."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:e7361b8487ac1660da9ab0793850061238efa055","name":"Coffee Fine-Stripe Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The fine stripe offers texture, but the very long body, heavily bunched rolled sleeves, open white-tee dependency and small script on the pocket make it too casual and visually busy for S150. Preserve it for Travel or Casual."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:e91eeff2e12728ba653563b1948d0728a0b051c1","name":"Pale-Aqua Pinstripe Button-Down","decision":"visual-front-runner-for-s150","decisionReason":"The full source confirms a cheerful pale-aqua pinstripe, clean button-down collar, regular shoulder and controlled relaxed body. It avoids both a skinny dress shirt and an oversized overshirt; use a clean tuck or restrained untucked hem for the creative-Office core."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:c088c69f9f54b34e8066d0bfb29314b31c32c1f0","name":"Light-Blue Ribbed Short-Sleeve Knit","decision":"reject-for-s150","decisionReason":"The light blue and vertical rib are useful, but the source is a cropped product/model composite without a reliable full-body silhouette. The narrow sleeve opening, close torso and bunched waist risk the fitted dated knit shape being removed."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:101e29ecd0a490074034237fecfbfefe384e0d95","name":"Apricot Notched-Neck Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The warm apricot linen-like color is pleasant, but the collarless split neck, oversized patch pocket, long loose sleeves and casual half-tuck read Resort or Vacation rather than polished Office."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:562ef215a70cbcfd7ce173689cb66a424834d5bd","name":"Yellow Long-Sleeve Button-Down","decision":"reject-for-s150","decisionReason":"The yellow is cheerful, but the heavily washed finish, pronounced wrinkling, tightly muscular torso, rolled sleeves and dated jeans styling do not meet the modern relaxed Zara-led Office standard."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:36775b09ed8cf6af570dd58f177804a5200ce70c","name":"Light-Khaki Controlled-Taper Trouser","decision":"visual-front-runner-for-s150","decisionReason":"The full source proves a clean mid-rise waist, regular thigh, controlled taper and precise full-length hem with one clean shoe break. It is neither skinny nor baggy and keeps the aqua-pinstripe Office core bright and professional."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320","name":"Light-Gray Relaxed Trouser","decision":"reject-for-s150","decisionReason":"Only a product image is available, so rise, thigh, drape and shoe break are unproven. The diagonal knee seams and synthetic-looking surface also read technical rather than tailored Office."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:3095c87326ee7556a98852b611d3737df02b04a4","name":"Flax-Coffee Lightweight Trouser","decision":"reject-for-s150","decisionReason":"The exposed black drawstring, gathered elastic waist, crinkled lounge fabric, broad leg and puddled hem make this a casual lounge trouser, not an Office bottom."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:bf7fa4e61eb13d0ac96cfca0028b90814633535c","name":"Ivory Straight-Leg Jean","decision":"keep-available-for-other-scenario","decisionReason":"The ivory color could support Spring Casual, but the product-only image cannot prove rise, thigh ease, length or shoe break and the visibly broad flat leg is too uncertain for an Office hold."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:c4694a3740fce46e4cb36568c29f9bd341398236","name":"Medium-Blue Straight-Leg Jean","decision":"reject-for-s150","decisionReason":"The medium blue is clean, but the leg runs long and wide enough to fold and stack at the sneaker. Its casual denim finish and visible hem collapse are weaker than B1 for a controlled Office silhouette."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:2757295a71470293dac80a2c7e1e5684a21f33e3","name":"Khaki Loose-Fit Trouser","decision":"keep-available-for-other-scenario","decisionReason":"The cropped controlled leg can work for Travel or functional Casual, but the gathered elastic waist, black webbing belt, synthetic surface and athletic sneaker styling are not Office tailoring."},
+    {"group":"bottom","key":"B7","identity":"shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265","name":"Military-Green Casual Trouser","decision":"reject-for-s150","decisionReason":"The product-only source gives no reliable fit or hem proof, and the shiny wrinkled olive fabric plus novelty multicolor bead attachment undermine polished Office styling."},
+    {"group":"bottom","key":"B8","identity":"shopify_supplier:aabdffc99d8e26c94746c17f630f60a6bb135e66","name":"Yellow-Green Straight-Leg Jean","decision":"reject-for-s150","decisionReason":"The acid yellow-green wash is dirty and uneven, while the streetwear styling, oversized sweatshirt, very long broad leg and heavy sneaker puddling directly conflict with the Office brief."}
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "batch": "33",
+  "approvals": {
+    "8": {
+      "color": "Camel",
+      "constraint": "Use this camel washed relaxed T-shirt once only for Spring/Summer/Early-Fall Casual Everyday, Weekend, Travel, Campus, a daytime Date or a restrained casual Party. Treat the tee as the outfit's one Fear-of-God/Zara-style relaxed volume and pair it with a clean straight or gently tapered bottom in ecru, stone, light gray, muted olive or controlled washed blue plus a low-profile cream, white, tan or light-gray shoe; never add a baggy, cargo-heavy or puddled bottom, bulky footwear, another oversized layer, a matching muddy-brown palette or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 4, 7, 9],
+      "reason": "These hanger-only, product-only or worn tops are generic dark basics with visible logos, trim or branding and add no clean modern role."
+    },
+    {
+      "cards": [3, 5, 6, 10, 13, 14],
+      "reason": "These tanks have deep armholes, long or uncontrolled bodies, muscle-fit presentation, visible branding, dark washed treatment or no credible fit proof and fail the controlled silhouette gate."
+    },
+    {
+      "cards": [11, 12],
+      "reason": "The satin ruffle shirt and sequin T-shirt are theatrical costume pieces rather than versatile modern menswear."
+    },
+    {
+      "cards": [15, 16],
+      "reason": "These washed zip hoodies are dark, oversized or product-only and repeat a role already covered by a stronger happier-color hoodie."
+    },
+    {
+      "cards": [17, 18, 20, 21, 22],
+      "reason": "These shorts are camouflage, distressed, long, wide, print-led or cargo-pocket-heavy and do not meet the clean tailored or controlled casual-short gate."
+    },
+    {
+      "cards": [19],
+      "reason": "The black wide-leg trouser pools heavily over the shoes and directly violates the no-puddled-bottom requirement."
+    },
+    {
+      "cards": [23, 24, 25, 26, 27, 28],
+      "reason": "These cargo and drawstring trousers are loose, pocket-heavy, cuff-bunched, excessively wide or visibly puddled; even the lighter colors recreate the baggy-bottom problem."
+    },
+    {
+      "cards": [29, 32, 35],
+      "reason": "These moto and faux-leather jackets are skinny, shiny, seam-heavy or generic product-only designs with dated low-cost construction."
+    },
+    {
+      "cards": [30, 34, 36, 38, 39, 40],
+      "reason": "These bombers and zip jackets are dominated by racing graphics, slogans, patches, contrast panels or novelty prints rather than clean Zara-led outerwear."
+    },
+    {
+      "cards": [31],
+      "reason": "The sequin vest and bow-tie presentation is costume/prom styling, not a useful non-wedding modern layer."
+    },
+    {
+      "cards": [33],
+      "reason": "The banquet-ready suit is a skinny formal set and is excluded because Wedding and Wedding Guest remain untouched."
+    },
+    {
+      "cards": [37],
+      "reason": "The expensive product-only brown/green bomber has visible chest branding, no adult fit proof and an unverified plaid-collar proportion."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 168 recorded color images rendered; 168 displayed images loaded with zero broken files.",
+    "1 accepted with one exact color and variant selected: a camel washed relaxed T-shirt with a modern Fear-of-God/Zara-style proportion.",
+    "39 rejected after the base pass and close inspection of 13 variants across four borderline identities; every bottom and outerwear product failed.",
+    "The selected identity, source product, variant and image have zero collision with every prior accepted or conditional item.",
+    "Rejections include logo and muscle-fit tanks, costume tops, dark oversized hoodies, cargo-heavy or puddled bottoms, faux-leather and racing jackets, a sequin vest, skinny formal tailoring and product-only branded outerwear."
+  ]
+}

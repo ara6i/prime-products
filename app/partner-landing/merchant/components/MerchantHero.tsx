@@ -1,56 +1,48 @@
 "use client";
 
-import Image, { getImageProps } from "next/image";
+import { ArrowRight, ArrowUpRight } from "@phosphor-icons/react";
+import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-import { ArrowUpRight } from "@phosphor-icons/react";
 import type { MerchantLandingViewModel } from "../types";
 import styles from "./merchantLanding.module.css";
 
 export function MerchantHero({
   viewModel,
+  cta,
 }: {
   viewModel: MerchantLandingViewModel;
+  cta?: {
+    href: string;
+    label: string;
+  };
 }) {
   const [activePillarIndex, setActivePillarIndex] = useState<number | null>(
     null,
   );
-  const common = {
-    alt: "PrimeStyleAI headquarters and the supplier, merchant, creator, and shopper network forming the PrimeStyleAI mark",
-    sizes: "100vw",
-    quality: 90,
-    fetchPriority: "high" as const,
-    loading: "eager" as const,
-  };
-  const {
-    props: { srcSet: desktopSrcSet },
-  } = getImageProps({
-    ...common,
-    src: viewModel.hero.heroImage,
-    width: 3840,
-    height: 2160,
-  });
-  const {
-    props: { srcSet: mobileSrcSet, ...mobileImageProps },
-  } = getImageProps({
-    ...common,
-    src: viewModel.hero.heroMobileImage,
-    width: 2160,
-    height: 3840,
-  });
+  const heroAlt =
+    "PrimeStyleAI headquarters and the global network of suppliers, merchants, creators, and shoppers forming the PrimeStyleAI mark";
 
   return (
     <section
       id="network"
       className={styles.networkHero}
-      aria-label="PrimeStyleAI merchant network"
+      aria-label="PrimeStyleAI global merchant network"
     >
       <picture className={styles.networkHeroPicture}>
-        <source media="(min-width: 561px)" srcSet={desktopSrcSet} />
-        <source media="(max-width: 560px)" srcSet={mobileSrcSet} />
+        <source
+          media="(max-width: 560px)"
+          srcSet={viewModel.hero.heroMobileImage}
+        />
         <img
-          {...mobileImageProps}
-          alt={common.alt}
+          src={viewModel.hero.heroImage}
+          alt={heroAlt}
+          width={3840}
+          height={2160}
           className={styles.networkHeroBackground}
+          fetchPriority="high"
+          loading="eager"
+          decoding="async"
         />
       </picture>
       <div className={styles.networkHeroCopy}>
@@ -79,7 +71,7 @@ export function MerchantHero({
         >
           <div
             className={styles.networkHeroFeatureList}
-            aria-label="Explore the merchant network features"
+            aria-label="Explore the PrimeStyleAI global network features"
             onBlur={(event) => {
               if (!event.currentTarget.contains(event.relatedTarget)) {
                 setActivePillarIndex(null);
@@ -150,6 +142,14 @@ export function MerchantHero({
             })}
           </figure>
         </div>
+        {cta ? (
+          <Link
+            href={cta.href}
+            className={`${styles.primaryButton} ${styles.networkHeroCta}`}
+          >
+            {cta.label} <ArrowRight size={17} weight="bold" />
+          </Link>
+        ) : null}
       </div>
     </section>
   );

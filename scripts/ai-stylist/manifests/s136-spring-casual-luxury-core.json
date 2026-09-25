@@ -1,0 +1,71 @@
+{
+  "outputDir": "spring-casual-luxury-pilot-s136",
+  "scenarioId": "S136",
+  "occasion": "Casual Everyday",
+  "season": "Spring",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "full-resolution-correction-no-luxury-core-awaiting-replacement-top-bottom-shoe-bag-accessory",
+  "comparisonTitle": "S136 · Spring Casual Everyday · Luxury local screen",
+  "comparisonSubtitle": "Eight color-led Spring tops · eight controlled-bottom candidates · eight light layers · all unique and unreserved",
+  "comparisonNote": "Require elevated Zara-led color, credible material and controlled ease · no skinny top, puddled bottom, cheap technical finish, oversized-on-oversized stack or dark monotony · not UI integrated",
+  "coreTitle": "S136 · corrected Spring Casual Everyday Luxury empty core",
+  "coreSubtitle": "previous knit tank revoked from Luxury · replacement top and all lower-half roles unresolved",
+  "coreNote": "Zero provisional holds · T7 retained only for a lower tier · top, bottom, shoe, bag and accessory missing · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "bottom",
+      "searchPhrase": "men dusty orchid soft lilac wool silk blend cropped straight trouser clean flat front",
+      "targetProduct": "dusty-orchid or soft-lilac wool-silk-blend clean cropped straight trouser",
+      "customerRetailTarget": "$360-$520"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men cream suede low profile court sneaker muted plum accent minimal",
+      "targetProduct": "cream-suede low-profile court sneaker with restrained muted-plum accent",
+      "customerRetailTarget": "$420-$650"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men tobacco cognac full grain leather compact crossbody minimalist no logo",
+      "targetProduct": "tobacco or cognac full-grain compact minimalist crossbody",
+      "customerRetailTarget": "$650-$1000"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men muted plum gradient slim acetate sunglasses luxury minimal spring",
+      "targetProduct": "muted-plum-gradient slim acetate luxury sunglasses",
+      "customerRetailTarget": "$350-$700"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:e91eeff2e12728ba653563b1948d0728a0b051c1","name":"Soft-Green Fine-Stripe Button-Down","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a clean shoulder and controlled regular-straight body, while the soft green stripe is fresh and versatile. It remains a strong unique Spring Office Casual or Date option, but this Luxury core needs more distinctive texture than another conventional button-down."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:135b9e50f6e72dc7185baef75627227a9a429ef0","name":"Muted-Purple Utility Overshirt","decision":"keep-available-for-other-scenario","decisionReason":"The muted purple is a valuable happier color and the worn source shows credible fabric, but the dropped shoulder, long broad body and large twin utility pockets make it an intentionally roomy outer layer. Preserve it for a later Travel or Creative Casual look with a compact base and narrow controlled trouser."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:e7361b8487ac1660da9ab0793850061238efa055","name":"Warm-Coffee Fine-Stripe Shirt","decision":"reject-for-s136","decisionReason":"The coffee stripe is long, loose and visually generic, with rolled sleeves and an unrelated white tee supplying much of the styling. It does not create the elevated color or distinctive Luxury focal point required here."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:1feb73f9a4814c97fb18176dbbb9e7dcd3e854f0","name":"Peacock-Blue Clean Button-Up","decision":"reject-for-s136","decisionReason":"The peacock blue is promising, but only a hanger image layered over a separate white tee is available. Shoulder line, chest ease, sleeve length and hem behavior are unproven, so it cannot pass the Luxury visual-proof gate."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:f49451cbcc0ad90a1ca810a75aa551f0a6e26970","name":"Pale-Light-Brown Cotton Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The worn source has a credible relaxed shape without extreme volume, but the pale gray-brown color and conventional long overshirt styling are too muted and ordinary for this color-led Luxury core. Keep it for a later understated Office Casual or Travel outfit."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:c44666050b8bf8d58036ec5a3b617fa5e4acfd67","name":"Refined-Khaki Long-Sleeve Shirt","decision":"reject-for-s136","decisionReason":"The khaki twin-pocket shirt is visually muddy and reads as a utilitarian overshirt, with a broad long body and a separate tee underneath. It would make the palette flatter and repeat the boxy layer problem."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:4dc95126d60f966f014ad4ca38177a3a6f88e1c6","name":"Apricot Zip-Neck Knit Tank","decision":"keep-available-for-non-luxury-scenario","decisionReason":"The full source confirms useful texture and color but also a long rectangular body, basic exposed zipper and simple rib finishing. Remove it from S136 Luxury; it may only be reconsidered for a lower-tier Casual or Resort scenario."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:9f7d27037e6928fdc58c7a87a314d205002778a1","name":"Green Relaxed Shirt-Jacket","decision":"reject-for-s136","decisionReason":"The green color could work, but the source is only a hanger image over a separate white tee. Fit, torso volume, sleeve control and hem length are not verifiable, so the shirt-jacket cannot receive a Luxury hold."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:04d7241016fbcf860f5b98ce77b100cd3efa1689","name":"Camel Relaxed-Straight Cotton Trouser","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a usable regular-relaxed straight shape without extreme bagginess, but the hem stacks slightly at the shoes and the plain camel cotton reads basic rather than Luxury. Preserve it for a lower price tier with a stronger colored top."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:f82ede51ff9fb0180d8e8318e06f575aa5f03944","name":"Nostalgic-Blue Straight-Leg Jean","decision":"reject-for-s136","decisionReason":"The jean is broad through the leg and visibly puddles and stacks over the footwear. It recreates the uncontrolled baggy-bottom proportion the rebuild is explicitly removing."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:aabdffc99d8e26c94746c17f630f60a6bb135e66","name":"Yellow-Green Straight-Leg Jean","decision":"reject-for-s136","decisionReason":"Although the yellow-green could have added color, the mottled wash and extreme full-length pooling look messy and cheap. The leg overwhelms the shoe and fails both silhouette and Luxury finish."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:2d404d28d11be77008250d5736f3877c185ccfe7","name":"Light-Blue Vintage Straight Jean","decision":"reject-for-s136","decisionReason":"The pale wash opens into a visible bootcut flare rather than the requested clean straight or gently relaxed line. The dated silhouette would not support a modern Zara-led Luxury outfit."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:36775b09ed8cf6af570dd58f177804a5200ce70c","name":"Khaki Clean Straight Trouser","decision":"reject-for-s136","decisionReason":"The worn fit is narrow and conservative through the thigh and lower leg, while the shiny khaki surface resembles an inexpensive office chino. It is too close to skinny and too formal-generic for this casual Luxury core."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:afb7fb3cf9cc6771830ceb3630b7001b6b0a833a","name":"Peacock-Blue Straight-Fit Jean","decision":"reject-for-s136","decisionReason":"The peacock-blue label does not match the visually dark, heavily whiskered worn jean. Its low-rise dated wash and broad stacked hem fail the clean modern lower-half standard."},
+    {"group":"bottom","key":"B7","identity":"shopify_supplier:6f7feed8840f5ae61fdc2bdca72c77313949b833","name":"Sage Zip-Detail Tailored Short","decision":"reject-for-s136","decisionReason":"Only a product packshot exists, and the integrated web belt, multiple zipper details and technical construction read Outdoor rather than tailored Luxury. Fit and knee proportion are also unproven."},
+    {"group":"bottom","key":"B8","identity":"shopify_supplier:21a2265522666c46ad4a36d90d1efef1bba96fd9","name":"Fog-Purple Controlled Casual Short","decision":"keep-available-for-other-scenario","decisionReason":"The fog-purple color is useful and the worn knee-length shape is controlled, but curved utility seams, pocket detailing and a synthetic-looking surface keep it below the Luxury bar. Preserve it for a unique Summer Casual or Travel outfit."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:7d49a77c6a00bae512e0cf904b9b68d8402b81e9","name":"Light-Khaki Hooded Zip Jacket","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a controlled practical shell and the light khaki is seasonally useful, but the high hood, black waterproof zips and trekking styling read Outdoor or Rain Travel rather than Luxury Casual. Preserve it for the proper functional scenario."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:0207913076417c4f3fc03599b3b2cc589b66c644","name":"Sapphire Contrast-Stitch Denim Jacket","decision":"reject-for-s136","decisionReason":"The dark denim, bright contrast stitching, four-pocket front and large buttons create a busy workwear look, and the isolated packshot gives no body-fit proof. It is too dark and visually heavy for the apricot Luxury core."},
+    {"group":"outerwear","key":"O3","identity":"shopify_supplier:b50b813f19e70580788dc58b1d3c0200845e5f6c","name":"Indigo Snap-Front Denim Jacket","decision":"reject-for-s136","decisionReason":"The unwashed indigo and unusual riveted front read stiff and costume-like, while the broad product-only outline leaves shoulder drop and body volume unproven. It does not meet the refined material or fit-proof requirement."},
+    {"group":"outerwear","key":"O4","identity":"shopify_supplier:39129805d156a12a421fd64b66233122e09d62a7","name":"Light-Blue Washed Denim Jacket","decision":"reject-for-s136","decisionReason":"The light blue is Spring-friendly, but the flat-lay outline is oversized with very dropped shoulders and no worn evidence of how the long broad body sits. The generic wash and large pockets do not justify a Luxury hold."},
+    {"group":"outerwear","key":"O5","identity":"shopify_supplier:efbb598e499c729a655456c1e97f1b5247d4f81e","name":"Pale Gray-Green Rain Shell","decision":"keep-available-for-other-scenario","decisionReason":"The worn image proves a light technical rain layer and the pale gray-green is usable, but the crinkled nylon, face-covering hood, sleeve pocket and loose shell volume are firmly Outdoor or Rain Travel. It would turn this outfit into technical streetwear."},
+    {"group":"outerwear","key":"O6","identity":"shopify_supplier:b9007875eb65fea3bd88de9ad0a6b71ce38b23b6","name":"Army-Green Clean Zip Jacket","decision":"reject-for-s136","decisionReason":"The bomber is relatively clean, but only a product image is available and the shiny synthetic cloth, diagonal zipper pockets and elastic waist read standard mass-market outerwear. Fit and drape are unproven and the finish is not Luxury."},
+    {"group":"outerwear","key":"O7","identity":"shopify_supplier:97d0fa66e0f0b15d1c75f32a5a86c1db3210eba1","name":"Light-Khaki Bomber Jacket","decision":"reject-for-s136","decisionReason":"The plush-lined stand collar, utility sleeve pocket and visibly bulky padded body make this a cool-season military bomber, not a light Spring layer. It would mis-season the scenario and add excessive upper volume."},
+    {"group":"outerwear","key":"O8","identity":"shopify_supplier:6630dc2632bcf5d749f8ca2811f8295abdb23953","name":"Caramel Lightweight Wind Shell","decision":"keep-available-for-other-scenario","decisionReason":"The caramel color is cheerful and potentially useful, but the packshot shows a hooded technical shell with many zips, flap pockets and hook-and-loop patches, without worn fit proof. Preserve it for a functional Outdoor or Travel outfit, not this pared-back Luxury core."}
+  ]
+}

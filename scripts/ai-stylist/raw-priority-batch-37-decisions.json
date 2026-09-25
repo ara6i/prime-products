@@ -1,0 +1,70 @@
+{
+  "batch": "37",
+  "approvals": {
+    "4": {
+      "color": "Yellow",
+      "constraint": "Use this sunny-yellow openwork collared shirt once only for Spring/Summer Vacation, Resort, Travel, Festival, daytime Date or a cheerful casual Party. Wear it over a clean tonal cream or white base when coverage is needed and pair it with controlled ecru, white, stone, tobacco or muted-olive tailored shorts or straight trousers and low-profile cream or tan footwear; never add a baggy cargo, loud printed layer, bulky dark shoe, black-heavy palette or any Wedding/Wedding Guest use."
+    },
+    "5": {
+      "color": "Peacock  Blue",
+      "constraint": "Use this peacock-blue fine-knit crew once only for Fall/Winter Casual Everyday, creative Office, Travel, daytime Date or a restrained Party. Keep its clean saturated color central with straight cream, ecru, camel, charcoal or chocolate trousers and refined cream, tan, brown or gray footwear; never pair it with puddled pants, another bright blue layer, a bulky trainer, dark navy head-to-toe palette or any Wedding/Wedding Guest use."
+    },
+    "7": {
+      "color": "Pastel  Blue",
+      "constraint": "Use this pastel-blue openwork knit tank once only for Spring/Summer Vacation, Resort, Festival, Travel, daytime Date or a restrained warm-weather Party. Pair it with controlled cream, ecru, white, tan or tobacco shorts or straight trousers and minimal cream or tan footwear; never add a baggy cargo, another open-mesh layer, heavy outerwear, bulky sneaker or any Wedding/Wedding Guest outfit."
+    },
+    "10": {
+      "color": "Burnt Coral",
+      "constraint": "Use this burnt-coral breathable active T-shirt once only for Spring/Summer Sports, Workout, Gym, Travel, Running or active Errands. Pair it with clean gray, white, navy, muted-blue or black performance bottoms of controlled length and a streamlined white, gray or navy trainer; never use it with casual cargo shorts, baggy layers, formal pieces, an all-dark board or any Wedding/Wedding Guest outfit."
+    },
+    "11": {
+      "color": "Camel",
+      "constraint": "Use this camel cable-knit quarter-zip once only for Fall/Winter Casual Everyday, Weekend, Travel, creative Office, daytime Date or a restrained Party. Pair it with straight ecru, charcoal, chocolate, burgundy, muted-olive or controlled dark-denim bottoms and low-profile cream, tan or brown footwear; never combine it with a skinny trouser, oversized cargo, bulky trainer, muddy all-brown palette or any Wedding/Wedding Guest use."
+    },
+    "16": {
+      "color": "Apricot",
+      "constraint": "Use this apricot clean zip-neck knit tank once only for Spring/Summer Casual Everyday, Vacation, Resort, Travel, daytime Date or a refined warm-weather Party. Style it as the single relaxed knit element with straight or tailored cream, stone, tobacco, muted-olive or washed-blue bottoms and minimal cream, tan or brown footwear; never add a baggy bottom, another sleeveless oversized layer, chunky trainer, dark palette or any Wedding/Wedding Guest use."
+    },
+    "21": {
+      "color": "Lake Blue",
+      "constraint": "Use this lake-blue controlled cargo short once only for Spring/Summer Casual Everyday, Weekend, Travel, Vacation, outdoor Errands or a daytime Festival. Pair its restrained utility shape with a clean white, ecru, sand, soft-yellow or light-gray tee, polo or overshirt and streamlined white, cream, tan or gray footwear; never add another cargo-heavy layer, oversized long top, bulky trainer, dark blue head-to-toe palette or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 3, 12, 13, 14, 17, 18, 19],
+      "reason": "These product-only or hanger-led basics lack reliable adult fit and movement proof and are additionally generic, dark, technical or visibly logoed."
+    },
+    {
+      "cards": [2, 6, 8, 9, 20],
+      "reason": "The lace-up tunic, deep-V tanks, lifting mesh tank and muscle-tight quarter-zip are costume, gym-bodybuilding or skinny constructions rather than versatile modern menswear."
+    },
+    {
+      "cards": [15],
+      "reason": "The fitted mottled half-zip is visually repetitive beside the stronger camel cable knit and its narrow body does not add a distinct modern role."
+    },
+    {
+      "cards": [22, 27],
+      "reason": "These product-only multi-pocket cargo shorts provide no adult fit proof and are excessively strap-, zipper- or pocket-heavy."
+    },
+    {
+      "cards": [23, 26, 33, 34, 35, 36, 37, 38],
+      "reason": "These camouflage cargo and culotte shorts are novelty-led, long, wide or costume-like and do not belong in a clean Zara-led matrix."
+    },
+    {
+      "cards": [24, 25, 28, 29, 30, 31, 32],
+      "reason": "These solid and denim cargo shorts are excessively wide, below-knee, distressed, color-blocked or dominated by oversized pockets and recreate the baggy-bottom problem."
+    },
+    {
+      "cards": [39, 40],
+      "reason": "Both long trousers are uncontrolled wide-leg or puddled drawstring silhouettes and fail the strict balance gate."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 181 recorded color images rendered; 221 displayed images loaded with zero broken files.",
+    "7 accepted with one exact color and variant selected each: sunny-yellow openwork shirt, peacock-blue fine knit, pastel-blue openwork tank, burnt-coral active tee, camel cable quarter-zip, apricot zip-neck knit tank and lake-blue controlled cargo short.",
+    "33 rejected after the base pass and close inspection of all 46 variants across eight borderline identities.",
+    "Every selected identity, variant and image has zero collision with every prior accepted or conditional item.",
+    "The accepted palette deliberately adds yellow, two clean blues, coral, camel and apricot; nineteen remaining bottoms failed for weak proof, camouflage, excessive cargo treatment or wide and puddled proportions."
+  ]
+}

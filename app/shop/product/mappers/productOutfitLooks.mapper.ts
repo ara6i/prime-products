@@ -1,185 +1,88 @@
-import { shopRunwayLooks } from "../../runway/data/shopRunway.data";
+import type {
+  PrimeStyleOutfitItem,
+  PrimeStyleOutfitLook,
+} from "@primestyleai/tryon-shop/react";
+import {
+  SHOWCASE_PRODUCTS,
+  SHOWCASE_SLOTS,
+  getShowcaseProduct,
+  showcaseAsset,
+  type ShowcaseProduct,
+} from "../../data/showcaseCatalog.data";
 
-type PrimeStyleOutfitSlot =
-  | "top"
-  | "bottom"
-  | "dress"
-  | "outerwear"
-  | "shoe"
-  | "bag";
+const COMPANION_MASKS = ["0000", "0101", "1010", "0011", "1100"] as const;
+const LOOK_LABELS = [
+  "Quiet tailoring",
+  "Soft contrast",
+  "Modern ease",
+  "City proportions",
+  "Weekend polish",
+] as const;
 
-type PrimeStyleOutfitAlternative = {
-  slot: PrimeStyleOutfitSlot;
-  productId: string;
-  title: string;
-  image: string;
-  url?: string;
-  color: string;
-  garmentType: string;
-  recommendedSize: string;
-};
+function alternativesFor(product: ShowcaseProduct) {
+  return SHOWCASE_PRODUCTS.filter(
+    (candidate) =>
+      candidate.gender === product.gender &&
+      candidate.slot === product.slot &&
+      candidate.id !== product.id,
+  ).map((candidate) => ({
+    slot: candidate.slot,
+    productId: candidate.id,
+    title: candidate.name,
+    image: showcaseAsset(candidate, "01-product-front"),
+    displayImage: showcaseAsset(candidate, "01-product-front"),
+    url: `/shop/product/${candidate.id}`,
+    color: candidate.color,
+    garmentType: candidate.slot,
+    recommendedSize: candidate.sizes[0] === "One size" ? "One size" : undefined,
+  }));
+}
 
-type PrimeStyleOutfitItem = PrimeStyleOutfitAlternative & {
-  selected: boolean;
-  alternatives?: PrimeStyleOutfitAlternative[];
-};
-
-type PrimeStyleOutfitLook = {
-  id: string;
-  label: string;
-  items: PrimeStyleOutfitItem[];
-};
-
-type RunwayProductPresentation = {
-  slot: PrimeStyleOutfitSlot;
-  color: string;
-  garmentType: string;
-  recommendedSize: string;
-};
-
-const RUNWAY_PRODUCT_PRESENTATION: Record<string, RunwayProductPresentation> = {
-  "signal-shell": {
-    slot: "outerwear",
-    color: "Coral",
-    garmentType: "Technical shell",
-    recommendedSize: "M",
-  },
-  "arc-mini": {
-    slot: "bag",
-    color: "Coral",
-    garmentType: "Mini bag",
-    recommendedSize: "One size",
-  },
-  "cloud-runner": {
-    slot: "shoe",
-    color: "White",
-    garmentType: "Sneakers",
-    recommendedSize: "8",
-  },
-  "cloudline-layer": {
-    slot: "outerwear",
-    color: "Camel",
-    garmentType: "Long coat",
-    recommendedSize: "M",
-  },
-  "noir-halo-camel": {
-    slot: "dress",
-    color: "Black",
-    garmentType: "Mini dress",
-    recommendedSize: "M",
-  },
-  "noir-step-boot": {
-    slot: "shoe",
-    color: "Black",
-    garmentType: "Ankle boots",
-    recommendedSize: "8",
-  },
-  "lilac-jacket": {
-    slot: "outerwear",
-    color: "Lilac",
-    garmentType: "Volume jacket",
-    recommendedSize: "M",
-  },
-  "lavender-mini": {
-    slot: "bag",
-    color: "Lavender",
-    garmentType: "Mini bag",
-    recommendedSize: "One size",
-  },
-  "lime-column": {
-    slot: "bottom",
-    color: "Lime",
-    garmentType: "Midi skirt",
-    recommendedSize: "M",
-  },
-  "cobalt-track": {
-    slot: "top",
-    color: "Cobalt",
-    garmentType: "Track jacket",
-    recommendedSize: "M",
-  },
-  "form-handbag": {
-    slot: "bag",
-    color: "Cobalt",
-    garmentType: "Shoulder bag",
-    recommendedSize: "One size",
-  },
-  "aero-runner": {
-    slot: "shoe",
-    color: "White",
-    garmentType: "Sneakers",
-    recommendedSize: "8",
-  },
-  "noir-halo": {
-    slot: "outerwear",
-    color: "Black",
-    garmentType: "Sculpted blazer",
-    recommendedSize: "M",
-  },
-  "ivory-column": {
-    slot: "shoe",
-    color: "Ivory",
-    garmentType: "Column boots",
-    recommendedSize: "8",
-  },
-  "signal-arc": {
-    slot: "bag",
-    color: "Coral",
-    garmentType: "Mini bag",
-    recommendedSize: "One size",
-  },
-};
-
-function mapRunwayProduct(
-  product: (typeof shopRunwayLooks)[number]["products"][number],
-): PrimeStyleOutfitItem {
-  const presentation = RUNWAY_PRODUCT_PRESENTATION[product.id];
-  if (!presentation) {
-    throw new Error(`Missing outfit presentation for ${product.id}`);
-  }
-
+function mapOutfitItem(product: ShowcaseProduct): PrimeStyleOutfitItem {
   return {
-    ...presentation,
+    slot: product.slot,
     productId: product.id,
     title: product.name,
-    image: product.image,
+    image: showcaseAsset(product, "01-product-front"),
+    displayImage: showcaseAsset(product, "01-product-front"),
+    url: `/shop/product/${product.id}`,
+    color: product.color,
+    garmentType: product.slot,
+    recommendedSize: product.sizes[0] === "One size" ? "One size" : undefined,
     selected: true,
+    alternatives: alternativesFor(product),
   };
 }
 
-const runwayItems = shopRunwayLooks.flatMap((look) =>
-  look.products.map(mapRunwayProduct),
-);
+export function getProductInstantOutfitLooks(
+  productId: string,
+): PrimeStyleOutfitLook[] {
+  const pinnedProduct = getShowcaseProduct(productId);
+  if (!pinnedProduct) return [];
 
-function alternativesFor(item: PrimeStyleOutfitItem) {
-  return runwayItems
-    .filter(
-      (candidate) =>
-        candidate.slot === item.slot && candidate.productId !== item.productId,
-    )
-    .slice(0, 4)
-    .map((candidate) => ({
-      slot: candidate.slot,
-      productId: candidate.productId,
-      title: candidate.title,
-      image: candidate.image,
-      url: candidate.url,
-      color: candidate.color,
-      garmentType: candidate.garmentType,
-      recommendedSize: candidate.recommendedSize,
-    }));
+  const missingSlots = SHOWCASE_SLOTS.filter(
+    (slot) => slot !== pinnedProduct.slot,
+  );
+  return COMPANION_MASKS.map((mask, lookIndex) => {
+    const selectedBySlot = new Map<ShowcaseProduct["slot"], ShowcaseProduct>();
+    missingSlots.forEach((slot, slotIndex) => {
+      const candidates = SHOWCASE_PRODUCTS.filter(
+        (candidate) =>
+          candidate.gender === pinnedProduct.gender && candidate.slot === slot,
+      );
+      const choice = Number(mask[slotIndex] ?? "0");
+      selectedBySlot.set(slot, candidates[choice] ?? candidates[0]);
+    });
+
+    return {
+      id: `${pinnedProduct.id}-look-${lookIndex + 1}-${mask}`,
+      label: LOOK_LABELS[lookIndex],
+      items: missingSlots.map((slot) => {
+        const product = selectedBySlot.get(slot);
+        if (!product)
+          throw new Error(`Missing ${slot} for ${pinnedProduct.id}`);
+        return mapOutfitItem(product);
+      }),
+    };
+  });
 }
-
-/** The five generated, shoppable looks already used by the shop landing page. */
-export const productInstantOutfitLooks: PrimeStyleOutfitLook[] =
-  shopRunwayLooks.map((look) => ({
-    id: look.id,
-    label: look.title,
-    items: look.products.map((product) => {
-      const item = mapRunwayProduct(product);
-      return {
-        ...item,
-        alternatives: alternativesFor(item),
-      };
-    }),
-  }));

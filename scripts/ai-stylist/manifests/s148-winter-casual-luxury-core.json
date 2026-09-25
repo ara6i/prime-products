@@ -1,0 +1,83 @@
+{
+  "outputDir": "winter-casual-luxury-pilot-s148",
+  "scenarioId": "S148",
+  "occasion": "Casual Everyday",
+  "season": "Winter",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-bag-accessory",
+  "comparisonTitle": "S148 · Winter Casual Everyday · Luxury local screen",
+  "comparisonSubtitle": "Eight rich-color Winter tops · eight full-length bottoms · eight statement layers · all unique and unreserved",
+  "comparisonNote": "Require quiet-Luxury finish, modern Zara-led proportion and purposeful jewel or warm color · no skinny knit, puddled lower half, utility clutter, synthetic bulk or dark monotony · not UI integrated",
+  "coreTitle": "S148 · provisional Winter Casual Everyday Luxury core",
+  "coreSubtitle": "No local garment reaches the Winter Luxury visual bar · all six roles unresolved",
+  "coreNote": "Zero provisional holds after all 24 originals were checked at full resolution · Luxury customer-retail proof and all companion roles remain unresolved · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men dusty orchid coral cashmere blend relaxed mock neck textured polo luxury winter",
+      "targetProduct": "dusty-orchid or coral cashmere-blend relaxed mock-neck sweater or textured knit polo",
+      "customerRetailTarget": "$300-$450"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men winter cream wool cashmere double pleat controlled straight trouser luxury",
+      "targetProduct": "winter-cream wool-cashmere double-pleat trouser with a controlled straight leg",
+      "customerRetailTarget": "$360-$520"
+    },
+    {
+      "category": "outerwear",
+      "searchPhrase": "men soft oatmeal short wool cashmere blouson minimal luxury winter",
+      "targetProduct": "soft-oatmeal short wool-cashmere blouson or compact topcoat with quiet hardware",
+      "customerRetailTarget": "$700-$1100"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men burgundy suede low profile winterized sneaker side zip boot luxury",
+      "targetProduct": "burgundy-suede low-profile winterized sneaker or clean side-zip boot",
+      "customerRetailTarget": "$420-$650"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men forest green full grain leather compact crossbody quiet luxury",
+      "targetProduct": "forest-green full-grain leather compact crossbody with minimal branding",
+      "customerRetailTarget": "$650-$1000"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men camel coral silk cashmere scarf luxury winter",
+      "targetProduct": "camel and coral silk-cashmere scarf with a restrained woven pattern",
+      "customerRetailTarget": "$250-$450"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:135b9e50f6e72dc7185baef75627227a9a429ef0","name":"Purple Long-Sleeve Button-Up","decision":"keep-available-for-other-scenario","decisionReason":"The rich aubergine color and controlled relaxed fit are useful, but the washed cotton, four utility pockets and long overshirt body read workwear rather than quiet Winter Luxury. Preserve it for a lower-tier Casual or Travel role."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:1feb73f9a4814c97fb18176dbbb9e7dcd3e854f0","name":"Peacock-Blue Long-Sleeve Button-Up","decision":"reject-for-s148","decisionReason":"The peacock blue is welcome, but the source is a hanger composition over a separate white T-shirt with no body-fit proof. The thin crinkled fabric reads warm-weather casual, not a luxury Winter knit or shirt."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:0b273a769388021d166d25e44f6005fa71599f1f","name":"Yellow-Green Ribbed Hooded Sweater","decision":"reject-for-s148","decisionReason":"The product-only image cannot prove fit, while the oversized hood, broad tubular body, long sleeves and kangaroo pocket create bulky hoodie proportions instead of a refined Luxury knit."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:8a64334bbf508713bdcb9363a1ed69f5be9ca300","name":"Khaki Textured Half-Button Sweatshirt","decision":"keep-available-for-other-scenario","decisionReason":"This has a credible controlled relaxed fit, upper-hip hem and useful diagonal texture, but the khaki sweatshirt finish and exposed white base layer are too casual and muted to lead the joyful Luxury Winter story. Preserve it for a lower tier."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:821ecfe8e5c578279ddd8f55492daca456209053","name":"Beige Quarter-Zip Long-Sleeve Top","decision":"reject-for-s148","decisionReason":"The torso and sleeves are closely cut, the waffle synthetic surface reads technical base layer, and the orange center and chest zips add sportswear clutter. It fails both the modern relaxed silhouette and Luxury finish gates."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:0ae1b8390f88851ec82739efb73704f9d134321e","name":"Mustard Half-Zip Sweatshirt","decision":"reject-for-s148","decisionReason":"Although the mustard color is lively, the body and sleeves are visibly skinny and the flat synthetic fleece resembles an inexpensive performance base layer. This is the exact fitted-top silhouette being removed."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:103874fdc98f0d098753e001e36f6000b75a187d","name":"Apricot Long-Sleeve Pocket Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The woven cream-brown pattern and easy overshirt fit can support a Fall Casual outfit, but the repetitive graphic texture, generic hardware and supplier-page presentation do not prove a Luxury textile or finish."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:34d9d6feb72ae5a69502a3d4eaaf59b00687c967","name":"Green Long-Sleeve Button-Up","decision":"reject-for-s148","decisionReason":"The muted green is pleasant, but the hanger-only composite supplies no shoulder, torso, sleeve or hem proof. Its thin crinkled surface reads Spring shirt rather than a substantial Winter Luxury top."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:1a666f5be35d5c8b71d25f4cbf709b11f941d134","name":"Sand-Gray Drawstring Trouser","decision":"reject-for-s148","decisionReason":"The elasticated drawstring waist, exposed front seam, shiny jersey and narrow taper make this a skinny lounge jogger, not a structured Luxury trouser."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265","name":"Military-Green Casual Trouser","decision":"reject-for-s148","decisionReason":"Only a wrinkled product image is available, so rise, thigh and hem behavior are unproven. The shiny cotton surface and novelty multicolor bead attachment reduce refinement."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:2ee1a0fbc1261c590f394c7d2529549fd8a033c9","name":"Navy Lightweight Wide-Leg Trouser","decision":"reject-for-s148","decisionReason":"The leg is extremely broad and collapses in multiple puddled folds over the sneakers. The lightweight technical fabric and zip detail are too sporty, dark and uncontrolled for the Luxury core."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:04d7241016fbcf860f5b98ce77b100cd3efa1689","name":"Camel Wide-Leg Casual Trouser","decision":"reject-for-s148","decisionReason":"The camel tone is useful, but the long wide leg stacks heavily at the shoe and the casual cotton surface lacks Luxury drape. It would repeat the baggy-bottom problem instead of correcting it."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:f3c07fc2e1f6106c028c1f8c44d239a552272766","name":"Paris-Gray Drawstring Jogger","decision":"reject-for-s148","decisionReason":"The elastic waist, long drawcord, technical nylon, cargo zip and elasticated ankle make this an activewear jogger. It is seasonally light and incompatible with a quiet-Luxury Winter outfit."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:33f20ed218284095318e12a6ed062423fec638af","name":"Blue Drawstring Jogger","decision":"reject-for-s148","decisionReason":"This is a dark narrow drawstring jogger with a tapered ankle and athletic waistband. It offers neither joyful color nor the tailored controlled-straight silhouette required for Luxury."},
+    {"group":"bottom","key":"B7","identity":"shopify_supplier:d1af0d4c9b1ab1f720fa08ef7813c2bc3e4c6d6d","name":"Moss Drawstring Wide-Leg Trouser","decision":"reject-for-s148","decisionReason":"The outdoor hiking context, neon side zip, bulky articulated panels, drawstring waist and overlong wide leg are functional expedition details, not an urban Luxury trouser."},
+    {"group":"bottom","key":"B8","identity":"shopify_supplier:afb7fb3cf9cc6771830ceb3630b7001b6b0a833a","name":"Peacock-Blue Straight-Fit Jean","decision":"reject-for-s148","decisionReason":"The low rise, strong whiskering and faded thighs look dated, while the hem lightly collapses on the shoe. It lacks the clean dark wash and precise break needed for a Luxury jean."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:aeec300145fdb4b330693796cf4e270f33526c42","name":"Beige Winter Puffer","decision":"reject-for-s148","decisionReason":"The beige color is usable, but the product-only image gives no fit proof and the deep horizontal baffles, shiny shell and bulky generic construction do not communicate Luxury."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:6b52abff343f1111ea1b4465ec34cb4c99c79d7e","name":"Dusty-Blue Stand-Collar Puffer","decision":"reject-for-s148","decisionReason":"The dark slate color adds more gloom, while oversized outlined utility pockets and a product-only image prevent clean fit verification. It is technical outerwear rather than refined Luxury."},
+    {"group":"outerwear","key":"O3","identity":"shopify_supplier:7d49a77c6a00bae512e0cf904b9b68d8402b81e9","name":"Khaki Lightweight Hooded Zip Jacket","decision":"keep-available-for-other-scenario","decisionReason":"The worn image proves a serviceable regular shell for Travel or Rainy Day use, but its long technical body, black waterproof zips, hood hardware and thin fabric are not warm or polished enough for Winter Luxury."},
+    {"group":"outerwear","key":"O4","identity":"shopify_supplier:b50b813f19e70580788dc58b1d3c0200845e5f6c","name":"Blue Snap-Down Denim Jacket","decision":"reject-for-s148","decisionReason":"The product-only image cannot verify length or volume, and the dark conventional snap-front denim design is both too ordinary and too visually dark for the Luxury color story."},
+    {"group":"outerwear","key":"O5","identity":"shopify_supplier:0207913076417c4f3fc03599b3b2cc589b66c644","name":"Sapphire Contrast-Stitch Denim Jacket","decision":"reject-for-s148","decisionReason":"The contrast stitching and oversized flap pockets create heavy workwear graphics, while the dark product-only presentation supplies no fit proof. It does not meet the quiet-Luxury gate."},
+    {"group":"outerwear","key":"O6","identity":"shopify_supplier:2f30cccc9b77808ce60e8aef94ba5ed6271a4556","name":"Taupe Faux-Leather Zip Shacket","decision":"keep-available-for-other-scenario","decisionReason":"The controlled relaxed fit, hip-length line and minimal front are credible, but the mottled faux-leather finish, exposed graphic T-shirt and low-cost hardware prevent a Luxury hold. Preserve it for a Fall or lower-tier Casual role."},
+    {"group":"outerwear","key":"O7","identity":"shopify_supplier:75180814820b72eb8664e3e545c6a0e780b86680","name":"Lime Lightweight Hooded Jacket","decision":"reject-for-s148","decisionReason":"The lime color is cheerful, but the product-only view cannot prove fit and the very thin shiny ripstop shell has neither Winter warmth nor Luxury finish."},
+    {"group":"outerwear","key":"O8","identity":"shopify_supplier:ba598eeda96118aa245db1edd47953e4ce9d83d0","name":"Blazing-Red Hooded Zip Jacket","decision":"keep-available-for-other-scenario","decisionReason":"The saturated red and worn fit can be useful for Rainy Day, Outdoor or Travel, but the thin technical shell, backpack styling and hiking hardware are too sporty and light for this Luxury Winter core."}
+  ]
+}

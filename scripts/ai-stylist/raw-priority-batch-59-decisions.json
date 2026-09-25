@@ -1,0 +1,31 @@
+{
+  "batch": "59",
+  "approvals": {},
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 3, 4],
+      "reason": "These final tops are slogan, graffiti, skull or cheap matching-set merchandise with uncontrolled oversized or novelty styling and cannot support a clean modern Zara-led wardrobe."
+    },
+    {
+      "cards": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+      "reason": "These jeans are visibly or structurally wide, puddled, distressed, paint-splattered, dirty-washed, camouflage, pearl-detailed or otherwise novelty-driven and fail the controlled modern silhouette gate."
+    },
+    {
+      "cards": [19, 24, 25, 26, 27, 28, 39, 40],
+      "reason": "These shorts, sweatpants and joggers are bear-, cartoon-, patchwork-, rhinestone-, slogan- or oversized side-panel designs with dated or cheap-looking proportions."
+    },
+    {
+      "cards": [20, 21, 22, 23],
+      "reason": "These jeans are either visibly skinny and paint-splattered or wide, ripped and strapped; none meets the clean regular-to-straight silhouette gate."
+    },
+    {
+      "cards": [29, 30, 31, 32, 33, 34, 35, 36, 37, 38],
+      "reason": "These wide trousers and jeans are puddled, synthetic, graffiti-, leopard-, lightning-, rhinestone- or graphic-led and cannot serve as versatile modern bottoms."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 97 recorded color images loaded for full visual review.",
+    "Nothing passed: the last four tops were graphic or novelty merchandise, and all 36 bottoms were wide, puddled, distressed, skinny, printed, rhinestoned, camouflage-led or otherwise gimmicky.",
+    "No candidate warranted a variant shortlist or final approval board, and no new identity, variant or image entered the usable pool."
+  ]
+}

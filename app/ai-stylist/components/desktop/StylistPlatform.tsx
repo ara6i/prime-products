@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/app/shared/components/ui";
@@ -154,6 +155,18 @@ interface StylistPlatformProps {
   showModels?: boolean;
   modelImageUrl?: string | null;
   slotImages?: string[];
+  slotImageScales?: readonly number[];
+  selectedIndex?: number;
+  onSelectedIndexChange?: (index: number) => void;
+  fillContainer?: boolean;
+  showRotationGuide?: boolean;
+  initialTuning?: Partial<PlatformTuning>;
+  imageAlt?: (index: number) => string;
+  labels?: {
+    dragSurface?: string;
+    previous?: string;
+    next?: string;
+  };
 }
 
 export function StylistPlatform({
@@ -161,14 +174,25 @@ export function StylistPlatform({
   showModels = true,
   modelImageUrl = null,
   slotImages,
+  slotImageScales,
+  selectedIndex: controlledSelectedIndex,
+  onSelectedIndexChange,
+  fillContainer = false,
+  showRotationGuide = false,
+  initialTuning,
+  imageAlt,
+  labels,
 }: StylistPlatformProps) {
   const usesInitialModelPreset =
     showModels && !modelImageUrl && !slotImages && outfits.length === 0;
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [internalSelectedIndex, setInternalSelectedIndex] = useState(0);
+  const selectedIndex = controlledSelectedIndex ?? internalSelectedIndex;
   const [tuningOpen, setTuningOpen] = useState(false);
-  const [tuning, setTuning] = useState<PlatformTuning>(() =>
-    usesInitialModelPreset ? INITIAL_MODELS_TUNING : DEFAULT_TUNING,
-  );
+  const tuningDefaults = {
+    ...(usesInitialModelPreset ? INITIAL_MODELS_TUNING : DEFAULT_TUNING),
+    ...initialTuning,
+  };
+  const [tuning, setTuning] = useState<PlatformTuning>(() => tuningDefaults);
   const platformRef = useRef<HTMLDivElement>(null);
   const tunerButtonRef = useRef<HTMLButtonElement>(null);
   const [tunerPosition, setTunerPosition] = useState<TunerPosition>({
@@ -215,6 +239,16 @@ export function StylistPlatform({
     [displayImages],
   );
 
+  const selectIndex = useCallback(
+    (index: number) => {
+      if (controlledSelectedIndex === undefined) {
+        setInternalSelectedIndex(index);
+      }
+      onSelectedIndexChange?.(index);
+    },
+    [controlledSelectedIndex, onSelectedIndexChange],
+  );
+
   const normalizeAvailableIndex = useCallback(
     (candidate: number) => {
       if (readyImageCount === 0 || displayImages[candidate]) {
@@ -235,8 +269,8 @@ export function StylistPlatform({
   );
 
   const handleRotationIndexChange = useCallback(
-    (index: number) => setSelectedIndex(normalizeAvailableIndex(index)),
-    [normalizeAvailableIndex],
+    (index: number) => selectIndex(normalizeAvailableIndex(index)),
+    [normalizeAvailableIndex, selectIndex],
   );
 
   const activeIndex = normalizeAvailableIndex(selectedIndex);
@@ -248,24 +282,32 @@ export function StylistPlatform({
   });
 
   const navigate = useCallback((direction: "prev" | "next") => {
-    setSelectedIndex((current) => {
-      const activeCurrent = normalizeAvailableIndex(current);
-      const step = direction === "prev" ? -1 : 1;
+    const activeCurrent = normalizeAvailableIndex(selectedIndex);
+    const step = direction === "prev" ? -1 : 1;
 
-      if (readyImageCount === 0) {
-        return (activeCurrent + step + PLATFORM_SLOT_COUNT) % PLATFORM_SLOT_COUNT;
+    if (readyImageCount === 0) {
+      selectIndex(
+        (activeCurrent + step + PLATFORM_SLOT_COUNT) % PLATFORM_SLOT_COUNT,
+      );
+      return;
+    }
+
+    for (let distance = 1; distance <= PLATFORM_SLOT_COUNT; distance += 1) {
+      const candidate =
+        (activeCurrent + step * distance + PLATFORM_SLOT_COUNT) %
+        PLATFORM_SLOT_COUNT;
+      if (displayImages[candidate]) {
+        selectIndex(candidate);
+        return;
       }
-
-      for (let distance = 1; distance <= PLATFORM_SLOT_COUNT; distance += 1) {
-        const candidate =
-          (activeCurrent + step * distance + PLATFORM_SLOT_COUNT) %
-          PLATFORM_SLOT_COUNT;
-        if (displayImages[candidate]) return candidate;
-      }
-
-      return activeCurrent;
-    });
-  }, [normalizeAvailableIndex, displayImages, readyImageCount]);
+    }
+  }, [
+    normalizeAvailableIndex,
+    selectedIndex,
+    readyImageCount,
+    displayImages,
+    selectIndex,
+  ]);
 
   const orderedReadyIndexes = displayImages
     .map((image, index) => (image ? index : -1))
@@ -335,7 +377,7 @@ export function StylistPlatform({
   return (
     <div
       ref={platformRef}
-      className={`${usesInitialModelPreset ? "w-[42.708vw]" : "w-[29.271vw]"} relative isolate flex shrink-0 overflow-hidden rounded-[1.042vw] border border-black/[0.07] bg-white`}
+      className={`${fillContainer ? "h-full w-full" : usesInitialModelPreset ? "w-[42.708vw]" : "w-[29.271vw]"} relative isolate flex shrink-0 overflow-hidden rounded-[1.042vw] border border-black/[0.07] bg-white`}
     >
       {usesInitialModelPreset && activeInitialLook ? (
         <InitialLookProductRail look={activeInitialLook} />
@@ -361,7 +403,10 @@ export function StylistPlatform({
 
         <div className="pointer-events-none absolute inset-0 z-[4]">
           <ModelCarousel
+            key={displayImages.join("|")}
             images={displayImages}
+            imageScales={slotImageScales}
+            imageAlt={imageAlt}
             rotationRef={rotationRef}
             selectedIndex={activeIndex}
             modelBottom={35 + tuning.modelOffsetY}
@@ -375,16 +420,58 @@ export function StylistPlatform({
 
         <div
           className="absolute inset-0 z-10"
-          aria-label="Rotate outfit platform"
+          aria-label={labels?.dragSurface ?? "Rotate outfit platform"}
+          aria-describedby={
+            showRotationGuide ? "stylist-platform-rotation-guide" : undefined
+          }
+          role="slider"
+          aria-valuemin={1}
+          aria-valuemax={PLATFORM_SLOT_COUNT}
+          aria-valuenow={activeIndex + 1}
+          tabIndex={0}
           style={{
             cursor: isDragging ? "grabbing" : "grab",
             touchAction: "pan-y",
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowLeft") navigate("prev");
+            if (event.key === "ArrowRight") navigate("next");
           }}
           onPointerDown={pointerHandlers.onPointerDown}
           onPointerMove={pointerHandlers.onPointerMove}
           onPointerUp={pointerHandlers.onPointerUp}
           onPointerCancel={pointerHandlers.onPointerUp}
         />
+
+        {showRotationGuide ? (
+          <>
+            <Image
+              className="pointer-events-none absolute bottom-[23%] left-[8.5%] z-20 h-auto w-[14.5%] select-none"
+              src="/media/global-shop/rotate-sketch-arrow-orange-v2.png"
+              alt=""
+              width={1672}
+              height={941}
+              sizes="(max-width: 800px) 15vw, 104px"
+              aria-hidden="true"
+              unoptimized
+              style={{ transform: "rotate(180deg)" }}
+            />
+            <p
+              id="stylist-platform-rotation-guide"
+              className="pointer-events-none absolute bottom-[2.5%] left-[4%] z-20 flex -rotate-3 flex-col items-start text-left text-[clamp(10px,1vw,14px)] leading-[1.15] text-[#c84b18]"
+              style={{
+                fontFamily:
+                  '"Bradley Hand", "Segoe Print", "Comic Sans MS", cursive',
+              }}
+            >
+              <strong className="mb-0.5 text-[clamp(16px,1.6vw,24px)] leading-none text-[#f0642c]">
+                Rotate the disk!
+              </strong>
+              <span>Grab your mouse.</span>
+              <span>Hold + drag.</span>
+            </p>
+          </>
+        ) : null}
 
         <div
           className="absolute right-3 top-3 z-40"
@@ -431,12 +518,8 @@ export function StylistPlatform({
                 type="button"
                 className="rounded-md px-2 py-1 text-[11px] font-medium text-brand-blue transition hover:bg-brand-blue/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue"
                 onClick={() => {
-                  setTuning(
-                    usesInitialModelPreset
-                      ? INITIAL_MODELS_TUNING
-                      : DEFAULT_TUNING,
-                  );
-                  setSelectedIndex(0);
+                  setTuning(tuningDefaults);
+                  selectIndex(0);
                 }}
               >
                 Reset
@@ -465,7 +548,7 @@ export function StylistPlatform({
                     aria-pressed={activeIndex === index}
                     disabled={!image}
                     className="flex h-7 items-center justify-center rounded-lg border border-[#e4e1e8] text-[11px] font-semibold text-[#625d69] transition hover:border-brand-blue/50 hover:bg-brand-blue/5 disabled:cursor-not-allowed disabled:opacity-30 aria-pressed:border-brand-blue aria-pressed:bg-brand-blue aria-pressed:text-white"
-                    onClick={() => setSelectedIndex(index)}
+                    onClick={() => selectIndex(index)}
                   >
                     {index + 1}
                   </button>
@@ -517,12 +600,12 @@ export function StylistPlatform({
           document.body,
         )}
 
-        <div className="absolute bottom-[16.5%] left-1/2 z-30 flex -translate-x-1/2 items-center gap-[0.417vw]">
+        <div className="absolute bottom-[7%] left-1/2 z-30 flex -translate-x-1/2 items-center gap-[0.417vw]">
           <Button
             type="button"
             variant="icon"
             size="sm"
-            aria-label="Previous outfit"
+            aria-label={labels?.previous ?? "Previous outfit"}
             className="flex h-[1.875vw] w-[1.875vw] items-center justify-center rounded-full bg-brand-blue hover:bg-brand-blue hover:brightness-95 active:brightness-90"
             style={{ boxShadow: "2px 2px 8px rgba(0,0,0,0.25)" }}
             onClick={() => navigate("prev")}
@@ -543,7 +626,7 @@ export function StylistPlatform({
             type="button"
             variant="icon"
             size="sm"
-            aria-label="Next outfit"
+            aria-label={labels?.next ?? "Next outfit"}
             className="flex h-[1.875vw] w-[1.875vw] items-center justify-center rounded-full bg-brand-blue hover:bg-brand-blue hover:brightness-95 active:brightness-90"
             style={{ boxShadow: "2px 2px 8px rgba(0,0,0,0.25)" }}
             onClick={() => navigate("next")}

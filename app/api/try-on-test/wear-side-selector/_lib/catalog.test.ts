@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { WearSideCatalogPerson } from "@/app/try-on-test/wear-side-selector/types";
-import { rankWearSideCandidates } from "./catalog";
+import { rankWearSideCandidates, rankWearWaistHipScenarios } from "./catalog";
 import { evaluateSideAndTape, oracleWinner } from "./evaluation";
 
 function person(
@@ -100,6 +100,23 @@ describe("rankWearSideCandidates", () => {
     expect(ranked.rings[0]!.leaderboards.overall.candidateIds.slice(0, 2)).toEqual(["NA-0010-A", "NA-0011-A"]);
     expect(ranked.globalFrontWinner?.scanId).toBe("NA-0008-A");
     expect(ranked.globalFrontWinner?.ring).toBe(2);
+  });
+});
+
+describe("rankWearWaistHipScenarios", () => {
+  it("keeps each selected ± band separate instead of including smaller bands", () => {
+    const ranked = rankWearWaistHipScenarios([
+      person("NA-0002-A", { heightCm: 170, weightKg: 65 }),
+      person("NA-0003-A", { heightCm: 170.8, weightKg: 65 }),
+      person("NA-0004-A", { heightCm: 171.8, weightKg: 65 }),
+      person("NA-0005-A", { heightCm: 172.8, weightKg: 65 }),
+    ], query);
+
+    expect(ranked.rings[0]!.leaderboards.overall.candidateIds).toEqual(["NA-0002-A"]);
+    expect(ranked.rings[1]!.leaderboards.overall.candidateIds).toEqual(["NA-0003-A"]);
+    expect(ranked.rings[2]!.leaderboards.overall.candidateIds).toEqual(["NA-0004-A"]);
+    expect(ranked.rings[3]!.leaderboards.overall.candidateIds).toEqual(["NA-0005-A"]);
+    expect(ranked.rings[3]!.candidateCount).toBe(1);
   });
 });
 

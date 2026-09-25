@@ -1,0 +1,70 @@
+{
+  "batch": "41",
+  "approvals": {
+    "11": {
+      "color": "Tangerine",
+      "constraint": "Use this cream-and-tangerine relaxed raglan T-shirt once only for Spring/Summer Casual Everyday, Weekend, Travel, Campus, Errands, daytime Date or a cheerful casual Party. Keep it as the outfit's single relaxed-volume piece with straight or tapered white, ecru, muted-olive, camel, washed-blue or controlled denim bottoms and streamlined cream, tan, gray or muted-green footwear; never pair it with a baggy bottom, another oversized layer, a muddy all-tan palette, bulky black trainer or any Wedding/Wedding Guest use."
+    },
+    "16": {
+      "color": "Light Apricot",
+      "constraint": "Use this light-apricot asymmetric cable-knit sweater once only for Fall/Winter Casual Everyday, Weekend, Travel, Campus, creative Office, daytime Date or a premium restrained Party. Balance the soft light knit with straight charcoal, dark denim, muted olive, tobacco or deep-burgundy bottoms and clean cream, brown, gray or burgundy footwear; never combine it with an oversized bottom, another cream textured layer, a washed-out all-beige palette, bulky trainer or any Wedding/Wedding Guest use."
+    },
+    "36": {
+      "color": "Grass Green",
+      "constraint": "Use this controlled grass-green cotton cargo trouser once only for Spring/Fall Hiking, Outdoor Adventure, active Travel, Errands, practical Weekend or a deliberate utilitarian Casual look. Pair it with a clean cream, white, pale-blue, burnt-orange, rust or charcoal top and streamlined cream, tan, brown or gray trail footwear; never add another pocket-heavy garment, an oversized top, camouflage, a bulky black shoe, formal tailoring or any Wedding/Wedding Guest use."
+    },
+    "39": {
+      "color": "Camel",
+      "constraint": "Use this tapered camel technical cargo trouser once only for Spring/Fall Hiking, Outdoor Adventure, active Travel, Errands, Sports-adjacent Weekend or a clean utility Casual look. Pair it with a controlled cream, sky-blue, teal, burgundy, rust, charcoal or navy top and low-profile cream, gray, brown or muted-blue footwear; never combine it with a baggy top, another camel utility layer, an all-brown palette, bulky trainer, formal pieces or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 3, 4, 5, 6, 7, 13, 15, 17],
+      "reason": "These mock-neck, active, tank and crew tops are compression-tight, bodybuilding-led, visibly branded or otherwise repeat the skinny-top problem."
+    },
+    {
+      "cards": [2],
+      "reason": "The textured quarter-zip is hanger-only with no trustworthy adult fit proof and the contrast zipper reads dated rather than clean."
+    },
+    {
+      "cards": [8, 9, 20],
+      "reason": "These hollow-out sleeveless knits are transparent, body-focused and either tightly fitted or repetitive beside stronger approved openwork tops."
+    },
+    {
+      "cards": [10, 18, 19],
+      "reason": "The ruffled blouse and shoulder-cutout tops are theatrical or costume-led rather than versatile modern menswear."
+    },
+    {
+      "cards": [12],
+      "reason": "The sweater's dangling contrast embroidery is novelty-led and the product-only images provide no reliable adult fit proof."
+    },
+    {
+      "cards": [14],
+      "reason": "The abstract color-block sweater is visually interesting but product-only; its shape, drape and sleeve proportion cannot be trusted."
+    },
+    {
+      "cards": [21, 22, 23, 24, 25, 26, 27, 31, 34],
+      "reason": "These long wide-leg and cropped shorts create oversized below-knee or calf-length volumes that fail the controlled modern silhouette."
+    },
+    {
+      "cards": [28, 29, 30, 33, 35],
+      "reason": "These denim shorts rely on heavy distressing, paint splatter, camouflage, graffiti details or dangling cords and read dated or novelty-led."
+    },
+    {
+      "cards": [32],
+      "reason": "The product-only cargo trouser has no trustworthy on-body fit or break proof and adds a generic pocket-heavy identity."
+    },
+    {
+      "cards": [37, 38, 40],
+      "reason": "These cargo trousers are oversized, ballooned or visibly puddled and directly recreate the baggy-bottom failure."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 147 recorded color images rendered and loaded with zero broken files.",
+    "4 products accepted with one exact color and variant selected each: cream-and-tangerine relaxed raglan T-shirt, light-apricot cable-knit sweater, grass-green controlled cotton cargo trouser and camel tapered technical cargo trouser.",
+    "36 rejected after the base pass and close inspection of all 18 variants across five borderline identities.",
+    "Every selected identity, variant and image has zero collision with every prior accepted or conditional item.",
+    "The batch mostly failed for compression tops, transparent mesh, cutouts and costume details, wide below-knee denim shorts, novelty distressing, and oversized puddled cargos."
+  ]
+}

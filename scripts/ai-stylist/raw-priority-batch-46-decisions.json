@@ -1,0 +1,57 @@
+{
+  "batch": "46",
+  "approvals": {},
+  "rejectionGroups": [
+    {
+      "cards": [1, 4, 9, 18],
+      "reason": "These distressed, elongated or product-only tanks and sleeveless tops are weakly finished, niche and unable to support a clean versatile Zara-led wardrobe."
+    },
+    {
+      "cards": [2, 3],
+      "reason": "These distressed hoodies use ragged finishing and uncontrolled volume, so they read costume-like rather than polished modern casualwear."
+    },
+    {
+      "cards": [5, 6],
+      "reason": "These washed T-shirts are visibly overlong and oversized on-body; every color recreates the loose, disproportionate silhouette the user rejected."
+    },
+    {
+      "cards": [7],
+      "reason": "The cropped tactical-logo hoodie is novelty-led, dark and difficult to balance across ordinary scenarios."
+    },
+    {
+      "cards": [8],
+      "reason": "Both long-sleeve variants have excessive body and sleeve length with drooping cuffs, so the silhouette is not controlled enough."
+    },
+    {
+      "cards": [10, 11, 19],
+      "reason": "These product-only shirts provide no trustworthy adult fit or drape proof; the slim shirts also risk repeating the tight-top failure."
+    },
+    {
+      "cards": [12, 13, 14, 15, 16, 20],
+      "reason": "These ribbed, V-neck and long-sleeve tops are visibly tight, deep-cut or body-conscious and directly repeat the skinny-shirt problem."
+    },
+    {
+      "cards": [17],
+      "reason": "The product-only distressed half-zip sweater has ragged finishing and no reliable on-body proportion evidence."
+    },
+    {
+      "cards": [21, 22, 23, 24, 26, 28, 30, 34, 35, 36],
+      "reason": "These camouflage, leopard, studded or heavily pocketed cargos are novelty-led, wide and visually noisy rather than clean modern wardrobe pieces."
+    },
+    {
+      "cards": [25, 27, 29, 31, 32, 33, 37, 38, 40],
+      "reason": "These joggers, cargo trousers and jeans are excessively wide, ballooned or puddled on-body, or lack enough on-body fit proof to safely approve."
+    },
+    {
+      "cards": [39],
+      "reason": "The drawstring jogger is visibly skinny through the calf and uses a dated tapered athletic silhouette."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 142 recorded color images rendered and loaded with zero broken files.",
+    "0 accepted; the final approved-gallery check overturned the only borderline washed T-shirt because it remained too long and loose on-body.",
+    "40 rejected after the base pass, close inspection of all 10 variants across four borderline identities and the final-board check; every bottom failed.",
+    "No candidate survived the full visual gate, so no new identity, variant or image entered the usable pool.",
+    "The batch mostly failed for distressed or novelty tops, extreme oversized length, tight ribbed and deep-V shirts, weak product-only fit proof, and camouflage, leopard, wide, puddled, cargo or skinny bottoms."
+  ]
+}

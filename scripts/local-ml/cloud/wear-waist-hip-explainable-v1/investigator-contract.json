@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "wear-waist-hip-openai-investigator/v1",
+  "investigator": {
+    "environment": "Codex authenticated ChatGPT session",
+    "model": "gpt-5.6-sol",
+    "role": "diagnose evidence and propose a separate controlled experiment"
+  },
+  "evidenceAllowed": [
+    "de-identified scan ID",
+    "front silhouette",
+    "real PLY mesh card",
+    "teacher-versus-student row and A-B overlay",
+    "teacher and student cross-section shapes",
+    "named width, depth, ring and tape-correction values",
+    "counterfactual error-removed calculations",
+    "training and validation history"
+  ],
+  "requiredChecks": [
+    "teacher identity, source and units",
+    "waist or hip body level",
+    "left and right A-B edges",
+    "A-B physical width",
+    "front-to-back depth",
+    "32-point closed cross-section shape",
+    "walked 3D ring circumference",
+    "recorded tape protocol correction",
+    "camera and silhouette consistency",
+    "regression compared with the previous saved checkpoint"
+  ],
+  "diagnosisSchema": {
+    "scanId": "string",
+    "target": "waist or hips",
+    "mainIssue": "named issue",
+    "evidence": "array of exact observed values",
+    "errorRemovedCm": "object keyed by named component",
+    "confidence": "0 to 1",
+    "teacherStatus": "green, yellow or red",
+    "recommendedExperiment": "one reviewable candidate change",
+    "decision": "test, reject, or inspect-source"
+  },
+  "hardRules": {
+    "mayDirectlyChangeMeasurements": false,
+    "mayDirectlyChangeWeights": false,
+    "mayUseHeldout448BeforeFreeze": false,
+    "mayApproveOwnSuggestionWithoutFoldValidation": false,
+    "oneCandidateChangeAtATime": true
+  },
+  "checkpointCadence": {
+    "deterministicCauseCalculations": "every saved epoch",
+    "OpenAIVisualReview": "every five epochs and immediately for a new worst regression",
+    "trainingPausesForReview": true
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "outputDir": "winter-formal-budget-pilot-s177",
+  "scenarioId": "S177",
+  "occasion": "Formal Evening",
+  "season": "Winter",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-screen-complete-existing-pool-rejected-all-core-roles-missing",
+  "comparisonTitle": "S177 · Winter Formal Evening · existing separates screen",
+  "comparisonSubtitle": "Six winter knit options · five remaining full-length bottoms · all unique and available",
+  "comparisonNote": "Require rich color, refined texture and controlled winter tailoring without skinny knits, baggy trousers or black monotony · not UI integrated",
+  "coreTitle": "S177 · provisional Winter Formal separates core",
+  "coreSubtitle": "no existing top or bottom passed the Winter Formal brief",
+  "coreNote": "Every source image reviewed at original resolution · six exact replacement roles queued · no uniqueness hold · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch", "suit"],
+  "queuedRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men garnet red fine gauge long sleeve knitted polo regular fit",
+      "targetProduct": "garnet-red fine-gauge long-sleeve knit polo"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men winter cream wool blend double pleat trousers straight leg regular fit",
+      "targetProduct": "winter-cream wool-blend double-pleat straight trouser"
+    },
+    {
+      "category": "outerwear",
+      "searchPhrase": "men pearl gray wool blend single breasted topcoat regular fit",
+      "targetProduct": "pearl-gray single-breasted wool-blend topcoat"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men dark chocolate suede side zip ankle boots round almond toe slim sole formal",
+      "targetProduct": "dark-chocolate suede round-almond-toe side-zip ankle boot"
+    },
+    {
+      "category": "watch",
+      "searchPhrase": "men minimal watch burgundy dial dark brown leather thin case",
+      "targetProduct": "burgundy-dial dark-brown-leather minimal watch"
+    },
+    {
+      "category": "suit",
+      "searchPhrase": "men aubergine wool blend unstructured suit regular fit straight trousers",
+      "targetProduct": "aubergine wool-blend unstructured suit"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:c718a3072a23b5f3daffd582a98373e700ff8129",
+      "name": "White Cable-Knit Turtleneck",
+      "decision": "reject-for-s177",
+      "decisionReason": "The white cable turtleneck is presented only as a shaped product cutout with a narrow waist and sleeve line, so it gives no credible on-body drape proof and risks the fitted-knit silhouette the brief excludes."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:fbfc103acc2f63512ef6f1c5b1038a150ab8c1db",
+      "name": "Peacock-Blue Mock-Neck Knit",
+      "decision": "reject-for-s177",
+      "decisionReason": "The peacock mock neck is visibly body-hugging through the chest, waist and arms with artificial product-only shaping; its color cannot compensate for the skinny silhouette."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:be3d8e8b3c2378e5b61eabc19a922df12ab5eabd",
+      "name": "Beige Fine-Knit Turtleneck",
+      "decision": "reject-for-s177",
+      "decisionReason": "The beige turtleneck is an isolated slim product render with no body proof, minimal texture and a washed neutral tone; it is too generic and uncertain for a polished evening look."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:3da4c00c5788b8cb3a84fe448d95335ed2281f94",
+      "name": "Brown Long-Sleeve Knit Polo",
+      "decision": "reject-for-s177",
+      "decisionReason": "The brown knit polo has useful regular-relaxed ease, but the bright oversized buttons, long bunched sleeves and flat dark checker texture read casual and inexpensive rather than sharp Winter Formal."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:7b959d24fb23eafe687761871356bdbb13a615b4",
+      "name": "Light-Khaki Textured Henley Knit",
+      "decision": "reject-for-s177",
+      "decisionReason": "The light-khaki Henley has modern rib texture, but its dropped shoulders, elongated sleeves and product-only presentation leave the fit unproven while the crew-Henley construction remains too casual for Formal Evening."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:9e8719479f6d34233b8dfd557767f52a1bffa7b4",
+      "name": "Peacock-Blue Fine-Knit Crew",
+      "decision": "reject-for-s177",
+      "decisionReason": "The blue fine-knit crew is visibly fitted across the chest, waist and arms and is styled with pushed three-quarter sleeves; it repeats the skinny-top problem instead of providing modern controlled ease."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320",
+      "name": "Light-Gray Relaxed Trouser",
+      "decision": "reject-for-s177",
+      "decisionReason": "The isolated light-gray trouser has sporty articulated-knee seams and provides no seat, full-length or worn-drape proof, so it cannot support a formal tailoring approval."
+    },
+    {
+      "group": "bottom",
+      "key": "B3",
+      "identity": "shopify_supplier:bd9eb3e71ff44da3314d188440d5608833ddeaae",
+      "name": "Army-Green Pleated Corduroy Trouser",
+      "decision": "reject-for-s177",
+      "decisionReason": "The army-green corduroy trouser has a balloon taper, rolled cuffs, D-ring hardware and strong casual workwear texture; it conflicts directly with the clean straight Formal silhouette."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265",
+      "name": "Military-Green Casual Trouser",
+      "decision": "reject-for-s177",
+      "decisionReason": "The military-green trouser is shown unworn and wrinkled with novelty bead hardware and casual cotton construction; neither its drape nor its Formal quality is proven."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:8d9fb6dd4f6289a656e655b8b9b0e6efe6005a3d",
+      "name": "Dark Zip-Detail Straight Jean",
+      "decision": "reject-for-s177",
+      "decisionReason": "The dark washed jean has hip zip details, a low rise and a long puddled hem over chunky sneakers; it is visually heavy and street-casual rather than Formal Evening."
+    },
+    {
+      "group": "bottom",
+      "key": "B6",
+      "identity": "shopify_supplier:fabf15cd2935c7ad9c6fc6909dbdb8e94ea7f169",
+      "name": "Light-Gray Straight Washed Jean",
+      "decision": "reject-for-s177",
+      "decisionReason": "The gray washed jean has a broad loose leg with strong pooling and turn-up at the shoe plus a casual faded finish; it recreates the baggy-bottom problem and is not formal."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "outputDir": "summer-travel-luxury-pilot-s240",
+  "scenarioId": "S240",
+  "occasion": "Travel",
+  "season": "Summer",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s239-summer-travel-premium-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S240 · Summer Travel · Luxury local screen",
+  "comparisonSubtitle": "The unique Summer Travel remainder re-evaluated for Luxury textile and hand finish",
+  "comparisonNote": "Require silk-cashmere, linen-silk, handwoven calf and full-grain leather or equivalent Luxury proof · not UI integrated",
+  "coreTitle": "S240 · provisional Summer Travel Luxury core",
+  "coreSubtitle": "No remaining local garment reaches the Luxury Travel bar · five roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men pale apricot silk cashmere open collar polo summer luxury", "targetProduct": "pale-apricot silk-cashmere open-collar travel polo", "customerRetailTarget": "$300-$450"},
+    {"category": "bottom", "searchPhrase": "men washed teal linen silk travel trouser summer luxury", "targetProduct": "washed-teal linen-silk Luxury travel trouser", "customerRetailTarget": "$380-$550"},
+    {"category": "outerwear", "searchPhrase": "men warm ivory linen silk travel overshirt luxury", "targetProduct": "warm-ivory hand-finished linen-silk Luxury travel overshirt", "customerRetailTarget": "$650-$900"},
+    {"category": "shoe", "searchPhrase": "men tobacco handwoven calf travel sneaker luxury", "targetProduct": "tobacco handwoven-calf Luxury travel sneaker", "customerRetailTarget": "$420-$600"},
+    {"category": "bag", "searchPhrase": "men soft sage full grain leather travel crossbody luxury", "targetProduct": "soft-sage full-grain leather Luxury travel crossbody", "customerRetailTarget": "$650-$900"}
+  ]
+}

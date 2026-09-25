@@ -1,0 +1,72 @@
+{
+  "outputDir": "spring-formal-midrange-pilot-s166",
+  "scenarioId": "S166",
+  "occasion": "Formal Evening",
+  "season": "Spring",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-watch-and-suit",
+  "comparisonTitle": "S166 · Spring Formal Evening · Mid-Range local screen",
+  "comparisonSubtitle": "Eight light or colored shirts · four remaining unreserved trousers · one relaxed blazer · all unique and unreserved",
+  "comparisonNote": "Require evening polish, controlled ease, credible Mid-Range material and a light expressive Spring palette · no utility overshirts, puddled legs, lounge waists, skinny tailoring or oversized-on-oversized styling · not UI integrated",
+  "coreTitle": "S166 · provisional Spring Formal Evening Mid-Range core",
+  "coreSubtitle": "No local garment reaches the Spring Mid-Range Formal Evening visual bar · all roles unresolved",
+  "coreNote": "Zero provisional holds after the 13 source originals were checked and re-evaluated for this price tier · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch", "suit"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men dusty lilac fine gauge long sleeve knit polo regular fit spring formal evening modern",
+      "targetProduct": "dusty-lilac or pale-aqua fine-gauge long-sleeve knit polo with a clean open collar and controlled regular body",
+      "customerRetailTarget": "$90-$130"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men light stone wool blend single pleat controlled straight trouser spring formal evening",
+      "targetProduct": "light-stone wool-blend high-rise single-pleat trouser with a controlled straight leg and precise break",
+      "customerRetailTarget": "$110-$160"
+    },
+    {
+      "category": "outerwear",
+      "searchPhrase": "men muted sky blue unstructured blazer regular relaxed spring formal evening modern",
+      "targetProduct": "muted-sky-blue unstructured blazer with natural shoulders, normal length and controlled regular-relaxed volume",
+      "customerRetailTarget": "$140-$200"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men burgundy leather low profile round toe tassel loafer double monk spring formal evening",
+      "targetProduct": "burgundy-leather low-profile round-toe tassel loafer or clean double-monk shoe",
+      "customerRetailTarget": "$130-$180"
+    },
+    {
+      "category": "watch",
+      "searchPhrase": "men pale blue dial brown leather minimal watch thin silver case formal evening",
+      "targetProduct": "pale-blue-dial minimalist watch with a thin silver case and medium-brown leather strap",
+      "customerRetailTarget": "$40-$70"
+    },
+    {
+      "category": "suit",
+      "searchPhrase": "men muted blue sage regular relaxed two piece suit controlled straight trousers spring formal evening",
+      "targetProduct": "muted-blue or light-sage two-piece suit with a natural shoulder, softly shaped jacket and controlled straight trouser",
+      "customerRetailTarget": "$330-$430"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:0312db0cd26acade9f91f474e8b9b19311c3e778","name":"Pink Plaid Button-Up Shirt","decision":"reject-for-s166","decisionReason":"The joyful pink is directionally welcome, but the loud plaid, dropped shoulder, oversized long body and novelty accessory styling read streetwear rather than polished Mid-Range Formal Evening."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:47ca6448dd910b9ff3503470a65b607a5617e9fb","name":"Sky-Blue Textured Button-Up Shirt","decision":"reject-for-s166","decisionReason":"The sky blue is fresh, but the full-resolution source shows an open textured overshirt over a white tee with rolled cuffs and a long rounded hem. It is Casual layering, not a self-contained Formal Evening shirt."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:945a758197eabed56a7270a176e4bd70b22f38bd","name":"Light-Blue Gingham Button-Up Shirt","decision":"reject-for-s166","decisionReason":"The pale gingham, exposed contrast buttons and untucked casual body look conventional daytime smart-casual rather than current evening polish."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:103874fdc98f0d098753e001e36f6000b75a187d","name":"Apricot Checked Button-Up Shirt","decision":"reject-for-s166","decisionReason":"The warm color is useful, but the brown check, open overshirt styling and boxy long body make it a light casual jacket rather than a refined Formal top."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:99c29ea832577fba8e2f28594b32b18c09c741f5","name":"Muted-Blue Utility Button-Up Shirt","decision":"reject-for-s166","decisionReason":"The muted blue helps the palette, but the broad dropped body and two large flap chest pockets create workwear utility volume rather than clean Mid-Range Formal construction."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:135b9e50f6e72dc7185baef75627227a9a429ef0","name":"Purple Utility Button-Up Shirt","decision":"reject-for-s166","decisionReason":"Purple is expressive, but the dropped shoulder, very long boxy body and oversized utility pockets turn it into a shirt-jacket. Color cannot rescue the loose Casual construction."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:5bd91e115e4ceaf0c92ee34cf5e55204f4403650","name":"White Four-Pocket Button-Up Shirt","decision":"reject-for-s166","decisionReason":"Four safari-style pockets, an open collar and beach presentation make this a Resort layer. It lacks the clean front and fabric refinement needed for Formal Evening."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:79749ba3c0481d9992007e844672ced11dda107a","name":"Light-Apricot Mandarin Shirt","decision":"reject-for-s166","decisionReason":"The controlled mandarin line is credible, but the near-white linen tone and visibly daytime minimalist finish do not create the requested expressive Spring evening look or prove Mid-Range material quality."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320","name":"Light-Gray Relaxed Trouser","decision":"reject-for-s166","decisionReason":"The isolated crop hides rise, seat, full leg and shoe break. Diagonal knee seams and a smooth technical-looking surface prevent it from reading as proven Formal tailoring."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:2ee1a0fbc1261c590f394c7d2529549fd8a033c9","name":"Navy Relaxed-Straight Trouser","decision":"reject-for-s166","decisionReason":"The very broad navy leg visibly puddles over the shoe. It would make the Spring evening palette dark and bottom-heavy while reproducing the baggy silhouette being removed."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:04d7241016fbcf860f5b98ce77b100cd3efa1689","name":"Camel Wide-Leg Casual Trouser","decision":"reject-for-s166","decisionReason":"The low casual rise, broad cotton leg and heavy stacking over a chunky sneaker are everyday Casual, not precise Formal Evening tailoring."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:0706cc59d6cccb0e2018c17d2d73768af8afa55e","name":"Gray Drawstring Straight Trouser","decision":"reject-for-s166","decisionReason":"The gathered elastic waist, oversized exposed drawcord, black D-ring and synthetic drape read lounge or technical casual even though the leg is comparatively controlled."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:5d5eb7a403cdcbaab147934e34260021d12d0dba","name":"Light-Khaki Relaxed Blazer","decision":"reject-for-s166","decisionReason":"The original proves an extremely long boxy body, sleeves beyond the wrist, low patch pockets and thin flat fabric. It supplies oversized upper-body volume without the drape, proportion or finish required for Mid-Range Formal Evening."}
+  ]
+}

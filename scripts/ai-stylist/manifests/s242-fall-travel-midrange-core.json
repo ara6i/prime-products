@@ -1,0 +1,28 @@
+{
+  "outputDir": "fall-travel-midrange-pilot-s242",
+  "scenarioId": "S242",
+  "occasion": "Travel",
+  "season": "Fall",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceSpec": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/fall-travel-budget-pilot-s241/companion-pool.json",
+  "excludeCandidateKeys": ["T2", "B6"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S242 · Fall Travel · Mid-Range local screen",
+  "comparisonSubtitle": "Remaining unique Fall Travel candidates after the S241 shirt and trouser holds",
+  "comparisonNote": "Require warm color, packable structure, controlled straight drape and tactile Mid-Range finish · no product-only bottom, shiny jogger, plaid-on-utility or baggy stacking · not UI integrated",
+  "coreTitle": "S242 · provisional Fall Travel Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Mid-Range Travel bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men petrol blue merino blend travel polo fall mid range", "targetProduct": "petrol-blue merino-blend fine-gauge travel polo", "customerRetailTarget": "$100-$140"},
+    {"category": "bottom", "searchPhrase": "men pale stone wool blend travel trouser fall straight", "targetProduct": "pale-stone wool-blend controlled-straight travel trouser", "customerRetailTarget": "$130-$180"},
+    {"category": "outerwear", "searchPhrase": "men burnt orange suede look travel blouson fall", "targetProduct": "burnt-orange suede-look cropped travel blouson", "customerRetailTarget": "$160-$220"},
+    {"category": "shoe", "searchPhrase": "men burgundy suede low profile travel sneaker fall", "targetProduct": "burgundy-suede low-profile travel sneaker", "customerRetailTarget": "$140-$190"},
+    {"category": "bag", "searchPhrase": "men ochre canvas leather weekender fall travel", "targetProduct": "ochre canvas-and-leather compact weekender", "customerRetailTarget": "$70-$110"}
+  ]
+}

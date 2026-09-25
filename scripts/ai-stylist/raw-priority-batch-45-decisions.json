@@ -1,0 +1,82 @@
+{
+  "batch": "45",
+  "approvals": {
+    "14": {
+      "color": "Burnt Coral",
+      "constraint": "Use this burnt-coral regular-relaxed cotton T-shirt once only for Spring/Summer Casual Everyday, Weekend, Travel, Vacation, Resort, Festival or a clean daytime Date. Make the coral the single color focus with straight cream, stone, washed-blue, muted-olive, tobacco or charcoal trousers or tailored shorts and low-profile cream, tan, brown or muted-blue footwear; never pair it with a baggy bottom, matching coral trouser, oversized outer layer, chunky trainer or any Wedding/Wedding Guest use."
+    },
+    "15": {
+      "color": "Anchor Red",
+      "constraint": "Use this anchor-red relaxed heavyweight T-shirt once only for Spring/Fall Casual Everyday, Weekend, Travel, Campus, creative Office, daytime Date or a restrained Party look. Balance the deep red with straight cream, stone, charcoal, washed-blue, tobacco or muted-olive bottoms and minimal cream, tan, brown or dark-green footwear; never combine it with a baggy bottom, another red garment, an all-dark palette, bulky trainer or any Wedding/Wedding Guest use."
+    },
+    "18": {
+      "color": "Tangerine",
+      "constraint": "Use this washed-tangerine relaxed T-shirt once only for Spring/Summer Casual Everyday, Vacation, Resort, Festival, Travel or an upbeat daytime Date. Keep the tangerine as the outfit's single vivid statement with straight ivory, stone, washed-blue, sage, tobacco or charcoal tailored shorts or trousers and low-profile cream, tan, brown or muted-blue footwear; never add a matching orange bottom, baggy trouser, another oversized layer, chunky trainer or any Wedding/Wedding Guest use."
+    },
+    "20": {
+      "color": "Camel",
+      "constraint": "Use this camel washed zip hoodie once only for Fall/Winter Casual Everyday, Weekend, Travel, Campus, Errands or a relaxed daytime Date. Layer it over white, sky-blue, burgundy, forest-green or charcoal and pair with straight dark-denim, cream, charcoal or muted-olive bottoms plus minimal cream, tan, brown or burgundy footwear; never combine it with a baggy bottom, another oversized layer, an all-brown palette, bulky trainer or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 6, 10],
+      "reason": "These contrast-detail shirts are visibly skinny, dated and synthetic-looking, directly repeating the tight-shirt failure."
+    },
+    {
+      "cards": [2],
+      "reason": "The product-only micro-plaid overshirt lacks adult fit proof and reads long, dated and insufficiently distinctive."
+    },
+    {
+      "cards": [3, 4, 5],
+      "reason": "These lace, rose and geometric shirts are tight or novelty-led and cannot support a versatile modern wardrobe."
+    },
+    {
+      "cards": [7],
+      "reason": "The black product-only textured shirt is overlong, synthetic and unproven on-body, with fussy toggle details."
+    },
+    {
+      "cards": [8],
+      "reason": "The oversized blue plaid flannel has visible chest branding and uncontrolled length, so it fails the clean Zara-led gate."
+    },
+    {
+      "cards": [9, 12],
+      "reason": "These hooded tanks are bodybuilding-focused, revealing or product-only and are not versatile modern menswear."
+    },
+    {
+      "cards": [11],
+      "reason": "The hanger-only hooded half-zip knit provides no trustworthy adult fit or drape proof."
+    },
+    {
+      "cards": [13],
+      "reason": "The hooded button-knit is droopy, dark and polyester-heavy, with exaggerated sleeves that make it difficult to balance cleanly."
+    },
+    {
+      "cards": [16, 17, 19],
+      "reason": "These product-only oversized long-sleeve tops and hoodie lack reliable on-body proportion proof despite useful color ranges."
+    },
+    {
+      "cards": [21, 22, 23, 24, 25, 26, 27],
+      "reason": "These camouflage, leopard and patchwork cargos are novelty-led, heavily pocketed, wide or puddled and fail the clean versatile wardrobe gate."
+    },
+    {
+      "cards": [28, 31, 33, 34, 36, 37, 38, 39],
+      "reason": "These on-body cargo trousers and jeans are excessively wide, ballooned, pocket-heavy or puddled and recreate the baggy-bottom failure."
+    },
+    {
+      "cards": [29, 30],
+      "reason": "The product-only leopard cargos are novelty-led and extremely wide, without trustworthy on-body proportion proof."
+    },
+    {
+      "cards": [32, 35, 40],
+      "reason": "These product-only cargo jeans and trousers are wide, heavily pocketed and unproven through the waist, thigh and shoe break."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 147 recorded color images rendered and loaded with zero broken files.",
+    "4 tops accepted with one exact color and variant selected each: burnt-coral relaxed cotton T-shirt, anchor-red relaxed heavyweight T-shirt, washed-tangerine relaxed T-shirt and camel washed zip hoodie.",
+    "36 rejected after the base pass and close inspection of all 29 variants across five borderline identities; every bottom failed.",
+    "Every selected identity, variant and image has zero collision with every prior accepted or conditional item.",
+    "The batch mostly failed for skinny or novelty shirts, weak product-only fit proof, bodybuilding hooded tanks, dark synthetic knits, and camouflage, leopard, wide or puddled cargo bottoms."
+  ]
+}

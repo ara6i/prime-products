@@ -8,7 +8,7 @@
 .poster {
   position: relative;
   width: 100%;
-  aspect-ratio: 1586 / 992;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   background: #fbf4ea;
   isolation: isolate;
@@ -35,31 +35,9 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   pointer-events: none;
-}
-
-.signature {
-  position: absolute;
-  z-index: 2;
-  top: 5.4%;
-  left: 50%;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #0a1b39;
-  font-size: clamp(8px, 0.72vw, 12px);
-  font-weight: 850;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  transform: translateX(-50%);
-}
-
-.signature img {
-  width: clamp(22px, 2vw, 34px);
-  height: auto;
-  object-fit: contain;
 }
 
 .centerCopy {
@@ -233,33 +211,28 @@
 }
 
 @media (max-width: 680px) {
-  .video {
-    display: none;
+  .section,
+  .poster {
+    min-height: 100svh;
   }
 
   .poster {
-    aspect-ratio: 1122 / 1402;
+    aspect-ratio: auto;
   }
 
-  .signature {
-    top: 3.2%;
-    gap: 5px;
-    font-size: 7px;
-  }
-
-  .signature img {
-    width: 19px;
+  .video {
+    object-fit: cover;
   }
 
   .centerCopy {
     top: 45.5%;
-    width: 62%;
+    width: 72%;
     transform: translate(-50%, -43%);
   }
 
   .eyebrow {
-    margin-bottom: 5px;
-    font-size: clamp(6px, 1.7vw, 8px);
+    margin-bottom: 7px;
+    font-size: clamp(9px, 2.35vw, 11px);
     letter-spacing: 0.15em;
   }
 
@@ -269,30 +242,30 @@
   }
 
   .roleLine {
-    max-width: 230px;
-    margin-top: 13px;
-    font-size: clamp(6px, 1.65vw, 8px);
+    max-width: 280px;
+    margin-top: 15px;
+    font-size: clamp(9px, 2.4vw, 11px);
   }
 
   .description {
-    max-width: 220px;
-    margin-top: 6px;
-    font-size: clamp(7px, 1.8vw, 9px);
-    line-height: 1.35;
+    max-width: 270px;
+    margin-top: 8px;
+    font-size: clamp(10px, 2.7vw, 12px);
+    line-height: 1.4;
   }
 
   .flowLine {
-    margin-top: 6px;
-    font-size: clamp(6px, 1.45vw, 8px);
+    margin-top: 8px;
+    font-size: clamp(9px, 2.25vw, 10px);
     letter-spacing: 0.08em;
   }
 
   .centerCopy button {
-    min-height: 28px;
-    gap: 5px;
-    margin-top: 9px;
-    padding: 0 11px;
-    font-size: clamp(7px, 1.8vw, 9px);
+    min-height: 38px;
+    gap: 7px;
+    margin-top: 12px;
+    padding: 0 16px;
+    font-size: clamp(10px, 2.65vw, 12px);
   }
 
   .centerCopy button svg {
@@ -301,17 +274,17 @@
   }
 
   .roleLabel {
-    gap: 4px;
-    padding: 4px 6px;
+    gap: 5px;
+    padding: 6px 9px;
     border-radius: 5px;
   }
 
   .roleLabel > span {
-    font-size: 6px;
+    font-size: 8px;
   }
 
   .roleLabel strong {
-    font-size: clamp(7px, 2vw, 9px);
+    font-size: clamp(10px, 2.75vw, 12px);
   }
 
   .roleLabel small {

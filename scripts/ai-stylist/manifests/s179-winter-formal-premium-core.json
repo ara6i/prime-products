@@ -1,0 +1,33 @@
+{
+  "outputDir": "winter-formal-premium-pilot-s179",
+  "scenarioId": "S179",
+  "occasion": "Formal Evening",
+  "season": "Winter",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s177-winter-formal-budget-core.json",
+  "additionalCandidates": [
+    {"group":"top","key":"T7","identity":"shopify_supplier:0794e5a5d5baa6332657d5add9661ae7a433d05c","name":"Dusty-Blue Corduroy Shirt","decision":"reject-for-s179","decisionReason":"The color is useful but the long open-over-tee body and lightweight casual construction do not prove Premium Winter Formal cloth, fit or finish."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:2984c73a22084c0ed6a3de38270524b2b9a5f582","name":"Camel Cable-Knit Quarter-Zip","decision":"reject-for-s179","decisionReason":"The close arms, conventional torso and bulky high zip neck do not deliver Premium evening drape or a modern controlled silhouette."},
+    {"group":"top","key":"T9","identity":"shopify_supplier:0ddafa2ad2660d3d70d8956732d8421c65ac55f6","name":"White-and-Black Grid Overshirt","decision":"reject-for-s179","decisionReason":"The graphic utility overshirt depends on a base tee and provides neither Premium fiber proof nor Formal Evening precision."}
+  ],
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-watch-and-suit",
+  "comparisonTitle": "S179 · Winter Formal Evening · Premium local screen",
+  "comparisonSubtitle": "Fourteen unique unreserved Winter Formal candidates re-evaluated for Premium fiber, construction and drape",
+  "comparisonNote": "Require jewel color, merino or silk-merino proof, exact trouser break and controlled Premium evening construction · no promotion of skinny, utility, novelty, product-only or puddled pieces · no valid local Winter Formal layer remains · not UI integrated",
+  "coreTitle": "S179 · provisional Winter Formal Evening Premium core",
+  "coreSubtitle": "No local garment reaches the Winter Premium Formal Evening visual bar · all six roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Premium re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch", "suit"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men garnet red silk merino fine gauge long sleeve knit polo premium winter formal evening","targetProduct":"garnet-red silk-merino fine-gauge long-sleeve knit polo","customerRetailTarget":"$180-$240"},
+    {"category":"bottom","searchPhrase":"men winter cream wool flannel double pleat controlled straight trouser premium formal","targetProduct":"winter-cream wool-flannel high-rise double-pleat trouser with exact controlled break","customerRetailTarget":"$220-$300"},
+    {"category":"outerwear","searchPhrase":"men pearl gray wool cashmere single breasted topcoat premium winter formal","targetProduct":"pearl-gray wool-cashmere single-breasted topcoat with natural shoulders","customerRetailTarget":"$320-$420"},
+    {"category":"shoe","searchPhrase":"men dark chocolate calf suede handmade side zip ankle boot almond toe premium formal","targetProduct":"dark-chocolate calf-suede handmade almond-toe side-zip ankle boot","customerRetailTarget":"$220-$300"},
+    {"category":"watch","searchPhrase":"men burgundy dial coffee leather thin case premium dress watch","targetProduct":"burgundy-dial thin-case Premium dress watch with dark-coffee leather strap","customerRetailTarget":"$120-$180"},
+    {"category":"suit","searchPhrase":"men aubergine wool flannel unstructured suit premium winter formal straight trousers","targetProduct":"aubergine wool-flannel Premium two-piece suit with natural shoulders and controlled-straight trousers","customerRetailTarget":"$650-$850"}
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "wear-waist-hip-training-contract/v1",
+  "scope": ["waist", "hips"],
+  "developmentPeople": 3878,
+  "crossValidationFolds": 5,
+  "heldoutPeople": 448,
+  "heldoutUse": "one final evaluation after the recipe and final model are frozen",
+  "customerInputs": ["front silhouette", "height", "weight", "BMI", "gender"],
+  "teacherOnlyInputs": ["WEAR PLY", "WEAR LND", "WEAR waist tape", "WEAR hip tape"],
+  "freshInitialization": true,
+  "previousV8WeightsAllowed": false,
+  "requiredVisibleOutputs": [
+    "waist and hip row",
+    "left and right A-B edges",
+    "A-B width in cm",
+    "front-to-back depth in cm",
+    "32-point closed cross-section shape",
+    "walked ring circumference in cm",
+    "named bounded tape correction in cm",
+    "final waist and hip tape values",
+    "confidence"
+  ],
+  "finalFormula": "walked predicted ring + named bounded tape correction",
+  "maximumAbsoluteTapeCorrectionCm": 7.0,
+  "successGates": {
+    "meanFiveFoldWaistMaeCmAtMost": 2.4,
+    "meanFiveFoldHipMaeCmAtMost": 1.55,
+    "meanFiveFoldWaistP95CmAtMost": 6.5,
+    "meanFiveFoldHipP95CmAtMost": 4.0,
+    "allFiveFoldsRequired": true,
+    "subgroupRegressionAllowed": false
+  },
+  "checkpointReview": {
+    "saveEveryEpoch": true,
+    "deterministicCauseReportEveryEpoch": true,
+    "pauseForOpenAIReviewEveryEpochs": 5,
+    "candidateChangesRequireSeparateRun": true
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "batch": "14",
+  "approvals": {
+    "3": {
+      "color": "Purple",
+      "constraint": "Use the muted-purple regular-relaxed utility overshirt once only for Spring or Fall Casual Everyday, Travel, Date Night, or a restrained Party / Night Out look. Pair with ecru, stone, soft gray, tobacco, washed blue, muted olive, or clean black straight bottoms and minimal white, cream, tan, or brown footwear; do not combine it with cargo bottoms, another utility layer, or an oversized trouser."
+    },
+    "5": {
+      "color": "Moss",
+      "constraint": "Use the moss-green regular-relaxed cotton overshirt once only for Spring or Fall Casual Everyday, Travel, Date Night, or relaxed Office. Pair with warm white, sand, stone, light gray, dark indigo, tobacco, or restrained chocolate straight bottoms and simple cream, white, tan, or brown footwear; keep every other garment clean because the twin pockets already provide utility detail."
+    },
+    "18": {
+      "color": "Tan",
+      "constraint": "Use the light-tan straight drawstring trouser once only for Spring or Summer Casual Everyday, Travel, Vacation / Resort, or a relaxed daytime Date Night. Pair with a controlled regular or relaxed shirt, knit polo, textured tee, or light overshirt in white, ecru, sky blue, sage, dusty pink, soft coral, muted purple, or restrained navy and low-profile footwear; no oversized top, heavy outerwear, or added hem pooling."
+    },
+    "26": {
+      "color": "Green",
+      "constraint": "Use the clean green ankle-length technical trouser once only for Spring or Summer Sports / Workout, active Travel, or a deliberate technical Casual Everyday look. Pair with white, ecru, light gray, pale blue, restrained navy, or soft orange performance tops and minimal white, cream, gray, or muted technical sneakers; do not add cargo layers, bulky shoes, or a formal shirt."
+    },
+    "30": {
+      "color": "Gray Green",
+      "constraint": "Use the pale gray-green lightweight rain shell once only for Spring or Fall Travel, Casual Everyday, or wet-weather Sports / Workout. Pair with a controlled white, ecru, pale blue, sage, muted coral, cocoa, or restrained navy base and clean straight or tapered bottoms; the shell must be the only loose-volume piece and must not be paired with formal footwear or a baggy trouser."
+    },
+    "33": {
+      "color": "Green",
+      "constraint": "Use the soft-green regular puffer once only for Fall or Winter Casual Everyday or Travel. Pair with ecru, oatmeal, camel, tobacco, burgundy, pale blue, soft gray, or dark-indigo regular-proportion garments and minimal cream, tan, brown, white, or restrained technical footwear; avoid an all-dark palette, oversized bottoms, and another bulky layer."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "The product-only striped shirt has no adult fit proof and carries a visible novelty bunny emblem on the chest pocket."
+    },
+    {
+      "cards": [2],
+      "reason": "All variants are hanger-only with visible supplier labeling and no reliable proof of shoulder, torso, sleeve or hem proportion."
+    },
+    {
+      "cards": [4, 7, 8, 9, 10, 11, 12, 15],
+      "reason": "These product-only or hanger-only shirts do not prove adult-male fit and add visible labels, tags or pocket logos, long uncontrolled hems, stand-collar styling, or repetitive generic solid-shirt roles."
+    },
+    {
+      "cards": [6],
+      "reason": "The one-pocket cotton overshirt is visually acceptable in isolation, but its gray and royal-blue options repeat darker approved solid-overshirt roles and the backpack strap obscures the strongest colored image."
+    },
+    {
+      "cards": [13],
+      "reason": "The army-green shirt is narrow through the shoulder and torso and relies on strapped roll-up sleeves, producing a dated safari-shirt proportion rather than a clean modern overshirt."
+    },
+    {
+      "cards": [14],
+      "reason": "The only on-body khaki variant is narrow and close through the chest, waist and sleeves, recreating the slim office-shirt silhouette being removed."
+    },
+    {
+      "cards": [16],
+      "reason": "The plaid shirt is close through the torso and upper arms, uses dated rolled-sleeve styling and displays a conspicuous chest label."
+    },
+    {
+      "cards": [17],
+      "reason": "The light-gray jogger remains loose through the thigh, uses curved technical panel seams and bunches above elastic cuffs; the darker colors add no useful palette role."
+    },
+    {
+      "cards": [19],
+      "reason": "The crossed-leg image does not prove a stable full-body silhouette, while the visible beige trouser is extremely wide and pools over the footwear."
+    },
+    {
+      "cards": [20, 21],
+      "reason": "The loose drawstring trousers are excessively wide and visibly puddle over the shoes, with cargo or logo details and long drawstrings that intensify the baggy-bottom problem."
+    },
+    {
+      "cards": [22],
+      "reason": "The diamond-pattern harem pant has extreme balloon volume, elastic ankles and novelty resort styling rather than a versatile modern silhouette."
+    },
+    {
+      "cards": [23],
+      "reason": "The product-only jogger has no adult fit proof, a visible hem label, prominent zip pockets and a generic dark synthetic finish."
+    },
+    {
+      "cards": [24],
+      "reason": "The streetwear trouser is extremely wide and puddled with an oversized long drawstring, failing the controlled relaxed silhouette gate."
+    },
+    {
+      "cards": [25],
+      "reason": "The cropped product-only trouser has no adult rise, seat, thigh or footwear proof and its ballooned shape is not reliable enough to approve."
+    },
+    {
+      "cards": [27],
+      "reason": "The nylon cargo jogger combines a loose thigh, bulky side pocket, elastic cuffs and visible bunching into a generic technical-cargo silhouette."
+    },
+    {
+      "cards": [28],
+      "reason": "The drawstring trouser is extremely wide and puddled with a decorative red waist cord, creating an uncontrolled novelty silhouette."
+    },
+    {
+      "cards": [29],
+      "reason": "The product-only windproof jacket has no on-body fit proof and carries visible chest branding plus busy diagonal zip and utility details."
+    },
+    {
+      "cards": [31],
+      "reason": "The product-only hooded jacket is long, narrow and repetitive dark navy, with no adult fit proof and a conspicuous diagonal chest zipper."
+    },
+    {
+      "cards": [32],
+      "reason": "The product-only puffer is long, shiny and generic in every recorded dark or gray color and provides no reliable real-body proportion proof."
+    },
+    {
+      "cards": [34],
+      "reason": "The product-only hooded jacket is overloaded with flap pockets, contrast lining, stitching and a visible chest patch, with no fit proof."
+    },
+    {
+      "cards": [35],
+      "reason": "The product-only sherpa-lined hooded bomber has an unproven bulky hood, cropped elastic hem and unusual diagonal pocket construction; its high price is not supported by fit evidence."
+    },
+    {
+      "cards": [36],
+      "reason": "The blue two-piece suit is severely waist-suppressed with a cropped jacket, narrow lapels and tight tapered trousers; the other colors preserve the same skinny formal construction."
+    },
+    {
+      "cards": [37],
+      "reason": "This wedding-specific three-piece suit is excluded from scope and also fails independently for an extremely tight jacket, narrow sleeves, cropped length and skinny trousers."
+    },
+    {
+      "cards": [38],
+      "reason": "The fleece-lined coat uses a shiny faux-leather finish, bulky asymmetric lining, tall collar and dated multi-button construction."
+    },
+    {
+      "cards": [39],
+      "reason": "The open-front short-sleeve cover-up is extremely long and oversized with kimono-like volume, creating a costume silhouette rather than a versatile layer."
+    },
+    {
+      "cards": [40],
+      "reason": "The product-only utility vest has no fit proof and is dominated by large fishing-style flap pockets and a generic outdoor-supplier construction."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 135 recorded color images rendered; 175 displayed images loaded with zero broken files.",
+    "6 accepted with one exact color and variant selected: two colored regular-relaxed overshirts, one light straight drawstring trouser, one green technical trouser, one pale rain shell and one soft-green regular puffer.",
+    "34 rejected after the base pass and close inspection of 12 promising color variants.",
+    "The six selected identities, source products, variants and images have zero collision with every prior accepted or conditional item.",
+    "Rejections include unproven or logo-led shirts, skinny formal tops, baggy and puddled trousers, harem and cargo silhouettes, product-only generic outerwear, cheap faux leather, skinny suits and wedding-specific tailoring."
+  ]
+}

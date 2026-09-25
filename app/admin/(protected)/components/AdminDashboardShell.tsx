@@ -12,11 +12,16 @@ interface AdminDashboardShellProps {
 }
 
 function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
-  const customersActive = activeHref.startsWith("/admin/customers") || activeHref.startsWith("/admin/reports/feedbacks");
+  const customersActive =
+    activeHref.startsWith("/admin/customers") ||
+    activeHref.startsWith("/admin/reports/feedbacks");
   const usersActive = activeHref.startsWith("/admin/users");
+  const influencersActive = activeHref.startsWith("/admin/influencers");
   const verificationActive = activeHref.startsWith("/admin/verification");
   const monitoringActive = activeHref.startsWith("/admin/monitoring");
-  const supportActive = activeHref.startsWith("/admin/chats") || activeHref.startsWith("/admin/tickets");
+  const supportActive =
+    activeHref.startsWith("/admin/chats") ||
+    activeHref.startsWith("/admin/tickets");
   const settingsActive = activeHref.startsWith("/admin/settings");
 
   return [
@@ -32,6 +37,13 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
       href: "/admin/users",
       icon: "customers",
       active: usersActive,
+      disabled: false,
+    },
+    {
+      label: "Influencers",
+      href: "/admin/influencers",
+      icon: "merchants",
+      active: influencersActive,
       disabled: false,
     },
     {
@@ -59,7 +71,9 @@ function createAdminNavItems(activeHref: string): AdminDashboardNavItem[] {
           label: "Feedbacks",
           href: "/admin/customers/feedbacks",
           icon: "reports",
-          active: activeHref === "/admin/customers/feedbacks" || activeHref === "/admin/reports/feedbacks",
+          active:
+            activeHref === "/admin/customers/feedbacks" ||
+            activeHref === "/admin/reports/feedbacks",
           disabled: false,
         },
       ],
@@ -140,7 +154,11 @@ function defaultDashboardBody() {
   );
 }
 
-export function AdminDashboardShell({ logoutAction, activeHref = "/admin", children }: AdminDashboardShellProps) {
+export function AdminDashboardShell({
+  logoutAction,
+  activeHref = "/admin",
+  children,
+}: AdminDashboardShellProps) {
   const adminNavItems = createAdminNavItems(activeHref);
   const body = children ?? defaultDashboardBody();
 
@@ -169,16 +187,14 @@ export function AdminDashboardShell({ logoutAction, activeHref = "/admin", child
               width={52}
               height={50}
               priority
-              className="h-[11vw] w-auto object-contain"
+              className="h-9 w-auto shrink-0 object-contain max-[380px]:hidden"
             />
           }
         />
 
         <AdminDashboardMobileNav navItems={adminNavItems} />
 
-        <main className="px-[4vw] pb-[8vw]">
-          {body}
-        </main>
+        <main className="px-3 pb-6 pt-4 sm:px-5 sm:pb-8">{body}</main>
       </div>
     </>
   );

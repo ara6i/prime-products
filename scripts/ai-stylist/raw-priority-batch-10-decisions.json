@@ -1,0 +1,150 @@
+{
+  "batch": "10",
+  "approvals": {
+    "1": {
+      "color": "Green Grid",
+      "constraint": "Use the green, tan, and muted-red relaxed plaid shirt once only for Fall Casual Everyday, Travel, or Date Night. Layer over a clean ecru or white top with controlled straight cocoa, stone, olive, charcoal, or dark-indigo bottoms and do not add another pattern."
+    },
+    "10": {
+      "color": "Wine Red",
+      "constraint": "Use the wine-red fine-grid shirt once only for Fall Casual Everyday, Travel, Date Night, or a restrained Party / Night Out look. Pair with ecru, stone, charcoal, dark olive, or clean dark-indigo straight bottoms and avoid another red or patterned garment."
+    },
+    "13": {
+      "color": "Sky Blue",
+      "constraint": "Use the sky-blue waffle-texture button-up once only for Spring or Summer Casual Everyday, Date Night, Travel, or relaxed Work / Office. Pair with ecru, stone, cocoa, olive, or controlled navy straight bottoms and low-profile footwear."
+    },
+    "17": {
+      "color": "Fog Purple",
+      "constraint": "Use the fog-purple controlled casual short once only for Summer Casual Everyday, Travel, or Vacation / Resort. Pair with a clean white, ecru, pale gray, soft sage, cocoa, or restrained navy top and simple low-profile sneakers or sandals."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [2, 5, 8, 15],
+      "reason": "Hanger-only or product-only imagery does not prove adult-male shoulder, torso, sleeve, or hem behavior."
+    },
+    {
+      "cards": [3],
+      "reason": "The bright tie-dye wash, very long oversized body and sleeves, and ambiguous model presentation are loud and uncontrolled."
+    },
+    {
+      "cards": [4],
+      "reason": "The synthetic product-only plaid shirt is narrowly shaped and provides no trustworthy adult fit proof."
+    },
+    {
+      "cards": [6],
+      "reason": "The busy tropical print is shown only as a floating product image, so adult fit and proportion remain unproven."
+    },
+    {
+      "cards": [7],
+      "reason": "The extremely wide half sleeves, long oversized body, giant utility pockets and visible lower tab create uncontrolled volume and supplier-generic workwear styling."
+    },
+    {
+      "cards": [9],
+      "reason": "The visible red chest brand tab, black-and-white repetition and generic loose plaid styling are weaker than the cleaner accepted plaid identities."
+    },
+    {
+      "cards": [11],
+      "reason": "The tucked cropped presentation, billowing sleeves, narrow cuffs and ambiguous model styling do not prove a versatile modern adult-male shirt fit."
+    },
+    {
+      "cards": [12],
+      "reason": "The sleeveless muscle-shirt cut is tight through the chest and waist, with dated contrast buttons and utility pockets."
+    },
+    {
+      "cards": [14],
+      "reason": "The product-only mock-neck sweater is tightly shaped, dark, repetitive, and marked with a small chest badge."
+    },
+    {
+      "cards": [16],
+      "reason": "The hanger-only shirt has a large decorative chest panel and visible pseudo-brand labels, with no adult fit proof."
+    },
+    {
+      "cards": [18],
+      "reason": "The rainbow mesh short is very short, highly specialized and novelty-led rather than a versatile clean modern bottom."
+    },
+    {
+      "cards": [19],
+      "reason": "The single product-only green textured short provides no adult proof of rise, seat, thigh volume, or length."
+    },
+    {
+      "cards": [20],
+      "reason": "The washed denim short is extremely wide and long, with oversized patch pockets and a below-knee baggy proportion."
+    },
+    {
+      "cards": [21],
+      "reason": "The single black product image has supplier-language overlays, no adult fit proof, and generic dark training styling."
+    },
+    {
+      "cards": [22],
+      "reason": "The dense novelty floral print is shown only off-body and provides no adult fit or proportion proof."
+    },
+    {
+      "cards": [23],
+      "reason": "The all-over geometric pattern, exposed zipper pockets, long cut and visible leg patch make the short busy and supplier-generic."
+    },
+    {
+      "cards": [24],
+      "reason": "The knee-length wide basketball cut and high-contrast double stripe recreate the dated baggy-short problem."
+    },
+    {
+      "cards": [25],
+      "reason": "Product-only corduroy trouser imagery does not prove rise, thigh, knee, hem or full-length behavior."
+    },
+    {
+      "cards": [26],
+      "reason": "The dense paisley beach print, extended white drawstring and long loose silhouette are too busy and novelty-led."
+    },
+    {
+      "cards": [27],
+      "reason": "The single product-only dark striped short provides no adult proof of rise, seat, thigh volume, or length."
+    },
+    {
+      "cards": [28],
+      "reason": "The very wide corduroy trousers pool at the shoes and recreate the baggy, puddled-bottom problem."
+    },
+    {
+      "cards": [29],
+      "reason": "The product-only black leather-look jacket has no adult fit proof and a generic dark synthetic finish."
+    },
+    {
+      "cards": [30, 31, 32],
+      "reason": "Product-only glossy faux-leather jackets with loud contrast panels, excessive zippers and narrow racing silhouettes are dated and unproven on-body."
+    },
+    {
+      "cards": [33],
+      "reason": "The shiny washed jacket has visible embroidered text, a sleeve graphic and elasticized volume, with no adult fit proof."
+    },
+    {
+      "cards": [34],
+      "reason": "The product-only fleece-lined jacket is bulky and overloaded with pockets, toggles and hood hardware."
+    },
+    {
+      "cards": [35],
+      "reason": "The product-only houndstooth shacket has no adult fit proof, oversized patch pockets and a visible novelty text label."
+    },
+    {
+      "cards": [36],
+      "reason": "The product-only quilted jacket provides no adult fit proof and adds another bulky generic dark winter layer."
+    },
+    {
+      "cards": [37],
+      "reason": "The cream synthetic shearling jacket is shown only as a floating product image, with narrow shaping and no adult fit proof."
+    },
+    {
+      "cards": [38],
+      "reason": "The black shearling-lined jacket is product-only, dark, heavily paneled and marked with conspicuous sleeve patches."
+    },
+    {
+      "cards": [39, 40],
+      "reason": "Product-only sherpa-lined jackets provide no adult fit proof and add generic bulky dark winter roles."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 126 recorded color images rendered; 166 displayed images loaded with zero broken files.",
+    "4 accepted with one exact color and variant selected: three tops and one bottom identity.",
+    "36 rejected; every outerwear product in this batch failed.",
+    "Accepted colors are green grid, wine red, sky blue, and fog purple.",
+    "Rejections include missing fit proof, uncontrolled oversized shirts, novelty prints, long or logo-led shorts, puddled trousers, loud faux leather, bulky utility layers, and generic dark sherpa jackets."
+  ]
+}

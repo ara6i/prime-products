@@ -210,6 +210,27 @@ function mapCategoryRelated(
     }));
 }
 
+function inferProductSlot(text: string): ProductDetailViewModel["slot"] {
+  if (/bottom|jean|trouser|pant|skirt|short/i.test(text)) return "bottom";
+  if (/shoe|footwear|sneaker|loafer|pump|boot|sandal/i.test(text)) {
+    return "shoe";
+  }
+  if (/bag|tote|crossbody|clutch|weekender/i.test(text)) return "bag";
+  if (/accessor|sunglass|scarf|earring|watch|jewelry/i.test(text)) {
+    return "accessory";
+  }
+  return "top";
+}
+
+function inferProductFitType(
+  slot: ProductDetailViewModel["slot"],
+): ProductDetailViewModel["fitType"] {
+  if (slot === "shoe") return "shoe";
+  if (slot === "bag") return "bag";
+  if (slot === "accessory") return "accessory";
+  return "apparel";
+}
+
 function mapBrandProduct(
   source: Extract<RawProductDetailSource, { kind: "brand" }>,
 ): ProductDetailViewModel {
@@ -218,6 +239,7 @@ function mapBrandProduct(
   const compareAtPriceCents = product.originalPrice
     ? product.originalPrice * 100
     : undefined;
+  const slot = inferProductSlot(`${product.category} ${product.name}`);
 
   return {
     id: product.id,
@@ -240,7 +262,7 @@ function mapBrandProduct(
     imageNotice: product.imageNotice,
     gallery,
     featureImage: gallery.at(-1)?.src ?? product.image,
-    sourceHref: `/shop/brand/${source.catalog.id}`,
+    sourceHref: `/shop/category/women?brand=${source.catalog.id}`,
     sourceLabel: `${source.catalog.name} edit`,
     canonicalHref: `/shop/product/${product.id}`,
     note: `${product.color} · ${product.season} ${product.category}`,
@@ -255,6 +277,11 @@ function mapBrandProduct(
       product.id,
       source.catalog.name,
     ),
+    gender: "women",
+    slot,
+    fitType: inferProductFitType(slot),
+    garmentReferenceImage: product.image,
+    garmentDetailImage: product.image,
   };
 }
 
@@ -270,6 +297,105 @@ function mapCategoryProduct(
   const color = getFacet(product, "color") || "Signature color";
   const material = getFacet(product, "material") || undefined;
   const sizeFacet = getFacet(product, "size");
+
+  if (product.gender && product.slot && product.fitType && product.gallery) {
+    const gallery = product.gallery.map((item, index) => ({
+      ...item,
+      id: `${product.id}-view-${index + 1}`,
+    }));
+    const displayColor = product.displayColor || color;
+    const measurements = product.measurements
+      ? [`Measurements: ${product.measurements}`]
+      : [];
+    return {
+      id: product.id,
+      name: product.name,
+      brandName: product.brand,
+      badge: "Generated showcase",
+      category: `${source.catalog.label} · ${category}`,
+      color: displayColor,
+      colorHex: product.colorHex ?? getColorValue(color),
+      styleCode: `PS-${product.gender === "women" ? "W" : "M"}-${String(product.position).padStart(2, "0")}`,
+      description:
+        product.description ??
+        `${product.name} from the generated showcase collection.`,
+      priceLabel: formatProductPrice(product.priceCents),
+      priceCents: product.priceCents,
+      currency: "USD",
+      sizes: product.sizes ?? [],
+      sizeGuide: product.sizeGuide,
+      gallery,
+      featureImage:
+        product.garmentDetailImage ?? gallery.at(-1)?.src ?? product.image,
+      sourceHref: `/shop/category/${source.catalog.id}`,
+      sourceLabel: `${source.catalog.label} generated showcase`,
+      canonicalHref: `/shop/product/${product.id}`,
+      tryOnSupported: true,
+      isMock: true,
+      imageNotice:
+        "Original AI-generated photography for the PrimeStyleAI showcase. No stock, review, supplier, or fulfillment claim is implied.",
+      note: `${displayColor} · ${category}${product.measurements ? ` · ${product.measurements}` : ""}`,
+      information: [
+        {
+          id: "details",
+          title: "Details",
+          summary:
+            product.description ??
+            `${product.name} from the generated showcase collection.`,
+          items: [
+            `Shown in ${displayColor}`,
+            ...(product.details ?? []),
+            ...measurements,
+          ],
+        },
+        {
+          id: "materials",
+          title: "Materials",
+          summary:
+            product.material ??
+            "Material shown in the generated showcase photography.",
+          items: [
+            ...(product.materialDetails ?? [
+              "Illustrative generated-showcase material description",
+            ]),
+            ...(product.careInstructions ?? []),
+          ],
+        },
+        {
+          id: "fit",
+          title: "Size & Fit",
+          summary:
+            product.fitDescription ??
+            (product.fitType === "bag" || product.fitType === "accessory"
+              ? "One-size item with finished dimensions in the size guide."
+              : "Choose a listed size before adding this showcase item to your bag."),
+          items: [
+            ...(product.fitNotes ?? []),
+            product.sizeGuide
+              ? `Chart fields: ${product.sizeGuide.headers.slice(1).join(", ")}`
+              : "PrimeStyleAI sizing and virtual try-on available",
+            "Open Size guide for the complete size-by-size matrix",
+            "This structured chart is passed directly to the PrimeStyleAI SDK",
+          ],
+        },
+        {
+          id: "shipping",
+          title: "Showcase status",
+          summary:
+            "This product is a generated demonstration item and is not presented as live merchant inventory.",
+          items: product.showcaseNotes ?? [
+            "No supplier, stock, review, or fulfillment claim",
+          ],
+        },
+      ],
+      related: mapCategoryRelated(source.catalog.products, product.id),
+      gender: product.gender,
+      slot: product.slot,
+      fitType: product.fitType,
+      garmentReferenceImage: product.garmentReferenceImage,
+      garmentDetailImage: product.garmentDetailImage,
+    };
+  }
 
   if (product.id === "denim-light-wide-leg") {
     return {
@@ -295,8 +421,23 @@ function mapCategoryProduct(
       note: "Washed light blue · High rise · Non-stretch denim",
       information: lumenWideLegInformation,
       related: mapCategoryRelated(source.catalog.products, product.id),
+      gender: "women",
+      slot: "bottom",
+      fitType: "apparel",
+      garmentReferenceImage:
+        "/media/global-shop/denim-pdp/lumen-wide-leg-flat.png",
+      garmentDetailImage:
+        "/media/global-shop/denim-pdp/lumen-wide-leg-detail.png",
     };
   }
+
+  const inferredGender =
+    source.catalog.id === "men"
+      ? "men"
+      : source.catalog.id === "women" || source.catalog.id === "denim"
+        ? "women"
+        : undefined;
+  const inferredSlot = inferProductSlot(`${category} ${product.name}`);
 
   return {
     id: product.id,
@@ -336,6 +477,11 @@ function mapCategoryProduct(
       material,
     ),
     related: mapCategoryRelated(source.catalog.products, product.id),
+    gender: inferredGender,
+    slot: inferredSlot,
+    fitType: inferProductFitType(inferredSlot),
+    garmentReferenceImage: product.image,
+    garmentDetailImage: product.hoverImage ?? product.image,
   };
 }
 

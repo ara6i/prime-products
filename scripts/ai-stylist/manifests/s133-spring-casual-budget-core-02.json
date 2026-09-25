@@ -1,0 +1,70 @@
+{
+  "outputDir": "spring-casual-budget-core-s133-02",
+  "scenarioId": "S133",
+  "occasion": "Casual Everyday",
+  "season": "Spring",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-six-piece-direction-pass-awaiting-belt-refinement",
+  "comparisonTitle": "S133 · Spring Casual Everyday · lighter blue core",
+  "comparisonSubtitle": "Cream textured knit shirt · French-blue controlled trouser · washed-blue bomber · light-sand sneaker · two warm-brown accents",
+  "comparisonNote": "Full-source visual pass for color, Spring season and proportion · six globally unique identities · light-sand shoe reallocated from a revoked S137 draft · Brown Style B belt source-approved but refinement not authorized · not outfit-approved · not UI integrated",
+  "coreTitle": "S133 · complete Spring Casual visual direction",
+  "coreSubtitle": "Cream and sand soften two fresh blues while burgundy-tobacco and warm brown ground the light Zara-led palette",
+  "coreNote": "Shoe is uniquely reserved to S133 · top, bottom and bag remain provisional holds · belt remains an unreserved source candidate awaiting explicitly authorized refinement and background removal · no complete outfit approval · not UI integrated",
+  "frontRunnerKeys": ["T1", "B1"],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:c1d7e0ae691889e61edf338a9b90f0e8389415d6",
+      "name": "Cream Chevron Knit Shirt",
+      "decision": "visual-front-runner-for-s133",
+      "decisionReason": "The full worn source proves a regular shoulder, straight upper-hip body, clean open collar and tactile vertical knit. Cream keeps the outfit bright while the white piping sharpens it without looking skinny or oversized."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:398e675c18f7e47723df3a8eeae3d2ca50b522ff",
+      "name": "French-Blue Clean Straight Trouser",
+      "decision": "visual-front-runner-for-s133",
+      "decisionReason": "The full worn source proves a clean regular rise, controlled thigh, straight leg and restrained ankle break. French blue adds happy Spring color and stays distinct from the lighter washed-blue bomber."
+    }
+  ],
+  "missingSlots": [],
+  "blockingGates": [
+    "belt-refinement-authorization",
+    "belt-background-removal",
+    "final-six-piece-visual-qa",
+    "top-bottom-bag-reservation",
+    "ui-integration"
+  ],
+  "selectedCompanions": [
+    {
+      "slot": "outerwear",
+      "identity": "cj:2505230844101616100",
+      "name": "Washed Light-Blue Short Bomber",
+      "state": "reserved-not-outfit-approved"
+    },
+    {
+      "slot": "shoe",
+      "identity": "cj:736610CB-75F0-45C7-9225-A3F4860A9CA4",
+      "name": "Light-Sand Tonal Low-Top Sneaker",
+      "state": "reserved-not-outfit-approved"
+    },
+    {
+      "slot": "bag",
+      "identity": "shopify_supplier:25f0ae396193e56843b28f53ef22cb3376e9c01d",
+      "name": "Brown Crescent Crossbody",
+      "state": "visual-front-runner-not-selected-or-reserved"
+    },
+    {
+      "slot": "accessory",
+      "identity": "cj:1375007945837907968",
+      "name": "Brown Cowhide Minimal Pin Belt",
+      "state": "source-imported-local-refinement-input-selected-awaiting-authorization"
+    }
+  ],
+  "queuedRoles": []
+}

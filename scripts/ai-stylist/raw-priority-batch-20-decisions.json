@@ -1,0 +1,138 @@
+{
+  "batch": "20",
+  "approvals": {
+    "2": {
+      "color": "Red",
+      "constraint": "Use the washed coral-red band-collar regular shirt once only for Spring or Summer Casual Everyday, Travel, Date Night, Creative Office, or a restrained daytime Party look. Pair with ecru, cream, stone, sand, pale gray, cocoa, muted olive or clean black straight bottoms and minimal white, cream, tan or brown footwear; keep every other item solid, use controlled proportions, and do not add another red or oversized piece."
+    },
+    "14": {
+      "color": "Blue",
+      "constraint": "Use the white shirt with soft blue-and-gray watercolor panels once only for Spring or Summer Vacation / Resort, Travel, Date Night, Creative Office, or a deliberate daytime Social look. Pair with ecru, white, sand, stone, light gray, cocoa or restrained navy straight trousers or controlled shorts and low-profile white, cream, tan or brown footwear; keep the bottom and accessories solid and avoid a second print, baggy trouser or bulky shoe."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "The black hanger-only shirt uses large scattered white novelty motifs and adds another dark print without adult fit proof or versatile coordination value."
+    },
+    {
+      "cards": [3],
+      "reason": "The ochre double-pocket shirt is acceptable in isolation but repeats several approved apricot, tobacco and light-brown overshirt roles and carries a visible chest label."
+    },
+    {
+      "cards": [4],
+      "reason": "The pale-blue micro-check shirt repeats an already crowded light-blue casual-shirt role, is hanger-only and carries a visible pocket label."
+    },
+    {
+      "cards": [5],
+      "reason": "The gray product-only shirt uses large tonal patch panels across the torso and adds another dark neutral layer without adult fit evidence."
+    },
+    {
+      "cards": [6],
+      "reason": "The all-black sweatshirt is loose and generic, with glossy three-stripe sleeve panels that create a dated imitation-sportswear cue."
+    },
+    {
+      "cards": [7],
+      "reason": "The dense multicolor checkerboard shirt is product-only and visually busy, combining too many dark earth tones into a difficult novelty pattern."
+    },
+    {
+      "cards": [8, 9],
+      "reason": "These duplicate white paint-splatter shirts use random orange and blue marks that read as cheap novelty decoration; both are hanger-only and provide no adult fit proof."
+    },
+    {
+      "cards": [10, 11, 12],
+      "reason": "These product-only olive, dark-blue and gray plaids repeat already approved checked-shirt roles and add no new fit, color or construction advantage."
+    },
+    {
+      "cards": [13, 15],
+      "reason": "Both hanger-only geometric shirts use dense repeated motifs over the entire body, making them visually noisy and harder to coordinate than the approved watercolor option."
+    },
+    {
+      "cards": [16],
+      "reason": "The black floral-print shirt is dark, shiny and long through the torso, with a narrow on-body fit that falls below the clean modern silhouette bar."
+    },
+    {
+      "cards": [17],
+      "reason": "The long loose short uses side stripes and repeats the previously approved anchor-red sports-short role; its black and khaki variants add no missing color coverage."
+    },
+    {
+      "cards": [18],
+      "reason": "The product-only loose short is shapeless and dark, with insufficient on-body waist, rise, length or leg-opening proof."
+    },
+    {
+      "cards": [19, 20],
+      "reason": "These quick-dry shorts are generic dark active basics; one lacks on-body proof and the other is extremely short and tight with visible supplier text."
+    },
+    {
+      "cards": [21],
+      "reason": "The washed denim short is extremely wide and cropped below the knee, reading as a culotte and directly violating the controlled-silhouette requirement."
+    },
+    {
+      "cards": [22],
+      "reason": "The black elastic short is long and wide with a visible metal waistband ring and neon zipper pull, adding dated technical detail to an otherwise generic shape."
+    },
+    {
+      "cards": [23, 24],
+      "reason": "Both denim shorts are too long and wide for the modern brief; the black versions are visually heavy and one adds a decorative chain and oversized hem volume."
+    },
+    {
+      "cards": [25],
+      "reason": "The khaki casual short is long, loose and visibly baggy through the leg, while the lifestyle crop does not provide reliable waist and rise evidence."
+    },
+    {
+      "cards": [26],
+      "reason": "The black active short is a repetitive neutral basic with an unusually high front waistband and no useful color or construction distinction."
+    },
+    {
+      "cards": [27],
+      "reason": "The black utility short combines an external belt, cargo zipper and long straight leg, creating a dated tactical gymwear look."
+    },
+    {
+      "cards": [28],
+      "reason": "The basketball short is paired with visible three-quarter compression leggings, high-contrast trim and side graphics, reproducing busy teamwear rather than clean training apparel."
+    },
+    {
+      "cards": [29, 30, 31],
+      "reason": "These product-only stand-collar puffers are visually repetitive basics, and their black, gray, purple, brown and white roles are already represented by approved winter layers."
+    },
+    {
+      "cards": [32],
+      "reason": "The synthetic moto jacket uses loud black, white and red racing stripes, a buckle collar and visibly narrow shiny construction that reads dated and cheap."
+    },
+    {
+      "cards": [33, 37],
+      "reason": "These faux-leather moto jackets are shiny, narrow and generic, with multiple zip details and no trustworthy adult on-body fit proof."
+    },
+    {
+      "cards": [34],
+      "reason": "The fleece-lined parka is bulky and logo-led, with ROUGH STOCK chest text, orange contrast lining and repeated FASHION trim."
+    },
+    {
+      "cards": [35],
+      "reason": "The product-only waterproof jacket is a generic dark technical shell with cargo pockets and no adult shoulder, torso, sleeve or movement proof."
+    },
+    {
+      "cards": [36],
+      "reason": "The olive, black and khaki hooded shells are clean but repeat already approved lightweight windbreaker roles and add no new on-body fit evidence."
+    },
+    {
+      "cards": [38],
+      "reason": "The product-only hooded jacket remains a generic technical shell in black, khaki or mustard, with no real-body evidence and insufficient distinction from existing windbreakers."
+    },
+    {
+      "cards": [39],
+      "reason": "The padded puffer carries a conspicuous chest logo and repeats black, brown and ivory winter-jacket roles already covered by cleaner approved products."
+    },
+    {
+      "cards": [40],
+      "reason": "The chevron-quilted down jacket is another product-only stand-collar puffer; light green and red do not offset the strong visual repetition across the approved winter inventory."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 81 recorded color images rendered; 121 displayed images loaded with zero broken files.",
+    "2 accepted with one exact color and variant selected: one washed coral-red band-collar shirt and one white shirt with soft blue-and-gray watercolor panels.",
+    "38 rejected after the base pass and close inspection of 13 promising color variants across 12 identities.",
+    "The two selected identities, source products, variants and images have zero collision with every prior accepted or conditional item.",
+    "Rejections include repeated plaid and neutral shirts, novelty prints, long or baggy shorts, busy teamwear, duplicated puffers, logo-led parkas, faux-leather moto jackets and generic technical shells."
+  ]
+}

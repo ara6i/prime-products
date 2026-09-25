@@ -1,0 +1,27 @@
+{
+  "outputDir": "fall-party-premium-pilot-s211",
+  "scenarioId": "S211",
+  "occasion": "Party / Night Out",
+  "season": "Fall",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s210-fall-party-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-watch",
+  "comparisonTitle": "S211 · Fall Party / Night Out · Premium local screen",
+  "comparisonSubtitle": "The 21 unique Fall Party candidates re-evaluated for Premium fiber, construction and drape",
+  "comparisonNote": "Require silk-merino, wool-flannel or supple suede proof, rich color and precise controlled ease · no promotion of utility, bulky, product-only or poorly draped pieces · not UI integrated",
+  "coreTitle": "S211 · provisional Fall Party Premium core",
+  "coreSubtitle": "No local garment reaches the Fall Premium Party visual bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Premium re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men burnt orange silk merino fine gauge knit polo premium fall party","targetProduct":"burnt-orange silk-merino fine-gauge knit polo with hand-finished collar","customerRetailTarget":"$180-$240"},
+    {"category":"bottom","searchPhrase":"men pale stone wool flannel double pleat trouser premium fall party","targetProduct":"pale-stone wool-flannel high-rise double-pleat trouser with exact break","customerRetailTarget":"$220-$300"},
+    {"category":"outerwear","searchPhrase":"men petrol teal supple suede cropped bomber premium fall party","targetProduct":"petrol-teal supple-suede cropped bomber with restrained hardware","customerRetailTarget":"$300-$420"},
+    {"category":"shoe","searchPhrase":"men burgundy calf suede handmade derby premium fall party","targetProduct":"burgundy calf-suede handmade round-toe derby","customerRetailTarget":"$220-$300"},
+    {"category":"watch","searchPhrase":"men champagne dial forest green leather thin case premium watch party","targetProduct":"champagne-dial thin-case Premium watch with forest-green leather strap","customerRetailTarget":"$120-$180"}
+  ]
+}

@@ -9,6 +9,8 @@ type MerchantSupplierSectionsProps = {
   onPrimaryAction: () => void;
 };
 
+const SHOW_SUPPLIER_DISTRIBUTION_SECTION = false;
+
 export function MerchantSupplierSections({
   onPrimaryAction,
 }: MerchantSupplierSectionsProps) {
@@ -40,40 +42,42 @@ export function MerchantSupplierSections({
         <SupplierCatalogMotion />
       </section>
 
-      <section
-        id="supplier-distribution"
-        className={styles.distributionSection}
-        aria-labelledby="supplier-distribution-title"
-      >
-        <div className={styles.distributionCopy}>
-          <h2 id="supplier-distribution-title">
-            List once. Reach every <span>matching merchant.</span>
-          </h2>
-          <p className={styles.distributionLead}>
-            Suppliers publish products once. Merchants discover what fits their
-            customer, add it to their storefront, and keep inventory, sizes, and
-            fulfillment connected.
-          </p>
-          <button
-            className={styles.distributionCta}
-            type="button"
-            onClick={onPrimaryAction}
-          >
-            Join the waitlist <ArrowRight size={16} weight="bold" />
-          </button>
-        </div>
+      {SHOW_SUPPLIER_DISTRIBUTION_SECTION ? (
+        <section
+          id="supplier-distribution"
+          className={styles.distributionSection}
+          aria-labelledby="supplier-distribution-title"
+        >
+          <div className={styles.distributionCopy}>
+            <h2 id="supplier-distribution-title">
+              List once. Reach every <span>matching merchant.</span>
+            </h2>
+            <p className={styles.distributionLead}>
+              Suppliers publish products once. Merchants discover what fits
+              their customer, add it to their storefront, and keep inventory,
+              sizes, and fulfillment connected.
+            </p>
+            <button
+              className={styles.distributionCta}
+              type="button"
+              onClick={onPrimaryAction}
+            >
+              Join the waitlist <ArrowRight size={16} weight="bold" />
+            </button>
+          </div>
 
-        <figure className={styles.distributionVisual}>
-          <Image
-            src="/media/partner-landing/merchant-network/supplier-distribution-network-reference-scale-v3-4k.png"
-            alt="A product-only supplier catalog distributing dresses, jackets, shoes, pants, and jewelry to merchant storefronts"
-            width={3840}
-            height={2160}
-            sizes="100vw"
-            unoptimized
-          />
-        </figure>
-      </section>
+          <figure className={styles.distributionVisual}>
+            <Image
+              src="/media/partner-landing/merchant-network/supplier-distribution-network-reference-scale-v3-4k.png"
+              alt="A product-only supplier catalog distributing dresses, jackets, shoes, pants, and jewelry to merchant storefronts"
+              width={3840}
+              height={2160}
+              sizes="100vw"
+              unoptimized
+            />
+          </figure>
+        </section>
+      ) : null}
     </div>
   );
 }

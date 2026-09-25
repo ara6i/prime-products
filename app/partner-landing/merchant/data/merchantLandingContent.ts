@@ -3,7 +3,7 @@ import type { MerchantLandingViewModel } from "../types";
 export const MERCHANT_LANDING_CONTENT: MerchantLandingViewModel = {
   hero: {
     eyebrow: "",
-    titleLead: "One network.",
+    titleLead: "One global network.",
     titleMiddleLead: "Every",
     titleMiddleTail: "product",
     titleAccent: "advantage.",
@@ -25,7 +25,7 @@ export const MERCHANT_LANDING_CONTENT: MerchantLandingViewModel = {
         imageAlt: "A shopper using PrimeStyleAI virtual try-on on a pink phone",
       },
       {
-        title: "Influencer network",
+        title: "Global influencer network",
         description: "Turn products into trusted demand.",
         image:
           "/media/partner-landing/merchant-network/merchant-hero-creator-network-chatgpt-pro.png",
@@ -41,7 +41,7 @@ export const MERCHANT_LANDING_CONTENT: MerchantLandingViewModel = {
       },
       {
         title: "Merchant dashboard",
-        description: "Run the network from one place.",
+        description: "Run the global network from one place.",
         image: "/media/merchant-dashboard/illustrations/overview.webp",
         imageAlt:
           "Merchant dashboard analytics arranged around a tailored blazer",
@@ -145,7 +145,7 @@ export const MERCHANT_LANDING_CONTENT: MerchantLandingViewModel = {
     "Returns and payment timing",
   ],
   interest: {
-    title: "Join the PrimeStyleAI network.",
-    body: "Tell us how you want to connect—as a supplier, affiliate merchant, or direct connected merchant.",
+    title: "Join the PrimeStyleAI global network.",
+    body: "",
   },
 };

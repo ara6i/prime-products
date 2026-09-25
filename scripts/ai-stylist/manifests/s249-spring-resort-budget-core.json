@@ -1,0 +1,145 @@
+{
+  "outputDir": "spring-resort-budget-pilot-s249",
+  "scenarioId": "S249",
+  "occasion": "Vacation / Resort",
+  "season": "Spring",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-screen-complete-top-only-awaiting-bottom-and-shoe",
+  "comparisonTitle": "S249 · Spring Vacation / Resort · existing core screen",
+  "comparisonSubtitle": "Five unique light colorful tops · remaining warm-weather shorts",
+  "comparisonNote": "Prefer breathable texture, happy controlled color and a clean above-knee or tailored short · not UI integrated",
+  "coreTitle": "S249 · provisional Spring Resort core",
+  "coreSubtitle": "sunny-yellow openwork camp-collar shirt",
+  "coreNote": "Tailored above-knee neutral short and cream suede rope-sole espadrille still missing · one uniqueness hold only · no complete outfit · not UI integrated",
+  "frontRunnerKeys": ["T1"],
+  "excludeCandidateKeys": ["T5", "T6", "B5"],
+  "missingSlots": ["bottom", "shoe"],
+  "queuedRoles": [
+    {
+      "category": "bottom",
+      "searchPhrase": "men ecru stone tailored resort shorts above knee clean waistband regular fit",
+      "targetProduct": "ecru or stone tailored above-knee Resort short"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men cream suede espadrilles rope sole low profile",
+      "targetProduct": "cream suede rope-sole espadrille"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:a2dbad98e6018465ae5b6de9731b74d970b0e3f6",
+      "name": "Sunny-Yellow Openwork Shirt",
+      "decision": "visual-front-runner-awaiting-shoe",
+      "decisionReason": "Full-resolution proof shows a straight regular camp-shirt body, clean collar and breathable openwork texture; the sunny yellow is cheerful and Resort-specific without becoming oversized or loud."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:9ce0f523048c1d96bc2122c732f5d8c921eae5b4",
+      "name": "Light-Blue Mandarin Tank",
+      "decision": "reject-for-s249",
+      "decisionReason": "The smooth sleeveless performance-like body and beach-gym presentation read athletic rather than textured, polished Resort wear."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:3d0d9cf2cc4575442d28636809036b15db9e6dd5",
+      "name": "Pastel-Blue Openwork Knit Tank",
+      "decision": "reject-for-s249",
+      "decisionReason": "The color and knit are attractive, but the close armholes, fitted torso and muscular styling move toward a body-focused skinny top rather than the controlled ease required here."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:9976d155616a8b22a906ff18f23fffd426a88db5",
+      "name": "Beige Eyelet Knit Tank",
+      "decision": "reject-for-s249",
+      "decisionReason": "The beige eyelet is wearable but adds no happy color and would create a washed-out pale-on-pale look with the strongest short."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:ce23752d32f430e7cacb464585a1c4cf3dffc3ea",
+      "name": "Blue Sleeveless Knit Polo",
+      "decision": "reject-for-s249",
+      "decisionReason": "It has credible relaxed ease, but the long sleeveless polo body and visible metal chest tag are less refined and less cheerful than the yellow camp shirt."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:bad79698a4e175bef96b662a1116daad12f566b5",
+      "name": "Khaki Openwork Collared Shirt",
+      "decision": "reject-for-s249",
+      "decisionReason": "The close torso, stretched button line, long hem and horizontal brown striping make the knit look fitted and dated rather than clean modern Resort styling."
+    },
+    {
+      "group": "top",
+      "key": "T7",
+      "identity": "shopify_supplier:5990f168c4c897e4a4a3f7e37efe212853e4be04",
+      "name": "Light-Green Textured Henley",
+      "decision": "reject-for-s249",
+      "decisionReason": "The soft green is useful, but the long rounded body, rolled sleeves and deep open neckline read beach cover-up rather than a crisp Spring Resort top."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:a81106d0444f9669f4978ea48e1443ed91973d1a",
+      "name": "Cerise Clean Short",
+      "decision": "reject-for-s249",
+      "decisionReason": "Full-resolution review shows washed jersey-like fabric, a hidden elastic waist and broad basketball-style volume; the strong pink cannot compensate for the sloppy shape."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:21a2265522666c46ad4a36d90d1efef1bba96fd9",
+      "name": "Fog-Purple Casual Short",
+      "decision": "reject-for-s249",
+      "decisionReason": "The fog-purple color is appealing, but the long utility volume, side snap and large pocket treatment would turn the look into baggy streetwear instead of refined Resort styling."
+    },
+    {
+      "group": "bottom",
+      "key": "B3",
+      "identity": "shopify_supplier:6531885c6d54dd5b10a585963227232ae011397c",
+      "name": "Pastel-Blue Elastic Short",
+      "decision": "reject-for-s249",
+      "decisionReason": "The isolated product image provides no rise, seat, leg opening or on-body length proof, and the half-elastic waistband reads generic chino."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:6f7feed8840f5ae61fdc2bdca72c77313949b833",
+      "name": "Sage Casual Short",
+      "decision": "reject-for-s249",
+      "decisionReason": "The product-only crop lacks on-body fit proof, while the multiple zip pockets introduce technical detailing that conflicts with the clean openwork shirt."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:8120446bbea5a8cfc540c46688949ac4a2a35a36",
+      "name": "Light-Green Casual Short",
+      "decision": "reject-for-s249",
+      "decisionReason": "The narrow long leg finishing at the knee and black-boot styling make this short feel conventional and heavy rather than easy Resort tailoring."
+    },
+    {
+      "group": "bottom",
+      "key": "B7",
+      "identity": "shopify_supplier:15d99fe892fb4b18875db9be577aaeb178bba0fd",
+      "name": "Khaki Casual Short",
+      "decision": "reject-for-s249",
+      "decisionReason": "The heavily creased product-only image lacks body proof and makes the fabric look cheap and collapsed."
+    },
+    {
+      "group": "bottom",
+      "key": "B8",
+      "identity": "shopify_supplier:f750b31d46f489f0333b6f1c5c8eb365d824d365",
+      "name": "Navy Clean Short",
+      "decision": "reject-for-s249",
+      "decisionReason": "The pressed construction is clean, but the dark navy and long conservative length would make the bright shirt look like a basic uniform rather than a fresh Resort outfit."
+    }
+  ]
+}

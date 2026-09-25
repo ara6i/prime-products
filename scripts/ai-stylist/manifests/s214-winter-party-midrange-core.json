@@ -1,0 +1,27 @@
+{
+  "outputDir": "winter-party-midrange-pilot-s214",
+  "scenarioId": "S214",
+  "occasion": "Party / Night Out",
+  "season": "Winter",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s213-winter-party-budget-core.json",
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-watch",
+  "comparisonTitle": "S214 · Winter Party / Night Out · Mid-Range local screen",
+  "comparisonSubtitle": "Eleven unique unreserved Winter Party candidates re-evaluated for Mid-Range finish",
+  "comparisonNote": "Require saturated but balanced Winter color, tactile material credibility and controlled tailored proportion · no skinny knit, technical half-zip, novelty argyle, balloon trouser, puddled denim or dark nightclub default · not UI integrated",
+  "coreTitle": "S214 · provisional Winter Party Mid-Range core",
+  "coreSubtitle": "No local garment reaches the Winter Mid-Range Party visual bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after full-resolution visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men dusty coral merino fine gauge long sleeve knit polo winter party mid range","targetProduct":"dusty-coral merino fine-gauge long-sleeve knit polo with controlled ease","customerRetailTarget":"$110-$150"},
+    {"category":"bottom","searchPhrase":"men winter ecru wool blend double pleat straight trouser winter party","targetProduct":"winter-ecru wool-blend high-rise double-pleat trouser with clean break","customerRetailTarget":"$130-$180"},
+    {"category":"outerwear","searchPhrase":"men petrol blue wool blend cropped blouson winter party modern","targetProduct":"petrol-blue wool-blend cropped blouson with natural shoulders","customerRetailTarget":"$160-$220"},
+    {"category":"shoe","searchPhrase":"men burgundy suede chelsea boot round toe slim sole winter party","targetProduct":"burgundy-suede round-toe Chelsea boot with weather-ready slim sole","customerRetailTarget":"$150-$200"},
+    {"category":"watch","searchPhrase":"men champagne dial burgundy leather thin case watch winter party","targetProduct":"champagne-dial thin-case watch with burgundy leather strap","customerRetailTarget":"$50-$80"}
+  ]
+}

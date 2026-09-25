@@ -4,7 +4,7 @@ export type ShopRunwayProduct = {
   brand: string;
   priceCents: number;
   image: string;
-  category: "Women" | "Men" | "Denim" | "Accessories";
+  category: "Women" | "Men" | "Accessories";
 };
 
 export type ShopRunwayLook = {

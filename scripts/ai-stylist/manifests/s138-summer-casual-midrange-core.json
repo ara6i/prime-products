@@ -1,0 +1,169 @@
+{
+  "outputDir": "summer-casual-midrange-pilot-s138",
+  "scenarioId": "S138",
+  "occasion": "Casual Everyday",
+  "season": "Summer",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-two-piece-summer-core-awaiting-mid-range-price-policy-and-shoe-bag-accessory",
+  "comparisonTitle": "S138 · Summer Casual Everyday · Mid-Range local screen",
+  "comparisonSubtitle": "Eight warm-weather tops · eight controlled shorts or light trousers · no jacket and no reused identity",
+  "comparisonNote": "Require breathable modern Zara-led styling, happy controlled color and balanced volume · no winter layer, skinny top, puddled trouser, bulky shoe or dark monotony · not UI integrated",
+  "coreTitle": "S138 · provisional Summer Casual Everyday Mid-Range core",
+  "coreSubtitle": "cream-and-caramel openwork polo · airy light-blue cropped straight trouser",
+  "coreNote": "Two provisional holds · no outerwear by design · customer retail price proof plus shoe, bag and accessory still missing · no complete outfit · not UI integrated",
+  "frontRunnerKeys": ["T6", "B6"],
+  "missingSlots": ["shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "shoe",
+      "searchPhrase": "men cream suede retro sneaker low profile gum sole",
+      "targetProduct": "cream suede low-profile retro sneaker",
+      "customerRetailTarget": "$170-$220"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men tobacco woven leather crossbody bag minimalist summer",
+      "targetProduct": "tobacco woven-leather minimalist crossbody",
+      "customerRetailTarget": "$140-$200"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men matte tortoiseshell rectangular sunglasses slim frame minimal summer",
+      "targetProduct": "matte-tortoiseshell slim rectangular sunglasses",
+      "customerRetailTarget": "$120-$180"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:ce23752d32f430e7cacb464585a1c4cf3dffc3ea",
+      "name": "Blue Open-Knit Sleeveless Polo",
+      "decision": "keep-available-for-other-scenario",
+      "decisionReason": "The original proves a breathable dusty-blue open knit, clean collar and controlled regular-relaxed body. It is a credible warm-weather product, but using it with the only viable light-blue trouser would make this core too tonally blue; keep it unique and available for a later Summer Resort or Date look."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:4dc95126d60f966f014ad4ca38177a3a6f88e1c6",
+      "name": "Apricot Zip-Neck Knit Tank",
+      "decision": "reject-for-s138",
+      "decisionReason": "The sleeveless knit is seasonally credible, but its squared shoulder, broad body and long low-hip hem create an overly loose block. The near-cream color also provides too little color contrast for the requested happier Summer Casual look."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:048334ba15315bb75e75ece8e59d4743ba05dca5",
+      "name": "Sky-Blue Band-Collar Shirt",
+      "decision": "reject-for-s138",
+      "decisionReason": "The shirt is visibly dropped through the shoulder, long in the sleeve and worn open over a second top. It is a useful mild-weather overshirt, not a self-contained hot-summer top, and would repeat the loose layered styling being removed."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:39f746168a6eba152e16f3f9733331ed7675b2bf",
+      "name": "Brown Short-Sleeve Shirt",
+      "decision": "reject-for-s138",
+      "decisionReason": "Only a hanger view is available, so shoulder, chest, body length and sleeve proportion cannot be verified. The staged white tee is not part of the product; the shirt cannot be approved as a Mid-Range core without on-body fit proof."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:ac88441583a239f40f04ad5c34178eac81d870d7",
+      "name": "French-Blue Short-Sleeve Overshirt",
+      "decision": "reject-for-s138",
+      "decisionReason": "The dropped shoulder, very wide chest and long rounded hem make this a deliberately oversized open layer dependent on a separate white tee. Its blue-gray tone is also darker than the brighter, self-contained Summer core required here."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:bad79698a4e175bef96b662a1116daad12f566b5",
+      "name": "Cream-Caramel Openwork Polo",
+      "decision": "visual-front-runner-for-s138",
+      "decisionReason": "Original review confirms a breathable cream openwork knit, caramel stripe, clean camp collar, controlled regular ease and an upper-hip hem. The texture and warm graphic line give the core modern Zara character without a skinny chest, oversized body or dark palette."
+    },
+    {
+      "group": "top",
+      "key": "T7",
+      "identity": "shopify_supplier:8da71f7e1638e59e5928945028ae2e449e9ee06a",
+      "name": "Gum-Leaf Roll-Sleeve Henley",
+      "decision": "reject-for-s138",
+      "decisionReason": "The mint color is useful, but the roll-sleeve Henley has a long tunic-like body and broad loose chest. Its generic beach-shirt presentation lacks the controlled proportion and polished Zara finish needed for this Mid-Range everyday core."
+    },
+    {
+      "group": "top",
+      "key": "T8",
+      "identity": "shopify_supplier:c253c19038953d3a862980eb16c4fb39b6b01e37",
+      "name": "White Textured Notch-Neck Tank",
+      "decision": "reject-for-s138",
+      "decisionReason": "The original shows deep open armholes, a broad loose body and cheap gym-street styling with camo trousers. It does not read polished Mid-Range Casual Everyday and would recreate the oversized top problem."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:0bbeb659ea8c838f7cdf606adeccf36a188247e0",
+      "name": "Light-Blue Toile Tailored Short",
+      "decision": "keep-available-for-other-scenario",
+      "decisionReason": "The botanical toile is visually credible and the leg is controlled, but the knee-length printed short reads destination Resort more than everyday city Casual. It would also compete with the openwork polo stripe, so keep it unique for a later solid-top vacation outfit."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:6f7feed8840f5ae61fdc2bdca72c77313949b833",
+      "name": "Sage Clean Zip-Detail Short",
+      "decision": "reject-for-s138",
+      "decisionReason": "The source is product-only and gives no body fit proof. Its integrated web belt, two zip pockets and curved technical thigh seams make it an outdoor/performance short rather than a clean Mid-Range everyday bottom."
+    },
+    {
+      "group": "bottom",
+      "key": "B3",
+      "identity": "shopify_supplier:f750b31d46f489f0333b6f1c5c8eb365d824d365",
+      "name": "Navy Clean Summer Short",
+      "decision": "reject-for-s138",
+      "decisionReason": "The navy short reaches the knee and uses sharp center creases with a narrow conventional line. It looks dated and business-casual rather than current Zara, while the dark navy would mute the happier Summer palette."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:15d99fe892fb4b18875db9be577aaeb178bba0fd",
+      "name": "Khaki Clean Summer Short",
+      "decision": "reject-for-s138",
+      "decisionReason": "The warm striped fabric could work, but only a flat product image is available. Rise, thigh ease and actual on-body length are unproven, so it cannot be the visually approved core bottom."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:6531885c6d54dd5b10a585963227232ae011397c",
+      "name": "Pastel-Blue Chino Short",
+      "decision": "reject-for-s138",
+      "decisionReason": "The saturated pastel-blue chino is product-only, with elasticated side panels, rolled cuffs and a slightly shiny finish. There is no proof of a modern thigh or hem proportion, and the styling reads generic rather than refined."
+    },
+    {
+      "group": "bottom",
+      "key": "B6",
+      "identity": "shopify_supplier:0820784edec4aa8490134ab11c411b8692a0e4bc",
+      "name": "Light-Blue Straight Drawstring Trouser",
+      "decision": "visual-front-runner-for-s138",
+      "decisionReason": "The original proves an airy light-blue straight leg with controlled thigh ease, a clean ankle crop and no hem stacking. Its relaxed waist is summer-appropriate while the unpuddled line balances the patterned polo and keeps the whole look light."
+    },
+    {
+      "group": "bottom",
+      "key": "B7",
+      "identity": "shopify_supplier:d3c89988d1f15bb65bf4a21fb3bfcceac90b4625",
+      "name": "Tan Straight Drawstring Trouser",
+      "decision": "reject-for-s138",
+      "decisionReason": "The tan trouser is visibly broad from hip to hem and pools over both shoes, with a prominent long drawstring. It is exactly the baggy, puddled lower-half silhouette this rebuild must remove."
+    },
+    {
+      "group": "bottom",
+      "key": "B8",
+      "identity": "shopify_supplier:016b87eb18f5b657fbd748be0e0957a9a1fba10c",
+      "name": "Army-Green Ribbed Straight Trouser",
+      "decision": "reject-for-s138",
+      "decisionReason": "The ribbed army-green trouser is seasonally wearable, but its elastic lounge waist, full wide leg and dark saturated color push it toward Resort/lounge styling. It is too visually heavy for this bright Mid-Range everyday core."
+    }
+  ]
+}

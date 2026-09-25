@@ -117,30 +117,32 @@ def build_scan(entry: dict, metric_dir: Path = METRIC_DIR) -> dict:
             round(float(maximum[1] - point[1] / pixels_per_cm), 5),
         ]
 
-    waist = metric["rows"]["waist"]
-    contour = np.asarray(waist["contour"]["pointsCm"], dtype=np.float64)
-    torso_min_x = float(contour[:, 0].min() - 2.0)
-    torso_max_x = float(contour[:, 0].max() + 2.0)
     stature = float(metric["profile"]["heightCm"])
-    centre_height = float(waist["plane"]["heightCm"])
     slices = []
-    for offset in SLICE_OFFSETS:
-        height = centre_height + offset * stature
-        points = plane_intersections(vertices, triangles, height)
-        central = points[(points[:, 0] >= torso_min_x) & (points[:, 0] <= torso_max_x)]
-        if len(central) < 12:
-            depth = None
-        elif abs(offset) < 1e-9:
-            depth = float(waist["depthCm"])
-        else:
-            depth = float(np.quantile(central[:, 1], 0.995) - np.quantile(central[:, 1], 0.005))
-        slices.append({
-            "offsetBodyHeight": offset,
-            "heightCm": round(height, 5),
-            "depthCm": None if depth is None else round(depth, 5),
-            "depthBodyHeight": None if depth is None else round(depth / stature, 8),
-            "source": "exact canonical PLY central-torso horizontal slice",
-        })
+    waist = metric.get("rows", {}).get("waist") or {}
+    waist_contour = (waist.get("contour") or {}).get("pointsCm")
+    centre_height = float((waist.get("plane") or {}).get("heightCm", 0.0))
+    if waist_contour and centre_height > 0:
+        contour = np.asarray(waist_contour, dtype=np.float64)
+        torso_min_x = float(contour[:, 0].min() - 2.0)
+        torso_max_x = float(contour[:, 0].max() + 2.0)
+        for offset in SLICE_OFFSETS:
+            height = centre_height + offset * stature
+            points = plane_intersections(vertices, triangles, height)
+            central = points[(points[:, 0] >= torso_min_x) & (points[:, 0] <= torso_max_x)]
+            if len(central) < 12:
+                depth = None
+            elif abs(offset) < 1e-9:
+                depth = float(waist["depthCm"])
+            else:
+                depth = float(np.quantile(central[:, 1], 0.995) - np.quantile(central[:, 1], 0.005))
+            slices.append({
+                "offsetBodyHeight": offset,
+                "heightCm": round(height, 5),
+                "depthCm": None if depth is None else round(depth, 5),
+                "depthBodyHeight": None if depth is None else round(depth / stature, 8),
+                "source": "exact canonical PLY central-torso horizontal slice",
+            })
 
     return {
         "schemaVersion": "wear-exact-dual-view/v1",
@@ -169,9 +171,11 @@ def build_scan(entry: dict, metric_dir: Path = METRIC_DIR) -> dict:
             },
         },
         "waistBand": {
-            "centreHeightCm": centre_height,
-            "centreHeightFractionFromFeet": round(centre_height / stature, 8),
+            "centreHeightCm": centre_height if centre_height > 0 else None,
+            "centreHeightFractionFromFeet": round(centre_height / stature, 8) if centre_height > 0 else None,
             "slices": slices,
+            "available": bool(slices),
+            "unavailableReason": None if slices else "This scan has no certified waist contour; the exact front and side PLY projections remain available.",
         },
     }
 

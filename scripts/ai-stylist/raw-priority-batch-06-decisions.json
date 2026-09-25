@@ -1,0 +1,94 @@
+{
+  "batch": "06",
+  "approvals": {
+    "1": {
+      "color": "Pink",
+      "constraint": "Use the pink-and-white vertical-striped shirt once only for Spring or Summer Vacation / Resort, Party / Night Out, Date Night, or a deliberate Casual Everyday look. Pair with ecru, stone, controlled light denim, or another quiet straight bottom and avoid a second loud pattern."
+    },
+    "17": {
+      "color": "Mint Green",
+      "constraint": "Use the mint-green elastic-waist performance short once only for Spring or Summer Sports / Workout. Pair with a clean white, ecru, light-gray, or restrained technical top and low-profile training footwear."
+    },
+    "37": {
+      "color": "Light Blue",
+      "constraint": "Use the light-blue regular-relaxed denim jacket once only for Spring or Fall Casual Everyday, Travel, or Date Night. Keep the base outfit light or warm-neutral, use a controlled straight bottom, and avoid double denim in the same wash."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [2],
+      "reason": "The blouse-like deep opening, tiny gold buttons, oversized sleeves, ambiguous model presentation, and hidden tucked hem do not prove a modern adult-male shirt identity."
+    },
+    {
+      "cards": [3, 5, 8, 10, 12, 14],
+      "reason": "The narrow torso, tight sleeves or arm openings, and fitted marketplace styling recreate the skinny-shirt problem."
+    },
+    {
+      "cards": [4, 6, 7, 13, 15, 16],
+      "reason": "Hanger or product-only imagery does not prove adult-male shoulder, torso, sleeve, or hem behavior; several options also rely on dated or exaggerated stripe treatments."
+    },
+    {
+      "cards": [9],
+      "reason": "The overlong open shirt, exposed-body styling, low-resolution source, and exaggerated vertical stripe read like a generic marketplace beach image rather than a versatile modern product."
+    },
+    {
+      "cards": [11],
+      "reason": "The dark microstripe, overlong hem, small red chest marks, skinny-jean styling, and muted palette add a repetitive weak role rather than useful color or proportion."
+    },
+    {
+      "cards": [18, 19, 23, 27, 28],
+      "reason": "Product-only imagery does not prove rise, thigh volume, length, or adult-male fit; visible marks or logos further weaken cards 27 and 28."
+    },
+    {
+      "cards": [20, 24, 25],
+      "reason": "The knee-length or below-knee wide silhouette, excessive drawstrings, and loose volume recreate the baggy-long-short problem."
+    },
+    {
+      "cards": [21],
+      "reason": "The all-over bandana print and contrasting waistband are loud, novelty-led, and supplier-generic."
+    },
+    {
+      "cards": [22],
+      "reason": "The long basketball proportion and high-contrast piping are dated and too specialized for the clean modern Sports / Workout wardrobe."
+    },
+    {
+      "cards": [26],
+      "reason": "The visible triangular leg badge, loose long cut, and BMX-styled presentation are more branded street-sport than the clean versatile short required."
+    },
+    {
+      "cards": [29, 30],
+      "reason": "The mottled gradient cardigan and open black mesh cover-up are costume-like, dark, and incompatible with the restrained modern wardrobe brief."
+    },
+    {
+      "cards": [31],
+      "reason": "The single cropped view shows a fitted navy cardigan-blazer hybrid with no full hem or back proof and adds another dark narrow layer."
+    },
+    {
+      "cards": [32],
+      "reason": "The broad three-quarter sleeves and open-front kimono volume are uncontrolled and repeat the oversized layer problem."
+    },
+    {
+      "cards": [33, 35, 36, 38],
+      "reason": "Product-only denim or padded outerwear does not prove adult fit and relies on tight shaping, generic washes, badges, heavy lining, or overlong shirt-jacket proportions."
+    },
+    {
+      "cards": [34],
+      "reason": "The heavily dropped shoulder, very long sleeves, oversized body, and ambiguous fit create uncontrolled volume rather than a balanced relaxed jacket."
+    },
+    {
+      "cards": [39],
+      "reason": "The small chest brand tab, dark repetitive wash, and generic boxy denim role are weaker than the cleaner approved light-blue jacket."
+    },
+    {
+      "cards": [40],
+      "reason": "The overlong black shape, chest spikes and zippers, oversized sleeves, and all-dark street styling are overdesigned and incompatible with the requested direction."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 107 recorded color images rendered; 147 displayed images loaded with zero broken files.",
+    "3 accepted with one exact color and variant selected: one top, one bottom, and one outerwear identity.",
+    "37 rejected.",
+    "Accepted colors are pink and white, mint green, and light blue.",
+    "Rejections include skinny shirts, unproven hanger products, overlong beach styling, baggy shorts, loud bandana prints, logos, costume cardigans, heavy or generic denim, and uncontrolled oversized layers."
+  ]
+}

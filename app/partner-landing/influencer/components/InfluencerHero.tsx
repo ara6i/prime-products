@@ -2,7 +2,7 @@
 
 import { ArrowRight } from "@phosphor-icons/react";
 import Image from "next/image";
-import { useCreatorLanguage } from "../../i18n/CreatorLanguageProvider";
+import { useOptionalCreatorLanguage } from "../../i18n/CreatorLanguageProvider";
 import type { InfluencerLandingViewModel } from "../types";
 import { InfluencerHeroJourney } from "./InfluencerHeroJourney";
 import { INFLUENCER_HERO_REELS } from "./influencerHeroMedia";
@@ -14,12 +14,14 @@ const CREATOR_CARDS = [
   "/media/partner-landing/optimized/avatar-elena-96.webp",
 ];
 
+const translateFallback = (value: string) => value;
+
 export function InfluencerHero({ viewModel, onPrimaryAction, onSecondaryAction }: {
   viewModel: InfluencerLandingViewModel;
   onPrimaryAction: () => void;
   onSecondaryAction: () => void;
 }) {
-  const { t } = useCreatorLanguage();
+  const t = useOptionalCreatorLanguage()?.t ?? translateFallback;
 
   return (
     <section className={styles.hero} aria-labelledby="influencer-hero-title">

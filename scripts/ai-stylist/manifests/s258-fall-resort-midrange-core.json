@@ -1,0 +1,29 @@
+{
+  "outputDir": "fall-resort-midrange-pilot-s258",
+  "scenarioId": "S258",
+  "occasion": "Vacation / Resort",
+  "season": "Fall",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceSpec": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/fall-resort-budget-pilot-s257/core-comparison.json",
+  "excludeCandidateKeys": ["O7"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-six-unique-roles",
+  "comparisonTitle": "S258 · Fall Vacation / Resort · Mid-Range local screen",
+  "comparisonSubtitle": "Remaining unique Fall Resort candidates after the S257 bomber hold",
+  "comparisonNote": "Require warm-destination color, breathable texture and controlled straight proportions · no tunic hoodie, oversized tee, slim jean, product-only trouser, dark denim or double utility bulk · not UI integrated",
+  "coreTitle": "S258 · provisional Fall Resort Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Mid-Range Resort bar · six roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men paprika textured knit polo fall resort mid range", "targetProduct": "paprika textured short-sleeve knit polo", "customerRetailTarget": "$100-$140"},
+    {"category": "bottom", "searchPhrase": "men pale stone travel trouser controlled straight fall resort", "targetProduct": "pale-stone controlled-straight Fall Resort trouser", "customerRetailTarget": "$120-$170"},
+    {"category": "outerwear", "searchPhrase": "men petrol blue lightweight suede look overshirt fall resort", "targetProduct": "petrol-blue lightweight suede-look Resort overshirt", "customerRetailTarget": "$140-$200"},
+    {"category": "shoe", "searchPhrase": "men sand suede deck shoe low profile fall resort", "targetProduct": "sand-suede low-profile deck shoe", "customerRetailTarget": "$130-$180"},
+    {"category": "bag", "searchPhrase": "men cognac canvas leather weekender fall resort", "targetProduct": "cognac canvas-and-leather compact weekender", "customerRetailTarget": "$90-$130"},
+    {"category": "accessory", "searchPhrase": "men amber tortoiseshell sunglasses fall resort", "targetProduct": "amber-tortoiseshell minimal rectangular sunglasses", "customerRetailTarget": "$50-$80"}
+  ]
+}

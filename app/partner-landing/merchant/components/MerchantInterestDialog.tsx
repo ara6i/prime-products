@@ -269,9 +269,9 @@ export function MerchantInterestDialog({
           >
             <X size={20} />
           </button>
-          <span>PrimeStyleAI Shopping Network</span>
+          <span>PrimeStyleAI Global Shopping Network</span>
           <h2 id="merchant-interest-title">{viewModel.interest.title}</h2>
-          <p>{viewModel.interest.body}</p>
+          {viewModel.interest.body ? <p>{viewModel.interest.body}</p> : null}
           {submissionState === "success" ? (
             <div className={styles.dialogSuccess}>
               <CheckCircle size={36} weight="fill" />

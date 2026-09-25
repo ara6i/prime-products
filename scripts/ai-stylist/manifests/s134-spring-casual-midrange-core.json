@@ -1,0 +1,166 @@
+{
+  "outputDir": "spring-casual-midrange-pilot-s134",
+  "scenarioId": "S134",
+  "occasion": "Casual Everyday",
+  "season": "Spring",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "full-resolution-correction-outerwear-only-core-awaiting-top-bottom-shoe-bag-accessory",
+  "comparisonTitle": "S134 · Spring Casual Everyday · Mid-Range existing core screen",
+  "comparisonSubtitle": "Six cheerful regular tops · six controlled denim or short options · six Spring layers · all unique and available",
+  "comparisonNote": "Require modern Zara-led color, clean controlled volume and real Spring function without skinny tops, puddled denim, utility overload or dark monotony · not UI integrated",
+  "coreTitle": "S134 · corrected Spring Casual Everyday Mid-Range partial core",
+  "coreSubtitle": "warm-brown cropped faux-suede zip jacket · oversized tee and puddled jean rejected",
+  "coreNote": "One provisional hold · replacement regular top and controlled bottom plus shoe, bag and accessory missing · no complete outfit · not UI integrated",
+  "frontRunnerKeys": ["O5"],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "shoe",
+      "searchPhrase": "men cream lavender suede retro sneakers gum sole low profile",
+      "targetProduct": "cream-and-lavender suede low-profile retro sneaker"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men warm taupe soft nylon crossbody bag minimalist",
+      "targetProduct": "warm-taupe soft-nylon minimalist crossbody"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men cream cotton twill baseball cap minimal logo",
+      "targetProduct": "cream cotton-twill minimal cap"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:23fad7d8c89e1ea3b24c130f572debc4d738ed9e",
+      "name": "Burnt-Coral Regular Tee",
+      "decision": "reject-for-s134",
+      "decisionReason": "The coral wash is attractive, but the tee has a heavily dropped shoulder, very wide chest and long tunic-like body. It repeats the oversized-top problem and would hang too far below a structured Spring jacket."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:c3cad9602e9bf1a897086042d46b761f8b2975c9",
+      "name": "Bean-Green Regular Henley",
+      "decision": "reject-for-s134",
+      "decisionReason": "The bean-green Henley is visibly close through the chest, waist and sleeves. Its generic fitted line is the skinny-top silhouette the rebuild is removing."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:e91eeff2e12728ba653563b1948d0728a0b051c1",
+      "name": "Soft-Green Stripe Shirt",
+      "decision": "reject-for-s134",
+      "decisionReason": "The softly striped shirt has credible regular ease, but its long rounded hem and pale blue-green tone create an overly cool, shirt-heavy core with the light-blue jean. The lavender tee produces a cleaner and more deliberate Casual color focus."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:5cbc77ca1e59ccf3528bd29d252216688cfbd0d1",
+      "name": "Apricot Wrap Shirt",
+      "decision": "reject-for-s134",
+      "decisionReason": "The wrap shirt uses an asymmetrical tie waist, deep open collar and long split tail. The novelty tunic shape is difficult to layer and does not match the clean modern everyday silhouette required."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:3585f563acb3495d789e9eea3b68a05f6553a4d1",
+      "name": "Pale Bean-Green Clean Shirt",
+      "decision": "reject-for-s134",
+      "decisionReason": "The pale green shirt is a long open overshirt dependent on a separate white tee, with a dropped relaxed body and rounded tail. It adds a second layer role instead of a clean self-contained top and would compete with the jacket."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:2d404d28d11be77008250d5736f3877c185ccfe7",
+      "name": "Light-Blue Straight Jean",
+      "decision": "reject-for-s134",
+      "decisionReason": "The very pale jean has a flared lower leg and stiff broad opening rather than a controlled straight line. Its fashion bootcut shape is more extreme than the balanced everyday proportion needed here."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:d61bbb433a5e5e5a18d8f920296ad06f2085e703",
+      "name": "Washed-Blue Relaxed-Cropped Jean",
+      "decision": "reject-for-s134",
+      "decisionReason": "The cropped jean is controlled in width, but the heavy whiskering, rolled cuffs and ankle exposure make it look dated and rugged rather than clean Mid-Range Zara styling."
+    },
+    {
+      "group": "bottom",
+      "key": "B3",
+      "identity": "shopify_supplier:00f657f5fb0ef1157e296ad9fa3404f0f0bd577d",
+      "name": "Light-Blue Clean Jean",
+      "decision": "reject-for-s134",
+      "decisionReason": "The light-blue jean is broad through the thigh and lower leg and visibly pools over the sneakers. It recreates the loose puddled bottom the rebuild excludes."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:8120446bbea5a8cfc540c46688949ac4a2a35a36",
+      "name": "Light-Green Casual Short",
+      "decision": "reject-for-s134",
+      "decisionReason": "The light-green short falls to the knee and includes curved technical seam panels. Together with the black performance styling it reads sporty and conventional rather than refined everyday Spring casual."
+    },
+    {
+      "group": "bottom",
+      "key": "B6",
+      "identity": "shopify_supplier:794e37299b82a5d3beae6b9aa304eb2516119885",
+      "name": "Apricot Casual Short",
+      "decision": "reject-for-s134",
+      "decisionReason": "The actual source is a near-white crinkled drawstring lounge short, not apricot, and is shown only as part of a loose matching set. The long soft shape and exposed cords do not provide a polished Mid-Range bottom."
+    },
+    {
+      "group": "outerwear",
+      "key": "O1",
+      "identity": "shopify_supplier:97d0fa66e0f0b15d1c75f32a5a86c1db3210eba1",
+      "name": "Light-Khaki Minimal Bomber",
+      "decision": "reject-for-s134",
+      "decisionReason": "The bomber is product-only with a fleece-lined high collar, bulky sleeves, sleeve zip and visible patch. It reads Fall/Winter utility outerwear and lacks credible on-body Spring fit proof."
+    },
+    {
+      "group": "outerwear",
+      "key": "O2",
+      "identity": "shopify_supplier:a514a8da05fe246ab7a55950bbd761138973f084",
+      "name": "Light-Blue Clean Denim Jacket",
+      "decision": "reject-for-s134",
+      "decisionReason": "The denim jacket has strongly dropped shoulders, very long sleeves and a long broad body. Its washed finish plus oversized volume would create a loose-on-loose blue outfit with the jean."
+    },
+    {
+      "group": "outerwear",
+      "key": "O3",
+      "identity": "shopify_supplier:cb3221d742c0aaad361cfbcd62a31272142a2274",
+      "name": "Light-Blue Regular Denim Jacket",
+      "decision": "reject-for-s134",
+      "decisionReason": "The second denim jacket has bagged sleeves, a dropped shoulder and a loose cropped body, while the proof styling is dominated by black trousers and a large bag. It does not provide a clean controlled layer and would repeat light-blue denim."
+    },
+    {
+      "group": "outerwear",
+      "key": "O4",
+      "identity": "shopify_supplier:2349a25ac0e2ed693d29d058a48f7be7233b84f7",
+      "name": "Khaki Double-Breasted Trench",
+      "decision": "reject-for-s134",
+      "decisionReason": "The trench is extremely long and oversized through shoulder, chest and sleeve, with large storm flaps and high visual weight. It overwhelms a simple Casual Everyday core instead of adding one controlled Spring layer."
+    },
+    {
+      "group": "outerwear",
+      "key": "O5",
+      "identity": "shopify_supplier:5860275ccdf790885f11f631bc5acaf453a578cf",
+      "name": "Brown Faux-Suede Zip Jacket",
+      "decision": "visual-front-runner-for-s134",
+      "decisionReason": "The warm-brown faux-suede jacket has a clean waist-to-hip length, controlled shoulder ease, simple zip front and enough room for the lavender tee without oversized bulk. Its rich texture grounds the two light colors and gives the core a modern Zara finish."
+    },
+    {
+      "group": "outerwear",
+      "key": "O6",
+      "identity": "shopify_supplier:ba598eeda96118aa245db1edd47953e4ce9d83d0",
+      "name": "Blazing-Red Lightweight Shell",
+      "decision": "reject-for-s134",
+      "decisionReason": "The red shell has credible Spring function and a clean body, but its gray hood lining, black technical tabs and backpack styling make it a sporty Travel/Outdoor layer. It conflicts with the lavender lifestyle core rather than refining it."
+    }
+  ]
+}

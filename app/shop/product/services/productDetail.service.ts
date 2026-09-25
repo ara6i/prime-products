@@ -1,5 +1,8 @@
 import { brandCatalogData } from "../../brand/data/brandCatalog.data";
-import { categoryCatalogData } from "../../category/data/categoryCatalog.data";
+import {
+  categoryCatalogData,
+  legacyCategoryCatalogData,
+} from "../../category/data/categoryCatalog.data";
 import { dailyEditProductDetails } from "../data/dailyEditProductDetails.data";
 import type { RawProductDetailSource } from "../types/productDetail.types";
 
@@ -23,11 +26,18 @@ export async function getRawProductDetail(
     if (productIndex >= 0) return { kind: "category", catalog, productIndex };
   }
 
+  for (const catalog of legacyCategoryCatalogData) {
+    const productIndex = catalog.products.findIndex(
+      (product) => product.id === productId,
+    );
+    if (productIndex >= 0) return { kind: "category", catalog, productIndex };
+  }
+
   return null;
 }
 
 export function getStaticProductIds(): string[] {
-  return [
+  return [...new Set([
     ...dailyEditProductDetails.map((product) => product.id),
     ...brandCatalogData.flatMap((catalog) =>
       catalog.products.map((product) => product.id),
@@ -35,5 +45,8 @@ export function getStaticProductIds(): string[] {
     ...categoryCatalogData.flatMap((catalog) =>
       catalog.products.map((product) => product.id),
     ),
-  ];
+    ...legacyCategoryCatalogData.flatMap((catalog) =>
+      catalog.products.map((product) => product.id),
+    ),
+  ])];
 }

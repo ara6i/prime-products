@@ -1,0 +1,74 @@
+{
+  "batch": "42",
+  "approvals": {
+    "2": {
+      "color": "White Grid",
+      "constraint": "Use this white-and-black relaxed plaid overshirt once only for Fall/Winter Casual Everyday, Weekend, Travel, Campus, creative Office or a daytime Date. Keep it as the outfit's only pattern over a clean cream, white, charcoal, muted-green or tobacco base with straight or tapered ecru, charcoal, dark-denim or olive bottoms and minimal cream, tan or gray footwear; never combine it with another plaid, a baggy bottom, a bulky dark shoe, an all-black palette or any Wedding/Wedding Guest use."
+    },
+    "3": {
+      "color": "Dark Green",
+      "constraint": "Use this dark-green, red and oatmeal argyle knit once only for Fall/Winter Casual Everyday, Campus, creative Office, daytime Date, Holiday or a cheerful non-wedding Party. Treat it as the outfit's single graphic statement with straight ecru, charcoal, dark-denim, tobacco or muted-olive bottoms and clean cream, brown, burgundy or gray footwear; never add another pattern, a baggy trouser, a dark bulky layer, an all-dark palette or any Wedding/Wedding Guest use."
+    },
+    "9": {
+      "color": "White",
+      "constraint": "Use this white ribbed notch-neck long-sleeve top once only for Spring/Fall Casual Everyday, Weekend, Travel, Campus, creative Office or a clean daytime Date. Pair its light texture with straight muted-olive, rust, tobacco, washed-blue, burgundy or charcoal bottoms and low-profile cream, tan, brown or gray shoes; never combine it with an oversized bottom, another ribbed white layer, an all-white lounge look, bulky trainer or any Wedding/Wedding Guest use."
+    },
+    "10": {
+      "color": "Violet",
+      "constraint": "Use this violet short-sleeve technical pullover once only for Spring/Summer/Fall Hiking, Outdoor Adventure, active Travel, Festival, Weekend or a deliberate utility Casual look. Make violet the single saturated piece with controlled stone, gray, khaki, muted-olive, charcoal or black technical bottoms and streamlined cream, gray, tan or muted-green footwear; never add another purple garment, a baggy cargo, formal accessories, a bulky black trainer or any Wedding/Wedding Guest use."
+    },
+    "23": {
+      "color": "Khaki",
+      "constraint": "Use this straight khaki single-pocket cargo trouser once only for Spring/Fall Hiking, Outdoor Adventure, active Travel, Errands, practical Weekend or a clean utility Casual look. Pair it with a controlled white, cream, sky-blue, teal, rust, burgundy or muted-green top and low-profile cream, gray, brown or muted-blue footwear; never add another pocket-heavy layer, an oversized top, an all-khaki palette, bulky trainer, formal tailoring or any Wedding/Wedding Guest use."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "The asymmetric long tunic shirt is overlong, draped and costume-like rather than a versatile modern men's separate."
+    },
+    {
+      "cards": [4, 5, 7, 8, 11, 14, 15, 16, 17, 18],
+      "reason": "These active, collared-knit and tank tops are compression-tight, bodybuilding-led, visibly branded, synthetic-looking or insufficiently proven and repeat the skinny-top problem."
+    },
+    {
+      "cards": [6],
+      "reason": "The product-only cable sweater has no trustworthy adult fit proof and its hard horizontal color band looks dated rather than clean."
+    },
+    {
+      "cards": [12],
+      "reason": "The elongated open-knit tank is too long, slightly sheer and repetitive beside stronger approved warm-weather textured tops."
+    },
+    {
+      "cards": [13, 19],
+      "reason": "The product-only zip hoodie and faux-fur quarter-zip lack adult fit proof; one is generic dark technical repetition and the other is shaggy novelty."
+    },
+    {
+      "cards": [20],
+      "reason": "The chest-cutout long-sleeve top is theatrical and narrowly styled rather than versatile modern menswear."
+    },
+    {
+      "cards": [21, 22, 25, 26, 27, 28, 30, 35, 36, 37, 40],
+      "reason": "These cargos are excessively wide, ballooned, multi-pocketed or visibly puddled and directly recreate the baggy-bottom failure."
+    },
+    {
+      "cards": [24, 31, 39],
+      "reason": "These dark cargo joggers stack heavily at the cuff, carry visible patches or use a dated narrow utility silhouette."
+    },
+    {
+      "cards": [29, 32, 34, 38],
+      "reason": "These product-only cargo trousers provide no trustworthy on-body waist, thigh, break or movement proof and add generic utility repetition."
+    },
+    {
+      "cards": [33],
+      "reason": "The cropped loose cargo has oversized labeled pockets, conspicuous drawstrings and a bulky shape that cannot meet the clean silhouette gate."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 140 recorded color images rendered and loaded with zero broken files.",
+    "5 products accepted with one exact color and variant selected each: white-grid relaxed plaid overshirt, dark-green multicolor argyle knit, white ribbed notch-neck top, violet technical pullover and straight khaki single-pocket cargo trouser.",
+    "35 rejected after the base pass and close inspection of all 22 variants across nine borderline identities.",
+    "Every selected identity, variant and image has zero collision with every prior accepted or conditional item.",
+    "The batch mostly failed for compression tops, elongated or novelty layers, generic product-only items, and wide, cuff-stacked or heavily pocketed cargos."
+  ]
+}

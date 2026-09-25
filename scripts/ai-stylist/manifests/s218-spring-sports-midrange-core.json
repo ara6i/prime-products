@@ -1,0 +1,28 @@
+{
+  "outputDir": "spring-sports-midrange-pilot-s218",
+  "scenarioId": "S218",
+  "occasion": "Sports / Workout",
+  "season": "Spring",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceSpec": "output/reports/ai-stylist-mens-global-unique-visual-v16-20260913/spring-sports-budget-pilot-s217/core-comparison.json",
+  "excludeCandidateKeys": ["O1", "T1", "B4"],
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-and-bag",
+  "comparisonTitle": "S218 · Spring Sports / Workout · Mid-Range local screen",
+  "comparisonSubtitle": "Eleven unique Spring active candidates after the S217 three-piece core holds",
+  "comparisonNote": "Require energetic color, credible movement mapping, controlled ease and Mid-Range technical finish · no body-hidden shell, streetwear hoodie, product-only tee, shiny jogger or beach-casual taper · not UI integrated",
+  "coreTitle": "S218 · provisional Spring Sports Mid-Range core",
+  "coreSubtitle": "No remaining local garment reaches the Spring Mid-Range activewear bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after uniqueness exclusion and visual re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men ultramarine moisture wicking performance tee regular fit spring workout mid range","targetProduct":"ultramarine technical performance tee with mapped ventilation and regular movement ease","customerRetailTarget":"$90-$120"},
+    {"category":"bottom","searchPhrase":"men pale stone technical tapered training trouser spring workout","targetProduct":"pale-stone technical tapered training trouser with a clean ankle finish","customerRetailTarget":"$110-$150"},
+    {"category":"outerwear","searchPhrase":"men pale lime lightweight technical wind shell regular fit spring workout","targetProduct":"pale-lime lightweight technical wind shell with controlled movement volume","customerRetailTarget":"$140-$190"},
+    {"category":"shoe","searchPhrase":"men silver gray low profile performance trainer spring workout","targetProduct":"silver-gray low-profile performance trainer with restrained gum detail","customerRetailTarget":"$130-$180"},
+    {"category":"bag","searchPhrase":"men dusty coral technical crossbody sling spring workout","targetProduct":"dusty-coral compact technical workout sling","customerRetailTarget":"$50-$80"}
+  ]
+}

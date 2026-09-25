@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildQueryFromMask, fixedTopologyMesh, rankSdkWearPart, type SdkWearIndex } from "./sdkWearMatcher";
+import { buildFullPersonOutlineFromMask, buildQueryFromMask, fixedTopologyMesh, rankSdkWearPart, type SdkWearIndex } from "./sdkWearMatcher";
 
 function index(): SdkWearIndex {
   const person = (scanId: string, heightCm: number, weightKg: number, width: number) => ({
@@ -38,5 +38,41 @@ describe("SDK WEAR matcher", () => {
     const query = buildQueryFromMask(mask, 20, 20, 168);
     expect(query).not.toBeNull();
     expect(query?.rowWidths.waist?.frontWidthCm).toBeGreaterThan(0);
+  });
+
+  it("keeps outstretched arms out of the comparable body outline", () => {
+    const width = 40;
+    const height = 40;
+    const mask = new Uint8ClampedArray(width * height);
+    for (let y = 3; y < 37; y += 1) {
+      for (let x = 15; x <= 25; x += 1) mask[y * width + x] = 255;
+    }
+    for (let y = 9; y <= 12; y += 1) {
+      for (let x = 2; x <= 38; x += 1) mask[y * width + x] = 255;
+    }
+    const query = buildQueryFromMask(mask, width, height, 168);
+    expect(query).not.toBeNull();
+    const xs = query!.outline.map(([x]) => x!);
+    const ys = query!.outline.map(([, y]) => y!);
+    expect(Math.max(...xs) - Math.min(...xs)).toBeLessThan(0.6);
+    expect(Math.min(...ys)).toBeCloseTo(0);
+    expect(Math.max(...ys)).toBeCloseTo(1);
+  });
+
+  it("keeps complete arms and hands in the separate display boundary", () => {
+    const width = 40;
+    const height = 40;
+    const mask = new Uint8ClampedArray(width * height);
+    for (let y = 3; y < 37; y += 1) {
+      for (let x = 15; x <= 25; x += 1) mask[y * width + x] = 255;
+    }
+    for (let y = 9; y <= 12; y += 1) {
+      for (let x = 2; x <= 38; x += 1) mask[y * width + x] = 255;
+    }
+    const outline = buildFullPersonOutlineFromMask(mask, width, height);
+    expect(outline).not.toBeNull();
+    const xs = outline!.map(([x]) => x!);
+    expect(Math.min(...xs)).toBeLessThanOrEqual(0.05);
+    expect(Math.max(...xs)).toBeGreaterThanOrEqual(0.975);
   });
 });

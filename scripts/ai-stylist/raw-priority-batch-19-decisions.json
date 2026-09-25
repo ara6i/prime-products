@@ -1,0 +1,146 @@
+{
+  "batch": "19",
+  "approvals": {
+    "2": {
+      "color": "Green",
+      "constraint": "Use the light green-and-white hand-drawn botanical short-sleeve shirt once only for Spring or Summer Vacation / Resort, Travel, Casual Everyday, daytime Date Night, or a relaxed daytime Party. Pair with ecru, white, sand, pale stone, tobacco, muted olive or clean black controlled shorts or straight trousers and low-profile white, cream, tan or brown footwear; keep every other item solid and avoid a second print, oversized bottom or dark heavy layer."
+    },
+    "10": {
+      "color": "White",
+      "constraint": "Use the white textured four-pocket open-collar resort shirt once only for Spring or Summer Vacation / Resort, Travel, Date Night, relaxed Creative Office, or polished Casual Everyday. Pair with sand, stone, ecru, light blue, cocoa, sage or restrained navy straight trousers or controlled shorts and minimal white, cream, tan or brown footwear; keep the outfit tonal or softly contrasted and do not combine it with cargo-heavy bottoms, another utility-pocket piece or bulky shoes."
+    },
+    "25": {
+      "color": "Willow Yellow",
+      "constraint": "Use the bright willow-yellow lightweight performance shorts once only for Spring or Summer Sports / Workout, active Travel, or a deliberate daytime athletic look. Pair with a clean regular athletic top in white, ecru, light gray, charcoal or restrained navy and neutral low-profile trainers; the shorts must be the sole neon item, with no logo-heavy top, black compression layer showing below the hem, or oversized outerwear."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1],
+      "reason": "Both distressed plaid recolors are hanger-only, dark or muddied, and repeat an already crowded overshirt role without adult fit proof."
+    },
+    {
+      "cards": [3],
+      "reason": "The waffle shirt is dominated by two flap pockets, hanging metal clips, a chest badge and supplier-label styling; the red recolor preserves the same gimmicky utility construction."
+    },
+    {
+      "cards": [4],
+      "reason": "The dark painterly all-over print is visually noisy, synthetic-looking and product-only, making it difficult to coordinate as a modern premium shirt."
+    },
+    {
+      "cards": [5],
+      "reason": "The shirt is visibly tight through the torso, shoulders and sleeves, with a long narrow hem and shiny fabric that reproduces the skinny supplier fit explicitly excluded from the brief."
+    },
+    {
+      "cards": [6],
+      "reason": "Both product-only distressed plaids add another conventional blue or red checked shirt without adult fit evidence or a useful new wardrobe role."
+    },
+    {
+      "cards": [7],
+      "reason": "The white open-collar shirt is excessively long and loose through the body and sleeves and reads as a beach cover-up rather than a controlled versatile layer."
+    },
+    {
+      "cards": [8],
+      "reason": "The dark navy shirt uses dated plaid contrast at the collar and cuffs, a narrow long torso and product-only presentation, adding another dark role with weak fit proof."
+    },
+    {
+      "cards": [9],
+      "reason": "The all-black half-sleeve shirt is oversized, visually heavy and dominated by four shiny faux-leather cargo pockets, while the crossbody strap obscures the fit."
+    },
+    {
+      "cards": [11],
+      "reason": "The product-only black-and-white plaid is a repetitive dark basic with an oversized chest pocket and no adult shoulder, torso, sleeve or hem proof."
+    },
+    {
+      "cards": [12],
+      "reason": "The narrow corduroy pullover uses contrast faux-leather placket trim and elbow patches, producing a dated heritage-sweater look in every color."
+    },
+    {
+      "cards": [13, 14, 15],
+      "reason": "These product-only geometric shirts use dense novelty motifs, artificial synthetic-looking prints and long narrow bodies rather than clean modern surface interest."
+    },
+    {
+      "cards": [16],
+      "reason": "The black plaid overshirt is visibly oversized and dark, with a low diagonal pocket and uncontrolled body volume that repeats the exact styling problem being removed."
+    },
+    {
+      "cards": [17],
+      "reason": "The double-layer active short combines a loose mesh shell with visible camouflage compression shorts and repeats the busy gymwear construction already rejected in the prior batch."
+    },
+    {
+      "cards": [18],
+      "reason": "The black track pant is over-wide and visibly pools over both shoes, while the giant white side stripe and long drawcords reinforce a dated silhouette."
+    },
+    {
+      "cards": [19],
+      "reason": "The product-only striped drawstring trouser has no rise, seat, thigh or shoe-break proof and adds another dark synthetic casual pant without a trustworthy silhouette."
+    },
+    {
+      "cards": [20, 21],
+      "reason": "Both washed jeans are extremely wide and visibly puddle over the footwear, directly violating the controlled straight-leg and clean shoe-break requirement."
+    },
+    {
+      "cards": [22],
+      "reason": "The product-only lightweight active short has no on-body waist, rise, leg-opening or length proof, while its neutral recolors repeat already approved active-short roles."
+    },
+    {
+      "cards": [23],
+      "reason": "The long basketball-style short uses high-contrast waistband and hem trim plus a row of star graphics, creating dated teamwear rather than clean training apparel."
+    },
+    {
+      "cards": [24, 26],
+      "reason": "These clean but generic knee-length active shorts repeat existing green, tan, blue and gray performance roles and add no distinct construction or scenario coverage."
+    },
+    {
+      "cards": [27],
+      "reason": "The product-only casual short uses shiny fabric, conspicuous contrast zipper pockets and an overlong straight shape without reliable on-body fit proof."
+    },
+    {
+      "cards": [28],
+      "reason": "Only a product-only rear view is provided for the beige active short, so the front, rise, full waistband and complete adult silhouette cannot be verified."
+    },
+    {
+      "cards": [29, 30],
+      "reason": "These fleece-lined multi-pocket parkas are dark, bulky and overdesigned with flap pockets, sleeve patches, drawcords and decorative hardware, producing an older utility look."
+    },
+    {
+      "cards": [31],
+      "reason": "The parka carries large DISCOVER text, a black supplier patch, multiple flap pockets and conspicuous drawcords; the lighter color does not rescue the logo-led construction."
+    },
+    {
+      "cards": [32, 33, 37],
+      "reason": "These product-only windbreakers are repetitive dark generic shells with sleeve badges, hanging drawcords and insufficient adult fit or movement proof."
+    },
+    {
+      "cards": [34],
+      "reason": "The plaid-lined hood, oversized white cords and gathered bomber hem create a dated hybrid windbreaker; all three neutral recolors repeat already covered casual-jacket roles."
+    },
+    {
+      "cards": [35],
+      "reason": "The fleece-lined shell combines a large gold sleeve badge, black contrast zippers and bulky hood insulation, making the light beige version logo-led and visually heavy."
+    },
+    {
+      "cards": [36],
+      "reason": "The winter jacket is bulky, all-dark and generic, with heavy fleece lining and no on-body proof for shoulder, torso or hem proportions."
+    },
+    {
+      "cards": [38],
+      "reason": "The fog-white shell is clean but product-only and closely repeats already accepted off-white lightweight windbreaker roles without new fit evidence or construction value."
+    },
+    {
+      "cards": [39],
+      "reason": "The padded jacket is overloaded with angled zippers, flap pockets, sleeve patch and layered technical panels; its yellow and brown recolors remain bulky and utility-heavy."
+    },
+    {
+      "cards": [40],
+      "reason": "The snap-down puffer is another product-only generic stand-collar basic, and gray, red and black roles are already represented by stronger approved winter layers."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 94 recorded color images rendered; 134 displayed images loaded with zero broken files.",
+    "3 accepted with one exact color and variant selected: one light botanical resort shirt, one white textured four-pocket resort shirt and one bright willow-yellow performance short.",
+    "37 rejected after the base pass and close inspection of 21 promising color variants across 14 identities.",
+    "The three selected identities, source products, variants and images have zero collision with every prior accepted or conditional item.",
+    "Rejections include skinny or excessively long tops, repetitive plaids, novelty prints, puddled jeans and track pants, repeated neutral active shorts, logo-led parkas and generic dark outerwear."
+  ]
+}

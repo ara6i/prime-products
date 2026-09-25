@@ -1,0 +1,159 @@
+{
+  "outputDir": "spring-formal-budget-pilot-s165",
+  "scenarioId": "S165",
+  "occasion": "Formal Evening",
+  "season": "Spring",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-screen-complete-existing-pool-rejected-all-core-roles-missing",
+  "comparisonTitle": "S165 · Spring Formal Evening · existing separates screen",
+  "comparisonSubtitle": "Eight light or colored long-sleeve shirts · six remaining full-length trouser options",
+  "comparisonNote": "Muted-blue unstructured suit remains separately queued · prefer refined color, clean collar and controlled tailoring · not UI integrated",
+  "coreTitle": "S165 · provisional Spring Formal separates core",
+  "coreSubtitle": "no existing top or bottom passed the Spring Formal brief",
+  "coreNote": "Consolidated-gallery re-audit revoked the narrow cropped trouser · five exact replacement roles queued · no uniqueness hold · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "watch", "suit"],
+  "queuedRoles": [
+    {
+      "category": "suit",
+      "searchPhrase": "men regular fit unstructured suit muted blue straight trousers",
+      "targetProduct": "muted-blue unstructured suit"
+    },
+    {
+      "category": "top",
+      "searchPhrase": "men soft lilac fine knit long sleeve polo regular fit",
+      "targetProduct": "soft-lilac fine-knit long-sleeve polo"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men dark taupe brown high rise double pleat trousers controlled straight leg formal",
+      "targetProduct": "dark-taupe brown high-rise double-pleat trouser with a controlled straight leg"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men burgundy leather double monk strap shoes round toe slim sole",
+      "targetProduct": "burgundy leather round-toe double-monk shoe"
+    },
+    {
+      "category": "watch",
+      "searchPhrase": "men minimal watch pale blue dial brown leather thin silver case",
+      "targetProduct": "pale-blue-dial brown-leather watch"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:0312db0cd26acade9f91f474e8b9b19311c3e778",
+      "name": "Pink Button-Up Shirt",
+      "decision": "reject-for-s165",
+      "decisionReason": "The dropped oversized body, loud plaid, long hem and novelty pink accessory styling read streetwear Casual rather than Formal Evening."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:47ca6448dd910b9ff3503470a65b607a5617e9fb",
+      "name": "Sky-Blue Button-Up Shirt",
+      "decision": "reject-for-s165",
+      "decisionReason": "Full-resolution review reveals a textured open overshirt layered over a white tee, with rolled cuffs and a long rounded hem; the color is good but the construction is too Casual."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:945a758197eabed56a7270a176e4bd70b22f38bd",
+      "name": "Light-Blue Button-Up Shirt",
+      "decision": "reject-for-s165",
+      "decisionReason": "The pale gingham check, exposed contrast buttons and casual untucked body do not provide the clean evening formality required."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:103874fdc98f0d098753e001e36f6000b75a187d",
+      "name": "Apricot Button-Up Shirt",
+      "decision": "reject-for-s165",
+      "decisionReason": "The brown check, open overshirt styling and boxy casual body function as a light jacket rather than a Formal shirt."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:99c29ea832577fba8e2f28594b32b18c09c741f5",
+      "name": "Blue Button-Up Shirt",
+      "decision": "reject-for-s165",
+      "decisionReason": "The broad body and two large utility chest pockets make this a workwear overshirt, not a refined Formal Evening top."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:135b9e50f6e72dc7185baef75627227a9a429ef0",
+      "name": "Purple Button-Up Shirt",
+      "decision": "reject-for-s165",
+      "decisionReason": "Purple is promising, but the dropped shoulder, long boxy body and oversized utility pockets create a loose casual shirt-jacket silhouette."
+    },
+    {
+      "group": "top",
+      "key": "T7",
+      "identity": "shopify_supplier:5bd91e115e4ceaf0c92ee34cf5e55204f4403650",
+      "name": "White Button-Up Shirt",
+      "decision": "reject-for-s165",
+      "decisionReason": "The four visible safari-style pockets, open collar and beach setting make this a Resort layer rather than Formal Evening shirting."
+    },
+    {
+      "group": "top",
+      "key": "T8",
+      "identity": "shopify_supplier:79749ba3c0481d9992007e844672ced11dda107a",
+      "name": "Light-Apricot Mandarin Shirt",
+      "decision": "reject-for-s165",
+      "decisionReason": "The clean mandarin silhouette is credible, but its near-white linen tone beside brown trousers supplies no Spring color and reads daytime minimalist rather than polished evening."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:5ee70df61299c873a76cd10ed93b206f97430c23",
+      "name": "Brown Double-Pleat Trouser",
+      "decision": "reject-for-s165",
+      "decisionReason": "The consolidated gallery shows a narrow thigh and close lower leg with a cropped ankle line. Double pleats do not compensate for the skinny-looking silhouette, so it cannot anchor a modern Formal outfit."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:36775b09ed8cf6af570dd58f177804a5200ce70c",
+      "name": "Khaki Regular Straight Trouser",
+      "decision": "reject-for-s165",
+      "decisionReason": "It is clean but visibly narrower, lower-rise and more conventional than the pleated option, producing a dated office rather than Formal silhouette."
+    },
+    {
+      "group": "bottom",
+      "key": "B3",
+      "identity": "shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320",
+      "name": "Light-Gray Relaxed Trouser",
+      "decision": "reject-for-s165",
+      "decisionReason": "The isolated crop omits rise, seat, full length and on-body drape; apparent light color is not enough to prove Formal tailoring."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:2ee1a0fbc1261c590f394c7d2529549fd8a033c9",
+      "name": "Navy Relaxed-Straight Trouser",
+      "decision": "reject-for-s165",
+      "decisionReason": "The very broad navy leg visibly puddles over the shoe and would make the Spring Formal palette dark and bottom-heavy."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:04d7241016fbcf860f5b98ce77b100cd3efa1689",
+      "name": "Camel Relaxed-Straight Trouser",
+      "decision": "reject-for-s165",
+      "decisionReason": "The low casual rise, broad leg and heavy sneaker stacking create the baggy Casual silhouette excluded from Formal."
+    },
+    {
+      "group": "bottom",
+      "key": "B6",
+      "identity": "shopify_supplier:0706cc59d6cccb0e2018c17d2d73768af8afa55e",
+      "name": "Gray Drawstring Straight Trouser",
+      "decision": "reject-for-s165",
+      "decisionReason": "The exposed rope drawstring, gathered elastic waist and soft lounge drape are not credible Formal Evening tailoring."
+    }
+  ]
+}

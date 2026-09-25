@@ -3,7 +3,9 @@ import { validateCreatorProfileUrl } from "./creatorProfileValidation";
 
 describe("validateCreatorProfileUrl", () => {
   it("adds https and normalizes an Instagram profile URL", () => {
-    expect(validateCreatorProfileUrl("instagram", "instagram.com/a")).toMatchObject({
+    expect(
+      validateCreatorProfileUrl("instagram", "instagram.com/a"),
+    ).toMatchObject({
       valid: true,
       normalizedUrl: "https://www.instagram.com/a",
       handle: "a",
@@ -12,7 +14,8 @@ describe("validateCreatorProfileUrl", () => {
 
   it("rejects the wrong domain and Instagram post links", () => {
     expect(
-      validateCreatorProfileUrl("instagram", "https://example.com/creator").valid,
+      validateCreatorProfileUrl("instagram", "https://example.com/creator")
+        .valid,
     ).toBe(false);
     expect(
       validateCreatorProfileUrl("instagram", "instagram.com/p/abc123").valid,
@@ -20,7 +23,9 @@ describe("validateCreatorProfileUrl", () => {
   });
 
   it("normalizes profile handles for TikTok and Threads", () => {
-    expect(validateCreatorProfileUrl("tiktok", "tiktok.com/creator")).toMatchObject({
+    expect(
+      validateCreatorProfileUrl("tiktok", "tiktok.com/creator"),
+    ).toMatchObject({
       valid: true,
       normalizedUrl: "https://www.tiktok.com/@creator",
     });
@@ -45,12 +50,22 @@ describe("validateCreatorProfileUrl", () => {
     ).toBe(false);
   });
 
+  it("accepts a Pinterest pin.it short link without turning it into a fake profile URL", () => {
+    expect(
+      validateCreatorProfileUrl("pinterest", "https://pin.it/1Z5MkCfl3"),
+    ).toMatchObject({
+      valid: true,
+      normalizedUrl: "https://pin.it/1Z5MkCfl3",
+      handle: undefined,
+    });
+  });
+
   it("rejects local and direct-IP websites", () => {
-    expect(validateCreatorProfileUrl("blog", "http://localhost:3000").valid).toBe(
-      false,
-    );
-    expect(validateCreatorProfileUrl("other", "http://127.0.0.1/profile").valid).toBe(
-      false,
-    );
+    expect(
+      validateCreatorProfileUrl("blog", "http://localhost:3000").valid,
+    ).toBe(false);
+    expect(
+      validateCreatorProfileUrl("other", "http://127.0.0.1/profile").valid,
+    ).toBe(false);
   });
 });

@@ -1,0 +1,27 @@
+{
+  "outputDir": "spring-travel-premium-pilot-s235",
+  "scenarioId": "S235",
+  "occasion": "Travel",
+  "season": "Spring",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s234-spring-travel-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S235 · Spring Travel · Premium local screen",
+  "comparisonSubtitle": "The unique Spring Travel remainder re-evaluated for Premium material and finish",
+  "comparisonNote": "Require silk-cotton or merino travel knit, premium stretch weave, supple layer construction and exact movement ease · no promotion of low-cost casual bottoms · not UI integrated",
+  "coreTitle": "S235 · provisional Spring Travel Premium core",
+  "coreSubtitle": "No remaining local garment reaches the Premium Travel bar · five roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men dusty coral silk cotton travel polo spring premium", "targetProduct": "dusty-coral silk-cotton fine-gauge travel polo", "customerRetailTarget": "$180-$240"},
+    {"category": "bottom", "searchPhrase": "men soft sage premium stretch travel trouser spring", "targetProduct": "soft-sage Premium stretch travel trouser with clean straight drape", "customerRetailTarget": "$220-$300"},
+    {"category": "outerwear", "searchPhrase": "men washed sky blue premium cotton suede overshirt spring travel", "targetProduct": "washed-sky Premium cotton-suede travel overshirt", "customerRetailTarget": "$280-$380"},
+    {"category": "shoe", "searchPhrase": "men ecru handmade leather low profile travel sneaker premium", "targetProduct": "ecru handmade low-profile leather travel sneaker", "customerRetailTarget": "$240-$320"},
+    {"category": "bag", "searchPhrase": "men caramel premium canvas leather weekender travel", "targetProduct": "caramel Premium canvas-and-leather compact weekender", "customerRetailTarget": "$160-$220"}
+  ]
+}

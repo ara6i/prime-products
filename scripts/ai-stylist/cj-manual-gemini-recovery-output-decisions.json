@@ -1,0 +1,18 @@
+{
+  "reviewedAt": "2026-09-16T05:06:00.000Z",
+  "localOnly": true,
+  "batch": "batches/5fsftq9xlf7ng8u2jeng2awury20hfqhsakh",
+  "model": "models/gemini-3-pro-image-preview",
+  "stage": "raw-gemini-output-before-background-removal",
+  "summary": {
+    "reviewed": 3,
+    "rawPass": 3,
+    "regenerate": 0,
+    "outfitReady": 0
+  },
+  "decisions": [
+    { "index": 12, "productId": "2501150834271620600", "decision": "raw-pass", "reason": "Full-resolution comparison confirms a clean complete light-mint heavyweight T-shirt with source-faithful shape, stitching and color." },
+    { "index": 13, "productId": "2406110219091605300", "decision": "raw-pass", "reason": "Full-resolution comparison confirms complete beige-apricot tailored shorts using the selected-color construction and same-product silhouette evidence without navy transfer." },
+    { "index": 22, "productId": "2504220944511605800", "decision": "raw-pass", "reason": "Full-resolution comparison confirms a single clean taupe-brown Chelsea boot with faithful panel seams, elastic gore, welt and sole." }
+  ]
+}

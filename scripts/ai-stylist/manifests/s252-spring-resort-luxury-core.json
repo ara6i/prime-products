@@ -1,0 +1,27 @@
+{
+  "outputDir": "spring-resort-luxury-pilot-s252",
+  "scenarioId": "S252",
+  "occasion": "Vacation / Resort",
+  "season": "Spring",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s251-spring-resort-premium-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S252 · Spring Vacation / Resort · Luxury local screen",
+  "comparisonSubtitle": "The unique Spring Resort remainder re-evaluated for Luxury material and hand finish",
+  "comparisonNote": "Require silk-cashmere openwork, linen-silk tailoring, handmade calf suede and full-grain leather or equivalent Luxury proof · not UI integrated",
+  "coreTitle": "S252 · provisional Spring Resort Luxury core",
+  "coreSubtitle": "No remaining local garment reaches the Luxury Resort bar · five roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men soft coral silk cashmere openwork camp shirt luxury", "targetProduct": "soft-coral silk-cashmere openwork Luxury camp shirt", "customerRetailTarget": "$300-$450"},
+    {"category": "bottom", "searchPhrase": "men soft sage linen silk tailored resort shorts luxury", "targetProduct": "soft-sage linen-silk Luxury tailored resort short", "customerRetailTarget": "$350-$500"},
+    {"category": "shoe", "searchPhrase": "men ecru handmade calf suede espadrille luxury", "targetProduct": "ecru handmade calf-suede Luxury espadrille", "customerRetailTarget": "$420-$600"},
+    {"category": "bag", "searchPhrase": "men powder blue full grain leather resort tote luxury", "targetProduct": "powder-blue full-grain leather Luxury resort tote", "customerRetailTarget": "$650-$900"},
+    {"category": "accessory", "searchPhrase": "men amber tortoiseshell handmade sunglasses luxury", "targetProduct": "amber-tortoiseshell handmade Luxury sunglasses", "customerRetailTarget": "$350-$700"}
+  ]
+}

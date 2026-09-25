@@ -278,6 +278,11 @@
   align-items: stretch;
   margin-top: clamp(20px, 2vw, 28px);
 }
+.networkHeroCta {
+  width: fit-content;
+  margin-top: 20px;
+  text-decoration: none;
+}
 .networkHeroFeatureList {
   display: grid;
   border-top: 1px solid rgba(8, 8, 8, 0.24);
@@ -4052,6 +4057,9 @@
   .networkHeroTitle {
     font-size: clamp(42px, 7.2vw, 61px);
   }
+  .networkHeroTitle > span:first-child {
+    font-size: 0.82em;
+  }
   .networkHeroExplorer {
     grid-template-columns: minmax(205px, 1.12fr) minmax(150px, 0.88fr);
     gap: 12px;
@@ -4346,49 +4354,81 @@
 }
 
 @media (max-width: 560px) {
+  .page section[id] {
+    min-height: 100svh;
+    scroll-margin-top: 58px;
+  }
+  .header {
+    top: 0;
+    width: 100%;
+    min-height: 58px;
+    margin-top: 0;
+    padding: 6px 12px 6px 14px;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0 0 22px 22px;
+  }
   .logoLink img {
-    width: 58px;
+    width: 42px;
+    height: 42px;
+  }
+  .menuButton {
+    width: 42px;
+    height: 42px;
+  }
+  .mobileNav {
+    top: calc(100% + 8px);
+    right: 10px;
+    left: 10px;
   }
   .networkHero {
-    align-items: flex-start;
+    min-height: 0;
+    align-items: stretch;
+    flex-direction: column;
     background: #f8e8d7;
   }
   .networkHero::after {
-    background: linear-gradient(
-      180deg,
-      rgba(248, 232, 215, 0.96) 0%,
-      rgba(248, 232, 215, 0.78) 18%,
-      rgba(248, 232, 215, 0.08) 34%,
-      transparent 45%
-    );
+    display: none;
+  }
+  .networkHeroPicture {
+    position: relative;
+    inset: auto;
+    order: 2;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    margin-top: 22px;
+    overflow: hidden;
+    border-top: 1px solid rgba(8, 8, 8, 0.12);
   }
   .networkHeroBackground {
-    object-fit: contain;
-    object-position: center bottom;
+    object-fit: cover;
+    object-position: center center;
   }
   .networkHeroCopy {
-    width: calc(100% - 36px);
+    order: 1;
+    width: 100%;
     margin: 0;
-    padding: 22px 18px 0;
+    padding: 38px 20px 0;
   }
   .networkHeroTitle {
-    font-size: clamp(39px, 12vw, 51px);
-    line-height: 0.9;
+    font-size: clamp(38px, 10.8vw, 46px);
+    line-height: 0.92;
   }
   .networkHeroTitleMiddle {
     gap: 0.12em;
   }
   .networkHeroExplorer {
-    grid-template-columns: minmax(0, 1fr) minmax(122px, 38%);
-    gap: 10px;
-    margin-top: 18px;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    margin-top: 24px;
   }
   .networkHeroFeatureButton {
-    min-height: 35px;
-    grid-template-columns: 20px minmax(0, 1fr) 13px;
-    gap: 4px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    min-height: 58px;
+    grid-template-columns: 25px minmax(0, 1fr) 18px;
+    gap: 8px;
+    padding: 8px 4px 8px 2px;
   }
   .networkHeroFeatureButton:hover,
   .networkHeroFeatureButton:focus-visible,
@@ -4397,19 +4437,21 @@
     padding-left: 5px;
   }
   .networkHeroFeatureIndex {
-    font-size: 8px;
+    font-size: 9px;
   }
   .networkHeroFeatureCopy strong {
-    font-size: 11.5px;
+    font-size: 14px;
   }
   .networkHeroFeatureCopy > span {
-    display: none;
+    display: block;
+    overflow: visible;
+    font-size: 10.5px;
+    line-height: 1.35;
+    text-overflow: clip;
+    white-space: normal;
   }
   .networkHeroFeaturePreview {
-    min-height: 0;
-    border-width: 3px;
-    border-radius: 14px;
-    box-shadow: 0 10px 28px rgba(56, 42, 31, 0.15);
+    display: none;
   }
   .fitExperience {
     min-height: 760px;
@@ -4846,7 +4888,7 @@
     padding-top: 96px;
   }
   .footerMain {
-    padding: 72px 22px 22px;
+    padding: 72px 22px calc(94px + env(safe-area-inset-bottom));
     border-radius: 68px 68px 0 0;
   }
   .footerMark {
@@ -4914,6 +4956,29 @@
     width: 100%;
     padding: 0 0 10px;
   }
+  .featureMiniNav nav button {
+    min-height: 44px;
+    flex: 0 0 auto;
+  }
+  .pdpFeatureNav {
+    row-gap: 8px;
+    padding-top: 12px;
+  }
+  .pdpFeatureNav nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px 8px;
+    overflow: visible;
+    padding-bottom: 12px;
+  }
+  .pdpFeatureNav nav button {
+    min-height: 44px;
+    padding: 6px 2px;
+    font-size: 10px;
+    line-height: 1.2;
+    text-align: center;
+    white-space: normal;
+  }
   .featureDarkButton,
   .pdpFeatureNav > .pdpWaitlistCta {
     justify-self: end;
@@ -4960,7 +5025,7 @@
     justify-content: flex-start;
   }
   .pdpFeatureHeading h2 {
-    font-size: clamp(45px, 13vw, 62px);
+    font-size: clamp(40px, 11.5vw, 52px);
   }
   .pdpFeatureHeading p {
     font-size: 13px;

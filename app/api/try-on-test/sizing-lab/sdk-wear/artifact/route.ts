@@ -2,8 +2,6 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
 import { isTestLabAvailableForHost } from "@/app/try-on-test/lib/access";
-import { wearSideCatalogPerson } from "@/app/api/try-on-test/wear-side-selector/_lib/catalog";
-import { heldoutWearPerson } from "../_lib/heldout";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,6 +22,7 @@ const ARTIFACTS = {
 } as const;
 
 type ArtifactKind = keyof typeof ARTIFACTS;
+const SAFE_SCAN_ID = /^(?:IT|NA|NL)-[0-9]{4}-A$/;
 
 export async function GET(request: Request) {
   if (!isTestLabAvailableForHost(request.headers.get("host"))) {
@@ -31,9 +30,9 @@ export async function GET(request: Request) {
   }
   const parameters = new URL(request.url).searchParams;
   const scanId = parameters.get("scanId")?.toUpperCase() ?? "";
+  const profile = parameters.get("profile") === "browser-comparison" ? "browser-comparison" : "full";
   const kind = parameters.get("kind") as ArtifactKind | null;
-  const person = await heldoutWearPerson(scanId) ?? await wearSideCatalogPerson(scanId);
-  if (!kind || !Object.hasOwn(ARTIFACTS, kind) || !person) {
+  if (!kind || !Object.prototype.hasOwnProperty.call(ARTIFACTS, kind) || !SAFE_SCAN_ID.test(scanId)) {
     return NextResponse.json({ error: "Unknown private WEAR artifact." }, { status: 404 });
   }
   const definition = ARTIFACTS[kind];
@@ -42,7 +41,7 @@ export async function GET(request: Request) {
       process.cwd(),
       ".local-ml",
       "wear-sdk-heldout",
-      "blender",
+      profile === "browser-comparison" ? "blender-comparison" : "blender",
       scanId.toLowerCase(),
       definition.fileName,
     ));

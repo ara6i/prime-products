@@ -1,0 +1,43 @@
+{
+  "scope": "Four S133/S134 Spring Casual products checked at full 1350x1800 source resolution",
+  "outputSlug": "provisional-source-audit-spring-casual-corrections",
+  "boardFilename": "four-spring-casual-source-corrections.jpg",
+  "boardTitle": "Four Spring Casual products · full-source correction audit",
+  "boardNote": "Three catalog products rejected for oversized or puddled proportions · one cropped brown jacket retained · no outfit approval or UI integration",
+  "localOnly": true,
+  "weddingExcluded": true,
+  "entries": [
+    {
+      "scenarioId": "S133",
+      "identity": "shopify_supplier:ec0fc22aef4e4bca6b20760e1d103c55bccd3fb5",
+      "label": "Flower-Apricot Knit Henley",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/fee971ce-87bd-42fc-b4cb-26fa4dd94ce2-Max-Origin.webp?v=1786231831",
+      "verdict": "reject-from-catalog",
+      "reason": "The full source shows a dropped shoulder, wide elbow-length sleeve and long straight body extending well below the hip. The soft color is useful, but the silhouette repeats the oversized-top problem and fails catalog acceptance."
+    },
+    {
+      "scenarioId": "S134",
+      "identity": "shopify_supplier:44305b4cea1abe8dc66c3ba9f6ab635212d1aff2",
+      "label": "Lavender Oversized Crew T-Shirt",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/9bf4ab8b-e25a-47fb-8b32-e102cbd9b0ff-Max-Origin.webp?v=1786216000",
+      "verdict": "reject-from-catalog",
+      "reason": "The full worn view contradicts the regular-crew label: the shoulder is dropped, sleeves are broad and the hem is long over the upper thigh. It is a generic oversized tee, not the controlled Zara-led top required."
+    },
+    {
+      "scenarioId": "S134",
+      "identity": "shopify_supplier:4106cc6f7b16b57d096645f9b347f8aac768ee0f",
+      "label": "Light-Blue Puddled Jean",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/61294af4-c71d-4946-936c-e73597ba4eeb-Max-Origin.webp?v=1786165373",
+      "verdict": "reject-from-catalog",
+      "reason": "The jean is broad through thigh and lower leg and visibly folds onto both shoes. It is neither a controlled straight cut nor a clean break, so it repeats the baggy-bottom failure and leaves the accepted pool."
+    },
+    {
+      "scenarioId": "S134",
+      "identity": "shopify_supplier:5860275ccdf790885f11f631bc5acaf453a578cf",
+      "label": "Brown Faux-Suede Cropped Zip Jacket",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/3a00f05c447f4230927d377cb887173b-Max-Origin.webp?v=1786242084",
+      "verdict": "pass-with-constraint",
+      "reason": "The warm-brown jacket has a modern cropped hip length, simple zip, controlled shoulder and useful suede texture. Keep as S134's only hold; pair with a regular-length colored top and controlled ecru or gray bottom, never another loose piece."
+    }
+  ]
+}

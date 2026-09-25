@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { ArrowUpRight, Clock3, ShieldCheck } from "lucide-react";
-import type { VerificationCenterView, VerificationRequestItem, VerificationStatCard } from "../types";
+import type {
+  VerificationCenterView,
+  VerificationRequestItem,
+  VerificationStatCard,
+} from "../types";
 
 interface VerificationCenterPageProps {
   view: VerificationCenterView;
@@ -25,7 +29,9 @@ function StatCard({ card }: { card: VerificationStatCard }) {
       <p className="text-customer-xs font-semibold uppercase tracking-[0.12em] text-customer-muted max-lg:text-[2.6vw]">
         {card.label}
       </p>
-      <p className={`mt-[0.313vw] text-customer-3xl font-semibold tracking-[-0.05em] max-lg:mt-[1vw] max-lg:text-[7vw] ${statToneClass(card.tone)}`}>
+      <p
+        className={`mt-[0.313vw] text-customer-3xl font-semibold tracking-[-0.05em] max-lg:mt-[1vw] max-lg:text-[7vw] ${statToneClass(card.tone)}`}
+      >
         {card.value}
       </p>
       <p className="mt-[0.208vw] text-customer-sm leading-[1.5] text-text-body max-lg:mt-[1vw] max-lg:text-[3.2vw]">
@@ -37,7 +43,9 @@ function StatCard({ card }: { card: VerificationStatCard }) {
 
 function VerificationStatusBadge({ item }: { item: VerificationRequestItem }) {
   return (
-    <span className={`inline-flex whitespace-nowrap rounded-full px-[0.625vw] py-[0.26vw] text-customer-xs font-semibold max-lg:px-[3vw] max-lg:py-[1.3vw] max-lg:text-[2.7vw] ${item.statusToneClass}`}>
+    <span
+      className={`inline-flex whitespace-nowrap rounded-full px-[0.625vw] py-[0.26vw] text-customer-xs font-semibold max-lg:px-[3vw] max-lg:py-[1.3vw] max-lg:text-[2.7vw] ${item.statusToneClass}`}
+    >
       {item.statusLabel}
     </span>
   );
@@ -69,14 +77,25 @@ function VerificationTable({ items }: { items: VerificationRequestItem[] }) {
           </thead>
           <tbody>
             {items.map((item) => (
-              <tr key={item.id} className="border-b border-customer-border last:border-b-0">
+              <tr
+                key={item.id}
+                className="border-b border-customer-border last:border-b-0"
+              >
                 <td className="max-w-[18vw] px-[1.042vw] py-[0.938vw]">
-                  <p className="truncate text-customer-sm font-semibold text-text-primary">{item.workspaceName}</p>
-                  <p className="mt-[0.156vw] truncate text-customer-xs text-customer-muted">{item.ownerEmail}</p>
+                  <p className="truncate text-customer-sm font-semibold text-text-primary">
+                    {item.workspaceName}
+                  </p>
+                  <p className="mt-[0.156vw] truncate text-customer-xs text-customer-muted">
+                    {item.ownerEmail}
+                  </p>
                 </td>
                 <td className="max-w-[13vw] px-[1.042vw] py-[0.938vw]">
-                  <p className="truncate text-customer-sm font-semibold text-text-primary">{item.domain}</p>
-                  <p className="mt-[0.156vw] truncate text-customer-xs text-customer-muted">{item.merchantName}</p>
+                  <p className="truncate text-customer-sm font-semibold text-text-primary">
+                    {item.domain}
+                  </p>
+                  <p className="mt-[0.156vw] truncate text-customer-xs text-customer-muted">
+                    {item.merchantName}
+                  </p>
                 </td>
                 <td className="px-[1.042vw] py-[0.938vw]">
                   <VerificationStatusBadge item={item} />
@@ -96,7 +115,10 @@ function VerificationTable({ items }: { items: VerificationRequestItem[] }) {
                     className="inline-flex h-[2.083vw] items-center justify-center gap-[0.313vw] rounded-full border border-brand-blue/20 bg-white px-[0.833vw] text-customer-sm font-semibold text-brand-blue transition hover:border-brand-blue hover:bg-customer-blue max-lg:h-10 max-lg:gap-1.5 max-lg:px-4 max-lg:text-sm"
                   >
                     View
-                    <ArrowUpRight className="h-[0.833vw] w-[0.833vw] max-lg:h-4 max-lg:w-4" aria-hidden />
+                    <ArrowUpRight
+                      className="h-[0.833vw] w-[0.833vw] max-lg:h-4 max-lg:w-4"
+                      aria-hidden
+                    />
                   </Link>
                 </td>
               </tr>
@@ -104,6 +126,77 @@ function VerificationTable({ items }: { items: VerificationRequestItem[] }) {
           </tbody>
         </table>
       </div>
+    </div>
+  );
+}
+
+function VerificationMobileCards({
+  items,
+}: {
+  items: VerificationRequestItem[];
+}) {
+  if (!items.length) {
+    return (
+      <div className="rounded-2xl border border-dashed border-customer-border bg-customer-card p-5 text-sm text-customer-muted">
+        No verification requests yet.
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {items.map((item) => (
+        <article
+          key={item.id}
+          className="rounded-2xl border border-customer-border bg-customer-card p-4"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h3 className="break-words text-base font-semibold text-text-primary">
+                {item.workspaceName}
+              </h3>
+              <p className="mt-1 break-all text-xs text-customer-muted">
+                {item.ownerEmail}
+              </p>
+            </div>
+            <VerificationStatusBadge item={item} />
+          </div>
+
+          <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-customer-border pt-4 text-sm">
+            <div className="col-span-2">
+              <dt className="text-xs text-customer-muted">Domain</dt>
+              <dd className="mt-1 break-all font-semibold text-text-primary">
+                {item.domain}
+              </dd>
+              <dd className="mt-1 break-words text-xs text-customer-muted">
+                {item.merchantName}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs text-customer-muted">Submitted</dt>
+              <dd className="mt-1 text-text-body">{item.submittedLabel}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-customer-muted">Reviewed</dt>
+              <dd className="mt-1 text-text-body">{item.reviewedLabel}</dd>
+            </div>
+            <div className="col-span-2">
+              <dt className="text-xs text-customer-muted">Access</dt>
+              <dd className="mt-1 break-words text-text-body">
+                {item.requestedAccessLabel}
+              </dd>
+            </div>
+          </dl>
+
+          <Link
+            href={`/admin/verification/${item.id}`}
+            className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-brand-blue/20 bg-white px-4 text-sm font-semibold text-brand-blue"
+          >
+            View request
+            <ArrowUpRight className="h-4 w-4" aria-hidden />
+          </Link>
+        </article>
+      ))}
     </div>
   );
 }
@@ -122,7 +215,8 @@ export function VerificationCenterPage({ view }: VerificationCenterPageProps) {
               SDK dashboard review requests
             </h1>
             <p className="mt-[0.417vw] text-customer-sm leading-[1.6] text-text-body max-lg:mt-[2vw] max-lg:text-[3.2vw]">
-              Review customer dashboard submissions from one clean queue. Open a request to approve, reject, or inspect the AI review evidence.
+              Review customer dashboard submissions from one clean queue. Open a
+              request to approve, reject, or inspect the AI review evidence.
             </p>
           </div>
           <div className="rounded-[0.938vw] border border-customer-border bg-customer-soft p-[0.938vw] text-customer-sm text-text-body max-lg:rounded-[4vw] max-lg:p-[4vw] max-lg:text-[3.2vw]">
@@ -131,7 +225,8 @@ export function VerificationCenterPage({ view }: VerificationCenterPageProps) {
               Live review queue
             </div>
             <p className="mt-[0.313vw] max-w-[18vw] leading-[1.5] max-lg:mt-[1vw] max-lg:max-w-none">
-              Decisions update customer access, dashboard status, and notifications.
+              Decisions update customer access, dashboard status, and
+              notifications.
             </p>
           </div>
         </div>
@@ -149,10 +244,16 @@ export function VerificationCenterPage({ view }: VerificationCenterPageProps) {
             Customers
           </h2>
           <p className="mt-[0.208vw] text-customer-sm text-text-body max-lg:mt-[1vw] max-lg:text-[3.2vw]">
-            Status is the current review outcome: Auto approved, Manual review, Rejected, Domain pending, or Draft.
+            Status is the current review outcome: Auto approved, Manual review,
+            Rejected, Domain pending, or Draft.
           </p>
         </div>
-        <VerificationTable items={view.allItems} />
+        <div className="hidden lg:block">
+          <VerificationTable items={view.allItems} />
+        </div>
+        <div className="lg:hidden">
+          <VerificationMobileCards items={view.allItems} />
+        </div>
       </section>
     </section>
   );

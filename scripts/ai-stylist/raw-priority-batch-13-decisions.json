@@ -1,0 +1,114 @@
+{
+  "batch": "13",
+  "approvals": {
+    "1": {
+      "color": "Light Blue",
+      "constraint": "Use the light-blue and white gingham regular-relaxed cotton shirt once only for Spring or Summer Casual Everyday, Travel, Vacation / Resort, or a relaxed daytime Date Night. Pair with ecru, sand, stone, light taupe, muted olive, or clean mid-blue straight bottoms and minimal white, cream, tan, or soft-brown footwear; do not combine it with another check, an oversized bottom, or a formal shoe."
+    },
+    "8": {
+      "color": "Light Brown",
+      "constraint": "Use the pale light-brown regular-relaxed cotton shirt once only for Spring or Summer Casual Everyday, Travel, Vacation / Resort, or relaxed Office. Pair with off-white, sage, washed blue, tobacco, stone, or controlled chocolate straight bottoms and simple cream, tan, white, or brown footwear; keep the lower half clean and never pair it with a baggy or puddled trouser."
+    },
+    "20": {
+      "color": "Flax Coffee",
+      "constraint": "Use the flax-coffee lightweight straight drawstring trouser once only for Spring or Summer Casual Everyday, Travel, Vacation / Resort, or a relaxed daytime Date Night. Pair with a controlled regular or relaxed shirt, knit polo, textured tee, or fine overshirt in white, ecru, pale blue, sage, soft coral, tobacco, or restrained navy and minimal low-profile footwear; no oversized top, formal shoe, heavy outerwear, or extra fabric pooling."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [2],
+      "reason": "The product-only classic plaid shirt has no adult-male fit proof and its narrow traditional check reads more dated office basic than modern Zara-led casual tailoring."
+    },
+    {
+      "cards": [3],
+      "reason": "The deep open neckline, long narrow torso and poolside styling make the shirt too body-led and resort-specific to serve as a versatile modern top."
+    },
+    {
+      "cards": [4],
+      "reason": "The product-only three-quarter-sleeve shirt is narrow and unusually long, with no reliable shoulder, torso, sleeve or trouser relationship proof."
+    },
+    {
+      "cards": [5],
+      "reason": "The shirt is extremely tight through the chest, arms and waist and recreates the skinny-top proportion that the men's catalog is removing."
+    },
+    {
+      "cards": [6],
+      "reason": "Although the gray and white variants have a controlled relaxed shape, the mirror-selfie images obscure the neckline and placket with a phone and hanging glasses and add no sufficiently distinct role over cleaner approved solid shirts."
+    },
+    {
+      "cards": [7],
+      "reason": "The product-only shirt has a contrast utility pocket, conspicuous label detail and no adult fit proof, producing a generic supplier look rather than clean modern shirting."
+    },
+    {
+      "cards": [9, 10, 11, 12, 13, 14, 15, 16],
+      "reason": "These product-only shirts do not provide dependable adult-male fit proof and add repetitive solid button-up roles, visible tags or labels, contrast pockets, narrow construction, or uncontrolled long and dropped-shoulder proportions."
+    },
+    {
+      "cards": [17],
+      "reason": "The jogger combines a patterned contrast side panel with loose synthetic volume and cuff bunching, creating a dated novelty activewear silhouette."
+    },
+    {
+      "cards": [18, 19],
+      "reason": "The loose nylon joggers have excessive thigh volume, synthetic shine and heavy cuff bunching and repeat the baggy-bottom problem rather than adding a clean sports or travel role."
+    },
+    {
+      "cards": [21],
+      "reason": "Both inspected colors use a dated skinny-taper jogger cut with elastic cuffs, long drawstrings and supplier-style footwear imagery; the green variant also bunches visibly through the lower leg."
+    },
+    {
+      "cards": [22, 23, 24, 25],
+      "reason": "The sweatpants are excessively wide, loose or puddled and use long drawstrings, side stripes or uncontrolled full-length volume that conflicts with the required clean regular-relaxed silhouette."
+    },
+    {
+      "cards": [26],
+      "reason": "The inspected sweatpants have a dropped crotch, heavy thigh and ankle bunching, conspicuous waistband branding and a visible logo patch."
+    },
+    {
+      "cards": [27, 28],
+      "reason": "The cuffed synthetic joggers use visible logos, decorative drawstrings or tassels and generic supplier-activewear proportions rather than a clean modern bottom."
+    },
+    {
+      "cards": [29],
+      "reason": "The faux-leather jacket is narrow and cheap-looking on the mannequin, with a dated high collar and insufficient real-body fit proof."
+    },
+    {
+      "cards": [30],
+      "reason": "The product-only dark sherpa fleece is bulky, repetitive and visually generic, with no adult fit proof and no useful new color role."
+    },
+    {
+      "cards": [31],
+      "reason": "The loud red-and-black retro faux-leather construction is costume-like, narrow and dated rather than restrained contemporary outerwear."
+    },
+    {
+      "cards": [32],
+      "reason": "The brown product-only jacket has a dated high stand collar, pointed flap pockets, elastic waist and shiny synthetic finish, and its high price does not match the visual quality."
+    },
+    {
+      "cards": [33, 34, 35],
+      "reason": "These black product-only jackets repeat dark generic supplier outerwear and rely on narrow cuts, faux-leather finishes or weak fit proof instead of adding a distinct modern layer."
+    },
+    {
+      "cards": [36],
+      "reason": "The colored technical shell is product-only, visibly synthetic and carries an inner supplier mark; without on-body proof its shoulder, body length and hem behavior are not reliable enough for approval."
+    },
+    {
+      "cards": [37],
+      "reason": "The blue plaid shacket is covered with busy paint-splatter graphics, making it novelty-led and difficult to style across modern scenarios."
+    },
+    {
+      "cards": [38, 39],
+      "reason": "The black faux-leather jackets are repetitive, generic and product-only, with synthetic finishes and insufficient fit proof."
+    },
+    {
+      "cards": [40],
+      "reason": "The gray and khaki on-body jackets show a visible chest logo, dated multi-pocket field-jacket styling and generic jeans-based supplier presentation rather than a clean Zara-led layer."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 111 recorded color images rendered; 151 displayed images loaded with zero broken files.",
+    "3 accepted with one exact color and variant selected: two light regular-relaxed shirts and one warm flax lightweight straight trouser.",
+    "37 rejected after the base pass and close inspection of 18 promising color variants plus prior-family comparison.",
+    "The selected identity, source product, variant and image fields have zero collision with every prior accepted or conditional item.",
+    "Rejections include skinny and unproven shirts, redundant solid tops, loose synthetic joggers, puddled sweats, logos, novelty graphics, cheap faux leather, generic dark jackets and product-only outerwear without fit proof."
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "batch": "09",
+  "approvals": {
+    "3": {
+      "color": "Blue",
+      "constraint": "Use the soft-blue regular overshirt once only for Spring or Fall Casual Everyday, Travel, or Date Night. Layer over a clean white or ecru top with stone, olive, charcoal, or controlled dark-indigo straight bottoms and keep the rest of the outfit quiet."
+    },
+    "10": {
+      "color": "Bean Green",
+      "constraint": "Use the pale bean-green regular-fit shirt once only for Spring Casual Everyday, Travel, Date Night, or a relaxed Work / Office look. Pair with ecru, stone, medium gray, chocolate, or dark-olive straight bottoms and avoid another green layer."
+    },
+    "14": {
+      "color": "Apricot",
+      "constraint": "Use the clean apricot short-sleeve band-collar shirt once only for Spring or Summer Casual Everyday, Travel, Vacation / Resort, or Date Night. Pair with sage, stone, light blue, controlled cocoa, or ecru straight shorts or trousers and low-profile footwear."
+    },
+    "34": {
+      "color": "Khaki",
+      "constraint": "Use the khaki relaxed shacket once only for Fall Casual Everyday, Travel, or Date Night. Layer over a clean ecru, white, pale-blue, or chocolate top with controlled straight stone, charcoal, olive, or dark-indigo bottoms; do not combine it with another oversized garment."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 4, 5, 7, 8, 9, 11, 12, 13, 15],
+      "reason": "Hanger-only or product-only imagery does not prove adult-male shoulder, torso, sleeve, or hem behavior, despite several useful colors."
+    },
+    {
+      "cards": [6],
+      "reason": "The flat product image, visible hangtag, and utility chest pockets provide no adult fit proof and read like generic supplier workwear."
+    },
+    {
+      "cards": [16],
+      "reason": "Every color is narrowly shaped through the torso and upper arms, repeating the skinny-shirt problem."
+    },
+    {
+      "cards": [17],
+      "reason": "The long black short, extended drawstrings, dark repetition, and generic styling add no distinctive modern role."
+    },
+    {
+      "cards": [18, 19],
+      "reason": "Product-only imagery does not prove rise, seat, thigh volume, or length; the extended white drawstrings also dominate the design."
+    },
+    {
+      "cards": [20],
+      "reason": "The visible script leg mark, long loose cut, and dark generic sports styling are weaker than the accepted clean training shorts."
+    },
+    {
+      "cards": [21],
+      "reason": "The wide washed-denim short has heavy seam treatment, excessive volume, and a long dated proportion."
+    },
+    {
+      "cards": [22],
+      "reason": "The black two-in-one short with full-length leggings is highly specialized, visually heavy, and does not fill a clean versatile bottom gap."
+    },
+    {
+      "cards": [23],
+      "reason": "The loose long short, large supplier-language overlay, and incomplete visual proof fail both proportion and source-image quality gates."
+    },
+    {
+      "cards": [24],
+      "reason": "Both colors are photographed off-body on a floor or in packaging, so rise, seat, thigh volume, and length remain unproven."
+    },
+    {
+      "cards": [25],
+      "reason": "The large TANS leg text, snap-side detail, long loose fit, and gym-marketplace presentation are logo-led and dated."
+    },
+    {
+      "cards": [26],
+      "reason": "The single product-only olive short has no adult fit proof and cannot establish rise, seat, thigh volume, or length."
+    },
+    {
+      "cards": [27],
+      "reason": "The bright-yellow short is very long, wide and shiny, with excessive drawstrings and an ambiguous model presentation."
+    },
+    {
+      "cards": [28],
+      "reason": "The single product-only sage short has no adult fit proof and cannot establish rise, seat, thigh volume, or length."
+    },
+    {
+      "cards": [29],
+      "reason": "The product-only sherpa fleece has no adult fit proof and adds another bulky generic winter layer."
+    },
+    {
+      "cards": [30],
+      "reason": "The tight glossy black faux-leather jacket, zipper-heavy chest and all-dark styling repeat the dated skinny biker problem."
+    },
+    {
+      "cards": [31],
+      "reason": "The narrow dark business-casual zip jacket is dated and fitted through the body and sleeves."
+    },
+    {
+      "cards": [32],
+      "reason": "The floating synthetic product render provides no adult fit proof and the shiny lightweight construction looks generic."
+    },
+    {
+      "cards": [33],
+      "reason": "The shiny blue business coat is narrowly tailored, dark and dated, with a formal-marketplace presentation."
+    },
+    {
+      "cards": [35],
+      "reason": "The short-sleeve color-block track jacket has an awkward high-neck windbreaker proportion and dated sportswear styling."
+    },
+    {
+      "cards": [36],
+      "reason": "The product-only tactical jacket has multiple buckles, bulky pockets and an aggressive utility silhouette with no fit proof."
+    },
+    {
+      "cards": [37],
+      "reason": "The shiny camouflage faux-leather finish, multiple zippers and product-only presentation are loud, dated and unproven on-body."
+    },
+    {
+      "cards": [38],
+      "reason": "The narrow polyester overshirt, inconsistent synthetic-looking poses and repetitive muted variants are weaker than the accepted relaxed shacket."
+    },
+    {
+      "cards": [39],
+      "reason": "The long black hanger-only jacket provides no adult fit proof and adds another dark generic layer."
+    },
+    {
+      "cards": [40],
+      "reason": "The hooded, pocket-heavy black jacket has long oversized sleeves, dangling details and uncontrolled streetwear volume."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 158 recorded color images rendered; 198 displayed images loaded with zero broken files.",
+    "4 accepted with one exact color and variant selected: three tops and one outerwear identity.",
+    "36 rejected; every bottom in this batch failed.",
+    "Accepted colors are soft blue, pale bean green, apricot, and khaki.",
+    "Rejections include missing fit proof, skinny shirts, long or logo-led shorts, baggy denim, tactical details, shiny synthetic layers, and dark generic outerwear."
+  ]
+}

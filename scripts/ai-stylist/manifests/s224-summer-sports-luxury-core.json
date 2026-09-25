@@ -1,0 +1,27 @@
+{
+  "outputDir": "summer-sports-luxury-pilot-s224",
+  "scenarioId": "S224",
+  "occasion": "Sports / Workout",
+  "season": "Summer",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s222-summer-sports-midrange-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-shoe-bag-and-accessory",
+  "comparisonTitle": "S224 · Summer Sports / Workout · Luxury local screen",
+  "comparisonSubtitle": "The 10 unique Summer active candidates re-evaluated for Luxury performance textile and hand finish",
+  "comparisonNote": "Require ultrafine performance yarn, precision four-way stretch, handmade footwear and full-grain technical leather or equivalent Luxury proof · no relabeling of mass-market pieces · not UI integrated",
+  "coreTitle": "S224 · provisional Summer Sports Luxury core",
+  "coreSubtitle": "No local garment reaches the Summer Luxury activewear bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Luxury re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men soft coral ultrafine merino cooling performance tee luxury summer","targetProduct":"soft-coral ultrafine-merino cooling performance tee","customerRetailTarget":"$300-$450"},
+    {"category":"bottom","searchPhrase":"men powder blue precision stretch lined training short luxury","targetProduct":"powder-blue precision four-way-stretch lined training short","customerRetailTarget":"$350-$500"},
+    {"category":"shoe","searchPhrase":"men light warm gray handmade luxury breathable trainer summer","targetProduct":"light warm-gray handmade Luxury breathable trainer","customerRetailTarget":"$420-$600"},
+    {"category":"bag","searchPhrase":"men soft sage full grain technical leather workout sling luxury","targetProduct":"soft-sage full-grain technical-leather workout sling","customerRetailTarget":"$650-$900"},
+    {"category":"accessory","searchPhrase":"men pale apricot luxury technical running cap summer","targetProduct":"pale-apricot Luxury technical running cap","customerRetailTarget":"$350-$700"}
+  ]
+}

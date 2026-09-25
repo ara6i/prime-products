@@ -1,0 +1,216 @@
+{
+  "outputDir": "winter-resort-budget-pilot-s261",
+  "scenarioId": "S261",
+  "occasion": "Vacation / Resort",
+  "season": "Winter",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-one-core-front-runner-awaiting-top-bottom-shoe-bag-accessory",
+  "comparisonTitle": "S261 · Winter Vacation / Resort · existing core screen",
+  "comparisonSubtitle": "Six unique cold-weather color tops · six full-length bottoms · seven Winter layers",
+  "comparisonNote": "Require warm lodge-ready function, modern controlled volume and a cheerful winter palette without skinny knits, puddled bottoms or black/navy monotony · not UI integrated",
+  "coreTitle": "S261 · provisional Winter Vacation / Resort core",
+  "coreSubtitle": "soft-sage regular puffer",
+  "coreNote": "One provisional hold · five unique pieces still missing · no complete outfit · not UI integrated",
+  "frontRunnerKeys": ["O1"],
+  "excludeCandidateKeys": ["T2", "T4"],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men paprika red fine knit mock neck sweater regular fit",
+      "targetProduct": "paprika-red fine-knit mock-neck sweater"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men winter cream corduroy trousers straight leg regular fit",
+      "targetProduct": "winter-cream straight-leg corduroy trouser"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men cognac suede lace up ankle boots round toe cream rubber sole minimalist",
+      "targetProduct": "cognac-suede round-toe cream-sole winter boot"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men chocolate brown pebbled leather weekender bag minimalist",
+      "targetProduct": "chocolate-brown pebbled weekender"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men ivory sage colorblock wool scarf minimal fringe",
+      "targetProduct": "ivory-and-sage colorblock wool scarf"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:e072509bbb39ee226b308bb09215ba9116bf6fe5",
+      "name": "Orange-and-Ivory Fuzzy Stripe Sweater",
+      "decision": "reject-for-s261",
+      "decisionReason": "The orange-and-ivory stripe is cheerful, but the fuzzy sweater is shown only as a floating product on a fur background. Shoulder, torso, sleeve and hem proportions are not proven, and the novelty surface reads less refined than the clean Winter Resort brief."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:4afedfe7709f20a71101a7cdc3f5e6ee434aa057",
+      "name": "Peacock-Blue Waffle Half-Zip Hoodie",
+      "decision": "reject-for-s261",
+      "decisionReason": "The peacock color is useful, but the hoodie has deeply dropped shoulders, a broad long body, bagged sleeves and a large kangaroo pocket. It is too bulky beneath a puffer and recreates the oversized-top problem."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:0ae1b8390f88851ec82739efb73704f9d134321e",
+      "name": "Mustard Clean Half-Zip Sweatshirt",
+      "decision": "reject-for-s261",
+      "decisionReason": "The mustard tone is seasonally strong, but the worn image proves a tight technical base-layer fit through the torso and arms. It is the skinny-top silhouette explicitly excluded from the rebuild."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:beacbb3827e6eb7d02fe7ed511e1648aa3e2da0b",
+      "name": "Light-Apricot Asymmetric Cable Knit",
+      "decision": "reject-for-s261",
+      "decisionReason": "The apricot knit has dropped shoulders, very long loose sleeves and an asymmetric novelty construction. Its soft oversized volume would bunch under the selected puffer rather than create a clean layered line."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:2984c73a22084c0ed6a3de38270524b2b9a5f582",
+      "name": "Camel Cable-Knit Quarter-Zip",
+      "decision": "reject-for-s261",
+      "decisionReason": "The camel cable quarter-zip is narrow and shaped through both torso and arms, with a conventional fitted presentation. It looks dated and repeats the skinny-knit issue rather than a modern regular silhouette."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:8a64334bbf508713bdcb9363a1ed69f5be9ca300",
+      "name": "Khaki Textured Half-Button Sweatshirt",
+      "decision": "reject-for-s261",
+      "decisionReason": "The half-button sweatshirt is less extreme than the other loose tops, but it still has a long dropped body and muted gray-khaki color. With the sage puffer it would make the Winter Resort outfit flat and muddy instead of supplying the intended joyful focal color."
+    },
+    {
+      "group": "top",
+      "key": "T7",
+      "identity": "shopify_supplier:9e8719479f6d34233b8dfd557767f52a1bffa7b4",
+      "name": "Peacock-Blue Fine-Knit Crew",
+      "decision": "reject-for-s261",
+      "decisionReason": "The peacock blue is attractive, but the knit visibly hugs the chest, waist and arms and is styled with pushed sleeves. Its fitted line fails the modern regular-fit requirement."
+    },
+    {
+      "group": "top",
+      "key": "T8",
+      "identity": "shopify_supplier:0794e5a5d5baa6332657d5add9661ae7a433d05c",
+      "name": "Dusty-Blue Corduroy Shirt",
+      "decision": "reject-for-s261",
+      "decisionReason": "The dusty-blue shirt has a controlled casual shape, but it is a lightweight open overshirt dependent on a separate white tee, with a long rounded hem. It does not provide the warm, self-contained Winter layer needed under a puffer."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:bf7fa4e61eb13d0ac96cfca0028b90814633535c",
+      "name": "Ivory Straight-Leg Jean",
+      "decision": "reject-for-s261",
+      "decisionReason": "The ivory denim color could brighten the palette, but the product-only cutout gives no credible proof of rise, seat, thigh width, full worn drape or shoe break. A shape inference is not enough for a visual hold."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:7572cafda48c1fb7fd652ae7a470e2cdafb136a0",
+      "name": "Blue-Gray Jean",
+      "decision": "reject-for-s261",
+      "decisionReason": "The jean is regular rather than baggy, but its actual image is a dark indigo workwear wash with heavy whiskering, rolled cuffs and rugged boot styling, not the claimed blue-gray. It would pull the outfit back into the dark generic direction the rebuild is correcting."
+    },
+    {
+      "group": "bottom",
+      "key": "B3",
+      "identity": "shopify_supplier:fabf15cd2935c7ad9c6fc6909dbdb8e94ea7f169",
+      "name": "Light-Gray Straight Washed Jean",
+      "decision": "reject-for-s261",
+      "decisionReason": "The light-gray jean is broad through the leg and visibly folds and puddles at the shoe. The washed finish plus excess length creates the baggy-bottom silhouette the user rejected."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:8d9fb6dd4f6289a656e655b8b9b0e6efe6005a3d",
+      "name": "Dark Zip-Detail Straight Jean",
+      "decision": "reject-for-s261",
+      "decisionReason": "The dark washed jean stacks heavily over the shoe and adds unnecessary zip hardware near the hem. Its black-gray palette and long pooled line are both wrong for this brighter controlled Winter Resort outfit."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265",
+      "name": "Military-Green Casual Trouser",
+      "decision": "reject-for-s261",
+      "decisionReason": "The military-green trouser is shown unworn and wrinkled with novelty bead hardware. Fit, drape and break are unproven, while the color would create an overly green outfit beside the selected puffer."
+    },
+    {
+      "group": "bottom",
+      "key": "B6",
+      "identity": "shopify_supplier:bd9eb3e71ff44da3314d188440d5608833ddeaae",
+      "name": "Army-Green Pleated Corduroy Trouser",
+      "decision": "reject-for-s261",
+      "decisionReason": "The corduroy trouser has deep pleats, a ballooned thigh, strong taper, rolled cuffs and a visible D-ring. It is product-only and too voluminous and utilitarian for a clean Resort proportion."
+    },
+    {
+      "group": "outerwear",
+      "key": "O1",
+      "identity": "shopify_supplier:99f159b474cc44ba3d3e7eafbc1275c2fc62f43c",
+      "name": "Soft-Green Regular Puffer",
+      "decision": "visual-front-runner-for-s261",
+      "decisionReason": "Original review confirms a clean logo-free puffer worn at a regular hip length with controlled shoulder width and enough room for one fine knit without an exaggerated streetwear drop. The soft sage-green color is light, modern and gives the Winter palette a fresh Zara-led base."
+    },
+    {
+      "group": "outerwear",
+      "key": "O2",
+      "identity": "shopify_supplier:7df108deda150146a14be24dcf21c574ff57a096",
+      "name": "Sage Quilted Zip Jacket",
+      "decision": "reject-for-s261",
+      "decisionReason": "The thin shiny quilted jacket is shown only as a floating product and appears broad and long through the body. There is no worn proof of shoulder, sleeve or hem control, so it cannot displace the proven soft-green puffer."
+    },
+    {
+      "group": "outerwear",
+      "key": "O3",
+      "identity": "shopify_supplier:aeec300145fdb4b330693796cf4e270f33526c42",
+      "name": "Warm-Beige Puffer",
+      "decision": "reject-for-s261",
+      "decisionReason": "The warm-beige puffer is an unworn product image with a long boxy body and glossy volume. Fit is not proven and its washed neutral color supplies less freshness than the soft-sage option."
+    },
+    {
+      "group": "outerwear",
+      "key": "O4",
+      "identity": "shopify_supplier:4d8999448b83e0cdd90a9a1b9590776cddcb35ac",
+      "name": "Light-Green Puffer",
+      "decision": "reject-for-s261",
+      "decisionReason": "The hooded light-green puffer is product-only and carries a prominent sleeve patch, black interior and outdoor text details. It reads generic technical outerwear rather than clean logo-light Zara styling."
+    },
+    {
+      "group": "outerwear",
+      "key": "O5",
+      "identity": "shopify_supplier:7771fc177b9d3f64e54c30eb8b86fbfa738c0fb7",
+      "name": "White Quilted Snap Puffer",
+      "decision": "reject-for-s261",
+      "decisionReason": "The white jacket is visibly oversized through the dropped shoulder and long body and carries an ADVANCED chest wordmark. Its branded streetwear presentation is not suitable for the refined Resort core."
+    },
+    {
+      "group": "outerwear",
+      "key": "O6",
+      "identity": "shopify_supplier:13d330b040b32bff8bdb5ef4f660a1a54df5b1b2",
+      "name": "Army-Green Puffer",
+      "decision": "reject-for-s261",
+      "decisionReason": "The army-green puffer has a large black yoke and hood that make the garment visually dark and outdoorsy. It is clean enough functionally, but it repeats the black-and-dark monotony the new styling direction must avoid."
+    },
+    {
+      "group": "outerwear",
+      "key": "O7",
+      "identity": "shopify_supplier:858efc647d67f500a70a3b003ebc5d4d5376d421",
+      "name": "White Padded Zip Vest",
+      "decision": "reject-for-s261",
+      "decisionReason": "The white padded vest is shown only as a cutout, so body width and armhole shape are unproven. As a sleeveless outer layer it also leaves the Winter outfit dependent on another garment and does not provide a complete cold-weather solution."
+    }
+  ]
+}

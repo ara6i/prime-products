@@ -1,0 +1,110 @@
+{
+  "batch": "03",
+  "approvals": {
+    "11": {
+      "color": "Green",
+      "constraint": "Use the pale-mint striped overshirt once only for Spring or Summer Casual Everyday, Office, Date Night, or Travel. Layer it over white or ecru and keep the trouser or short controlled and neutral."
+    },
+    "19": {
+      "color": "Light Blue",
+      "constraint": "Use the light-blue two-in-one training short once only for Sports / Workout in Spring or Summer. Pair with a clean white, ecru, gray, or restrained technical top and a low-profile performance shoe."
+    },
+    "28": {
+      "color": "Terracotta",
+      "constraint": "Use the terracotta lightweight short once only for Spring or Summer Sports / Workout, Travel, Vacation, or Casual Everyday. Balance the strong color with an ecru, white, stone, or pale-blue regular-fit top."
+    },
+    "29": {
+      "color": "Khaki",
+      "constraint": "Use the khaki double-breasted trench once only for Spring or Fall Office, Date Night, Travel, or elevated Casual Everyday. Keep the layers and trousers controlled rather than oversized and avoid an all-dark board."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 3, 4, 5, 8, 9, 10, 12, 13, 16],
+      "reason": "Hanger, folded, or garment-only imagery does not prove the adult-male shoulder, torso, length, or material behavior required for approval."
+    },
+    {
+      "cards": [6],
+      "reason": "The tightly suppressed torso, narrow sleeves, contrast buttons, and dated microstripe styling recreate the skinny-shirt problem."
+    },
+    {
+      "cards": [7],
+      "reason": "The red-white-blue racing stripe down both sleeves reads sporty and dated rather than clean modern shirting."
+    },
+    {
+      "cards": [14],
+      "reason": "Large scattered graphics, labels, and double chest pockets make the short-sleeve shirt loud and supplier-generic."
+    },
+    {
+      "cards": [15],
+      "reason": "The oversized contrast pocket, stitched label, and mismatched stripe treatment are busy and not Zara-led."
+    },
+    {
+      "cards": [17],
+      "reason": "The knee-length wide cut varies across male and female-presenting images and lacks the controlled tailored-short silhouette required."
+    },
+    {
+      "cards": [18],
+      "reason": "The shiny polyester corduroy is tight through the thigh and reads cheap rather than relaxed and polished."
+    },
+    {
+      "cards": [20, 25, 26],
+      "reason": "Product-only imagery does not prove rise, thigh volume, length, or adult-male fit well enough for one-time allocation."
+    },
+    {
+      "cards": [21, 22],
+      "reason": "The below-knee loose cut is shapeless and recreates the baggy-long-short problem."
+    },
+    {
+      "cards": [23],
+      "reason": "The red-white-blue elastic waistband and synthetic resort styling are loud, repetitive, and less refined than the approved tailored shorts."
+    },
+    {
+      "cards": [24],
+      "reason": "The ultra-short bodybuilding cut is too tight and exposed for the versatile Sports / Workout wardrobe."
+    },
+    {
+      "cards": [27],
+      "reason": "The repeated synthetic-looking torso and dock composites do not provide trustworthy real-product fit evidence."
+    },
+    {
+      "cards": [30, 31, 32, 33],
+      "reason": "Product-only or synthetic-torso imagery does not prove outerwear fit; cargo pockets, heavy sherpa, or mixed quilting also read dated and bulky."
+    },
+    {
+      "cards": [34],
+      "reason": "The all-over sequin bomber is costume-like and outside the restrained modern Party wardrobe."
+    },
+    {
+      "cards": [35],
+      "reason": "The long shiny polyester sherpa jacket has a dated zip-pocket layout and no credible on-body proportion proof."
+    },
+    {
+      "cards": [36],
+      "reason": "Multiple faux aviation patches, shiny nylon, and a bulky sherpa collar make the bomber busy and dated."
+    },
+    {
+      "cards": [37],
+      "reason": "The polyurethane leather-look bomber is tight, shiny, and shaped with dated curved chest seams."
+    },
+    {
+      "cards": [38],
+      "reason": "The multi-pocket tactical bomber is overdesigned, bulky, and incompatible with the clean modern styling brief."
+    },
+    {
+      "cards": [39],
+      "reason": "Garment-only proof, synthetic washed fabric, and a generic zip bomber shape do not justify another repetitive outerwear identity."
+    },
+    {
+      "cards": [40],
+      "reason": "Camouflage sleeves, chevron quilting, and padded synthetic construction read cheap and dated."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 169 recorded color images rendered; 209 displayed images loaded with zero broken files.",
+    "4 accepted with one exact color and variant selected: one top, two bottoms, and one outerwear identity.",
+    "36 rejected.",
+    "Accepted colors are pale mint, light blue, terracotta, and khaki.",
+    "Rejections include unproven hanger shirts, dated stripe treatments, long or synthetic shorts, bodybuilding cuts, heavy supplier outerwear, sequins, patches, tactical pockets, and fake leather."
+  ]
+}

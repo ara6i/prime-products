@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useShopBag } from "../../bag/useShopBag";
 import type {
   ActiveCategoryFilters,
@@ -8,10 +9,24 @@ import type {
   CategoryProduct,
   CategorySortId,
 } from "../types/categoryCatalog.types";
+import {
+  categoryProductMatchesFilters,
+  createInitialCategoryFilters,
+} from "../utils/categoryCatalogFilters";
 
-export function useCategoryCatalog(catalog: CategoryCatalog) {
+type CategoryCatalogOptions = {
+  initialBrand?: string;
+};
+
+export function useCategoryCatalog(
+  catalog: CategoryCatalog,
+  options: CategoryCatalogOptions = {},
+) {
+  const router = useRouter();
   const [expandedFilterId, setExpandedFilterId] = useState<string | null>(null);
-  const [activeFilters, setActiveFilters] = useState<ActiveCategoryFilters>({});
+  const [activeFilters, setActiveFilters] = useState<ActiveCategoryFilters>(
+    () => createInitialCategoryFilters(options.initialBrand),
+  );
   const [sortId, setSortId] = useState<CategorySortId>("featured");
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const bag = useShopBag();
@@ -19,24 +34,9 @@ export function useCategoryCatalog(catalog: CategoryCatalog) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const products = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-    const filtered = catalog.products.filter((product) => {
-      const matchesQuery =
-        normalizedQuery.length === 0 ||
-        `${product.name} ${product.brand}`
-          .toLowerCase()
-          .includes(normalizedQuery);
-      const matchesFilters = Object.entries(activeFilters).every(
-        ([groupId, values]) => {
-          if (values.length === 0) return true;
-          return product.facets.some(
-            (facet) =>
-              facet.groupId === groupId && values.includes(facet.value),
-          );
-        },
-      );
-      return matchesQuery && matchesFilters;
-    });
+    const filtered = catalog.products.filter((product) =>
+      categoryProductMatchesFilters(product, activeFilters, searchQuery),
+    );
 
     return [...filtered].sort((a, b) => {
       if (sortId === "price-low") return a.priceCents - b.priceCents;
@@ -81,16 +81,26 @@ export function useCategoryCatalog(catalog: CategoryCatalog) {
     toggleFilter,
     toggleFavorite,
     clearFilters: () => setActiveFilters({}),
-    addToBag: (product: CategoryProduct) => bag.add({
-      productId: product.id,
-      name: product.name,
-      brandName: product.brand,
-      image: product.image,
-      href: `/shop/product/${product.id}`,
-      size: "",
-      color: product.facets.find((facet) => facet.groupId === "color")?.value ?? "",
-      priceCents: product.priceCents,
-      currency: "USD",
-    }),
+    addToBag: (product: CategoryProduct) => {
+      const oneSize =
+        product.sizes?.length === 1 && product.sizes[0] === "One size";
+      if (!oneSize) {
+        router.push(`/shop/product/${product.id}#size`);
+        return;
+      }
+      bag.add({
+        productId: product.id,
+        name: product.name,
+        brandName: product.brand,
+        image: product.image,
+        href: `/shop/product/${product.id}`,
+        size: "One size",
+        color:
+          product.facets.find((facet) => facet.groupId === "color")?.value ??
+          "",
+        priceCents: product.priceCents,
+        currency: "USD",
+      });
+    },
   };
 }

@@ -1,0 +1,27 @@
+{
+  "outputDir": "summer-sports-premium-pilot-s223",
+  "scenarioId": "S223",
+  "occasion": "Sports / Workout",
+  "season": "Summer",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s222-summer-sports-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-shoe-bag-and-accessory",
+  "comparisonTitle": "S223 · Summer Sports / Workout · Premium local screen",
+  "comparisonSubtitle": "The 10 unique Summer active candidates re-evaluated for Premium breathability, construction and movement",
+  "comparisonNote": "Require merino-Tencel or advanced cooling knit, four-way technical stretch, clean bonded construction and exact athletic ease · no promotion of low-cost active basics · not UI integrated",
+  "coreTitle": "S223 · provisional Summer Sports Premium core",
+  "coreSubtitle": "No local garment reaches the Summer Premium activewear bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after immediate Premium re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men soft coral merino tencel cooling performance tee premium summer workout","targetProduct":"soft-coral merino-Tencel cooling performance tee","customerRetailTarget":"$180-$240"},
+    {"category":"bottom","searchPhrase":"men powder blue four way stretch lined training short premium summer","targetProduct":"powder-blue four-way-stretch lined technical short","customerRetailTarget":"$200-$260"},
+    {"category":"shoe","searchPhrase":"men light warm gray premium breathable low profile trainer summer","targetProduct":"light warm-gray Premium breathable low-profile trainer","customerRetailTarget":"$260-$340"},
+    {"category":"bag","searchPhrase":"men soft sage premium technical workout sling summer","targetProduct":"soft-sage Premium technical workout sling","customerRetailTarget":"$200-$280"},
+    {"category":"accessory","searchPhrase":"men pale apricot premium technical running cap summer","targetProduct":"pale-apricot Premium technical running cap","customerRetailTarget":"$100-$160"}
+  ]
+}

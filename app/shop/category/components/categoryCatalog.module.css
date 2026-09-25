@@ -479,14 +479,30 @@
 }
 
 .productImage img {
-  object-fit: cover;
-  object-position: center top;
-  transition: transform 450ms ease;
+  object-fit: contain;
+  object-position: center;
+  transition: opacity 260ms ease, transform 450ms ease;
+}
+
+.productFrontImage {
+  opacity: 1;
+}
+
+.productHoverImage {
+  opacity: 0;
 }
 
 .productImage > a {
   position: absolute;
   inset: 0;
+}
+
+.productCard:hover .productFrontImage {
+  opacity: 0;
+}
+
+.productCard:hover .productHoverImage {
+  opacity: 1;
 }
 
 .productCard:hover .productImage img {

@@ -27,11 +27,25 @@ function hasPage(href: string) {
 }
 
 describe("Platform menu destinations", () => {
-  it("shows only Denim in the Shop category links", () => {
+  it("shows the active Shop categories without a standalone Denim route", () => {
     const shop = shopMenuSections.find((section) => section.id === "shop");
     expect(shop?.groups.find((group) => group.label === "Categories")?.links).toEqual([
-      { label: "Denim", href: "/shop/category/denim" },
+      { label: "Women", href: "/shop/category/women" },
+      { label: "Men", href: "/shop/category/men" },
+      { label: "Accessories", href: "/shop/category/accessories" },
     ]);
+    expect(JSON.stringify(shop)).not.toContain("/shop/category/denim");
+  });
+
+  it("routes every imported brand into its filtered Women collection", () => {
+    const shop = shopMenuSections.find((section) => section.id === "shop");
+    const brandLinks = shop?.groups.find((group) => group.label === "Brands")?.links;
+    expect(brandLinks).toEqual(
+      shopBrandProfiles.map((brand) => ({
+        label: brand.name,
+        href: `/shop/category/women?brand=${brand.id}`,
+      })),
+    );
   });
 
   it.each(shopMenuSections)("uses existing pages and original image assets for $label", (section) => {

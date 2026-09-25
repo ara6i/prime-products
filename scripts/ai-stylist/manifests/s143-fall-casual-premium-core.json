@@ -1,0 +1,59 @@
+{
+  "outputDir": "fall-casual-premium-pilot-s143",
+  "scenarioId": "S143",
+  "occasion": "Casual Everyday",
+  "season": "Fall",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "full-resolution-corrected-two-piece-fall-core-awaiting-premium-price-policy-and-shoe-bag-accessory",
+  "comparisonTitle": "S143 · Fall Casual Everyday · Premium local screen",
+  "comparisonSubtitle": "Eight premium-candidate tops · six straight-bottom candidates · four Fall layers · all unique and unreserved",
+  "comparisonNote": "Require elevated Zara-led texture, expressive color and controlled proportion · no skinny top, puddled jean, muddy brown stack, oversized-on-oversized outfit or dark monotony · not UI integrated",
+  "coreTitle": "S143 · provisional Fall Casual Everyday Premium core",
+  "coreSubtitle": "warm-ivory asymmetric cable knit · clean mid-blue regular-straight jean",
+  "coreNote": "Full-source review confirms a balanced relaxed top and controlled straight jean, but both remain visual holds only until Premium fiber, construction and customer-retail proof exist · no outerwear by design · shoe, bag and accessory still missing · no complete outfit · not UI integrated",
+  "frontRunnerKeys": ["T7", "B1"],
+  "missingSlots": ["shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "shoe",
+      "searchPhrase": "men cream suede low profile retro sneaker dusty pink accent gum sole",
+      "targetProduct": "cream-suede low-profile retro sneaker with restrained dusty-pink accent",
+      "customerRetailTarget": "$280-$360"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men warm gray pebbled leather compact crossbody minimalist no logo",
+      "targetProduct": "warm-gray pebbled-leather compact minimalist crossbody",
+      "customerRetailTarget": "$320-$480"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men warm gray brushed wool baseball cap premium minimal logo fall",
+      "targetProduct": "warm-gray brushed-wool minimalist baseball cap",
+      "customerRetailTarget": "$180-$260"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:189ec0f3dec5d9a9474992abbeacc9ab93a301d6","name":"Washed-Pink Oversized Zip Hoodie","decision":"reject-after-full-resolution-for-s143","decisionReason":"Full-resolution review shows a strongly dropped shoulder, oversized body and extra-long graphic underlayer, while the source styling extends the same volume into matching trousers. The vivid color is useful, but the silhouette reproduces the oversized Chinese-set styling the rebuild must remove."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:8a64334bbf508713bdcb9363a1ed69f5be9ca300","name":"Khaki Textured Half-Button Sweatshirt","decision":"keep-available-for-other-scenario","decisionReason":"The worn source proves a clean textured surface, controlled drop and modern upper-hip line, but the muted khaki is too quiet for this Premium color-led core. Preserve it for a unique neutral Office Casual, Travel or Spring outfit with a brighter companion."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:3c8baacfaca7fe2715165e06af8f0c00d5a68cd4","name":"Warm-Coffee Textured Button-Up","decision":"keep-available-for-other-scenario","decisionReason":"The warm corded texture and controlled ease are credible, but it is shown open over a separate white tee and would require another unique top. Its brown tone also produces a muddier Fall palette than the pink front-runner, so it remains available for a later layered scenario."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:8be044b2ef75a018352c5bfc03846f0fecbb1fce","name":"Coffee-Brown Relaxed Raglan Hoodie","decision":"reject-for-s143","decisionReason":"The relaxed body is wearable, but the deep coffee color is dark and the small visible REGRESS chest wordmark weakens the clean premium direction. It would repeat the muted dark-hoodie look the rebuild is intentionally reducing."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:7b959d24fb23eafe687761871356bdbb13a615b4","name":"Light-Khaki Textured Henley Knit","decision":"reject-for-s143","decisionReason":"Only an isolated product image is available, so shoulder drop, torso width and sleeve length cannot be verified. The long sleeves and broad body outline create an unproven oversized risk, which is not acceptable for a Premium visual hold."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:2984c73a22084c0ed6a3de38270524b2b9a5f582","name":"Camel Cable-Knit Quarter-Zip","decision":"reject-for-s143","decisionReason":"The worn source is visibly close through chest, waist and arms and uses rolled sleeves to disguise length. Despite useful cable texture, it reproduces the conventional skinny-knit proportion being removed."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:beacbb3827e6eb7d02fe7ed511e1648aa3e2da0b","name":"Warm-Ivory Asymmetric Cable Sweater","decision":"visual-front-runner-after-full-source-for-s143","decisionReason":"The full source proves an upper-hip hem, controlled relaxed body and intentional one-sided cable surface without excessive length. Its warm ivory gives the clean mid-blue straight jean a light Zara-led Fall contrast while keeping only one half of the outfit relaxed; Premium material and retail proof remain required."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:f9c9196d870785e0b931566b5097b11a6898df94","name":"Anchor-Red Heavyweight Relaxed T-Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The heavyweight burgundy jersey is expressive and visually clean, but the tee is long, broad and strongly dropped. Preserve it for a unique warm early-Fall Party, Campus or Travel look with a narrower cropped bottom; B1 would make this core too conventionally sporty."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:048f91fa8b67f16175d1ad88b171fbd87340e32c","name":"Clean Mid-Blue Regular-Straight Jean","decision":"visual-front-runner-after-full-source-for-s143","decisionReason":"The full source proves regular thigh ease, a straight leg and one small natural shoe break rather than broad or puddled volume. Its clean mid-blue wash balances the warm-ivory knit, but Premium fiber, construction and customer-retail proof remain required."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:ab2aa6d1c74a8d9545ea4517b457fc9d7c312e26","name":"Blue Relaxed Vintage-Wash Jean","decision":"reject-for-s143","decisionReason":"The leg is very broad from thigh to hem and rests heavily across the shoes. Combined with any relaxed top it recreates the oversized-on-oversized, bottom-heavy silhouette the rebuild must remove."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:7572cafda48c1fb7fd652ae7a470e2cdafb136a0","name":"Blue-Gray Vintage-Wash Relaxed Jean","decision":"reject-for-s143","decisionReason":"Although the leg is straighter than B2, the heavy whiskering, rolled cuffs and work-boot styling read dated rugged casual rather than polished Zara Premium. The dark distressed wash also makes the palette heavier."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:f7a81f949ef5378b333161394812d31627fa7265","name":"Military-Green Casual Trouser","decision":"reject-for-s143","decisionReason":"The product-only image does not prove rise, thigh volume, hem or shoe break. Its synthetic sheen and dangling multicolor bead charm also undermine the clean Premium brief."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:c4694a3740fce46e4cb36568c29f9bd341398236","name":"Medium-Blue Straight-Leg Jean","decision":"reject-for-s143","decisionReason":"The straight outline is usable, but the glossy stretch-denim surface, conventional wash and visible hem stacking look mass-market and dated. It does not meet the material or finish bar for the Premium core."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:8d9fb6dd4f6289a656e655b8b9b0e6efe6005a3d","name":"Dark Decor-Zip Straight Jean","decision":"reject-for-s143","decisionReason":"The dark jean visibly collapses and puddles over both shoes, and the decorative ankle zips plus novelty buckle create a trend-costume signal. It is too dark and too bottom-heavy for this brief."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:5d5eb7a403cdcbaab147934e34260021d12d0dba","name":"Light-Khaki Relaxed Blazer","decision":"keep-available-for-other-scenario","decisionReason":"The light blazer has a credible modern relaxed line, but its long broad body is shown over a slim black base and extremely wide trousers. Layering it over the pink hoodie would stack upper-body volume; preserve it for a unique Office Casual or Date Night outfit with a clean knit."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:2349a25ac0e2ed693d29d058a48f7be7233b84f7","name":"Light-Khaki Double-Breasted Trench","decision":"keep-available-for-other-scenario","decisionReason":"The full worn source proves a light, visually credible trench, but it is deliberately oversized through shoulder, sleeve and body and is styled with shirt, tie and cropped black trousers. It belongs in a planned elevated Office or Travel look, not over this relaxed hoodie."},
+    {"group":"outerwear","key":"O3","identity":"shopify_supplier:0b0026d57ef43627c967e2592a1523d683169666","name":"Warm-Brown Snap Shirt-Jacket","decision":"reject-for-s143","decisionReason":"Only an isolated product image is available, so the large shoulder, sleeve and fishtail proportions cannot be verified on a body. The muddy brown-olive tone would also flatten the pink-and-blue palette rather than elevate it."},
+    {"group":"outerwear","key":"O4","identity":"shopify_supplier:0207913076417c4f3fc03599b3b2cc589b66c644","name":"Sapphire Contrast-Stitch Denim Jacket","decision":"keep-available-for-other-scenario","decisionReason":"The crisp contrast stitching and dark indigo surface are visually strong, but there is no worn fit proof and the boxy outline cannot be validated. Keep it available for a dedicated denim-layer scenario; adding it here would create double denim and unnecessary darkness."}
+  ]
+}

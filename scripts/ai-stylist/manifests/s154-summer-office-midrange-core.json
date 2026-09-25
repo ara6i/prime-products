@@ -1,0 +1,68 @@
+{
+  "outputDir": "summer-office-midrange-pilot-s154",
+  "scenarioId": "S154",
+  "occasion": "Work / Office",
+  "season": "Summer",
+  "budget": "Mid-Range",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-midrange-core-candidates-pass-awaiting-top-bottom-shoe-bag-accessory",
+  "comparisonTitle": "S154 · Summer Work / Office · Mid-Range local screen",
+  "comparisonSubtitle": "Eight light or colorful warm-weather tops · eight controlled trouser or tailored-short candidates · all unique and unreserved",
+  "comparisonNote": "Require modern creative-office polish, breathable construction and purposeful happy color · no skinny shirt, puddled leg, lounge waist, cargo clutter or dark monotony · not UI integrated",
+  "coreTitle": "S154 · provisional Summer Work / Office Mid-Range core",
+  "coreSubtitle": "No local garment reaches the Summer Mid-Range Office visual bar · all five roles unresolved",
+  "coreNote": "Zero provisional holds after all 16 originals were checked at full resolution · Mid-Range customer-retail proof and all companion roles remain unresolved · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men coral seafoam fine gauge short sleeve knit polo relaxed summer office modern",
+      "targetProduct": "soft-coral or seafoam fine-gauge short-sleeve knit polo with controlled regular-relaxed ease",
+      "customerRetailTarget": "$110-$160"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men warm ivory linen viscose double pleat controlled straight trouser summer office",
+      "targetProduct": "warm-ivory linen-viscose double-pleat trouser with a controlled straight leg and precise break",
+      "customerRetailTarget": "$120-$180"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men tobacco suede low profile round toe penny loafer summer office",
+      "targetProduct": "tobacco-suede low-profile round-toe penny loafer",
+      "customerRetailTarget": "$140-$190"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men cognac canvas leather slim briefcase crossbody summer office minimal",
+      "targetProduct": "cognac canvas-and-leather slim briefcase or structured compact crossbody",
+      "customerRetailTarget": "$100-$150"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men cream dial tan leather minimal watch summer office",
+      "targetProduct": "cream-dial minimalist watch with a tan leather strap",
+      "customerRetailTarget": "$60-$100"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:4b02fa1f08581096e185ad135f7fb00d6d622f3d","name":"Pea-Green Textured Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The subtle texture and controlled shoulder are useful, but the actual color reads muted khaki rather than pea green. Its long open overshirt body, large flap pocket and visible white T-shirt make it Casual or Travel rather than a self-contained Summer Office top."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:0312db0cd26acade9f91f474e8b9b19311c3e778","name":"Pink Button-Up Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The pink is cheerful, but the distressed plaid, raw frayed edges, very long open body, dropped shoulder and oversized patch pocket create grunge Festival or Casual styling rather than modern Office polish."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:f5800aaaef7e1a427ebc24fd5041ae95a71b003c","name":"Sky-Blue Long-Sleeve Button-Down","decision":"keep-available-for-other-scenario","decisionReason":"The sky blue is fresh, but the hanger composition supplies no worn fit proof and shows the shirt only as an open layer over a white T-shirt. Preserve it for Summer Casual, Travel or Resort."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:4364e9fb40a107fbdd3db7c2b04eb9ebef44b1e2","name":"Khaki Mock-Neck Short-Sleeve Knit","decision":"reject-for-s154","decisionReason":"The product-only image gives no reliable shoulder, torso or hem proof, while the narrow ribbed sleeve openings and long tapered body risk a fitted dated knit. The muted khaki also fails the requested happier Summer palette."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:da767e27d71701e7343c7a356396e5a5e90d680d","name":"White Mock-Neck Short-Sleeve Top","decision":"reject-for-s154","decisionReason":"Only a flat product image is available, so fit and drape are unproven. The plain T-shirt body and synthetic-looking mock collar do not establish a refined Office knit or purposeful color story."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:9cc79e1077cee3d17f7915da83507df07302d073","name":"White Short-Sleeve Button-Up","decision":"keep-available-for-other-scenario","decisionReason":"The lightweight white shirt can serve Resort or Casual, but the hanger-only open-over-tee image cannot prove fit, and the soft band collar plus curved hem read informal rather than Office-ready."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:f0ad2af6c72cba6799e6543fc55abf587f53ab04","name":"Light-Green Casual Button-Up","decision":"reject-for-s154","decisionReason":"The product-only image supplies no worn fit proof, while two large asymmetric utility pockets, dark buttons, a black wordmark patch and long sleeves make the shirt technical and visually cluttered for Summer Office."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:6531885c6d54dd5b10a585963227232ae011397c","name":"Pastel-Blue Clean Chino Short","decision":"reject-for-s154","decisionReason":"The pastel blue is welcome, but only a product image is available. The shiny surface, elastic side waistband, rolled hem and conventional narrow shape read inexpensive casual chino short rather than tailored Office Bermuda."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:0ea516ce4334a3e1b7d95485d902e489baa6c0c3","name":"Light-Blue Cotton-Linen Straight Trouser","decision":"reject-for-s154","decisionReason":"The color is fresh, but the gathered elastic waist, visible drawstring, crinkled fabric and barefoot source read lounge or Resort. The image does not prove a clean shoe break or tailored Summer Office construction."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:0706cc59d6cccb0e2018c17d2d73768af8afa55e","name":"Gray Straight Drawstring Trouser","decision":"reject-for-s154","decisionReason":"Although the leg is controlled, the fully gathered waist, oversized exposed drawcord, black D-ring and synthetic sheen turn it into a casual technical trouser. The cropped source also hides the shoe break."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:2ee1a0fbc1261c590f394c7d2529549fd8a033c9","name":"Navy Lightweight Relaxed-Straight Trouser","decision":"reject-for-s154","decisionReason":"The dark navy conflicts with the lighter Summer direction, while the broad leg pools over the sneakers and the small zip detail reads technical. It would repeat the baggy-bottom problem."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:04d7241016fbcf860f5b98ce77b100cd3efa1689","name":"Camel Relaxed-Straight Cotton Trouser","decision":"keep-available-for-other-scenario","decisionReason":"The camel color and easy cotton can serve Spring or Fall Casual, but the leg is long enough to stack at the chunky sneaker and the sweatshirt styling confirms a casual rather than airy Summer Office direction."},
+    {"group":"bottom","key":"B6","identity":"shopify_supplier:15d99fe892fb4b18875db9be577aaeb178bba0fd","name":"Khaki Casual Short","decision":"keep-available-for-other-scenario","decisionReason":"The light khaki texture may work for Resort, but the wrinkled product-only image gives no rise, thigh or hem proof and the long rolled knee-short proportion is too casual for this Office core."},
+    {"group":"bottom","key":"B7","identity":"shopify_supplier:0bbeb659ea8c838f7cdf606adeccf36a188247e0","name":"Light-Blue Toile Knee-Length Short","decision":"keep-available-for-other-scenario","decisionReason":"The blue botanical toile is cheerful and the straight knee-length shape is controlled, but the all-over print and casual sneaker styling belong to Resort, Vacation or a daytime Party rather than Office."},
+    {"group":"bottom","key":"B8","identity":"shopify_supplier:6f7feed8840f5ae61fdc2bdca72c77313949b833","name":"Sage Casual Short","decision":"reject-for-s154","decisionReason":"The sage is attractive, but the product-only image lacks worn fit proof and the integrated webbing belt, exposed zip pockets and diagonal technical seams make it an outdoor short rather than tailored Office Bermuda."}
+  ]
+}

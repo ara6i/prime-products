@@ -1,0 +1,61 @@
+{
+  "scope": "Six remaining S138/S139/S150/S190/S194 provisional men products checked at their full source resolution",
+  "outputSlug": "provisional-source-audit-summer-office-date-corrections",
+  "boardFilename": "six-summer-office-date-source-corrections.jpg",
+  "boardTitle": "Six Summer, Office and Date products · full-source audit",
+  "boardNote": "One Premium hold revoked · one dated shirt rejected from catalog · four retained with exact use or metadata corrections · no outfit approval or UI integration",
+  "minimumWidth": 1000,
+  "minimumHeight": 1333,
+  "localOnly": true,
+  "weddingExcluded": true,
+  "entries": [
+    {
+      "scenarioId": "S138",
+      "identity": "shopify_supplier:bad79698a4e175bef96b662a1116daad12f566b5",
+      "label": "Cream-Caramel Openwork Knit Shirt",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/8afd280e-2dc3-48d0-be4f-ac1519ec4081-Max.webp?v=1786120035",
+      "verdict": "pass-with-constraint",
+      "reason": "The full worn source shows a breathable regular body, controlled shoulder and upper-hip hem. Keep only for warm Casual Mid-Range with a discreet underlayer and one simple straight bottom; the large dark buttons and open knit exclude Premium use."
+    },
+    {
+      "scenarioId": "S139",
+      "identity": "shopify_supplier:8575f1ab5835288d4a116a8960cc6f1944d3f859",
+      "label": "Cool-Taupe Clean Bermuda Short",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/df0034f3a9704860863ed3bca78cf3ec-Max-Origin.webp?v=1786169016",
+      "verdict": "revoke-from-s139-premium",
+      "reason": "The flat front and controlled knee-grazing leg are useful, but the ordinary fabric, basic fly and small gold trim read clean Mid-Range rather than Premium. Remove the S139 hold and keep only as an unassigned lower-tier Summer option."
+    },
+    {
+      "scenarioId": "S150",
+      "identity": "shopify_supplier:e91eeff2e12728ba653563b1948d0728a0b051c1",
+      "label": "Pale-Aqua Pinstripe Button-Down",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/275c1762-7ad6-43f7-8e48-8bd6949bac28-Max-Origin.webp?v=1786214231",
+      "verdict": "pass-with-correction",
+      "reason": "The source proves a clean button-down collar, regular shoulder and controlled relaxed body with cheerful Spring color. Correct Green Stripe to pale aqua pinstripe and keep for S150 creative Office with a clean tuck or restrained untucked hem."
+    },
+    {
+      "scenarioId": "S150",
+      "identity": "shopify_supplier:36775b09ed8cf6af570dd58f177804a5200ce70c",
+      "label": "Light-Khaki Controlled-Taper Trouser",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/c4774f7cdf6d4a988b76b1f4f763f9e6-Max-Origin.webp?v=1786302042",
+      "verdict": "pass-with-correction",
+      "reason": "The full view is a clean regular thigh with a controlled taper and one precise shoe break, not the supplier's broad straight label and not skinny. Keep for S150 Office only with a regular top and low-profile loafer or derby."
+    },
+    {
+      "scenarioId": "S190",
+      "identity": "shopify_supplier:92620c73b673716da6ea84c981234cd035adf7d7",
+      "label": "Warm-White Roll-Tab Band-Collar Shirt",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/f3364e92-d84a-4c5c-8a4b-a456bf799c27-Max-Origin.webp?v=1786273895",
+      "verdict": "reject-from-catalog",
+      "reason": "The full source shows dropped shoulders, a long broad body, dated roll-tab sleeves and a conventional chest pocket. The warm-white color cannot rescue the generic silhouette; remove it from the accepted catalog and S190."
+    },
+    {
+      "scenarioId": "S194",
+      "identity": "shopify_supplier:2f30cccc9b77808ce60e8aef94ba5ed6271a4556",
+      "label": "Brown Distressed Faux-Leather Blouson",
+      "sourceImage": "https://cdn.shopify.com/s/files/1/0710/8231/1725/files/27896417-e278-4409-baf7-48484ce83cdc-Max-Origin.webp?v=1786245346",
+      "verdict": "pass-with-correction",
+      "reason": "The cropped hip line, clean collar and controlled boxy body are current enough for one Fall Date look. Correct faux suede/taupe to distressed faux leather/mottled brown and require coral, ivory and burgundy pieces so the outfit never becomes muddy or dark."
+    }
+  ]
+}

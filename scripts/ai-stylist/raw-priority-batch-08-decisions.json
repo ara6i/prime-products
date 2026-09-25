@@ -1,0 +1,122 @@
+{
+  "batch": "08",
+  "approvals": {
+    "4": {
+      "color": "Yellow",
+      "constraint": "Use the mustard-yellow controlled regular-fit button-down once only for Spring or Fall Casual Everyday, Travel, Date Night, or a relaxed Work / Office look. Pair with ecru, stone, medium gray, clean dark indigo, or olive straight bottoms; avoid distressed jeans and a second yellow garment."
+    },
+    "7": {
+      "color": "Apricot",
+      "constraint": "Use the apricot, cream, and soft-gray plaid overshirt once only for Fall or mild Winter Casual Everyday, Travel, or Date Night. Layer over a clean white or ecru top with straight dark-indigo, olive, charcoal, or stone bottoms and do not add another plaid piece."
+    },
+    "26": {
+      "color": "Gray",
+      "constraint": "Use the gray two-in-one training short once only for Spring or Summer Sports / Workout. Pair with a clean white, ecru, pale-blue, soft-green, or restrained technical top and simple low-profile training footwear."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 3],
+      "reason": "Product-only imagery does not prove adult-male shoulder, torso, sleeve, or hem behavior; small marks and dark marketplace presentation further weaken the shirts."
+    },
+    {
+      "cards": [5],
+      "reason": "The very deep open neckline, decorative waist straps and buttons, and narrow body make the shirt overdesigned and costume-like."
+    },
+    {
+      "cards": [6],
+      "reason": "Hanger-only imagery does not prove adult-male fit despite the useful light colors and linen-cotton claim."
+    },
+    {
+      "cards": [8, 9],
+      "reason": "Product-only or synthetic torso imagery shows narrow fitted proportions and does not provide trustworthy full-body fit proof."
+    },
+    {
+      "cards": [10],
+      "reason": "The mandarin-collar shirt pulls tightly across the chest and upper arms and repeats the skinny-shirt problem."
+    },
+    {
+      "cards": [11],
+      "reason": "The oversized snowflake and gradient prints are loud novelty treatments rather than versatile modern styling."
+    },
+    {
+      "cards": [12, 14],
+      "reason": "The awkward three-quarter sleeves, visible lower patch and pocket tab, and generic supplier styling weaken otherwise controlled silhouettes."
+    },
+    {
+      "cards": [13, 15, 16],
+      "reason": "Hanger-only imagery does not prove adult-male shoulder, torso, sleeve, or hem behavior."
+    },
+    {
+      "cards": [17],
+      "reason": "The large SQUATWOLF leg text makes the active short visibly brand-led and unsuitable for a clean reusable wardrobe."
+    },
+    {
+      "cards": [18, 19, 20],
+      "reason": "Product-only shorts do not prove rise, seat, thigh volume, or length on an adult male."
+    },
+    {
+      "cards": [21],
+      "reason": "The bodybuilding presentation, long loose cut, and large yellow leg graphic are too specialized and logo-led."
+    },
+    {
+      "cards": [22, 23, 24],
+      "reason": "Below-knee or knee-length loose proportions recreate the baggy-long-short problem."
+    },
+    {
+      "cards": [25],
+      "reason": "The product-only nylon short has no fit proof and its retro high-contrast chevron panels read dated rather than clean and modern."
+    },
+    {
+      "cards": [27, 28],
+      "reason": "The long, wide washed-denim shorts have excessive volume, extended drawstrings, and a dated below-knee streetwear proportion."
+    },
+    {
+      "cards": [29],
+      "reason": "The shiny, narrow business-casual zip jacket is dark, dated, and fitted through the body and sleeves."
+    },
+    {
+      "cards": [30],
+      "reason": "The product-only faux-suede bomber has no adult fit proof and a generic synthetic supplier finish."
+    },
+    {
+      "cards": [31, 33],
+      "reason": "The tight glossy long coats, high collars, monochrome leather styling, and theatrical proportions are incompatible with the modern wearable brief."
+    },
+    {
+      "cards": [32],
+      "reason": "The heavily recolored field-jacket imagery looks synthetic, the waist and sleeves are narrowly shaped, and the dressed-up presentation does not provide trustworthy casual fit proof."
+    },
+    {
+      "cards": [34, 35],
+      "reason": "Product-only faux-leather jackets do not prove adult fit and rely on tight, glossy, generic biker styling."
+    },
+    {
+      "cards": [36],
+      "reason": "The narrow synthetic trucker-jacket body and sleeves repeat the fitted marketplace look rather than a balanced modern overshirt silhouette."
+    },
+    {
+      "cards": [37],
+      "reason": "The very long sleeves, dropped volume, long hem, and dangling zip details create uncontrolled oversized proportions."
+    },
+    {
+      "cards": [38],
+      "reason": "Product-only imagery does not prove adult fit and the contrast-collar jacket remains a generic dark supplier layer."
+    },
+    {
+      "cards": [39],
+      "reason": "The sleeve badge, orange inner trim, dark technical fleece, and product-only presentation make the jacket logo-led and generic."
+    },
+    {
+      "cards": [40],
+      "reason": "The product-only sherpa-lined jacket provides no adult fit proof and adds another bulky generic winter layer."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 187 recorded color images rendered; 227 displayed images loaded with zero broken files.",
+    "3 accepted with one exact color and variant selected: two tops and one bottom identity.",
+    "37 rejected.",
+    "Accepted colors are mustard yellow, apricot plaid, and gray.",
+    "Rejections include missing fit proof, skinny shirts, novelty graphics, long or baggy shorts, visible branding, theatrical coats, synthetic recolors, and generic dark outerwear."
+  ]
+}

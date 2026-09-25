@@ -38,84 +38,170 @@ function ReportsTable({
   onView: (item: BugReportItem) => void;
   onPreviewImage: (item: BugReportItem) => void;
 }) {
-  const showPreviewColumn = items.some((item) => item.source === "visual-qa" && item.previewUrl);
+  const showPreviewColumn = items.some(
+    (item) => item.source === "visual-qa" && item.previewUrl,
+  );
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[980px] text-left text-sm">
-        <thead className="border-b border-customer-border bg-customer-soft text-xs font-semibold uppercase tracking-[0.1em] text-customer-muted">
-          <tr>
-            <th className="px-4 py-3">Severity</th>
-            {showPreviewColumn ? <th className="px-4 py-3">Generated image</th> : null}
-            <th className="px-4 py-3">Issue</th>
-            <th className="px-4 py-3">Store</th>
-            <th className="px-4 py-3">Platform</th>
-            <th className="px-4 py-3">Date / time</th>
-            <th className="px-4 py-3 text-right">Action</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-customer-border">
-          {items.map((item) => (
-            <tr key={item.id} className="align-top">
-              <td className="px-4 py-4">
-                <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${item.severityTone}`}>
+    <>
+      <div className="hidden overflow-x-auto lg:block">
+        <table className="w-full min-w-[980px] text-left text-sm">
+          <thead className="border-b border-customer-border bg-customer-soft text-xs font-semibold uppercase tracking-[0.1em] text-customer-muted">
+            <tr>
+              <th className="px-4 py-3">Severity</th>
+              {showPreviewColumn ? (
+                <th className="px-4 py-3">Generated image</th>
+              ) : null}
+              <th className="px-4 py-3">Issue</th>
+              <th className="px-4 py-3">Store</th>
+              <th className="px-4 py-3">Platform</th>
+              <th className="px-4 py-3">Date / time</th>
+              <th className="px-4 py-3 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-customer-border">
+            {items.map((item) => (
+              <tr key={item.id} className="align-top">
+                <td className="px-4 py-4">
+                  <span
+                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${item.severityTone}`}
+                  >
+                    {item.severityLabel}
+                  </span>
+                </td>
+                {showPreviewColumn ? (
+                  <td className="px-4 py-4">
+                    {item.source === "visual-qa" && item.previewUrl ? (
+                      <button
+                        type="button"
+                        onClick={() => onPreviewImage(item)}
+                        className="group relative block overflow-hidden rounded-xl border border-customer-border bg-slate-950"
+                        aria-label={`Open generated image full screen for ${item.title}`}
+                      >
+                        <Image
+                          src={item.previewUrl}
+                          alt="Generated try-on issue preview"
+                          width={64}
+                          height={80}
+                          className="h-20 w-16 object-contain"
+                          loading="lazy"
+                          unoptimized
+                        />
+                        <span className="absolute inset-0 flex items-center justify-center bg-slate-950/0 text-white opacity-0 transition group-hover:bg-slate-950/45 group-hover:opacity-100">
+                          <Maximize2 className="h-4 w-4" />
+                        </span>
+                      </button>
+                    ) : (
+                      <span className="text-xs text-customer-muted">
+                        No image
+                      </span>
+                    )}
+                  </td>
+                ) : null}
+                <td className="max-w-[280px] px-4 py-4">
+                  <p className="font-semibold text-text-primary">
+                    {item.title}
+                  </p>
+                  <p className="mt-1 line-clamp-2 text-xs text-text-body">
+                    {item.summary}
+                  </p>
+                </td>
+                <td className="max-w-[220px] px-4 py-4">
+                  <p className="font-semibold text-text-primary">
+                    {item.storeLabel}
+                  </p>
+                </td>
+                <td className="px-4 py-4 text-xs text-text-body">
+                  <span className="inline-flex rounded-full bg-customer-soft px-2.5 py-1 font-semibold text-brand-blue">
+                    {item.platformLabel}
+                  </span>
+                </td>
+                <td className="px-4 py-4 text-xs text-customer-muted">
+                  {item.dateLabel}
+                </td>
+                <td className="px-4 py-4 text-right">
+                  <button
+                    type="button"
+                    onClick={() => onView(item)}
+                    className="inline-flex rounded-lg border border-customer-border px-3 py-2 text-xs font-semibold text-brand-blue hover:border-brand-blue/50"
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="divide-y divide-customer-border lg:hidden">
+        {items.map((item) => (
+          <article key={item.id} className="p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <span
+                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${item.severityTone}`}
+                >
                   {item.severityLabel}
                 </span>
-              </td>
-              {showPreviewColumn ? (
-                <td className="px-4 py-4">
-                  {item.source === "visual-qa" && item.previewUrl ? (
-                    <button
-                      type="button"
-                      onClick={() => onPreviewImage(item)}
-                      className="group relative block overflow-hidden rounded-xl border border-customer-border bg-slate-950"
-                      aria-label={`Open generated image full screen for ${item.title}`}
-                    >
-                      <Image
-                        src={item.previewUrl}
-                        alt="Generated try-on issue preview"
-                        width={64}
-                        height={80}
-                        className="h-20 w-16 object-contain"
-                        loading="lazy"
-                        unoptimized
-                      />
-                      <span className="absolute inset-0 flex items-center justify-center bg-slate-950/0 text-white opacity-0 transition group-hover:bg-slate-950/45 group-hover:opacity-100">
-                        <Maximize2 className="h-4 w-4" />
-                      </span>
-                    </button>
-                  ) : (
-                    <span className="text-xs text-customer-muted">No image</span>
-                  )}
-                </td>
+                <h3 className="mt-3 break-words text-base font-semibold text-text-primary">
+                  {item.title}
+                </h3>
+              </div>
+              {item.source === "visual-qa" && item.previewUrl ? (
+                <button
+                  type="button"
+                  onClick={() => onPreviewImage(item)}
+                  className="relative min-h-11 min-w-11 shrink-0 overflow-hidden rounded-xl border border-customer-border bg-slate-950"
+                  aria-label={`Open generated image full screen for ${item.title}`}
+                >
+                  <Image
+                    src={item.previewUrl}
+                    alt="Generated try-on issue preview"
+                    width={52}
+                    height={64}
+                    className="h-16 w-[52px] object-contain"
+                    loading="lazy"
+                    unoptimized
+                  />
+                </button>
               ) : null}
-              <td className="max-w-[280px] px-4 py-4">
-                <p className="font-semibold text-text-primary">{item.title}</p>
-                <p className="mt-1 line-clamp-2 text-xs text-text-body">{item.summary}</p>
-              </td>
-              <td className="max-w-[220px] px-4 py-4">
-                <p className="font-semibold text-text-primary">{item.storeLabel}</p>
-              </td>
-              <td className="px-4 py-4 text-xs text-text-body">
-                <span className="inline-flex rounded-full bg-customer-soft px-2.5 py-1 font-semibold text-brand-blue">
+            </div>
+
+            <p className="mt-3 break-words text-sm leading-6 text-text-body">
+              {item.summary}
+            </p>
+
+            <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-customer-border pt-4 text-sm">
+              <div>
+                <dt className="text-xs text-customer-muted">Store</dt>
+                <dd className="mt-1 break-words font-semibold text-text-primary">
+                  {item.storeLabel}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-customer-muted">Platform</dt>
+                <dd className="mt-1 font-semibold text-brand-blue">
                   {item.platformLabel}
-                </span>
-              </td>
-              <td className="px-4 py-4 text-xs text-customer-muted">{item.dateLabel}</td>
-              <td className="px-4 py-4 text-right">
+                </dd>
+              </div>
+              <div className="col-span-2 flex items-center justify-between gap-3">
+                <div>
+                  <dt className="text-xs text-customer-muted">Date / time</dt>
+                  <dd className="mt-1 text-customer-muted">{item.dateLabel}</dd>
+                </div>
                 <button
                   type="button"
                   onClick={() => onView(item)}
-                  className="inline-flex rounded-lg border border-customer-border px-3 py-2 text-xs font-semibold text-brand-blue hover:border-brand-blue/50"
+                  className="inline-flex min-h-11 shrink-0 items-center rounded-xl border border-customer-border px-4 text-sm font-semibold text-brand-blue"
                 >
-                  View
+                  View details
                 </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+              </div>
+            </dl>
+          </article>
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -143,7 +229,9 @@ function FullScreenImageDialog({
                 {item?.title ?? "Generated try-on image"}
               </DialogTitle>
               <DialogDescription className="mt-1 truncate text-sm text-slate-300">
-                {item ? `${item.storeLabel} · ${item.dateLabel}` : "Full-screen admin image preview"}
+                {item
+                  ? `${item.storeLabel} · ${item.dateLabel}`
+                  : "Full-screen admin image preview"}
               </DialogDescription>
             </div>
             <DialogClose asChild>
@@ -204,23 +292,39 @@ function DetailDialog({
       <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[var(--radius-customer-card)] border border-customer-border bg-customer-card shadow-xl">
         <div className="flex items-start justify-between gap-4 border-b border-customer-border p-5">
           <div>
-            <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${item.severityTone}`}>
+            <span
+              className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${item.severityTone}`}
+            >
               {item.severityLabel}
             </span>
-            <h3 className="mt-3 text-lg font-semibold text-text-primary">{item.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-text-body">{item.summary}</p>
+            <h3 className="mt-3 text-lg font-semibold text-text-primary">
+              {item.title}
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-text-body">
+              {item.summary}
+            </p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg border border-customer-border px-3 py-2 text-sm font-semibold text-text-body">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg border border-customer-border px-3 py-2 text-sm font-semibold text-text-body"
+          >
             Close
           </button>
         </div>
 
-        <div className={`grid gap-4 p-5 ${isVisualQaIssue ? "lg:grid-cols-[minmax(0,1fr)_300px]" : ""}`}>
+        <div
+          className={`grid gap-4 p-5 ${isVisualQaIssue ? "lg:grid-cols-[minmax(0,1fr)_300px]" : ""}`}
+        >
           <dl className="grid gap-3 sm:grid-cols-2">
             {details.map(([label, value]) => (
               <div key={label} className="rounded-lg bg-customer-soft p-3">
-                <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-customer-muted">{label}</dt>
-                <dd className="mt-1 break-words text-sm text-text-primary">{value || "None"}</dd>
+                <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-customer-muted">
+                  {label}
+                </dt>
+                <dd className="mt-1 break-words text-sm text-text-primary">
+                  {value || "None"}
+                </dd>
               </div>
             ))}
           </dl>
@@ -263,21 +367,36 @@ function DetailDialog({
   );
 }
 
-export function BugReportsPage({ view, sentryProjectUrl }: BugReportsPageProps) {
+export function BugReportsPage({
+  view,
+  sentryProjectUrl,
+}: BugReportsPageProps) {
   const [activeTab, setActiveTab] = useState<BugTab>("tryon");
   const [selectedItem, setSelectedItem] = useState<BugReportItem | null>(null);
-  const [fullScreenItem, setFullScreenItem] = useState<BugReportItem | null>(null);
+  const [fullScreenItem, setFullScreenItem] = useState<BugReportItem | null>(
+    null,
+  );
 
-  const tryOnItems = useMemo(() => view.items.filter((item) => item.isVisualTryOnIssue), [view.items]);
-  const runtimeItems = useMemo(() => view.items.filter((item) => !item.isVisualTryOnIssue), [view.items]);
+  const tryOnItems = useMemo(
+    () => view.items.filter((item) => item.isVisualTryOnIssue),
+    [view.items],
+  );
+  const runtimeItems = useMemo(
+    () => view.items.filter((item) => !item.isVisualTryOnIssue),
+    [view.items],
+  );
   const activeItems = activeTab === "tryon" ? tryOnItems : runtimeItems;
 
   return (
     <section className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-blue">Monitoring</p>
-          <h2 className="mt-2 text-3xl font-semibold leading-tight text-text-primary lg:text-4xl">Bug Reports</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-blue">
+            Monitoring
+          </p>
+          <h2 className="mt-2 text-3xl font-semibold leading-tight text-text-primary lg:text-4xl">
+            Bug Reports
+          </h2>
         </div>
         {sentryProjectUrl ? (
           <a
@@ -292,10 +411,12 @@ export function BugReportsPage({ view, sentryProjectUrl }: BugReportsPageProps) 
       </div>
 
       <div className="inline-flex rounded-lg border border-customer-border bg-customer-card p-1">
-        {([
-          ["tryon", "Try-on issues", tryOnItems.length],
-          ["runtime", "Bug reports", runtimeItems.length],
-        ] as const).map(([id, label, count]) => (
+        {(
+          [
+            ["tryon", "Try-on issues", tryOnItems.length],
+            ["runtime", "Bug reports", runtimeItems.length],
+          ] as const
+        ).map(([id, label, count]) => (
           <button
             key={id}
             type="button"
@@ -314,7 +435,9 @@ export function BugReportsPage({ view, sentryProjectUrl }: BugReportsPageProps) 
             onView={setSelectedItem}
             onPreviewImage={setFullScreenItem}
           />
-        ) : <EmptyState activeTab={activeTab} />}
+        ) : (
+          <EmptyState activeTab={activeTab} />
+        )}
       </section>
 
       {selectedItem ? (

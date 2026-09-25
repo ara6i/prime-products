@@ -1,0 +1,42 @@
+{
+  "outputDir": "summer-formal-premium-pilot-s171",
+  "scenarioId": "S171",
+  "occasion": "Formal Evening",
+  "season": "Summer",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-watch-and-suit",
+  "comparisonTitle": "S171 · Summer Formal Evening · Premium local screen",
+  "comparisonSubtitle": "The 14 unique unreserved Summer Formal candidates re-evaluated for Premium fiber, breathability and drape",
+  "comparisonNote": "Require expressive Summer color, refined breathable cloth, natural-shoulder tailoring and exact controlled proportion · no product-only fit guesses, lounge waists, puddled hems or Resort shackets · not UI integrated",
+  "coreTitle": "S171 · provisional Summer Formal Evening Premium core",
+  "coreSubtitle": "No local garment reaches the Summer Premium Formal Evening visual bar · all roles unresolved",
+  "coreNote": "Zero provisional holds after immediate full-resolution Premium re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "watch", "suit"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men pale pistachio silk cotton fine knit short sleeve polo premium summer formal evening","targetProduct":"pale-pistachio silk-cotton fine-knit short-sleeve polo with a clean open collar","customerRetailTarget":"$170-$230"},
+    {"category":"bottom","searchPhrase":"men ivory linen wool double pleat controlled straight trouser premium summer formal evening","targetProduct":"ivory linen-wool high-rise double-pleat trouser with precise controlled-straight drape","customerRetailTarget":"$220-$300"},
+    {"category":"outerwear","searchPhrase":"men smoky aqua linen wool unstructured blazer natural shoulder premium summer formal evening","targetProduct":"smoky-aqua linen-wool unstructured blazer with natural shoulders and breathable half lining","customerRetailTarget":"$280-$380"},
+    {"category":"shoe","searchPhrase":"men oxblood woven calf leather handmade penny loafer premium summer formal evening","targetProduct":"oxblood woven-calf handmade low-profile round-toe penny loafer","customerRetailTarget":"$220-$300"},
+    {"category":"watch","searchPhrase":"men champagne dial tan leather thin gold case premium dress watch summer","targetProduct":"champagne-dial thin gold-case Premium dress watch with fine tan leather strap","customerRetailTarget":"$120-$180"},
+    {"category":"suit","searchPhrase":"men smoky aqua linen wool two piece suit premium summer formal evening straight trousers","targetProduct":"smoky-aqua linen-wool two-piece suit with natural shoulders and controlled straight trousers","customerRetailTarget":"$600-$800"}
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:4364e9fb40a107fbdd3db7c2b04eb9ebef44b1e2","name":"Khaki Short-Sleeve Mock-Neck Knit","decision":"reject-for-s171","decisionReason":"The product-only cutout supplies no worn fit or Premium fiber proof, while the washed khaki tone lacks the desired Summer energy."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:f7e9aaeca612a242f9dc832cf56866df4010398c","name":"Green Short-Sleeve Mock-Neck Knit","decision":"reject-for-s171","decisionReason":"The saturated green is useful, but the isolated basic tee form proves neither Premium yarn nor refined on-body proportion."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:9cc79e1077cee3d17f7915da83507df07302d073","name":"White Short-Sleeve Button-Up","decision":"reject-for-s171","decisionReason":"The crumpled hanger overshirt, tee dependency, rolled sleeves and long rounded hem show Casual construction rather than Premium evening shirting."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:c088c69f9f54b34e8066d0bfb29314b31c32c1f0","name":"Light-Blue Ribbed Short-Sleeve Knit","decision":"reject-for-s171","decisionReason":"The cropped narrow form, bunching, hem badge and absence of full worn proof prevent a Premium fit or yarn approval."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:2950c7b291a65a0052cf1680b5ad6cc594a5c5f9","name":"Lake-Blue Long-Sleeve Shirt","decision":"reject-for-s171","decisionReason":"Hanger-only tee layering, rolled cuffs, novelty embroidery and a long overshirt body lack Premium Formal precision."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:f49451cbcc0ad90a1ca810a75aa551f0a6e26970","name":"Pale-Brown Relaxed Summer Shirt","decision":"reject-for-s171","decisionReason":"The open-over-tee presentation, dropped shoulders, long body and backpack styling are Casual overshirt signals, not Premium Formal."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:0ea516ce4334a3e1b7d95485d902e489baa6c0c3","name":"Light-Blue Straight Drawstring Trouser","decision":"reject-for-s171","decisionReason":"Elastic drawstring waist, patch pockets, crumpled cloth, rolled hems and barefoot beach styling are lounge construction."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:3095c87326ee7556a98852b611d3737df02b04a4","name":"Flax-Coffee Lightweight Trouser","decision":"reject-for-s171","decisionReason":"The gathered waist, black athletic drawcord and puddled sneaker hem fail Premium tailoring and exact-drape requirements."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:d3c89988d1f15bb65bf4a21fb3bfcceac90b4625","name":"Light-Tan Straight Drawstring Trouser","decision":"reject-for-s171","decisionReason":"An exposed rope drawstring, broad lounge leg and pooling hem cannot be promoted to Premium Formal because the color is pale."},
+    {"group":"bottom","key":"B4","identity":"shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320","name":"Light-Gray Relaxed Trouser","decision":"reject-for-s171","decisionReason":"The product crop hides rise, seat, full drape and break; technical knee seams and smooth cloth do not establish Premium tailoring."},
+    {"group":"bottom","key":"B5","identity":"shopify_supplier:0706cc59d6cccb0e2018c17d2d73768af8afa55e","name":"Gray Straight Drawstring Trouser","decision":"reject-for-s171","decisionReason":"Gathered elastic, rope drawcord, D-ring and soft synthetic construction are lounge details incompatible with Premium Formal."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:5ab0310ae9053fa971557c673b0ef3ddd136b573","name":"White Lightweight Button-Up Blazer","decision":"reject-for-s171","decisionReason":"Washed translucent cloth, bunched sleeves, T-shirt styling and generic patch pockets fail Premium blazer construction and finish."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:f23bed156981c3eefb1fe37ab832a7e947f07775","name":"Sky-Blue Lightweight Shacket","decision":"reject-for-s171","decisionReason":"The sky blue is attractive, but the rumpled rolled-cuff open shacket and jeans styling remain Resort-level rather than Premium Formal tailoring."}
+  ]
+}

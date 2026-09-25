@@ -1,0 +1,66 @@
+{
+  "batch": "30",
+  "approvals": {
+    "14": {
+      "color": "Green",
+      "constraint": "Use this muted-olive clean sleeveless top once only for Spring/Summer Casual Everyday, Travel, Resort, Festival or a restrained daytime Party look. Keep the outfit modern with one controlled straight or tailored bottom in ecru, stone, tobacco, washed blue or soft black and a low-profile cream, tan or white shoe; never combine it with a puddled wide leg, another oversized layer, a bulky sneaker or an all-dark palette."
+    },
+    "16": {
+      "color": "Coffee Brown",
+      "constraint": "Use this coffee-brown regular-relaxed heavyweight-look T-shirt once only for Spring/Summer Casual Everyday, Date Night, Travel, Weekend or a restrained Party look. Balance its dropped shoulder with a clean straight, tapered or tailored bottom in ecru, stone, sage, light blue or charcoal and a cream, tan or white low-profile shoe; never add a baggy or puddled bottom, another oversized layer, a chunky trainer or a head-to-toe dark palette."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 6, 10],
+      "reason": "These long-sleeve henley and performance tops are overlong, narrow, chest-emphasizing or sleeve-heavy and recreate the rejected skinny-top direction."
+    },
+    {
+      "cards": [2, 7, 8, 12, 15],
+      "reason": "These tops rely on visible logos, outlined graphics, pseudo-brand styling or dark novelty decoration instead of a clean modern garment."
+    },
+    {
+      "cards": [3, 4, 13],
+      "reason": "These hanger-only or product-only tops do not prove credible adult shoulder, torso, sleeve, hem and movement proportions."
+    },
+    {
+      "cards": [5],
+      "reason": "The Chinese-style button shirt reads costume-like and dated rather than versatile modern menswear."
+    },
+    {
+      "cards": [9],
+      "reason": "The smooth synthetic-looking fitted tee is visually generic, torso-emphasizing and weaker than the accepted regular-relaxed T-shirt options."
+    },
+    {
+      "cards": [11],
+      "reason": "The long active tank has oversized arm openings, repeated performance styling and a weaker everyday silhouette than the cleaner sleeveless top accepted in this batch."
+    },
+    {
+      "cards": [17, 18, 19, 20, 21, 22, 23, 24, 25, 28],
+      "reason": "These pleated trousers are extremely wide, ballooned or puddled over the shoe and directly violate the controlled straight or tailored silhouette requirement."
+    },
+    {
+      "cards": [26],
+      "reason": "The below-knee cargo short is oversized, pocket-heavy and styled as bulky streetwear rather than a clean modern summer bottom."
+    },
+    {
+      "cards": [27],
+      "reason": "The plaid polo-and-shorts set is a weak product-only composite with long shorts and dated matched-set detailing."
+    },
+    {
+      "cards": [29, 30, 36, 37, 39],
+      "reason": "These faux-leather motorcycle jackets are shiny, tight, heavily detailed, logo-led or dated and do not meet the premium modern outerwear gate."
+    },
+    {
+      "cards": [31, 32, 33, 34, 35, 38, 40],
+      "reason": "These puffers are repetitive, bulky, product-only, contrast-trimmed or generic dark technical layers without a distinctive modern role."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 155 recorded color images rendered; 155 displayed images loaded with zero broken files.",
+    "2 accepted with one exact color and variant selected each: a muted-olive clean sleeveless top and a coffee-brown regular-relaxed T-shirt.",
+    "38 rejected after the base pass and close inspection of 20 promising color variants across five identities; every bottom and outerwear product failed.",
+    "Every selected identity, source product, variant and image has zero collision with every prior accepted or conditional item.",
+    "Rejections include skinny or logo-led tops, insufficient fit proof, ultra-wide puddled trousers, oversized cargo shorts, dated faux leather and repetitive puffers."
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "outputDir": "summer-formal-budget-pilot-s169",
+  "scenarioId": "S169",
+  "occasion": "Formal Evening",
+  "season": "Summer",
+  "budget": "Budget-Friendly",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-screen-complete-existing-pool-rejected-all-core-roles-missing",
+  "comparisonTitle": "S169 · Summer Formal Evening · existing separates screen",
+  "comparisonSubtitle": "Eight light or colorful warm-weather tops · six full-length trouser options · all unique and available",
+  "comparisonNote": "Require breathable polish, controlled tailoring and confident color without wedding styling, skinny tops or baggy bottoms · not UI integrated",
+  "coreTitle": "S169 · provisional Summer Formal separates core",
+  "coreSubtitle": "no existing top or bottom passed the Summer Formal brief",
+  "coreNote": "Every source image reviewed at original resolution · five exact replacement roles queued · no uniqueness hold · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "watch", "suit"],
+  "queuedRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men pale pistachio fine knit polo short sleeve regular fit",
+      "targetProduct": "pale-pistachio fine-knit short-sleeve polo"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men ivory linen blend double pleat trousers straight leg regular fit",
+      "targetProduct": "ivory linen-blend double-pleat straight trouser"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men oxblood woven leather penny loafers round toe slim sole",
+      "targetProduct": "oxblood woven-leather round-toe penny loafer"
+    },
+    {
+      "category": "watch",
+      "searchPhrase": "men minimal watch champagne dial tan leather thin gold case",
+      "targetProduct": "champagne-dial tan-leather minimal watch"
+    },
+    {
+      "category": "suit",
+      "searchPhrase": "men smoky aqua linen blend unstructured suit regular fit straight trousers",
+      "targetProduct": "smoky-aqua linen-blend unstructured suit"
+    }
+  ],
+  "candidates": [
+    {
+      "group": "top",
+      "key": "T1",
+      "identity": "shopify_supplier:4364e9fb40a107fbdd3db7c2b04eb9ebef44b1e2",
+      "name": "Khaki Short-Sleeve Mock-Neck Knit",
+      "decision": "reject-for-s169",
+      "decisionReason": "The khaki knit has useful texture, but the product-only image provides no on-body shoulder, chest, length or drape proof and the washed beige color adds little Summer energy."
+    },
+    {
+      "group": "top",
+      "key": "T2",
+      "identity": "shopify_supplier:f7e9aaeca612a242f9dc832cf56866df4010398c",
+      "name": "Green Short-Sleeve Mock-Neck Knit",
+      "decision": "reject-for-s169",
+      "decisionReason": "The saturated green is welcome, but the isolated product render gives no credible body proof and its mock-neck tee construction reads basic rather than Formal Evening."
+    },
+    {
+      "group": "top",
+      "key": "T3",
+      "identity": "shopify_supplier:9cc79e1077cee3d17f7915da83507df07302d073",
+      "name": "White Short-Sleeve Button-Up",
+      "decision": "reject-for-s169",
+      "decisionReason": "The hanger image shows a crumpled casual band-collar overshirt layered over a crew tee, with rolled sleeves and a long rounded hem; it does not prove polished Formal shirting."
+    },
+    {
+      "group": "top",
+      "key": "T4",
+      "identity": "shopify_supplier:c088c69f9f54b34e8066d0bfb29314b31c32c1f0",
+      "name": "Light-Blue Ribbed Short-Sleeve Knit",
+      "decision": "reject-for-s169",
+      "decisionReason": "The light blue and vertical rib are promising, but the cropped product view shows a narrow torso, visible bunching and a small hem badge while omitting full on-body proportion proof."
+    },
+    {
+      "group": "top",
+      "key": "T5",
+      "identity": "shopify_supplier:2950c7b291a65a0052cf1680b5ad6cc594a5c5f9",
+      "name": "Lake-Blue Long-Sleeve Shirt",
+      "decision": "reject-for-s169",
+      "decisionReason": "The hanger-only lake-blue shirt includes a novelty embroidered figure, white tee dependency, rolled cuffs and long overshirt styling; it reads casual and unproven rather than Formal."
+    },
+    {
+      "group": "top",
+      "key": "T6",
+      "identity": "shopify_supplier:e91eeff2e12728ba653563b1948d0728a0b051c1",
+      "name": "Soft-Green Stripe Shirt",
+      "decision": "reject-for-s169",
+      "decisionReason": "The soft green micro-stripe has credible regular ease, but the button-down collar, long untucked hem and lightweight daytime styling remain relaxed Office/Casual rather than Formal Evening."
+    },
+    {
+      "group": "top",
+      "key": "T8",
+      "identity": "shopify_supplier:f49451cbcc0ad90a1ca810a75aa551f0a6e26970",
+      "name": "Pale-Brown Relaxed Summer Shirt",
+      "decision": "reject-for-s169",
+      "decisionReason": "The pale-brown shirt is worn open over a tee with a dropped shoulder, long body and visible backpack hardware, so it functions as a casual overshirt rather than evening shirting."
+    },
+    {
+      "group": "bottom",
+      "key": "B1",
+      "identity": "shopify_supplier:36775b09ed8cf6af570dd58f177804a5200ce70c",
+      "name": "Khaki Regular Straight Trouser",
+      "decision": "reject-for-s169",
+      "decisionReason": "The khaki trouser is clean but low-rise, narrow and conventionally office-like; it lacks the pleat, breathable texture and modern straight ease required for Summer Formal."
+    },
+    {
+      "group": "bottom",
+      "key": "B2",
+      "identity": "shopify_supplier:0ea516ce4334a3e1b7d95485d902e489baa6c0c3",
+      "name": "Light-Blue Straight Drawstring Trouser",
+      "decision": "reject-for-s169",
+      "decisionReason": "The light-blue pant exposes an elastic drawstring waist, patch pockets, crumpled fabric, rolled hems and barefoot styling; it is clearly lounge or beach wear."
+    },
+    {
+      "group": "bottom",
+      "key": "B3",
+      "identity": "shopify_supplier:3095c87326ee7556a98852b611d3737df02b04a4",
+      "name": "Flax-Coffee Lightweight Trouser",
+      "decision": "reject-for-s169",
+      "decisionReason": "The flax-coffee trouser has a gathered waist, prominent black athletic drawcord and a long puddled hem over sneakers, making it casual and poorly proportioned for Formal Evening."
+    },
+    {
+      "group": "bottom",
+      "key": "B4",
+      "identity": "shopify_supplier:d3c89988d1f15bb65bf4a21fb3bfcceac90b4625",
+      "name": "Light-Tan Straight Drawstring Trouser",
+      "decision": "reject-for-s169",
+      "decisionReason": "The light-tan trouser has an exposed rope drawstring, broad lounge leg and fabric pooling over the shoes; the pale color cannot convert it into formal tailoring."
+    },
+    {
+      "group": "bottom",
+      "key": "B5",
+      "identity": "shopify_supplier:de0c7dfa10b7272a8c0cadea123eaaac8aff7320",
+      "name": "Light-Gray Relaxed Trouser",
+      "decision": "reject-for-s169",
+      "decisionReason": "The isolated light-gray image omits rise, seat, full length and worn drape while the fabric looks smooth and technical; there is not enough proof for a Formal approval."
+    },
+    {
+      "group": "bottom",
+      "key": "B6",
+      "identity": "shopify_supplier:0706cc59d6cccb0e2018c17d2d73768af8afa55e",
+      "name": "Gray Straight Drawstring Trouser",
+      "decision": "reject-for-s169",
+      "decisionReason": "The gray trouser has a gathered elastic waist, visible drawstring, D-ring hardware and soft lounge construction, which directly conflicts with the requested tailored evening silhouette."
+    }
+  ]
+}

@@ -50,4 +50,62 @@ describe("submitPartnerInterest", () => {
       creatorProfiles.map((profile) => profile.platform),
     );
   });
+
+  it("submits the supplier profile and connection goals", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await submitPartnerInterest({
+      audience: "supplier",
+      name: "Alex Morgan",
+      email: "alex@example.com",
+      companyName: "Northstar Supply",
+      website: "https://example.com",
+      productCategory: "apparel",
+      catalogSize: "100-500",
+      sellingModel: "flexible",
+      shippingReach: "global",
+      connectionGoals: ["merchant-connections", "influencer-partnerships"],
+      notes: "Interested in long-term partnerships.",
+    });
+
+    expect(result.ok).toBe(true);
+    expect(fetchMock).toHaveBeenCalledOnce();
+
+    const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const body = JSON.parse(String(request.body));
+
+    expect(body).toMatchObject({
+      product: "supplier",
+      company: "Northstar Supply",
+      productCategory: "apparel",
+      catalogSize: "100-500",
+      sellingModel: "flexible",
+      shippingReach: "global",
+      connectionGoals: ["merchant-connections", "influencer-partnerships"],
+    });
+  });
+
+  it("does not submit an incomplete supplier profile", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await submitPartnerInterest({
+      audience: "supplier",
+      name: "Alex Morgan",
+      email: "alex@example.com",
+      companyName: "Northstar Supply",
+    });
+
+    expect(result).toEqual({
+      ok: false,
+      message: "Complete the supplier profile questions before joining.",
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });

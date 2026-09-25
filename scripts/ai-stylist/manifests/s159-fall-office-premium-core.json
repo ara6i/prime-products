@@ -1,0 +1,78 @@
+{
+  "outputDir": "fall-office-premium-pilot-s159",
+  "scenarioId": "S159",
+  "occasion": "Work / Office",
+  "season": "Fall",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-top-bottom-outerwear-shoe-bag-accessory",
+  "comparisonTitle": "S159 · Fall Work / Office · Premium local screen",
+  "comparisonSubtitle": "Eight Fall shirts and knits · three remaining trousers · eight possible layers · all unique and unreserved",
+  "comparisonNote": "Require Premium material credibility, precise drape, controlled ease and a light warm color plan · no skinny knit, puddled leg, lounge waist, utility clutter or muddy all-dark styling · not UI integrated",
+  "coreTitle": "S159 · provisional Fall Work / Office Premium core",
+  "coreSubtitle": "No local garment reaches the Fall Premium Office visual bar · all six roles unresolved",
+  "coreNote": "Zero provisional holds after all 19 originals were checked at full resolution · Premium customer-retail proof and all companion roles remain unresolved · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag", "accessory"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {
+      "category": "top",
+      "searchPhrase": "men dusty coral teal merino fine gauge knit polo henley fall premium office relaxed",
+      "targetProduct": "dusty-coral or muted-teal merino fine-gauge knit polo or clean henley with controlled ease",
+      "customerRetailTarget": "$170-$220"
+    },
+    {
+      "category": "bottom",
+      "searchPhrase": "men warm ivory wool blend double pleat controlled straight trouser fall premium office",
+      "targetProduct": "warm-ivory wool-blend double-pleat trouser with a controlled straight leg and precise break",
+      "customerRetailTarget": "$200-$280"
+    },
+    {
+      "category": "outerwear",
+      "searchPhrase": "men light sage dusty blue wool blend unstructured blazer short blouson fall premium office",
+      "targetProduct": "light-sage or dusty-blue wool-blend unstructured blazer or compact clean blouson",
+      "customerRetailTarget": "$220-$300"
+    },
+    {
+      "category": "shoe",
+      "searchPhrase": "men burgundy suede handmade low profile penny loafer fall premium office",
+      "targetProduct": "burgundy-suede handmade low-profile round-toe penny loafer",
+      "customerRetailTarget": "$220-$280"
+    },
+    {
+      "category": "bag",
+      "searchPhrase": "men cognac pebbled leather slim briefcase crossbody premium office minimal",
+      "targetProduct": "cognac pebbled-leather slim briefcase or structured compact office crossbody",
+      "customerRetailTarget": "$200-$280"
+    },
+    {
+      "category": "accessory",
+      "searchPhrase": "men cream dial sage burgundy leather minimal watch premium office",
+      "targetProduct": "cream-dial minimalist watch with a muted-sage or burgundy leather strap",
+      "customerRetailTarget": "$100-$160"
+    }
+  ],
+  "candidates": [
+    {"group":"top","key":"T1","identity":"shopify_supplier:3c8baacfaca7fe2715165e06af8f0c00d5a68cd4","name":"Warm-Coffee Textured Button-Up","decision":"keep-available-for-other-scenario","decisionReason":"The tobacco-coffee jacquard texture is interesting, but the dropped shoulder, broad long overshirt body, large patch pocket, visible base T-shirt and backpack styling read Premium Casual or Travel rather than self-contained Premium Office."},
+    {"group":"top","key":"T2","identity":"shopify_supplier:7b959d24fb23eafe687761871356bdbb13a615b4","name":"Light-Khaki Textured Henley Knit","decision":"reject-for-s159","decisionReason":"The light khaki and clean henley neckline are directionally right, but only a product form is shown. Worn shoulder, torso, sleeve and hem behavior are unproven, so the knit cannot clear a Premium fit and drape gate."},
+    {"group":"top","key":"T3","identity":"shopify_supplier:0794e5a5d5baa6332657d5add9661ae7a433d05c","name":"Dusty-Blue Corduroy Shirt","decision":"keep-available-for-other-scenario","decisionReason":"The dusty blue is welcome for Fall, but the shirt is worn only as a long open layer over a white T-shirt with a cap and outdoor styling. It reads Casual or Travel and does not prove Premium Office finishing."},
+    {"group":"top","key":"T4","identity":"shopify_supplier:b772e94c0dcebd891bf13e299fb0c21afe738598","name":"Gray Fine-Stripe Button-Down","decision":"keep-available-for-other-scenario","decisionReason":"The fine stripe and regular-relaxed body are useful, but the long open-over-tee presentation, broad dropped shoulder, jeans styling and flat gray palette make it a casual overshirt rather than a Premium Office shirt."},
+    {"group":"top","key":"T5","identity":"shopify_supplier:c239d758829d2cc9a45bb85055383d87ef9b2725","name":"Coffee Contrast-Stitch Overshirt","decision":"keep-available-for-other-scenario","decisionReason":"The clean camel-brown color and contrast stitching suit a deliberate Casual look, but the two large workwear patch pockets, long open body and visible base tee do not provide refined Premium Office construction."},
+    {"group":"top","key":"T6","identity":"shopify_supplier:604ce0729f87d1a481f5cae14adac4e515e78c4c","name":"Moss Twin-Pocket Cotton Overshirt","decision":"keep-available-for-other-scenario","decisionReason":"The muted moss is useful, but the long boxy body, dropped shoulder, twin flap pockets and open white-tee dependency make this utility Casual or Travel, not Premium Office."},
+    {"group":"top","key":"T7","identity":"shopify_supplier:99c29ea832577fba8e2f28594b32b18c09c741f5","name":"Muted-Blue Twin-Pocket Cotton Overshirt","decision":"keep-available-for-other-scenario","decisionReason":"The blue lifts the palette, but the garment repeats the same long relaxed utility-overshirt construction with two prominent flap pockets and black base layer. It lacks Premium Office precision."},
+    {"group":"top","key":"T8","identity":"shopify_supplier:40a4127a4b2d81c1f79ac40c43b11901a63a0fc5","name":"Creamy-White Corduroy Overshirt","decision":"keep-available-for-other-scenario","decisionReason":"The creamy white and corduroy texture are attractive, but the very broad long body, dropped shoulder and oversized twin pockets create a heavy utility layer. It is too voluminous to serve as the Premium Office top."},
+    {"group":"bottom","key":"B1","identity":"shopify_supplier:bd9eb3e71ff44da3314d188440d5608833ddeaae","name":"Army-Green Corduroy Wide-Leg Trouser","decision":"reject-for-s159","decisionReason":"The pleats and corduroy texture suggest Fall, but the flat product image cannot prove rise or drape and shows a balloon-taper leg with rolled cuffs. Premium Office requires a worn precise break and cleaner tailoring."},
+    {"group":"bottom","key":"B2","identity":"shopify_supplier:04d7241016fbcf860f5b98ce77b100cd3efa1689","name":"Camel Wide-Leg Casual Trouser","decision":"keep-available-for-other-scenario","decisionReason":"The camel cotton can serve Casual or Travel, but the broad leg folds and pools over a chunky sneaker. Its loose everyday construction and visible stacking fail the Premium Office silhouette."},
+    {"group":"bottom","key":"B3","identity":"shopify_supplier:0706cc59d6cccb0e2018c17d2d73768af8afa55e","name":"Gray Drawstring Straight Trouser","decision":"reject-for-s159","decisionReason":"The fully gathered waistband, oversized exposed drawcord, black D-ring and synthetic sheen read lounge or technical casual. The cropped source also withholds the precise shoe break required for Premium Office."},
+    {"group":"outerwear","key":"O1","identity":"shopify_supplier:a09789e253d99e246a5ec1964db4154eb9305f6a","name":"Army-Green Corduroy Snap Jacket","decision":"keep-available-for-other-scenario","decisionReason":"The corduroy texture is seasonal, but the product-only composite, oversized patch and zip pockets, mixed snap/zip hardware and elastic hem make it a casual utility jacket rather than Premium Office outerwear."},
+    {"group":"outerwear","key":"O2","identity":"shopify_supplier:0b0026d57ef43627c967e2592a1523d683169666","name":"Brown Snap-Down Light Layer","decision":"reject-for-s159","decisionReason":"Only a product form is available, with no worn proportion proof. The cape-like broad body, large storm-flap pockets, asymmetrical hardware and technical fabric read functional overshirt, not Premium tailoring."},
+    {"group":"outerwear","key":"O3","identity":"shopify_supplier:16979789931509ee789c04fefffd07da8162def5","name":"Green Striped Button-Up Cardigan","decision":"reject-for-s159","decisionReason":"The green, burgundy and cream are colorful, but the product image shows a very narrow torso and sleeves with retro vertical striping. It is a fitted knit shirt, not a modern Premium layer."},
+    {"group":"outerwear","key":"O4","identity":"shopify_supplier:97d0fa66e0f0b15d1c75f32a5a86c1db3210eba1","name":"Khaki Zip-Up Light Jacket","decision":"keep-available-for-other-scenario","decisionReason":"The short jacket can serve functional Casual or Travel, but the fuzzy stand collar, sleeve zip pocket, patch label, elastic hem and synthetic shell create a utility bomber rather than Premium Office outerwear."},
+    {"group":"outerwear","key":"O5","identity":"shopify_supplier:b9007875eb65fea3bd88de9ad0a6b71ce38b23b6","name":"Army-Green Zip-Up Light Jacket","decision":"reject-for-s159","decisionReason":"The plain product-only bomber has no worn fit proof, while the shiny synthetic shell, angled black zips and elastic rib trims look mass-market casual. It cannot establish Premium material quality."},
+    {"group":"outerwear","key":"O6","identity":"shopify_supplier:eb9f1ca89e42083379c0e262a20ac2c0b7df6d2d","name":"Military-Green Zip-Up Light Jacket","decision":"keep-available-for-other-scenario","decisionReason":"The corduroy surface has Fall relevance, but the product-only bomber construction, sleeve utility zip, snap pockets and dark lining are Casual. No worn drape or Premium finish is demonstrated."},
+    {"group":"outerwear","key":"O7","identity":"shopify_supplier:7d49a77c6a00bae512e0cf904b9b68d8402b81e9","name":"Khaki Lightweight Zip Jacket","decision":"keep-available-for-other-scenario","decisionReason":"The pale khaki keeps the palette light, but the hood toggles, black taped zips, technical cuffs, backpack and shell fabric clearly belong to Rainy Day, Outdoor or Travel rather than Premium Office."},
+    {"group":"outerwear","key":"O8","identity":"shopify_supplier:2349a25ac0e2ed693d29d058a48f7be7233b84f7","name":"Khaki Double-Breasted Trench","decision":"keep-available-for-other-scenario","decisionReason":"The light stone color is useful, but the extremely oversized shoulder and body, very long wide lapel, streetwear tie styling and canvas sneakers create a deliberately baggy Casual or Travel trench, not precise Premium Office tailoring."}
+  ]
+}

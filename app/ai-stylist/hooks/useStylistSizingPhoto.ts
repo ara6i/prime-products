@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { normalizeBodyInputs } from "@/app/onboarding/lib/body-inputs";
 import {
   analyzeSizingPhoto,
   prewarmSizingPhotoAnalyzer,
@@ -177,18 +178,7 @@ export function useStylistSizingPhoto(input: {
       setStatus("analyzing");
       setSizingChoice("generated");
       try {
-        const height = Number.parseFloat(input.profile.height);
-        const weight = Number.parseFloat(input.profile.weight);
-        if (!Number.isFinite(height) || height <= 0) {
-          throw new Error(
-            "Add your height in Profile before finding your size from a photo.",
-          );
-        }
-        if (!Number.isFinite(weight) || weight <= 0) {
-          throw new Error(
-            "Add your weight in Profile before finding your size from a photo.",
-          );
-        }
+        const bodyInputs = normalizeBodyInputs(input.profile);
 
         const analyzed = await analyzeSizingPhoto(uploaded.file);
         setUploaded({
@@ -205,12 +195,7 @@ export function useStylistSizingPhoto(input: {
           band > 0 &&
           Boolean(input.profile.cupSize.trim());
         const result = await estimateSizing({
-          height,
-          weight,
-          heightUnit:
-            input.profile.measurementSystem === "metric" ? "cm" : "in",
-          weightUnit:
-            input.profile.measurementSystem === "metric" ? "kg" : "lbs",
+          ...bodyInputs,
           gender: input.gender,
           ...(input.profile.birthYear
             ? { age: currentYear - input.profile.birthYear }
@@ -248,12 +233,13 @@ export function useStylistSizingPhoto(input: {
     setError(null);
     setStatus("saving");
     try {
+      const bodyInputs = normalizeBodyInputs(input.profile);
       const photo = await uploadSizingPhoto(uploaded.dataUrl);
       await saveSizingProfile({
         photoUrl: photo.sizingPhotoUrl,
         gender: input.gender,
-        height: input.profile.height,
-        weight: input.profile.weight,
+        height: String(bodyInputs.height),
+        weight: String(bodyInputs.weight),
         measurementSystem: input.profile.measurementSystem,
         measurements: estimate.estimates,
         measurementUnit: estimate.unit,

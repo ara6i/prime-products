@@ -28,8 +28,17 @@ import type {
 import { WearV6Workbench } from "./WearV6Workbench";
 import { HeldoutOnnxTrainingVisual } from "./HeldoutOnnxTrainingVisual";
 import { FreshGeometryResult } from "./FreshGeometryResult";
+import { crossSectionPerimeterCm } from "./cameraGeometry";
 import { FreshSealed448Lab } from "./FreshSealed448Lab";
 import { V8Benchmark448Lab } from "./V8Benchmark448Lab";
+import { AiadBenchmark448Lab } from "./AiadBenchmark448Lab";
+import { AiadPhotoWorkbench } from "./AiadPhotoWorkbench";
+import { ProductSizeImpactPanel } from "./ProductSizeImpactPanel";
+import { BodyTapeComparison } from "./BodyTapeComparison";
+import { CommercialSizingValidationLab } from "./CommercialSizingValidationLab";
+import { selectedPersonSizeInput } from "./productSizeImpact";
+import { aiadCameraLineOverrides } from "./aiadWorkbenchGeometry";
+import type { AiadCalibrateLines } from "./useAiadCameraComparison";
 import type {
   FreshCameraFusion,
   FreshGeometryLineOverrideMap,
@@ -50,7 +59,9 @@ import type {
 
 type RunState = "idle" | "pose" | "wear-edges" | "apple" | "wear-measurements" | "ready" | "error";
 type AppleState = "idle" | "loading" | "ready" | "error";
-type TestMode = "heldout-onnx" | "photo-pipeline" | "fresh-photo" | "v8-photo" | "fresh-448" | "v8-448";
+type TestMode = "heldout-onnx" | "photo-pipeline" | "fresh-photo" | "v8-photo" | "fresh-448" | "v8-448" | "aiad-photo" | "aiad-448" | "commercial-100";
+type CameraMode = "raw" | "apple" | "apple-depth";
+type AiadStatus = FreshGeometryStatus & { referenceSegmenterAvailable?: boolean; camera?: { appleVision: boolean; depthPro: boolean; connected?: boolean; note: string } };
 
 interface HeldoutWearModel {
   scanId: string;
@@ -431,15 +442,17 @@ function failedFreshCameraFusion(prediction: FreshGeometryPrediction, message: s
         fusedDepthCm: row.depthCm,
         learnedDepthWidthRatio: row.depthWidthRatio,
         directTapeCm: row.tapeCm,
+        rawGeometryCircumferenceCm: crossSectionPerimeterCm(row.shape, row.widthCm, row.depthCm),
+        cameraGeometryCircumferenceCm: null,
         widthSource: "fresh-onnx",
         confidence: "low",
         widthChangePct: 0,
       })),
-      rowPositionSource: "fresh-onnx",
+      rowPositionSource: prediction.aiad ? "height-fraction-guide" : "fresh-onnx",
       manuallyEditedRows: [],
       warnings: [message],
       tapeHandling: "direct-fresh-head-unchanged",
-      importantLimit: "Camera fusion failed, so the displayed physical values remain raw fresh-ONNX outputs.",
+      importantLimit: "Camera fusion failed, so the displayed physical values remain raw ONNX outputs.",
     },
   };
 }
@@ -496,6 +509,10 @@ function fuseFreshCameraPrediction(
       fusedDepthCm,
       learnedDepthWidthRatio: ratio,
       directTapeCm: row.tapeCm,
+      rawGeometryCircumferenceCm: crossSectionPerimeterCm(row.shape, rawWidthCm, row.depthCm),
+      cameraGeometryCircumferenceCm: widthSource === "fresh-onnx"
+        ? null
+        : crossSectionPerimeterCm(row.shape, fusedWidthCm, fusedDepthCm),
       widthSource,
       confidence,
       widthChangePct,
@@ -540,7 +557,7 @@ function fuseFreshCameraPrediction(
       manuallyEditedRows,
       warnings,
       tapeHandling: "direct-fresh-head-unchanged",
-      importantLimit: `${rowPositionSource === "manual" ? "The displayed row positions were manually edited after ONNX. " : ""}Apple + Depth Pro correct the visible A-to-B width. Hidden front-to-back depth is inferred from that width and the fresh model's learned depth/width ratio; it is not directly scanned. Tape stays the independent fresh tape head.`,
+importantLimit: `${prediction.aiad ? "Aiad’s row positions use fixed height fractions and silhouette edges, not learned landmarks. " : ""}${rowPositionSource === "manual" ? "The displayed row positions were manually edited after ONNX. " : ""}Camera tools estimate visible A-to-B width. Hidden front-to-back depth uses that width and the model's learned depth/width ratio; it is not directly scanned. Direct tape stays unchanged.`,
     },
   };
 }
@@ -788,8 +805,12 @@ export function LegacyHeldoutOnnxResult({
   );
 }
 
-export function WearV6PhotoLab() {
-  const [testMode, setTestMode] = useState<TestMode>("v8-448");
+export function WearV6PhotoLab({ initialTab = "v8-photo", initialView = "measurements" }: { initialTab?: "v8-photo" | "aiad-photo" | "aiad-448" | "commercial-100"; initialView?: "measurements" | "product-sizes" }) {
+  const [testMode, setTestMode] = useState<TestMode>(initialTab);
+  const [photoResultView, setPhotoResultView] = useState(initialView);
+  const [cameraMode, setCameraMode] = useState<CameraMode>(initialTab === "v8-photo" ? "apple-depth" : "raw");
+  const [aiadSegmenter, setAiadSegmenter] = useState<"aiad-rembg" | "mediapipe">("aiad-rembg");
+  const [aiadStatus, setAiadStatus] = useState<AiadStatus | null>(null);
   const [datasets, setDatasets] = useState<DatasetRow[]>([]);
   const [heldoutModels, setHeldoutModels] = useState<HeldoutWearModel[]>([]);
   const [heldoutPersonCount, setHeldoutPersonCount] = useState(0);
@@ -813,6 +834,11 @@ export function WearV6PhotoLab() {
   const [runError, setRunError] = useState<string | null>(null);
   const [prediction, setPrediction] = useState<WearV6Prediction | null>(null);
   const [freshPrediction, setFreshPrediction] = useState<FreshGeometryPrediction | null>(null);
+  const [productPredictions, setProductPredictions] = useState<{
+    identity: string;
+    aiad: FreshGeometryPrediction | null;
+    v8: FreshGeometryPrediction | null;
+  }>({ identity: "", aiad: null, v8: null });
   const [freshLineRecalibrating, setFreshLineRecalibrating] = useState(false);
   const [freshLineEditError, setFreshLineEditError] = useState<string | null>(null);
   const [maskLines, setMaskLines] = useState<Partial<Record<WearV6RowKind, WearV6Line>>>({});
@@ -830,6 +856,7 @@ export function WearV6PhotoLab() {
   const poseAnchorsRequired = modelStatus?.poseAnchorsRequired !== false;
   const uploadRef = useRef<HTMLInputElement>(null);
   const uploadedObjectUrlRef = useRef<string | null>(null);
+  const photoSelectionRef = useRef(0);
   const activeRunRef = useRef(0);
   const sourceDataUrlRef = useRef<string | null>(null);
   const poseRef = useRef<PoseResult | null>(null);
@@ -874,6 +901,13 @@ export function WearV6PhotoLab() {
   }, []);
 
   const applyDataset = useCallback(async (row: DatasetRow) => {
+    const selection = ++photoSelectionRef.current;
+    resetResult();
+    // Keep Run disabled until image dimensions AND this profile are ready.
+    // Otherwise a fast click can combine the new photo with the previous
+    // person's profile, then leave a cancelled request showing "Running".
+    setImageUrl(null);
+    setImageSize({ width: 0, height: 0 });
     if (uploadedObjectUrlRef.current) {
       URL.revokeObjectURL(uploadedObjectUrlRef.current);
       uploadedObjectUrlRef.current = null;
@@ -881,8 +915,6 @@ export function WearV6PhotoLab() {
     const source = datasetImage(row);
     setSelectedHeldoutScanId("");
     setSelectedDatasetId(row.setId);
-    setImageUrl(source);
-    setImageSize(await imageDimensions(source));
     setHeightCm(row.heightCm);
     setWeightKg(row.weightKg);
     setGender(row.gender);
@@ -894,10 +926,21 @@ export function WearV6PhotoLab() {
       waist: finitePositive(row.waistCm),
       hips: finitePositive(row.hipsCm),
     });
-    resetResult();
+    try {
+      const size = await withTimeout(imageDimensions(source), 15_000, "The selected photo could not be loaded.");
+      if (photoSelectionRef.current !== selection) return;
+      setImageSize(size);
+      setImageUrl(source);
+    } catch (error) {
+      if (photoSelectionRef.current === selection) setRunError(error instanceof Error ? error.message : "Could not load the selected photo.");
+    }
   }, [resetResult]);
 
   const applyHeldoutModel = useCallback(async (model: HeldoutWearModel) => {
+    const selection = ++photoSelectionRef.current;
+    resetResult();
+    setImageUrl(null);
+    setImageSize({ width: 0, height: 0 });
     if (uploadedObjectUrlRef.current) {
       URL.revokeObjectURL(uploadedObjectUrlRef.current);
       uploadedObjectUrlRef.current = null;
@@ -905,17 +948,24 @@ export function WearV6PhotoLab() {
     setTestMode("heldout-onnx");
     setSelectedHeldoutScanId(model.scanId);
     setSelectedDatasetId(`heldout:${model.scanId}`);
-    setImageUrl(model.imageUrl);
-    setImageSize(await imageDimensions(model.imageUrl));
     setHeightCm(model.heightCm);
     setWeightKg(model.weightKg);
     setGender(model.gender);
     setReportedChestCm(null);
     setActuals(EMPTY_ACTUALS);
-    resetResult();
+    try {
+      const size = await withTimeout(imageDimensions(model.imageUrl), 15_000, "The selected WEAR image could not be loaded.");
+      if (photoSelectionRef.current !== selection) return;
+      setImageSize(size);
+      setImageUrl(model.imageUrl);
+    } catch (error) {
+      if (photoSelectionRef.current === selection) setRunError(error instanceof Error ? error.message : "Could not load the WEAR image.");
+    }
   }, [resetResult]);
 
   const refreshStatus = useCallback(async () => {
+    const aiadRequest = fetch("/api/try-on-test/wear-photo-test/aiad", { cache: "no-store" })
+      .then((response) => response.json() as Promise<AiadStatus>).then(setAiadStatus);
     const freshRequest = fetch("/api/try-on-test/wear-photo-test/fresh", { cache: "no-store" })
       .then((response) => response.json() as Promise<FreshGeometryStatus>)
       .then(setFreshStatus);
@@ -929,7 +979,7 @@ export function WearV6PhotoLab() {
       setModelStatus(modelPayload);
       setForgeStatus(forgePayload.status ?? forgePayload);
     });
-    await Promise.allSettled([freshRequest, v8Request, legacyRequest]);
+    await Promise.allSettled([freshRequest, v8Request, legacyRequest, aiadRequest]);
   }, []);
 
   useEffect(() => {
@@ -942,7 +992,7 @@ export function WearV6PhotoLab() {
       const rows = ((datasetPayload.rows ?? []) as DatasetRow[]).filter((row) => row.frontImageUrl);
       setDatasets(rows);
       const initial = rows.find((row) => row.setId === "shahnaz-2") ?? rows[0];
-      if (initial) void applyDataset(initial);
+      if (initial && photoSelectionRef.current === 0) void applyDataset(initial);
     }).catch((error) => {
       if (active) setRunError(error instanceof Error ? error.message : "Could not load the saved photo dataset.");
     });
@@ -982,22 +1032,33 @@ export function WearV6PhotoLab() {
   }, [trainingExpanded]);
 
   const uploadPhoto = useCallback(async (file: File) => {
-    if (!file.type.startsWith("image/")) {
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
       setRunError("Choose a PNG, JPEG, or WebP photo.");
       return;
     }
+    if (file.size > 15 * 1024 * 1024) { setRunError("Choose a photo smaller than 15 MB."); return; }
+    const selection = ++photoSelectionRef.current;
+    resetResult();
+    if (testMode === "aiad-photo") setCameraMode("raw");
+    setImageUrl(null);
+    setImageSize({ width: 0, height: 0 });
     if (uploadedObjectUrlRef.current) URL.revokeObjectURL(uploadedObjectUrlRef.current);
     const source = URL.createObjectURL(file);
     uploadedObjectUrlRef.current = source;
-    setTestMode((current) => current === "fresh-photo" || current === "v8-photo" ? current : "photo-pipeline");
+    setTestMode((current) => current === "aiad-photo" || current === "fresh-photo" || current === "v8-photo" ? current : "photo-pipeline");
     setSelectedHeldoutScanId("");
     setSelectedDatasetId("upload");
-    setImageUrl(source);
-    setImageSize(await imageDimensions(source));
     setReportedChestCm(null);
     setActuals(EMPTY_ACTUALS);
-    resetResult();
-  }, [resetResult]);
+    try {
+      const size = await withTimeout(imageDimensions(source), 15_000, "The uploaded photo could not be loaded.");
+      if (photoSelectionRef.current !== selection) return;
+      setImageSize(size);
+      setImageUrl(source);
+    } catch (error) {
+      if (photoSelectionRef.current === selection) setRunError(error instanceof Error ? error.message : "Could not load the uploaded photo.");
+    }
+  }, [resetResult, testMode]);
 
   const appleSeedForPhoto = useCallback(async (sourceDataUrl: string) => {
     if (!heightCm || imageSize.width < 1 || imageSize.height < 1) {
@@ -1065,6 +1126,9 @@ export function WearV6PhotoLab() {
     return payload;
   }, [gender, heightCm, poseAnchorsRequired, reportedChestCm, weightKg]);
 
+  // Apple Vision runs only on macOS. Normal-photo models use the same
+  // authenticated private Mac worker on staging; raw ONNX stays on the app host.
+  const cameraApiBase = "/api/try-on-test/wear-photo-test/camera";
   const appleWidthsForLines = useCallback(async (
     lines: Partial<Record<WearV6RowKind, WearV6Line>>,
     sourceDataUrl: string,
@@ -1077,11 +1141,11 @@ export function WearV6PhotoLab() {
       rightX: line.rightX * imageSize.width,
     }] : []);
     if (rows.length < 2) throw new Error("WEAR must provide at least two valid rows before Apple correction.");
-    const response = await fetch("/api/try-on-test/sizing-lab/apple-vision-pose3d", {
+    const requestApple = (includeImage: boolean) => fetch(`${cameraApiBase}/apple-vision-pose3d`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        imageDataUrl: appleCacheKeyRef.current ? undefined : sourceDataUrl,
+        imageDataUrl: includeImage ? sourceDataUrl : undefined,
         cacheKey: appleCacheKeyRef.current,
         imageWidth: imageSize.width,
         imageHeight: imageSize.height,
@@ -1089,6 +1153,8 @@ export function WearV6PhotoLab() {
         rows,
       }),
     });
+    let response = await requestApple(!appleCacheKeyRef.current);
+    if (response.status === 409) response = await requestApple(true);
     const payload = await response.json() as { ok?: boolean; error?: string; result?: WearV6AppleResult };
     if (!response.ok || !payload.ok || !payload.result) throw new Error(payload.error ?? "Apple Vision camera correction failed.");
     if (payload.result.geometryQuality === "reject") {
@@ -1103,12 +1169,13 @@ export function WearV6PhotoLab() {
     const confidence: WearV6WidthConfidence = payload.result.geometryQuality === "pass" ? "high" : "medium";
     const confidences = Object.fromEntries(Object.keys(widths).map((key) => [key, confidence])) as Partial<Record<WearV6RowKind, WearV6WidthConfidence>>;
     return { result: payload.result, widths, confidences };
-  }, [heightCm, imageSize.height, imageSize.width]);
+  }, [cameraApiBase, heightCm, imageSize.height, imageSize.width]);
 
   const appleDepthWidthsForLines = useCallback(async (
     lines: Partial<Record<WearV6RowKind, WearV6Line>>,
     sourceDataUrl: string,
   ): Promise<WidthCalibration> => {
+    const calibrationRunId = activeRunRef.current;
     if (!heightCm) throw new Error("Height is required for Apple + Depth Pro.");
     const pose = poseRef.current;
     if (!pose?.mask) throw new Error("The person mask is unavailable for safe Depth Pro body sampling.");
@@ -1125,7 +1192,7 @@ export function WearV6PhotoLab() {
 
     setAppleDepthState("loading");
     setAppleDepthDetail("Depth Pro is reading body-surface distance. It does not read tape numbers.");
-    const requestDepthCache = (includeImage: boolean) => fetch("/api/try-on-test/sizing-lab/depth-pro-cache", {
+    const requestDepthCache = (includeImage: boolean) => fetch(`${cameraApiBase}/depth-pro-cache`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -1136,11 +1203,12 @@ export function WearV6PhotoLab() {
     let depthResponse = await requestDepthCache(false);
     if (depthResponse.status === 409) depthResponse = await requestDepthCache(true);
     const depthPayload = await depthResponse.json() as { ok?: boolean; error?: string; result?: { cacheKey?: string; cacheHit?: boolean } };
+    if (activeRunRef.current !== calibrationRunId) throw new Error("Photo changed; previous camera request discarded.");
     if (!depthResponse.ok || !depthPayload.ok || !depthPayload.result?.cacheKey) {
       throw new Error(depthPayload.error ?? "Depth Pro could not build a body-surface map.");
     }
 
-    const fusedResponse = await fetch("/api/try-on-test/sizing-lab/apple-fused-body-scale", {
+    const fusedResponse = await fetch(`${cameraApiBase}/apple-fused-body-scale`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -1151,6 +1219,7 @@ export function WearV6PhotoLab() {
       }),
     });
     const fusedPayload = await fusedResponse.json() as { ok?: boolean; error?: string; result?: AppleFusedBodyScaleApiResult };
+    if (activeRunRef.current !== calibrationRunId) throw new Error("Photo changed; previous camera request discarded.");
     if (!fusedResponse.ok || !fusedPayload.ok || !fusedPayload.result) {
       throw new Error(fusedPayload.error ?? "Apple + Depth Pro body width failed.");
     }
@@ -1163,7 +1232,7 @@ export function WearV6PhotoLab() {
     setAppleDepthState("ready");
     setAppleDepthDetail(`Apple + Depth Pro ready · ${validRows.length}/${rows.length} valid rows · rejected rows keep Apple Vision · no tape input`);
     return { widths, confidences, depthResult: fusedPayload.result };
-  }, [heightCm, imageSize.height, imageSize.width]);
+  }, [cameraApiBase, heightCm, imageSize.height, imageSize.width]);
 
   const runHeldoutOnnxOnly = useCallback(async () => {
     if (!selectedHeldoutScanId) {
@@ -1232,7 +1301,7 @@ export function WearV6PhotoLab() {
     setMetaStatus(EMPTY_META_STATUS);
     setAppleResult(null);
     setAppleState("idle");
-    setAppleDetail(`Waiting for ${testMode === "v8-photo" ? "V8 ONNX to predict waist and hips" : "fresh ONNX to predict the five body rows"}`);
+    setAppleDetail("Waiting for ONNX measurements and silhouette row endpoints");
     setAppleDepthState("idle");
     setAppleDepthDetail("Waiting for Apple Vision camera geometry");
     setWidthMethod("apple-depth");
@@ -1252,7 +1321,13 @@ export function WearV6PhotoLab() {
         15_000,
         "The selected photo took too long to load.",
       );
+      if (activeRunRef.current !== runId) return;
       sourceDataUrlRef.current = sourceDataUrl;
+      const aiadRun = testMode === "aiad-photo";
+      const referenceSegmentation = aiadRun && aiadSegmenter === "aiad-rembg";
+      if (referenceSegmentation) poseRef.current = null;
+      let encodedMask: string | null = null;
+      if (!referenceSegmentation) {
       const pose = await withTimeout(
         detectPoseAndMask(imageUrl, { includeMask: true }),
         45_000,
@@ -1263,40 +1338,42 @@ export function WearV6PhotoLab() {
         throw new Error("Could not find one complete standing person.");
       }
       requireCompleteStandingPose(pose);
-      const encodedMask = maskDataUrl(pose);
+      encodedMask = maskDataUrl(pose);
       if (!encodedMask) throw new Error("Could not encode the full-body silhouette.");
       poseRef.current = pose;
       personBoxRef.current = posePersonBox(pose);
+      }
       setRunState("wear-measurements");
       const v8Run = testMode === "v8-photo";
+      const studentLabel = aiadRun ? "Aiad" : v8Run ? "V8" : "Fresh";
       const response = await withTimeout(
-        fetch(v8Run
+        fetch(aiadRun ? "/api/try-on-test/wear-photo-test/aiad" : v8Run
           ? "/api/try-on-test/wear-photo-test/v8"
           : "/api/try-on-test/wear-photo-test/fresh", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({
-            maskDataUrl: encodedMask,
+            ...(referenceSegmentation ? { imageDataUrl: sourceDataUrl } : { maskDataUrl: encodedMask }),
             heightCm,
             weightKg,
             gender,
-            landmarks: pose.landmarks.map((landmark) => ({
+            landmarks: referenceSegmentation ? undefined : poseRef.current?.landmarks.map((landmark) => ({
               x: landmark.x,
               y: landmark.y,
               visibility: landmark.visibility,
             })),
           }),
         }),
-        30_000,
-        `${v8Run ? "V8" : "Fresh"} ONNX inference timed out.`,
+        referenceSegmentation ? 110_000 : 30_000,
+        `${studentLabel} ONNX inference timed out.`,
       );
       const payload = await withTimeout(
         response.json() as Promise<FreshGeometryPrediction | { ok: false; error?: string }>,
         10_000,
-        `${v8Run ? "V8" : "Fresh"} ONNX returned an incomplete response.`,
+        `${studentLabel} ONNX returned an incomplete response.`,
       );
       if (!response.ok || !payload.ok) {
-        throw new Error("error" in payload && payload.error ? payload.error : `${v8Run ? "V8" : "Fresh"} ONNX inference failed.`);
+        throw new Error("error" in payload && payload.error ? payload.error : `${studentLabel} ONNX inference failed.`);
       }
       if (activeRunRef.current !== runId) return;
       if (
@@ -1308,12 +1385,43 @@ export function WearV6PhotoLab() {
       }
       rawPrediction = payload;
       setFreshPrediction(payload);
+      if (aiadRun || v8Run) {
+        const identity = JSON.stringify([selectedDatasetId, imageUrl, heightCm, weightKg, gender, aiadSegmenter]);
+        setProductPredictions(current => ({
+          identity,
+          aiad: aiadRun ? payload : current.identity === identity ? current.aiad : null,
+          v8: v8Run ? payload : current.identity === identity ? current.v8 : null,
+        }));
+      }
       // Camera fusion is optional enrichment. Expose the complete raw ONNX
       // result now so Apple or Depth Pro can never trap it behind a spinner.
       setRunState("ready");
 
+      if (aiadRun) {
+        // The workbench owns optional camera comparisons. Keep this immutable
+        // result separate, and never run a second overlapping camera request.
+        setAppleDetail("Aiad outputs ready · camera comparisons are controlled in the editor");
+        setAppleDepthDetail("Camera comparisons are separate from ONNX");
+        return;
+      }
+
+      if (cameraMode === "raw") {
+        setAppleState("idle");
+        setAppleDetail(`${studentLabel} raw ONNX selected · Apple Vision was not requested`);
+        setAppleDepthState("idle");
+        setAppleDepthDetail("Raw ONNX selected · Depth Pro was not requested");
+        return;
+      }
+
       setAppleState("loading");
-      setAppleDetail("Apple Vision is estimating camera geometry at the fresh ONNX rows");
+      setAppleDetail("Apple Vision is estimating camera geometry at the displayed rows");
+      if (!poseRef.current) {
+        const cameraPose = await withTimeout(detectPoseAndMask(imageUrl, { includeMask: true }), 45_000, "Camera-support segmentation timed out; raw Aiad output remains available.");
+        if (activeRunRef.current !== runId) return;
+        if (!cameraPose?.mask) throw new Error("Camera tools could not get a person mask; raw Aiad prediction is unaffected.");
+        poseRef.current = cameraPose;
+        personBoxRef.current = posePersonBox(cameraPose);
+      }
       const lines = lineMapFromFreshPrediction(payload);
       const appleCalibration = await withTimeout(
         appleWidthsForLines(lines, sourceDataUrl),
@@ -1327,14 +1435,15 @@ export function WearV6PhotoLab() {
       setAppleResult(appleCalibration.result);
       setAppleVisionWidths(appleCalibration.widths);
       setAppleState("ready");
-      setAppleDetail(`Apple camera geometry ${appleCalibration.result.geometryQuality} · measuring the same rows with Depth Pro`);
+      setAppleDetail(`Apple camera geometry ${appleCalibration.result.geometryQuality}${cameraMode === "apple-depth" ? " · measuring the same rows with Depth Pro" : " · width comparison ready"}`);
 
       let depthCalibration: WidthCalibration | null = null;
       let depthError: string | null = null;
       try {
+        if (cameraMode === "apple-depth") {
         depthCalibration = await withTimeout(
           appleDepthWidthsForLines(lines, sourceDataUrl),
-          45_000,
+          aiadRun ? 150_000 : 45_000,
           "Depth Pro body-width fusion timed out.",
         );
         if (activeRunRef.current !== runId) return;
@@ -1342,7 +1451,9 @@ export function WearV6PhotoLab() {
         appleDepthConfidencesRef.current = depthCalibration.confidences;
         appleDepthGeometryRef.current = lineGeometryKey(lines);
         setAppleDepthWidths(depthCalibration.widths);
+        } else { setAppleDepthState("idle"); setAppleDepthDetail("Apple Vision only · Depth Pro not requested"); }
       } catch (error) {
+        if (activeRunRef.current !== runId) return;
         depthError = error instanceof Error ? error.message : "Depth Pro body-width fusion failed.";
         setAppleDepthState("error");
         setAppleDepthDetail(`${depthError} Apple Vision widths are used as a visible fallback.`);
@@ -1355,6 +1466,7 @@ export function WearV6PhotoLab() {
         appleCalibration.confidences,
         depthCalibration,
         depthError,
+        aiadRun ? "height-fraction-guide" : "fresh-onnx",
       );
       setWidthMethod(depthCalibration ? "apple-depth" : "apple-vision");
       setFreshPrediction(fusedPrediction);
@@ -1368,25 +1480,86 @@ export function WearV6PhotoLab() {
         setAppleDetail(message);
         setAppleDepthState("error");
         setAppleDepthDetail("Depth Pro did not run because Apple camera geometry failed.");
-        setRunError(`${testMode === "v8-photo" ? "V8" : "Fresh"} ONNX finished, but Apple + Depth Pro fusion failed: ${message}`);
+        setRunError(`${testMode === "aiad-photo" ? "Aiad" : testMode === "v8-photo" ? "V8" : "Fresh"} ONNX finished, but the optional camera stage failed: ${message}`);
         setRunState("ready");
       } else {
         setRunError(message);
         setRunState("error");
       }
     }
-  }, [appleDepthWidthsForLines, appleWidthsForLines, gender, heightCm, imageUrl, testMode, weightKg]);
+  }, [aiadSegmenter, appleDepthWidthsForLines, appleWidthsForLines, cameraMode, gender, heightCm, imageUrl, selectedDatasetId, testMode, weightKg]);
+
+  const calibrateAiadLines: AiadCalibrateLines = useCallback(async (mode, lines) => {
+    const sourceDataUrl = sourceDataUrlRef.current;
+    if (!freshPrediction?.aiad || !sourceDataUrl || !imageUrl) throw new Error("Run Aiad on this photo before using camera tools.");
+    const runId = activeRunRef.current;
+    const requireCurrentPhoto = () => {
+      if (activeRunRef.current !== runId) throw new Error("Photo changed; previous camera request discarded.");
+    };
+    const cameraLines = aiadCameraLineOverrides(lines, freshPrediction);
+    const manuallyEditedRows = changedFreshLineKinds(freshPrediction, cameraLines);
+    const comparisonInput = freshPredictionWithLineOverrides(freshPrediction, cameraLines);
+    setAppleState("loading");
+    setAppleDepthState("idle");
+    setAppleDetail("Measuring the editor's current A-to-B endpoints");
+    try {
+      const apple = await withTimeout(appleWidthsForLines(cameraLines, sourceDataUrl), 30_000, "Apple Vision timed out. The live preview and original tape remain available.");
+      requireCurrentPhoto();
+      appleCacheKeyRef.current = apple.result.cacheKey;
+      setAppleState("ready");
+      setAppleDetail("Apple width comparison ready");
+      let depth: WidthCalibration | null = null;
+      let depthError: string | null = null;
+      if (mode === "apple-depth") {
+        try {
+          if (!poseRef.current) {
+            const pose = await withTimeout(detectPoseAndMask(imageUrl, { includeMask: true }), 45_000, "Camera-support segmentation timed out.");
+            requireCurrentPhoto();
+            if (!pose?.mask) throw new Error("The body mask needed for Depth Pro is unavailable.");
+            poseRef.current = pose;
+            personBoxRef.current = posePersonBox(pose);
+          }
+          depth = await withTimeout(appleDepthWidthsForLines(cameraLines, sourceDataUrl), 150_000, "Depth Pro timed out. Apple widths are available as a fallback.");
+          requireCurrentPhoto();
+        } catch (error) {
+          requireCurrentPhoto();
+          depthError = error instanceof Error ? error.message : "Depth Pro comparison failed.";
+          setAppleDepthState("error");
+          setAppleDepthDetail(depthError);
+        }
+      }
+      requireCurrentPhoto();
+      // Return a separate comparison; do not overwrite freshPrediction, its
+      // raw tape, or the workbench's latest draft endpoints.
+      return fuseFreshCameraPrediction(comparisonInput, apple.result, apple.widths, apple.confidences, depth, depthError,
+        manuallyEditedRows.length ? "manual" : "height-fraction-guide", manuallyEditedRows);
+    } catch (error) {
+      if (activeRunRef.current === runId) {
+        setAppleState("error");
+        setAppleDepthState("error");
+        setAppleDetail(error instanceof Error ? error.message : "Camera comparison failed.");
+      }
+      throw error;
+    }
+  }, [appleDepthWidthsForLines, appleWidthsForLines, freshPrediction, imageUrl]);
 
   const recalculateFreshLines = useCallback(async (overrides: FreshGeometryLineOverrideMap) => {
-    if (!freshPrediction || !sourceDataUrlRef.current || !poseRef.current) {
+    if (!freshPrediction || !sourceDataUrlRef.current) {
       setFreshLineEditError("Run the fresh photo pipeline before editing its rows.");
       return;
     }
     const changedThisPass = changedFreshLineKinds(freshPrediction, overrides);
-    if (!changedThisPass.length) return;
-    const existingEdited = freshPrediction.cameraFusion?.manuallyEditedRows ?? [];
+    if (!changedThisPass.length && !freshPrediction.aiad) return;
+    const existingEdited = freshPrediction.aiad?.manuallyEditedRows ?? freshPrediction.cameraFusion?.manuallyEditedRows ?? [];
     const manuallyEditedRows = [...new Set([...existingEdited, ...changedThisPass])];
     const predictionWithOverrides = freshPredictionWithLineOverrides(freshPrediction, overrides);
+    if (predictionWithOverrides.aiad) predictionWithOverrides.aiad = { ...predictionWithOverrides.aiad, manuallyEditedRows };
+    if (freshPrediction.aiad && cameraMode === "raw") {
+      delete predictionWithOverrides.cameraFusion;
+      setFreshPrediction(predictionWithOverrides);
+      setFreshLineEditError(null);
+      return;
+    }
     const lines = lineMapFromFreshPrediction(predictionWithOverrides);
     const runId = activeRunRef.current;
     setFreshLineRecalibrating(true);
@@ -1396,6 +1569,13 @@ export function WearV6PhotoLab() {
     setAppleDetail("Recalculating Apple camera width at the manually edited rows");
     setAppleDepthDetail("Reusing the Depth Pro surface map at the edited endpoints");
     try {
+      if (!poseRef.current && imageUrl) {
+        const cameraPose = await withTimeout(detectPoseAndMask(imageUrl, { includeMask: true }), 45_000, "Camera-support segmentation timed out.");
+        if (activeRunRef.current !== runId) return;
+        if (!cameraPose?.mask) throw new Error("Camera tools could not get a body mask.");
+        poseRef.current = cameraPose;
+        personBoxRef.current = posePersonBox(cameraPose);
+      }
       const appleCalibration = await withTimeout(
         appleWidthsForLines(lines, sourceDataUrlRef.current),
         30_000,
@@ -1413,9 +1593,10 @@ export function WearV6PhotoLab() {
       let depthCalibration: WidthCalibration | null = null;
       let depthError: string | null = null;
       try {
+        if (!freshPrediction.aiad || cameraMode === "apple-depth") {
         depthCalibration = await withTimeout(
           appleDepthWidthsForLines(lines, sourceDataUrlRef.current),
-          45_000,
+          freshPrediction.aiad ? 150_000 : 45_000,
           "Depth Pro row recalculation timed out.",
         );
         if (activeRunRef.current !== runId) return;
@@ -1423,7 +1604,9 @@ export function WearV6PhotoLab() {
         appleDepthConfidencesRef.current = depthCalibration.confidences;
         appleDepthGeometryRef.current = lineGeometryKey(lines);
         setAppleDepthWidths(depthCalibration.widths);
+        } else { setAppleDepthState("idle"); setAppleDepthDetail("Apple Vision only · Depth Pro not requested"); }
       } catch (error) {
+        if (activeRunRef.current !== runId) return;
         depthError = error instanceof Error ? error.message : "Depth Pro body-width fusion failed.";
         setAppleDepthState("error");
         setAppleDepthDetail(`${depthError} Apple Vision widths are used as a visible fallback.`);
@@ -1446,18 +1629,21 @@ export function WearV6PhotoLab() {
       setAppleState("error");
       const message = error instanceof Error ? error.message : "The edited rows could not be recalculated.";
       setAppleDetail(message);
+      setAppleDepthState("error");
+      setAppleDepthDetail("Camera recalculation failed; raw Aiad tape is unchanged.");
       setFreshLineEditError(message);
+      if (freshPrediction.aiad) setFreshPrediction(failedFreshCameraFusion(predictionWithOverrides, message));
     } finally {
       if (activeRunRef.current === runId) setFreshLineRecalibrating(false);
     }
-  }, [appleDepthWidthsForLines, appleWidthsForLines, freshPrediction]);
+  }, [appleDepthWidthsForLines, appleWidthsForLines, cameraMode, freshPrediction, imageUrl]);
 
   const runFullTest = useCallback(async () => {
     if (testMode === "heldout-onnx") {
       await runHeldoutOnnxOnly();
       return;
     }
-    if (testMode === "fresh-photo" || testMode === "v8-photo") {
+    if (testMode === "fresh-photo" || testMode === "v8-photo" || testMode === "aiad-photo") {
       await runFreshPhoto();
       return;
     }
@@ -1780,16 +1966,27 @@ export function WearV6PhotoLab() {
   );
   const forgeCandidateBlocked = forgeStatus?.state === "blocked" || forgeStatus?.state === "failed";
   const freshMode = testMode === "fresh-photo";
+  const commercialMode = testMode === "commercial-100";
+  const aiadMode = testMode === "aiad-photo";
+  const aiadBenchmarkMode = testMode === "aiad-448";
+  const aiadFamilyMode = aiadMode || aiadBenchmarkMode;
+  const studentLabel = aiadMode ? "Aiad" : testMode === "v8-photo" ? "V8" : "Fresh";
   const v8Mode = testMode === "v8-photo";
   const v8BenchmarkMode = testMode === "v8-448";
   const v8FamilyMode = v8Mode || v8BenchmarkMode;
-  const photoStudentMode = freshMode || v8Mode;
+  const photoStudentMode = freshMode || v8Mode || aiadMode;
   const fresh448Mode = testMode === "fresh-448";
-  const any448Mode = fresh448Mode || v8BenchmarkMode;
+  const any448Mode = fresh448Mode || v8BenchmarkMode || aiadBenchmarkMode;
   const freshFamilyMode = photoStudentMode || any448Mode;
   const cameraFusionRunning = photoStudentMode && (appleState === "loading" || appleDepthState === "loading");
   const running = ["pose", "wear-edges", "apple", "wear-measurements"].includes(runState) || cameraFusionRunning;
-  const activeStudentStatus = v8FamilyMode ? v8Status : freshStatus;
+  const selectedTapeInput = selectedPersonSizeInput(runState === "ready" ? photoStudentMode ? freshPrediction : prediction : null, actuals, selectedLabel);
+  const productPredictionIdentity = JSON.stringify([selectedDatasetId, imageUrl, heightCm, weightKg, gender, aiadSegmenter]);
+  const productSizeInputs = {
+    aiad: selectedPersonSizeInput(productPredictions.identity === productPredictionIdentity ? productPredictions.aiad : null, actuals, selectedLabel),
+    v8: selectedPersonSizeInput(productPredictions.identity === productPredictionIdentity ? productPredictions.v8 : null, actuals, selectedLabel),
+  };
+  const activeStudentStatus = aiadFamilyMode ? aiadStatus : v8FamilyMode ? v8Status : freshStatus;
   const activeFamilyStatus = fresh448Mode ? freshStatus : activeStudentStatus;
   const activeModelAvailable = photoStudentMode ? activeStudentStatus?.ok === true : modelStatus?.ok === true;
   const profileReady = Boolean(heightCm && weightKg && (
@@ -1805,7 +2002,7 @@ export function WearV6PhotoLab() {
   const realPhotoMae = knownComparisons.length
     ? knownComparisons.reduce((sum, row) => sum + Math.abs(row.error), 0) / knownComparisons.length
     : null;
-  const heroEyebrow = testMode === "heldout-onnx"
+  const heroEyebrow = commercialMode ? "Frozen commercial validation · waist + hip" : aiadFamilyMode ? "Aiad · verified four-model ONNX ensemble" : testMode === "heldout-onnx"
     ? "ONNX only · 448 held-out"
     : v8BenchmarkMode
       ? "V8 ONNX · fixed 448 benchmark"
@@ -1816,7 +2013,7 @@ export function WearV6PhotoLab() {
         : freshMode
           ? "Fresh H100 ONNX · normal photo"
           : "Formula-free WEAR v6";
-  const heroTitle = testMode === "heldout-onnx"
+  const heroTitle = commercialMode ? "100 Waist/Hip Product Decisions" : aiadFamilyMode ? aiadBenchmarkMode ? "Aiad · All 448 WEAR People" : "Aiad Photo + Line Test" : testMode === "heldout-onnx"
     ? "WEAR ONNX Held-out Test"
     : v8BenchmarkMode
       ? "V8 All-448 Benchmark"
@@ -1827,7 +2024,7 @@ export function WearV6PhotoLab() {
         : freshMode
           ? "Fresh 3D Teacher Photo Test"
           : "WEAR 3D Photo Lab";
-  const heroDescription = testMode === "heldout-onnx"
+  const heroDescription = commercialMode ? "Five women and five men across five BMI bands, each paired with ten unique waist/hip-driven products. Aiad and V8 use the identical frozen manifest; recorded WEAR tape defines the current-policy reference size. This measures size-selection stability, not physical garment fit." : aiadFamilyMode ? "Aiad’s uploaded model, unchanged: front silhouette + height / weight / gender → tape, width, inferred depth, uncertainty and shape code. His row-endpoint algorithm supplies editable silhouette-edge lines at fixed height fractions. Optional camera corrections remain separate from raw model predictions." : testMode === "heldout-onnx"
     ? v7ModelActive
       ? "Choose any test-only WEAR person. V7 sees only the front RGB render, height, weight and gender. It predicts the lines first, then uses those predicted lines to produce width, depth, 32-point shape and circumference. Real WEAR truth is revealed only afterward."
       : "Choose one test-only WEAR model and run the ONNX package directly. Tape is revealed only for the score. No Apple Vision, MediaPipe, Depth Pro, or nearest-person matching."
@@ -1853,44 +2050,61 @@ export function WearV6PhotoLab() {
             <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">{heroDescription}</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+            {commercialMode ? <>
+              <div className="flex items-center justify-between gap-3"><p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">Frozen report</p><span className="rounded-full bg-emerald-400/15 px-2.5 py-1 text-xs font-black text-emerald-200">USB checksum verified</span></div>
+              <p className="mt-3 text-lg font-black">Aiad vs V8 · identical manifest</p>
+              <p className="mt-2 text-xs leading-5 text-amber-200">No Apple, Depth Pro, training, GPU, deployment, or physical-garment fit claim.</p>
+              <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full w-full rounded-full bg-emerald-400" /></div>
+              <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs"><div className="rounded-lg bg-white/5 p-2"><p className="font-black">10</p><p className="text-slate-400">WEAR people</p></div><div className="rounded-lg bg-white/5 p-2"><p className="font-black">100</p><p className="text-slate-400">unique products</p></div><div className="rounded-lg bg-white/5 p-2"><p className="font-black">200</p><p className="text-slate-400">model decisions</p></div></div>
+              <p className="mt-4 text-[11px] font-black uppercase tracking-[0.12em] text-rose-200">Reviewer conclusion required · purchase keep-rate remains N/A</p>
+            </> : <>
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">Current private ONNX</p>
               {freshFamilyMode
                 ? activeFamilyStatus?.ok
-                  ? <span className="rounded-full bg-cyan-400/15 px-2.5 py-1 text-xs font-black text-cyan-200">{v8FamilyMode ? "Private V8 installed" : "Fresh model installed"}</span>
-                  : <span className="rounded-full bg-amber-400/15 px-2.5 py-1 text-xs font-black text-amber-300">{v8FamilyMode ? "Private V8 unavailable" : "Fresh model unavailable"}</span>
+                  ? <span className="rounded-full bg-cyan-400/15 px-2.5 py-1 text-xs font-black text-cyan-200">{aiadFamilyMode ? "Aiad checksum verified" : v8FamilyMode ? "Private V8 installed" : "Fresh model installed"}</span>
+                  : <span className="rounded-full bg-amber-400/15 px-2.5 py-1 text-xs font-black text-amber-300">{aiadFamilyMode ? activeFamilyStatus ? "Aiad model unavailable" : "Checking Aiad model…" : v8FamilyMode ? "Private V8 unavailable" : "Fresh model unavailable"}</span>
                 : forgeCandidateVisible
                 ? <span className={`rounded-full px-2.5 py-1 text-xs font-black ${forgeCandidateBlocked ? "bg-rose-400/15 text-rose-200" : "bg-blue-400/15 text-blue-200"}`}>{forgeCandidateBlocked ? "Private v6r5 blocked" : "Private v6r5 process"}</span>
                 : modelStatus?.ok
                 ? <span className="rounded-full bg-emerald-400/15 px-2.5 py-1 text-xs font-black text-emerald-300">Installed</span>
                 : <span className="rounded-full bg-amber-400/15 px-2.5 py-1 text-xs font-black text-amber-300">{modelStatus?.training === false ? "Waiting for review" : "Training"}</span>}
             </div>
-            <p className="mt-3 text-lg font-black">{freshFamilyMode ? activeFamilyStatus?.ok ? activeFamilyStatus.modelVersion : activeFamilyStatus?.error ?? `${v8FamilyMode ? "V8" : "Fresh"} ONNX not installed` : forgeCandidateVisible ? forgeStatus?.currentStageLabel : modelStatus?.ok ? modelStatus.modelVersion : modelStatus?.trainingStageLabel ?? forgeStatus?.currentStageLabel ?? "Preparing full v6 data"}</p>
+            <p className="mt-3 text-lg font-black">{freshFamilyMode ? activeFamilyStatus?.ok ? activeFamilyStatus.modelVersion : activeFamilyStatus?.error ?? (aiadFamilyMode ? "Checking the verified Aiad artifact…" : `${v8FamilyMode ? "V8" : "Fresh"} ONNX not installed`) : forgeCandidateVisible ? forgeStatus?.currentStageLabel : modelStatus?.ok ? modelStatus.modelVersion : modelStatus?.trainingStageLabel ?? forgeStatus?.currentStageLabel ?? "Preparing full v6 data"}</p>
             {freshFamilyMode && activeFamilyStatus?.importantLimit ? <p className="mt-2 text-xs leading-5 text-amber-200">{activeFamilyStatus.importantLimit}</p> : null}
             {!freshFamilyMode && forgeCandidateVisible && forgeStatus?.detail ? <p className="mt-2 text-xs leading-5 text-slate-300">{forgeStatus.detail}</p> : null}
             {!freshFamilyMode && !forgeCandidateVisible && !modelStatus?.ok && (modelStatus?.trainingDetail || forgeStatus?.detail) ? <p className="mt-2 text-xs leading-5 text-slate-300">{modelStatus?.trainingDetail ?? forgeStatus?.detail}</p> : null}
             {!freshFamilyMode && forgeCandidateVisible && modelStatus?.ok ? <p className="mt-2 text-[11px] font-bold text-slate-400">Private Test Lab candidate installed: {modelStatus.modelVersion}. {modelStatus.privateDiagnosticOnly ? "Official synthetic pass is false; hash-locked diagnostic inference only." : "Synthetic gate passed."} Release, publish, deploy, and SDK remain blocked.</p> : null}
             <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10"><div className={`h-full rounded-full transition-all ${freshFamilyMode ? "bg-cyan-400" : forgeCandidateBlocked ? "bg-rose-400" : "bg-blue-400"}`} style={{ width: `${freshFamilyMode ? activeFamilyStatus?.ok ? 100 : 1 : forgeCandidateVisible ? forgeStatus?.overallPercent ?? 1 : modelStatus?.ok ? 100 : forgeStatus?.overallPercent ?? 1}%` }} /></div>
-            <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
+            {aiadFamilyMode ? <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs"><div className="rounded-lg bg-white/5 p-2"><p className="font-black">4</p><p className="text-slate-400">ensemble members</p></div><div className="rounded-lg bg-white/5 p-2"><p className="font-black">6</p><p className="text-slate-400">tape outputs</p></div><div className="rounded-lg bg-white/5 p-2"><p className="font-black">448</p><p className="text-slate-400">WEAR test people</p></div></div> : <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
               <div className="rounded-lg bg-white/5 p-2"><p className="font-black text-white">{any448Mode ? "448" : photoStudentMode ? activeStudentStatus?.train?.subjects.toLocaleString() ?? "3,451" : "4,326"}</p><p className="text-slate-400">{any448Mode ? "benchmark people" : "people"}</p></div>
               <div className="rounded-lg bg-white/5 p-2"><p className="font-black text-white">{any448Mode ? "448" : photoStudentMode ? activeStudentStatus?.train?.records.toLocaleString() ?? "31,059" : "38,934"}</p><p className="text-slate-400">{any448Mode ? "front views" : photoStudentMode ? "silhouette views" : "RGB views"}</p></div>
               <div className="rounded-lg bg-white/5 p-2"><p className="font-black text-white">{any448Mode ? "1×" : photoStudentMode ? activeStudentStatus?.targetCount ?? (v8Mode ? 150 : 371) : 0}</p><p className="text-slate-400">{any448Mode ? "frozen run" : photoStudentMode ? "outputs" : "formulas"}</p></div>
-            </div>
+            </div>}
             {!freshFamilyMode ? <button className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue-300/30 bg-blue-400/10 px-3 py-2 text-xs font-black text-blue-100 hover:bg-blue-400/20" onClick={() => setTrainingExpanded(true)} type="button"><Maximize2 className="size-3.5" /> Full-screen process</button> : <p className="mt-4 text-[11px] font-black uppercase tracking-[0.12em] text-rose-200">{v8BenchmarkMode ? "448 completed · waist failed · hips failed · SDK false" : fresh448Mode ? "Final test opened once · tuning forbidden · canonical WEAR views" : v8Mode ? "448 benchmark failed · private diagnostic only · SDK false" : "Private test only · real-photo validation pending · SDK false"}</p>}
+            </>}
           </div>
         </div>
       </section>
 
-      <section className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm xl:grid-cols-6">
+      <section className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm sm:grid-cols-2 xl:grid-cols-4" aria-label="WEAR model tabs">
+        <button className={cn("rounded-xl px-4 py-3 text-left", commercialMode ? "bg-emerald-800 text-white" : "bg-emerald-50 text-emerald-950 hover:bg-emerald-100")} onClick={() => { setTestMode("commercial-100"); setTrainingExpanded(false); resetResult(); }} type="button"><span className="block text-sm font-black">100 waist/hip product decisions</span><span className="mt-1 block text-xs">10 people · 100 products · Aiad vs V8</span></button>
+        <button className={cn("rounded-xl px-4 py-3 text-left", aiadMode ? "bg-teal-700 text-white" : "bg-teal-50 text-teal-900 hover:bg-teal-100")} onClick={() => { setTestMode("aiad-photo"); setCameraMode("raw"); setTrainingExpanded(false); resetResult(); const initial = selectedDataset ?? datasets.find((row) => row.setId === "shahnaz-2") ?? datasets[0]; if (initial) void applyDataset(initial); }} type="button"><span className="block text-sm font-black">Aiad ONNX · photos + lines</span><span className="mt-1 block text-xs">Saved models · upload · optional camera comparison</span></button>
+        <button className={cn("rounded-xl px-4 py-3 text-left", aiadBenchmarkMode ? "bg-teal-700 text-white" : "bg-teal-50 text-teal-900 hover:bg-teal-100")} onClick={() => { setTestMode("aiad-448"); setTrainingExpanded(false); resetResult(); }} type="button"><span className="block text-sm font-black">Aiad ONNX · all 448 WEAR</span><span className="mt-1 block text-xs">Fixed cohort · direct recorded-tape comparison</span></button>
         <button className={cn("rounded-xl px-4 py-3 text-left", testMode === "heldout-onnx" ? "bg-emerald-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("heldout-onnx"); resetResult(); const initial = selectedHeldoutModel ?? heldoutModels[0]; if (initial) void applyHeldoutModel(initial); }} type="button"><span className="block text-sm font-black">448 held-out models · ONNX only</span><span className={cn("mt-1 block text-xs", testMode === "heldout-onnx" ? "text-emerald-100" : "text-slate-500")}>No Apple Vision or camera pipeline</span></button>
-        <button className={cn("rounded-xl px-4 py-3 text-left", testMode === "photo-pipeline" ? "bg-blue-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("photo-pipeline"); setSelectedHeldoutScanId(""); resetResult(); const initial = selectedDataset ?? datasets.find((row) => row.setId === "shahnaz-2") ?? datasets[0]; if (initial) void applyDataset(initial); }} type="button"><span className="block text-sm font-black">Own photo · full camera pipeline</span><span className={cn("mt-1 block text-xs", testMode === "photo-pipeline" ? "text-blue-100" : "text-slate-500")}>Existing upload and Apple-assisted workflow</span></button>
-        <button className={cn("rounded-xl px-4 py-3 text-left", freshMode ? "bg-cyan-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("fresh-photo"); setTrainingExpanded(false); setSelectedHeldoutScanId(""); resetResult(); const initial = selectedDataset ?? datasets.find((row) => row.setId === "shahnaz-2") ?? datasets[0]; if (initial) void applyDataset(initial); }} type="button"><span className="block text-sm font-black">Fresh 3D ONNX · normal photo</span><span className={cn("mt-1 block text-xs", freshMode ? "text-cyan-100" : "text-slate-500")}>New H100 model · isolated from every previous model</span></button>
-        <button className={cn("rounded-xl px-4 py-3 text-left", v8Mode ? "bg-orange-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("v8-photo"); setTrainingExpanded(false); setSelectedHeldoutScanId(""); resetResult(); const initial = selectedDataset ?? datasets.find((row) => row.setId === "shahnaz-2") ?? datasets[0]; if (initial) void applyDataset(initial); }} type="button"><span className="block text-sm font-black">V8 waist + hips · normal photo</span><span className={cn("mt-1 block text-xs", v8Mode ? "text-orange-100" : "text-slate-500")}>Fresh student · private · bounded camera stages</span></button>
+        <button className={cn("rounded-xl px-4 py-3 text-left", testMode === "photo-pipeline" ? "bg-blue-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("photo-pipeline"); setCameraMode("apple-depth"); setSelectedHeldoutScanId(""); resetResult(); const initial = selectedDataset ?? datasets.find((row) => row.setId === "shahnaz-2") ?? datasets[0]; if (initial) void applyDataset(initial); }} type="button"><span className="block text-sm font-black">Legacy V6 ONNX · own photo</span><span className={cn("mt-1 block text-xs", testMode === "photo-pipeline" ? "text-blue-100" : "text-slate-500")}>Older model · Apple-assisted workflow</span></button>
+        <button className={cn("rounded-xl px-4 py-3 text-left", freshMode ? "bg-cyan-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("fresh-photo"); setCameraMode("apple-depth"); setTrainingExpanded(false); setSelectedHeldoutScanId(""); resetResult(); const initial = selectedDataset ?? datasets.find((row) => row.setId === "shahnaz-2") ?? datasets[0]; if (initial) void applyDataset(initial); }} type="button"><span className="block text-sm font-black">Fresh 3D ONNX · normal photo</span><span className={cn("mt-1 block text-xs", freshMode ? "text-cyan-100" : "text-slate-500")}>Our fresh model · camera comparison available</span></button>
+        <button className={cn("rounded-xl px-4 py-3 text-left", v8Mode ? "bg-orange-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("v8-photo"); setCameraMode("apple-depth"); setTrainingExpanded(false); setSelectedHeldoutScanId(""); resetResult(); const initial = selectedDataset ?? datasets.find((row) => row.setId === "shahnaz-2") ?? datasets[0]; if (initial) void applyDataset(initial); }} type="button"><span className="block text-sm font-black">Our V8 ONNX · normal photo</span><span className={cn("mt-1 block text-xs", v8Mode ? "text-orange-100" : "text-slate-500")}>Waist + hips · Apple + Depth Pro available</span></button>
         <button className={cn("rounded-xl px-4 py-3 text-left", v8BenchmarkMode ? "bg-red-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("v8-448"); setTrainingExpanded(false); resetResult(); }} type="button"><span className="block text-sm font-black">V8 · all 448 benchmark</span><span className={cn("mt-1 block text-xs", v8BenchmarkMode ? "text-red-100" : "text-slate-500")}>Completed · prediction versus WEAR truth</span></button>
         <button className={cn("rounded-xl px-4 py-3 text-left", fresh448Mode ? "bg-violet-700 text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100")} onClick={() => { setTestMode("fresh-448"); setTrainingExpanded(false); resetResult(); }} type="button"><span className="block text-sm font-black">Fresh ONNX · all 448 results</span><span className={cn("mt-1 block text-xs", fresh448Mode ? "text-violet-100" : "text-slate-500")}>Frozen final test · prediction versus WEAR truth</span></button>
       </section>
 
-      {v8BenchmarkMode ? <V8Benchmark448Lab /> : fresh448Mode ? <FreshSealed448Lab /> : <>
+      {commercialMode ? <CommercialSizingValidationLab /> : aiadBenchmarkMode ? <AiadBenchmark448Lab /> : v8BenchmarkMode ? <V8Benchmark448Lab /> : fresh448Mode ? <FreshSealed448Lab /> : <>
+      <section className="flex flex-wrap items-center gap-3 rounded-2xl border border-teal-200 bg-white p-3" aria-label="Selected person result views">
+        <button type="button" className={cn("rounded-xl px-4 py-3 text-sm font-black", photoResultView === "measurements" ? "bg-teal-700 text-white" : "bg-slate-100 text-slate-700")} aria-pressed={photoResultView === "measurements"} onClick={() => setPhotoResultView("measurements")}>Photo & body measurements</button>
+        <button type="button" className={cn("rounded-xl px-4 py-3 text-sm font-black", photoResultView === "product-sizes" ? "bg-teal-700 text-white" : "bg-teal-50 text-teal-900")} aria-pressed={photoResultView === "product-sizes"} onClick={() => setPhotoResultView("product-sizes")}>Product sizes · selected person</button>
+        <p className="text-xs text-slate-600">{selectedLabel} · switching views keeps this prediction</p>
+      </section>
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
         <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between gap-3">
@@ -1915,7 +2129,7 @@ export function WearV6PhotoLab() {
             </div>
           ) : (
             <div className="mt-4 flex flex-wrap gap-2">
-              <select className="min-w-56 flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold" onChange={(event) => { const row = datasets.find((item) => item.setId === event.target.value); if (row) void applyDataset(row); }} value={selectedDatasetId === "upload" ? "" : selectedDatasetId}>
+              <select aria-label="Saved test photo" className="min-w-56 flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold" onChange={(event) => { const row = datasets.find((item) => item.setId === event.target.value); if (row) { if (aiadMode) setCameraMode("raw"); void applyDataset(row); } }} value={selectedDatasetId === "upload" ? "" : selectedDatasetId}>
                 <option value="">Choose saved photo</option>
                 {datasets.map((row) => <option key={row.setId} value={row.setId}>{row.label}</option>)}
               </select>
@@ -1952,7 +2166,7 @@ export function WearV6PhotoLab() {
             </>
           ) : (
             <>
-              <p className="mt-2 text-xs leading-5 text-slate-500">{photoStudentMode ? `The ${v8Mode ? "V8" : "fresh"} ONNX receives only the cleaned silhouette, height, weight, calculated BMI and gender flags. Tape checks appear only after prediction.` : "Tape answers are never sent to v6. They appear only after prediction to show the error."}</p>
+              <p className="mt-2 text-xs leading-5 text-slate-500">{photoStudentMode ? `The ${studentLabel} ONNX receives only the cleaned silhouette, height, weight, calculated BMI and gender flags. Tape checks are used for comparison, never as model inputs.` : "Tape answers are never sent to v6. They appear only after prediction to show the error."}</p>
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <NumberField label="Height" onChange={(value) => { setHeightCm(value); resetResult(); }} required value={heightCm} />
                 <label className="block"><span className="mb-1.5 block text-xs font-black uppercase tracking-[0.12em] text-slate-500">Weight · required</span><span className="flex items-center rounded-xl border border-slate-200 px-3 focus-within:border-blue-500"><input className="min-w-0 flex-1 py-2.5 text-sm font-bold outline-none" min="25" onChange={(event) => { setWeightKg(event.target.value ? Number(event.target.value) : null); resetResult(); }} step="0.1" type="number" value={weightKg ?? ""} /><span className="text-xs font-bold text-slate-400">kg</span></span></label>
@@ -1960,9 +2174,19 @@ export function WearV6PhotoLab() {
               <div className="mt-3 grid grid-cols-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
                 {(["female", "male"] as const).map((value) => <button className={cn("rounded-lg px-3 py-2 text-sm font-black capitalize", gender === value ? "bg-blue-700 text-white" : "text-slate-500")} key={value} onClick={() => { setGender(value); resetResult(); }} type="button">{value}</button>)}
               </div>
-              {photoStudentMode ? <div className="mt-4 rounded-2xl border border-cyan-200 bg-cyan-50 p-3">
+              {aiadMode ? <div className="mt-4 rounded-2xl border border-teal-200 bg-teal-50 p-3">
+                <p className="text-xs font-black uppercase tracking-wide text-teal-900">Aiad input contract</p>
+                <label className="mt-3 block text-xs font-black text-teal-950">Photo segmentation<select aria-label="Aiad photo segmentation" className="mt-2 w-full rounded-lg border border-teal-300 bg-white p-2" disabled={running || freshLineRecalibrating} value={aiadSegmenter} onChange={(event) => { setAiadSegmenter(event.target.value as typeof aiadSegmenter); resetResult(); }}><option value="aiad-rembg">Aiad reference · rembg u2net_human_seg</option><option value="mediapipe">Existing MediaPipe · comparison</option></select></label>
+                {aiadStatus?.referenceSegmenterAvailable === false && aiadSegmenter === "aiad-rembg" ? <p className="mt-2 text-xs font-bold text-amber-800">The reference segmenter is not installed on this host yet. MediaPipe is a separate, explicitly labelled comparison.</p> : null}
+                <p className="mt-2 text-xs leading-5 text-teal-900">256 × 192 silhouette + profile → direct tape, width, inferred depth and shape code. Aiad’s separate row-endpoint function locates torso edges at fixed height fractions. No old model, tape check, manual line or Apple value enters his ONNX.</p>
+                <label className="mt-3 block text-xs font-black text-teal-950">Camera / width mode<select aria-label="Aiad camera mode" className="mt-2 w-full rounded-lg border border-teal-300 bg-white p-2" disabled={running || freshLineRecalibrating} value={cameraMode} onChange={(event) => setCameraMode(event.target.value as CameraMode)}><option value="raw">Raw Aiad ONNX · no camera correction</option><option value="apple">Apple Vision width comparison</option><option value="apple-depth">Apple Vision + Depth Pro width comparison</option></select></label>
+                <p className="mt-2 text-xs leading-5 text-teal-800">{aiadStatus?.camera?.note ?? "Checking camera-tool availability…"}</p>
+                <p className="mt-2 text-xs leading-5 text-teal-800">After prediction, open the full-screen editor. Drag lines for immediate width/depth previews; camera comparisons refresh after release. The guides are not learned anatomical lines. Direct tape stays unchanged.</p>
+              </div> : photoStudentMode ? <div className="mt-4 rounded-2xl border border-cyan-200 bg-cyan-50 p-3">
                 <p className="text-xs font-black uppercase tracking-[0.12em] text-cyan-800">{v8Mode ? "V8 input contract" : "Fresh input contract"}</p>
                 <p className="mt-2 text-[11px] leading-5 text-cyan-900">{v8Mode ? "Waist, hips, A-to-B width, depth, shape and tape are outputs—not inputs. V8 receives only the cleaned front silhouette, height, weight, BMI and gender. Apple + Depth Pro run afterward as a clearly labeled comparison; they do not change the direct tape head." : "Chest, waist, hips, depth and tape are outputs—not inputs. The fresh ONNX stays isolated from Apple, Depth Pro, old V6/V7 and saved WEAR answers. After ONNX predicts its rows, Apple + Depth Pro measure those same visible endpoints for the clearly labeled fusion stage."}</p>
+                <label className="mt-3 block text-xs font-black text-cyan-950">Run this model with<select aria-label={`${studentLabel} camera mode`} className="mt-2 w-full rounded-lg border border-cyan-300 bg-white p-2" disabled={running || freshLineRecalibrating} value={cameraMode} onChange={(event) => { setCameraMode(event.target.value as CameraMode); resetResult(); }}><option value="raw">Raw {studentLabel} ONNX only</option><option value="apple">{studentLabel} ONNX + Apple Vision</option><option value="apple-depth">{studentLabel} ONNX + Apple Vision + Depth Pro</option></select></label>
+                <p className="mt-2 text-xs leading-5 text-cyan-800">{aiadStatus?.camera?.note ?? "Checking the private Mac camera worker…"}</p>
               </div> : <div className="mt-4 rounded-2xl border border-blue-200 bg-blue-50 p-3">
                 <NumberField label={gender === "male" ? "Customer chest" : "Customer bust / chest"} onChange={(value) => { setReportedChestCm(value); resetResult(); }} required={gender === "male"} value={reportedChestCm} />
                 <p className="mt-2 text-[11px] leading-4 text-blue-800">{gender === "male" ? "Required by the product profile." : "Optional for women."} It is shown in the contract but never used as a saved WEAR training answer.</p>
@@ -1979,22 +2203,43 @@ export function WearV6PhotoLab() {
           )}
           <button className={cn("mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none", testMode === "heldout-onnx" ? "bg-emerald-700 shadow-lg shadow-emerald-200" : v8Mode ? "bg-orange-700 shadow-lg shadow-orange-200" : freshMode ? "bg-cyan-700 shadow-lg shadow-cyan-200" : "bg-blue-700 shadow-lg shadow-blue-200")} disabled={!activeModelAvailable || !imageUrl || !profileReady || running || (testMode === "heldout-onnx" && !selectedHeldoutScanId)} onClick={() => void runFullTest()} type="button">
             {running ? <Loader2 className="size-4 animate-spin" /> : <BrainCircuit className="size-4" />}
-            {testMode === "heldout-onnx" ? running ? "Running ONNX only…" : prediction ? "Run ONNX again" : "Run ONNX only" : photoStudentMode ? running ? cameraFusionRunning ? `${v8Mode ? "V8" : "Fresh"} result ready · applying Apple + Depth Pro…` : `Running ${v8Mode ? "V8" : "fresh"} ONNX…` : freshPrediction ? `Run ${v8Mode ? "V8" : "fresh"} ONNX again` : `Run ${v8Mode ? "V8" : "fresh"} ONNX on this photo` : stageLabel(runState)}
+            {testMode === "heldout-onnx" ? running ? "Running ONNX only…" : prediction ? "Run ONNX again" : "Run ONNX only" : photoStudentMode ? running ? cameraFusionRunning ? `${studentLabel} result ready · applying camera tools…` : `Running ${studentLabel} ONNX…` : freshPrediction ? `Run ${studentLabel} ONNX again` : `Run ${studentLabel} ONNX on this photo` : stageLabel(runState)}
           </button>
-          {!activeModelAvailable ? <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold leading-5 text-amber-800">{photoStudentMode ? activeStudentStatus?.error ?? `The ${v8Mode ? "V8" : "fresh"} ONNX package is unavailable.` : "The audited ONNX artifact is unavailable. This button unlocks automatically after a private model is installed."}</p> : null}
+          {!activeModelAvailable ? <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold leading-5 text-amber-800">{photoStudentMode ? activeStudentStatus?.error ?? (aiadMode && !activeStudentStatus ? "Checking Aiad’s model; this button unlocks when verification finishes." : `The ${studentLabel} ONNX package is unavailable.`) : "The audited ONNX artifact is unavailable. This button unlocks automatically after a private model is installed."}</p> : null}
           {runError ? <p className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-bold leading-5 text-red-800"><AlertTriangle className="mr-1 inline size-3.5" />{runError}</p> : null}
         </div>
       </section>
 
+      <BodyTapeComparison input={selectedTapeInput} actuals={actuals} personLabel={selectedLabel} pending={running} />
+      <div hidden={photoResultView !== "product-sizes"}>
+        <ProductSizeImpactPanel
+          key={`${selectedDatasetId}:${selectedHeldoutScanId}:${imageUrl}`}
+          inputs={productSizeInputs}
+          personLabel={selectedLabel}
+          gender={gender}
+        />
+      </div>
+      <div hidden={photoResultView !== "measurements"}>
       {photoStudentMode && freshPrediction && imageUrl && runState === "ready" ? (
-        <FreshGeometryResult
+        aiadMode ? <AiadPhotoWorkbench
+          key={`${imageUrl}:${freshPrediction.model.sha256}`}
           actuals={actuals}
           imageUrl={imageUrl}
-          key={`${freshPrediction.model.sha256}:${lineGeometryKey(lineMapFromFreshPrediction(freshPrediction))}`}
+          imageSize={imageSize}
+          prediction={freshPrediction}
+          cameraMode={cameraMode}
+          onCameraModeChange={setCameraMode}
+          onCalibrate={calibrateAiadLines}
+          onOpenProductSizes={() => setPhotoResultView("product-sizes")}
+        /> : <FreshGeometryResult
+          actuals={actuals}
+          imageUrl={imageUrl}
+          key={`${imageUrl}:${freshPrediction.model.sha256}`}
           lineEditError={freshLineEditError}
-          lineRecalibrating={freshLineRecalibrating}
+          lineRecalibrating={freshLineRecalibrating || cameraFusionRunning}
           onRecalculateLines={recalculateFreshLines}
           prediction={freshPrediction}
+          applyLabel={aiadMode ? cameraMode === "raw" ? "Apply line edits · keep raw predictions" : cameraMode === "apple" ? "Apply lines + Apple Vision" : "Apply lines + Apple + Depth Pro" : undefined}
         />
       ) : prediction && imageUrl && runState === "ready" ? (
         testMode === "heldout-onnx" && selectedHeldoutModel ? (
@@ -2033,10 +2278,11 @@ export function WearV6PhotoLab() {
       ) : (
         <section className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
           {running ? <Loader2 className="mx-auto size-8 animate-spin text-blue-700" /> : <ScanLine className="mx-auto size-8 text-slate-400" />}
-          <h2 className="mt-3 text-xl font-black text-slate-900">{testMode === "heldout-onnx" ? running ? "ONNX is running" : "Choose a held-out model and run ONNX" : photoStudentMode ? running ? `${v8Mode ? "V8" : "Fresh"} ONNX is running` : "Choose Shahnaz, Shane, or upload a photo" : stageLabel(runState)}</h2>
-          <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-500">{testMode === "heldout-onnx" ? "The result shows predicted versus real lines, front width, depth, 32-point shape and circumference for the selected held-out person. Apple Vision is not part of this path." : v8Mode ? "The V8 result shows the canonical silhouette, waist and hip row overlays, A-to-B width, depth, direct WEAR-tape heads, 32-point cross-sections and ratios. It is private research output, not an accuracy claim." : freshMode ? "The fresh result will show the exact canonical silhouette, five predicted row overlays, A-to-B widths, depth, direct tape heads, all 32-point cross-sections, ratios and learned camera outputs. Normal-photo accuracy is still unproven." : "The editor will show WEAR RGB lines, separate mask and Meta comparisons, hidden-by-default saved red lines, live camera-corrected measurements, raw WEAR-trained depth, 32-point body shapes, and no ellipse controls."}</p>
+          <h2 className="mt-3 text-xl font-black text-slate-900">{testMode === "heldout-onnx" ? running ? "ONNX is running" : "Choose a held-out model and run ONNX" : photoStudentMode ? running ? `${studentLabel} ONNX is running` : "Choose Shahnaz, Shane, or upload a photo" : stageLabel(runState)}</h2>
+          <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-500">{aiadMode ? "The result includes Aiad’s measurements and uncertainty, canonical silhouette, his editable A-to-B row guides, inferred depths, ratios and shape code. Camera tools are optional and never hide the raw result." : testMode === "heldout-onnx" ? "The result shows predicted versus real lines, front width, depth, 32-point shape and circumference for the selected held-out person. Apple Vision is not part of this path." : v8Mode ? "The V8 result shows the canonical silhouette, waist and hip row overlays, A-to-B width, depth, direct WEAR-tape heads, 32-point cross-sections and ratios. It is private research output, not an accuracy claim." : freshMode ? "The fresh result will show the exact canonical silhouette, five predicted row overlays, A-to-B widths, depth, direct tape heads, all 32-point cross-sections, ratios and learned camera outputs. Normal-photo accuracy is still unproven." : "The editor will show WEAR RGB lines, separate mask and Meta comparisons, hidden-by-default saved red lines, live camera-corrected measurements, raw WEAR-trained depth, 32-point body shapes, and no ellipse controls."}</p>
         </section>
       )}
+      </div>
       </>}
 
       {trainingExpanded ? (

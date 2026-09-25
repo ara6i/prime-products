@@ -1,0 +1,138 @@
+{
+  "batch": "12",
+  "approvals": {
+    "25": {
+      "color": "Air Force Blue",
+      "constraint": "Use the Air Force blue clean tapered performance jogger once only for Spring or Summer Sports / Workout. Pair with white, ecru, soft gray, restrained olive, or muted navy performance tops and simple technical sneakers; do not add cargo pockets, a bulky layer, or another shiny garment."
+    },
+    "38": {
+      "color": "Brown",
+      "constraint": "Use the brown regular-proportion faux-suede zip jacket once only for Spring or Fall Casual Everyday, Travel, or Date Night. Pair with ecru, white, soft gray, pale blue, stone, or clean dark-indigo straight bottoms; keep the shirt and footwear minimal so the warm jacket remains the single statement."
+    }
+  },
+  "rejectionGroups": [
+    {
+      "cards": [1, 2, 9, 11, 16],
+      "reason": "Floating, hanger-only or laid-flat shirt imagery does not prove adult-male shoulder, chest, sleeve, body length, or hem behavior, and these plain shirt roles are already better represented by approved on-body identities."
+    },
+    {
+      "cards": [3],
+      "reason": "The hanger-only fleece-lined plaid shirt looks bulky and inexpensive, with saturated checks, gold-tone buttons and no adult fit proof."
+    },
+    {
+      "cards": [4],
+      "reason": "The plaid shirt is extremely long and oversized, with dropped shoulders, sleeve volume, multiple visible supplier labels and an uncontrolled layered silhouette."
+    },
+    {
+      "cards": [5],
+      "reason": "The close-up product image combines a striped shirt collar with an artificial V-neck cardigan front and never proves the complete adult torso or hem proportion."
+    },
+    {
+      "cards": [6],
+      "reason": "The floating shirt uses a dense novelty Nordic-style print, a visible hang tag and no on-body proof, making it costume-led rather than modern and versatile."
+    },
+    {
+      "cards": [7],
+      "reason": "The asymmetrical button placement, severe narrow torso and sleeves, high collar and product-only rendering create a dated gimmick shirt."
+    },
+    {
+      "cards": [8],
+      "reason": "The on-body shirt is tight through the chest, upper arms and waist, with dated double utility pockets and a short fitted proportion."
+    },
+    {
+      "cards": [10],
+      "reason": "The product-only shirt has a narrow synthetic body, tight sleeves and a high stand collar that reads dated formal rather than clean modern."
+    },
+    {
+      "cards": [12],
+      "reason": "The half-sleeve shirt is very wide and long, with oversized utility pockets and a conspicuous tan supplier label near the hem."
+    },
+    {
+      "cards": [13],
+      "reason": "The inspected black, dark-gray and white shirts use an exaggerated dropped shoulder, long body and wide sleeves; the light option remains shapeless rather than controlled relaxed."
+    },
+    {
+      "cards": [14],
+      "reason": "The shirt has an extremely dropped shoulder, oversized sleeve and long body, producing the shapeless baggy-top problem across the visible variants."
+    },
+    {
+      "cards": [15],
+      "reason": "The fitted shirt is narrow through the torso and sleeves and repeats the skinny office-shirt proportion being removed."
+    },
+    {
+      "cards": [17, 19, 22, 23, 28],
+      "reason": "The trousers are excessively wide or loose and visibly puddle over the shoes; close inspection of the colored variants confirmed the same baggy full-length silhouette."
+    },
+    {
+      "cards": [18],
+      "reason": "The synthetic two-tone pant has an uncontrolled wide leg, extended drawstring and repetitive composited travel backgrounds that weaken product trust."
+    },
+    {
+      "cards": [20, 21],
+      "reason": "Product-only cropped or loose drawstring trousers provide no adult proof of rise, seat, thigh, knee, hem, or footwear relationship."
+    },
+    {
+      "cards": [24],
+      "reason": "The dark active jogger is overloaded with cargo panels, exposed zippers and long drawstrings, creating busy generic gymwear."
+    },
+    {
+      "cards": [26],
+      "reason": "Every inspected color has excessive thigh volume and bunches heavily above the elastic cuffs, recreating the baggy jogger problem."
+    },
+    {
+      "cards": [27],
+      "reason": "The very wide cropped pant, low crotch and decorative tassel drawstring create a costume-like silhouette rather than a versatile modern bottom."
+    },
+    {
+      "cards": [29],
+      "reason": "The product-only jacket mixes contrast denim-look sleeves, brown shoulder panels and diamond quilting in a dated patchwork construction."
+    },
+    {
+      "cards": [30],
+      "reason": "The bulky fleece-lined jacket is product-only and carries conspicuous FASHION and sleeve patches with dated contrast stitching."
+    },
+    {
+      "cards": [31],
+      "reason": "The washed black faux-leather blazer hybrid has multiple diagonal zippers, flap pockets and a crumpled synthetic finish with no fit proof."
+    },
+    {
+      "cards": [32],
+      "reason": "Although relatively clean, the cropped torso view hides the complete hem and lower-body relationship; both variants are repetitive dark navy with a narrow office-jacket proportion."
+    },
+    {
+      "cards": [33],
+      "reason": "The otherwise clean product-only knit jacket has no adult fit proof and carries a visible chest brand plate; it does not add enough value over approved layers."
+    },
+    {
+      "cards": [34],
+      "reason": "Both faux-leather variants use an excessively tall stand collar, long synthetic body and generic high-street motorcycle finish."
+    },
+    {
+      "cards": [35],
+      "reason": "The product-only dark jacket uses loud double shoulder stripes, striped ribbing and a dated generic varsity construction."
+    },
+    {
+      "cards": [36],
+      "reason": "The windbreaker is extremely oversized and long with high-contrast panels, elastic bulk and visible chest branding."
+    },
+    {
+      "cards": [37],
+      "reason": "The two-tone faux-leather racing jacket has giant NOOPER lettering, high-contrast panels and a narrow dated shape."
+    },
+    {
+      "cards": [39],
+      "reason": "The product-only utility jacket is overloaded with chest and lower pockets, epaulettes, stitching and an embroidered pocket emblem, with no fit proof."
+    },
+    {
+      "cards": [40],
+      "reason": "The glossy crocodile-texture faux-leather bomber is product-only, bulky, repetitive black and visibly inexpensive."
+    }
+  ],
+  "qaSummary": [
+    "40 identities and all 145 recorded color images rendered; 185 displayed images loaded with zero broken files.",
+    "2 accepted with one exact color and variant selected: one active bottom and one outerwear identity.",
+    "38 rejected after the base pass and close inspection of 16 promising color variants.",
+    "Accepted colors are Air Force blue and brown; no top passed because every candidate was skinny, uncontrolled oversized, branded, novelty-led, or lacked reliable fit proof.",
+    "Rejections include hanger-only shirts, skinny formal tops, overlong plaid layers, puddled sweatpants, wide cropped trousers, cargo-heavy joggers, patchwork quilting, logo-led fleece, dated racing leather, oversized windbreakers and shiny synthetic bombers."
+  ]
+}

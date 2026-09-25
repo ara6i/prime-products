@@ -1,0 +1,28 @@
+{
+  "outputDir": "summer-date-luxury-pilot-s192",
+  "scenarioId": "S192",
+  "occasion": "Date Night",
+  "season": "Summer",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s190-summer-date-midrange-core.json",
+  "excludeCandidateKeys": ["T4"],
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-top-bottom-shoe-bag-and-watch",
+  "comparisonTitle": "S192 · Summer Date Night · Luxury local screen",
+  "comparisonSubtitle": "Fifteen unique unreserved Summer Date candidates after the S190 top hold",
+  "comparisonNote": "Require silk-cashmere, linen-silk, handwoven calf or equivalent Luxury proof, romantic color and exact drape · no relabeling of mass-market warm-weather pieces · not UI integrated",
+  "coreTitle": "S192 · provisional Summer Date Night Luxury core",
+  "coreSubtitle": "No remaining local garment reaches the Summer Luxury Date visual bar · five roles unresolved",
+  "coreNote": "Zero provisional holds after current uniqueness exclusion and Luxury re-evaluation · no complete outfit · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "shoe", "bag", "watch"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category":"top","searchPhrase":"men soft coral silk cashmere fine gauge short sleeve knit polo luxury summer date","targetProduct":"soft-coral silk-cashmere fine-gauge short-sleeve knit polo with hand-finished collar","customerRetailTarget":"$300-$450"},
+    {"category":"bottom","searchPhrase":"men warm ivory linen silk high rise double pleat trouser luxury summer date","targetProduct":"warm-ivory linen-silk high-rise double-pleat trouser with hand-finished waistband and exact break","customerRetailTarget":"$380-$550"},
+    {"category":"shoe","searchPhrase":"men tobacco handwoven calf suede handmade loafer luxury summer date","targetProduct":"tobacco handwoven-calf-and-suede Luxury low-profile loafer","customerRetailTarget":"$420-$600"},
+    {"category":"bag","searchPhrase":"men powder blue cognac full grain leather compact crossbody luxury summer date","targetProduct":"powder-blue and cognac full-grain hand-finished compact crossbody","customerRetailTarget":"$650-$900"},
+    {"category":"watch","searchPhrase":"men champagne dial tan leather thin case luxury watch summer date","targetProduct":"champagne-dial thin-case Luxury watch with fine tan leather strap","customerRetailTarget":"$350-$700"}
+  ]
+}

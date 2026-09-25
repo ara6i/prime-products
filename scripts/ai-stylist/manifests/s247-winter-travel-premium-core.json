@@ -1,0 +1,27 @@
+{
+  "outputDir": "winter-travel-premium-pilot-s247",
+  "scenarioId": "S247",
+  "occasion": "Travel",
+  "season": "Winter",
+  "budget": "Premium",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s246-winter-travel-midrange-core.json",
+  "status": "visual-comparison-complete-no-premium-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S247 · Winter Travel · Premium local screen",
+  "comparisonSubtitle": "The unique Winter Travel remainder re-evaluated for Premium warmth and finish",
+  "comparisonNote": "Require silk-merino, wool-silk travel drape, traceable down, handmade weather resistance and Premium luggage construction · not UI integrated",
+  "coreTitle": "S247 · provisional Winter Travel Premium core",
+  "coreSubtitle": "No remaining local garment reaches the Premium Travel bar · five roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men plum silk merino travel crew winter premium", "targetProduct": "plum silk-merino fine-gauge travel crew", "customerRetailTarget": "$180-$240"},
+    {"category": "bottom", "searchPhrase": "men pale taupe wool silk travel trouser winter premium", "targetProduct": "pale-taupe wool-silk Premium travel trouser", "customerRetailTarget": "$220-$300"},
+    {"category": "outerwear", "searchPhrase": "men winter white traceable down short puffer travel premium", "targetProduct": "winter-white Premium traceable-down short travel puffer", "customerRetailTarget": "$320-$420"},
+    {"category": "shoe", "searchPhrase": "men cream sage handmade weather resistant sneaker boot premium", "targetProduct": "cream-and-sage handmade weather-resistant sneaker boot", "customerRetailTarget": "$240-$320"},
+    {"category": "bag", "searchPhrase": "men saffron premium canvas leather weekender winter travel", "targetProduct": "saffron Premium canvas-and-leather compact weekender", "customerRetailTarget": "$160-$220"}
+  ]
+}

@@ -6,11 +6,13 @@ import { CategoryCatalogView } from "./CategoryCatalogView";
 
 type CategoryCatalogExperienceProps = {
   catalog: CategoryCatalog;
+  initialBrand?: string;
 };
 
 export function CategoryCatalogExperience({
   catalog,
+  initialBrand,
 }: CategoryCatalogExperienceProps) {
-  const state = useCategoryCatalog(catalog);
+  const state = useCategoryCatalog(catalog, { initialBrand });
   return <CategoryCatalogView catalog={catalog} state={state} />;
 }

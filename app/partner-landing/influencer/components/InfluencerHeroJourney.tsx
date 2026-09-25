@@ -10,7 +10,7 @@ import {
   TiktokLogo,
 } from "@phosphor-icons/react";
 import Image from "next/image";
-import { useCreatorLanguage } from "../../i18n/CreatorLanguageProvider";
+import { useOptionalCreatorLanguage } from "../../i18n/CreatorLanguageProvider";
 import styles from "./influencerLanding.module.css";
 
 const HERO_STEPS = [
@@ -23,12 +23,25 @@ const HERO_STEPS = [
 const CREATOR_IMAGE = "/media/partner-landing/creator-orange-white.png";
 const CAMPAIGN_IMAGE = "/media/partner-landing/optimized/creator-campaign-affiliate.webp";
 
+function translateFallback(
+  value: string,
+  replacements?: Record<string, string | number>,
+) {
+  if (!replacements) return value;
+
+  return Object.entries(replacements).reduce(
+    (translated, [key, replacement]) =>
+      translated.replaceAll(`{${key}}`, String(replacement)),
+    value,
+  );
+}
+
 function StepRail({ number }: { number: string }) {
   return <div className={styles.stepRail}><span>{number}</span><i aria-hidden /></div>;
 }
 
 export function InfluencerHeroJourney() {
-  const { t } = useCreatorLanguage();
+  const t = useOptionalCreatorLanguage()?.t ?? translateFallback;
 
   return (
     <div className={styles.heroJourney}>

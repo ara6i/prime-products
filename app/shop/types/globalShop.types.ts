@@ -1,4 +1,4 @@
-export type GlobalShopCategory = "Women" | "Men" | "Denim" | "Accessories";
+export type GlobalShopCategory = "Women" | "Men" | "Accessories";
 
 export type GlobalShopCategoryFilter = "All" | GlobalShopCategory;
 

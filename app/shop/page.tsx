@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
+import { Bodoni_Moda } from "next/font/google";
 import { GlobalShopExperience } from "./components/GlobalShopExperience";
+
+const supplierSerif = Bodoni_Moda({
+  variable: "--font-supplier-serif",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "PrimeStyleAI Shop · Fashion, styled and fitted for you",
@@ -8,5 +16,9 @@ export const metadata: Metadata = {
 };
 
 export default function GlobalShopPage() {
-  return <GlobalShopExperience />;
+  return (
+    <div className={supplierSerif.variable}>
+      <GlobalShopExperience />
+    </div>
+  );
 }

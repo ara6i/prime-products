@@ -139,8 +139,7 @@ const EXTRA_ROWS = [
     underChestCm: 0,
     cup: "B",
     bra: null,
-    frontImageUrl: "/try-on-test/sizing-lab/shahnaz-2-front.jpg",
-    alternateFrontImageUrl: "/try-on-test/sizing-lab/shahnaz-2-no-tape-front.jpg",
+    frontImageUrl: "/try-on-test/sizing-lab/shahnaz-2-no-tape-front.jpg",
     sideImageUrl: "/try-on-test/sizing-lab/shahnaz-2-side.jpg",
   },
   {
@@ -252,7 +251,7 @@ const EXTRA_ROWS = [
   },
   {
     setId: "delaram-2",
-    label: "Delaram 2 · female · 168 cm · 70.80 kg · tape photo",
+    label: "Delaram 2 · female · 168 cm · 70.80 kg · no-tape front + saved side",
     gender: "female" as const,
     heightCm: 168,
     weightKg: 70.8,
@@ -270,7 +269,7 @@ const EXTRA_ROWS = [
     underChestCm: 0,
     cup: "C",
     bra: null,
-    frontImageUrl: "/try-on-test/sizing-lab/delaram-2-front.jpg",
+    frontImageUrl: "/try-on-test/sizing-lab/delaram-front.jpg",
     sideImageUrl: "/try-on-test/sizing-lab/delaram-side.jpg",
   },
   {

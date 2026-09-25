@@ -31,7 +31,7 @@ const SOCIAL_LINKS = [
 ] as const;
 
 const QUICK_LINKS = [
-  { id: "influencer-network", label: "Creator network" },
+  { id: "influencer-network", label: "Global creator network" },
   { id: "merchant-dashboard", label: "Merchant dashboard" },
   { id: "pdp-studio-feature", label: "PDP Studio" },
 ] as const;

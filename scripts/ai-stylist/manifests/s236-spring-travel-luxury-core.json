@@ -1,0 +1,27 @@
+{
+  "outputDir": "spring-travel-luxury-pilot-s236",
+  "scenarioId": "S236",
+  "occasion": "Travel",
+  "season": "Spring",
+  "budget": "Luxury",
+  "bank": "separates",
+  "plannedPosition": 1,
+  "candidateSourceManifest": "scripts/ai-stylist/manifests/s235-spring-travel-premium-core.json",
+  "status": "visual-comparison-complete-no-luxury-core-candidates-pass-awaiting-five-unique-roles",
+  "comparisonTitle": "S236 · Spring Travel · Luxury local screen",
+  "comparisonSubtitle": "The unique Spring Travel remainder re-evaluated for Luxury material and hand finish",
+  "comparisonNote": "Require silk-cashmere, technical wool-silk, hand-finished suede or equivalent Luxury proof · no relabeling of mass-market pieces · not UI integrated",
+  "coreTitle": "S236 · provisional Spring Travel Luxury core",
+  "coreSubtitle": "No remaining local garment reaches the Luxury Travel bar · five roles unresolved",
+  "coreNote": "Zero provisional holds · no complete outfit · no price-valid claim · not UI integrated",
+  "frontRunnerKeys": [],
+  "missingSlots": ["top", "bottom", "outerwear", "shoe", "bag"],
+  "queuedRoles": [],
+  "deferredPriceTierRoles": [
+    {"category": "top", "searchPhrase": "men dusty coral silk cashmere travel polo spring luxury", "targetProduct": "dusty-coral silk-cashmere fine-gauge travel polo", "customerRetailTarget": "$300-$450"},
+    {"category": "bottom", "searchPhrase": "men soft sage technical wool silk travel trouser luxury", "targetProduct": "soft-sage technical wool-silk Luxury travel trouser", "customerRetailTarget": "$380-$550"},
+    {"category": "outerwear", "searchPhrase": "men washed sky blue lamb suede travel overshirt luxury", "targetProduct": "washed-sky hand-finished lamb-suede travel overshirt", "customerRetailTarget": "$700-$1,000"},
+    {"category": "shoe", "searchPhrase": "men ecru handmade calf leather travel sneaker luxury", "targetProduct": "ecru handmade calf-leather Luxury travel sneaker", "customerRetailTarget": "$420-$600"},
+    {"category": "bag", "searchPhrase": "men caramel full grain leather compact weekender luxury", "targetProduct": "caramel full-grain leather Luxury compact weekender", "customerRetailTarget": "$650-$900"}
+  ]
+}
