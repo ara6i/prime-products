@@ -25,7 +25,7 @@ export async function generateMetadata({
   const catalog = await getCategoryCatalog(categoryId);
   if (!catalog) return { title: "Category not found · PrimeStyleAI" };
   return {
-    title: `${catalog.label} Edit · PrimeStyleAI Global Shop`,
+    title: `${catalog.label} Edit · PrimeStyleAI Global Shopping Network`,
     description: catalog.intro,
   };
 }

@@ -36,7 +36,7 @@ describe("Shop receipt readability and interactions", () => {
     render(<ShopReceiptSidebar />);
     const region = screen.getByRole("region", { name: "Receipt items" });
     expect(region.tabIndex).toBe(0);
-    expect(within(region).getByRole("list", { name: "Products in your bag" }).children).toHaveLength(2);
+    expect(within(region).getByRole("list", { name: "Products in your saved look" }).children).toHaveLength(2);
     expect(within(region).queryByText("SUBTOTAL")).toBeNull();
     expect(within(region).queryByRole("button", { name: "Continue shopping" })).toBeNull();
     expect(screen.getByText("$362.00")).toBeTruthy();
@@ -60,10 +60,10 @@ describe("Shop receipt readability and interactions", () => {
     bag.bagCount = 12;
     const user = userEvent.setup();
     render(<ShopReceiptSidebar />);
-    expect(screen.getByRole("list", { name: "Products in your bag" }).children).toHaveLength(12);
+    expect(screen.getByRole("list", { name: "Products in your saved look" }).children).toHaveLength(12);
     await user.click(screen.getByRole("button", { name: "Increase quantity of Item 12, S" }));
     expect(bag.changeQuantity).toHaveBeenCalledExactlyOnceWith("qa-11", 1);
-    await user.click(screen.getByRole("button", { name: "Remove Item 12, S from bag" }));
+    await user.click(screen.getByRole("button", { name: "Remove Item 12, S from saved look" }));
     expect(bag.remove).toHaveBeenCalledExactlyOnceWith("qa-11");
   });
 

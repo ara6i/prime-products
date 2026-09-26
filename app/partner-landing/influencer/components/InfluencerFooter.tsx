@@ -33,7 +33,7 @@ export function InfluencerFooter({
     >
       <div className={styles.footerFrame}>
         <section className={styles.footerMain} aria-label={t("PrimeStyleAI footer")}>
-          <Link href="/influencers" className={styles.footerMark} aria-label="PrimeStyleAI home">
+          <Link href="/shop" className={styles.footerMark} aria-label="PrimeStyleAI home">
             <Image
               src="/media/partner-landing/optimized/primestyleai-mark-256.webp"
               alt="PrimeStyleAI"
@@ -44,15 +44,15 @@ export function InfluencerFooter({
           </Link>
 
           <div className={styles.footerBrand}>
-            <h2>Prime Style AI</h2>
-            <p>{t("Where every look becomes a story worth sharing.")}</p>
+            <h2>PrimeStyleAI</h2>
+            <p>{t("Fashion, styled around you across one connected network.")}</p>
           </div>
 
           <div className={styles.footerContent}>
             <div className={styles.footerContact}>
               <h3>{t("Contact")}</h3>
               <a href="mailto:support@primestyleai.com"><EnvelopeSimple size={16} /> support@primestyleai.com</a>
-              <span><MapPin size={16} /> {t("Laguna Niguel, California")}</span>
+              <span><MapPin size={16} /> {t("1968 S. Coast Hwy #4471, Laguna Beach, CA 92651")}</span>
               <nav aria-label={t("Social links")}>
                 {SOCIAL_LINKS.map(({ href, label, Icon }) => (
                   <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label}>
@@ -70,25 +70,30 @@ export function InfluencerFooter({
                 </>
               ) : (
                 <>
-                  <Link href="/influencers/dashboard/outfit-studio">{t("Open Outfit Studio")} <ArrowUpRight size={14} weight="bold" /></Link>
-                  <Link href="#creator-journey">{t("How it works")} <ArrowUpRight size={14} weight="bold" /></Link>
+                  <Link href="/shop#ai-stylist-scenario">{t("Try the AI Stylist")} <ArrowUpRight size={14} weight="bold" /></Link>
+                  <Link href="/shop#merchant-system">{t("How the network works")} <ArrowUpRight size={14} weight="bold" /></Link>
                 </>
               )}
             </div>
 
             <nav className={styles.footerQuickLinks} aria-label={t("Footer navigation")}>
               <h3>{t("Quick links")}</h3>
-              <Link href="#outfit-studio">{t("Outfit Studio")}</Link>
-              <Link href="#creator-journey">{t("How creators earn")}</Link>
-              <Link href="#creator-commission">{t("Commission")}</Link>
+              <Link href="/shop">{t("Shop")}</Link>
+              <Link href="/merchants">{t("Merchants")}</Link>
+              <Link href="/influencers">{t("Creators")}</Link>
+              <Link href="/suppliers">{t("Suppliers")}</Link>
             </nav>
           </div>
 
           <div className={styles.footerLegal}>
-            <span>© {new Date().getFullYear()} Prime Style AI</span>
+            <span>© {new Date().getFullYear()} PrimeStyleAI</span>
             <nav aria-label={t("Legal links")}>
-              <Link href="/privacy-policy">{t("Privacy policy")}</Link>
-              <Link href="/terms">{t("Terms")}</Link>
+              <Link href="/terms">{t("Terms & participation")}</Link>
+              <Link href="/privacy-policy">{t("Privacy")}</Link>
+              <Link href="/privacy-policy#section-3">{t("AI & photo data")}</Link>
+              <Link href="/terms#section-22">{t("Accessibility")}</Link>
+              <Link href="/privacy-policy#section-6">{t("Cookie & privacy choices")}</Link>
+              <a href="mailto:support@primestyleai.com">{t("Contact")}</a>
             </nav>
           </div>
         </section>

@@ -228,6 +228,12 @@ export function MerchantPdpSdkSection({
                 Upload one photo to get your recommended size and see the Arc
                 Jacket on you.
               </span>
+              <small>
+                This interactive demo uses a prepared model photo. AI sizing and
+                virtual try-on are estimates and illustrations, not guarantees of
+                actual fit or appearance. Live photo processing requires separate
+                consent.
+              </small>
             </div>
 
             <div className={styles.sdkCtaWrap}>
@@ -298,6 +304,9 @@ export function MerchantPdpSdkSection({
                 showPoweredBy
                 className={styles.sdkRoot}
                 classNames={{ button: styles.sdkButton }}
+                addToBagLabel="Save to look"
+                continueShoppingLabel="Keep styling"
+                backToProductPageLabel="Back to Arc Jacket"
               />
             </div>
           </article>

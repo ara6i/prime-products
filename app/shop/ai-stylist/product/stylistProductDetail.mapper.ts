@@ -121,8 +121,8 @@ function productInformation(product: StylistCatalogProduct): ProductInformationS
     {
       id: "shipping",
       title: "Shipping & returns",
-      summary: "Delivery timing and return eligibility are confirmed by the connected merchant before checkout.",
-      items: ["Secure network checkout", "Merchant stock and delivery are rechecked before purchase"],
+      summary: "Delivery and return details are shown with each available product.",
+      items: ["Current availability", "Delivery details before purchase"],
     },
   ];
 }

@@ -48,10 +48,10 @@ const visualSlots = [
   {
     key: "influencer",
     number: "04",
-    title: "Influencer",
+    title: "Creator",
     description: "Creator and shoppable content visual",
     className: styles.influencerPlaceholder,
-    ariaLabel: "Influencer image",
+    ariaLabel: "Creator image",
   },
 ] as const;
 
@@ -68,7 +68,7 @@ export function ShopMerchantSystemSection() {
             <span className={styles.sideMarker} aria-hidden="true" />
             <p className={styles.kicker}>Merchants</p>
             <strong>Built for your store</strong>
-            <span>Sell globally</span>
+            <span>Connect your catalog</span>
             <span>Size with AI</span>
             <span>Connect with creators</span>
           </aside>
@@ -82,7 +82,7 @@ export function ShopMerchantSystemSection() {
                   <CaretRight weight="bold" />
                 </span>
               </span>
-              <span className={styles.titleMiddle}>Join the Global network</span>
+              <span className={styles.titleMiddle}>Join the Global Shopping Network</span>
               <span className={styles.titleEnd}>
                 <em>powering</em> every look.
               </span>
@@ -91,13 +91,13 @@ export function ShopMerchantSystemSection() {
 
           <div className={styles.pitch}>
             <p>
-              <strong>Sell through PrimeStyleAI Shop.</strong> Add AI sizing and
-              virtual try-on, connect with suppliers and influencers, and place
-              your products inside the{" "}
+              <strong>Connect your catalog to PrimeStyleAI.</strong> Add estimated
+              AI sizing and illustrative virtual try-on, connect with suppliers
+              and Creators, and place your products inside the{" "}
                 <span className={styles.completeLook}>
                   &ldquo;Complete the Look&rdquo; feature
                 </span>
-                {`.`}
+                {`. Shoppers continue to your checkout, and you remain the seller of record.`}
             </p>
             <Link href="/merchants">
               Learn more <ArrowRight size={17} weight="bold" aria-hidden="true" />

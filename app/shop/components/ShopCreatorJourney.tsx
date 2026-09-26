@@ -83,7 +83,7 @@ export function ShopCreatorJourney() {
                 </div>
                 <div className={styles.confidenceDetail}>
                   <dt>AI fit confidence</dt>
-                  <dd>94%</dd>
+                  <dd>Illustrative</dd>
                 </div>
               </dl>
             </div>
@@ -149,7 +149,7 @@ export function ShopCreatorJourney() {
 
         <li>
           <article className={styles.campaignCard} aria-labelledby="creator-step-04">
-            <CardHeader badge="Track payouts" />
+            <CardHeader badge="Track performance" />
             <figure className={styles.cardVisual}>
               <Image
                 src={JOURNEY_IMAGES.payout}
@@ -162,13 +162,13 @@ export function ShopCreatorJourney() {
             <div className={styles.cardContent}>
               <h3 id="creator-step-04">Get paid</h3>
               <CardSummary>
-                Validated sales become a clear payout statement.
+                Eligible attributed purchases appear in a clear performance statement.
               </CardSummary>
               <div className={styles.payoutPanel}>
                 <header>
-                  <span>Commission earned</span>
+                  <span>Illustrative commission</span>
                   <strong>$128.40</strong>
-                  <small>+24% vs last 7 days</small>
+                  <small>Sample data · eligibility and terms apply</small>
                 </header>
                 <div className={styles.orderRow}>
                   <span>Order #10492</span>

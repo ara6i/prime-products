@@ -37,7 +37,7 @@ export function ProductShopHeader({
         <button
           className={styles.bagButton}
           type="button"
-          aria-label={`Shopping bag with ${bagCount} ${bagCount === 1 ? "item" : "items"}`}
+          aria-label={`Saved look with ${bagCount} ${bagCount === 1 ? "item" : "items"}`}
           aria-haspopup="dialog"
           onClick={onOpenBag}
         >

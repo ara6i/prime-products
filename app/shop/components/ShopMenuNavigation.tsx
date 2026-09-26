@@ -32,7 +32,7 @@ export function ShopMenuNavigation() {
                 <div>
                   {group.links.map((item) => (
                     <Link
-                      key={item.href}
+                      key={`${item.label}-${item.href}`}
                       href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -50,7 +50,7 @@ export function ShopMenuNavigation() {
           <nav className={styles.menuFeatureRail} aria-label={`${section.label} featured destinations`}>
             {section.features.map((item) => (
               <Link
-                key={item.href}
+                key={`${item.label}-${item.href}`}
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"

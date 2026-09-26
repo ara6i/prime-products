@@ -2,9 +2,9 @@ import { CheckIcon } from "@/app/shared/components/icons";
 import styles from "./productDetail.module.css";
 
 const benefits = [
-  ["AI fit match", "Size guidance built around your profile"],
-  ["Connected checkout", "One bag across the merchant network"],
-  ["Tracked delivery", "Order status available after checkout"],
+  ["Estimated AI fit", "Personalized guidance, not a fit guarantee"],
+  ["Styled together", "Keep every piece in one coordinated look"],
+  ["Saved for later", "Come back to your favorite pieces anytime"],
 ] as const;
 
 export function ProductBenefits() {

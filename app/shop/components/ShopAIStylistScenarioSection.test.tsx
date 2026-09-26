@@ -184,7 +184,7 @@ it("places the five initial results on the real interactive disc", async () => {
   render(<ShopAIStylistScenarioSection />);
 
   const section = within(
-    screen.getByRole("region", { name: /One you\. Five ways to arrive\./i }),
+    screen.getByRole("region", { name: /One you\. Five complete looks\./i }),
   );
   const models = section.getAllByAltText(/AI Stylist model wearing/i);
   expect(models).toHaveLength(5);
@@ -266,7 +266,7 @@ it("shows women's Wedding roles on their own step and skips Season", async () =>
   expect(screen.getByText("Step 3 of 4")).toBeTruthy();
   expect(screen.getByRole("button", { name: "Bride" })).toBeTruthy();
   expect(screen.getByRole("button", { name: "Bridesmaid" })).toBeTruthy();
-  expect(screen.getByRole("button", { name: "Mother of bride" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Mother of the Bride" })).toBeTruthy();
   expect(screen.queryByRole("button", { name: "Groom" })).toBeNull();
   expect(screen.queryByRole("button", { name: "Spring" })).toBeNull();
   expect(screen.getByText("No season or garment type needed for Wedding.")).toBeTruthy();
@@ -302,7 +302,7 @@ it("switches Wedding to Groom and Usher for men", async () => {
   await user.click(screen.getByRole("button", { name: "Continue" }));
   expect(screen.getByRole("button", { name: "Groom" })).toBeTruthy();
   expect(screen.getByRole("button", { name: "Usher" })).toBeTruthy();
-  expect(screen.getByRole("button", { name: "Mother of groom" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Mother of the Groom" })).toBeTruthy();
   await user.click(screen.getByRole("button", { name: "Usher" }));
   await user.click(screen.getByRole("button", { name: "Continue" }));
   await user.click(screen.getByRole("button", { name: "Build wedding party" }));

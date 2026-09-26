@@ -11,9 +11,9 @@ import Link from "next/link";
 import styles from "./shopSupplierNetwork.module.css";
 
 const networkBenefits = [
-  { icon: Storefront, label: "More stockists" },
+  { icon: Storefront, label: "Merchant connections" },
   { icon: VideoCamera, label: "Creator demand" },
-  { icon: GlobeHemisphereWest, label: "Global distribution" },
+  { icon: GlobeHemisphereWest, label: "Broader network reach" },
 ];
 
 export function ShopSupplierNetworkSection() {
@@ -43,11 +43,11 @@ export function ShopSupplierNetworkSection() {
         <div className={styles.stage}>
           <div className={styles.stageCopy}>
             <p className={styles.eyebrow}>For suppliers</p>
-            <h3>Turn one catalog into global demand.</h3>
+            <h3>Turn one catalog into more routes to market.</h3>
             <p className={styles.description}>
-              List your products once. Reach verified merchants, creator-led
-              campaigns, and global shoppers through one connected supplier
-              system.
+              Share products with participating merchants and Creator-led
+              campaigns through one connected supplier system. Availability and
+              distribution depend on each partner relationship.
             </p>
             <Link href="/suppliers" className={styles.primaryCta}>
               Grow as a supplier
@@ -58,7 +58,7 @@ export function ShopSupplierNetworkSection() {
           <div className={styles.sceneFrame}>
             <Image
               src="/media/global-shop/supplier-network/supplier-merchant-influencer-cutout-v1.png"
-              alt="A European supplier handing a garment box to a European merchant while a European influencer films the exchange"
+              alt="A European supplier handing a garment box to a European merchant while a European Creator films the exchange"
               fill
               sizes="(max-width: 800px) calc(100vw - 72px), 48vw"
               className={styles.sceneImage}
@@ -96,7 +96,7 @@ export function ShopSupplierNetworkSection() {
           <ArrowRight size={18} weight="bold" aria-hidden="true" />
           <span>Reach merchants</span>
           <ArrowRight size={18} weight="bold" aria-hidden="true" />
-          <span>Grow globally</span>
+          <span>Expand network reach</span>
         </div>
       </div>
     </section>

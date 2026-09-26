@@ -303,6 +303,13 @@
   line-height: 1.55;
 }
 
+.aiFitCopy small {
+  margin-top: 4px;
+  color: #85857f;
+  font-size: clamp(9px, 0.68vw, 11px);
+  line-height: 1.5;
+}
+
 .sdkCtaWrap {
   position: relative;
   margin-top: clamp(18px, 2vw, 28px);

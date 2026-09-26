@@ -33,7 +33,7 @@ export function ShopCreatorHero({
         </div>
 
         <h2 className={styles.headline} id="shop-creator-hero-title">
-          Are you an influencer?
+          Are you a Creator?
         </h2>
 
         <div className={styles.pitch}>

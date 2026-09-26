@@ -202,12 +202,12 @@ export const SHOP_WEDDING_ROLE_OPTIONS = {
   women: [
     { id: "bride", label: "Bride" },
     { id: "bridesmaid", label: "Bridesmaid" },
-    { id: "mother", label: "Mother of bride" },
+    { id: "mother", label: "Mother of the Bride" },
   ],
   men: [
     { id: "groom", label: "Groom" },
     { id: "usher", label: "Usher" },
-    { id: "mother", label: "Mother of groom" },
+    { id: "mother", label: "Mother of the Groom" },
   ],
 } as const;
 

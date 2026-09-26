@@ -175,6 +175,38 @@
   font-weight: 750;
 }
 
+.locationControl {
+  display: grid;
+  width: min(100%, 350px);
+  gap: 7px;
+  margin-top: 12px;
+  text-align: left;
+}
+
+.locationControl span {
+  color: #77727f;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.locationControl input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 15px;
+  border: 1px solid rgba(111, 124, 255, 0.24);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--scenario-ink);
+  font: inherit;
+}
+
+.locationControl input:focus-visible {
+  outline: 3px solid rgba(111, 124, 255, 0.28);
+  outline-offset: 2px;
+}
+
 .locationPill {
   display: flex;
   width: fit-content;

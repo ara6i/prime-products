@@ -81,13 +81,13 @@ export const shopMenuSections: MenuSection[] = [
   },
   {
     id: "influencers",
-    label: "Influencers",
+    label: "Creators",
     groups: [
       {
         label: "Explore",
         links: [
-          { label: "Influencer landing", href: "/influencers" },
-          { label: "Influencer dashboard", href: "/influencers/dashboard" },
+          { label: "Creator landing", href: "/influencers" },
+          { label: "Creator dashboard", href: "/influencers/dashboard" },
           { label: "Creator storefront", href: "/influencers/maya-laurent" },
           {
             label: "Outfit Studio",
@@ -224,9 +224,9 @@ export const shopMenuSections: MenuSection[] = [
         label: "Explore",
         links: [
           { label: "Supplier landing", href: "/suppliers" },
-          { label: "Supplier dashboard", href: "/suppliers/dashboard" },
-          { label: "Company page", href: "/suppliers/dashboard/company" },
-          { label: "Product catalog", href: "/suppliers/dashboard/products" },
+          { label: "Join supplier waitlist", href: "/suppliers" },
+          { label: "Catalog overview", href: "/suppliers#catalog-story" },
+          { label: "Performance preview", href: "/suppliers#supplier-dashboard" },
         ],
       },
       {
@@ -234,38 +234,38 @@ export const shopMenuSections: MenuSection[] = [
         links: [
           {
             label: "Merchant matches",
-            href: "/suppliers/dashboard/merchant-matches",
+            href: "/suppliers#merchants",
           },
           {
-            label: "Influencer matches",
-            href: "/suppliers/dashboard/influencer-matches",
+            label: "Creator matches",
+            href: "/suppliers#influencers",
           },
           {
             label: "Merchant relationships",
-            href: "/suppliers/dashboard/relationships",
+            href: "/suppliers#merchants",
           },
           {
             label: "Selling options",
-            href: "/suppliers/dashboard/selling-options",
+            href: "/suppliers#selling-routes",
           },
           {
-            label: "Influencer campaigns",
-            href: "/suppliers/dashboard/campaigns",
+            label: "Creator campaigns",
+            href: "/suppliers#influencers",
           },
-          { label: "Messages & RFQs", href: "/suppliers/dashboard/messages" },
+          { label: "Messages & RFQs", href: "/suppliers" },
         ],
       },
       {
         label: "Manage",
         links: [
-          { label: "Orders", href: "/suppliers/dashboard/orders" },
+          { label: "Partner orders preview", href: "/suppliers#supplier-dashboard" },
           {
-            label: "Payments & payouts",
-            href: "/suppliers/dashboard/payments",
+            label: "Partner terms",
+            href: "/suppliers#selling-routes",
           },
-          { label: "Performance", href: "/suppliers/dashboard/performance" },
-          { label: "Policies", href: "/suppliers/dashboard/policies" },
-          { label: "Team", href: "/suppliers/dashboard/team" },
+          { label: "Performance", href: "/suppliers#supplier-dashboard" },
+          { label: "Policies", href: "/terms" },
+          { label: "Team", href: "/suppliers" },
         ],
       },
     ],
@@ -277,19 +277,19 @@ export const shopMenuSections: MenuSection[] = [
       },
       {
         label: "Your collection",
-        href: "/suppliers/dashboard/products",
+        href: "/suppliers#catalog-story",
         image:
           "/media/partner-landing/merchant-network/sdk-panelled-jacket.png",
       },
       {
         label: "Retail partners",
-        href: "/suppliers/dashboard/merchant-matches",
+        href: "/suppliers#merchants",
         image:
           "/media/partner-landing/merchant-network/store-example/example-store-hero-model.webp",
       },
       {
         label: "Creator partners",
-        href: "/suppliers/dashboard/influencer-matches",
+        href: "/suppliers#influencers",
         image: "/media/partner-landing/optimized/creator-match-maya.webp",
       },
     ],

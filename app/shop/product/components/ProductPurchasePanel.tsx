@@ -124,7 +124,7 @@ export function ProductPurchasePanel({
           size="commerce"
           onClick={state.addToBag}
         >
-          Add to bag · {product.priceLabel}
+          Save to look · {product.priceLabel}
         </Button>
         <Button
           className={styles.favoriteButton}

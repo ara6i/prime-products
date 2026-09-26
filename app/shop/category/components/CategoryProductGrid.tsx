@@ -82,9 +82,9 @@ export function CategoryProductGrid({
               variant="commerce"
               size="commerce"
               onClick={() => onAddToBag(product)}
-              aria-label={`Add ${product.name} to bag`}
+              aria-label={`Save ${product.name} to your look`}
             >
-              Add to bag <Plus size={15} />
+              Save to look <Plus size={15} />
             </Button>
           </article>
         );

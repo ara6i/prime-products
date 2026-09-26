@@ -183,7 +183,7 @@ export function GlobalShopExperience() {
           <nav className={styles.desktopNav} aria-label="Shop navigation">
             <Link href="/shop/category/women">Women</Link>
             <Link href="/shop/category/men">Men</Link>
-            <Link href="/influencers">For Influencers</Link>
+            <Link href="/influencers">For Creators</Link>
             <Link href="/merchants">For Merchants</Link>
             <Link href="/suppliers">
               For Suppliers
@@ -204,7 +204,7 @@ export function GlobalShopExperience() {
             <button
               type="button"
               className={styles.bagAction}
-              aria-label={`Shopping bag with ${bagCount} items`}
+              aria-label={`Saved look with ${bagCount} items`}
               onClick={() => setCartOpen(true)}
             >
               <Handbag size={20} weight="regular" />
@@ -320,7 +320,7 @@ export function GlobalShopExperience() {
                 type="button"
                 onClick={() => closeMenuThen(() => setCartOpen(true))}
               >
-                Bag <span>[ {bagCount} ]</span>
+                Saved look <span>[ {bagCount} ]</span>
               </button>
               <Link
                 href="/customer/login"
@@ -353,7 +353,7 @@ export function GlobalShopExperience() {
             </div>
           </div>
           <div className={styles.heroHeadline}>
-            <p>PrimeStyleAI global shop · One network, every style</p>
+            <p>PrimeStyleAI Global Shopping Network · One network, every style</p>
             <h1 id="shop-hero-title">FEEL THE VIBES</h1>
           </div>
           <div className={styles.heroModelBreakout} aria-hidden="true">
@@ -382,10 +382,10 @@ export function GlobalShopExperience() {
           <div className={styles.heroMedia} aria-hidden="true" />
           <div className={styles.heroCopy}>
             <span>New season · Curated across the network</span>
-            <h2>Fashion that already knows your next move.</h2>
+            <h2>Fashion, styled around you.</h2>
             <p>
-              Discover connected brands, build a look with your AI stylist, and
-              shop the size made for you.
+              Discover new pieces, build a look with your AI stylist, and find
+              the size made for you.
             </p>
             <div>
               <button type="button" onClick={() => openCategoryPage("Women")}>
@@ -424,8 +424,8 @@ export function GlobalShopExperience() {
               <h2 id="arrival-title">New arrivals, made personal.</h2>
             </div>
             <p>
-              Products from connected merchants, selected around your style and
-              ready for fit, try-on, and complete-look discovery.
+              New pieces selected around your style and ready for fit, try-on,
+              and complete-look discovery.
             </p>
           </div>
 
@@ -519,9 +519,9 @@ export function GlobalShopExperience() {
                     className={styles.addButton}
                     type="button"
                     onClick={() => addToBag(product)}
-                    aria-label={`Add ${product.name} to bag`}
+                    aria-label={`Save ${product.name} to your look`}
                   >
-                    Add to bag <Plus size={16} />
+                    Save to look <Plus size={16} />
                   </button>
                 </article>
               );
@@ -564,7 +564,7 @@ export function GlobalShopExperience() {
 
             <div className={styles.stylistHero}>
               <div className={styles.stylistHeroCopy}>
-                <span>New Spring AI Edit</span>
+                <span>Interactive AI Stylist demo</span>
                 <h2 id="stylist-title">Simply</h2>
                 <b>/FASHION</b>
                 <p>
@@ -591,8 +591,8 @@ export function GlobalShopExperience() {
                 />
               </div>
               <div className={styles.stylistHeroMetric}>
-                <strong>450K</strong>
-                <span>style combinations</span>
+                <strong>5</strong>
+                <span>ready outfit ideas</span>
               </div>
               <h3 className={styles.stylistHeroWord}>
                 Beyond
@@ -631,11 +631,10 @@ export function GlobalShopExperience() {
               </figure>
               <div className={styles.stylistEditorialCopy}>
                 <span>02 · YOUR AI EDIT</span>
-                <h3>We build the perfect outfit to match your identity.</h3>
+                <h3>We build complete looks around your style preferences.</h3>
                 <p>
-                  Your stylist reads color, silhouette, occasion, fit, and live
-                  products from connected brands—then turns them into one
-                  complete shoppable look.
+                  Your stylist reads color, silhouette, occasion, and fit—then
+                  shapes every piece into one coordinated look.
                 </p>
                 <button
                   type="button"

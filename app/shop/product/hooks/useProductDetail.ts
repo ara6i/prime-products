@@ -33,7 +33,7 @@ export function useProductDetail(
 
   function addToBag() {
     if (product.sizes.length > 0 && !product.sizes.includes(selectedSize)) {
-      setConfirmation("Choose a valid size before adding this item to your bag.");
+      setConfirmation("Choose a valid size before saving this item to your look.");
       return;
     }
     bag.add({
@@ -47,7 +47,7 @@ export function useProductDetail(
       priceCents: product.priceCents,
       currency: product.currency ?? "USD",
     });
-    setConfirmation(`${product.name}${selectedSize ? ` · ${selectedSize}` : ""} added to your bag`);
+    setConfirmation(`${product.name}${selectedSize ? ` · ${selectedSize}` : ""} saved to your look`);
   }
 
   function saveOutfit(items: ProductDetailInteractionState["pendingOutfit"]) {
@@ -64,7 +64,7 @@ export function useProductDetail(
         currency: item.currency,
       });
     }
-    setConfirmation(`${items.length === 1 ? items[0].name : "Complete outfit"} added to your bag.`);
+    setConfirmation(`${items.length === 1 ? items[0].name : "Complete outfit"} saved to your look.`);
     setPendingOutfit([]);
   }
 

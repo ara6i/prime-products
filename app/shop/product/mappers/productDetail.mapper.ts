@@ -105,12 +105,12 @@ const lumenWideLegInformation: ProductInformationSection[] = [
     id: "shipping",
     title: "Shipping & Returns",
     summary:
-      "Showcase delivery estimates and return eligibility are confirmed before checkout. Unworn items with original tags may be returned through the connected merchant flow.",
+      "Delivery and return details are shown before purchase.",
     items: [
-      "Estimated standard delivery: 2–5 business days",
-      "Free showcase returns within 30 days",
-      "Tracked delivery updates",
-      "Duties shown before payment where applicable",
+      "Delivery timing shown before purchase",
+      "Return details shown with the product",
+      "Tracking where available",
+      "Duties shown where applicable",
     ],
   },
 ];
@@ -155,7 +155,7 @@ function getInformation(
       title: "Shipping & Returns",
       summary:
         "Delivery timing, duties, and return eligibility are confirmed before checkout.",
-      items: ["Secure network checkout", "Order tracking included"],
+      items: ["Delivery details before purchase", "Tracking where available"],
     },
   ];
 }

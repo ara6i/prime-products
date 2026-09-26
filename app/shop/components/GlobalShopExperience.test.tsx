@@ -113,7 +113,7 @@ it("links every partner destination in the header to its landing page", () => {
   expect(navigation.queryByRole("button", { name: "Brands" })).toBeNull();
   expect(
     navigation
-      .getByRole("link", { name: "For Influencers" })
+      .getByRole("link", { name: "For Creators" })
       .getAttribute("href"),
   ).toBe("/influencers");
   expect(
@@ -195,7 +195,7 @@ describe("New arrivals product links", () => {
     ).toBeTruthy();
     expect(actions.add).not.toHaveBeenCalled();
     await user.click(
-      arrivals.getByRole("button", { name: `Add ${product.name} to bag` }),
+      arrivals.getByRole("button", { name: `Save ${product.name} to your look` }),
     );
     expect(actions.add).toHaveBeenCalledWith(
       expect.objectContaining({ productId: product.id, href: product.href }),
@@ -217,7 +217,8 @@ it("presents the focused merchant network hero and the complete creator hero", (
       name: /Have a store\?/,
     }),
   ).toBeTruthy();
-  expect(merchant.getByText(/Sell through PrimeStyleAI Shop/)).toBeTruthy();
+  expect(merchant.getByText(/Connect your catalog to PrimeStyleAI/)).toBeTruthy();
+  expect(merchant.getByText(/you remain the seller of record/)).toBeTruthy();
   expect(
     merchant.getByRole("link", { name: "Learn more" }).getAttribute("href"),
   ).toBe("/merchants");
@@ -236,7 +237,7 @@ it("presents the focused merchant network hero and the complete creator hero", (
     "/media/partner-landing/merchant-network/one-photo-sizing/one-photo-sizing-european-omni-box-only-720p-v2.mp4",
   );
   const influencerImage = merchant.getByRole("article", {
-    name: "Influencer image",
+    name: "Creator image",
   });
   expect(influencerImage.querySelector("img")?.getAttribute("src")).toContain(
     "merchant-influencer-editorial-v1.png",
@@ -266,7 +267,7 @@ it("presents the focused merchant network hero and the complete creator hero", (
   expect(merchant.queryByRole("navigation")).toBeNull();
 
   const creatorSection = screen.getByRole("region", {
-    name: /Are you an influencer\?/,
+    name: /Are you a Creator\?/,
   });
   const creator = within(creatorSection);
   expect(creator.getByRole("button", { name: "Learn more" })).toBeTruthy();
@@ -323,7 +324,7 @@ it("presents one full supplier-focused network section", () => {
 
   expect(
     supplier.getByText(
-      /Reach verified merchants, creator-led campaigns, and global shoppers through one connected supplier system/i,
+      /Share products with participating merchants and Creator-led campaigns through one connected supplier system/i,
     ),
   ).toBeTruthy();
   expect(
@@ -332,14 +333,14 @@ it("presents one full supplier-focused network section", () => {
       .getAttribute("href"),
   ).toBe("/suppliers");
   const handoffImage = supplier.getByAltText(
-    /European supplier handing a garment box to a European merchant while a European influencer films the exchange/i,
+    /European supplier handing a garment box to a European merchant while a European Creator films the exchange/i,
   );
   expect(handoffImage.getAttribute("src")).toContain(
     "supplier-merchant-influencer-cutout-v1.png",
   );
-  expect(supplier.getByText("More stockists")).toBeTruthy();
+  expect(supplier.getByText("Merchant connections")).toBeTruthy();
   expect(supplier.getByText("Creator demand")).toBeTruthy();
-  expect(supplier.getByText("Global distribution")).toBeTruthy();
+  expect(supplier.getByText("Broader network reach")).toBeTruthy();
   expect(supplier.getByText("Built for suppliers")).toBeTruthy();
   expect(supplier.getByText("One catalog. Full visibility.")).toBeTruthy();
   expect(screen.queryByText(/Are you a supplier/i)).toBeNull();
@@ -406,7 +407,7 @@ describe("Shop branded menu", () => {
     );
     for (const label of [
       "Shop",
-      "Influencers",
+      "Creators",
       "Merchants",
       "Suppliers",
       "PDP Studio",
@@ -493,12 +494,12 @@ describe("Shop branded menu", () => {
     await waitFor(() =>
       expect(
         menu
-          .getByRole("tab", { name: "Influencers" })
+          .getByRole("tab", { name: "Creators" })
           .getAttribute("aria-selected"),
       ).toBe("true"),
     );
     expect(document.activeElement).toBe(
-      menu.getByRole("tab", { name: "Influencers" }),
+      menu.getByRole("tab", { name: "Creators" }),
     );
     await user.keyboard("{End}");
     await waitFor(() =>
@@ -518,7 +519,7 @@ describe("Shop branded menu", () => {
       "Suppliers",
       "PDP Studio",
       "MyAIFitting",
-      "Influencers",
+      "Creators",
       "Shop",
     ]) {
       await user.click(menu.getByRole("tab", { name: label }));
@@ -528,7 +529,7 @@ describe("Shop branded menu", () => {
     expect(menu.queryByRole("link", { name: "Merchant dashboard" })).toBeNull();
     expect(menu.queryByRole("link", { name: "Supplier dashboard" })).toBeNull();
     expect(
-      menu.queryByRole("link", { name: "Influencer dashboard" }),
+      menu.queryByRole("link", { name: "Creator dashboard" }),
     ).toBeNull();
     expect(
       menu.queryByRole("link", { name: "PDP Studio dashboard" }),
@@ -576,7 +577,7 @@ describe("Shop branded menu", () => {
     expect(actions.add).not.toHaveBeenCalled();
     expect(actions.setCartOpen).not.toHaveBeenCalled();
     expect(
-      screen.getByRole("button", { name: "Shopping bag with 2 items" }),
+      screen.getByRole("button", { name: "Saved look with 2 items" }),
     ).toBeTruthy();
   });
 
@@ -593,8 +594,8 @@ describe("Shop branded menu", () => {
 
   it("opens the existing bag once after the menu closes", async () => {
     const { user, menu } = await openMenu();
-    await user.click(menu.getByRole("tab", { name: "Influencers" }));
-    await user.click(menu.getByRole("button", { name: /Bag/ }));
+    await user.click(menu.getByRole("tab", { name: "Creators" }));
+    await user.click(menu.getByRole("button", { name: /Saved look/ }));
     await waitFor(() => expect(actions.setCartOpen).toHaveBeenCalledWith(true));
     expect(actions.setCartOpen).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole("dialog")).toBeNull();

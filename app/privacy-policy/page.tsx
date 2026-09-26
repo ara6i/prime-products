@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { LegalEditorialPage } from "@/app/legal-content/components/LegalEditorialPage";
-import { POLICY_PAGES } from "@/app/legal-content/data/policyPages";
+import { networkPrivacyPolicy } from "@/app/legal-content/data/networkPolicyPages";
 
 const CREATOR_NETWORK_ICON =
   "/media/partner-landing/optimized/primestyleai-mark-256.png";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | PrimeStyleAI",
-  description: POLICY_PAGES.privacyPolicy.description,
+  title: "Privacy & Photo Data Policy | PrimeStyleAI",
+  description: networkPrivacyPolicy.description,
   icons: {
     icon: [{ url: CREATOR_NETWORK_ICON, type: "image/png" }],
     shortcut: [CREATOR_NETWORK_ICON],
@@ -16,5 +16,5 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPolicyPage() {
-  return <LegalEditorialPage page={POLICY_PAGES.privacyPolicy} />;
+  return <LegalEditorialPage page={networkPrivacyPolicy} />;
 }

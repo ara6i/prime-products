@@ -78,7 +78,7 @@ describe.each([false, true])("Daily Edit PDP interactions (mobile: %s)", (mobile
 
     await user.click(screen.getByRole("button", { name: "XL" }));
     expect(screen.getByRole("button", { name: "XL" }).getAttribute("aria-pressed")).toBe("true");
-    await user.click(screen.getByRole("button", { name: `Add to bag · ${product.priceLabel}` }));
+    await user.click(screen.getByRole("button", { name: `Save to look · ${product.priceLabel}` }));
     expect(fixture.store!.getSnapshot().items[0]).toMatchObject({ productId: product.id, name: product.name, size: "XL", image: product.gallery[0].src, href: product.canonicalHref, priceCents: product.priceCents, quantity: 1 });
     expect(fixture.store!.getSnapshot().isOpen).toBe(true);
 
@@ -100,12 +100,12 @@ it("keeps all four products and different sizes when moving between PDPs and res
   for (const product of dailyEditProductDetails) {
     view.rerender(<ProductHarness key={product.id} product={product} />);
     await user.click(screen.getByRole("button", { name: "M" }));
-    await user.click(screen.getByRole("button", { name: `Add to bag · ${product.priceLabel}` }));
+    await user.click(screen.getByRole("button", { name: `Save to look · ${product.priceLabel}` }));
   }
   const first = dailyEditProductDetails[0];
   view.rerender(<ProductHarness key={first.id} product={first} />);
   await user.click(screen.getByRole("button", { name: "XL" }));
-  await user.click(screen.getByRole("button", { name: `Add to bag · ${first.priceLabel}` }));
+  await user.click(screen.getByRole("button", { name: `Save to look · ${first.priceLabel}` }));
   expect(fixture.store!.getSnapshot().items).toHaveLength(5);
   const saved = storage.getItem(SHOP_BAG_STORAGE_KEY);
   act(() => fixture.store!.setOpen(false));

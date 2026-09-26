@@ -154,6 +154,7 @@ interface StylistPlatformProps {
   outfits: OutfitSuggestion[];
   showModels?: boolean;
   modelImageUrl?: string | null;
+  modelDepth?: number;
   slotImages?: string[];
   slotImageObjectPositions?: readonly string[];
   slotImageScales?: readonly number[];
@@ -174,6 +175,7 @@ export function StylistPlatform({
   outfits,
   showModels = true,
   modelImageUrl = null,
+  modelDepth = 4.5,
   slotImages,
   slotImageObjectPositions,
   slotImageScales,
@@ -415,7 +417,7 @@ export function StylistPlatform({
             modelBottom={35 + tuning.modelOffsetY}
             modelSpread={30 * (tuning.modelSpacing / 100)}
             modelSize={baseModelSize * (tuning.modelScale / 100)}
-            modelDepth={4.5}
+            modelDepth={modelDepth}
             modelOffsetX={tuning.modelOffsetX}
             activeBrightness={tuning.centerBrightness / 100}
           />

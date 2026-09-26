@@ -47,7 +47,7 @@ describe("ProductShopHeader", () => {
     expect(screen.queryByRole("button", { name: "Your account" })).toBeNull();
 
     await user.click(
-      screen.getByRole("button", { name: "Shopping bag with 2 items" }),
+      screen.getByRole("button", { name: "Saved look with 2 items" }),
     );
     expect(onOpenBag).toHaveBeenCalledOnce();
   });

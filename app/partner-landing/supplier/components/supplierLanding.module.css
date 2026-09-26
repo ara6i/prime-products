@@ -487,6 +487,14 @@
   text-decoration: none;
 }
 
+button.inlineLink,
+button.primaryCta,
+button.finalButton {
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 .inlineLink:hover svg,
 .orangeLink:hover svg {
   transform: translateX(3px);
@@ -727,17 +735,22 @@
   opacity: 0.74;
 }
 
-.connectionCards a {
+.connectionCards button {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   margin-top: 23px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
   font-size: 10px;
   font-weight: 850;
+  cursor: pointer;
   text-decoration: none;
 }
 
-.connectionCards a:hover {
+.connectionCards button:hover {
   text-decoration: underline;
   text-underline-offset: 5px;
 }
@@ -789,6 +802,40 @@
   background: #eaf3ff;
   box-shadow: 0 38px 90px rgba(25, 31, 38, 0.24);
   color: #171717;
+}
+
+.dashboardPreviewLabel {
+  width: min(100%, 1280px);
+  margin: 0 auto 10px;
+  color: #3f3f3f;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.generatedDashboardPreview {
+  display: block;
+  overflow: hidden;
+  width: min(100%, 1280px);
+  margin: 0 auto;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 20px;
+  background: #eaf3ff;
+  box-shadow: 0 38px 90px rgba(25, 31, 38, 0.24);
+  cursor: pointer;
+}
+
+.generatedDashboardPreview:focus-visible {
+  outline: 3px solid #5547ff;
+  outline-offset: 5px;
+}
+
+.generatedDashboardImage {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .dashboardAppBar {
@@ -849,7 +896,7 @@
 }
 
 .dashboardUtilities button,
-.dashboardTitleActions > button {
+.dashboardTitleActions > button:not(.dashboardJoinButton) {
   display: grid;
   width: 34px;
   height: 34px;
@@ -896,7 +943,8 @@
   gap: 9px;
 }
 
-.dashboardTitleActions a {
+.dashboardTitleActions a,
+.dashboardJoinButton {
   display: inline-flex;
   min-height: 36px;
   align-items: center;
@@ -908,6 +956,10 @@
   font-size: 9px;
   font-weight: 800;
   text-decoration: none;
+}
+
+.dashboardJoinButton {
+  cursor: pointer;
 }
 
 .dashboardOverview {
@@ -1644,7 +1696,8 @@
   justify-content: center;
 }
 
-.footerActions a {
+.footerActions a,
+.footerActions button {
   display: inline-flex;
   min-height: 42px;
   align-items: center;
@@ -1656,12 +1709,15 @@
   font-size: 10px;
   font-weight: 850;
   text-decoration: none;
+  border: 0;
+  cursor: pointer;
   transition:
     background 180ms ease,
     transform 180ms ease;
 }
 
-.footerActions a:hover {
+.footerActions a:hover,
+.footerActions button:hover {
   background: #1d3fc7;
   transform: translateY(-2px);
 }
@@ -2664,6 +2720,7 @@
   .sellingRoutes {
     grid-template-columns: 1fr;
   }
+
 }
 
 @media (max-width: 800px) {

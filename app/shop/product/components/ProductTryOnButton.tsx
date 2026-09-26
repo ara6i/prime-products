@@ -80,7 +80,8 @@ export function ProductTryOnButton({
   )?.summary;
 
   return (
-    <ShopPrimeStyleTryon
+    <div className={styles.tryOnDemoWrap}>
+      <ShopPrimeStyleTryon
       apiUrl={
         process.env.NEXT_PUBLIC_API_BASE_URL ||
         process.env.NEXT_PUBLIC_API_URL ||
@@ -127,7 +128,16 @@ export function ProductTryOnButton({
       showPoweredBy
       className={styles.tryOnSdkRoot}
       classNames={{ button: styles.tryOnButton }}
-      onAddToBag={(payload) => state.addSdkSelection(payload)}
-    />
+      addToBagLabel="Save to look"
+      continueShoppingLabel="Keep styling"
+      backToProductPageLabel="Back to product"
+        onAddToBag={(payload) => state.addSdkSelection(payload)}
+      />
+      <p className={styles.aiEstimateNotice}>
+        Interactive demo using a prepared model. AI sizing and virtual try-on are
+        estimates and illustrations, not guarantees of actual fit or appearance.
+        A live photo experience requires separate consent before processing.
+      </p>
+    </div>
   );
 }

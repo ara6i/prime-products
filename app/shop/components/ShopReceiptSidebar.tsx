@@ -45,12 +45,12 @@ export function ShopReceiptSidebar() {
         >
           <header className={styles.header}>
             <div>
-              <Dialog.Title className={styles.title}>Your bag <span>[ {bag.bagCount} ]</span></Dialog.Title>
+              <Dialog.Title className={styles.title}>Your saved look <span>[ {bag.bagCount} ]</span></Dialog.Title>
               <Dialog.Description className={styles.description}>
                 {bag.storageAvailable ? "Saved on this browser. Yours to come back to." : "Browser storage unavailable. Saved for this visit only."}
               </Dialog.Description>
             </div>
-            <Dialog.Close className={styles.close} aria-label="Close shopping bag"><X size={21} /></Dialog.Close>
+            <Dialog.Close className={styles.close} aria-label="Close saved look"><X size={21} /></Dialog.Close>
           </header>
 
           <div className={styles.receipt}>
@@ -61,13 +61,13 @@ export function ShopReceiptSidebar() {
                 <div className={styles.paper}>
                   <div className={styles.receiptHeading}>
                     <span>PRIMESTYLEAI / GLOBAL SHOP</span>
-                    <h3>BASKET RECEIPT</h3>
+                    <h3>LOOK SHEET</h3>
                     <p aria-live="polite">{bag.bagCount} {bag.bagCount === 1 ? "item" : "items"} · {bag.items.length} {bag.items.length === 1 ? "selection" : "selections"}</p>
                   </div>
 
                   <div className={styles.items} role="region" aria-label="Receipt items" tabIndex={0}>
                     {bag.items.length ? (
-                      <ul aria-label="Products in your bag">
+                      <ul aria-label="Products in your saved look">
                         {bag.items.map((item, index) => (
                           <li className={styles.item} key={item.key}>
                             <Image
@@ -90,7 +90,7 @@ export function ShopReceiptSidebar() {
                                   <span aria-live="polite">{item.quantity}</span>
                                   <button type="button" disabled={item.quantity >= 999} onClick={() => bag.changeQuantity(item.key, 1)} aria-label={`Increase quantity of ${item.name}, ${item.size || "size not selected"}`}><Plus size={12} /></button>
                                 </div>
-                                <button className={styles.remove} type="button" onClick={() => bag.remove(item.key)} aria-label={`Remove ${item.name}, ${item.size || "size not selected"} from bag`}>Remove</button>
+                                <button className={styles.remove} type="button" onClick={() => bag.remove(item.key)} aria-label={`Remove ${item.name}, ${item.size || "size not selected"} from saved look`}>Remove</button>
                               </div>
                             </div>
                           </li>
@@ -103,10 +103,10 @@ export function ShopReceiptSidebar() {
 
                   <footer className={styles.summary}>
                     {bag.items.length > 0 && <>
-                      <div className={styles.subtotal}><span>SUBTOTAL</span><div>{totals.map((total) => <strong key={total.currency}>{formatBagMoney(total.priceCents, total.currency)}</strong>)}</div></div>
-                      <p className={styles.shipping}>Shipping & taxes not included.</p>
+                      <div className={styles.subtotal}><span>LOOK VALUE</span><div>{totals.map((total) => <strong key={total.currency}>{formatBagMoney(total.priceCents, total.currency)}</strong>)}</div></div>
+                      <p className={styles.shipping}>A complete look, saved in one place.</p>
                       <Image className={styles.barcode} src="/media/global-shop/pdp-receipt/barcode-reference.png" width={325} height={64} alt="" loading="eager" />
-                      <p className={styles.checkoutNote}>Checkout isn’t connected yet. {bag.storageAvailable ? "Your bag stays saved." : "Your bag is kept for this visit."}</p>
+                      <p className={styles.checkoutNote}>{bag.storageAvailable ? "Your look stays saved." : "Your look is kept for this visit."}</p>
                     </>}
                     <Dialog.Close className={styles.continue}>Continue shopping <ArrowRight size={16} /></Dialog.Close>
                   </footer>

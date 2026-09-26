@@ -232,7 +232,7 @@ export function ShopRunwayView({
                 className={styles.addProduct}
                 type="button"
                 tabIndex={hidden ? -1 : undefined}
-                aria-label={`Add ${product.name} to cart`}
+                aria-label={`Save ${product.name} to look`}
                 onClick={() => onAddToBag(product)}
               >
                 <Plus size={13} />
@@ -268,10 +268,11 @@ export function ShopRunwayView({
             onPointerCancel={state.cancelDrag}
           >
             <div className={styles.intro}>
-              <h2 id="runway-title">Spring Summer 2026</h2>
+              <h2 id="runway-title">The Network Edit</h2>
               <p>
                 Drag across the runway to move through the collection. Every
-                look stays connected to its live pieces and personal fit.
+                look stays connected to participating products where available
+                and your estimated fit.
               </p>
             </div>
 

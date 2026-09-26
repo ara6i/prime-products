@@ -25,7 +25,7 @@ export async function generateMetadata({
   if (!catalog) return { title: "Brand not found · PrimeStyleAI" };
 
   return {
-    title: `${catalog.name} Edit · PrimeStyleAI Global Shop`,
+    title: `${catalog.name} Edit · PrimeStyleAI Global Shopping Network`,
     description: `Shop the ${catalog.name} collection through PrimeStyleAI. ${catalog.descriptor}`,
   };
 }

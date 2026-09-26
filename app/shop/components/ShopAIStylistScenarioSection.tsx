@@ -234,6 +234,7 @@ export function ShopAIStylistScenarioSection() {
   const [activeLook, setActiveLook] = useState(0);
   const [mode, setMode] = useState<ExperienceMode>("intro");
   const [step, setStep] = useState(0);
+  const [manualCity, setManualCity] = useState("");
 
   const scenarioLooks = useMemo(
     () =>
@@ -270,11 +271,13 @@ export function ShopAIStylistScenarioSection() {
   const scenarioSummary = isAppliedWedding
     ? `${activeGender.label} · Wedding · ${ROLE_LABELS[appliedScenario.weddingRole]} · ${appliedScenario.budget}`
     : `${activeGender.label} · ${activeOccasion.label} · ${appliedScenario.season} · ${appliedScenario.budget}`;
-  const liveWeatherSummary = shopWeather
-    ? `${shopWeather.location}${shopWeather.country ? `, ${shopWeather.country}` : ""} · ${shopWeather.temperature} · ${shopWeather.condition}`
-    : isWeatherLoading
-      ? "Detecting location and live weather…"
-      : "Live weather unavailable";
+  const liveWeatherSummary = manualCity.trim()
+    ? `${manualCity.trim()} · manually selected location`
+    : shopWeather
+      ? `${shopWeather.location}${shopWeather.country ? `, ${shopWeather.country}` : ""} · ${shopWeather.temperature} · ${shopWeather.condition}`
+      : isWeatherLoading
+        ? "Detecting approximate location and weather…"
+        : "Weather unavailable";
 
   function chooseGender(nextGender: ShopStylistGender) {
     setGender(nextGender);
@@ -295,15 +298,16 @@ export function ShopAIStylistScenarioSection() {
       aria-labelledby="ai-stylist-scenario-title"
     >
       <div className={styles.intro}>
-        <p>AI Stylist · Live scenario</p>
+        <p>AI Stylist · Interactive demo</p>
         <h2 id="ai-stylist-scenario-title">
           One you.
           <br />
-          <em>Five ways to arrive.</em>
+          <em>Five complete looks.</em>
         </h2>
         <span>
-          Choose who, the moment, and your budget. Add a season for everyday
-          styling—or choose a role for a Wedding.
+          Tell us who you&apos;re styling, the occasion, and the budget. We&apos;ll build
+          five ready outfit ideas around your preferences. Wedding switches to
+          role-based styling with no season step.
         </span>
       </div>
 
@@ -336,6 +340,15 @@ export function ShopAIStylistScenarioSection() {
                   </span>
                 )}
               </div>
+              <label className={styles.locationControl}>
+                <span>Style for another city</span>
+                <input
+                  type="text"
+                  value={manualCity}
+                  onChange={(event) => setManualCity(event.target.value)}
+                  placeholder="Enter a city manually"
+                />
+              </label>
               <div className={styles.startCopy}>
                 <p>
                   Tell us who you&apos;re styling and where you&apos;re headed. We&apos;ll
@@ -343,7 +356,7 @@ export function ShopAIStylistScenarioSection() {
                 </p>
                 <p>
                   Dressing for a wedding? Choose your role—Bride, Bridesmaid,
-                  Mother of bride, Groom, Usher, or Mother of groom—and let
+                  Mother of the Bride, Groom, Usher, or Mother of the Groom—and let
                   your personal stylist take it from there.
                 </p>
               </div>
@@ -576,7 +589,7 @@ export function ShopAIStylistScenarioSection() {
               <div className={styles.locationPill}>
                 <MapPin size={17} weight="fill" />
                 <span>
-                  <small>IP location · live weather</small>
+                  <small>{manualCity.trim() ? "Manual location" : "Approximate IP location"}</small>
                   {liveWeatherSummary}
                 </span>
               </div>
@@ -609,6 +622,7 @@ export function ShopAIStylistScenarioSection() {
               }
               slotImageScales={weddingStageComposition?.imageScales}
               fillContainer
+              modelDepth={1.25}
               showRotationGuide={!showMenWizardPreview && !weddingStageComposition}
               imageAlt={(index) =>
                 showMenWizardPreview
